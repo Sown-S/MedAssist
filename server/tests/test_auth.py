@@ -44,7 +44,8 @@ def test_login_success_logs_login(client, users, logs):
 ])
 def test_login_failures_same_message_and_logged(client, users, logs, username, password, reason, has_user_id):
     r = client.post("/api/v1/auth/login", json={"username": username, "password": password})
-    assert r.status_code == 401 and r.json()["detail"] == GENERIC
+    err = r.json()["error"]
+    assert r.status_code == 401 and err["message"] == GENERIC and err["code"] == "UNAUTHORIZED"
 
     (row,) = logs(action="LOGIN_FAILED")
     assert row.attempted_username == username
