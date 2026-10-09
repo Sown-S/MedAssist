@@ -5,7 +5,7 @@ Nguồn: biến môi trường hệ điều hành > file server/.env > giá tr�
 from pathlib import Path
 from typing import Literal
 
-from pydantic import field_validator
+from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from sqlalchemy.engine import make_url
 
@@ -27,6 +27,14 @@ class Settings(BaseSettings):
     DATABASE_URL: str
     # CHỈ Alembic dùng — vai trò medassist_owner. API không cần nên để trống được.
     MIGRATION_DATABASE_URL: str | None = None
+
+    # JWT (token ngắn hạn — Kế hoạch v7, Sprint 2). Khóa bí mật >= 32 ký tự, chỉ nằm trong .env
+    JWT_SECRET_KEY: str = Field(min_length=32)
+    JWT_ALGORITHM: Literal["HS256"] = "HS256"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = Field(default=15, ge=1, le=60)
+
+    # Proxy được tin header X-Forwarded-For (máy admin: mạng Docker của Caddy). Dev: để trống.
+    TRUSTED_PROXIES: list[str] = []
 
     DB_POOL_SIZE: int = 5
     DB_MAX_OVERFLOW: int = 5

@@ -1,0 +1,34 @@
+# Máy dev: CHỈ chạy db trong Docker; API chạy native (uvicorn --reload).
+# Chạy từ thư mục gốc repo:
+# docker compose -f deploy/docker-compose.dev.yml --env-file deploy/.env up -d
+name: medassist-dev
+
+services:
+  db:
+    image: postgres:16
+    container_name: medassist-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Thiếu POSTGRES_PASSWORD trong deploy/.env}
+      POSTGRES_DB: medassist
+      # ICU vi-VN: sắp xếp đúng Anh < Ánh < Ân < Bình < Dương < Đặng (ERD v1.8 mục 1)
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale-provider=icu --icu-locale=vi-VN --locale=C.UTF-8"
+      TZ: Asia/Ho_Chi_Minh
+      MEDASSIST_OWNER_PASSWORD: ${MEDASSIST_OWNER_PASSWORD:?}
+      MEDASSIST_APP_PASSWORD: ${MEDASSIST_APP_PASSWORD:?}
+      MEDASSIST_BACKUP_PASSWORD: ${MEDASSIST_BACKUP_PASSWORD:?}
+      MEDASSIST_CREATE_EVAL_DB: ${MEDASSIST_CREATE_EVAL_DB:-0}
+    ports:
+      - "127.0.0.1:5432:5432"   # chỉ localhost; compose chính trên máy admin KHÔNG mở cổng db
+    volumes:
+      - ../server/db/initdb:/docker-entrypoint-initdb.d:ro
+      - medassist_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d medassist"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  medassist_pgdata:

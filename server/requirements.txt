@@ -2,7 +2,10 @@ alembic==1.19.0
 annotated-doc==0.0.5
 annotated-types==0.8.0
 anyio==4.14.2
+argon2-cffi==25.1.0
+argon2-cffi-bindings==26.1.0
 cached-property==2.0.1
+cffi==2.1.1
 click==8.4.2
 colorama==0.4.6
 fastapi==0.141.1
@@ -15,9 +18,11 @@ MarkupSafe==3.0.3
 mypy_extensions==1.1.0
 psycopg==3.3.6
 psycopg-binary==3.3.6
+pycparser==3.11
 pydantic==2.13.4
 pydantic-settings==2.14.2
 pydantic_core==2.46.4
+PyJWT==2.15.1
 python-dotenv==1.2.2
 SQLAlchemy==2.0.51
 sqlalchemy-orm==1.2.10
