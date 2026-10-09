@@ -36,6 +36,9 @@ os.environ["DATABASE_URL"] = _test_url("TEST_DATABASE_URL", "DATABASE_URL")
 os.environ["MIGRATION_DATABASE_URL"] = _test_url("TEST_MIGRATION_DATABASE_URL", "MIGRATION_DATABASE_URL")
 os.environ["MEDASSIST_ALLOW_DROP_SCHEMA"] = "1"
 os.environ.setdefault("JWT_SECRET_KEY", "test-only-secret-key-at-least-32-characters!!")
+# Mọi request của TestClient đến từ cùng "IP" testclient: nâng ngưỡng theo IP để các test
+# không khóa lẫn nhau; test giới hạn đăng nhập tự hạ ngưỡng bằng monkeypatch.
+os.environ["LOGIN_MAX_FAILURES_PER_IP"] = "100000"
 
 # ---- từ đây mới được import app ----------------------------------------------------
 import pytest  # noqa: E402

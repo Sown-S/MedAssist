@@ -42,7 +42,7 @@ class TriageRule(Base):
     version: Mapped[int] = mapped_column(Integer, nullable=False, server_default=text('1'))
     rule_name: Mapped[str] = mapped_column(String(255), nullable=False)
     rule_type: Mapped[str] = mapped_column(String(20), nullable=False)
-    condition_logic: Mapped[Any] = mapped_column(JSONB, nullable=False)
+    condition_logic: Mapped[Any] = mapped_column(JSONB(none_as_null=True), nullable=False)
     resulting_priority: Mapped[str] = mapped_column(String(20), nullable=False)
     reason_text: Mapped[str] = mapped_column(Text, nullable=False)
     source_id: Mapped[uuid.UUID] = mapped_column(Uuid, nullable=False)

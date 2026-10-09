@@ -40,9 +40,9 @@ def user_agent(request: Request) -> str | None:
     ua = request.headers.get("user-agent")
     return ua[:255] if ua else None
 
-
 def path_template(request: Request) -> str:
     """Đường dẫn đầy đủ với tham số đường dẫn thay bằng tên, vd /api/v1/patients/{patient_id}.
+
     Dùng cho nhật ký: gom được theo endpoint và không lặp lại ID đã có ở cột entity_id.
     """
     path = request.url.path

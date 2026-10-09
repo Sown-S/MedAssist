@@ -1,4 +1,4 @@
-"""Quản trị — phần nhật ký (US09): chỉ Admin xem và xuất. Kho, hóa đơn, báo cáo thêm sau."""
+"""Quản trị: tài khoản (US07) và nhật ký (US09) — chỉ Admin. Kho, hóa đơn, báo cáo thêm ở bước 5."""
 import csv
 import io
 import json
@@ -12,13 +12,19 @@ from openpyxl.styles import Font
 from sqlalchemy import Select, func, or_, select
 from sqlalchemy.orm import Session
 
+import uuid
+
 from app.core.audit_view import audit_view
+from app.core.auth import require_roles
 from app.core.database import get_db
 from app.core.request_meta import client_ip, user_agent
 from app.models.audit_log import AuditLog
 from app.models.user import User
 from app.schemas.audit_log import AuditLogFilter, AuditLogOut, AuditLogPage
+from app.schemas.common import Page
+from app.schemas.user import PasswordReset, Role, UserCreate, UserOut, UserUpdate
 from app.services import audit_service as audit
+from app.services import user_service
 
 router = APIRouter(prefix="/admin", tags=["admin"])
 
@@ -165,3 +171,45 @@ def export_audit_logs(
     if truncated:
         headers["X-Export-Truncated"] = str(EXPORT_MAX_ROWS)
     return Response(content=content, media_type=media_type, headers=headers)
+
+
+# ---------------------------------------------------------------------------
+# Tài khoản người dùng (US07)
+# ---------------------------------------------------------------------------
+_admin_users = require_roles("Admin", audit_entity="users")
+
+
+@router.get("/users", response_model=Page[UserOut])
+def list_users(role: Role | None = None, is_active: bool | None = None,
+               q: str | None = Query(None, max_length=50, description="Tìm theo tên đăng nhập hoặc họ tên (không dấu)"),
+               limit: int = Query(50, ge=1, le=200), offset: int = Query(0, ge=0),
+               _: User = Depends(_admin_users), db: Session = Depends(get_db)):
+    total, rows = user_service.list_users(db, role=role, is_active=is_active, q=q, limit=limit, offset=offset)
+    return Page[UserOut](total=total, limit=limit, offset=offset, items=rows)
+
+
+@router.get("/users/{user_id}", response_model=UserOut)
+def get_user(user_id: uuid.UUID, _: User = Depends(_admin_users), db: Session = Depends(get_db)):
+    return user_service.get_user(db, user_id)
+
+
+@router.post("/users", response_model=UserOut, status_code=201)
+def create_user(body: UserCreate, actor: User = Depends(_admin_users), db: Session = Depends(get_db)):
+    user = user_service.create_user(db, body, actor)
+    db.commit()
+    return user
+
+
+@router.patch("/users/{user_id}", response_model=UserOut)
+def update_user(user_id: uuid.UUID, body: UserUpdate, actor: User = Depends(_admin_users),
+                db: Session = Depends(get_db)):
+    user = user_service.update_user(db, user_id, body, actor)
+    db.commit()
+    return user
+
+
+@router.post("/users/{user_id}/reset-password", status_code=204)
+def reset_password(user_id: uuid.UUID, body: PasswordReset, actor: User = Depends(_admin_users),
+                   db: Session = Depends(get_db)) -> None:
+    user_service.reset_password(db, user_id, body.new_password, actor)
+    db.commit()
