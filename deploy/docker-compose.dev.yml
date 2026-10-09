@@ -19,6 +19,7 @@ services:
       MEDASSIST_APP_PASSWORD: ${MEDASSIST_APP_PASSWORD:?}
       MEDASSIST_BACKUP_PASSWORD: ${MEDASSIST_BACKUP_PASSWORD:?}
       MEDASSIST_CREATE_EVAL_DB: ${MEDASSIST_CREATE_EVAL_DB:-0}
+      MEDASSIST_CREATE_TEST_DB: ${MEDASSIST_CREATE_TEST_DB:-1}
     ports:
       - "127.0.0.1:5432:5432"   # chỉ localhost; compose chính trên máy admin KHÔNG mở cổng db
     volumes:
