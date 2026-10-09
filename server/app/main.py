@@ -2,12 +2,13 @@ from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from sqlalchemy import text
-from app.database import get_db
+from app.core.config import settings
+from app.core.database import get_db
 
 # 1. Khởi tạo ứng dụng FastAPI Core
 app = FastAPI(
-    title="CDSS Outpatient Backend API Core",
-    version="1.0.0",
+    title=settings.PROJECT_NAME,
+    version=settings.VERSION,
     description="Hệ thống hỗ trợ quyết định lâm sàng (CDSS) cho phòng khám ngoại trú"
 )
 
@@ -38,12 +39,13 @@ def health_check(db: Session = Depends(get_db)):
         return {
             "status": "healthy",
             "database": "connected",
-            "provider": "Neon Cloud PostgreSQL",
+            "provider": "PostgreSQL",
             "service": "CDSS Backend Service"
         }
-    except Exception as e:
+    except Exception:
+        # Không trả chi tiết lỗi ra ngoài (có thể lộ host, vai trò, câu SQL)
         return {
             "status": "unhealthy",
-            "database": f"connection_error: {str(e)}",
+            "database": "connection_error",
             "service": "CDSS Backend Service"
         }
