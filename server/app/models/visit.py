@@ -48,7 +48,7 @@ class Visit(Base):
     status: Mapped[str] = mapped_column(String(20), nullable=False, server_default=text("'Waiting'::character varying"))
     queue_number: Mapped[int | None] = mapped_column(Integer)
     checked_in_at: Mapped[datetime.datetime | None] = mapped_column(DateTime(True))
-    vital_signs: Mapped[Any | None] = mapped_column(JSONB)
+    vital_signs: Mapped[Any | None] = mapped_column(JSONB(none_as_null=True))
     chief_complaint: Mapped[str] = mapped_column(Text, nullable=False)
     free_text_description: Mapped[str | None] = mapped_column(Text)
     triage_priority_rule: Mapped[str | None] = mapped_column(String(20))

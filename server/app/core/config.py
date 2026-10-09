@@ -32,6 +32,13 @@ class Settings(BaseSettings):
     JWT_SECRET_KEY: str = Field(min_length=32)
     JWT_ALGORITHM: Literal["HS256"] = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = Field(default=15, ge=1, le=60)
+    REFRESH_TOKEN_EXPIRE_HOURS: int = Field(default=8, ge=1, le=24)     # một ca làm việc
+
+    # Giới hạn đăng nhập sai (ERD v1.8 điểm mở #1), đếm từ các dòng LOGIN_FAILED của audit_log
+    LOGIN_WINDOW_MINUTES: int = Field(default=15, ge=1)
+    LOGIN_LOCK_MINUTES: int = Field(default=5, ge=1)
+    LOGIN_MAX_FAILURES_PER_USER: int = Field(default=5, ge=1)
+    LOGIN_MAX_FAILURES_PER_IP: int = Field(default=20, ge=1)
 
     # Proxy được tin header X-Forwarded-For (máy admin: mạng Docker của Caddy). Dev: để trống.
     TRUSTED_PROXIES: list[str] = []

@@ -23,7 +23,7 @@ class SystemSetting(Base):
     )
 
     setting_key: Mapped[str] = mapped_column(String(100), primary_key=True)
-    value: Mapped[Any] = mapped_column(JSONB, nullable=False)
+    value: Mapped[Any] = mapped_column(JSONB(none_as_null=True), nullable=False)
     description: Mapped[str | None] = mapped_column(Text)
     updated_by: Mapped[uuid.UUID] = mapped_column(Uuid, nullable=False)
     updated_at: Mapped[datetime.datetime] = mapped_column(DateTime(True), nullable=False, server_default=text('now()'))

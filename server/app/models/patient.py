@@ -33,7 +33,7 @@ class Patient(Base):
     gender: Mapped[str] = mapped_column(String(10), nullable=False)
     phone: Mapped[str | None] = mapped_column(String(20))
     address: Mapped[str | None] = mapped_column(String(255))
-    medical_history: Mapped[Any | None] = mapped_column(JSONB)
+    medical_history: Mapped[Any | None] = mapped_column(JSONB(none_as_null=True))
     allergy_notes: Mapped[str | None] = mapped_column(Text)
     created_at: Mapped[datetime.datetime] = mapped_column(DateTime(True), nullable=False, server_default=text('now()'))
     updated_at: Mapped[datetime.datetime] = mapped_column(DateTime(True), nullable=False, server_default=text('now()'))
