@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import text
 from app.core.config import settings
 from app.core.database import get_db
+from app.routers import auth_router
 
 # 1. Khởi tạo ứng dụng FastAPI Core
 app = FastAPI(
@@ -20,8 +21,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+# 3. Router nghiệp vụ, tiền tố /api/v1 (Architecture v1.7)
+app.include_router(auth_router.router, prefix="/api/v1")
 
-# 3. Route trang chủ (Root Endpoint)
+# 4. Route trang chủ (Root Endpoint)
 @app.get("/")
 def read_root():
     return {
@@ -30,7 +33,7 @@ def read_root():
         "docs_url": "/docs"
     }
 
-# 4. Route kiểm tra sức khỏe và kết nối Neon DB (Health Endpoint)
+# 5. Route kiểm tra sức khỏe và kết nối Neon DB (Health Endpoint)
 @app.get("/health")
 def health_check(db: Session = Depends(get_db)):
     try:
