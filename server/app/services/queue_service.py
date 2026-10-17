@@ -165,6 +165,14 @@ def mark_prescribed(db: Session, visit_id: uuid.UUID, actor: User) -> Visit:
                        conflict_code="NOT_YOUR_VISIT")
 
 
+def reopen_exam(db: Session, visit_id: uuid.UUID, actor: User) -> Visit:
+    """Prescribed -> Examining khi bác sĩ 'mở lại đơn' (prescription_service kiểm tra điều kiện:
+    chưa cấp thuốc, chưa thu tiền). Chỉ bác sĩ đã khám lượt này."""
+    return _transition(db, visit_id, actor, from_status=("Prescribed",), to_status="Examining",
+                       values={}, extra_where=(Visit.physician_id == actor.user_id,),
+                       conflict_code="NOT_YOUR_VISIT")
+
+
 def mark_finished(db: Session, visit_id: uuid.UUID, actor: User) -> Visit:
     """Prescribed -> Finished. Service hóa đơn (bước 5) gọi khi hóa đơn đã Paid VÀ mọi dòng thuốc
     đã Dispensed/Skipped — điều kiện đó do service hóa đơn kiểm tra trong cùng transaction."""

@@ -20,11 +20,13 @@ def test_update_validates_audits_and_affects_views(client, users, admin, logs, l
     r = client.put("/api/v1/admin/settings/khong.co", headers=admin, json={"value": 1})
     assert r.status_code == 422 and r.json()["error"]["code"] == "UNKNOWN_SETTING"
 
-    r = client.put("/api/v1/admin/settings/billing.default_consultation_fee", headers=admin, json={"value": 150000})
-    assert r.status_code == 200 and r.json()["value"] == 150000 and r.json()["is_default"] is False
+    before = {s["setting_key"]: s["value"] for s in client.get("/api/v1/admin/settings", headers=admin).json()}
+    start = before["billing.default_consultation_fee"]          # test khác có thể đã đổi giá trị
+    r = client.put("/api/v1/admin/settings/billing.default_consultation_fee", headers=admin, json={"value": 150001})
+    assert r.status_code == 200 and r.json()["value"] == 150001 and r.json()["is_default"] is False
     r = client.put("/api/v1/admin/settings/billing.default_consultation_fee", headers=admin, json={"value": 200000})
     rows = logs(action="UPDATE", entity="system_setting")
-    assert [(x.old_values["value"], x.new_values["value"]) for x in rows] == [(0, 150000), (150000, 200000)]
+    assert [(x.old_values["value"], x.new_values["value"]) for x in rows] == [(start, 150001), (150001, 200000)]
     client.put("/api/v1/admin/settings/billing.default_consultation_fee", headers=admin, json={"value": 200000})
     assert len(logs(action="UPDATE", entity="system_setting")) == 2           # không đổi thì không ghi
 
