@@ -40,11 +40,14 @@ def evaluate_triage_rules(
     Only TRUE rules count as hits. Only UNKNOWN red flags contribute missing
     feature paths to ``complete_now`` (deduplicated in rule/tree order). Once a
     red flag is TRUE, Emergency is already determined and completion is not
-    required to make that decision. Malformed rules propagate an explicit error
-    instead of silently producing Routine.
+    required to make that decision. Malformed rules or a malformed collection
+    propagate an explicit error instead of silently producing Routine. An empty
+    sequence is valid; an empty mapping or string is not an empty ruleset.
     """
     if not isinstance(input_features, Mapping):
         raise ConditionFormatError("input_features phải là object")
+    if not isinstance(rules, Sequence) or isinstance(rules, (str, bytes, bytearray)):
+        raise ConditionFormatError("rules phải là danh sách luật")
 
     hits: list[RuleHit] = []
     missing: list[str] = []

@@ -230,6 +230,36 @@ def test_invalid_features_are_rejected_even_without_rules():
         evaluate_triage_rules(None, [])
 
 
+@pytest.mark.parametrize(
+    "rules", [None, {}, {"rule_key": "rf_test"}, "", "RED_FLAG", b"", bytearray(), 0]
+)
+def test_malformed_rule_collections_raise_instead_of_silently_becoming_routine(rules):
+    class MalformedReader(FakeKnowledgeReader):
+        def active_triage_rules(self):
+            return rules
+
+    with pytest.raises(ConditionFormatError, match="rules phải là danh sách luật"):
+        run_node1({"input_features": {}}, MalformedReader())
+
+
+@pytest.mark.parametrize("rules", [[], ()])
+def test_empty_rule_sequences_are_valid(rules):
+    result = evaluate_triage_rules({}, rules)
+
+    assert result == {
+        "priority": "Routine",
+        "rule_hits": [],
+        "is_red_flag": False,
+        "complete_now": [],
+    }
+
+
+@pytest.mark.parametrize("item", [None, "RED_FLAG", 1])
+def test_non_object_rule_entries_raise_a_condition_format_error(item):
+    with pytest.raises(ConditionFormatError, match="Luật phân loại phải là object"):
+        evaluate_triage_rules({}, [item])
+
+
 def test_node_reads_only_active_triage_rules_through_reader_boundary():
     class TriageOnlyReader(FakeKnowledgeReader):
         calls = 0
