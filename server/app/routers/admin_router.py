@@ -24,7 +24,8 @@ from app.schemas.audit_log import AuditLogFilter, AuditLogOut, AuditLogPage
 from app.schemas.common import Page
 from app.schemas.user import PasswordReset, Role, UserCreate, UserOut, UserUpdate
 from app.services import audit_service as audit
-from app.services import user_service
+from app.services import settings_service, user_service
+from app.schemas.inventory import SettingOut, SettingUpdate
 
 router = APIRouter(prefix="/admin", tags=["admin"])
 
@@ -213,3 +214,22 @@ def reset_password(user_id: uuid.UUID, body: PasswordReset, actor: User = Depend
                    db: Session = Depends(get_db)) -> None:
     user_service.reset_password(db, user_id, body.new_password, actor)
     db.commit()
+
+
+# ---------------------------------------------------------------------------
+# Tham số vận hành (SYSTEM_SETTING) — Admin chỉnh, không cần khởi động lại
+# ---------------------------------------------------------------------------
+_admin_settings = require_roles("Admin", audit_entity="system_setting")
+
+
+@router.get("/settings", response_model=list[SettingOut])
+def list_settings(_: User = Depends(_admin_settings), db: Session = Depends(get_db)):
+    return settings_service.list_settings(db)
+
+
+@router.put("/settings/{setting_key}", response_model=SettingOut)
+def update_setting(setting_key: str, body: SettingUpdate, actor: User = Depends(_admin_settings),
+                   db: Session = Depends(get_db)):
+    out = settings_service.update_setting(db, setting_key, body.value, actor)
+    db.commit()
+    return out
