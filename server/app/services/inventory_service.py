@@ -9,7 +9,7 @@ Nguyên tắc (ERD v1.8 mục kho):
     audit_log ghi thay đổi danh mục thuốc và việc tạo lô.
 """
 import uuid
-from datetime import date
+from datetime import date, timedelta
 
 from sqlalchemy import func, select, text
 from sqlalchemy.orm import Session
@@ -225,3 +225,86 @@ def reconciliation(db: Session) -> list[dict]:
 
 def today(db: Session) -> date:
     return db.scalar(select(func.current_date()))
+
+
+# ============================================================================ FEFO cho đơn thuốc (lượt 6b)
+def _min_shelf_days(db: Session) -> int:
+    from app.services.settings_service import get_value
+    return int(get_value(db, "inventory.min_remaining_shelf_days"))
+
+
+def eligible_quantity(db: Session, drug_id: uuid.UUID, duration_days: int) -> int:
+    """Tồn của các lô còn hạn qua hết liệu trình (+ inventory.min_remaining_shelf_days). Không khóa."""
+    cutoff = today(db) + timedelta(days=duration_days + _min_shelf_days(db))
+    return db.scalar(select(func.coalesce(func.sum(InventoryBatch.remaining_quantity), 0)).where(
+        InventoryBatch.drug_id == drug_id, InventoryBatch.remaining_quantity > 0,
+        InventoryBatch.expiry_date > cutoff)) or 0
+
+
+def allocate_fefo(db: Session, items) -> tuple[list[tuple], list[dict]]:
+    """Chọn lô cho từng dòng đơn theo FEFO (hạn gần nhất trước; cùng hạn thì lô nhập trước).
+
+    Khóa các lô đủ điều kiện (FOR UPDATE) theo thứ tự drug_id -> hạn -> batch_id để hai đơn xác nhận
+    cùng lúc không tranh nhau lô (không deadlock). Trả (phân bổ, thiếu):
+      phân bổ = [(item, batch_id, số lượng)], thiếu = [{item_id, ..., reason}] — rỗng nếu đủ hết.
+    Nhiều dòng cùng một thuốc được tính dồn trên cùng các lô.
+    """
+    shelf = _min_shelf_days(db)
+    day0 = today(db)
+    allocations, shortages = [], []
+    taken: dict[uuid.UUID, int] = {}                     # batch_id -> đã phân bổ trong đơn này
+    for item in sorted(items, key=lambda i: (str(i.drug_id), i.duration_days)):
+        cutoff = day0 + timedelta(days=item.duration_days + shelf)
+        batches = db.scalars(select(InventoryBatch).where(
+            InventoryBatch.drug_id == item.drug_id, InventoryBatch.remaining_quantity > 0,
+            InventoryBatch.expiry_date > cutoff)
+            .order_by(InventoryBatch.expiry_date, InventoryBatch.created_at, InventoryBatch.batch_id)
+            .with_for_update()).all()
+        need, picks = item.quantity, []
+        for b in batches:
+            free = b.remaining_quantity - taken.get(b.batch_id, 0)
+            if free <= 0:
+                continue
+            q = min(free, need)
+            picks.append((item, b.batch_id, q))
+            taken[b.batch_id] = taken.get(b.batch_id, 0) + q
+            need -= q
+            if need == 0:
+                break
+        if need > 0:
+            usable = db.scalar(select(func.coalesce(func.sum(InventoryBatch.remaining_quantity), 0)).where(
+                InventoryBatch.drug_id == item.drug_id, InventoryBatch.expiry_date > day0)) or 0
+            eligible = item.quantity - need
+            shortages.append({
+                "item_id": str(item.item_id), "drug_id": str(item.drug_id), "needed": item.quantity,
+                "available_for_course": eligible, "available_total": int(usable),
+                "reason": "EXPIRES_BEFORE_COURSE_END" if usable >= item.quantity else "OUT_OF_STOCK",
+                "message": ("Còn hàng nhưng lô hết hạn trước khi dùng xong liệu trình"
+                            if usable >= item.quantity else "Không đủ hàng trong kho"),
+            })
+        else:
+            allocations.extend(picks)
+    return allocations, shortages
+
+
+def deduct(db: Session, allocations, actor: User) -> None:
+    for item, batch_id, qty in allocations:
+        db.add(StockMovement(batch_id=batch_id, performed_by=actor.user_id, movement_type="Deduct",
+                             quantity_change=-qty, prescription_item_id=item.item_id))
+    db.flush()
+
+
+def restore_item(db: Session, item_id: uuid.UUID, actor: User, note: str) -> int:
+    """Hoàn lại đúng các lô đã trừ cho một dòng đơn (đọc từ sổ cái). Trả tổng số lượng hoàn."""
+    rows = db.execute(select(StockMovement.batch_id, func.sum(StockMovement.quantity_change))
+                      .where(StockMovement.prescription_item_id == item_id,
+                             StockMovement.movement_type.in_(("Deduct", "Restore")))
+                      .group_by(StockMovement.batch_id)).all()
+    total = 0
+    for batch_id, net in rows:
+        if net < 0:
+            db.add(StockMovement(batch_id=batch_id, performed_by=actor.user_id, movement_type="Restore",
+                                 quantity_change=-net, prescription_item_id=item_id, note=note))
+            total += -net
+    db.flush()
+    return total
