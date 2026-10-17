@@ -6,6 +6,12 @@ from typing import Any
 
 
 class FakeKnowledgeReader:
+    """Simulate Active graph/catalogue reads, including Node 2's nested rows.
+
+    Omitted status means Active in synthetic fixtures; explicit Draft,
+    PendingApproval and Retired graph/catalogue rows are excluded by the reader.
+    """
+
     def __init__(
         self,
         *,
@@ -26,10 +32,19 @@ class FakeKnowledgeReader:
         return deepcopy(self._triage_rules)
 
     def active_conditions(self) -> list[dict[str, Any]]:
-        return deepcopy(self._conditions)
+        conditions = self._active(self._conditions)
+        for condition in conditions:
+            for key in ("symptoms", "guidelines"):
+                if key in condition:
+                    condition[key] = self._active(condition[key])
+        return conditions
 
     def active_symptoms(self) -> list[dict[str, Any]]:
-        return deepcopy(self._symptoms)
+        return self._active(self._symptoms)
+
+    @staticmethod
+    def _active(rows: Sequence[Mapping[str, Any]]) -> list[dict[str, Any]]:
+        return deepcopy([dict(row) for row in rows if row.get("status", "Active") == "Active"])
 
 
 class FakeLLMClient:

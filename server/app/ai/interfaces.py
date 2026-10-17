@@ -23,7 +23,13 @@ class KnowledgeReader(Protocol):
         ...
 
     def active_conditions(self) -> Sequence[JsonObject]:
-        """Return Active conditions and their deterministic-scoring data."""
+        """Return Active conditions with nested Active ``symptoms``/``guidelines``.
+
+        Temporary Node 2 mapping: condition_code, name_vi, icd10_code; symptoms
+        contain symptom_code, polarity, weight, is_key; guidelines contain
+        excerpt_key and the excerpt/source fields. Reconcile with OKF and the
+        concrete reader before production integration.
+        """
         ...
 
     def active_symptoms(self) -> Sequence[JsonObject]:
