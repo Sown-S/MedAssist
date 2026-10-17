@@ -48,5 +48,9 @@ class LLMClient(Protocol):
         schema: Mapping[str, Any],
         timeout_seconds: float,
     ) -> dict[str, Any]:
-        """Generate one JSON object conforming to ``schema`` or raise an error."""
+        """Request schema-constrained JSON or raise a typed client error.
+
+        Returned objects remain untrusted until Node 4 (or extraction's Active
+        catalogue checks and nurse confirmation) validates them before use.
+        """
         ...

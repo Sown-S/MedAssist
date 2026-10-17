@@ -71,3 +71,11 @@ class FakeLLMClient:
         if self.error is not None:
             raise self.error
         return deepcopy(self.response)
+
+
+class MockLLMClient(FakeLLMClient):
+    """AI-05 mock: deterministic JSON or an injected typed LLM failure.
+
+    Calls are held in memory only, with synthetic test data; nothing is logged
+    or persisted. Kept compatible with AI-00's FakeLLMClient.
+    """
