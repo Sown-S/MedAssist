@@ -1,73 +1,14 @@
 """Lượt 6b: chẩn đoán, đơn nháp, xác nhận trừ kho FEFO, hóa đơn tự tạo, hoàn tất khám, mở lại đơn."""
 import threading
 import uuid
-from datetime import timedelta
-from decimal import Decimal
 
 import pytest
 from sqlalchemy import text
 
-from app.core.database import SessionLocal, engine
-from app.core.security import hash_password
-from app.models import User
+from app.core.database import engine
 
 
-# ---------------------------------------------------------------------------- tiện ích
-@pytest.fixture
-def nurse(login):
-    return login("yta")
-
-
-@pytest.fixture
-def doctor(login):
-    return login("bs")
-
-
-@pytest.fixture
-def doctor2(users, login):
-    with SessionLocal() as db:
-        if not db.query(User).filter_by(username="bs2").first():
-            db.add(User(username="bs2", password_hash=hash_password("Matkhau123"), full_name="BS 2", role="Physician"))
-            db.commit()
-    return login("bs2")
-
-
-@pytest.fixture
-def today(users):
-    with engine.connect() as conn:
-        return conn.scalar(text("SELECT CURRENT_DATE"))
-
-
-@pytest.fixture
-def examining(client, nurse, doctor):
-    """Tạo bệnh nhân + lượt khám, check-in, 'bs' nhận khám. Trả visit_id."""
-    def _make(**patient_over):
-        pid = client.post("/api/v1/patients", headers=nurse, json={
-            "full_name": f"Kê Đơn {uuid.uuid4().hex[:8]}", "date_of_birth": "1980-01-01", "gender": "Male",
-            **patient_over}).json()["patient_id"]
-        vid = client.post("/api/v1/visits", headers=nurse, json={"patient_id": pid, "chief_complaint": "Ho"}).json()["visit_id"]
-        assert client.patch(f"/api/v1/visits/{vid}/check-in", headers=nurse).status_code == 200
-        assert client.patch(f"/api/v1/visits/{vid}/start-exam", headers=doctor).status_code == 200
-        return vid
-    return _make
-
-
-@pytest.fixture
-def drug(client, nurse, today):
-    """Tạo thuốc kèm các lô {hạn sau N ngày: số lượng}. Trả (drug_id, {N: batch_id})."""
-    def _make(batches: dict[int, int], price=2000):
-        tag = uuid.uuid4().hex[:6]
-        did = client.post("/api/v1/drugs", headers=nurse, json={
-            "generic_name": f"Amoxicillin {tag}", "trade_name": f"Amox {tag}", "strength": "500 mg",
-            "dosage_form": "viên nang", "unit": "viên", "sale_price": price}).json()["drug_id"]
-        ids = {}
-        for days, qty in batches.items():
-            r = client.post("/api/v1/inventory/batches", headers=nurse, json={
-                "drug_id": did, "batch_number": f"B{days}-{tag}", "expiry_date": (today + timedelta(days=days)).isoformat(),
-                "quantity": qty, "import_price": 1000})
-            ids[days] = r.json()["batch_id"]
-        return did, ids
-    return _make
+# Fixture nurse, doctor, doctor2, today, examining, drug: tests/api/conftest.py
 
 
 def _dx(client, doctor, vid, **over):
@@ -82,12 +23,6 @@ def _item(drug_id, quantity=10, days=5, **over):
 
 def _remaining(client, nurse, batch_id):
     return client.get(f"/api/v1/inventory/batches/{batch_id}", headers=nurse).json()["remaining_quantity"]
-
-
-@pytest.fixture(autouse=True)
-def _fee(client, login):
-    client.put("/api/v1/admin/settings/billing.default_consultation_fee", headers=login("admin"), json={"value": 100000})
-    client.put("/api/v1/admin/settings/inventory.min_remaining_shelf_days", headers=login("admin"), json={"value": 0})
 
 
 # ---------------------------------------------------------------------------- chẩn đoán
