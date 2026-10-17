@@ -101,3 +101,26 @@ def current_for_visit(db: Session, visit_id: uuid.UUID) -> Invoice:
     if invoice is None:
         raise NotFoundError("Lượt khám chưa có hóa đơn")
     return invoice
+
+
+# ============================================================================ Lượt 6c: sửa, lập lại, thu tiền
+def _paraclinical_lines(db: Session, invoice: Invoice) -> list[dict]:
+    return [dict(item_type="Paraclinical", item_name=i.item_name, quantity=i.quantity, unit_price=i.unit_price,
+                 prescription_item_id=None)
+            for i in db.scalars(select(InvoiceItem).where(InvoiceItem.invoice_id == invoice.invoice_id,
+                                                          InvoiceItem.item_type == "Paraclinical")
+                                .order_by(InvoiceItem.item_name))]
+
+
+def reissue(db: Session, visit: Visit, old: Invoice, reason: str, actor: User, *,
+            consultation_fee: Decimal | None = None, paraclinical: list[dict] | None = None) -> Invoice:
+    """Hủy hóa đơn Pending cũ và lập hóa đơn mới (app không có quyền DELETE dòng hóa đơn).
+    Mặc định giữ nguyên phí khám và các dòng nhập tay; dòng thuốc lập lại theo đơn (bỏ dòng Skipped)."""
+    keep_fee = old.consultation_fee if consultation_fee is None else consultation_fee
+    keep_para = _paraclinical_lines(db, old) if paraclinical is None else paraclinical
+    method = old.payment_method
+    cancel(db, old, reason, actor)
+    new = create_for_visit(db, visit, actor, consultation_fee=keep_fee, extra_lines=keep_para)
+    new.payment_method = method
+    db.flush()
+    return new

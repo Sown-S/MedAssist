@@ -139,7 +139,11 @@ def release(db: Session, visit_id: uuid.UUID, actor: User) -> Visit:
 
 
 def cancel(db: Session, visit_id: uuid.UUID, reason: str, actor: User) -> Visit:
-    """Nurse: Waiting/CheckedIn. Physician: Examining do chính mình nhận. Lý do lưu trong audit_log."""
+    """Nurse: Waiting/CheckedIn, hoặc Prescribed khi bệnh nhân bỏ về (billing_service hoàn kho, hủy đơn và
+    hóa đơn). Physician: Examining do chính mình nhận. Lý do lưu trong audit_log."""
+    if actor.role == "Nurse" and db.scalar(select(Visit.status).where(Visit.visit_id == visit_id)) == "Prescribed":
+        from app.services import billing_service      # import muộn: tránh vòng import
+        return billing_service.cancel_prescribed(db, visit_id, reason, actor)
     if actor.role == "Nurse":
         allowed, where = ("Waiting", "CheckedIn"), ()
     elif actor.role == "Physician":
@@ -163,6 +167,11 @@ def mark_prescribed(db: Session, visit_id: uuid.UUID, actor: User) -> Visit:
     return _transition(db, visit_id, actor, from_status=("Examining",), to_status="Prescribed",
                        values={}, extra_where=(Visit.physician_id == actor.user_id,),
                        conflict_code="NOT_YOUR_VISIT")
+
+
+def cancel_from_prescribed(db: Session, visit_id: uuid.UUID, reason: str, actor: User) -> Visit:
+    return _transition(db, visit_id, actor, from_status=("Prescribed",), to_status="Cancelled",
+                       values={"finished_at": func.now()}, audit_extra={"reason": reason})
 
 
 def reopen_exam(db: Session, visit_id: uuid.UUID, actor: User) -> Visit:
