@@ -1,6 +1,6 @@
-"""Nạp danh mục thuốc mẫu (và một lô cho mỗi thuốc) từ server/data/drugs_sample.csv.
+"""Nạp danh mục thuốc (và một lô cho mỗi thuốc) từ server/data/drugs.csv — xem server/data/README.md.
 
-Dùng cho máy dev và demo. Giá trong file là GIẢ LẬP. Chạy lại nhiều lần an toàn:
+Dùng cho máy dev, demo, và (với --no-batches) khi cài máy admin. Chạy lại nhiều lần an toàn:
 thuốc đã có (cùng hoạt chất + tên thương mại + hàm lượng + dạng bào chế) thì bỏ qua; lô "SEED-<mã>"
 chỉ tạo khi thuốc chưa có lô đó. Đi qua inventory_service (kiểm tra, ghi nhật ký) bằng tài khoản 'system'.
 
@@ -8,6 +8,7 @@ Chạy trong server/:
     python -m scripts.seed_drugs                 # thuốc + lô
     python -m scripts.seed_drugs --no-batches    # chỉ danh mục (máy admin khi cài đặt)
     python -m scripts.seed_drugs --file data/khac.csv
+    python -m scripts.seed_drugs --deactivate-others   # ngừng dùng thuốc đang dùng nhưng KHÔNG có trong file
 """
 import argparse
 import csv
@@ -22,10 +23,10 @@ from app.core.database import SessionLocal
 from app.exceptions import AppError
 from app.models import Drug, InventoryBatch, User
 from app.models.user import SYSTEM_USER_ID
-from app.schemas.inventory import BatchCreate, DrugCreate
+from app.schemas.inventory import BatchCreate, DrugCreate, DrugUpdate
 from app.services import inventory_service
 
-DEFAULT_FILE = Path(__file__).resolve().parents[1] / "data" / "drugs_sample.csv"
+DEFAULT_FILE = Path(__file__).resolve().parents[1] / "data" / "drugs.csv"
 _DRUG_FIELDS = ("generic_name", "trade_name", "strength", "dosage_form", "unit", "sale_price",
                 "reorder_level", "drug_class")
 
@@ -38,13 +39,14 @@ def _find(db, row) -> Drug | None:
         func.lower(Drug.dosage_form) == row["dosage_form"].strip().lower()))
 
 
-def seed(path: Path = DEFAULT_FILE, with_batches: bool = True) -> dict:
-    stats = {"drugs_created": 0, "drugs_existing": 0, "batches_created": 0}
+def seed(path: Path = DEFAULT_FILE, with_batches: bool = True, deactivate_others: bool = False) -> dict:
+    stats = {"drugs_created": 0, "drugs_existing": 0, "batches_created": 0, "deactivated": 0}
     with open(path, encoding="utf-8-sig", newline="") as f:
         rows = list(csv.DictReader(f))
     with SessionLocal() as db:
         system = db.get(User, SYSTEM_USER_ID)
         today = inventory_service.today(db)
+        in_file: set = set()
         for n, row in enumerate(rows, start=2):           # dòng 1 là tiêu đề
             try:
                 drug = _find(db, row)
@@ -54,6 +56,7 @@ def seed(path: Path = DEFAULT_FILE, with_batches: bool = True) -> dict:
                     stats["drugs_created"] += 1
                 else:
                     stats["drugs_existing"] += 1
+                in_file.add(drug.drug_id)
                 if with_batches and int(row.get("batch_quantity") or 0) > 0:
                     batch_no = f"SEED-{str(drug.drug_id)[:8].upper()}"
                     if not db.scalar(select(InventoryBatch.batch_id).where(
@@ -66,18 +69,25 @@ def seed(path: Path = DEFAULT_FILE, with_batches: bool = True) -> dict:
             except (AppError, ValueError) as exc:
                 db.rollback()
                 raise SystemExit(f"Lỗi ở dòng {n} ({row.get('generic_name')}): {exc}") from None
+        if deactivate_others:
+            # Không xóa (thuốc đã kê đơn / có lô vẫn cần giữ); ngừng dùng qua service để có nhật ký
+            for drug in db.scalars(select(Drug).where(Drug.is_active.is_(True), Drug.drug_id.not_in(in_file))).all():
+                inventory_service.update_drug(db, drug.drug_id, DrugUpdate(is_active=False), system)
+                stats["deactivated"] += 1
         db.commit()
     return stats
 
 
 def main() -> int:
-    p = argparse.ArgumentParser(description="Nạp danh mục thuốc mẫu")
+    p = argparse.ArgumentParser(description="Nạp danh mục thuốc")
     p.add_argument("--file", type=Path, default=DEFAULT_FILE)
     p.add_argument("--no-batches", action="store_true", help="Chỉ nạp danh mục, không tạo lô")
+    p.add_argument("--deactivate-others", action="store_true",
+                   help="Ngừng dùng (is_active = false) các thuốc đang dùng nhưng không có trong file")
     args = p.parse_args()
-    stats = seed(args.file, with_batches=not args.no_batches)
+    stats = seed(args.file, with_batches=not args.no_batches, deactivate_others=args.deactivate_others)
     print(f"Thuốc mới: {stats['drugs_created']}, đã có: {stats['drugs_existing']}, "
-          f"lô mới: {stats['batches_created']}")
+          f"lô mới: {stats['batches_created']}, ngừng dùng: {stats['deactivated']}")
     return 0
 
 
