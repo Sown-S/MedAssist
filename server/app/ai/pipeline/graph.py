@@ -72,10 +72,19 @@ async def run_pipeline(
     from langsmith import tracing_context
 
     with tracing_context(enabled=False):
+        from langgraph.errors import NodeCancelledError
+
         graph = _compile_worker_graph(
             knowledge_reader, llm_client, db, deadline, on_preliminary
         )
-        result = await graph.ainvoke({"assessment": gated}, config={"callbacks": []})
+        try:
+            result = await graph.ainvoke({"assessment": gated}, config={"callbacks": []})
+        except NodeCancelledError as exc:
+            # LangGraph wraps cancellation raised by a node body. Restore the
+            # worker's cancellation contract without treating it as LLM failure.
+            if isinstance(exc.__cause__, asyncio.CancelledError):
+                raise exc.__cause__ from None
+            raise asyncio.CancelledError from None
     return result["assessment"]
 
 

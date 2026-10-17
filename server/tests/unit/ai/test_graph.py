@@ -447,6 +447,50 @@ def test_worker_cancellation_is_propagated_instead_of_becoming_degraded(case):
     assert not case.catalogue_calls
 
 
+def test_preliminary_callback_cancellation_preserves_original_exception(case):
+    cancellation = asyncio.CancelledError("Synthetic cancellation")
+
+    async def cancelled(state):
+        raise cancellation
+
+    with pytest.raises(asyncio.CancelledError) as caught:
+        asyncio.run(case.run(on_preliminary=cancelled))
+    assert caught.value is cancellation
+    assert not case.client.calls
+    assert not case.catalogue_calls
+
+
+def test_worker_task_cancellation_stops_inflight_llm(case):
+    async def cancel_assessment():
+        started = asyncio.Event()
+        stopped = asyncio.Event()
+
+        class HangingClient:
+            async def generate_json(self, **kwargs):
+                started.set()
+                try:
+                    await asyncio.Event().wait()
+                finally:
+                    stopped.set()
+
+        case.client = HangingClient()
+        task = asyncio.create_task(case.run())
+        try:
+            await asyncio.wait_for(started.wait(), timeout=5)
+            task.cancel()
+            with pytest.raises(asyncio.CancelledError):
+                await task
+            assert task.cancelled()
+            assert stopped.is_set()
+        finally:
+            if not task.done():
+                task.cancel()
+            await asyncio.gather(task, return_exceptions=True)
+
+    asyncio.run(cancel_assessment())
+    assert not case.catalogue_calls
+
+
 def test_unexpected_programming_failure_is_not_swallowed(case):
     case.client.error = RuntimeError("Synthetic programming failure")
     with pytest.raises(RuntimeError, match="Synthetic programming failure"):
