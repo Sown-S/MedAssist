@@ -8,7 +8,7 @@ from app.core.database import get_db
 from app.core.logging import get_logger, setup_logging
 from app.core.middleware import RequestContextMiddleware
 from app.exceptions import register_exception_handlers
-from app.routers import admin_router, auth_router, clinic_router
+from app.routers import admin_router, auth_router, clinic_router, inventory_router
 
 setup_logging(settings.LOG_LEVEL)
 logger = get_logger("main")
@@ -43,6 +43,7 @@ register_exception_handlers(app)
 app.include_router(auth_router.router, prefix="/api/v1")
 app.include_router(admin_router.router, prefix="/api/v1")
 app.include_router(clinic_router.router, prefix="/api/v1")
+app.include_router(inventory_router.router, prefix="/api/v1")
 
 
 # 5. Route trang chủ
