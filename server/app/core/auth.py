@@ -14,7 +14,7 @@ from sqlalchemy.orm import Session
 
 from app.core.database import get_db
 from app.core.request_meta import client_ip, path_template, user_agent
-from app.core.security import decode_access_token
+from app.core.security import decode_access_token, stamp_matches
 from app.models.user import ROLES, User
 from app.services import audit_service as audit
 
@@ -39,10 +39,10 @@ def get_current_user(
     except (jwt.PyJWTError, ValueError):
         raise _UNAUTHORIZED from None
 
-    # Đọc lại từ DB mỗi request: khóa tài khoản hoặc đổi vai trò có hiệu lực ngay,
-    # không phải đợi token hết hạn.
+    # Đọc lại từ DB mỗi request: khóa tài khoản, đổi vai trò hoặc đổi mật khẩu có hiệu lực
+    # ngay, không phải đợi token hết hạn.
     user = db.get(User, user_id)
-    if user is None or not user.is_active:
+    if user is None or not user.is_active or not stamp_matches(payload, user.password_hash):
         raise _UNAUTHORIZED
     return user
 

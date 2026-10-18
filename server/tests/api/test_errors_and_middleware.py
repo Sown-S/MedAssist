@@ -154,3 +154,25 @@ def test_prod_settings_guard():
     with pytest.raises(ValidationError, match="DB_ECHO"):
         Settings(_env_file=None, **base, DB_ECHO=True)
     assert Settings(_env_file=None, **base).is_prod
+
+
+def test_health_ok_and_minimal(client):
+    r = client.get("/health")
+    assert r.status_code == 200 and r.json() == {"status": "healthy", "database": "connected"}
+
+
+def test_health_503_when_db_down(client):
+    from app.core.database import get_db
+    from app.main import app
+
+    class _DeadSession:
+        def execute(self, *_a, **_k):
+            raise RuntimeError("could not connect to server: secret-host")
+
+    app.dependency_overrides[get_db] = lambda: _DeadSession()
+    try:
+        r = client.get("/health")
+    finally:
+        app.dependency_overrides.pop(get_db, None)
+    assert r.status_code == 503 and r.json() == {"status": "unhealthy", "database": "unavailable"}
+    assert "secret-host" not in r.text

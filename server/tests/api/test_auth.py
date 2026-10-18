@@ -104,7 +104,7 @@ def test_deactivated_user_token_stops_working_immediately(client, users):
                  full_name="Tạm", role="Nurse")
         db.add(u)
         db.commit()
-        token, _ = create_access_token(u.user_id, u.role)
+        token, _ = create_access_token(u.user_id, u.role, u.password_hash)
         headers = {"Authorization": f"Bearer {token}"}
         assert client.get("/api/v1/auth/me", headers=headers).status_code == 200
 

@@ -1,5 +1,6 @@
 from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
@@ -60,15 +61,14 @@ def read_root():
     }
 
 
-# 6. Kiểm tra sức khỏe và kết nối PostgreSQL
+# 6. Kiểm tra sức khỏe và kết nối PostgreSQL. Dùng cho healthcheck của Docker Compose / Caddy:
+#    200 khi DB trả lời, 503 khi không — để orchestrator biết dịch vụ chưa sẵn sàng.
+#    Không trả tên hệ quản trị CSDL hay chi tiết lỗi (chỉ ghi ra log server).
 @app.get("/health")
 def health_check(db: Session = Depends(get_db)):
     try:
         db.execute(text("SELECT 1"))
-        return {"status": "healthy", "database": "connected", "provider": "PostgreSQL",
-                "service": "CDSS Backend Service"}
+        return {"status": "healthy", "database": "connected"}
     except Exception:
-        # Chi tiết lỗi chỉ ghi ra log server, không trả cho client
         logger.exception("Health check: không kết nối được DB")
-        return {"status": "unhealthy", "database": "connection_error",
-                "service": "CDSS Backend Service"}
+        return JSONResponse(status_code=503, content={"status": "unhealthy", "database": "unavailable"})

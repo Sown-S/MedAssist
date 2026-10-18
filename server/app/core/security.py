@@ -1,4 +1,11 @@
-"""Băm mật khẩu (Argon2id) và JWT access token ngắn hạn."""
+"""Băm mật khẩu (Argon2id) và JWT access token ngắn hạn.
+
+Dấu mật khẩu (claim "pwd"): mỗi token mang HMAC-SHA256(JWT_SECRET_KEY, password_hash) rút gọn.
+Đổi mật khẩu hoặc Admin đặt lại mật khẩu thì password_hash đổi, nên mọi token cũ (access lẫn
+refresh) bị từ chối ngay ở lần dùng kế tiếp — không cần thêm cột hay bảng nào (giữ ERD v1.8).
+"""
+import hashlib
+import hmac
 import uuid
 from datetime import UTC, datetime, timedelta
 
@@ -42,12 +49,24 @@ def burn_verify_time(password: str) -> None:
         pass
 
 
-def _create_token(user_id: uuid.UUID, role: str, token_type: str, lifetime: timedelta) -> str:
+def password_stamp(password_hash: str) -> str:
+    """Dấu ngắn của password_hash. Dùng HMAC với khóa bí mật nên không suy ngược được gì từ hash."""
+    digest = hmac.new(settings.JWT_SECRET_KEY.encode(), password_hash.encode(), hashlib.sha256)
+    return digest.hexdigest()[:16]
+
+
+def stamp_matches(payload: dict, password_hash: str) -> bool:
+    return hmac.compare_digest(str(payload.get("pwd", "")), password_stamp(password_hash))
+
+
+def _create_token(user_id: uuid.UUID, role: str, password_hash: str, token_type: str,
+                  lifetime: timedelta) -> str:
     now = datetime.now(UTC)
     payload = {
         "sub": str(user_id),
         "role": role,            # chỉ để client hiển thị; server luôn đọc role từ DB
         "type": token_type,
+        "pwd": password_stamp(password_hash),
         "iat": now,
         "exp": now + lifetime,
         "jti": uuid.uuid4().hex,
@@ -55,17 +74,18 @@ def _create_token(user_id: uuid.UUID, role: str, token_type: str, lifetime: time
     return jwt.encode(payload, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
 
 
-def create_access_token(user_id: uuid.UUID, role: str) -> tuple[str, int]:
+def create_access_token(user_id: uuid.UUID, role: str, password_hash: str) -> tuple[str, int]:
     """Trả (token, số giây hiệu lực). Access token ngắn hạn (mặc định 15 phút)."""
     lifetime = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
-    return _create_token(user_id, role, "access", lifetime), int(lifetime.total_seconds())
+    return _create_token(user_id, role, password_hash, "access", lifetime), int(lifetime.total_seconds())
 
 
-def create_refresh_token(user_id: uuid.UUID, role: str) -> tuple[str, int]:
+def create_refresh_token(user_id: uuid.UUID, role: str, password_hash: str) -> tuple[str, int]:
     """Refresh token cho một ca làm việc (mặc định 8 giờ). Không lưu DB: mỗi lần làm mới,
-    server kiểm tra lại tài khoản còn hoạt động và đọc lại vai trò. Thu hồi = khóa tài khoản."""
+    server kiểm tra lại tài khoản còn hoạt động, dấu mật khẩu và đọc lại vai trò.
+    Thu hồi = khóa tài khoản hoặc đổi/đặt lại mật khẩu."""
     lifetime = timedelta(hours=settings.REFRESH_TOKEN_EXPIRE_HOURS)
-    return _create_token(user_id, role, "refresh", lifetime), int(lifetime.total_seconds())
+    return _create_token(user_id, role, password_hash, "refresh", lifetime), int(lifetime.total_seconds())
 
 
 def decode_token(token: str, expected_type: str) -> dict:
@@ -74,7 +94,7 @@ def decode_token(token: str, expected_type: str) -> dict:
         token,
         settings.JWT_SECRET_KEY,
         algorithms=[settings.JWT_ALGORITHM],
-        options={"require": ["sub", "exp", "iat", "type"]},
+        options={"require": ["sub", "exp", "iat", "type", "pwd"]},
     )
     if payload.get("type") != expected_type:
         raise jwt.InvalidTokenError("Sai loại token")
