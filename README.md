@@ -1,7 +1,5 @@
 # MedAssist — Hệ thống hỗ trợ quyết định lâm sàng (CDSS) cho phòng khám ngoại trú
 
-Đồ án tốt nghiệp nhóm **C1SE.28** (08–12/2026).
-
 | Thư mục | Nội dung | Phụ trách | Hướng dẫn |
 |---|---|---|---|
 | `server/` | Backend FastAPI + PostgreSQL | Sơn (module AI: Huy) | **[server/README.md](server/README.md)** — cách chạy backend |
