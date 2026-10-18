@@ -1,6 +1,6 @@
 # server/data — dữ liệu nạp sẵn
 
-## drugs.csv — danh mục thuốc phòng khám (100 thuốc)
+## drugs.csv — danh mục thuốc phòng khám (386 thuốc)
 
 Nạp bằng `python -m scripts.seed_drugs` (chạy trong `server/`). Script đi qua `inventory_service`
 (kiểm tra dữ liệu, ghi nhật ký bằng tài khoản `system`), chạy lại nhiều lần không tạo trùng.
