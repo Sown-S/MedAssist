@@ -1,10 +1,10 @@
 # MedAssist — Backend (FastAPI + PostgreSQL)
 
-Hướng dẫn chạy backend **trên máy dev** (Windows, PowerShell).
+Hướng dẫn chạy backend **trên máy dev** (Windows, PowerShell). Cập nhật: 18/10/2026 — Sprint 2.
 
 - **Stack:** Python 3.14, FastAPI, SQLAlchemy 2, Alembic, PostgreSQL 16 (Docker), JWT, Argon2id.
 - **Cách chạy trên máy dev:** CSDL chạy trong **Docker**; API chạy **trực tiếp bằng Python** (`uvicorn --reload`) để sửa code là thấy ngay.
-- **Đã có:** đăng nhập/phân quyền, nhật ký (audit-log), tài khoản, bệnh nhân, lượt khám và hàng đợi, kho thuốc, chẩn đoán, kê đơn (trừ kho FEFO), cấp phát, hóa đơn, thu tiền. 
+- **Đã có:** đăng nhập/phân quyền, nhật ký (audit-log), tài khoản, bệnh nhân, lượt khám và hàng đợi, kho thuốc, chẩn đoán, kê đơn (trừ kho FEFO), cấp phát, hóa đơn, thu tiền. **Chưa có:** module AI, tri thức OKF (Sprint 3), Docker cho máy admin (giai đoạn đóng gói).
 - Phân quyền thư mục, quy ước nhánh: xem *Quy định v5*, *Cấu trúc v5* (thư mục tài liệu của nhóm).
 
 > Các lệnh dưới đây chạy trong **PowerShell**. Đường dẫn ví dụ: repo ở `D:\Projects\Github Repo\CDSS` — thay bằng đường dẫn trên máy bạn.
@@ -143,7 +143,7 @@ python -m scripts.import_okf --approve-as bs    # máy dev: tạo bản phát h�
 ### 2.8. Chạy test (nên làm lần đầu để chắc môi trường đúng)
 
 ```powershell
-pytest            # ~2 phút, phải ra: 989 passed
+pytest            # ~2 phút, phải ra: 999 passed
 ```
 
 ### 2.9. Chạy API
@@ -323,6 +323,9 @@ Tiền tố `/api/v1`. Chi tiết tham số và schema: **Swagger `/docs`** (lu�
 | Chẩn đoán | `GET/POST visits/{id}/diagnoses`; `PATCH diagnoses/{id}`; `POST diagnoses/{id}/retract` | Physician đang khám; Nurse xem |
 | Đơn thuốc | `GET/PUT/DELETE visits/{id}/prescription`; `POST …/prescription/confirm`, `…/prescription/reopen`; `POST visits/{id}/complete-exam` | Physician đang khám; Nurse xem |
 | Cấp phát, thu tiền | `GET billing/awaiting`; `GET/PATCH visits/{id}/invoice`; `GET …/invoice/print`; `POST …/invoice/pay`; `PATCH prescription-items/{id}/dispense`; `POST visits/{id}/dispense-all` | Nurse; Physician xem hóa đơn |
+| Tri thức: bản phát hành | `GET/POST admin/knowledge/releases`; `GET …/releases/{id}` (kèm thay đổi); `POST …/{id}/submit`; `POST …/{id}/approve`, `…/{id}/reject` | Admin soạn, gửi duyệt; Physician duyệt / từ chối |
+| Tri thức: soạn nháp | `PUT admin/knowledge/symptoms/{mã}`, `conditions/{mã}`, `relations/{bệnh}/{triệu chứng}`, `excerpts/{mã}`, `rules/{mã}`; `DELETE …/{loại}/{mã}/draft`; `GET/POST admin/knowledge/sources` | Admin |
+| Tri thức: xem, tắt khẩn cấp | `GET admin/knowledge/{loại}` (lọc `status`, `q`); `GET …/{loại}/{mã}/versions`; `GET …/{loại}/{mã}/dependents`; `POST …/{loại}/{mã}/deactivate` | Admin, Physician xem; Admin tắt |
 | Hệ thống | `GET /health`, `GET /` (không có tiền tố) | Không cần đăng nhập |
 
 Quy ước chung: tiền trả về **dạng số** (VNĐ); mọi GET dữ liệu bệnh nhân ghi nhật ký VIEW; header
