@@ -1,0 +1,7 @@
+# Công cụ dữ liệu thuốc — chạy trên máy dev, KHÔNG thuộc server (không vào image Docker)
+# cd tools && python -m venv .venv && .venv\Scripts\activate && pip install -r drug_data/requirements.txt
+# Dùng phiên bản tối thiểu (>=) để cài được trên Python mới (vd 3.13, 3.14)
+httpx>=0.28.1
+python-docx>=1.1.2
+pytest>=8.3.4
+pywin32>=311; sys_platform == "win32"   # chỉ cần khi nguồn là .doc Word 97-2003

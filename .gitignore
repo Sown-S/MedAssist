@@ -216,3 +216,14 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# MedAssist — tools/drug_data
+tools/.venv/
+tools/drug_data/sources/prices/cache/
+tools/drug_data/output/drug_candidates.csv
+tools/drug_data/output/price_review.csv
+tools/drug_data/output/tt19_check_report.csv
+tools/drug_data/config.local.toml
+tools/drug_data/inbox/*
+!tools/drug_data/inbox/README.txt
+tools/drug_data/output/tt19_bang_mau.txt

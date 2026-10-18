@@ -1,101 +1,387 @@
-generic_name,trade_name,strength,dosage_form,unit,sale_price,reorder_level,drug_class,import_price,batch_quantity,shelf_life_days,source
-Paracetamol,Panadol,500 mg,viên nén,viên,1500,300,"Giảm đau, hạ sốt, chống viêm",900,1000,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 18"
-Paracetamol,Efferalgan 500,500 mg,viên sủi,viên,3500,100,"Giảm đau, hạ sốt, chống viêm",2300,300,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 18"
-Paracetamol,Hapacol 250,250 mg,gói bột pha dung dịch uống,gói,3000,150,"Giảm đau, hạ sốt, chống viêm",1900,400,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 18"
-Paracetamol,Hapacol 80,80 mg,gói bột pha dung dịch uống,gói,2500,100,"Giảm đau, hạ sốt, chống viêm",1500,300,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 18"
-Paracetamol,Efferalgan 150,150 mg,viên đạn đặt trực tràng,viên,4000,50,"Giảm đau, hạ sốt, chống viêm",2600,100,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 18"
-Ibuprofen,Gofen 400,400 mg,viên nang mềm,viên,2500,100,"Giảm đau, hạ sốt, chống viêm",1500,300,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 16"
-Ibuprofen,Ibuprofen 40 mg/ml,40 mg/ml,"dung dịch uống, chai 60 ml",chai,35000,20,"Giảm đau, hạ sốt, chống viêm",22000,60,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 16"
-Diclofenac,Voltaren 50,50 mg,viên nén bao tan ở ruột,viên,3500,100,"Giảm đau, hạ sốt, chống viêm",2200,300,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 15"
-Meloxicam,Mobic 7.5,"7,5 mg",viên nén,viên,5500,60,"Giảm đau, hạ sốt, chống viêm",3500,200,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 17"
-Acid acetylsalicylic,Aspirin 81,81 mg,viên nén bao tan ở ruột,viên,600,200,Chống kết tập tiểu cầu,350,600,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 261"
-Loratadin,Clarityne,10 mg,viên nén,viên,3500,100,Kháng histamin,2200,300,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 41"
-Clorpheniramin maleat,Clorpheniramin 4,4 mg,viên nén,viên,300,200,Kháng histamin,150,600,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 35"
-Clorpheniramin maleat,"Clorpheniramin 0,4 mg/ml","0,4 mg/ml","sirô, chai 60 ml",chai,15000,20,Kháng histamin,9000,60,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 35"
-Alimemazin,Theralene,5 mg,viên nén bao phim,viên,1000,100,Kháng histamin,600,300,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 34"
-Alimemazin,"Theralene 0,05%","0,5 mg/ml","sirô, chai 90 ml",chai,28000,20,Kháng histamin,18000,60,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 454"
-Prednisolon,Prednisolon 5,5 mg,viên nén,viên,700,150,Corticoid,400,500,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 40"
-Dexamethason,"Dexamethason 0,5","0,5 mg",viên nén,viên,300,150,Corticoid,150,500,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 36"
-Amoxicilin,Amoxicilin 500,500 mg,viên nang,viên,1800,300,Kháng sinh nhóm beta-lactam,1100,1000,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 77"
-Amoxicilin,Amoxicilin 250,250 mg,gói bột pha hỗn dịch uống,gói,2500,150,Kháng sinh nhóm beta-lactam,1500,400,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 77"
-Amoxicilin + Acid clavulanic,Augmentin 625,500 mg + 125 mg,viên nén bao phim,viên,15000,100,Kháng sinh nhóm beta-lactam,9500,300,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 78"
-Amoxicilin + Acid clavulanic,"Amoxicilin + Clavulanic 250/62,5","250 mg + 62,5 mg/5 ml","bột pha hỗn dịch uống, chai 60 ml",chai,65000,15,Kháng sinh nhóm beta-lactam,42000,40,540,"TT 19/2018/TT-BYT, Phụ lục I, STT 78"
-Cephalexin,Cephalexin 500,500 mg,viên nang,viên,1500,200,Kháng sinh cephalosporin,900,600,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 83"
-Cephalexin,Cephalexin 250 mg/5 ml,250 mg/5 ml,"bột pha hỗn dịch uống, chai 60 ml",chai,35000,15,Kháng sinh cephalosporin,22000,40,540,"TT 19/2018/TT-BYT, Phụ lục I, STT 83"
-Cefuroxim,Zinnat 500,500 mg,viên nén bao phim,viên,15000,100,Kháng sinh cephalosporin,9500,300,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 88"
-Cefuroxim,Zinnat 250,250 mg,viên nén bao phim,viên,9000,100,Kháng sinh cephalosporin,5800,300,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 88"
-Cefixim,Cefixim 200,200 mg,viên nang,viên,6000,100,Kháng sinh cephalosporin,3800,300,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 85"
-Azithromycin,Zithromax 500,500 mg,viên nén bao phim,viên,25000,60,Kháng sinh macrolid,16000,150,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 99"
-Azithromycin,Zithromax 200 mg/5 ml,200 mg/5 ml,"bột pha hỗn dịch uống, chai 15 ml",chai,110000,10,Kháng sinh macrolid,72000,30,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 99"
-Clarithromycin,Klacid 500,500 mg,viên nén bao phim,viên,18000,60,Kháng sinh macrolid,11500,150,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 100"
-Ciprofloxacin,Ciprofloxacin 500,500 mg,viên nén bao phim,viên,1500,150,Kháng sinh quinolon,900,500,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 102"
-Levofloxacin,Tavanic 500,500 mg,viên nén bao phim,viên,20000,60,Kháng sinh quinolon,13000,150,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 103"
-Metronidazol,Flagyl 250,250 mg,viên nén,viên,800,150,Kháng khuẩn nhóm nitroimidazol,450,500,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 97"
-Sulfamethoxazol + Trimethoprim,Biseptol 480,400 mg + 80 mg,viên nén,viên,800,150,Kháng khuẩn nhóm sulfamid,450,500,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 104"
-Sulfamethoxazol + Trimethoprim,Sulfamethoxazol + Trimethoprim 40/8 mg/ml,40 mg + 8 mg/ml,"hỗn dịch uống, chai 60 ml",chai,25000,15,Kháng khuẩn nhóm sulfamid,15000,40,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 104"
-Doxycyclin,Doxycyclin 100,100 mg,viên nang,viên,800,100,Kháng sinh nhóm tetracyclin,450,300,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 106"
-Nitrofurantoin,Nitrofurantoin 100,100 mg,viên nang,viên,2000,60,Kháng khuẩn tiết niệu,1200,200,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 105"
-Fluconazol,Diflucan 150,150 mg,viên nang,viên,30000,20,Chống nấm,19000,60,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 130"
-Aciclovir,Aciclovir 800,800 mg,viên nén,viên,5000,60,Kháng virus,3200,200,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 157"
-Aciclovir,Aciclovir 5%,5%,"kem bôi da, tuýp 5 g",tuýp,15000,20,Kháng virus,9000,60,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 157"
-Oseltamivir,Tamiflu 75,75 mg,viên nang,viên,45000,30,Kháng virus cúm,30000,100,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 172"
-Albendazol,Zentel 400,400 mg,viên nén,viên,8000,50,Trị giun sán,5000,150,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 66"
-Mebendazol,Fugacar 500,500 mg,viên nén,viên,15000,50,Trị giun sán,9500,150,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 67"
-Omeprazol,Omeprazol 20,20 mg,viên nang,viên,2000,150,Ức chế bơm proton,1200,500,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 310"
-Pantoprazol,Pantoloc 40,40 mg,viên nén bao tan ở ruột,viên,12000,100,Ức chế bơm proton,7500,300,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 311"
-Magnesi hydroxyd + Nhôm hydroxyd,Maalox,400 mg + 400 mg,viên nhai,viên,2000,100,Kháng acid,1200,300,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 309"
-Metoclopramid,Primperan 10,10 mg,viên nén,viên,1000,60,Chống nôn,600,200,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 313"
-Ondansetron,Ondansetron 4,4 mg,viên nén bao phim,viên,4000,30,Chống nôn,2500,100,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 316"
-Alverin citrat,Alverin 60,60 mg,viên nang,viên,1500,100,Chống co thắt,900,300,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 317"
-Hyoscin butylbromid,Buscopan 10,10 mg,viên nén bao đường,viên,2500,100,Chống co thắt,1500,300,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 319"
-Lactulose,Duphalac,10 g/15 ml,"dung dịch uống, gói 15 ml",gói,4000,60,Nhuận tràng,2500,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 31"
-Oresol,Oresol 245,"4,1 g",gói bột pha dung dịch uống,gói,2500,200,Bù nước - điện giải,1500,600,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 323"
-Kẽm sulfat,Kẽm sulfat 20,20 mg,viên nén phân tán,viên,1500,100,Vi chất - chống tiêu chảy,900,300,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 327"
-Loperamid,Imodium,2 mg,viên nang,viên,3000,60,Chống tiêu chảy,1900,200,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 326"
-Atapulgit,Actapulgite,3 g,gói bột pha hỗn dịch uống,gói,4000,100,Chống tiêu chảy,2500,300,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 324"
-Berberin clorid,Berberin 10,10 mg,viên nén,viên,100,200,Chống tiêu chảy,50,1000,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 325"
-Diosmin,Diosmin 300,300 mg,viên nén bao phim,viên,3000,60,Điều trị trĩ,1900,200,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 328"
-Salbutamol,Ventolin 2,2 mg,viên nén,viên,800,100,Giãn phế quản,450,300,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 448"
-Salbutamol,Ventolin Inhaler,100 mcg/liều xịt,bình xịt định liều 200 liều,bình,85000,10,Giãn phế quản,55000,30,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 448"
-Salbutamol,"Salbutamol 0,4 mg/ml","0,4 mg/ml","dung dịch uống, chai 60 ml",chai,25000,15,Giãn phế quản,15000,40,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 448"
-Budesonid,Budesonid 200 mcg,200 mcg/liều hít,bình hít định liều 200 liều,bình,180000,5,Corticoid đường hô hấp,120000,15,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 450"
-Budesonid,Budesonid xịt mũi 100 mcg,100 mcg/liều xịt,"dung dịch xịt mũi, lọ 120 liều",lọ,120000,10,Corticoid tai mũi họng,80000,30,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 422"
-Ipratropium bromid,Atrovent,20 mcg/liều xịt,bình xịt định liều 200 liều,bình,150000,5,Giãn phế quản,100000,15,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 452"
-Acetylcystein,Acemuc 200,200 mg,gói bột pha uống,gói,2500,150,Long đờm,1500,400,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 453"
-Bromhexin hydroclorid,Bisolvon 8,8 mg,viên nén,viên,1500,100,Long đờm,900,300,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 455"
-Dextromethorphan,Dextromethorphan 15,15 mg,viên nén bao phim,viên,600,100,Giảm ho,350,300,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 456"
-Amlodipin,Amlor 5,5 mg,viên nang,viên,2500,150,Điều trị tăng huyết áp,1500,500,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 242"
-Enalapril,Renitec 5,5 mg,viên nén,viên,2000,100,Điều trị tăng huyết áp,1200,300,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 244"
-Captopril,Captopril 25,25 mg,viên nén,viên,500,100,Điều trị tăng huyết áp,300,300,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 243"
-Nifedipin,Adalat Retard 20,20 mg,viên tác dụng chậm,viên,2500,100,Điều trị tăng huyết áp,1500,300,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 248"
-Hydroclorothiazid,Hydroclorothiazid 25,25 mg,viên nén,viên,500,100,Lợi tiểu thiazid,300,300,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 246"
-Atenolol,Atenolol 50,50 mg,viên nén,viên,1000,60,Chẹn beta,600,200,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 231"
-Propranolol hydroclorid,Propranolol 40,40 mg,viên nén,viên,500,60,Chẹn beta,300,200,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 238"
-Furosemid,Furosemid 40,40 mg,viên nén,viên,500,60,Lợi tiểu quai,300,200,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 245"
-Spironolacton,Spironolacton 25,25 mg,viên nén,viên,1500,60,Lợi tiểu giữ kali,900,200,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 260"
-Atorvastatin,Lipitor 20,20 mg,viên nén bao phim,viên,12000,100,Hạ lipid máu,7500,300,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 263"
-Simvastatin,Simvastatin 20,20 mg,viên nén bao phim,viên,1500,60,Hạ lipid máu,900,200,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 265"
-Fenofibrat,Lipanthyl 300,300 mg,viên nang,viên,6000,60,Hạ lipid máu,3800,200,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 264"
-Metformin,Glucophage 500,500 mg,viên nén bao phim,viên,1500,200,Điều trị đái tháo đường,900,600,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 349"
-Metformin,Glucophage 850,850 mg,viên nén bao phim,viên,2500,150,Điều trị đái tháo đường,1500,500,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 349"
-Gliclazid,Diamicron 80,80 mg,viên nén,viên,3000,100,Điều trị đái tháo đường,1900,300,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 346"
-Gliclazid,Diamicron MR 30,30 mg,viên nén giải phóng có kiểm soát,viên,4000,100,Điều trị đái tháo đường,2500,300,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 346"
-Glibenclamid,Glibenclamid 5,5 mg,viên nén,viên,500,60,Điều trị đái tháo đường,300,200,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 345"
-Levothyroxin natri,Levothyroxin 100,100 mcg,viên nén,viên,1500,60,Hormon giáp,900,200,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 356"
-Allopurinol,Zyloric 300,300 mg,viên nén,viên,2000,60,Điều trị gút,1200,200,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 478"
-Colchicin,Colchicin 1,1 mg,viên nén,viên,1000,60,Điều trị gút,600,200,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 479"
-Vitamin C,Vitamin C 500,500 mg,viên nén,viên,600,200,Vitamin,350,600,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 473"
-Vitamin B6,Vitamin B6 25,25 mg,viên nén,viên,250,100,Vitamin,150,300,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 472"
-Thiamin hydroclorid,Vitamin B1 100,100 mg,viên nén,viên,300,100,Vitamin,180,300,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 470"
-Sắt sulfat + Acid folic,Sắt + Acid folic,"60 mg + 0,25 mg",viên nén bao phim,viên,1000,100,Chống thiếu máu,600,300,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 214"
-Acid folic,Acid folic 5,5 mg,viên nén,viên,300,60,Chống thiếu máu,180,200,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 211"
-Calci gluconat,Calci gluconat 500,500 mg,viên nén,viên,1000,100,Khoáng chất,600,300,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 467"
-Vitamin A + D,Vitamin A + D,5.000 IU + 500 IU,viên nang mềm,viên,800,60,Vitamin,450,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 469"
-Clotrimazol,Canesten 1%,1%,"kem bôi da, tuýp 20 g",tuýp,35000,15,Chống nấm ngoài da,22000,40,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 269"
-Betamethason valerat,"Betamethason 0,1%","0,1%","kem bôi da, tuýp 15 g",tuýp,15000,15,Corticoid ngoài da,9000,40,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 278"
-Povidon iod,Betadine 10%,10%,"dung dịch dùng ngoài, chai 90 ml",chai,45000,15,Sát khuẩn,29000,40,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 275"
-Cloramphenicol,"Cloramphenicol 0,4%","0,4%","dung dịch nhỏ mắt, lọ 8 ml",lọ,5000,30,Kháng sinh nhỏ mắt,3000,100,540,"TT 19/2018/TT-BYT, Phụ lục I, STT 403"
-Ofloxacin,"Oflovid 0,3%","0,3%","dung dịch nhỏ mắt, lọ 5 ml",lọ,45000,15,Kháng sinh nhỏ mắt,29000,40,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 406"
-Ciprofloxacin,"Ciprofloxacin 0,3%","0,3%","dung dịch nhỏ mắt, lọ 5 ml",lọ,12000,20,Kháng sinh nhỏ mắt,7500,60,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 409"
-Xylometazolin,"Otrivin 0,05%","0,05%","dung dịch nhỏ mũi, lọ 10 ml",lọ,40000,15,Thông mũi,26000,40,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 420"
-Naphazolin,"Naphazolin 0,05%","0,05%","dung dịch nhỏ mũi, lọ 10 ml",lọ,5000,30,Thông mũi,3000,100,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 418"
+generic_name,trade_name,strength,dosage_form,unit,sale_price,reorder_level,drug_class,import_price,batch_quantity,shelf_life_days,source,price_source,price_retrieved_at
+Paracetamol,Panadol,500 mg,viên nén,viên,1500,300,"Giảm đau, hạ sốt, chống viêm",900,1000,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 18",,
+Paracetamol,Efferalgan 500,500 mg,viên sủi,viên,3500,100,"Giảm đau, hạ sốt, chống viêm",2300,300,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 18",,
+Paracetamol,Hapacol 250,250 mg,gói bột pha dung dịch uống,gói,3000,150,"Giảm đau, hạ sốt, chống viêm",1900,400,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 18",,
+Paracetamol,Hapacol 80,80 mg,gói bột pha dung dịch uống,gói,2500,100,"Giảm đau, hạ sốt, chống viêm",1500,300,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 18",,
+Paracetamol,Efferalgan 150,150 mg,viên đạn đặt trực tràng,viên,4000,50,"Giảm đau, hạ sốt, chống viêm",2600,100,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 18",,
+Ibuprofen,Gofen 400,400 mg,viên nang mềm,viên,2500,100,"Giảm đau, hạ sốt, chống viêm",1500,300,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 16",,
+Ibuprofen,Ibuprofen 40 mg/ml,40 mg/ml,"dung dịch uống, chai 60 ml",chai,35000,20,"Giảm đau, hạ sốt, chống viêm",22000,60,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 16",,
+Diclofenac,Voltaren 50,50 mg,viên nén bao tan ở ruột,viên,3500,100,"Giảm đau, hạ sốt, chống viêm",2200,300,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 15",,
+Meloxicam,Mobic 7.5,"7,5 mg",viên nén,viên,5500,60,"Giảm đau, hạ sốt, chống viêm",3500,200,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 17",,
+Acid acetylsalicylic,Aspirin 81,81 mg,viên nén bao tan ở ruột,viên,600,200,Chống kết tập tiểu cầu,350,600,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 261",,
+Loratadin,Clarityne,10 mg,viên nén,viên,3500,100,Kháng histamin,2200,300,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 41",,
+Clorpheniramin maleat,Clorpheniramin 4,4 mg,viên nén,viên,300,200,Kháng histamin,150,600,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 35",,
+Clorpheniramin maleat,"Clorpheniramin 0,4 mg/ml","0,4 mg/ml","sirô, chai 60 ml",chai,15000,20,Kháng histamin,9000,60,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 35",,
+Alimemazin,Theralene,5 mg,viên nén bao phim,viên,1000,100,Kháng histamin,600,300,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 34",,
+Alimemazin,"Theralene 0,05%","0,5 mg/ml","sirô, chai 90 ml",chai,28000,20,Kháng histamin,18000,60,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 454",,
+Prednisolon,Prednisolon 5,5 mg,viên nén,viên,700,150,Corticoid,400,500,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 40",,
+Dexamethason,"Dexamethason 0,5","0,5 mg",viên nén,viên,300,150,Corticoid,150,500,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 36",,
+Amoxicilin,Amoxicilin 500,500 mg,viên nang,viên,1800,300,Kháng sinh nhóm beta-lactam,1100,1000,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 77",,
+Amoxicilin,Amoxicilin 250,250 mg,gói bột pha hỗn dịch uống,gói,2500,150,Kháng sinh nhóm beta-lactam,1500,400,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 77",,
+Amoxicilin + Acid clavulanic,Augmentin 625,500 mg + 125 mg,viên nén bao phim,viên,15000,100,Kháng sinh nhóm beta-lactam,9500,300,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 78",,
+Amoxicilin + Acid clavulanic,"Amoxicilin + Clavulanic 250/62,5","250 mg + 62,5 mg/5 ml","bột pha hỗn dịch uống, chai 60 ml",chai,65000,15,Kháng sinh nhóm beta-lactam,42000,40,540,"TT 19/2018/TT-BYT, Phụ lục I, STT 78",,
+Cephalexin,Cephalexin 500,500 mg,viên nang,viên,1500,200,Kháng sinh cephalosporin,900,600,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 83",,
+Cephalexin,Cephalexin 250 mg/5 ml,250 mg/5 ml,"bột pha hỗn dịch uống, chai 60 ml",chai,35000,15,Kháng sinh cephalosporin,22000,40,540,"TT 19/2018/TT-BYT, Phụ lục I, STT 83",,
+Cefuroxim,Zinnat 500,500 mg,viên nén bao phim,viên,15000,100,Kháng sinh cephalosporin,9500,300,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 88",,
+Cefuroxim,Zinnat 250,250 mg,viên nén bao phim,viên,9000,100,Kháng sinh cephalosporin,5800,300,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 88",,
+Cefixim,Cefixim 200,200 mg,viên nang,viên,6000,100,Kháng sinh cephalosporin,3800,300,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 85",,
+Azithromycin,Zithromax 500,500 mg,viên nén bao phim,viên,25000,60,Kháng sinh macrolid,16000,150,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 99",,
+Azithromycin,Zithromax 200 mg/5 ml,200 mg/5 ml,"bột pha hỗn dịch uống, chai 15 ml",chai,110000,10,Kháng sinh macrolid,72000,30,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 99",,
+Clarithromycin,Klacid 500,500 mg,viên nén bao phim,viên,18000,60,Kháng sinh macrolid,11500,150,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 100",,
+Ciprofloxacin,Ciprofloxacin 500,500 mg,viên nén bao phim,viên,1500,150,Kháng sinh quinolon,900,500,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 102",,
+Levofloxacin,Tavanic 500,500 mg,viên nén bao phim,viên,20000,60,Kháng sinh quinolon,13000,150,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 103",,
+Metronidazol,Flagyl 250,250 mg,viên nén,viên,800,150,Kháng khuẩn nhóm nitroimidazol,450,500,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 97",,
+Sulfamethoxazol + Trimethoprim,Biseptol 480,400 mg + 80 mg,viên nén,viên,800,150,Kháng khuẩn nhóm sulfamid,450,500,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 104",,
+Sulfamethoxazol + Trimethoprim,Sulfamethoxazol + Trimethoprim 40/8 mg/ml,40 mg + 8 mg/ml,"hỗn dịch uống, chai 60 ml",chai,25000,15,Kháng khuẩn nhóm sulfamid,15000,40,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 104",,
+Doxycyclin,Doxycyclin 100,100 mg,viên nang,viên,800,100,Kháng sinh nhóm tetracyclin,450,300,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 106",,
+Nitrofurantoin,Nitrofurantoin 100,100 mg,viên nang,viên,2000,60,Kháng khuẩn tiết niệu,1200,200,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 105",,
+Fluconazol,Diflucan 150,150 mg,viên nang,viên,30000,20,Chống nấm,19000,60,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 130",,
+Aciclovir,Aciclovir 800,800 mg,viên nén,viên,5000,60,Kháng virus,3200,200,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 157",,
+Aciclovir,Aciclovir 5%,5%,"kem bôi da, tuýp 5 g",tuýp,15000,20,Kháng virus,9000,60,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 157",,
+Oseltamivir,Tamiflu 75,75 mg,viên nang,viên,45000,30,Kháng virus cúm,30000,100,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 172",,
+Albendazol,Zentel 400,400 mg,viên nén,viên,8000,50,Trị giun sán,5000,150,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 66",,
+Mebendazol,Fugacar 500,500 mg,viên nén,viên,15000,50,Trị giun sán,9500,150,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 67",,
+Omeprazol,Omeprazol 20,20 mg,viên nang,viên,2000,150,Ức chế bơm proton,1200,500,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 310",,
+Pantoprazol,Pantoloc 40,40 mg,viên nén bao tan ở ruột,viên,12000,100,Ức chế bơm proton,7500,300,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 311",,
+Magnesi hydroxyd + Nhôm hydroxyd,Maalox,400 mg + 400 mg,viên nhai,viên,2000,100,Kháng acid,1200,300,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 309",,
+Metoclopramid,Primperan 10,10 mg,viên nén,viên,1000,60,Chống nôn,600,200,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 313",,
+Ondansetron,Ondansetron 4,4 mg,viên nén bao phim,viên,4000,30,Chống nôn,2500,100,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 316",,
+Alverin citrat,Alverin 60,60 mg,viên nang,viên,1500,100,Chống co thắt,900,300,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 317",,
+Hyoscin butylbromid,Buscopan 10,10 mg,viên nén bao đường,viên,2500,100,Chống co thắt,1500,300,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 319",,
+Lactulose,Duphalac,10 g/15 ml,"dung dịch uống, gói 15 ml",gói,4000,60,Nhuận tràng,2500,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 31",,
+Oresol,Oresol 245,"4,1 g",gói bột pha dung dịch uống,gói,2500,200,Bù nước - điện giải,1500,600,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 323",,
+Kẽm sulfat,Kẽm sulfat 20,20 mg,viên nén phân tán,viên,1500,100,Vi chất - chống tiêu chảy,900,300,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 327",,
+Loperamid,Imodium,2 mg,viên nang,viên,3000,60,Chống tiêu chảy,1900,200,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 326",,
+Atapulgit,Actapulgite,3 g,gói bột uống,gói,4000,100,Chống tiêu chảy,2500,300,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 324",,
+Berberin clorid,Berberin 10,10 mg,viên nén,viên,100,200,Chống tiêu chảy,50,1000,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 325",,
+Diosmin,Diosmin 300,300 mg,viên nén bao phim,viên,3000,60,Điều trị trĩ,1900,200,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 328",,
+Salbutamol,Ventolin 2,2 mg,viên nén,viên,800,100,Giãn phế quản,450,300,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 448",,
+Salbutamol,Ventolin Inhaler,100 mcg/liều xịt,bình xịt định liều 200 liều,bình,85000,10,Giãn phế quản,55000,30,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 448",,
+Salbutamol,"Salbutamol 0,4 mg/ml","0,4 mg/ml","dung dịch uống, chai 60 ml",chai,25000,15,Giãn phế quản,15000,40,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 448",,
+Budesonid,Budesonid 200 mcg,200 mcg/liều hít,bình hít định liều 200 liều,bình,180000,5,Corticoid đường hô hấp,120000,15,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 450",,
+Budesonid,Budesonid xịt mũi 100 mcg,100 mcg/liều xịt,"dung dịch xịt mũi, lọ 120 liều",lọ,120000,10,Corticoid tai mũi họng,80000,30,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 422",,
+Ipratropium bromid,Atrovent,20 mcg/liều xịt,bình xịt định liều 200 liều,bình,150000,5,Giãn phế quản,100000,15,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 452",,
+Acetylcystein,Acemuc 200,200 mg,gói bột pha hỗn dịch uống,gói,2500,150,Long đờm,1500,400,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 453",,
+Bromhexin hydroclorid,Bisolvon 8,8 mg,viên nén,viên,1500,100,Long đờm,900,300,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 455",,
+Dextromethorphan,Dextromethorphan 15,15 mg,viên nén bao phim,viên,600,100,Giảm ho,350,300,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 456",,
+Amlodipin,Amlor 5,5 mg,viên nang,viên,2500,150,Điều trị tăng huyết áp,1500,500,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 242",,
+Enalapril,Renitec 5,5 mg,viên nén,viên,2000,100,Điều trị tăng huyết áp,1200,300,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 244",,
+Captopril,Captopril 25,25 mg,viên nén,viên,500,100,Điều trị tăng huyết áp,300,300,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 243",,
+Nifedipin,Adalat Retard 20,20 mg,viên tác dụng chậm,viên,2500,100,Điều trị tăng huyết áp,1500,300,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 248",,
+Hydroclorothiazid,Hydroclorothiazid 25,25 mg,viên nén,viên,500,100,Lợi tiểu thiazid,300,300,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 246",,
+Atenolol,Atenolol 50,50 mg,viên nén,viên,1000,60,Chẹn beta,600,200,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 231",,
+Propranolol hydroclorid,Propranolol 40,40 mg,viên nén,viên,500,60,Chẹn beta,300,200,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 238",,
+Furosemid,Furosemid 40,40 mg,viên nén,viên,500,60,Lợi tiểu quai,300,200,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 245",,
+Spironolacton,Spironolacton 25,25 mg,viên nén,viên,1500,60,Lợi tiểu giữ kali,900,200,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 260",,
+Atorvastatin,Lipitor 20,20 mg,viên nén bao phim,viên,12000,100,Hạ lipid máu,7500,300,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 263",,
+Simvastatin,Simvastatin 20,20 mg,viên nén bao phim,viên,1500,60,Hạ lipid máu,900,200,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 265",,
+Fenofibrat,Lipanthyl 300,300 mg,viên nang,viên,6000,60,Hạ lipid máu,3800,200,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 264",,
+Metformin,Glucophage 500,500 mg,viên nén bao phim,viên,1500,200,Điều trị đái tháo đường,900,600,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 349",,
+Metformin,Glucophage 850,850 mg,viên nén bao phim,viên,2500,150,Điều trị đái tháo đường,1500,500,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 349",,
+Gliclazid,Diamicron 80,80 mg,viên nén,viên,3000,100,Điều trị đái tháo đường,1900,300,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 346",,
+Gliclazid,Diamicron MR 30,30 mg,viên nén giải phóng có kiểm soát,viên,4000,100,Điều trị đái tháo đường,2500,300,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 346",,
+Glibenclamid,Glibenclamid 5,5 mg,viên nén,viên,500,60,Điều trị đái tháo đường,300,200,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 345",,
+Levothyroxin natri,Levothyroxin 100,100 mcg,viên nén,viên,1500,60,Hormon giáp,900,200,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 356",,
+Allopurinol,Zyloric 300,300 mg,viên nén,viên,2000,60,Điều trị gút,1200,200,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 478",,
+Colchicin,Colchicin 1,1 mg,viên nén,viên,1000,60,Điều trị gút,600,200,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 479",,
+Vitamin C,Vitamin C 500,500 mg,viên nén,viên,600,200,Vitamin,350,600,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 473",,
+Vitamin B6,Vitamin B6 25,25 mg,viên nén,viên,250,100,Vitamin,150,300,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 472",,
+Thiamin hydroclorid,Vitamin B1 100,100 mg,viên nén,viên,300,100,Vitamin,180,300,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 470",,
+Sắt sulfat + Acid folic,Sắt + Acid folic,"60 mg + 0,25 mg",viên nén bao phim,viên,1000,100,Chống thiếu máu,600,300,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 214",,
+Acid folic,Acid folic 5,5 mg,viên nén,viên,300,60,Chống thiếu máu,180,200,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 211",,
+Calci gluconat,Calci gluconat 500,500 mg,viên nén,viên,1000,100,Khoáng chất,600,300,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 467",,
+Vitamin A + D,Vitamin A + D,5.000 IU + 500 IU,viên nang mềm,viên,800,60,Vitamin,450,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 469",,
+Clotrimazol,Canesten 1%,1%,"kem bôi da, tuýp 20 g",tuýp,35000,15,Chống nấm ngoài da,22000,40,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 269",,
+Betamethason valerat,"Betamethason 0,1%","0,1%","kem bôi da, tuýp 15 g",tuýp,15000,15,Corticoid ngoài da,9000,40,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 278",,
+Povidon iod,Betadine 10%,10%,"dung dịch dùng ngoài, chai 90 ml",chai,45000,15,Sát khuẩn,29000,40,1080,"TT 19/2018/TT-BYT, Phụ lục I, STT 275",,
+Cloramphenicol,"Cloramphenicol 0,4%","0,4%","dung dịch nhỏ mắt, lọ 8 ml",lọ,5000,30,Kháng sinh nhỏ mắt,3000,100,540,"TT 19/2018/TT-BYT, Phụ lục I, STT 403",,
+Ofloxacin,"Oflovid 0,3%","0,3%","dung dịch nhỏ mắt, lọ 5 ml",lọ,45000,15,Kháng sinh nhỏ mắt,29000,40,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 406",,
+Ciprofloxacin,"Ciprofloxacin 0,3%","0,3%","dung dịch nhỏ mắt, lọ 5 ml",lọ,12000,20,Kháng sinh nhỏ mắt,7500,60,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 409",,
+Xylometazolin,"Otrivin 0,05%","0,05%","dung dịch nhỏ mũi, lọ 10 ml",lọ,40000,15,Thông mũi,26000,40,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 420",,
+Naphazolin,"Naphazolin 0,05%","0,05%","dung dịch nhỏ mũi, lọ 10 ml",lọ,5000,30,Thông mũi,3000,100,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 418",,
+Acid Acetylsalicylic,Acid Acetylsalicylic 100 mg,100 mg,bột pha dung dịch,gói,2500,0,"Thuốc giảm đau không opi, hạ sốt, chống viêm không steroid",1600,100,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 14","uoc-tinh:trung-vi-don-vi (gói, 7 thuốc)",2026-10-18
+Diclofenac,Diclofenac 25 mg,25 mg,viên,viên,1800,0,"Thuốc giảm đau không opi, hạ sốt, chống viêm không steroid",1200,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 15",uoc-tinh:cung-hoat-chat (Voltaren 50),2026-10-18
+Diclofenac,Diclofenac 75 mg,75 mg,viên,viên,5300,0,"Thuốc giảm đau không opi, hạ sốt, chống viêm không steroid",3400,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 15",uoc-tinh:cung-hoat-chat (Voltaren 50),2026-10-18
+Diclofenac,Diclofenac 100 mg,100 mg,viên,viên,7000,0,"Thuốc giảm đau không opi, hạ sốt, chống viêm không steroid",4600,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 15",uoc-tinh:cung-hoat-chat (Voltaren 50),2026-10-18
+Ibuprofen,Ibuprofen 200 mg,200 mg,viên,viên,1300,0,"Thuốc giảm đau không opi, hạ sốt, chống viêm không steroid",800,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 16",uoc-tinh:cung-hoat-chat (Gofen 400),2026-10-18
+Meloxicam,Meloxicam 15 mg,15 mg,viên,viên,11000,0,"Thuốc giảm đau không opi, hạ sốt, chống viêm không steroid",7200,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 17",uoc-tinh:cung-hoat-chat (Mobic 7.5),2026-10-18
+Paracetamol,Paracetamol 80 mg,80 mg,viên,viên,800,0,"Thuốc giảm đau không opi, hạ sốt, chống viêm không steroid",500,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 18",uoc-tinh:cung-hoat-chat (Panadol),2026-10-18
+Paracetamol,Paracetamol 100 mg,100 mg,viên,viên,800,0,"Thuốc giảm đau không opi, hạ sốt, chống viêm không steroid",500,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 18",uoc-tinh:cung-hoat-chat (Panadol),2026-10-18
+Paracetamol,Paracetamol 250 mg,250 mg,viên,viên,800,0,"Thuốc giảm đau không opi, hạ sốt, chống viêm không steroid",500,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 18",uoc-tinh:cung-hoat-chat (Panadol),2026-10-18
+Paracetamol,Paracetamol 100 mg,100 mg,bột pha dung dịch,gói,3100,0,"Thuốc giảm đau không opi, hạ sốt, chống viêm không steroid",2000,100,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 18",uoc-tinh:cung-hoat-chat (Hapacol 80),2026-10-18
+Paracetamol,Paracetamol 500 mg,500 mg,bột pha dung dịch,gói,6000,0,"Thuốc giảm đau không opi, hạ sốt, chống viêm không steroid",3900,100,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 18",uoc-tinh:cung-hoat-chat (Hapacol 250),2026-10-18
+Paracetamol,Paracetamol 80 mg,80 mg,viên đạn,viên,2100,0,"Thuốc giảm đau không opi, hạ sốt, chống viêm không steroid",1400,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 18",uoc-tinh:cung-hoat-chat (Efferalgan 150),2026-10-18
+Paracetamol,Paracetamol 300 mg,300 mg,viên đạn,viên,8000,0,"Thuốc giảm đau không opi, hạ sốt, chống viêm không steroid",5200,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 18",uoc-tinh:cung-hoat-chat (Efferalgan 150),2026-10-18
+Piroxicam,Piroxicam 10 mg,10 mg,viên,viên,1700,0,"Thuốc giảm đau không opi, hạ sốt, chống viêm không steroid",1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 19","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Piroxicam,Piroxicam 20 mg,20 mg,viên,viên,1700,0,"Thuốc giảm đau không opi, hạ sốt, chống viêm không steroid",1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 19","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Alimemazin,Alimemazin 5 mg/ml,5 mg/ml,sirô,chai,56000,0,III. THUỐC CHỐNG DỊ ỨNG VÀ DÙNG TRONG CÁC TRƯỜNG HỢP QUÁ MẪN,36400,20,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 34","uoc-tinh:cung-hoat-chat (Theralene 0,05%)",2026-10-18
+Dexamethason,Dexamethason 1 mg,1 mg,viên,viên,600,0,III. THUỐC CHỐNG DỊ ỨNG VÀ DÙNG TRONG CÁC TRƯỜNG HỢP QUÁ MẪN,400,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 36","uoc-tinh:cung-hoat-chat (Dexamethason 0,5)",2026-10-18
+Prednisolon,Prednisolon 5 mg/ml,5 mg/ml,sirô,chai,35000,0,III. THUỐC CHỐNG DỊ ỨNG VÀ DÙNG TRONG CÁC TRƯỜNG HỢP QUÁ MẪN,22800,20,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 40","uoc-tinh:trung-vi-don-vi (chai, 9 thuốc)",2026-10-18
+Promethazin hydroclorid,Promethazin hydroclorid 10 mg,10 mg,viên nén,viên,1700,0,III. THUỐC CHỐNG DỊ ỨNG VÀ DÙNG TRONG CÁC TRƯỜNG HỢP QUÁ MẪN,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 42","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Promethazin hydroclorid,Promethazin hydroclorid 50 mg,50 mg,viên nén,viên,1700,0,III. THUỐC CHỐNG DỊ ỨNG VÀ DÙNG TRONG CÁC TRƯỜNG HỢP QUÁ MẪN,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 42","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Promethazin hydroclorid,"Promethazin hydroclorid 1,25 mg/ml","1,25 mg/ml",sirô,chai,35000,0,III. THUỐC CHỐNG DỊ ỨNG VÀ DÙNG TRONG CÁC TRƯỜNG HỢP QUÁ MẪN,22800,20,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 42","uoc-tinh:trung-vi-don-vi (chai, 9 thuốc)",2026-10-18
+Promethazin hydroclorid,Promethazin hydroclorid 5 mg/ml,5 mg/ml,sirô,chai,35000,0,III. THUỐC CHỐNG DỊ ỨNG VÀ DÙNG TRONG CÁC TRƯỜNG HỢP QUÁ MẪN,22800,20,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 42","uoc-tinh:trung-vi-don-vi (chai, 9 thuốc)",2026-10-18
+Albendazol,Albendazol 200 mg,200 mg,viên,viên,4000,0,"Thuốc trị giun, sán đường ruột",2600,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 66",uoc-tinh:cung-hoat-chat (Zentel 400),2026-10-18
+Mebendazol,Mebendazol 100 mg,100 mg,viên,viên,7500,0,"Thuốc trị giun, sán đường ruột",4900,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 67",uoc-tinh:cung-hoat-chat (Fugacar 500),2026-10-18
+Niclosamid,Niclosamid 500 mg,500 mg,viên,viên,1700,0,"Thuốc trị giun, sán đường ruột",1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 68","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Praziquantel,Praziquantel 150 mg,150 mg,viên,viên,1700,0,"Thuốc trị giun, sán đường ruột",1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 69","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Praziquantel,Praziquantel 600 mg,600 mg,viên,viên,1700,0,"Thuốc trị giun, sán đường ruột",1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 69","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Pyrantel (embonat),Pyrantel (embonat) 250 mg,250 mg,viên,viên,1700,0,"Thuốc trị giun, sán đường ruột",1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 70","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Pyrantel (embonat),Pyrantel (embonat) 50 mg/ml,50 mg/ml,hỗn dịch,chai,35000,0,"Thuốc trị giun, sán đường ruột",22800,20,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 70","uoc-tinh:trung-vi-don-vi (chai, 9 thuốc)",2026-10-18
+Amoxicilin,Amoxicilin 250 mg,250 mg,viên,viên,900,0,Thuốc nhóm beta- lactam,600,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 77",uoc-tinh:cung-hoat-chat (Amoxicilin 500),2026-10-18
+Amoxicilin,Amoxicilin 125 mg,125 mg,bột pha hỗn dịch,gói,1300,0,Thuốc nhóm beta- lactam,800,100,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 77",uoc-tinh:cung-hoat-chat (Amoxicilin 250),2026-10-18
+Amoxicilin + Acid Clavulanic,"Amoxicilin + Acid Clavulanic 250 mg + 62,5 mg","250 mg + 62,5 mg",viên,viên,7500,0,Thuốc nhóm beta- lactam,4900,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 78",uoc-tinh:cung-hoat-chat (Augmentin 625),2026-10-18
+Amoxicilin + Acid Clavulanic,"Amoxicilin + Acid Clavulanic 125 mg +31,25 mg","125 mg +31,25 mg",viên,viên,7500,0,Thuốc nhóm beta- lactam,4900,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 78",uoc-tinh:cung-hoat-chat (Augmentin 625),2026-10-18
+Amoxicilin + Acid Clavulanic,Amoxicilin + Acid Clavulanic 500 mg + 125 mg/5 ml,500 mg + 125 mg/5 ml,bột pha hỗn dịch,gói,2500,0,Thuốc nhóm beta- lactam,1600,100,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 78","uoc-tinh:trung-vi-don-vi (gói, 7 thuốc)",2026-10-18
+Amoxicilin + Acid Clavulanic,"Amoxicilin + Acid Clavulanic 125 mg + 31,25 mg/5 ml (sau pha)","125 mg + 31,25 mg/5 ml (sau pha)",bột pha hỗn dịch,gói,2500,0,Thuốc nhóm beta- lactam,1600,100,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 78","uoc-tinh:trung-vi-don-vi (gói, 7 thuốc)",2026-10-18
+Cephalexin,Cephalexin 125 mg/5 ml,125 mg/5 ml,bột pha hỗn dịch,gói,2500,0,Thuốc nhóm beta- lactam,1600,100,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 83","uoc-tinh:trung-vi-don-vi (gói, 7 thuốc)",2026-10-18
+Cephalexin,Cephalexin 125 mg,125 mg,viên,viên,800,0,Thuốc nhóm beta- lactam,500,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 83",uoc-tinh:cung-hoat-chat (Cephalexin 500),2026-10-18
+Cephalexin,Cephalexin 250 mg,250 mg,viên,viên,800,0,Thuốc nhóm beta- lactam,500,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 83",uoc-tinh:cung-hoat-chat (Cephalexin 500),2026-10-18
+Cefixim,Cefixim 100 mg,100 mg,viên,viên,3000,0,Thuốc nhóm beta- lactam,2000,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 85",uoc-tinh:cung-hoat-chat (Cefixim 200),2026-10-18
+Cloxacilin (natri),Cloxacilin (natri) 250 mg,250 mg,viên,viên,1700,0,Thuốc nhóm beta- lactam,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 89","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Cloxacilin (natri),Cloxacilin (natri) 500 mg,500 mg,viên,viên,1700,0,Thuốc nhóm beta- lactam,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 89","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Phenoxymethyl penicilin,Phenoxymethyl penicilin 200.000 IU,200.000 IU,viên,viên,1700,0,Thuốc nhóm beta- lactam,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 90","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Phenoxymethyl penicilin,Phenoxymethyl penicilin 400.000 IU,400.000 IU,viên,viên,1700,0,Thuốc nhóm beta- lactam,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 90","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Phenoxymethyl penicilin,Phenoxymethyl penicilin 1.000.000 IU,1.000.000 IU,viên,viên,1700,0,Thuốc nhóm beta- lactam,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 90","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Cloramphenicol,Cloramphenicol 250 mg,250 mg,viên,viên,1700,0,Thuốc nhóm chloramphenicol,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 96","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Cloramphenicol (palmitat),Cloramphenicol (palmitat) 30 mg/ml,30 mg/ml,hỗn dịch,chai,35000,0,Thuốc nhóm chloramphenicol,22800,20,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 96","uoc-tinh:trung-vi-don-vi (chai, 9 thuốc)",2026-10-18
+Metronidazol,Metronidazol 500 mg,500 mg,viên,viên,1600,0,Thuốc nhóm Nitroimidazol,1000,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 97",uoc-tinh:cung-hoat-chat (Flagyl 250),2026-10-18
+Metronidazol,Metronidazol 500 mg,500 mg,viên đạn,viên,1700,0,Thuốc nhóm Nitroimidazol,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 97","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Metronidazol,Metronidazol 1 g,1 g,viên đạn,viên,1700,0,Thuốc nhóm Nitroimidazol,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 97","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Metronidazol (benzoat),Metronidazol (benzoat) 40 mg/ml,40 mg/ml,hỗn dịch,chai,35000,0,Thuốc nhóm Nitroimidazol,22800,20,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 97","uoc-tinh:trung-vi-don-vi (chai, 9 thuốc)",2026-10-18
+Clindamycin (hydroclorid),Clindamycin (hydroclorid) 150 mg,150 mg,viên,viên,1700,0,Thuốc nhóm lincosamid,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 98","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Clindamycin (hydroclorid),Clindamycin (hydroclorid) 300 mg,300 mg,viên,viên,1700,0,Thuốc nhóm lincosamid,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 98","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Clindamycin (palmitat),Clindamycin (palmitat) 15 mg/ml,15 mg/ml,dung dịch,chai,35000,0,Thuốc nhóm lincosamid,22800,20,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 98","uoc-tinh:trung-vi-don-vi (chai, 9 thuốc)",2026-10-18
+Clarithromycin,Clarithromycin 250 mg,250 mg,viên,viên,9000,0,Thuốc nhóm macrolid,5900,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 100",uoc-tinh:cung-hoat-chat (Klacid 500),2026-10-18
+Erythromycin (stearat hoặc ethyl succinat),Erythromycin (stearat hoặc ethyl succinat) 250 mg,250 mg,viên,viên,1700,0,Thuốc nhóm macrolid,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 101","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Erythromycin (stearat hoặc ethyl succinat),Erythromycin (stearat hoặc ethyl succinat) 500 mg,500 mg,viên,viên,1700,0,Thuốc nhóm macrolid,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 101","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Erythromycin (stearat hoặc ethyl succinat),Erythromycin (stearat hoặc ethyl succinat) 125 mg/5 ml (sau pha),125 mg/5 ml (sau pha),cốm pha hỗn dịch,gói,2500,0,Thuốc nhóm macrolid,1600,100,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 101","uoc-tinh:trung-vi-don-vi (gói, 7 thuốc)",2026-10-18
+Ciprofloxacin (hydroclorid),Ciprofloxacin (hydroclorid) 250 mg,250 mg,viên,viên,1700,0,Thuốc nhóm quinolon,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 102","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Levofloxacin,Levofloxacin 250 mg,250 mg,viên nén bao phim,viên,10000,0,Thuốc nhóm quinolon,6500,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 103",uoc-tinh:cung-hoat-chat (Tavanic 500),2026-10-18
+Levofloxacin,Levofloxacin 750 mg,750 mg,viên nén bao phim,viên,30000,0,Thuốc nhóm quinolon,19500,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 103",uoc-tinh:cung-hoat-chat (Tavanic 500),2026-10-18
+Sulfamethoxazol + Trimethoprim,Sulfamethoxazol + Trimethoprim 800 mg + 160 mg,800 mg + 160 mg,viên,viên,1600,0,Thuốc nhóm sulfamid,1000,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 104",uoc-tinh:cung-hoat-chat (Biseptol 480),2026-10-18
+Sulfamethoxazol + Trimethoprim,Sulfamethoxazol + Trimethoprim 100 mg + 20 mg,100 mg + 20 mg,viên,viên,400,0,Thuốc nhóm sulfamid,300,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 104",uoc-tinh:cung-hoat-chat (Biseptol 480),2026-10-18
+Nitrofurantoin,Nitrofurantoin 5 mg/ml,5 mg/ml,hỗn dịch,chai,35000,0,Thuốc nhóm nitrofuran,22800,20,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 105","uoc-tinh:trung-vi-don-vi (chai, 9 thuốc)",2026-10-18
+Doxycyclin (hydroclorid),Doxycyclin (hydroclorid) 50 mg,50 mg,viên,viên,1700,0,Thuốc nhóm tetracyclin,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 106","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Doxycyclin (hydroclorid),Doxycyclin (hydroclorid) 5 mg/ml,5 mg/ml,hỗn dịch,chai,35000,0,Thuốc nhóm tetracyclin,22800,20,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 106","uoc-tinh:trung-vi-don-vi (chai, 9 thuốc)",2026-10-18
+Doxycyclin (hydroclorid),Doxycyclin (hydroclorid) 10 mg/ml,10 mg/ml,hỗn dịch,chai,35000,0,Thuốc nhóm tetracyclin,22800,20,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 106","uoc-tinh:trung-vi-don-vi (chai, 9 thuốc)",2026-10-18
+Clotrimazol,Clotrimazol 1 %,1 %,kem bôi âm đạo,tuýp,35000,0,Thuốc chống nấm,22800,20,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 129",uoc-tinh:cung-hoat-chat (Canesten 1%),2026-10-18
+Clotrimazol,Clotrimazol 10 %,10 %,kem bôi âm đạo,tuýp,70000,0,Thuốc chống nấm,45500,20,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 129",uoc-tinh:cung-hoat-chat (Canesten 1%),2026-10-18
+Fluconazol,Fluconazol 50 mg,50 mg,viên,viên,15000,0,Thuốc chống nấm,9800,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 130",uoc-tinh:cung-hoat-chat (Diflucan 150),2026-10-18
+Fluconazol,Fluconazol 10 mg/ml (sau pha),10 mg/ml (sau pha),bột pha hỗn dịch,gói,2500,0,Thuốc chống nấm,1600,100,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 130","uoc-tinh:trung-vi-don-vi (gói, 7 thuốc)",2026-10-18
+Griseofulvin,Griseofulvin 125 mg,125 mg,viên,viên,1700,0,Thuốc chống nấm,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 131","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Griseofulvin,Griseofulvin 250 mg,250 mg,viên,viên,1700,0,Thuốc chống nấm,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 131","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Griseofulvin,Griseofulvin 500 mg,500 mg,viên,viên,1700,0,Thuốc chống nấm,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 131","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Griseofulvin,Griseofulvin 25 mg/ml,25 mg/ml,hỗn dịch,chai,35000,0,Thuốc chống nấm,22800,20,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 131","uoc-tinh:trung-vi-don-vi (chai, 9 thuốc)",2026-10-18
+Nystatin,Nystatin 250.000 IU,250.000 IU,viên,viên,1700,0,Thuốc chống nấm,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 132","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Nystatin,Nystatin 500.000 IU,500.000 IU,viên,viên,1700,0,Thuốc chống nấm,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 132","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Nystatin,Nystatin 100.000 IU/ml,100.000 IU/ml,hỗn dịch,chai,35000,0,Thuốc chống nấm,22800,20,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 132","uoc-tinh:trung-vi-don-vi (chai, 9 thuốc)",2026-10-18
+Flucytosin,Flucytosin 250 mg,250 mg,viên,viên,1700,0,Thuốc chống nấm,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 133","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Kali iodid,Kali iodid 1 g/ml,1 g/ml,dung dịch,chai,35000,0,Thuốc chống nấm,22800,20,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 134","uoc-tinh:trung-vi-don-vi (chai, 9 thuốc)",2026-10-18
+Diloxanid furoat,Diloxanid furoat 500 mg,500 mg,viên,viên,1700,0,Thuốc điều trị bệnh do amip,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 135","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Metronidazol,Metronidazol 250 mg,250 mg,viên,viên,800,0,Thuốc điều trị bệnh do amip,500,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 136",uoc-tinh:cung-hoat-chat (Flagyl 250),2026-10-18
+Amodiaquin,Amodiaquin 153 mg,153 mg,viên,viên,1700,0,Thuốc chữa bệnh,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 141","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Amodiaquin,Amodiaquin 200 mg,200 mg,viên,viên,1700,0,Thuốc chữa bệnh,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 141","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Artesunat + Amodiaquin,"Artesunat + Amodiaquin 25 mg+ 67,5 mg","25 mg+ 67,5 mg",viên,viên,1700,0,Thuốc chữa bệnh,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 143","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Artesunat + Amodiaquin,Artesunat + Amodiaquin 50 mg + 135 mg,50 mg + 135 mg,viên,viên,1700,0,Thuốc chữa bệnh,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 143","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Artesunat + Amodiaquin,Artesunat + Amodiaquin 100 mg + 270 mg,100 mg + 270 mg,viên,viên,1700,0,Thuốc chữa bệnh,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 143","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Artesunat + Mefloquin,Artesunat + Mefloquin 25 mg + 55 mg,25 mg + 55 mg,viên,viên,1700,0,Thuốc chữa bệnh,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 144","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Artesunat + Mefloquin,Artesunat + Mefloquin 100 mg + 220 mg,100 mg + 220 mg,viên,viên,1700,0,Thuốc chữa bệnh,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 144","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Cloroquin (phosphat hoặc Sulfat),Cloroquin (phosphat hoặc Sulfat) 100 mg,100 mg,viên,viên,1700,0,Thuốc chữa bệnh,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 145","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Cloroquin (phosphat hoặc Sulfat),Cloroquin (phosphat hoặc Sulfat) 150 mg,150 mg,viên,viên,1700,0,Thuốc chữa bệnh,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 145","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Cloroquin (phosphat hoặc Sulfat),Cloroquin (phosphat hoặc Sulfat) 250 mg,250 mg,viên,viên,1700,0,Thuốc chữa bệnh,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 145","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Cloroquin (phosphat hoặc Sulfat),Cloroquin (phosphat hoặc Sulfat) 10 mg/ml,10 mg/ml,si rô,chai,35000,0,Thuốc chữa bệnh,22800,20,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 145","uoc-tinh:trung-vi-don-vi (chai, 9 thuốc)",2026-10-18
+Primaquin,"Primaquin 7,5 mg","7,5 mg",viên,viên,1700,0,Thuốc chữa bệnh,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 146","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Primaquin,Primaquin 15 mg,15 mg,viên,viên,1700,0,Thuốc chữa bệnh,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 146","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Quinin sulfat hoặc bisulfat,Quinin sulfat hoặc bisulfat 300 mg,300 mg,viên,viên,1700,0,Thuốc chữa bệnh,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 148","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Sulfadoxin + Pyrimethamin,Sulfadoxin + Pyrimethamin 500 mg + 25 mg,500 mg + 25 mg,viên,viên,1700,0,Thuốc chữa bệnh,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 149","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Arthemether + Lumefantrin,Arthemether + Lumefantrin 20 mg + 120 mg,20 mg + 120 mg,viên,viên,1700,0,Thuốc chữa bệnh,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 151","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Doxycyclin (hydroclorid),Doxycyclin (hydroclorid) 100 mg,100 mg,viên,viên,1700,0,Thuốc chữa bệnh,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 152","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Aciclovir,Aciclovir 200 mg,200 mg,viên,viên,2500,0,Thuốc chống virus herpes,1600,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 157",uoc-tinh:cung-hoat-chat (Aciclovir 800),2026-10-18
+Aciclovir,Aciclovir 40 mg/ml,40 mg/ml,hỗn dịch,chai,35000,0,Thuốc chống virus herpes,22800,20,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 157","uoc-tinh:trung-vi-don-vi (chai, 9 thuốc)",2026-10-18
+Ribavirin,Ribavirin 200,200,viên,viên,1700,0,Thuốc chống virus herpes,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 158","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Ribavirin,Ribavirin 400,400,viên,viên,1700,0,Thuốc chống virus herpes,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 158","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Ribavirin,Ribavirin 600 mg,600 mg,viên,viên,1700,0,Thuốc chống virus herpes,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 158","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Oseltamivir,Oseltamivir 30 mg,30 mg,viên,viên,22500,0,Thuốc khác,14600,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 172",uoc-tinh:cung-hoat-chat (Tamiflu 75),2026-10-18
+Oseltamivir,Oseltamivir 45 mg,45 mg,viên,viên,27000,0,Thuốc khác,17600,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 172",uoc-tinh:cung-hoat-chat (Tamiflu 75),2026-10-18
+Oseltamivir,Oseltamivir 12 mg/ml,12 mg/ml,bột pha hỗn dịch,gói,2500,0,Thuốc khác,1600,100,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 172","uoc-tinh:trung-vi-don-vi (gói, 7 thuốc)",2026-10-18
+Acetylsalicylic acid,Acetylsalicylic acid 300 mg đến 500 mg,300 mg đến 500 mg,viên,viên,1700,0,Thuốc điều trị cơn đau cấp,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 173","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Ibuprofen,Ibuprofen 400 mg,400 mg,viên,viên,2500,0,Thuốc điều trị cơn đau cấp,1600,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 174",uoc-tinh:cung-hoat-chat (Gofen 400),2026-10-18
+Paracetamol,Paracetamol 300 mg đến 500 mg,300 mg đến 500 mg,viên,viên,900,0,Thuốc điều trị cơn đau cấp,600,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 175",uoc-tinh:cung-hoat-chat (Panadol),2026-10-18
+Paracetamol,Paracetamol 125 mg/ml,125 mg/ml,dung dịch,chai,35000,0,Thuốc điều trị cơn đau cấp,22800,20,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 175","uoc-tinh:trung-vi-don-vi (chai, 9 thuốc)",2026-10-18
+Acid Folic,Acid Folic 1 mg,1 mg,viên,viên,200,0,Thuốc chống thiếu máu,100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 211",uoc-tinh:cung-hoat-chat (Acid folic 5),2026-10-18
+Sắt (Sulfat hay oxalat),Sắt (Sulfat hay oxalat) 60 mg,60 mg,viên,viên,1700,0,Thuốc chống thiếu máu,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 213","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Acenocoumarol,Acenocoumarol 2 mg,2 mg,viên,viên,1700,0,Thuốc tác dụng lên quá trình đông máu,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 215","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Acenocoumarol,Acenocoumarol 4 mg,4 mg,viên,viên,1700,0,Thuốc tác dụng lên quá trình đông máu,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 215","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Acid Tranexamic,Acid Tranexamic 250 mg,250 mg,viên,viên,1700,0,Thuốc tác dụng lên quá trình đông máu,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 217","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Acid Tranexamic,Acid Tranexamic 500 mg,500 mg,viên,viên,1700,0,Thuốc tác dụng lên quá trình đông máu,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 217","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Carbazocrom dihydrat,Carbazocrom dihydrat 10 mg,10 mg,viên,viên,1700,0,Thuốc tác dụng lên quá trình đông máu,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 218","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Carbazocrom natri sulfonat,Carbazocrom natri sulfonat 30 mg,30 mg,viên,viên,1700,0,Thuốc tác dụng lên quá trình đông máu,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 218","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Vitamin K1,Vitamin K1 2 mg,2 mg,viên,viên,1700,0,Thuốc tác dụng lên quá trình đông máu,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 220","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Vitamin K1,Vitamin K1 5 mg,5 mg,viên,viên,1700,0,Thuốc tác dụng lên quá trình đông máu,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 220","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Vitamin K1,Vitamin K1 10 mg,10 mg,viên,viên,1700,0,Thuốc tác dụng lên quá trình đông máu,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 220","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Warfarin natri,"Warfarin natri 0,5 mg","0,5 mg",viên,viên,1700,0,Thuốc tác dụng lên quá trình đông máu,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 222","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Warfarin natri,Warfarin natri 1 mg,1 mg,viên,viên,1700,0,Thuốc tác dụng lên quá trình đông máu,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 222","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Warfarin natri,Warfarin natri 2 mg,2 mg,viên,viên,1700,0,Thuốc tác dụng lên quá trình đông máu,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 222","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Warfarin natri,Warfarin natri 5 mg,5 mg,viên,viên,1700,0,Thuốc tác dụng lên quá trình đông máu,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 222","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Atenolol,Atenolol 100 mg,100 mg,viên,viên,2000,0,Thuốc chống đau thắt ngực,1300,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 231",uoc-tinh:cung-hoat-chat (Atenolol 50),2026-10-18
+Diltiazem,Diltiazem 30 mg,30 mg,viên,viên,1700,0,Thuốc chống đau thắt ngực,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 232","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Diltiazem,Diltiazem 60 mg,60 mg,viên,viên,1700,0,Thuốc chống đau thắt ngực,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 232","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Glyceryl trinitrat,Glyceryl trinitrat 2 mg,2 mg,viên,viên,1700,0,Thuốc chống đau thắt ngực,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 233","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Glyceryl trinitrat,"Glyceryl trinitrat 2,5 mg","2,5 mg",viên,viên,1700,0,Thuốc chống đau thắt ngực,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 233","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Glyceryl trinitrat,Glyceryl trinitrat 3 mg,3 mg,viên,viên,1700,0,Thuốc chống đau thắt ngực,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 233","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Glyceryl trinitrat,Glyceryl trinitrat 5 mg,5 mg,viên,viên,1700,0,Thuốc chống đau thắt ngực,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 233","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Glyceryl trinitrat,"Glyceryl trinitrat 0,5 mg","0,5 mg",viên,viên,1700,0,Thuốc chống đau thắt ngực,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 233","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Isosorbid dinitrat hoặc mononitrat,Isosorbid dinitrat hoặc mononitrat 5 mg,5 mg,viên,viên,1700,0,Thuốc chống đau thắt ngực,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 234","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Isosorbid dinitrat hoặc mononitrat,Isosorbid dinitrat hoặc mononitrat 30 mg,30 mg,viên,viên,1700,0,Thuốc chống đau thắt ngực,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 234","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Isosorbid dinitrat hoặc mononitrat,Isosorbid dinitrat hoặc mononitrat 60 mg,60 mg,viên,viên,1700,0,Thuốc chống đau thắt ngực,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 234","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Amiodaron hydroclorid,Amiodaron hydroclorid 100 mg,100 mg,viên,viên,1700,0,Thuốc chống loạn nhịp,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 235","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Amiodaron hydroclorid,Amiodaron hydroclorid 200 mg,200 mg,viên,viên,1700,0,Thuốc chống loạn nhịp,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 235","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Amiodaron hydroclorid,Amiodaron hydroclorid 400 mg,400 mg,viên,viên,1700,0,Thuốc chống loạn nhịp,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 235","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Atenolol,Atenolol 50 mg,50 mg,viên,viên,1000,0,Thuốc chống loạn nhịp,700,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 236",uoc-tinh:cung-hoat-chat (Atenolol 50),2026-10-18
+Verapamil hydroclorid,Verapamil hydroclorid 40 mg,40 mg,viên,viên,1700,0,Thuốc chống loạn nhịp,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 239","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Verapamil hydroclorid,Verapamil hydroclorid 80 mg,80 mg,viên,viên,1700,0,Thuốc chống loạn nhịp,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 239","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Digoxin,"Digoxin 62,5 mcg","62,5 mcg",viên,viên,1700,0,Thuốc chống loạn nhịp,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 240","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Digoxin,Digoxin 250 mcg,250 mcg,viên,viên,1700,0,Thuốc chống loạn nhịp,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 240","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Digoxin,Digoxin 50 mcg/ml,50 mcg/ml,dung dịch,chai,35000,0,Thuốc chống loạn nhịp,22800,20,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 240","uoc-tinh:trung-vi-don-vi (chai, 9 thuốc)",2026-10-18
+Amlodipin,"Amlodipin 2,5 mg","2,5 mg",viên,viên,1300,0,Thuốc điều trị tăng huyết áp,800,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 242",uoc-tinh:cung-hoat-chat (Amlor 5),2026-10-18
+Captopril,Captopril 50 mg,50 mg,viên,viên,1000,0,Thuốc điều trị tăng huyết áp,700,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 243",uoc-tinh:cung-hoat-chat (Captopril 25),2026-10-18
+Enalapril,Enalapril 10 mg,10 mg,viên,viên,4000,0,Thuốc điều trị tăng huyết áp,2600,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 244",uoc-tinh:cung-hoat-chat (Renitec 5),2026-10-18
+Enalapril,Enalapril 20 mg,20 mg,viên,viên,4000,0,Thuốc điều trị tăng huyết áp,2600,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 244",uoc-tinh:cung-hoat-chat (Renitec 5),2026-10-18
+Hydroclorothiazid,Hydroclorothiazid 50 mg,50 mg,viên,viên,1000,0,Thuốc điều trị tăng huyết áp,700,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 246",uoc-tinh:cung-hoat-chat (Hydroclorothiazid 25),2026-10-18
+Methyldopa,Methyldopa 250 mg,250 mg,viên,viên,1700,0,Thuốc điều trị tăng huyết áp,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 247","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Nifedipin,Nifedipin 5 mg,5 mg,viên,viên,1300,0,Thuốc điều trị tăng huyết áp,800,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 248",uoc-tinh:cung-hoat-chat (Adalat Retard 20),2026-10-18
+Nifedipin,Nifedipin 10 mg,10 mg,viên,viên,1300,0,Thuốc điều trị tăng huyết áp,800,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 248",uoc-tinh:cung-hoat-chat (Adalat Retard 20),2026-10-18
+Propranolol hydroclorid,Propranolol hydroclorid 40 mg,40 mg,viên,viên,500,0,Thuốc điều trị tăng huyết áp,300,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 249",uoc-tinh:cung-hoat-chat (Propranolol 40),2026-10-18
+Hydralazin,Hydralazin 25 mg,25 mg,viên,viên,1700,0,Thuốc điều trị tăng huyết áp,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 251","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Hydralazin,Hydralazin 50 mg,50 mg,viên,viên,1700,0,Thuốc điều trị tăng huyết áp,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 251","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Heptaminol (hydroclorid),Heptaminol (hydroclorid) 150 mg,150 mg,viên,viên,1700,0,Thuốc điều trị hạ huyết áp,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 252","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Digoxin,Digoxin 62.5 mcg,62.5 mcg,viên,viên,1700,0,Thuốc điều trị suy tim,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 253","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Enalapril,"Enalapril 2,5 mg","2,5 mg",viên,viên,1000,0,Thuốc điều trị suy tim,700,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 257",uoc-tinh:cung-hoat-chat (Renitec 5),2026-10-18
+Enalapril,Enalapril 5 mg,5 mg,viên,viên,2000,0,Thuốc điều trị suy tim,1300,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 257",uoc-tinh:cung-hoat-chat (Renitec 5),2026-10-18
+Furosemid,Furosemid 40 mg,40 mg,viên,viên,500,0,Thuốc điều trị suy tim,300,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 258",uoc-tinh:cung-hoat-chat (Furosemid 40),2026-10-18
+Furosemid,Furosemid 4 mg/ml,4 mg/ml,dung dịch,chai,35000,0,Thuốc điều trị suy tim,22800,20,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 258","uoc-tinh:trung-vi-don-vi (chai, 9 thuốc)",2026-10-18
+Hydrochlorothiazid,Hydrochlorothiazid 25 mg,25 mg,viên,viên,1700,0,Thuốc điều trị suy tim,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 259","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Hydrochlorothiazid,Hydrochlorothiazid 10 mg/ml,10 mg/ml,dung dịch,chai,35000,0,Thuốc điều trị suy tim,22800,20,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 259","uoc-tinh:trung-vi-don-vi (chai, 9 thuốc)",2026-10-18
+Acid Acetylsalicylic,Acid Acetylsalicylic 100 mg,100 mg,viên,viên,700,0,Thuốc chống huyết khối,500,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 261",uoc-tinh:cung-hoat-chat (Aspirin 81),2026-10-18
+Atorvastatin,Atorvastatin 10 mg,10 mg,viên,viên,6000,0,Thuốc hạ lipit máu,3900,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 263",uoc-tinh:cung-hoat-chat (Lipitor 20),2026-10-18
+Fenofibrat,Fenofibrat 100 mg,100 mg,viên,viên,3000,0,Thuốc hạ lipit máu,2000,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 264",uoc-tinh:cung-hoat-chat (Lipanthyl 300),2026-10-18
+Simvastatin,Simvastatin 5 mg,5 mg,viên,viên,800,0,Thuốc hạ lipit máu,500,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 265",uoc-tinh:cung-hoat-chat (Simvastatin 20),2026-10-18
+Simvastatin,Simvastatin 10 mg,10 mg,viên,viên,800,0,Thuốc hạ lipit máu,500,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 265",uoc-tinh:cung-hoat-chat (Simvastatin 20),2026-10-18
+Simvastatin,Simvastatin 40 mg,40 mg,viên,viên,3000,0,Thuốc hạ lipit máu,2000,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 265",uoc-tinh:cung-hoat-chat (Simvastatin 20),2026-10-18
+Acid Benzoic + Acid Salicylic,Acid Benzoic + Acid Salicylic 6 %,6 %,"kem, mỡ",tuýp,15000,0,Thuốc chống nấm,9800,20,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 266","uoc-tinh:trung-vi-don-vi (tuýp, 3 thuốc)",2026-10-18
+Acid Benzoic + Acid Salicylic,Acid Benzoic + Acid Salicylic 3 %,3 %,"kem, mỡ",tuýp,15000,0,Thuốc chống nấm,9800,20,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 266","uoc-tinh:trung-vi-don-vi (tuýp, 3 thuốc)",2026-10-18
+Ketoconazol,Ketoconazol 2 %,2 %,kem,tuýp,15000,0,Thuốc chống nấm,9800,20,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 270","uoc-tinh:trung-vi-don-vi (tuýp, 3 thuốc)",2026-10-18
+Miconazol,Miconazol 2 %,2 %,kem,tuýp,15000,0,Thuốc chống nấm,9800,20,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 271","uoc-tinh:trung-vi-don-vi (tuýp, 3 thuốc)",2026-10-18
+Terbinafin,Terbinafin 1 %,1 %,"kem, mỡ",tuýp,15000,0,Thuốc chống nấm,9800,20,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 272","uoc-tinh:trung-vi-don-vi (tuýp, 3 thuốc)",2026-10-18
+Natri thiosulfat,Natri thiosulfat 15 %,15 %,dung dịch,chai,35000,0,Thuốc chống nấm,22800,20,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 273","uoc-tinh:trung-vi-don-vi (chai, 9 thuốc)",2026-10-18
+Neomycin + Bacitracin,Neomycin + Bacitracin 5 mg + 500 IU,5 mg + 500 IU,kem,tuýp,15000,0,Thuốc chống nhiễm khuẩn,9800,20,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 274","uoc-tinh:trung-vi-don-vi (tuýp, 3 thuốc)",2026-10-18
+Kali permanganate,"Kali permanganate 0,5 %","0,5 %",dung dịch,chai,35000,0,Thuốc chống nhiễm khuẩn,22800,20,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 276","uoc-tinh:trung-vi-don-vi (chai, 9 thuốc)",2026-10-18
+Bạc Sulfadiazin,Bạc Sulfadiazin 1 %,1 %,kem,tuýp,15000,0,Thuốc chống nhiễm khuẩn,9800,20,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 277","uoc-tinh:trung-vi-don-vi (tuýp, 3 thuốc)",2026-10-18
+Fluocinolon acetonid,"Fluocinolon acetonid 0,025 %","0,025 %",mỡ,tuýp,15000,0,"Thuốc chống viêm, ngứa",9800,20,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 279","uoc-tinh:trung-vi-don-vi (tuýp, 3 thuốc)",2026-10-18
+Hydrocortison acetate,Hydrocortison acetate 1 %,1 %,"kem, mỡ",tuýp,15000,0,"Thuốc chống viêm, ngứa",9800,20,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 280","uoc-tinh:trung-vi-don-vi (tuýp, 3 thuốc)",2026-10-18
+Acid Salicylic,Acid Salicylic 3 %,3 %,mỡ,tuýp,15000,0,Thuốc có tác dụng làm tiêu sừng,9800,20,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 282","uoc-tinh:trung-vi-don-vi (tuýp, 3 thuốc)",2026-10-18
+Acid Salicylic,Acid Salicylic 5 %,5 %,mỡ,tuýp,15000,0,Thuốc có tác dụng làm tiêu sừng,9800,20,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 282","uoc-tinh:trung-vi-don-vi (tuýp, 3 thuốc)",2026-10-18
+Benzoyl peroxide,Benzoyl peroxide 5 %,5 %,"kem, lotion",tuýp,15000,0,Thuốc có tác dụng làm tiêu sừng,9800,20,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 283","uoc-tinh:trung-vi-don-vi (tuýp, 3 thuốc)",2026-10-18
+Benzoyl peroxide,Benzoyl peroxide 10 %,10 %,"kem, lotion",tuýp,15000,0,Thuốc có tác dụng làm tiêu sừng,9800,20,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 283","uoc-tinh:trung-vi-don-vi (tuýp, 3 thuốc)",2026-10-18
+Fluorouracil,Fluorouracil 5 %,5 %,mỡ,tuýp,15000,0,Thuốc có tác dụng làm tiêu sừng,9800,20,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 284","uoc-tinh:trung-vi-don-vi (tuýp, 3 thuốc)",2026-10-18
+Urea,Urea 10 %,10 %,"mỡ, kem",tuýp,15000,0,Thuốc có tác dụng làm tiêu sừng,9800,20,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 285","uoc-tinh:trung-vi-don-vi (tuýp, 3 thuốc)",2026-10-18
+Benzyl benzoate,Benzyl benzoate 25 %,25 %,kem thuốc,tuýp,15000,0,Thuốc trị ghẻ,9800,20,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 286","uoc-tinh:trung-vi-don-vi (tuýp, 3 thuốc)",2026-10-18
+Diethylphtalat,Diethylphtalat 10 %,10 %,dung dịch,chai,35000,0,Thuốc trị ghẻ,22800,20,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 287","uoc-tinh:trung-vi-don-vi (chai, 9 thuốc)",2026-10-18
+Diethylphtalat,"Diethylphtalat 5,2/8 g","5,2/8 g","mỡ, kem",tuýp,15000,0,Thuốc trị ghẻ,9800,20,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 287","uoc-tinh:trung-vi-don-vi (tuýp, 3 thuốc)",2026-10-18
+Diethylphtalat,"Diethylphtalat 19,5/30 g (65 % kl/kl)","19,5/30 g (65 % kl/kl)","mỡ, kem",tuýp,15000,0,Thuốc trị ghẻ,9800,20,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 287","uoc-tinh:trung-vi-don-vi (tuýp, 3 thuốc)",2026-10-18
+Permethrin,Permethrin 5 %,5 %,mỡ,tuýp,15000,0,Thuốc trị ghẻ,9800,20,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 288","uoc-tinh:trung-vi-don-vi (tuýp, 3 thuốc)",2026-10-18
+Permethrin,Permethrin 1 %,1 %,lotion,chai,35000,0,Thuốc trị ghẻ,22800,20,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 288","uoc-tinh:trung-vi-don-vi (chai, 9 thuốc)",2026-10-18
+Clorhexidin digluconat,Clorhexidin digluconat 5 %,5 %,dung dịch,chai,35000,0,XV. THUỐC TẨY TRÙNG VÀ KHỬ TRÙNG,22800,20,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 297","uoc-tinh:trung-vi-don-vi (chai, 9 thuốc)",2026-10-18
+Cồn iod,"Cồn iod 2,5 %","2,5 %",dung dịch,chai,35000,0,XV. THUỐC TẨY TRÙNG VÀ KHỬ TRÙNG,22800,20,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 299","uoc-tinh:trung-vi-don-vi (chai, 9 thuốc)",2026-10-18
+Nước oxy già,Nước oxy già 3 %,3 %,dung dịch,chai,35000,0,XV. THUỐC TẨY TRÙNG VÀ KHỬ TRÙNG,22800,20,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 300","uoc-tinh:trung-vi-don-vi (chai, 9 thuốc)",2026-10-18
+Povidon iod,Povidon iod 10 %,10 %,dung dịch,chai,45000,0,XV. THUỐC TẨY TRÙNG VÀ KHỬ TRÙNG,29300,20,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 301",uoc-tinh:cung-hoat-chat (Betadine 10%),2026-10-18
+Furosemid,Furosemid 20 mg,20 mg,viên,viên,300,0,XVI. THUỐC LỢI TIỂU,200,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 302",uoc-tinh:cung-hoat-chat (Furosemid 40),2026-10-18
+Hydroclorothiazid,"Hydroclorothiazid 6,25 mg","6,25 mg",viên,viên,300,0,XVI. THUỐC LỢI TIỂU,200,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 303",uoc-tinh:cung-hoat-chat (Hydroclorothiazid 25),2026-10-18
+Hydroclorothiazid,Hydroclorothiazid 25 mg,25 mg,viên,viên,500,0,XVI. THUỐC LỢI TIỂU,300,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 303",uoc-tinh:cung-hoat-chat (Hydroclorothiazid 25),2026-10-18
+Spironolacton,Spironolacton 25 mg,25 mg,viên,viên,1500,0,XVI. THUỐC LỢI TIỂU,1000,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 305",uoc-tinh:cung-hoat-chat (Spironolacton 25),2026-10-18
+Spironolacton,Spironolacton 50 mg,50 mg,viên,viên,3000,0,XVI. THUỐC LỢI TIỂU,2000,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 305",uoc-tinh:cung-hoat-chat (Spironolacton 25),2026-10-18
+Spironolacton,Spironolacton 75 mg,75 mg,viên,viên,3000,0,XVI. THUỐC LỢI TIỂU,2000,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 305",uoc-tinh:cung-hoat-chat (Spironolacton 25),2026-10-18
+Cimetidin,Cimetidin 200 mg,200 mg,viên,viên,1700,0,"Thuốc chống loét dạ dày, tá tràng",1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 306","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Cimetidin,Cimetidin 400 mg,400 mg,viên,viên,1700,0,"Thuốc chống loét dạ dày, tá tràng",1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 306","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+"Muối bismuth (carbonat, trikali dicitrat...)","Muối bismuth (carbonat, trikali dicitrat...) 120 mg",120 mg,viên,viên,1700,0,"Thuốc chống loét dạ dày, tá tràng",1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 307","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Famotidin,Famotidin 20 mg,20 mg,viên,viên,1700,0,"Thuốc chống loét dạ dày, tá tràng",1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 308","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Famotidin,Famotidin 40 mg,40 mg,viên,viên,1700,0,"Thuốc chống loét dạ dày, tá tràng",1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 308","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Magnest hydmxyd + Nhỏm hydroxyd,Magnest hydmxyd + Nhỏm hydroxyd 55 mg Magnesi oxyd + 64 mg Nhôm oxyd/ml,55 mg Magnesi oxyd + 64 mg Nhôm oxyd/ml,hỗn dịch,chai,35000,0,"Thuốc chống loét dạ dày, tá tràng",22800,20,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 309","uoc-tinh:trung-vi-don-vi (chai, 9 thuốc)",2026-10-18
+Magnest hydmxyd + Nhỏm hydroxyd,Magnest hydmxyd + Nhỏm hydroxyd 200 mg + 200 mg,200 mg + 200 mg,"viên nén, viên nhai",viên,1700,0,"Thuốc chống loét dạ dày, tá tràng",1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 309","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Magnest hydmxyd + Nhỏm hydroxyd,Magnest hydmxyd + Nhỏm hydroxyd 500 mg + 500 mg,500 mg + 500 mg,"viên nén, viên nhai",viên,1700,0,"Thuốc chống loét dạ dày, tá tràng",1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 309","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Ranitidin,Ranitidin 150 mg,150 mg,viên,viên,1700,0,"Thuốc chống loét dạ dày, tá tràng",1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 312","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Ranitidin,Ranitidin 300 mg,300 mg,viên,viên,1700,0,"Thuốc chống loét dạ dày, tá tràng",1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 312","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Promethazin hydroclorid,Promethazin hydroclorid 10 mg,10 mg,viên,viên,1700,0,Thuốc chống nôn,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 314","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Promethazin hydroclorid,Promethazin hydroclorid 50 mg,50 mg,viên,viên,1700,0,Thuốc chống nôn,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 314","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Dexamethason,"Dexamethason 0,5 mg","0,5 mg",viên,viên,300,0,Thuốc chống nôn,200,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 315","uoc-tinh:cung-hoat-chat (Dexamethason 0,5)",2026-10-18
+Dexamethason,"Dexamethason 0,75 mg","0,75 mg",viên,viên,500,0,Thuốc chống nôn,300,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 315","uoc-tinh:cung-hoat-chat (Dexamethason 0,5)",2026-10-18
+Dexamethason,"Dexamethason 1,5 mg","1,5 mg",viên,viên,600,0,Thuốc chống nôn,400,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 315","uoc-tinh:cung-hoat-chat (Dexamethason 0,5)",2026-10-18
+Dexamethason,Dexamethason 4 mg,4 mg,viên,viên,600,0,Thuốc chống nôn,400,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 315","uoc-tinh:cung-hoat-chat (Dexamethason 0,5)",2026-10-18
+Dexamethason,"Dexamethason 0,1 mg/ml","0,1 mg/ml",dung dịch,chai,35000,0,Thuốc chống nôn,22800,20,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 315","uoc-tinh:trung-vi-don-vi (chai, 9 thuốc)",2026-10-18
+Dexamethason,"Dexamethason 0,4 mg/ml","0,4 mg/ml",dung dịch,chai,35000,0,Thuốc chống nôn,22800,20,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 315","uoc-tinh:trung-vi-don-vi (chai, 9 thuốc)",2026-10-18
+Ondansetron (hydroclorid),Ondansetron (hydroclorid) 8 mg,8 mg,viên,viên,1700,0,Thuốc chống nôn,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 316","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Ondansetron (hydroclorid),Ondansetron (hydroclorid) 24 mg,24 mg,viên,viên,1700,0,Thuốc chống nôn,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 316","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Ondansetron (hydroclorid),"Ondansetron (hydroclorid) 0,8 mg/ml","0,8 mg/ml",dung dịch,chai,35000,0,Thuốc chống nôn,22800,20,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 316","uoc-tinh:trung-vi-don-vi (chai, 9 thuốc)",2026-10-18
+Alverin (citrat),Alverin (citrat) 10 mg,10 mg,viên,viên,1700,0,Thuốc chống co thắt,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 317","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Atropin Sulfat,"Atropin Sulfat 0,25 mg","0,25 mg",viên,viên,1700,0,Thuốc chống co thắt,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 318","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Papaverin hydroclorid,Papaverin hydroclorid 40 mg,40 mg,viên,viên,1700,0,Thuốc chống co thắt,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 320","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Bisacodyl,Bisacodyl 5 mg,5 mg,viên,viên,1700,0,"Thuốc tẩy, nhuận tràng",1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 321","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Bisacodyl,Bisacodyl 10 mg,10 mg,viên,viên,1700,0,"Thuốc tẩy, nhuận tràng",1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 321","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Magnesi sulfat,Magnesi sulfat 5 g,5 g,bột,gói,2500,0,"Thuốc tẩy, nhuận tràng",1600,100,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 322","uoc-tinh:trung-vi-don-vi (gói, 7 thuốc)",2026-10-18
+Diosmin,Diosmin 150 mg,150 mg,viên,viên,1500,0,Thuốc điều trị bệnh trĩ,1000,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 328",uoc-tinh:cung-hoat-chat (Diosmin 300),2026-10-18
+Hydrocortison,Hydrocortison 5 mg,5 mg,viên,viên,1700,0,Hormon thượng thận và những chất tổng hợp thay thế,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 331","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Hydrocortison,Hydrocortison 10 mg,10 mg,viên,viên,1700,0,Hormon thượng thận và những chất tổng hợp thay thế,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 331","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Hydrocortison,Hydrocortison 20 mg,20 mg,viên,viên,1700,0,Hormon thượng thận và những chất tổng hợp thay thế,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 331","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Prednisolon,Prednisolon 1 mg,1 mg,viên,viên,400,0,Hormon thượng thận và những chất tổng hợp thay thế,300,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 332",uoc-tinh:cung-hoat-chat (Prednisolon 5),2026-10-18
+Prednisolon,Prednisolon 5 mg,5 mg,viên,viên,700,0,Hormon thượng thận và những chất tổng hợp thay thế,500,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 332",uoc-tinh:cung-hoat-chat (Prednisolon 5),2026-10-18
+Fludrocortison,Fludrocortison 100 microgram,100 microgram,viên,viên,1700,0,Hormon thượng thận và những chất tổng hợp thay thế,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 333","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Acarbose,Acarbose 50 mg,50 mg,viên,viên,1700,0,Insulin và thuốc hạ đường huyết,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 344","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Acarbose,Acarbose 100 mg,100 mg,viên,viên,1700,0,Insulin và thuốc hạ đường huyết,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 344","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Glibenclamid,"Glibenclamid 2,5 mg","2,5 mg",viên,viên,300,0,Insulin và thuốc hạ đường huyết,200,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 345",uoc-tinh:cung-hoat-chat (Glibenclamid 5),2026-10-18
+Carbimazol,Carbimazol 5 mg,5 mg,viên,viên,1700,0,Giáp trạng và kháng giáp trạng,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 355","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Levothyroxin natri,Levothyroxin natri 50 mcg,50 mcg,viên,viên,800,0,Giáp trạng và kháng giáp trạng,500,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 356",uoc-tinh:cung-hoat-chat (Levothyroxin 100),2026-10-18
+Methylthiouracil,Methylthiouracil 50 mg,50 mg,viên,viên,1700,0,Giáp trạng và kháng giáp trạng,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 357","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Propylthiouracil,Propylthiouracil 50 mg,50 mg,viên,viên,1700,0,Giáp trạng và kháng giáp trạng,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 358","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Kali iodid,Kali iodid 60 mg,60 mg,viên,viên,1700,0,Giáp trạng và kháng giáp trạng,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 359","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Dung dịch Lugol,Dung dịch Lugol 130 mg/ml,130 mg/ml,dung dịch,chai,35000,0,Giáp trạng và kháng giáp trạng,22800,20,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 360","uoc-tinh:trung-vi-don-vi (chai, 9 thuốc)",2026-10-18
+Aciclovir,Aciclovir 3 %,3 %,mỡ,tuýp,9000,0,"Thuốc chống nhiễm khuẩn, kháng virus",5900,20,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 401",uoc-tinh:cung-hoat-chat (Aciclovir 5%),2026-10-18
+Argyrol,Argyrol 3 %,3 %,dung dịch,lọ,26000,0,"Thuốc chống nhiễm khuẩn, kháng virus",16900,20,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 402","uoc-tinh:trung-vi-don-vi (lọ, 6 thuốc)",2026-10-18
+Gentamicin (sulfat),"Gentamicin (sulfat) 0,3 %","0,3 %",dung dịch,lọ,26000,0,"Thuốc chống nhiễm khuẩn, kháng virus",16900,20,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 404","uoc-tinh:trung-vi-don-vi (lọ, 6 thuốc)",2026-10-18
+Neomycin (sulfat),"Neomycin (sulfat) 0,5 %","0,5 %",dung dịch,lọ,26000,0,"Thuốc chống nhiễm khuẩn, kháng virus",16900,20,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 405","uoc-tinh:trung-vi-don-vi (lọ, 6 thuốc)",2026-10-18
+Sulfacetamid natri,Sulfacetamid natri 10 %,10 %,dung dịch,lọ,26000,0,"Thuốc chống nhiễm khuẩn, kháng virus",16900,20,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 407","uoc-tinh:trung-vi-don-vi (lọ, 6 thuốc)",2026-10-18
+Tetracyclin hydroclorid,Tetracyclin hydroclorid 1 %,1 %,mỡ,tuýp,15000,0,"Thuốc chống nhiễm khuẩn, kháng virus",9800,20,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 408","uoc-tinh:trung-vi-don-vi (tuýp, 3 thuốc)",2026-10-18
+Hydrocortison,Hydrocortison 1 %,1 %,mỡ,tuýp,15000,0,Thuốc chống viêm,9800,20,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 410","uoc-tinh:trung-vi-don-vi (tuýp, 3 thuốc)",2026-10-18
+Prednisolon natri phosphat,"Prednisolon natri phosphat 0,5 %","0,5 %",dung dịch,lọ,26000,0,Thuốc chống viêm,16900,20,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 411","uoc-tinh:trung-vi-don-vi (lọ, 6 thuốc)",2026-10-18
+Tetracain hydroclorid,"Tetracain hydroclorid 0,5 %","0,5 %",dung dịch,lọ,26000,0,Thuốc gây tê tại chỗ,16900,20,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 412","uoc-tinh:trung-vi-don-vi (lọ, 6 thuốc)",2026-10-18
+Acetazolamid,Acetazolamid 250 mg,250 mg,viên,viên,1700,0,Thuốc làm co đồng tử và giảm nhãn áp,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 413","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Pilocarpin (hydroclorid hoặc nitrat),Pilocarpin (hydroclorid hoặc nitrat) 2 %,2 %,dung dịch,lọ,26000,0,Thuốc làm co đồng tử và giảm nhãn áp,16900,20,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 414","uoc-tinh:trung-vi-don-vi (lọ, 6 thuốc)",2026-10-18
+Pilocarpin (hydroclorid hoặc nitrat),Pilocarpin (hydroclorid hoặc nitrat) 4 %,4 %,dung dịch,lọ,26000,0,Thuốc làm co đồng tử và giảm nhãn áp,16900,20,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 414","uoc-tinh:trung-vi-don-vi (lọ, 6 thuốc)",2026-10-18
+Timolol,"Timolol 3,25 %","3,25 %",dung dịch,lọ,26000,0,Thuốc làm co đồng tử và giảm nhãn áp,16900,20,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 415","uoc-tinh:trung-vi-don-vi (lọ, 6 thuốc)",2026-10-18
+Timolol,"Timolol 0,5 %","0,5 %",dung dịch,lọ,26000,0,Thuốc làm co đồng tử và giảm nhãn áp,16900,20,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 415","uoc-tinh:trung-vi-don-vi (lọ, 6 thuốc)",2026-10-18
+Atropin sulfat,"Atropin sulfat 0,1 %","0,1 %",dung dịch,lọ,26000,0,Thuốc làm giãn đồng tử,16900,20,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 416","uoc-tinh:trung-vi-don-vi (lọ, 6 thuốc)",2026-10-18
+Atropin sulfat,"Atropin sulfat 0,5 %","0,5 %",dung dịch,lọ,26000,0,Thuốc làm giãn đồng tử,16900,20,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 416","uoc-tinh:trung-vi-don-vi (lọ, 6 thuốc)",2026-10-18
+Atropin sulfat,"Atropin sulfat 1,0 %","1,0 %",dung dịch,lọ,26000,0,Thuốc làm giãn đồng tử,16900,20,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 416","uoc-tinh:trung-vi-don-vi (lọ, 6 thuốc)",2026-10-18
+Sunfarin (Thành phần: Natri sulfacetamid + Ephedrin hydroclorid),"Sunfarin (Thành phần: Natri sulfacetamid + Ephedrin hydroclorid) 0,01 g + 0,01 g/ml","0,01 g + 0,01 g/ml",dung dịch,lọ,26000,0,"Thuốc tai, mũi, họng",16900,20,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 419","uoc-tinh:trung-vi-don-vi (lọ, 6 thuốc)",2026-10-18
+Xylometazolin,"Xylometazolin 0,1 %","0,1 %",dung dịch,lọ,26000,0,"Thuốc tai, mũi, họng",16900,20,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 420","uoc-tinh:trung-vi-don-vi (lọ, 6 thuốc)",2026-10-18
+Beclometason dipropionat,Beclometason dipropionat 50 mcg,50 mcg,thuốc hít (khí dung),bình,150000,0,Thuốc chữa hen và bệnh phổi tắc nghẽn mạn tính,97500,10,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 447","uoc-tinh:trung-vi-don-vi (bình, 3 thuốc)",2026-10-18
+Beclometason dipropionat,Beclometason dipropionat 100 mcg/Iần xịt,100 mcg/Iần xịt,thuốc hít (khí dung),bình,150000,0,Thuốc chữa hen và bệnh phổi tắc nghẽn mạn tính,97500,10,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 447","uoc-tinh:trung-vi-don-vi (bình, 3 thuốc)",2026-10-18
+Salbutamol (sulfat),Salbutamol (sulfat) 4 mg,4 mg,viên,viên,1700,0,Thuốc chữa hen và bệnh phổi tắc nghẽn mạn tính,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 448","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Budesonid,Budesonid 100 mcg/lần xịt,100 mcg/lần xịt,thuốc hít (khí dung),bình,90000,0,Thuốc chữa hen và bệnh phổi tắc nghẽn mạn tính,58500,10,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 450",uoc-tinh:cung-hoat-chat (Budesonid 200 mcg),2026-10-18
+Acetylcystein,Acetylcystein 100 mg,100 mg,viên,viên,1700,0,Thuốc chữa rối loạn tiết dịch,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 453","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Acetylcystein,Acetylcystein 200 mg,200 mg,viên,viên,1700,0,Thuốc chữa rối loạn tiết dịch,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 453","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Bromhexin hydroclorid,Bromhexin hydroclorid 4 mg,4 mg,viên,viên,800,0,Thuốc chữa rối loạn tiết dịch,500,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 455",uoc-tinh:cung-hoat-chat (Bisolvon 8),2026-10-18
+Kali clorid,Kali clorid 600 mg,600 mg,viên,viên,1700,0,Thuốc uống,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 458","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Calci gluconat,Calci gluconat 1 g,1 g,viên,viên,500,0,XXVII. VITAMIN VÀ CÁC CHẤT VÔ CƠ,300,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 467",uoc-tinh:cung-hoat-chat (Calci gluconat 500),2026-10-18
+Vitamin A,Vitamin A 5.000 IU,5.000 IU,viên,viên,1700,0,XXVII. VITAMIN VÀ CÁC CHẤT VÔ CƠ,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 468","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Thiamin hydroclorid hoặc nitrat,Thiamin hydroclorid hoặc nitrat 10 mg,10 mg,viên,viên,1700,0,XXVII. VITAMIN VÀ CÁC CHẤT VÔ CƠ,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 470","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Thiamin hydroclorid hoặc nitrat,Thiamin hydroclorid hoặc nitrat 50 mg,50 mg,viên,viên,1700,0,XXVII. VITAMIN VÀ CÁC CHẤT VÔ CƠ,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 470","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Vitamin B2,Vitamin B2 5 mg,5 mg,viên,viên,1700,0,XXVII. VITAMIN VÀ CÁC CHẤT VÔ CƠ,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 471","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Vitamin B6,Vitamin B6 100 mg,100 mg,viên,viên,500,0,XXVII. VITAMIN VÀ CÁC CHẤT VÔ CƠ,300,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 472",uoc-tinh:cung-hoat-chat (Vitamin B6 25),2026-10-18
+Vitamin C,Vitamin C 50 mg,50 mg,viên,viên,300,0,XXVII. VITAMIN VÀ CÁC CHẤT VÔ CƠ,200,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 473",uoc-tinh:cung-hoat-chat (Vitamin C 500),2026-10-18
+Vitamin C,Vitamin C 100 mg,100 mg,viên,viên,300,0,XXVII. VITAMIN VÀ CÁC CHẤT VÔ CƠ,200,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 473",uoc-tinh:cung-hoat-chat (Vitamin C 500),2026-10-18
+Vitamin PP,Vitamin PP 50 mg,50 mg,viên,viên,1700,0,XXVII. VITAMIN VÀ CÁC CHẤT VÔ CƠ,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 474","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Allopurinol,Allopurinol 100 mg,100 mg,viên,viên,1000,0,Thuốc điều trị bệnh gút,700,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 478",uoc-tinh:cung-hoat-chat (Zyloric 300),2026-10-18
+Cloroquin (phosphat hoặc sulfat),Cloroquin (phosphat hoặc sulfat) 100 mg,100 mg,viên nén,viên,1700,0,Thuốc được sử dụng trong viêm khớp dạng thấp,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 480","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Cloroquin (phosphat hoặc sulfat),Cloroquin (phosphat hoặc sulfat) 150 mg,150 mg,viên nén,viên,1700,0,Thuốc được sử dụng trong viêm khớp dạng thấp,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 480","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
+Methotrexat (natri),"Methotrexat (natri) 2,5 mg","2,5 mg",viên,viên,1700,0,Thuốc được sử dụng trong viêm khớp dạng thấp,1100,200,720,"TT 19/2018/TT-BYT, Phụ lục I, STT 481","uoc-tinh:trung-vi-don-vi (viên, 72 thuốc)",2026-10-18
