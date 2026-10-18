@@ -92,3 +92,50 @@ def prescribed(client, doctor, examining):
     return _make
 
 
+
+
+# ---- Tri thức Active dùng cho test triệu chứng / worker AI -------------------------------------
+WK_SYMPTOMS = {"wk_fever_high": "Sốt cao", "wk_cough_dry": "Ho khan", "wk_sore_throat": "Đau họng",
+               "wk_joint_pain": "Đau khớp"}
+WK_CONDITIONS = {
+    "wk_cum_mua": ("Cúm mùa (thử)", "J11.1", [("wk_fever_high", "SUPPORTS", 0.85, True),
+                                             ("wk_cough_dry", "SUPPORTS", 0.8, True),
+                                             ("wk_sore_throat", "SUPPORTS", 0.6, False)]),
+    "wk_viem_hong": ("Viêm họng cấp (thử)", "J02.9", [("wk_sore_throat", "SUPPORTS", 0.9, True),
+                                                     ("wk_fever_high", "SUPPORTS", 0.5, False),
+                                                     ("wk_joint_pain", "CONTRADICTS", 0.4, False)]),
+}
+
+
+@pytest.fixture(scope="session")
+def wk_knowledge(users):
+    """Bản phát hành Active nhỏ: 4 triệu chứng, 2 bệnh, quan hệ, 1 trích dẫn. Tạo một lần mỗi phiên test
+    (DB test được Alembic dựng lại mỗi phiên). Không có luật cờ đỏ để không ảnh hưởng test khác."""
+    import datetime as _dt
+    from sqlalchemy import select as _select
+    from app.models import (Condition, ConditionSymptom, GuidelineExcerpt, KnowledgeRelease, KnowledgeSource,
+                            Symptom)
+    admin, bs = users["admin"].user_id, users["bs"].user_id
+    with SessionLocal() as db:
+        if db.scalar(_select(Symptom).where(Symptom.symptom_code == "wk_fever_high")) is None:
+            rel = KnowledgeRelease(label="TEST-WK", status="Active", created_by=admin, approved_by=bs,
+                                   approved_at=_dt.datetime.now(_dt.UTC))
+            src = KnowledgeSource(title="Hướng dẫn thử", organization="Bộ Y tế", edition="QĐ thử",
+                                  created_by=admin)
+            db.add_all([rel, src])
+            db.flush()
+            common = {"status": "Active", "release_id": rel.release_id, "created_by": admin}
+            for code, name in WK_SYMPTOMS.items():
+                db.add(Symptom(symptom_code=code, symptom_name=name, category="test", **common))
+            for code, (name, icd, _) in WK_CONDITIONS.items():
+                db.add(Condition(condition_code=code, name_vi=name, icd10_code=icd, disease_group="test", **common))
+            db.flush()                                  # trigger tạo symptom_key / condition_key trước
+            for code, (_, _, rels) in WK_CONDITIONS.items():
+                for sym, pol, w, key in rels:
+                    db.add(ConditionSymptom(condition_code=code, symptom_code=sym, polarity=pol, weight=w,
+                                            is_key=key, source_id=src.source_id, **common))
+            db.add(GuidelineExcerpt(excerpt_key="wk_cum_mua_chan_doan", condition_code="wk_cum_mua",
+                                    title="Chẩn đoán cúm mùa", content="Sốt, ho, đau họng khởi phát đột ngột.",
+                                    source_id=src.source_id, source_locator="Mục 2", **common))
+            db.commit()
+    return {"symptoms": WK_SYMPTOMS, "conditions": WK_CONDITIONS}

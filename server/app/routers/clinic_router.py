@@ -14,11 +14,12 @@ from app.core.auth import require_roles
 from app.core.database import get_db
 from app.models import User
 from app.schemas.common import Page, PhoneVN
+from app.schemas.visit_symptom import SymptomsPut, VisitSymptomOut
 from app.schemas.emr import PatientHistory, PatientLookupResult, VisitRecord
 from app.schemas.patient import IdNumber, PatientCreate, PatientOut, PatientSummary, PatientUpdate
 from app.schemas.visit import (BulkCancelRequest, CancelRequest, QueueItem, VisitCreate, VisitOut,
                                VisitUpdate, VisitWithWarnings)
-from app.services import emr_service, queue_service
+from app.services import emr_service, queue_service, symptom_service
 from app.validation.schema_validators import vital_sign_warnings
 
 router = APIRouter(tags=["clinic"])
@@ -113,6 +114,26 @@ def visit_record(visit_id: uuid.UUID,
                  db: Session = Depends(get_db)):
     """Xem lại đầy đủ một lượt khám (kể cả lượt cũ): sinh hiệu, chẩn đoán, đơn thuốc, hóa đơn."""
     return emr_service.visit_record(db, visit_id)
+
+
+# ============================================================================ Triệu chứng đã xác nhận (HITL)
+@router.get("/visits/{visit_id}/symptoms", response_model=list[VisitSymptomOut])
+def visit_symptoms(visit_id: uuid.UUID,
+                   _: User = Depends(audit_view("visit", roles=CLINICAL_ROLES, id_param="visit_id")),
+                   db: Session = Depends(get_db)):
+    """Triệu chứng đã xác nhận của lượt khám (PRESENT trước, rồi ABSENT, UNKNOWN)."""
+    return symptom_service.list_symptoms(db, visit_id)
+
+
+@router.put("/visits/{visit_id}/symptoms", response_model=list[VisitSymptomOut])
+def put_visit_symptoms(visit_id: uuid.UUID, body: SymptomsPut, actor: User = Depends(_clinical_visit),
+                       db: Session = Depends(get_db)):
+    """Y tá (hoặc bác sĩ khi đang khám) xác nhận trạng thái CÓ / KHÔNG / CHƯA RÕ cho từng triệu chứng.
+    Thay toàn bộ danh sách; mã bị bỏ khỏi danh sách thành UNKNOWN. Chỉ mã đang Active.
+    Sau khi lưu, client gọi POST /visits/{id}/assessment để chạy lại AI."""
+    rows = symptom_service.put_symptoms(db, visit_id, body, actor)
+    db.commit()
+    return rows
 
 
 # ============================================================================ Hàng đợi
