@@ -1,10 +1,10 @@
 # MedAssist — Backend (FastAPI + PostgreSQL)
 
-Hướng dẫn chạy backend **trên máy dev** (Windows, PowerShell). Cập nhật: 18/10/2026 — Sprint 2.
+Hướng dẫn chạy backend **trên máy dev** (Windows, PowerShell).
 
 - **Stack:** Python 3.14, FastAPI, SQLAlchemy 2, Alembic, PostgreSQL 16 (Docker), JWT, Argon2id.
 - **Cách chạy trên máy dev:** CSDL chạy trong **Docker**; API chạy **trực tiếp bằng Python** (`uvicorn --reload`) để sửa code là thấy ngay.
-- **Đã có:** đăng nhập/phân quyền, nhật ký (audit-log), tài khoản, bệnh nhân, lượt khám và hàng đợi, kho thuốc, chẩn đoán, kê đơn (trừ kho FEFO), cấp phát, hóa đơn, thu tiền. **Chưa có:** module AI, tri thức OKF (Sprint 3), Docker cho máy admin (giai đoạn đóng gói).
+- **Đã có:** đăng nhập/phân quyền, nhật ký (audit-log), tài khoản, bệnh nhân, lượt khám và hàng đợi, kho thuốc, chẩn đoán, kê đơn (trừ kho FEFO), cấp phát, hóa đơn, thu tiền. 
 - Phân quyền thư mục, quy ước nhánh: xem *Quy định v5*, *Cấu trúc v5* (thư mục tài liệu của nhóm).
 
 > Các lệnh dưới đây chạy trong **PowerShell**. Đường dẫn ví dụ: repo ở `D:\Projects\Github Repo\CDSS` — thay bằng đường dẫn trên máy bạn.
@@ -125,10 +125,25 @@ python -m scripts.seed_drugs
 ```
 Kết quả: `Thuốc mới: 386, ... lô mới: 386 ...`. Xem [mục 6](#6-nạp--cập-nhật-danh-mục-thuốc).
 
+### 2.7b. Nạp tri thức lâm sàng (OKF của Tuấn, thư mục `knowledge/`)
+
+```powershell
+python -m scripts.import_okf --dry-run          # kiểm tra + xem thay đổi, không ghi
+python -m scripts.import_okf --approve-as bs    # máy dev: tạo bản phát hành và kích hoạt ngay
+```
+
+- Script kiểm toàn bộ thư mục trước (mã, độ dài, nguồn, `condition_logic`, chạy thử bằng bộ đánh giá luật của
+  pipeline); có lỗi thì in danh sách và **không ghi gì**.
+- Chỉ mục mới hoặc có nội dung khác mới tạo phiên bản mới; chạy lại khi không có gì đổi thì báo "Không có thay đổi".
+- Bản sửa sau: đổi `label` trong `knowledge/_release.md` (vd `KB-2026.02`) rồi chạy lại.
+- Không có `--approve-as`: tạo bản **Draft** (thêm `--submit` để gửi duyệt) chờ bác sĩ duyệt qua API quản trị tri thức.
+- Người duyệt phải là Physician khác người soạn (mặc định người soạn là tài khoản `system`, đổi bằng `--as <admin>`).
+- `--retire-missing`: mục đang Active mà đã bị xóa khỏi thư mục sẽ bị tắt khi kích hoạt.
+
 ### 2.8. Chạy test (nên làm lần đầu để chắc môi trường đúng)
 
 ```powershell
-pytest            # ~1 phút, phải ra: 218 passed
+pytest            # ~2 phút, phải ra: 989 passed
 ```
 
 ### 2.9. Chạy API
