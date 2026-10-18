@@ -86,6 +86,7 @@ class AwaitingPaymentItem(BaseModel):
 
 
 class PrintPatient(BaseModel):
+    patient_code: str
     full_name: str
     date_of_birth: object
     gender: str

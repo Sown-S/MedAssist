@@ -1,0 +1,7 @@
+node_modules
+out
+dist
+.DS_Store
+# Khoá riêng của CA / máy chủ không bao giờ được commit (Quy định v5, nguyên tắc #3)
+*.key
+certs/*.key

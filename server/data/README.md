@@ -1,6 +1,6 @@
 # server/data — dữ liệu nạp sẵn
 
-## drugs.csv — danh mục thuốc phòng khám (100 thuốc)
+## drugs.csv — danh mục thuốc phòng khám (386 thuốc)
 
 Nạp bằng `python -m scripts.seed_drugs` (chạy trong `server/`). Script đi qua `inventory_service`
 (kiểm tra dữ liệu, ghi nhật ký bằng tài khoản `system`), chạy lại nhiều lần không tạo trùng.
@@ -24,6 +24,12 @@ Thêm `--deactivate-others` để ngừng dùng các thuốc đang dùng nhưng 
 
 Danh mục cần **bác sĩ cố vấn xem lại** trước khi dùng cho buổi demo chính thức.
 
+### Tạo / cập nhật danh mục
+
+Danh mục được tạo và cập nhật bằng công cụ ở **`tools/drug_data/`** (minh chứng nguồn kèm SHA-256, trích
+Phụ lục I, đối chiếu, thêm thuốc, giá tham khảo) — xem `tools/drug_data/README.md`. Công cụ chỉ ghi file này;
+`python -m scripts.seed_drugs` (trong `server/`) nạp vào DB, bỏ qua thuốc chưa có giá.
+
 ### Cột
 
 | Cột | Ý nghĩa |
@@ -35,6 +41,7 @@ Danh mục cần **bác sĩ cố vấn xem lại** trước khi dùng cho buổi
 | drug_class | Nhóm tác dụng (hiển thị, lọc) |
 | batch_quantity, shelf_life_days | Lô ban đầu do script tạo: số lượng, hạn dùng = ngày nạp + số ngày |
 | source | Văn bản tham chiếu |
+| price_source, price_retrieved_at | Trang lấy giá tham khảo và ngày lấy (do `tools/drug_data/fetch_prices` ghi) |
 
-Đổi danh mục: sửa `drugs.csv` (UTF-8), mở PR; chạy lại `seed_drugs` chỉ thêm thuốc mới, không sửa thuốc đã có
+Đổi danh mục: dùng `tools/drug_data` hoặc sửa `drugs.csv` (UTF-8), chạy `tt19_catalog check`, mở PR; chạy lại `seed_drugs` chỉ thêm thuốc mới, không sửa thuốc đã có
 (sửa giá / ngừng dùng thuốc đã có làm trên giao diện hoặc API `PATCH /drugs/{id}`).

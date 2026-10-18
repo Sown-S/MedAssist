@@ -10,7 +10,7 @@ from app.core.auth import get_current_user
 from app.core.database import get_db
 from app.core.request_meta import client_ip, user_agent
 from app.core.security import (burn_verify_time, create_access_token, create_refresh_token,
-                               decode_token, hash_password, verify_password)
+                               decode_token, hash_password, stamp_matches, verify_password)
 from app.exceptions import AppError
 from app.models.user import User
 from app.schemas.auth import ChangePasswordRequest, LoginRequest, RefreshRequest, TokenResponse, UserMe
@@ -25,8 +25,8 @@ _REFRESH_FAILED = AppError(401, "UNAUTHORIZED", "Phiên đăng nhập đã hết
 
 
 def _tokens(user: User) -> TokenResponse:
-    access, access_s = create_access_token(user.user_id, user.role)
-    refresh, refresh_s = create_refresh_token(user.user_id, user.role)
+    access, access_s = create_access_token(user.user_id, user.role, user.password_hash)
+    refresh, refresh_s = create_refresh_token(user.user_id, user.role, user.password_hash)
     return TokenResponse(access_token=access, expires_in=access_s, refresh_token=refresh,
                          refresh_expires_in=refresh_s, role=user.role)
 
@@ -78,7 +78,7 @@ def refresh(body: RefreshRequest, db: Session = Depends(get_db)) -> TokenRespons
     except (jwt.PyJWTError, ValueError):
         raise _REFRESH_FAILED from None
     user = db.get(User, user_id)
-    if user is None or not user.is_active:
+    if user is None or not user.is_active or not stamp_matches(payload, user.password_hash):
         raise _REFRESH_FAILED
     return _tokens(user)
 

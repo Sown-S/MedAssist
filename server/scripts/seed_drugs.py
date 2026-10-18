@@ -40,7 +40,7 @@ def _find(db, row) -> Drug | None:
 
 
 def seed(path: Path = DEFAULT_FILE, with_batches: bool = True, deactivate_others: bool = False) -> dict:
-    stats = {"drugs_created": 0, "drugs_existing": 0, "batches_created": 0, "deactivated": 0}
+    stats = {"drugs_created": 0, "drugs_existing": 0, "batches_created": 0, "deactivated": 0, "no_price": []}
     with open(path, encoding="utf-8-sig", newline="") as f:
         rows = list(csv.DictReader(f))
     with SessionLocal() as db:
@@ -49,6 +49,10 @@ def seed(path: Path = DEFAULT_FILE, with_batches: bool = True, deactivate_others
         in_file: set = set()
         for n, row in enumerate(rows, start=2):           # dòng 1 là tiêu đề
             try:
+                if not (row.get("sale_price") or "").strip():
+                    # CSDL bắt buộc giá bán (sale_price NOT NULL): chờ có giá (tools/drug_data/fetch_prices) rồi nạp
+                    stats["no_price"].append(f"{row['generic_name']} {row['strength']} ({row['trade_name']})")
+                    continue
                 drug = _find(db, row)
                 if drug is None:
                     data = DrugCreate(**{k: row[k] for k in _DRUG_FIELDS if row.get(k) not in (None, "")})
@@ -57,7 +61,8 @@ def seed(path: Path = DEFAULT_FILE, with_batches: bool = True, deactivate_others
                 else:
                     stats["drugs_existing"] += 1
                 in_file.add(drug.drug_id)
-                if with_batches and int(row.get("batch_quantity") or 0) > 0:
+                if with_batches and int(row.get("batch_quantity") or 0) > 0 and (row.get("import_price") or "").strip() \
+                        and (row.get("shelf_life_days") or "").strip():
                     batch_no = f"SEED-{str(drug.drug_id)[:8].upper()}"
                     if not db.scalar(select(InventoryBatch.batch_id).where(
                             InventoryBatch.drug_id == drug.drug_id, InventoryBatch.batch_number == batch_no)):
@@ -87,7 +92,10 @@ def main() -> int:
     args = p.parse_args()
     stats = seed(args.file, with_batches=not args.no_batches, deactivate_others=args.deactivate_others)
     print(f"Thuốc mới: {stats['drugs_created']}, đã có: {stats['drugs_existing']}, "
-          f"lô mới: {stats['batches_created']}, ngừng dùng: {stats['deactivated']}")
+          f"lô mới: {stats['batches_created']}, ngừng dùng: {stats['deactivated']}, "
+          f"bỏ qua vì chưa có giá: {len(stats['no_price'])}")
+    for name in stats["no_price"]:
+        print(f"  chưa có giá: {name}")
     return 0
 
 

@@ -3,11 +3,17 @@ import uuid
 from datetime import date, datetime
 from typing import Annotated, Literal
 
-from pydantic import AfterValidator, BaseModel, BeforeValidator, ConfigDict, Field
+from pydantic import AfterValidator, BaseModel, BeforeValidator, ConfigDict, Field, computed_field
 
 from app.schemas.common import CleanStr, PhoneVN, _empty_to_none
 
 Gender = Literal["Male", "Female", "Other"]
+
+
+def patient_code(patient_id: uuid.UUID) -> str:
+    """Mã BN = "BN-" + 8 ký tự hex đầu của patient_id, viết hoa (vd BN-3F2A9C1B). In trên phiếu khám
+    để tra cứu nhanh; không lưu thành cột (giữ ERD v1.8). Tìm bằng tiền tố của patient_id."""
+    return "BN-" + patient_id.hex[:8].upper()
 MAX_AGE_YEARS = 130
 
 
@@ -76,6 +82,11 @@ class PatientOut(BaseModel):
     created_at: datetime
     updated_at: datetime
 
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def patient_code(self) -> str:
+        return patient_code(self.patient_id)
+
 
 class PatientSummary(BaseModel):
     """Dòng trong kết quả tìm kiếm / danh sách có thể trùng."""
@@ -85,3 +96,8 @@ class PatientSummary(BaseModel):
     date_of_birth: date
     gender: str
     phone: str | None
+
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def patient_code(self) -> str:
+        return patient_code(self.patient_id)
