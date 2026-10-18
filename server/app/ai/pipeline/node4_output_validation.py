@@ -1,13 +1,15 @@
-"""Worker-side boundary between untrusted reasoning and displayable results.
+"""Ranh giới trong worker giữa reasoning chưa tin cậy và kết quả được hiển thị.
 
-LLM v1 can only reorder Node 2 candidates, explain them, and propose an
-upgrade. Evidence, ICD codes and guidelines are copied from Node 2, never from
-the model. Shared knowledge validators own slug and Active catalogue checks.
-No patient data, model output or validation exception is logged or persisted.
+LLM v1 chỉ được sắp xếp lại ứng viên Node 2, giải thích và đề nghị nâng ưu tiên.
+Bằng chứng, mã ICD và hướng dẫn được sao chép từ Node 2, không lấy từ model.
+Validator tri thức dùng chung chịu trách nhiệm kiểm tra slug và catalog Active.
+Không log/lưu dữ liệu bệnh nhân, đầu ra model hoặc exception validation.
 """
 
 from copy import deepcopy
+import re
 from typing import Any, Literal
+import unicodedata
 
 from pydantic import BaseModel, ConfigDict, Field, TypeAdapter, ValidationError
 from sqlalchemy.orm import Session
@@ -32,7 +34,7 @@ class _Evidence(BaseModel):
 
 
 class _Candidate(BaseModel):
-    """The existing Node 2 mapping, without any LLM-owned fields."""
+    """Mapping Node 2 hiện có, không gồm trường nào do LLM sở hữu."""
 
     model_config = ConfigDict(extra="forbid", strict=True)
 
@@ -51,17 +53,17 @@ class _Candidate(BaseModel):
 
 _CANDIDATES = TypeAdapter(list[_Candidate])
 _CONDITION_CODES = TypeAdapter(list[knowledge_validators.ConditionCode])
+_VIETNAMESE_MARKS = frozenset("\u0300\u0301\u0302\u0303\u0306\u0309\u031b\u0323")
 
 
 def run_node4(state: PipelineState, db: Session) -> PipelineState:
-    """Validate one Node 3 proposal, returning a fresh state with <= 3 results.
+    """Kiểm tra một proposal Node 3 và trả state mới với tối đa ba kết quả.
 
-    Success is Completed/Full. Invalid reasoning is Degraded/RuleOnly with
-    deterministic candidates and the existing priority floor. Invalid baseline
-    evidence/catalogue data yields no suggestions. ``validation_result`` and
-    ``error`` contain fixed codes only, suitable for later audit metadata.
-    Database/infrastructure failures propagate to the worker; this function
-    never writes, commits, rolls back, calls a reader or invokes an LLM.
+    Thành công là Completed/Full. Reasoning sai trở thành Degraded/RuleOnly với
+    ứng viên tất định và mức sàn ưu tiên hiện có. Dữ liệu bằng chứng/catalog
+    baseline sai sẽ không trả gợi ý. ``validation_result`` và ``error`` chỉ chứa
+    mã cố định, phù hợp metadata audit về sau. Lỗi database/hạ tầng được truyền lên
+    worker; hàm này không ghi, commit, rollback, gọi reader hoặc gọi LLM.
     """
     result = state.copy()
     for key in ("llm_output", "validation_result", "error"):
@@ -82,7 +84,7 @@ def run_node4(state: PipelineState, db: Session) -> PipelineState:
     ):
         raise ValueError("Phải chạy Node 1 trước Node 4")
 
-    # Preserve both the deterministic floor and any existing higher priority.
+    # Giữ cả mức sàn tất định và mức ưu tiên cao hơn đang có.
     result["priority_final"] = (
         "HighPriority" if "HighPriority" in (state["priority_rule"], state["priority_final"])
         else "Routine"
@@ -105,8 +107,8 @@ def run_node4(state: PipelineState, db: Session) -> PipelineState:
         )
     ))
     try:
-        # Including the fourth, hidden candidate prevents display truncation
-        # from masking an invalid code. These are the only catalogue reads.
+        # Kiểm tra cả ứng viên thứ tư bị ẩn để việc cắt danh sách hiển thị không che
+        # mất mã sai. Đây là các lần đọc catalog duy nhất.
         knowledge_validators.active_condition_codes(db, [c.condition_code for c in candidates])
         knowledge_validators.active_symptoms(db, symptom_codes)
     except AppError as exc:
@@ -120,8 +122,8 @@ def run_node4(state: PipelineState, db: Session) -> PipelineState:
     if not isinstance(state.get("llm_output"), dict):
         return _reject(result, "INVALID_SCHEMA")
     try:
-        # The client already decodes JSON. A string, malformed object, extra
-        # evidence/priority field or coerced boolean is rejected here.
+        # Client đã giải mã JSON. Từ chối chuỗi, object sai, trường bằng chứng/ưu
+        # tiên thừa hoặc boolean bị ép kiểu tại đây.
         proposal = ReasoningOutput.model_validate(state.get("llm_output"), strict=True)
         codes = _CONDITION_CODES.validate_python(
             [row.condition_code for row in proposal.ranking], strict=True
@@ -136,12 +138,17 @@ def run_node4(state: PipelineState, db: Session) -> PipelineState:
         return _reject(result, "OUTSIDE_CANDIDATES")
     if set(codes) != set(expected):
         return _reject(result, "INCOMPLETE_RANKING")
-    if any(not row.reason.strip() for row in proposal.ranking):
-        return _reject(result, "INVALID_REASON")
+    for row in proposal.ranking:
+        if not row.reason.strip():
+            return _reject(result, "INVALID_REASON")
+        if not _contains_vietnamese_text(row.reason):
+            return _reject(result, "INVALID_REASON_LANGUAGE")
+        if not _reason_cites_candidate_evidence(row.reason, expected[row.condition_code]):
+            return _reject(result, "UNGROUNDED_REASON")
 
     displayed = _display([expected[code] for code in codes])
     for candidate, ranked in zip(displayed, proposal.ranking):
-        # Free text is an explanation, never an authoritative evidence source.
+        # Văn bản tự do chỉ là giải thích, không bao giờ là nguồn bằng chứng chuẩn.
         candidate["reason"] = ranked.reason
     result["candidates"] = displayed
     if proposal.raise_priority:
@@ -157,7 +164,7 @@ def _retrieved_candidates(value: object) -> list[_Candidate]:
     try:
         candidates = _CANDIDATES.validate_python(value, strict=True)
     except ValidationError:
-        # Never propagate Pydantic's input-bearing error details.
+        # Không truyền chi tiết lỗi Pydantic có chứa đầu vào.
         raise ValueError("Dữ liệu Node 2 không hợp lệ") from None
     codes = [candidate.condition_code for candidate in candidates]
     if len(codes) != len(set(codes)):
@@ -194,6 +201,28 @@ def _evidence_matches_input(candidates: list[_Candidate], features: dict[str, An
 
 def _display(candidates: list[_Candidate]) -> list[dict[str, Any]]:
     return [deepcopy(candidate.model_dump()) for candidate in candidates[:MAX_DISPLAY_CANDIDATES]]
+
+
+def _contains_vietnamese_text(reason: str) -> bool:
+    """Yêu cầu chữ viết tiếng Việt thay vì chỉ tin vào prompt."""
+    decomposed = unicodedata.normalize("NFD", reason)
+    return "đ" in decomposed.casefold() or any(char in _VIETNAMESE_MARKS for char in decomposed)
+
+
+def _reason_cites_candidate_evidence(reason: str, candidate: _Candidate) -> bool:
+    """Chỉ nhận lý do dẫn chính xác một mã bằng chứng từ Node 2."""
+    codes = {
+        row.symptom_code
+        for row in candidate.supporting_evidence + candidate.contradicting_evidence
+    }
+    codes.update(candidate.unknown_key_symptoms)
+    return any(
+        re.search(
+            rf"(?<![A-Za-z0-9_]){re.escape(code)}(?![A-Za-z0-9_])",
+            reason,
+        )
+        for code in codes
+    )
 
 
 def _validation_result(valid: bool, errors: list[str]) -> dict[str, Any]:

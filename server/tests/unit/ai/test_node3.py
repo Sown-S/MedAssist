@@ -1,4 +1,4 @@
-"""AI-06: synthetic worker-side reasoning, using MockLLM and no real model."""
+"""AI-06: reasoning giả lập trong worker, dùng MockLLM và không gọi model thật."""
 
 import asyncio
 from copy import deepcopy
@@ -95,7 +95,7 @@ def test_node1_node2_node3_send_closed_candidates_and_existing_evidence():
         assert sent["unknown_key_symptoms"] == ["signal_c"]
     assert result["llm_output"] == OUTPUT
     assert ReasoningOutput.model_validate(result["llm_output"]).ranking[0].reason
-    # Ranking is only a proposal. Keep deterministic candidates/evidence intact.
+    # Xếp hạng chỉ là đề xuất; giữ nguyên ứng viên/bằng chứng tất định.
     assert result["candidates"] == original["candidates"]
     assert result["priority_final"] == "Routine"
     assert result["ai_status"] == "Pending"

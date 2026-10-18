@@ -1,4 +1,4 @@
-"""Versioned static instructions. Dynamic, de-identified data is added by callers."""
+"""Chỉ dẫn tĩnh có phiên bản; bên gọi bổ sung dữ liệu động đã che định danh."""
 
 from importlib.resources import files
 
@@ -13,7 +13,7 @@ _FILES = {
 
 
 def load_prompt(version: str) -> str:
-    """Load only a known, immutable version; never read an arbitrary path."""
+    """Chỉ nạp phiên bản bất biến đã biết, không đọc đường dẫn tùy ý."""
     if version not in _FILES:
         raise LLMConfigurationError("Unknown LLM prompt version.")
     return files(__package__).joinpath(_FILES[version]).read_text(encoding="utf-8")

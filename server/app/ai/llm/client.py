@@ -1,10 +1,10 @@
-"""Public local LLM boundary for worker-side reasoning and extraction only.
+"""Ranh giới LLM cục bộ công khai, chỉ dùng cho reasoning và extraction ở worker.
 
-Callers supply an already de-identified prompt and the *remaining* time budget
-(assessment: 90s; extraction: 30s, measured from queueing by the worker). Never
-persist prompts or generated text here. Only prompt versions may be logged.
-Generated objects are untrusted: Node 4 must still validate schema, Active codes,
-candidate membership, evidence and the Node 1 safety floor before use/display.
+Bên gọi cung cấp prompt đã che định danh và ngân sách thời gian *còn lại* (đánh giá:
+90 giây; trích xuất: 30 giây, do worker tính từ lúc xếp hàng). Không lưu prompt hay
+văn bản sinh ra tại đây; chỉ được log phiên bản prompt. Object sinh ra chưa đáng
+tin: Node 4 vẫn phải kiểm tra schema, mã Active, ứng viên, bằng chứng và mức sàn an
+toàn Node 1 trước khi sử dụng/hiển thị.
 """
 
 import asyncio
@@ -49,7 +49,7 @@ def _json_object(raw: str | bytes) -> dict[str, Any]:
     try:
         value = json.loads(raw, parse_constant=_reject_constant, object_pairs_hook=_unique_object)
     except (ValueError, UnicodeError, RecursionError):
-        # Suppress parser context: its input can contain patient information.
+        # Ẩn ngữ cảnh parser vì đầu vào có thể chứa thông tin bệnh nhân.
         raise LLMInvalidJSONError("Local LLM returned invalid JSON.") from None
     if not isinstance(value, dict):
         raise LLMInvalidJSONError("Local LLM output must be a JSON object.")
@@ -57,10 +57,10 @@ def _json_object(raw: str | bytes) -> dict[str, Any]:
 
 
 class LLMClient:
-    """Implements app.ai.interfaces.LLMClient without starting work at import.
+    """Triển khai app.ai.interfaces.LLMClient mà không chạy tác vụ khi import.
 
-    The explicit model name is the installed local model tag; there is no
-    default tag until the team selects a model. Construction makes no requests.
+    Tên model truyền rõ ràng là tag model cục bộ đã cài. Không có tag mặc định cho
+    đến khi nhóm chốt model. Khởi tạo client không gửi request.
     """
 
     def __init__(
@@ -86,11 +86,11 @@ class LLMClient:
         schema: Mapping[str, Any],
         timeout_seconds: float,
     ) -> dict[str, Any]:
-        """Request schema-constrained JSON; return an object pending Node 4.
+        """Yêu cầu JSON theo schema; trả object đang chờ Node 4 kiểm tra.
 
-        HTTPX timeouts apply per I/O operation. asyncio.timeout additionally
-        bounds the whole request, including slow responses that keep arriving.
-        Cancellation from the worker is deliberately allowed to propagate.
+        Timeout HTTPX áp dụng cho từng thao tác I/O. asyncio.timeout đồng thời giới
+        hạn toàn bộ request, kể cả response chậm nhưng vẫn tiếp tục gửi dữ liệu.
+        Chủ động để cancellation từ worker truyền lên.
         """
         if (
             isinstance(timeout_seconds, bool)
@@ -103,8 +103,8 @@ class LLMClient:
         if not isinstance(prompt, str) or not prompt.strip() or not isinstance(schema, Mapping):
             raise LLMConfigurationError("A prompt and JSON object schema are required.")
         try:
-            # Check serializability before HTTPX constructs a request. Do not
-            # echo schema values or serialization errors to application logs.
+            # Kiểm tra khả năng tuần tự hóa trước khi HTTPX tạo request. Không đưa
+            # giá trị schema hoặc lỗi tuần tự hóa vào log ứng dụng.
             request_schema = json.loads(json.dumps(dict(schema), allow_nan=False))
         except (TypeError, ValueError, RecursionError):
             raise LLMConfigurationError("Invalid LLM JSON schema.") from None

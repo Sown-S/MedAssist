@@ -1,4 +1,4 @@
-"""AI-07: synthetic output attacks, fake Active catalogue and no real LLM."""
+"""AI-07: đầu ra tấn công giả lập, catalog Active giả và không gọi LLM thật."""
 
 import asyncio
 from copy import deepcopy
@@ -42,14 +42,17 @@ def retrieved_state(*, count=2, priority="Routine"):
 
 def proposal(state, *, raise_priority=False):
     return {"ranking": [
-        {"condition_code": candidate["condition_code"], "reason": "Bằng chứng hỗ trợ giả lập."}
+        {
+            "condition_code": candidate["condition_code"],
+            "reason": "Bằng chứng hỗ trợ từ signal_a.",
+        }
         for candidate in reversed(state["candidates"])
     ], "raise_priority": raise_priority}
 
 
 @pytest.fixture
 def catalogue(monkeypatch):
-    """Fake Active decisions while spying on calls to the shared validators."""
+    """Giả lập quyết định Active đồng thời theo dõi lời gọi validator dùng chung."""
     class Catalogue:
         db = object()  # Cannot query, write, commit or roll back directly.
 
@@ -119,7 +122,7 @@ def test_node1_through_node4_accepts_mock_ranking_and_only_copies_node2_evidence
     by_code = {c["condition_code"]: c for c in state["candidates"]}
     for candidate in result["candidates"]:
         expected = deepcopy(by_code[candidate["condition_code"]])
-        expected["reason"] = "Bằng chứng hỗ trợ giả lập."
+        expected["reason"] = "Bằng chứng hỗ trợ từ signal_a."
         assert candidate == expected
         assert candidate["label"] == "Reference Suggestion"
     assert catalogue.calls[0] == (
@@ -127,7 +130,7 @@ def test_node1_through_node4_accepts_mock_ranking_and_only_copies_node2_evidence
     )
     assert catalogue.calls[1][0] == "symptoms"
     assert set(catalogue.calls[1][1]) == {"signal_a", "signal_b", "signal_c", "signal_d"}
-    # Returned nested evidence/guidelines must not mutate the source snapshot.
+    # Bằng chứng/hướng dẫn lồng nhau trả về không được làm đổi snapshot nguồn.
     result["candidates"][0]["supporting_evidence"][0]["weight"] = 0.1
     result["candidates"][0]["guidelines"][0]["excerpt"] = "Changed"
     assert reasoning == original
@@ -201,7 +204,7 @@ def test_model_cannot_inject_top_level_evidence(catalogue):
 def test_even_an_active_condition_outside_node2_is_rejected_as_a_whole(catalogue):
     state = retrieved_state()
     output = proposal(state, raise_priority=True)
-    # condition_c is Active but not one of the two retrieved candidates.
+    # condition_c đang Active nhưng không thuộc hai ứng viên được retrieval.
     output["ranking"][0]["condition_code"] = "condition_c"
     assert_rejected(validate(state, catalogue, output), state, "OUTSIDE_CANDIDATES")
 
@@ -264,6 +267,27 @@ def test_whitespace_reason_is_rejected(catalogue):
     output = proposal(state)
     output["ranking"][0]["reason"] = " \t\n"
     assert_rejected(validate(state, catalogue, output), state, "INVALID_REASON")
+
+
+def test_english_reason_is_rejected(catalogue):
+    state = retrieved_state()
+    output = proposal(state)
+    output["ranking"][0]["reason"] = "Supported by signal_a."
+
+    assert_rejected(validate(state, catalogue, output), state, "INVALID_REASON_LANGUAGE")
+
+
+@pytest.mark.parametrize("reason", [
+    "Bằng chứng phù hợp nhưng không dẫn mã.",
+    "Bằng chứng hỗ trợ từ signal_z.",
+    "Bằng chứng hỗ trợ từ signal_a_extra.",
+])
+def test_vietnamese_reason_must_cite_exact_candidate_evidence(catalogue, reason):
+    state = retrieved_state()
+    output = proposal(state)
+    output["ranking"][0]["reason"] = reason
+
+    assert_rejected(validate(state, catalogue, output), state, "UNGROUNDED_REASON")
 
 
 def test_more_than_four_ranks_is_rejected(catalogue):

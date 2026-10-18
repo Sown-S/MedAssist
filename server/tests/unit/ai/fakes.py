@@ -1,4 +1,4 @@
-"""In-memory collaborators shared by AI unit tests."""
+"""Các collaborator trong bộ nhớ dùng chung cho unit test AI."""
 
 from collections.abc import Mapping, Sequence
 from copy import deepcopy
@@ -6,10 +6,10 @@ from typing import Any
 
 
 class FakeKnowledgeReader:
-    """Simulate Active graph/catalogue reads, including Node 2's nested rows.
+    """Mô phỏng đọc graph/catalog Active, gồm cả các hàng lồng của Node 2.
 
-    Omitted status means Active in synthetic fixtures; explicit Draft,
-    PendingApproval and Retired graph/catalogue rows are excluded by the reader.
+    Trong fixture giả lập, thiếu status được hiểu là Active; reader loại các hàng
+    graph/catalog ghi rõ Draft, PendingApproval hoặc Retired.
     """
 
     def __init__(
@@ -74,8 +74,8 @@ class FakeLLMClient:
 
 
 class MockLLMClient(FakeLLMClient):
-    """AI-05 mock: deterministic JSON or an injected typed LLM failure.
+    """Mock AI-05: JSON tất định hoặc lỗi LLM có kiểu được chèn vào.
 
-    Calls are held in memory only, with synthetic test data; nothing is logged
-    or persisted. Kept compatible with AI-00's FakeLLMClient.
+    Các lần gọi chỉ được giữ trong bộ nhớ bằng dữ liệu test giả lập; không log hoặc
+    lưu bền vững. Giữ tương thích với FakeLLMClient của AI-00.
     """

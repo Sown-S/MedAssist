@@ -1,23 +1,23 @@
-"""Pure, provisional Node 2 scoring over an Active reader snapshot.
+"""Chấm điểm Node 2 thuần và tạm thời trên một snapshot reader Active.
 
-Temporary reader mapping (reconcile with OKF and the concrete reader): a
-condition has ``condition_code``, ``name_vi``, optional ``icd10_code``, nested
-``symptoms`` (condition-symptom rows) and ``guidelines`` (excerpt rows). Relations
-use ``symptom_code``, ``polarity`` (SUPPORTS/CONTRADICTS), ``weight`` in [0, 1]
-and ``is_key``. All rows must come from the reader's Active methods.
+Mapping reader tạm (phải đối chiếu với OKF và reader thật): một bệnh có
+``condition_code``, ``name_vi``, ``icd10_code`` tùy chọn, ``symptoms`` lồng bên
+trong (các hàng quan hệ bệnh-triệu chứng) và ``guidelines`` (các hàng trích đoạn).
+Quan hệ dùng ``symptom_code``, ``polarity`` (SUPPORTS/CONTRADICTS), ``weight``
+trong [0, 1] và ``is_key``. Mọi hàng phải đến từ các hàm Active của reader.
 
-Provisional formula, to be reviewed after Sprint 3 evaluation:
-* coverage = weight of PRESENT SUPPORTS / weight of all SUPPORTS;
-* precision = number of PRESENT SUPPORTS / number of PRESENT catalogue symptoms;
-* score = harmonic mean(coverage, precision) * (1 - contradiction ratio), where
-  contradiction ratio is contradicted weight / weight of all usable relations.
-PRESENT CONTRADICTS and ABSENT SUPPORTS are counter-evidence. ABSENT CONTRADICTS
-is neutral: lack of counter-evidence is not evidence for a condition. UNKNOWN
-(including omitted symptoms) is never evidence. Zero-weight relations are
-ignored. Only conditions with positive supporting evidence are retrieved.
+Công thức tạm, cần xem lại sau đánh giá Sprint 3:
+* coverage = trọng số SUPPORTS PRESENT / trọng số của mọi SUPPORTS;
+* precision = số SUPPORTS PRESENT / số triệu chứng PRESENT trong catalog;
+* score = trung bình điều hòa(coverage, precision) * (1 - tỷ lệ phản bác), trong đó
+  tỷ lệ phản bác = trọng số bị phản bác / trọng số mọi quan hệ dùng được.
+CONTRADICTS PRESENT và SUPPORTS ABSENT là bằng chứng phản bác. CONTRADICTS ABSENT
+là trung tính: thiếu bằng chứng phản bác không phải bằng chứng ủng hộ bệnh. UNKNOWN
+(kể cả triệu chứng bị bỏ qua) không bao giờ là bằng chứng. Bỏ qua quan hệ trọng số
+0. Chỉ lấy bệnh có bằng chứng ủng hộ dương.
 
-These scores are ranking aids, not probabilities or clinical thresholds. No
-clinical facts, catalogue entries or guidelines are supplied by this module.
+Các điểm này chỉ hỗ trợ xếp hạng, không phải xác suất hay ngưỡng lâm sàng. Module
+không tự cung cấp dữ kiện lâm sàng, mục catalog hoặc hướng dẫn.
 """
 
 from collections.abc import Mapping, Sequence
@@ -31,7 +31,7 @@ from app.ai.interfaces import JsonObject
 
 
 class ScoringFormatError(ValueError):
-    """The reader snapshot or confirmed features do not follow the mapping."""
+    """Snapshot reader hoặc đặc trưng đã xác nhận không theo mapping."""
 
 
 def rank_conditions(
@@ -39,12 +39,12 @@ def rank_conditions(
     conditions: Sequence[JsonObject],
     symptoms: Sequence[JsonObject],
 ) -> list[dict[str, Any]]:
-    """Rank all supported conditions; Node 2 applies its four-candidate cap.
+    """Xếp hạng mọi bệnh được hỗ trợ; Node 2 áp giới hạn bốn ứng viên.
 
-    Use exact fractions internally so relation order cannot affect close scores
-    or ties. Export ordinary floats for serializable pipeline state. Catalogue
-    intersection here restricts retrieval; shared code/Active validation remains
-    the responsibility of ``validation.knowledge_validators`` at the boundaries.
+    Nội bộ dùng phân số chính xác để thứ tự quan hệ không ảnh hưởng điểm sát nhau
+    hoặc hòa. Xuất float thông thường để state pipeline tuần tự hóa được. Phép giao
+    catalog giới hạn retrieval tại đây; việc kiểm tra mã/Active dùng chung ở các
+    biên vẫn thuộc ``validation.knowledge_validators``.
     """
     if not isinstance(input_features, Mapping):
         raise ScoringFormatError("input_features phải là object")
@@ -167,8 +167,8 @@ def _text(value: JsonObject, key: str) -> str:
 
 
 def _weight(value: object) -> Fraction:
-    # Numeric(3, 2) from the future reader may be a Decimal. Reject non-finite
-    # values and booleans explicitly instead of letting them enter the sort.
+    # Numeric(3, 2) từ reader tương lai có thể là Decimal. Từ chối rõ giá trị không
+    # hữu hạn và boolean thay vì để chúng đi vào phép sắp xếp.
     if (
         not isinstance(value, (int, float, Decimal))
         or isinstance(value, bool)

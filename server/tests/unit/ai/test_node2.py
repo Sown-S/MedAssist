@@ -1,4 +1,4 @@
-"""AI-03: synthetic graph retrieval/scoring with in-memory collaborators."""
+"""AI-03: retrieval/chấm điểm graph giả lập với collaborator trong bộ nhớ."""
 
 from copy import deepcopy
 from decimal import Decimal
@@ -177,7 +177,7 @@ def test_score_precedes_lexical_tie_break():
 
 
 def test_equal_scores_use_coverage_then_precision_before_condition_code():
-    # Both F1 values are 2/3: (coverage=1, precision=1/2) versus (1/2, 1).
+    # Hai giá trị F1 đều là 2/3: (coverage=1, precision=1/2) so với (1/2, 1).
     conditions = [
         condition("condition_a", relations=[
             relation(weight=0.25),

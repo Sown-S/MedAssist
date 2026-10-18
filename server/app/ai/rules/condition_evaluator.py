@@ -1,18 +1,17 @@
-"""Evaluate triage ``condition_logic`` with strong Kleene three-valued logic.
+"""Đánh giá ``condition_logic`` phân loại bằng logic ba giá trị Kleene mạnh.
 
-Temporary AI-01 format assumption (reconcile with ``okf_format.md`` when it is
-available):
+Giả định định dạng tạm của AI-01 (đối chiếu lại với ``okf_format.md`` khi có):
 
-* groups: ``{"op": "AND" | "OR", "conditions": [node, ...]}``
-* symptom leaves: ``{"type": "symptom", "code": str, "status":
+* nhóm: ``{"op": "AND" | "OR", "conditions": [node, ...]}``
+* lá triệu chứng: ``{"type": "symptom", "code": str, "status":
   "PRESENT" | "ABSENT"}``
-* vital leaves: ``{"type": "vital_sign", "key": str, "operator": comparator,
+* lá sinh hiệu: ``{"type": "vital_sign", "key": str, "operator": comparator,
   "value": number}``
-* age leaves: ``{"type": "age", "operator": comparator, "value": number}``
+* lá tuổi: ``{"type": "age", "operator": comparator, "value": number}``
 
-Input features use ``symptoms`` (code -> PRESENT/ABSENT/UNKNOWN),
-``vital_signs`` (key -> number), and optional ``age_years``. Missing values
-produce UNKNOWN; malformed rules raise :class:`ConditionFormatError`.
+Đặc trưng đầu vào dùng ``symptoms`` (mã -> PRESENT/ABSENT/UNKNOWN),
+``vital_signs`` (khóa -> số) và ``age_years`` tùy chọn. Thiếu giá trị cho kết quả
+UNKNOWN; luật sai định dạng phát sinh :class:`ConditionFormatError`.
 """
 
 from collections.abc import Callable, Mapping, Sequence
@@ -32,7 +31,7 @@ class TruthValue(str, Enum):
 
 
 class ConditionFormatError(ValueError):
-    """Raised when a condition tree does not follow the supported format."""
+    """Phát sinh khi cây điều kiện không theo định dạng được hỗ trợ."""
 
 
 @dataclass(frozen=True)
@@ -55,7 +54,7 @@ _SYMPTOM_STATES = frozenset({"PRESENT", "ABSENT", "UNKNOWN"})
 def evaluate_condition(
     condition_logic: Mapping[str, Any], input_features: Mapping[str, Any]
 ) -> EvaluationResult:
-    """Evaluate one condition tree against normalized visit features."""
+    """Đánh giá một cây điều kiện trên đặc trưng lượt khám đã chuẩn hóa."""
 
     if not isinstance(input_features, Mapping):
         raise ConditionFormatError("input_features phải là object")
@@ -93,8 +92,8 @@ def _evaluate_group(node: Mapping[str, Any], features: Mapping[str, Any]) -> Eva
     ):
         raise ConditionFormatError("conditions phải là danh sách không rỗng")
 
-    # Evaluate every child so an invalid vital-sign key cannot hide behind a
-    # truth-value short circuit.
+    # Đánh giá mọi node con để khóa sinh hiệu sai không thể ẩn sau short-circuit
+    # của giá trị logic.
     results = [_evaluate_node(child, features) for child in children]
     values = [result.value for result in results]
     missing = tuple(item for result in results for item in result.missing)

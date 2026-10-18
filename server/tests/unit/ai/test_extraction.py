@@ -1,4 +1,4 @@
-"""AI-10: synthetic Vietnamese notes, fake Active reader/validator and LLM."""
+"""AI-10: ghi chú tiếng Việt giả lập cùng reader/validator Active và LLM giả."""
 
 import asyncio
 from copy import deepcopy
@@ -142,7 +142,7 @@ def test_known_identifiers_are_masked_everywhere_without_losing_symptom_context(
 
 @pytest.mark.parametrize("field,private", [
     ("Họ và tên: ", "Nguyễn Văn An"), ("Họ tên: ", "Nguyễn Văn An"),
-    ("BN ", "Trần Thị Bình"), ("Bệnh nhân ", "Lê Văn Cường"),
+    ("BN: ", "Trần Thị Bình"), ("Bệnh nhân: ", "Lê Văn Cường"),
     ("Tên: ", "Đỗ Thị Dung"), ("Ho ten: ", "Nguyen Van An"),
     ("Địa chỉ: ", "12 Đường Mẫu, Phường Thử, Thành phố Mẫu"),
     ("Address: ", "42 Example Road, Test District"),
@@ -158,6 +158,32 @@ def test_labelled_identity_fields_are_masked_without_explicit_values(catalogue, 
     extract(catalogue, client, text=field + private + "; " + NOTE)
     assert private not in client.calls[0]["prompt"]
     assert NOTE in payload(client)["text"]
+
+
+@pytest.mark.parametrize("note", [
+    "Bệnh nhân đau đầu 2 ngày, không sốt.",
+    "BN ho 2 ngày; chưa rõ khó thở.",
+    "Patient reports headache for two days.",
+])
+def test_ambiguous_patient_words_do_not_remove_clinical_content(catalogue, note):
+    client = MockLLMClient(OUTPUT)
+
+    extract(catalogue, client, text=note)
+
+    assert payload(client)["text"] == note
+
+
+def test_unlabelled_patient_name_is_masked_from_known_identifiers(catalogue):
+    client = MockLLMClient(OUTPUT)
+
+    extract(
+        catalogue,
+        client,
+        text="Bệnh nhân Lê Văn Cường; sốt 2 ngày.",
+        identifiers=["Lê Văn Cường"],
+    )
+
+    assert payload(client)["text"] == "Bệnh nhân [REDACTED]; sốt 2 ngày."
 
 
 @pytest.mark.parametrize("private", [
@@ -223,8 +249,8 @@ def test_extraction_never_mutates_state_or_adds_unconfirmed_features_to_node2(ca
 
     assert result
     assert gate == original
-    # Even explicitly carrying tentative rows beside confirmed features must
-    # not turn them into evidence for Node 2. Nurse confirmation is a later step.
+    # Dù mang rõ các hàng tạm cạnh đặc trưng đã xác nhận cũng không được biến chúng
+    # thành bằng chứng cho Node 2. Điều dưỡng xác nhận ở bước sau.
     gate["input_features"]["extracted_symptoms"] = result
     assert run_node2(gate, reader)["candidates"] == []
 

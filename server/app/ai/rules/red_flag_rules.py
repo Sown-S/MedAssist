@@ -1,10 +1,10 @@
-"""Deterministic red-flag and priority-floor evaluation for Node 1.
+"""Đánh giá cờ đỏ và mức sàn ưu tiên tất định cho Node 1.
 
-Rules come from ``KnowledgeReader.active_triage_rules()``; no clinical thresholds
-are bundled here. The mapping uses the existing triage-rule fields ``rule_key``,
-``version``, ``rule_type``, ``reason_text`` and ``condition_logic``. The condition
-tree follows AI-01's temporary format until the OKF specification is available.
-Priority is derived from rule type, never from a supplied ``resulting_priority``.
+Luật đến từ ``KnowledgeReader.active_triage_rules()``; module không đóng gói ngưỡng
+lâm sàng. Mapping dùng các trường luật hiện có: ``rule_key``, ``version``,
+``rule_type``, ``reason_text`` và ``condition_logic``. Cây điều kiện theo định dạng
+tạm của AI-01 cho đến khi có đặc tả OKF. Mức ưu tiên được suy ra từ loại luật,
+không bao giờ lấy từ ``resulting_priority`` được truyền vào.
 """
 
 from collections.abc import Mapping, Sequence
@@ -35,14 +35,13 @@ class TriageResult(TypedDict):
 def evaluate_triage_rules(
     input_features: Mapping[str, Any], rules: Sequence[Mapping[str, Any]]
 ) -> TriageResult:
-    """Evaluate Active rules with Kleene logic and apply the highest rule floor.
+    """Đánh giá luật Active bằng logic Kleene và áp dụng mức sàn cao nhất.
 
-    Only TRUE rules count as hits. Only UNKNOWN red flags contribute missing
-    feature paths to ``complete_now`` (deduplicated in rule/tree order). Once a
-    red flag is TRUE, Emergency is already determined and completion is not
-    required to make that decision. Malformed rules or a malformed collection
-    propagate an explicit error instead of silently producing Routine. An empty
-    sequence is valid; an empty mapping or string is not an empty ruleset.
+    Chỉ luật TRUE được tính là khớp. Chỉ cờ đỏ UNKNOWN bổ sung đường dẫn đặc trưng
+    thiếu vào ``complete_now`` (loại trùng theo thứ tự luật/cây). Khi cờ đỏ TRUE,
+    Emergency đã được xác định nên không cần hoàn thiện dữ liệu để ra quyết định.
+    Luật hoặc tập luật sai định dạng phát sinh lỗi rõ ràng thay vì âm thầm trả
+    Routine. Sequence rỗng hợp lệ; mapping rỗng hoặc chuỗi không phải tập luật rỗng.
     """
     if not isinstance(input_features, Mapping):
         raise ConditionFormatError("input_features phải là object")

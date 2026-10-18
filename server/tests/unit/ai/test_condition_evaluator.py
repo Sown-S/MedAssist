@@ -1,4 +1,4 @@
-"""AI-01: strong Kleene condition evaluator."""
+"""AI-01: bộ đánh giá điều kiện theo logic Kleene mạnh."""
 
 import pytest
 

@@ -1,9 +1,9 @@
-"""Internal Ollama HTTP adapter. Worker callers use llm.client.LLMClient.
+"""Adapter HTTP nội bộ cho Ollama. Worker gọi qua llm.client.LLMClient.
 
-API reference: https://docs.ollama.com/api/generate
-Only loopback, RFC1918/ULA LAN addresses and the local Docker hostnames below
-are accepted. DNS aliases outside this list must be configured by private IP.
-The deployment must also disable Ollama cloud features; no credentials are used.
+Tham khảo API: https://docs.ollama.com/api/generate
+Chỉ chấp nhận loopback, địa chỉ LAN RFC1918/ULA và các hostname Docker cục bộ bên
+dưới. Alias DNS ngoài danh sách phải cấu hình bằng IP riêng. Khi triển khai cũng
+phải tắt tính năng cloud của Ollama; client không dùng thông tin xác thực.
 """
 
 from collections.abc import Mapping
@@ -52,11 +52,11 @@ def _local_url(base_url: str) -> httpx.URL:
 
 
 class OllamaClient:
-    """HTTP implementation detail; one owned, closed HTTP client per request.
+    """Chi tiết triển khai HTTP; mỗi request sở hữu một client và tự đóng client đó.
 
-    A custom transport is a test seam, not an alternate AI provider. Proxies
-    from the environment and redirects are disabled so prompts stay on premise.
-    There are no automatic retries that could exceed the worker's deadline.
+    Custom transport chỉ là điểm nối cho test, không phải nhà cung cấp AI thay thế.
+    Tắt proxy từ môi trường và redirect để prompt luôn ở nội bộ. Không tự động thử
+    lại vì có thể vượt deadline của worker.
     """
 
     def __init__(
@@ -93,7 +93,7 @@ class OllamaClient:
         schema: Mapping[str, Any],
         timeout_seconds: float,
     ) -> bytes:
-        """Send a non-streaming structured request; return its raw envelope."""
+        """Gửi request cấu trúc không streaming và trả envelope thô."""
         try:
             async with httpx.AsyncClient(
                 transport=self._transport,

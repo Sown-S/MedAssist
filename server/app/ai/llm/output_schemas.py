@@ -1,8 +1,8 @@
-"""Version 1 generation contracts, shared with future Node 4/FR12 validation.
+"""Hợp đồng sinh dữ liệu phiên bản 1, dùng chung cho kiểm tra Node 4/FR12.
 
-These describe shape only. Do not replace validation.knowledge_validators or
-Node 4's candidate/evidence/safety checks with these models. No generated
-evidence, ICD codes or priority assignment is accepted from the LLM.
+Các model này chỉ mô tả hình dạng. Không dùng chúng thay cho
+validation.knowledge_validators hoặc kiểm tra ứng viên/bằng chứng/an toàn của Node
+4. Không chấp nhận bằng chứng, mã ICD hoặc mức ưu tiên do LLM tự sinh.
 """
 
 from typing import Any, Literal
@@ -22,10 +22,12 @@ class RankedCondition(_StrictOutput):
 
 
 class ReasoningOutput(_StrictOutput):
-    # Node 2 supplies up to four candidates internally; Node 4/service limit
-    # the displayed list to three and add the Reference Suggestion label.
+    # Node 2 cung cấp tối đa bốn ứng viên nội bộ; Node 4/service giới hạn danh sách
+    # hiển thị còn ba và thêm nhãn Reference Suggestion.
     ranking: list[RankedCondition] = Field(max_length=4)
-    raise_priority: bool = Field(description="Only suggest Routine -> HighPriority; never lower.")
+    raise_priority: bool = Field(
+        description="Chỉ đề nghị nâng Routine lên HighPriority, không bao giờ hạ mức."
+    )
 
 
 class ExtractedSymptom(_StrictOutput):
@@ -34,13 +36,13 @@ class ExtractedSymptom(_StrictOutput):
 
 
 class ExtractionOutput(_StrictOutput):
-    # Extraction is tentative; AI-10 must check the Active catalogue and the
-    # nurse must confirm it before any extracted feature enters assessment.
+    # Kết quả trích xuất chỉ là tạm thời; AI-10 phải kiểm tra catalog Active và điều
+    # dưỡng phải xác nhận trước khi đặc trưng trích xuất đi vào đánh giá.
     symptoms: list[ExtractedSymptom]
 
 
 def reasoning_json_schema() -> dict[str, Any]:
-    """Return a fresh schema suitable for Ollama's format parameter."""
+    """Trả schema mới phù hợp tham số format của Ollama."""
     return ReasoningOutput.model_json_schema()
 
 

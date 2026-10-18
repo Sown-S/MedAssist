@@ -1,13 +1,13 @@
-"""Shared state passed between deterministic and worker-side AI nodes."""
+"""Trạng thái dùng chung giữa các node tất định và các node chạy trong worker."""
 
 from typing import Any, NotRequired, TypedDict
 
 
 class PipelineState(TypedDict):
-    """Serializable state for a single assessment pipeline run.
+    """Trạng thái có thể tuần tự hóa của một lượt chạy pipeline đánh giá.
 
-    Only ``input_features`` is required at construction time. Each node adds its
-    own fields, which keeps Node 1 usable without importing or invoking an LLM.
+    Khi khởi tạo chỉ bắt buộc ``input_features``. Mỗi node tự bổ sung trường của
+    mình, nhờ đó Node 1 vẫn dùng được mà không import hoặc gọi LLM.
     """
 
     input_features: dict[str, Any]

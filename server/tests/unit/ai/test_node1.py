@@ -1,4 +1,4 @@
-"""AI-02: Node 1 safety decisions using synthetic Active rules and no LLM."""
+"""AI-02: quyết định an toàn Node 1 bằng luật Active giả lập và không dùng LLM."""
 
 from copy import deepcopy
 import os
@@ -21,7 +21,7 @@ def symptom(code="test_signal"):
 
 
 def vital(key="spo2_pct"):
-    # Synthetic comparison to exercise the engine, not a clinical rule bundle.
+    # Phép so sánh giả lập để chạy engine, không phải bộ luật lâm sàng.
     return {"type": "vital_sign", "key": key, "operator": "lt", "value": 90}
 
 
@@ -306,8 +306,8 @@ def test_reassessment_returns_fresh_state_without_old_diagnoses_or_input_mutatio
 
 
 def test_node_imports_and_runs_with_llm_routers_and_graph_dependencies_blocked():
-    # A fresh interpreter catches transitive imports too, even if another test
-    # has already imported an optional module in the pytest process.
+    # Interpreter mới phát hiện cả import bắc cầu dù test khác đã import module tùy
+    # chọn trong tiến trình pytest.
     program = textwrap.dedent(
         """
         import importlib.abc

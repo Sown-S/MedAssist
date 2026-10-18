@@ -1,24 +1,24 @@
-"""Typed failures for the worker's Rule-only fallback; messages contain no PHI."""
+"""Lỗi có kiểu để worker fallback Rule-only; thông báo không chứa dữ liệu y tế cá nhân."""
 
 
 class LLMError(Exception):
-    """Base class for expected local LLM failures."""
+    """Lớp cơ sở cho các lỗi LLM cục bộ dự kiến có thể xảy ra."""
 
 
 class LLMConfigurationError(LLMError, ValueError):
-    """The local model, endpoint or request configuration is invalid."""
+    """Cấu hình model, endpoint hoặc request cục bộ không hợp lệ."""
 
 
 class LLMTimeoutError(LLMError, TimeoutError):
-    """The remaining time budget was exhausted."""
+    """Ngân sách thời gian còn lại đã hết."""
 
 
 class LLMConnectionError(LLMError):
-    """The local Ollama transport failed."""
+    """Lớp truyền tải Ollama cục bộ gặp lỗi."""
 
 
 class LLMHTTPError(LLMError):
-    """Ollama returned an unsuccessful HTTP status, without exposing its body."""
+    """Ollama trả HTTP status lỗi; không để lộ nội dung body."""
 
     def __init__(self, status_code: int) -> None:
         self.status_code = status_code
@@ -26,8 +26,8 @@ class LLMHTTPError(LLMError):
 
 
 class LLMResponseError(LLMError):
-    """The local server returned an incomplete or unexpected response."""
+    """Máy chủ cục bộ trả response thiếu hoặc không đúng dự kiến."""
 
 
 class LLMInvalidJSONError(LLMResponseError):
-    """The envelope or generated content is not a strict JSON object."""
+    """Envelope hoặc nội dung sinh ra không phải JSON object nghiêm ngặt."""

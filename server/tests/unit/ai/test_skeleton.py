@@ -1,4 +1,4 @@
-"""AI-00 package, protocols, shared state, and test doubles."""
+"""AI-00: package, protocol, state dùng chung và test double."""
 
 import asyncio
 from typing import get_type_hints

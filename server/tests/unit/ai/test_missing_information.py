@@ -1,4 +1,4 @@
-"""AI-04: FR14 uses only confirmed UNKNOWN symptoms from Active Node 2 data."""
+"""AI-04: FR14 chỉ dùng triệu chứng UNKNOWN đã xác nhận từ dữ liệu Node 2 Active."""
 
 from copy import deepcopy
 from itertools import permutations
@@ -52,8 +52,8 @@ def test_unknown_symptoms_must_belong_to_catalogue_and_leading_candidates():
 
 
 def test_suggestions_follow_supplied_candidate_order_with_only_the_first_three_contributing():
-    # Do not re-sort by code or provisional score: a later validated ranking
-    # may differ from Node 2's ranking. The fourth candidate is internal only.
+    # Không sắp xếp lại theo mã hoặc điểm tạm: thứ hạng đã kiểm tra về sau có thể
+    # khác Node 2. Ứng viên thứ tư chỉ dùng nội bộ.
     candidates = [
         {**candidate("condition_z", "signal_z"), "score": 0.1},
         {**candidate("condition_b", "signal_b"), "score": 0.2},

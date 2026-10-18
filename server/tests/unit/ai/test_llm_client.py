@@ -1,4 +1,4 @@
-"""AI-05: synthetic Ollama HTTP exchanges; no model or external network calls."""
+"""AI-05: trao đổi HTTP Ollama giả lập; không gọi model hoặc mạng bên ngoài."""
 
 import asyncio
 from copy import deepcopy
@@ -336,7 +336,7 @@ def test_reasoning_and_extraction_schemas_can_be_sent_and_have_strict_shapes():
     for schema in (reasoning_json_schema(), extraction_json_schema()):
         assert schema["type"] == "object"
         assert schema["additionalProperties"] is False
-    # Each caller receives an independent schema, including nested definitions.
+    # Mỗi bên gọi nhận schema độc lập, kể cả các định nghĩa lồng nhau.
     schema = reasoning_json_schema()
     schema["$defs"]["RankedCondition"]["properties"].clear()
     assert "condition_code" in reasoning_json_schema()["$defs"]["RankedCondition"]["properties"]

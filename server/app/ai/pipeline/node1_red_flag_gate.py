@@ -1,4 +1,4 @@
-"""Node 1: synchronous safety gate, independent of LLM and worker availability."""
+"""Node 1: cổng an toàn đồng bộ, không phụ thuộc LLM hay tình trạng worker."""
 
 from app.ai.interfaces import KnowledgeReader
 from app.ai.pipeline.state import PipelineState
@@ -6,14 +6,14 @@ from app.ai.rules.red_flag_rules import evaluate_triage_rules
 
 
 def run_node1(state: PipelineState, knowledge_reader: KnowledgeReader) -> PipelineState:
-    """Start an assessment using only confirmed, normalized input features.
+    """Bắt đầu đánh giá chỉ bằng đặc trưng đã xác nhận và chuẩn hóa.
 
-    Return a fresh state so a repeated assessment cannot retain old diagnoses or
-    LLM output. Both priorities start at the deterministic rule floor. A red flag
-    is terminal (``is_red_flag=True``, ``ai_status=Skipped``); the caller must
-    return this result without scheduling or running subsequent AI nodes.
-    Otherwise ``Pending`` is the visit status; queue creation belongs to the
-    assessment service/router, not this pure gate.
+    Trả trạng thái mới để lượt đánh giá lặp lại không giữ chẩn đoán hoặc đầu ra LLM
+    cũ. Hai mức ưu tiên đều bắt đầu từ mức sàn do luật tất định đặt ra. Cờ đỏ là
+    trạng thái kết thúc (``is_red_flag=True``, ``ai_status=Skipped``); bên gọi phải
+    trả kết quả ngay, không xếp lịch hoặc chạy các node AI sau. Nếu không có cờ đỏ,
+    trạng thái lượt khám là ``Pending``; việc tạo hàng đợi thuộc service/router đánh
+    giá, không thuộc cổng thuần này.
     """
     result = evaluate_triage_rules(
         state["input_features"], knowledge_reader.active_triage_rules()

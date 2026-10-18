@@ -1,16 +1,15 @@
-"""Deterministic FR14 suggestions from the leading Node 2 candidates.
+"""Đề xuất FR14 tất định từ các ứng viên dẫn đầu của Node 2.
 
-Consume Node 2's ``unknown_key_symptoms`` and the reader's Active symptom
-catalogue from the same assessment snapshot. Only the first three candidates
-contribute, in their supplied ranking order. Within a candidate, sort codes and
-omit duplicates already suggested for a higher-ranked candidate.
+Sử dụng ``unknown_key_symptoms`` của Node 2 và catalog triệu chứng Active từ cùng
+snapshot đánh giá. Chỉ ba ứng viên đầu đóng góp theo thứ tự xếp hạng được truyền.
+Trong mỗi ứng viên, sắp mã và bỏ mã trùng đã được ứng viên hạng cao hơn đề xuất.
 
-Omitted confirmed symptoms mean UNKNOWN, as in Node 2. Recheck their state so a
-symptom subsequently marked PRESENT/ABSENT is never requested again. Free text,
-unconfirmed extraction, vital signs and age do not contribute FR14 suggestions.
-This helper returns internal symptom codes, not diagnoses or a display payload;
-the output layer supplies the "Reference Suggestion" label. It performs no LLM
-calls, knowledge queries, logging, writes or priority changes.
+Triệu chứng đã xác nhận nhưng bị bỏ qua được hiểu là UNKNOWN như Node 2. Kiểm tra
+lại trạng thái để không hỏi lại triệu chứng sau đó đã thành PRESENT/ABSENT. Văn bản
+tự do, trích xuất chưa xác nhận, sinh hiệu và tuổi không đóng góp vào đề xuất FR14.
+Helper này trả mã triệu chứng nội bộ, không trả chẩn đoán hay payload hiển thị; lớp
+đầu ra thêm nhãn "Reference Suggestion". Hàm không gọi LLM, truy vấn tri thức, log,
+ghi dữ liệu hoặc đổi ưu tiên.
 """
 
 from collections.abc import Mapping, Sequence
@@ -21,7 +20,7 @@ MAX_RELEVANT_CANDIDATES = 3
 
 
 class MissingInformationFormatError(ValueError):
-    """Confirmed features or the Node 2/reader snapshot have an invalid shape."""
+    """Đặc trưng đã xác nhận hoặc snapshot Node 2/reader có hình dạng không hợp lệ."""
 
 
 def find_missing_information(
@@ -29,13 +28,13 @@ def find_missing_information(
     candidates: Sequence[JsonObject],
     symptoms: Sequence[JsonObject],
 ) -> list[str]:
-    """List unique UNKNOWN key symptoms relevant to the leading candidates.
+    """Liệt kê triệu chứng key UNKNOWN không trùng, liên quan ứng viên dẫn đầu.
 
-    ``candidates`` must be the ranked closed list produced by Node 2, after the
-    Node 1 gate; pass an empty list for terminal red-flag states. ``symptoms``
-    must come from ``KnowledgeReader.active_symptoms()``. Catalogue intersection
-    restricts suggestions here; shared Active/code validation at the application
-    boundaries remains in ``validation.knowledge_validators``.
+    ``candidates`` phải là danh sách đóng đã xếp hạng do Node 2 tạo sau cổng Node
+    1; truyền danh sách rỗng cho trạng thái cờ đỏ kết thúc. ``symptoms`` phải đến
+    từ ``KnowledgeReader.active_symptoms()``. Phép giao catalog giới hạn đề xuất
+    tại đây; kiểm tra Active/mã dùng chung ở biên ứng dụng vẫn nằm trong
+    ``validation.knowledge_validators``.
     """
     if not isinstance(input_features, Mapping):
         raise MissingInformationFormatError("input_features phải là object")

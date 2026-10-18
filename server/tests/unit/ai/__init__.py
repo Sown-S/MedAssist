@@ -1,1 +1,1 @@
-"""Unit tests for the AI module."""
+"""Unit test cho module AI."""

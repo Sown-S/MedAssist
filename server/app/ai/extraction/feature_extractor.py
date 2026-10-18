@@ -1,10 +1,10 @@
-"""FR12: worker-only, tentative extraction from de-identified Vietnamese text.
+"""FR12: trích xuất tạm từ văn bản tiếng Việt đã che định danh, chỉ chạy ở worker.
 
-The caller runs Node 1 first and supplies the remaining queue budget and all
-known identifying values (name, address, DOB, phone, IDs and any aliases in the
-note). Pattern masking supplements those values; it is not a general-purpose
-named-entity recognizer. Nothing here logs, persists or changes clinical state.
-Only a nurse's later confirmation may copy suggestions into input_features.
+Bên gọi phải chạy Node 1 trước, truyền thời gian hàng đợi còn lại và mọi giá trị
+định danh đã biết (tên, địa chỉ, ngày sinh, điện thoại, giấy tờ và bí danh có trong
+ghi chú). Che bằng mẫu chỉ bổ sung cho các giá trị đó, không phải bộ nhận diện thực
+thể có tên dùng chung. Module này không ghi log, lưu dữ liệu hoặc đổi trạng thái
+lâm sàng. Chỉ sau khi điều dưỡng xác nhận mới được chép đề xuất vào input_features.
 """
 
 import asyncio
@@ -31,24 +31,28 @@ EXTRACTION_TIMEOUT_SECONDS = 30
 _CODES = TypeAdapter(list[knowledge_validators.SymptomCode])
 _MASK = "[REDACTED]"
 
-# Labelled names/addresses/IDs may contain spaces, punctuation and digits. Mask
-# the whole field conservatively, including commas in an address. Known values
-# below also cover identifiers occurring without labels elsewhere in the note.
+# Tên/địa chỉ/giấy tờ có nhãn có thể chứa khoảng trắng, dấu câu và chữ số. Che thận
+# trọng toàn bộ trường, kể cả dấu phẩy trong địa chỉ. Các từ mơ hồ thường xuất hiện
+# tự nhiên trong câu lâm sàng (``bệnh nhân``, ``BN``, ``patient``) phải có dấu
+# ``:``/``=`` rõ ràng; nếu không, câu như "Bệnh nhân đau đầu 2 ngày" sẽ bị mất nội
+# dung triệu chứng. Danh sách giá trị định danh đã biết bên dưới xử lý tên không có
+# dấu phân cách rõ ràng.
 _IDENTITY_FIELDS = re.compile(
     r"(?i)\b(?:địa\s*chỉ|dia\s*chi|address|nơi\s*ở|noi\s*o)"
     r"\s*[:=]?\s*[^\r\n;!?]+"
     r"|\b(?:họ(?:\s+và)?\s*tên|ho(?:\s+va)?\s*ten|tên\s+bệnh\s+nhân|"
-    r"bệnh\s+nhân|benh\s+nhan|bn|full_name|patient(?:\s+name)?|"
+    r"full_name|patient\s+name|"
     r"ngày\s*sinh|ngay\s*sinh|sinh\s+ngày|dob|date_of_birth|"
     r"cccd|cmnd|bhyt|số\s*điện\s*thoại|sdt|sđt|phone|"
     r"mã\s*bệnh\s*nhân|patient_id|visit_id)\s*[:=]?\s*[^\r\n,;!?]+"
+    r"|\b(?:bệnh\s+nhân|benh\s+nhan|bn|patient)\s*[:=]\s*[^\r\n,;!?]+"
     r"|\b(?:tên|ten|name|email)\s*[:=]\s*[^\r\n,;!?]+"
 )
 _CONTACT_PATTERNS = (
     re.compile(r"[\w.+-]+@[\w.-]+\.[^\W\d_]{2,}", re.UNICODE),
     re.compile(r"\b[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}\b", re.I),
     re.compile(r"\b\d{4}[-/]\d{1,2}[-/]\d{1,2}\b|\b\d{1,2}[/.-]\d{1,2}[/.-]\d{2,4}\b"),
-    # Phone/identity numbers, including +84, spaces, dots, hyphens or brackets.
+    # Số điện thoại/giấy tờ, kể cả +84, khoảng trắng, dấu chấm, gạch nối hoặc ngoặc.
     re.compile(r"(?<!\w)\+?\d(?:[\s().-]*\d){8,14}(?!\w)"),
 )
 
@@ -70,19 +74,19 @@ async def extract_symptoms(
     identifiers: Sequence[str],
     timeout_seconds: float,
 ) -> list[SymptomSuggestion]:
-    """Return Active suggestions, never confirmed assessment features.
+    """Trả đề xuất thuộc catalog Active, không bao giờ là đặc trưng đã xác nhận.
 
-    Call only from the worker via assessment_service, outside the assessment
-    graph. ``gate_state`` must be the result of Node 1 on confirmed data; a red
-    flag skips extraction. ``identifiers`` is required, even when empty, so the
-    worker explicitly supplies every known identifying value before inference.
-    Do not pass raw patient objects/metadata into the prompt.
+    Chỉ gọi từ worker qua assessment_service, bên ngoài graph đánh giá.
+    ``gate_state`` phải là kết quả Node 1 trên dữ liệu đã xác nhận; có cờ đỏ thì bỏ
+    qua trích xuất. ``identifiers`` luôn bắt buộc, kể cả danh sách rỗng, để worker
+    chủ động cung cấp mọi giá trị định danh đã biết trước khi suy luận. Không đưa
+    object/metadata bệnh nhân thô vào prompt.
 
-    ``timeout_seconds`` is the time remaining since queueing, capped at 30s.
-    Preparation and validation consume that same budget. Exhaustion, typed LLM
-    failures and invalid output yield []; no retries. Worker cancellation and
-    infrastructure/programming errors propagate. The session is only passed to
-    the shared Active validator, never used for writes/commit/rollback here.
+    ``timeout_seconds`` là thời gian còn lại tính từ lúc xếp hàng, tối đa 30 giây.
+    Chuẩn bị và kiểm tra cùng tiêu thụ ngân sách này. Hết giờ, lỗi LLM có kiểu hoặc
+    đầu ra sai đều trả []; không thử lại. Hủy từ worker và lỗi hạ tầng/lập trình
+    được truyền lên. Session chỉ chuyển cho validator Active dùng chung, không được
+    dùng để ghi, commit hoặc rollback tại đây.
     """
     started = monotonic()
     if (
@@ -131,13 +135,13 @@ async def extract_symptoms(
     if monotonic() >= deadline:
         return []
 
-    # Extraction is a separate FR12 operation, so apply its schema/Active checks
-    # here. Node 4 still validates any later, nurse-confirmed assessment output.
+    # Trích xuất là thao tác FR12 riêng nên kiểm tra schema/Active ngay tại đây.
+    # Node 4 vẫn kiểm tra đầu ra đánh giá sau khi điều dưỡng xác nhận.
     suggestions = _validated_suggestions(output, allowed)
     if not suggestions:
         return []
     try:
-        # Recheck after inference: a code may have been retired while waiting.
+        # Kiểm tra lại sau suy luận vì mã có thể đã bị ngừng trong lúc chờ.
         knowledge_validators.active_symptoms(db, [row["symptom_code"] for row in suggestions])
     except AppError as exc:
         if exc.code != "UNKNOWN_SYMPTOM":
@@ -147,8 +151,8 @@ async def extract_symptoms(
 
 
 def _normalise(value: str) -> str:
-    # Normalise decomposed Vietnamese/full-width text; remove invisible format
-    # characters so they cannot defeat an exact identifying-value match.
+    # Chuẩn hóa tiếng Việt dạng tách dấu và ký tự full-width; bỏ ký tự định dạng vô
+    # hình để chúng không thể làm sai phép khớp chính xác giá trị định danh.
     return "".join(
         char for char in unicodedata.normalize("NFKC", value)
         if unicodedata.category(char) != "Cf"
@@ -168,8 +172,8 @@ def _redact_identifiers(text: str, identifiers: Sequence[str]) -> str:
     if any(not value for value in values):
         raise ValueError("Invalid extraction identifying values.")
     if values:
-        # Escape literal identifiers, match flexible whitespace/case, and mask
-        # overlaps in one pass. No identifier is treated as a regex or logged.
+        # Escape định danh dạng literal, cho phép khoảng trắng/hoa thường linh hoạt
+        # và che phần chồng lấn trong một lượt. Không coi định danh là regex hay log.
         pattern = "|".join(r"\s+".join(re.escape(part) for part in value.split()) for value in values)
         masked = re.sub(pattern, _MASK, masked, flags=re.IGNORECASE)
     masked = _IDENTITY_FIELDS.sub(_MASK, masked)
@@ -188,12 +192,12 @@ def _catalogue(reader: KnowledgeReader) -> list[dict[str, str]]:
         ):
             raise ValueError
     except (KeyError, TypeError, ValueError):
-        # Shared code validators own slug/length rules; suppress input-bearing
-        # Pydantic details. Reader/infrastructure failures otherwise propagate.
+        # Validator mã dùng chung quản lý quy tắc slug/độ dài; ẩn chi tiết Pydantic
+        # có chứa đầu vào. Các lỗi reader/hạ tầng khác vẫn được truyền lên.
         raise ValueError("Invalid Active symptom catalogue.") from None
-    # The current Symptom model uses symptom_name. Missing names fall back to
-    # codes until the concrete reader mapping is integrated; no other metadata
-    # (IDs, audit fields, notes, etc.) is copied into the prompt.
+    # Model Symptom hiện dùng symptom_name. Nếu thiếu tên thì tạm dùng mã cho đến
+    # khi tích hợp mapping reader thật; không chép metadata khác (ID, trường audit,
+    # ghi chú...) vào prompt.
     return [
         {"symptom_code": code, "symptom_name": name}
         for code, name in sorted(zip(codes, names, strict=True))
@@ -213,7 +217,7 @@ def _validated_suggestions(output: object, allowed: set[str]) -> list[SymptomSug
         if row.symptom_code not in allowed:
             continue
         if row.symptom_code in statuses and statuses[row.symptom_code] != row.status:
-            # Conflicting generated statuses must not silently select one.
+            # Không được âm thầm chọn một trạng thái khi LLM sinh trạng thái mâu thuẫn.
             return []
         statuses[row.symptom_code] = row.status
     return [

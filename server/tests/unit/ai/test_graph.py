@@ -1,4 +1,4 @@
-"""AI-08: real LangGraph orchestration with synthetic knowledge/LLM/catalogues."""
+"""AI-08: điều phối LangGraph thật với tri thức/LLM/catalog giả lập."""
 
 import asyncio
 import builtins
@@ -41,7 +41,10 @@ def triage_rule(kind="RED_FLAG"):
 def output(*, raise_priority=False):
     return {
         "ranking": [
-            {"condition_code": f"condition_{letter}", "reason": "Lý do giả lập."}
+            {
+                "condition_code": f"condition_{letter}",
+                "reason": "Bằng chứng hỗ trợ từ signal_a.",
+            }
             for letter in "dcba"
         ],
         "raise_priority": raise_priority,
@@ -50,7 +53,7 @@ def output(*, raise_priority=False):
 
 @pytest.fixture
 def case(monkeypatch):
-    """Exercise all nodes; only the reader, model and catalogue I/O are fake."""
+    """Chạy mọi node; chỉ I/O của reader, model và catalog là giả."""
     events = []
     calling_thread = get_ident()
 
@@ -184,7 +187,7 @@ def test_success_runs_gate_retrieval_preliminary_reasoning_validation_in_order(c
     ]
     assert all("reason" not in c for c in snapshot["candidates"])
     assert all(c["label"] == "Reference Suggestion" for c in result["candidates"])
-    assert all(c["reason"] == "Lý do giả lập." for c in result["candidates"])
+    assert all(c["reason"] == "Bằng chứng hỗ trợ từ signal_a." for c in result["candidates"])
     assert case.catalogue_calls[0] == (
         "conditions", [f"condition_{letter}" for letter in "abcd"],
     )
@@ -391,7 +394,7 @@ def test_graph_caps_assessment_budget_at_ninety_seconds(case, monkeypatch):
 
 
 def test_graph_enforces_timeout_even_if_client_does_not(case, monkeypatch):
-    # Keep import/compilation cost out of this real asyncio timeout check.
+    # Không tính chi phí import/compile vào phép kiểm tra timeout asyncio thật này.
     monkeypatch.setattr(graph, "monotonic", lambda: 100.0)
     class HangingClient:
         cancelled = False
@@ -517,7 +520,7 @@ def test_preliminary_persistence_failure_stops_before_llm(case):
 
 
 def test_langgraph_has_no_checkpointer_debug_or_callbacks_and_tracing_is_disabled(case, monkeypatch):
-    # This spies on the real engine; no fake graph is used to claim orchestration passes.
+    # Theo dõi engine thật; không dùng graph giả để báo điều phối đã pass.
     from langgraph.graph import StateGraph
     import langsmith
 
@@ -534,7 +537,7 @@ def test_langgraph_has_no_checkpointer_debug_or_callbacks_and_tracing_is_disable
             seen["config"] = config
             return await invoke(state, config=config)
 
-        # Proxy just the call; execution still uses the compiled real graph.
+        # Chỉ proxy lời gọi; việc chạy vẫn dùng graph thật đã compile.
         class Invocation:
             ainvoke = staticmethod(invoke_spy)
 

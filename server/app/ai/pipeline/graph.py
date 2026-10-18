@@ -1,9 +1,9 @@
-"""Worker-only assessment orchestration; no persistence, tracing or real I/O here.
+"""Điều phối đánh giá chỉ trong worker; không lưu dữ liệu, tracing hay I/O thật.
 
-Node 1 runs before loading the optional graph/LLM dependencies. Non-emergency
-runs use LangGraph for Node 2 -> Node 3 -> Node 4, without a checkpointer. The
-envelope replaces whole PipelineState values: LangGraph's per-key updates
-would otherwise retain fields removed by a node (notably raw llm_output).
+Node 1 chạy trước khi nạp các phụ thuộc graph/LLM tùy chọn. Ca không khẩn cấp dùng
+LangGraph cho Node 2 -> Node 3 -> Node 4 mà không có checkpointer. Envelope thay
+toàn bộ giá trị PipelineState; nếu cập nhật từng key theo LangGraph thì các trường
+đã bị node xóa (đặc biệt llm_output thô) có thể vẫn còn.
 """
 
 import asyncio
@@ -38,19 +38,19 @@ async def run_pipeline(
     timeout_seconds: float,
     on_preliminary: PreliminaryCallback | None = None,
 ) -> PipelineState:
-    """Compose Node 1-4 for one worker run, returning only validated results.
+    """Ghép Node 1-4 cho một lượt worker, chỉ trả kết quả đã kiểm tra.
 
-    The worker/service supplies the remaining budget measured from queueing.
-    Gate, graph setup, retrieval and the optional Preliminary callback all
-    consume that budget; it is never restarted before reasoning or retried.
-    The service owns queueing, transactions and audit metadata (AI-09). It may
-    await ``on_preliminary`` to expose <= 3 deterministic suggestions before
-    reasoning; the private fallback snapshot retains all four candidates.
-    Clinical state passed to that callback must not be written to log tables.
+    Worker/service truyền ngân sách còn lại tính từ lúc xếp hàng. Cổng an toàn,
+    khởi tạo graph, retrieval và callback Preliminary tùy chọn đều tiêu thụ ngân
+    sách đó; không khởi động lại đồng hồ trước reasoning và không retry. Service
+    quản lý hàng đợi, transaction và metadata audit (AI-09). Service có thể await
+    ``on_preliminary`` để công bố tối đa ba gợi ý tất định trước reasoning; snapshot
+    fallback riêng vẫn giữ đủ bốn ứng viên. Không ghi trạng thái lâm sàng truyền
+    vào callback này xuống bảng log.
 
-    Typed LLM failures/timeouts become Degraded/RuleOnly through Node 4's
-    baseline checks. Cancellation, programming, callback and infrastructure
-    failures propagate to the worker. No API endpoint should call this function.
+    Lỗi LLM có kiểu/timeout trở thành Degraded/RuleOnly qua kiểm tra baseline của
+    Node 4. Cancellation và lỗi lập trình/callback/hạ tầng được truyền lên worker.
+    Endpoint API không được gọi hàm này.
     """
     started = monotonic()
     gated = run_node1(deepcopy(state), knowledge_reader)
@@ -66,9 +66,9 @@ async def run_pipeline(
         raise ValueError("Assessment timeout must be finite seconds.")
     deadline = started + min(timeout_seconds, ASSESSMENT_TIMEOUT_SECONDS)
 
-    # LangGraph/LangSmith are local execution dependencies only. Explicitly
-    # disable environment-enabled tracing, inherited callbacks and debugging;
-    # graph state and exception payloads can contain clinical information.
+    # LangGraph/LangSmith chỉ là phụ thuộc chạy cục bộ. Tắt rõ tracing từ môi
+    # trường, callback kế thừa và debug vì state graph/payload lỗi có thể chứa dữ
+    # liệu lâm sàng.
     from langsmith import tracing_context
 
     with tracing_context(enabled=False):
@@ -80,8 +80,8 @@ async def run_pipeline(
         try:
             result = await graph.ainvoke({"assessment": gated}, config={"callbacks": []})
         except NodeCancelledError as exc:
-            # LangGraph wraps cancellation raised by a node body. Restore the
-            # worker's cancellation contract without treating it as LLM failure.
+            # LangGraph bọc cancellation phát sinh trong thân node. Khôi phục hợp
+            # đồng cancellation của worker, không coi đây là lỗi LLM.
             if isinstance(exc.__cause__, asyncio.CancelledError):
                 raise exc.__cause__ from None
             raise asyncio.CancelledError from None
@@ -102,8 +102,8 @@ def _compile_worker_graph(
     from app.ai.pipeline.node3_reasoning import run_node3
     from app.ai.pipeline.node4_output_validation import MAX_DISPLAY_CANDIDATES, run_node4
 
-    # Async wrappers keep synchronous reader/session work on the worker's
-    # calling thread, rather than LangGraph's executor for synchronous nodes.
+    # Wrapper async giữ tác vụ reader/session đồng bộ trên thread gọi của worker,
+    # không đẩy sang executor mà LangGraph dùng cho node đồng bộ.
     async def retrieve(envelope: _GraphState) -> _GraphState:
         retrieved = run_node2(envelope["assessment"], knowledge_reader)
         retrieved.update(ai_status="Preliminary", mode="RuleOnly")
@@ -136,8 +136,8 @@ def _compile_worker_graph(
         failure = envelope.get("llm_failure")
         baseline = envelope["preliminary"] if failure else envelope["assessment"]
         validated = run_node4(deepcopy(baseline), db)
-        # A missing proposal is intentional on LLM failure. Preserve stronger
-        # baseline rejections (inactive codes, invalid evidence, no candidates).
+        # Khi LLM lỗi thì chủ động không có proposal. Giữ nguyên lỗi baseline mạnh
+        # hơn (mã inactive, bằng chứng sai hoặc không có ứng viên).
         if failure and validated.get("error") == "INVALID_SCHEMA":
             validated["error"] = failure
             validated["validation_result"]["errors"] = [failure]

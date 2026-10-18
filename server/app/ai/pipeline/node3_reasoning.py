@@ -1,9 +1,9 @@
-"""Worker-side reasoning over Node 2's closed candidate list.
+"""Reasoning trong worker trên danh sách ứng viên đóng của Node 2.
 
-Only structured candidate codes, scores and evidence enter the prompt. Raw
-input features, identifiers and arbitrary metadata are never forwarded. The
-returned JSON stays in ``llm_output`` for Node 4; it must not be displayed or
-used to change priority here. No prompts or patient data are logged/persisted.
+Chỉ mã ứng viên, điểm và bằng chứng có cấu trúc được đưa vào prompt. Không chuyển
+tiếp đặc trưng đầu vào thô, định danh hoặc metadata tùy ý. JSON trả về được giữ ở
+``llm_output`` cho Node 4; không hiển thị hoặc dùng để đổi ưu tiên tại đây. Không
+log/lưu prompt hoặc dữ liệu bệnh nhân.
 """
 
 import json
@@ -25,12 +25,12 @@ async def run_node3(
     *,
     timeout_seconds: float,
 ) -> PipelineState:
-    """Request ranking/reasons and an optional Routine -> HighPriority proposal.
+    """Yêu cầu xếp hạng/lý do và đề nghị Routine -> HighPriority tùy chọn.
 
-    The worker supplies the *remaining* assessment budget measured from queueing,
-    rather than restarting the 90-second deadline. Client errors and worker
-    cancellation propagate to the graph's Rule-only fallback/cancellation path.
-    Node 4 owns schema, Active codes, evidence and safety-floor validation.
+    Worker truyền ngân sách đánh giá *còn lại* tính từ lúc xếp hàng thay vì khởi
+    động lại deadline 90 giây. Lỗi client và cancellation từ worker được truyền
+    tới nhánh fallback Rule-only/cancellation của graph. Node 4 chịu trách nhiệm
+    kiểm tra schema, mã Active, bằng chứng và mức sàn an toàn.
     """
     result = state.copy()
     for key in ("llm_output", "validation_result", "error"):
@@ -65,8 +65,8 @@ async def run_node3(
 
 
 def _reasoning_prompt(state: PipelineState, candidates: list[dict[str, Any]]) -> str:
-    # Node 2 supplies normalized, confirmed catalogue codes. Project each nested
-    # evidence row as well as each candidate so extra free text cannot leak in.
+    # Node 2 cung cấp mã catalog đã chuẩn hóa và xác nhận. Chỉ chiếu các trường cần
+    # thiết của từng ứng viên/hàng bằng chứng để văn bản tự do thừa không lọt vào.
     try:
         data = {
             "priority_rule": state["priority_rule"],
@@ -92,6 +92,6 @@ def _reasoning_prompt(state: PipelineState, candidates: list[dict[str, Any]]) ->
         }
         payload = json.dumps(data, ensure_ascii=False, allow_nan=False)
     except (KeyError, TypeError, ValueError, RecursionError):
-        # Do not include failing values/parser context, which might contain PHI.
+        # Không đưa giá trị lỗi/ngữ cảnh parser vì có thể chứa dữ liệu y tế cá nhân.
         raise LLMConfigurationError("Invalid Node 2 reasoning input.") from None
     return load_prompt(REASONING_PROMPT_VERSION) + "\n" + payload

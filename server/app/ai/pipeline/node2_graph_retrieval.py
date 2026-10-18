@@ -1,8 +1,8 @@
-"""Worker-side deterministic retrieval after the Node 1 safety gate.
+"""Retrieval tất định trong worker sau cổng an toàn Node 1.
 
-The four candidates are an internal closed list for later reasoning/validation,
-not a display result. The final output layer must limit display to three. This
-node performs no database writes, logging, priority changes or LLM calls.
+Bốn ứng viên là danh sách đóng nội bộ cho reasoning/validation sau đó, không phải
+kết quả hiển thị. Lớp đầu ra cuối phải giới hạn còn ba. Node này không ghi database,
+không log, không đổi ưu tiên và không gọi LLM.
 """
 
 from app.ai.interfaces import KnowledgeReader
@@ -13,11 +13,11 @@ MAX_CANDIDATES = 4
 
 
 def run_node2(state: PipelineState, knowledge_reader: KnowledgeReader) -> PipelineState:
-    """Return fresh retrieval state using confirmed features and Active data.
+    """Trả trạng thái retrieval mới từ đặc trưng đã xác nhận và dữ liệu Active.
 
-    Node 1 must already have populated its safety result. Terminal red-flag
-    states return without reading knowledge or retaining diagnosis suggestions.
-    Persistence of the Rule-only Preliminary result belongs to AI-09's service.
+    Node 1 phải điền xong kết quả an toàn. Trạng thái cờ đỏ kết thúc sẽ trả ngay,
+    không đọc tri thức hoặc giữ gợi ý chẩn đoán. Việc lưu kết quả Preliminary
+    Rule-only thuộc service của AI-09.
     """
     result = state.copy()
     for key in ("candidates", "llm_output", "validation_result", "error"):

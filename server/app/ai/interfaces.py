@@ -1,7 +1,7 @@
-"""Stable dependency boundaries used by the AI pipeline.
+"""Các ranh giới phụ thuộc ổn định mà pipeline AI sử dụng.
 
-The pipeline consumes plain mappings so it does not depend on SQLAlchemy models or
-on the concrete knowledge-reader implementation owned by another module.
+Pipeline chỉ nhận các mapping thuần để không phụ thuộc model SQLAlchemy hoặc cách
+triển khai Knowledge Reader cụ thể thuộc module khác.
 """
 
 from collections.abc import Mapping, Sequence
@@ -12,34 +12,34 @@ JsonObject = Mapping[str, Any]
 
 @runtime_checkable
 class KnowledgeReader(Protocol):
-    """Read the Active knowledge release used by one assessment run."""
+    """Đọc bản phát hành tri thức Active dùng cho một lượt đánh giá."""
 
     def active_release(self) -> JsonObject:
-        """Return metadata for the currently Active knowledge release."""
+        """Trả metadata của bản phát hành tri thức đang Active."""
         ...
 
     def active_triage_rules(self) -> Sequence[JsonObject]:
-        """Return Active red-flag and priority-floor rules."""
+        """Trả các luật cờ đỏ và mức sàn ưu tiên đang Active."""
         ...
 
     def active_conditions(self) -> Sequence[JsonObject]:
-        """Return Active conditions with nested Active ``symptoms``/``guidelines``.
+        """Trả các bệnh Active cùng ``symptoms``/``guidelines`` Active lồng bên trong.
 
-        Temporary Node 2 mapping: condition_code, name_vi, icd10_code; symptoms
-        contain symptom_code, polarity, weight, is_key; guidelines contain
-        excerpt_key and the excerpt/source fields. Reconcile with OKF and the
-        concrete reader before production integration.
+        Mapping tạm của Node 2: condition_code, name_vi, icd10_code; symptoms chứa
+        symptom_code, polarity, weight, is_key; guidelines chứa excerpt_key cùng
+        các trường excerpt/source. Phải đối chiếu với OKF và reader thật trước khi
+        tích hợp production.
         """
         ...
 
     def active_symptoms(self) -> Sequence[JsonObject]:
-        """Return the Active symptom catalogue."""
+        """Trả danh mục triệu chứng đang Active."""
         ...
 
 
 @runtime_checkable
 class LLMClient(Protocol):
-    """Local structured-output LLM boundary used only by worker-side code."""
+    """Ranh giới LLM cục bộ có đầu ra cấu trúc, chỉ dùng trong worker."""
 
     async def generate_json(
         self,
@@ -48,9 +48,9 @@ class LLMClient(Protocol):
         schema: Mapping[str, Any],
         timeout_seconds: float,
     ) -> dict[str, Any]:
-        """Request schema-constrained JSON or raise a typed client error.
+        """Yêu cầu JSON bị ràng buộc bởi schema hoặc phát sinh lỗi client có kiểu.
 
-        Returned objects remain untrusted until Node 4 (or extraction's Active
-        catalogue checks and nurse confirmation) validates them before use.
+        Object trả về vẫn chưa đáng tin cho đến khi Node 4 kiểm tra, hoặc với trích
+        xuất là sau khi kiểm tra catalog Active và điều dưỡng xác nhận, rồi mới dùng.
         """
         ...
