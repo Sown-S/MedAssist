@@ -18,14 +18,16 @@ def _rows():
 
 def test_catalog_file_is_well_formed():
     rows = _rows()
-    assert len(rows) == 100
+    assert len(rows) >= 100
     keys = [(r["generic_name"].lower(), r["trade_name"].lower(), r["strength"].lower(), r["dosage_form"].lower())
             for r in rows]
     assert len(set(keys)) == len(keys)                                   # khớp uq_drug_identity
     for r in rows:
         assert re.fullmatch(r"TT 19/2018/TT-BYT, Phụ lục I, STT \d+", r["source"]), r
-        assert int(r["sale_price"]) >= int(r["import_price"]) > 0
-        assert int(r["batch_quantity"]) > 0 and int(r["shelf_life_days"]) >= 365
+        if r["sale_price"] and r["import_price"]:                           # thuốc mới thêm có thể chưa có giá
+            assert int(r["sale_price"]) >= int(r["import_price"]) > 0
+        if r["batch_quantity"]:
+            assert int(r["batch_quantity"]) > 0 and int(r["shelf_life_days"]) >= 365
     # Thuốc không có trong Phụ lục I Thông tư 19/2018 không được đưa vào
     names = {r["generic_name"].lower() for r in rows}
     assert not names & {"cetirizin", "domperidon", "losartan", "kẽm gluconat"}
@@ -35,7 +37,8 @@ def test_seed_is_idempotent_and_goes_through_services(users):
     first = seed_drugs.seed()
     second = seed_drugs.seed()
     assert second["drugs_created"] == 0 and second["batches_created"] == 0
-    assert second["drugs_existing"] == first["drugs_created"] + first["drugs_existing"] == 100
+    priced = sum(1 for r in _rows() if r["sale_price"].strip())         # dòng chưa có giá bị bỏ qua
+    assert second["drugs_existing"] == first["drugs_created"] + first["drugs_existing"] == priced
     with SessionLocal() as db:
         para = db.scalar(select(Drug).where(Drug.trade_name == "Panadol"))
         assert para.sale_price == 1500 and para.unit == "viên"
@@ -61,8 +64,20 @@ def test_deactivate_others(users):
     assert stats["deactivated"] >= 1
     with SessionLocal() as db:
         assert db.get(Drug, extra_id).is_active is False
-        assert db.scalar(select(func.count()).select_from(Drug).where(Drug.is_active.is_(True))) == 100
+        priced = sum(1 for r in _rows() if r["sale_price"].strip())
+        assert db.scalar(select(func.count()).select_from(Drug).where(Drug.is_active.is_(True))) == priced
         assert db.scalar(select(AuditLog).where(AuditLog.entity_id == extra_id, AuditLog.action_type == "UPDATE"))
+
+
+def test_seed_skips_rows_without_price(tmp_path, users):
+    f = tmp_path / "d.csv"
+    f.write_text("generic_name,trade_name,strength,dosage_form,unit,sale_price,reorder_level,drug_class,"
+                 "import_price,batch_quantity,shelf_life_days,source\n"
+                 "Cefixim,Cefixim 100 thử,100 mg,viên nang,viên,,0,,,,,\n"
+                 "Cefixim,Cefixim 100 có giá,100 mg,viên nang,viên,4000,0,,,,,\n", encoding="utf-8")
+    stats = seed_drugs.seed(f)
+    assert stats["no_price"] == ["Cefixim 100 mg (Cefixim 100 thử)"]
+    assert stats["drugs_created"] == 1 and stats["batches_created"] == 0     # thiếu giá nhập/hạn: không tạo lô
 
 
 def test_seed_reports_bad_row(tmp_path, users):
