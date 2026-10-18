@@ -54,9 +54,10 @@ class Settings(BaseSettings):
         return self.ENVIRONMENT == "prod"
 
     # --- AI: worker đánh giá và LLM cục bộ (Ollama) ---------------------------------
-    # LLM_PROVIDER=none: không gọi LLM, mọi lần chạy kết thúc Degraded/RuleOnly (Node 2 tất định).
-    # Dùng khi máy không có Ollama (demo, CI).
-    LLM_PROVIDER: Literal["ollama", "none"] = "ollama"
+    # Máy không có Ollama (dev, CI, demo):
+    #   fake: LLM giả lập tất định, chạy đủ luồng Ready/Full; cấm ở prod, nhật ký AI ghi model_name="fake".
+    #   none: không gọi LLM, mọi lần chạy kết thúc Degraded/RuleOnly (Node 2 tất định).
+    LLM_PROVIDER: Literal["ollama", "fake", "none"] = "ollama"
     OLLAMA_BASE_URL: str = "http://127.0.0.1:11434"
     OLLAMA_MODEL: str = "aisingapore/Gemma-SEA-LION-v3-9B-IT"   # theo spike của Huy; đổi trong .env
     AI_ASSESSMENT_TIMEOUT_SECONDS: float = Field(default=90, gt=0, le=90)   # tính từ lúc xếp hàng
@@ -99,6 +100,8 @@ class Settings(BaseSettings):
                 raise ValueError("prod: CORS_ORIGINS không được chứa '*'")
             if self.DB_ECHO:
                 raise ValueError("prod: tắt DB_ECHO (log câu SQL có thể chứa dữ liệu bệnh nhân)")
+            if self.LLM_PROVIDER == "fake":
+                raise ValueError("prod: không dùng LLM_PROVIDER=fake (kết quả AI giả lập)")
         return self
 
 
