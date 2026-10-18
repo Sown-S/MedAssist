@@ -272,9 +272,7 @@ def test_sweeper_requeues_then_fails(make_visit, nurse_user):
     assert _visit(vid).ai_status == "Failed"
 
 
-# ---------------------------------------------------------------------------- cờ đỏ (chờ Huy)
-@pytest.mark.xfail(strict=True, reason="Chờ Huy sửa condition_evaluator theo đặc tả condition_logic chung "
-                                       "(card hạn 21/10). Khi test này PASS: gỡ dấu xfail.")
+# ---------------------------------------------------------------------------- cờ đỏ (Node 1 đồng bộ)
 def test_red_flag_applied_synchronously(make_visit, nurse_user, users):
     with SessionLocal() as db:
         rel_id = db.scalar(text("SELECT release_id FROM knowledge_release WHERE label = 'TEST-WK'"))
