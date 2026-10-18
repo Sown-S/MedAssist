@@ -17,12 +17,12 @@ from tests.unit.ai.fakes import FakeKnowledgeReader
 
 
 def symptom(code="test_signal"):
-    return {"type": "symptom", "code": code, "status": "PRESENT"}
+    return {"type": "symptom", "symptom_code": code, "state": "PRESENT"}
 
 
 def vital(key="spo2_pct"):
     # Phép so sánh giả lập để chạy engine, không phải bộ luật lâm sàng.
-    return {"type": "vital_sign", "key": key, "operator": "lt", "value": 90}
+    return {"type": "vital", "vital": key, "cmp": "<", "value": 90}
 
 
 def rule(rule_type="RED_FLAG", *, key=None, logic=None, version=2):
@@ -143,9 +143,10 @@ def test_unknown_floor_does_not_add_complete_now_items():
 
 def test_completion_deduplicates_across_red_flags_and_excludes_floor_data():
     rules = [
-        rule(key="rf_first", logic={"op": "OR", "conditions": [symptom(), vital()]}),
+        rule(key="rf_first", logic={"op": "OR", "args": [symptom(), vital()]}),
         rule(key="rf_second", logic=symptom()),
-        rule(key="rf_age", logic={"type": "age", "operator": "gte", "value": 60}),
+        rule(key="rf_age", logic={"type": "age", "unit": "years", "cmp": ">=", "value": 60}),
+        rule(key="rf_age_months", logic={"type": "age", "unit": "months", "cmp": "<", "value": 12}),
         rule("PRIORITY_FLOOR", logic=symptom("floor_only")),
     ]
 
@@ -154,7 +155,7 @@ def test_completion_deduplicates_across_red_flags_and_excludes_floor_data():
     assert result["priority_rule"] == "Routine"
     assert result["rule_hits"] == []
     assert result["complete_now"] == [
-        "symptoms.test_signal", "vital_signs.spo2_pct", "age_years"
+        "symptoms.test_signal", "vital_signs.spo2_pct", "age_years", "age_months"
     ]
 
 
@@ -168,7 +169,7 @@ def test_completion_deduplicates_across_red_flags_and_excludes_floor_data():
     ],
 )
 def test_gate_preserves_decisive_and_unknown_kleene_results(op, status, priority, missing):
-    tree = {"op": op, "conditions": [symptom(), vital()]}
+    tree = {"op": op, "args": [symptom(), vital()]}
 
     result = gate([rule(logic=tree)], {"symptoms": {"test_signal": status}})
 
@@ -200,7 +201,7 @@ def test_priority_is_derived_from_rule_type(rule_type, expected):
 
 @pytest.mark.parametrize("rule_type", ["RED_FLAG", "PRIORITY_FLOOR"])
 def test_unknown_vital_key_is_rejected_even_behind_true_or_branch(rule_type):
-    tree = {"op": "OR", "conditions": [symptom(), vital("oxygen")]}
+    tree = {"op": "OR", "args": [symptom(), vital("oxygen")]}
 
     with pytest.raises(ConditionFormatError, match="Khóa sinh hiệu không hợp lệ"):
         gate([rule(rule_type, logic=tree)], {"symptoms": {"test_signal": "PRESENT"}})
@@ -329,7 +330,7 @@ def test_node_imports_and_runs_with_llm_routers_and_graph_dependencies_blocked()
                     "rule_key": "rf_import_test", "version": 1,
                     "rule_type": "RED_FLAG", "reason_text": "Test rule",
                     "condition_logic": {
-                        "type": "symptom", "code": "test_signal", "status": "PRESENT"
+                        "type": "symptom", "symptom_code": "test_signal", "state": "PRESENT"
                     },
                 }]
 

@@ -168,7 +168,7 @@ def test_red_flag_pipeline_has_no_missing_diagnosis_suggestions():
     reader = FakeKnowledgeReader(triage_rules=[{
         "rule_key": "rf_test", "version": 1, "rule_type": "RED_FLAG",
         "reason_text": "Luật thử nghiệm",
-        "condition_logic": {"type": "vital_sign", "key": "spo2_pct", "operator": "lt", "value": 90},
+        "condition_logic": {"type": "vital", "vital": "spo2_pct", "cmp": "<", "value": 90},
     }])
     state = run_node2(run_node1({
         "input_features": {"vital_signs": {"spo2_pct": 80}},

@@ -28,6 +28,18 @@ def relation(code="signal_a", *, polarity="SUPPORTS", weight=1, is_key=False, **
     }
 
 
+def guideline(key="guide_a", **extra):
+    return {
+        "excerpt_key": key,
+        "title": f"Khuyến cáo {key}",
+        "content": f"Nội dung {key}",
+        "source_title": "Hướng dẫn thử nghiệm",
+        "source_locator": None,
+        "status": "Active",
+        **extra,
+    }
+
+
 def condition(code="condition_a", *, relations=None, guidelines=(), **extra):
     return {
         "condition_code": code,
@@ -195,7 +207,7 @@ def test_equal_scores_use_coverage_then_precision_before_condition_code():
 
 def test_candidate_evidence_and_guideline_order_is_independent_of_reader_order():
     relations = [relation(weight=0.1), relation("signal_b", weight=0.2), relation("signal_c", weight=0.3)]
-    guidelines = [{"excerpt_key": key, "title": "Synthetic excerpt"} for key in ("guide_z", "guide_a")]
+    guidelines = [guideline(key) for key in ("guide_z", "guide_a")]
     conditions = [
         condition(code, relations=relations, guidelines=guidelines)
         for code in ("condition_c", "condition_b", "condition_a")
@@ -218,8 +230,8 @@ def test_only_active_reader_conditions_relations_guidelines_and_catalogue_are_us
     item = condition(
         relations=[relation(), relation("signal_b", status=status), relation("signal_c")],
         guidelines=[
-            {"excerpt_key": "guide_active", "status": "Active"},
-            {"excerpt_key": "guide_inactive", "status": status},
+            guideline("guide_active"),
+            guideline("guide_inactive", status=status),
         ],
     )
     conditions = [item, condition("condition_inactive", status=status)]
@@ -234,20 +246,33 @@ def test_only_active_reader_conditions_relations_guidelines_and_catalogue_are_us
     assert candidate["score"] == candidate["coverage"] == candidate["precision"] == 1
     assert candidate["unknown_key_symptoms"] == []
     assert [item["symptom_code"] for item in candidate["supporting_evidence"]] == ["signal_a"]
-    assert candidate["guidelines"] == [{"excerpt_key": "guide_active", "status": "Active"}]
+    assert candidate["guidelines"] == [{
+        "excerpt_key": "guide_active",
+        "title": "Khuyến cáo guide_active",
+        "content": "Nội dung guide_active",
+        "source_title": "Hướng dẫn thử nghiệm",
+        "source_locator": None,
+    }]
 
 
-def test_icd10_and_full_guideline_source_are_preserved_without_inventing_content():
+def test_icd10_and_guideline_contract_are_projected_without_database_metadata():
     guideline = {
         "excerpt_key": "guide_test", "condition_code": "condition_a", "version": 2,
         "title": "Khuyến cáo thử nghiệm", "content": "Nội dung giả lập",
-        "source_id": "synthetic-source", "source_locator": "section 1", "status": "Active",
+        "source_id": "synthetic-source", "source_title": "Bộ Y tế",
+        "source_locator": "section 1", "status": "Active", "created_by": "private",
     }
     candidate = retrieve([condition(guidelines=[guideline])])["candidates"][0]
     without_optional = retrieve([condition(icd10_code=None)])["candidates"][0]
 
     assert candidate["icd10_code"] == "TEST"
-    assert candidate["guidelines"] == [guideline]
+    assert candidate["guidelines"] == [{
+        "excerpt_key": "guide_test",
+        "title": "Khuyến cáo thử nghiệm",
+        "content": "Nội dung giả lập",
+        "source_title": "Bộ Y tế",
+        "source_locator": "section 1",
+    }]
     assert without_optional["icd10_code"] is None
     assert without_optional["guidelines"] == []
 
@@ -282,11 +307,11 @@ def test_retrieval_preserves_node1_safety_result_and_does_not_mutate_inputs(prio
 
 
 def test_returned_guidelines_do_not_mutate_reader_owned_knowledge():
-    item = condition(guidelines=[{"excerpt_key": "guide_a", "source": {"title": "Original"}}])
+    item = condition(guidelines=[guideline("guide_a")])
     original = deepcopy(item)
 
     candidate = rank_conditions({"symptoms": {"signal_a": "PRESENT"}}, [item], catalogue("signal_a"))[0]
-    candidate["guidelines"][0]["source"]["title"] = "Changed"
+    candidate["guidelines"][0]["content"] = "Changed"
 
     assert item == original
 
@@ -314,7 +339,9 @@ def test_terminal_gate_never_reads_knowledge_or_returns_diagnoses(terminal):
 def test_real_node1_red_flag_result_stops_retrieval():
     reader = FakeKnowledgeReader(triage_rules=[{
         "rule_key": "rf_test", "version": 1, "rule_type": "RED_FLAG", "reason_text": "Synthetic rule",
-        "condition_logic": {"type": "symptom", "code": "signal_a", "status": "PRESENT"},
+        "condition_logic": {
+            "type": "symptom", "symptom_code": "signal_a", "state": "PRESENT",
+        },
     }], conditions=[condition()], symptoms=catalogue("signal_a"))
     state = run_node1({"input_features": {"symptoms": {"signal_a": "PRESENT"}}}, reader)
 
@@ -390,6 +417,27 @@ def test_malformed_condition_data_is_rejected(field, value):
 
     with pytest.raises(ScoringFormatError):
         rank_conditions({}, [item], catalogue("signal_a"))
+
+
+@pytest.mark.parametrize("field,value", [
+    ("excerpt_key", ""),
+    ("title", " "),
+    ("content", None),
+    ("source_title", ""),
+    ("source_locator", ""),
+    ("source_locator", 7),
+])
+def test_malformed_guideline_contract_is_rejected(field, value):
+    row = guideline()
+    row[field] = value
+
+    with pytest.raises(ScoringFormatError):
+        retrieve([condition(guidelines=[row])])
+
+
+def test_duplicate_guideline_excerpt_key_is_rejected():
+    with pytest.raises(ScoringFormatError, match="trùng excerpt_key"):
+        retrieve([condition(guidelines=[guideline(), guideline()])])
 
 
 @pytest.mark.parametrize("field,value", [("symptom_code", ""), ("polarity", "OTHER"), ("is_key", 1)])

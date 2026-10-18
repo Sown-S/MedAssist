@@ -29,7 +29,13 @@ def retrieved_state(*, count=2, priority="Routine"):
                  "is_key": True},
                 {"symptom_code": "signal_d", "polarity": "SUPPORTS", "weight": 0.5},
             ],
-            "guidelines": [{"excerpt_key": "synthetic_guide", "excerpt": "Tri thức giả lập."}],
+            "guidelines": [{
+                "excerpt_key": "synthetic_guide",
+                "title": "Khuyến cáo giả lập",
+                "content": "Tri thức giả lập.",
+                "source_title": "Nguồn giả lập",
+                "source_locator": None,
+            }],
         } for letter in "abcd"[:count]],
         symptoms=[{"symptom_code": f"signal_{letter}"} for letter in "abcd"],
     )
@@ -132,7 +138,7 @@ def test_node1_through_node4_accepts_mock_ranking_and_only_copies_node2_evidence
     assert set(catalogue.calls[1][1]) == {"signal_a", "signal_b", "signal_c", "signal_d"}
     # Bằng chứng/hướng dẫn lồng nhau trả về không được làm đổi snapshot nguồn.
     result["candidates"][0]["supporting_evidence"][0]["weight"] = 0.1
-    result["candidates"][0]["guidelines"][0]["excerpt"] = "Changed"
+    result["candidates"][0]["guidelines"][0]["content"] = "Changed"
     assert reasoning == original
 
 
