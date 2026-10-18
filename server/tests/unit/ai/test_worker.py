@@ -6,7 +6,7 @@ from types import SimpleNamespace
 import uuid
 
 import pytest
-from sqlalchemy import func, select
+from sqlalchemy import func, select, update
 
 from app.ai.extraction import feature_extractor
 from app.core.database import SessionLocal
@@ -20,6 +20,28 @@ from app.worker.runner import (
     sweep_expired_jobs,
 )
 from tests.unit.ai.fakes import FakeKnowledgeReader, MockLLMClient
+
+
+def _drain_worker_queue() -> None:
+    with SessionLocal() as db:
+        db.execute(
+            update(AiAssessmentLog)
+            .where(AiAssessmentLog.status.in_(("Queued", "Running")))
+            .values(
+                status="Skipped",
+                lease_until=None,
+                completed_at=datetime.now(UTC),
+                error_detail="TEST_CLEANUP",
+            )
+        )
+        db.commit()
+
+
+@pytest.fixture(autouse=True)
+def _clean_worker_queue():
+    _drain_worker_queue()
+    yield
+    _drain_worker_queue()
 
 
 def _visit(db, users, *, free_text="Ho và sốt", phone=None):

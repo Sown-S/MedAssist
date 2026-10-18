@@ -162,8 +162,15 @@ def test_trigger_assessment_red_flag_and_queued_use_same_transaction(users):
         skipped = assessment_service.trigger_assessment(
             db, emergency_visit.visit_id, red_reader, triggered_by=users["yta"].user_id
         )
+        class RefreshingReader(FakeKnowledgeReader):
+            refresh_calls = 0
+
+            def refresh(self):
+                self.refresh_calls += 1
+
+        queued_reader = RefreshingReader(release=release_data)
         queued = assessment_service.trigger_assessment(
-            db, queued_visit.visit_id, FakeKnowledgeReader(release=release_data),
+            db, queued_visit.visit_id, queued_reader,
             triggered_by=users["yta"].user_id,
         )
 
@@ -174,6 +181,12 @@ def test_trigger_assessment_red_flag_and_queued_use_same_transaction(users):
         assert emergency_visit.red_flag_rule_type == "RED_FLAG"
         assert queued.status == "Queued" and queued.mode is None and queued.completed_at is None
         assert queued_visit.ai_status == "Pending" and queued.priority_rule == "Routine"
+        assert set(queued.input_features) == {
+            "symptoms", "vital_signs", "age_years", "age_months",
+        }
+        assert queued.input_features["vital_signs"] == {"spo2_pct": 98}
+        assert "Ca giả lập" not in str(queued.input_features)
+        assert queued_reader.refresh_calls == 1
         audits = list(db.scalars(select(AuditLog).where(
             AuditLog.action_type == "AI_ASSESSMENT",
             AuditLog.entity_id.in_([emergency_visit.visit_id, queued_visit.visit_id]),
@@ -276,6 +289,51 @@ def test_latest_assessment_maps_release_label_and_polling_fields():
     assert payload["ai_status"] == "Pending"
     assert payload["knowledge_release"] == "KB-2026"
     assert payload["complete_now"] == [{"symptom_code": "fever", "symptom_name": "Sốt"}]
+
+
+def test_latest_assessment_normalizes_queue_service_shapes():
+    visit_id = uuid4()
+    log = SimpleNamespace(
+        assessment_id=uuid4(), visit_id=visit_id, run_type="Assessment",
+        queued_at=datetime.now(timezone.utc), mode="Full", knowledge_release_id=None,
+        model_name="gemma:9b", model_version=None, prompt_version="reasoning_v1",
+        priority_rule="Routine", priority_final="Routine",
+        rule_hits=[
+            {"rule_key": "rf_low_spo2", "version": 1, "reason": "SpO2 thấp"},
+            {"rule_key": "unknown", "version": 1, "reason": "Bỏ qua"},
+        ],
+        candidates=[candidate()],
+    )
+    visit = SimpleNamespace(visit_id=visit_id, ai_status="Ready", priority_raised_by_ai=False)
+
+    class ScalarResult:
+        def first(self):
+            return log
+
+    class DB:
+        def get(self, model, key):
+            return visit
+
+        def scalars(self, query):
+            return ScalarResult()
+
+    reader = FakeKnowledgeReader(
+        release={"label": "KB-ACTIVE"},
+        symptoms=[
+            {"symptom_code": "cough", "symptom_name": "Ho"},
+            {"symptom_code": "fever", "symptom_name": "Sốt"},
+        ],
+    )
+    payload = assessment_service.get_latest_assessment(DB(), visit_id, reader)
+    assert payload["alerts"] == [{
+        "rule_key": "rf_low_spo2", "rule_type": "RED_FLAG", "reason_text": "SpO2 thấp",
+    }]
+    assert payload["model_version"] == "gemma:9b"
+    assert payload["candidates"][0]["rank"] == 1
+    assert payload["candidates"][0]["supporting"][0]["symptom_name"] == "Ho"
+    assert payload["candidates"][0]["missing"] == [
+        {"symptom_code": "fever", "symptom_name": "Sốt"}
+    ]
 
 
 def test_invalid_offline_mode_is_rejected():

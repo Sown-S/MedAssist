@@ -29,8 +29,9 @@ def list_diagnoses(visit_id: uuid.UUID, _: User = Depends(_view_visit), db: Sess
 @router.post("/visits/{visit_id}/diagnoses", response_model=DiagnosisOut, status_code=201)
 def add_diagnosis(visit_id: uuid.UUID, body: DiagnosisCreate, actor: User = Depends(_physician_dx),
                   db: Session = Depends(get_db)):
-    """Lưu = xác nhận (chưa có gợi ý AI). Chẩn đoán đầu tiên luôn là chẩn đoán chính; thêm một
-    chẩn đoán chính mới thì chẩn đoán chính cũ thành chẩn đoán kèm theo."""
+    """Lưu = xác nhận. Chẩn đoán đầu tiên luôn là chẩn đoán chính; thêm một chẩn đoán chính mới thì
+    chẩn đoán chính cũ thành chẩn đoán kèm theo. Gắn với lần chạy AI (assessment_id, không bắt buộc)
+    và ghi quyết định của bác sĩ vào nhật ký AI trong cùng transaction."""
     dx = rx.add_diagnosis(db, visit_id, body, actor)
     db.commit()
     return dx

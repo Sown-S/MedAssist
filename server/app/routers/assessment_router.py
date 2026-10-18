@@ -46,6 +46,12 @@ def get_knowledge_reader(db: Session = Depends(get_db)) -> KnowledgeReader:
     reader_type = getattr(module, "KnowledgeReader", None)
     if callable(reader_type):
         return reader_type(db)
+    db_reader_type = getattr(module, "DbKnowledgeReader", None)
+    if callable(db_reader_type):
+        reader = db_reader_type()
+        if hasattr(reader, "refresh"):
+            reader.refresh()
+        return reader
     raise _knowledge_unavailable()
 
 

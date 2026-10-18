@@ -200,6 +200,8 @@ def trigger_assessment(
     if patient is None:
         raise NotFoundError("Không tìm thấy bệnh nhân")
     features = _features(db, visit, patient)
+    if hasattr(knowledge_reader, "refresh"):
+        knowledge_reader.refresh()
     state = run_node1({"input_features": features}, knowledge_reader)
     active_rules = list(knowledge_reader.active_triage_rules())
     symptom_map = _symptom_map(knowledge_reader)
@@ -246,7 +248,7 @@ def trigger_assessment(
         triggered_by=triggered_by,
         status=status,
         mode=mode,
-        input_features=None,
+        input_features=features,
         rule_hits=hits,
         priority_rule=state["priority_rule"],
         priority_final=state["priority_final"],
@@ -353,8 +355,44 @@ def get_latest_assessment(
             )
         )
     rule_data = log.rule_hits or {}
-    hits = rule_data.get("hits", rule_data) if isinstance(rule_data, dict) else []
-    complete_now = rule_data.get("complete_now", []) if isinstance(rule_data, dict) else []
+    if isinstance(rule_data, dict):
+        hits = rule_data.get("hits", [])
+        complete_now = rule_data.get("complete_now", [])
+    elif isinstance(rule_data, list):
+        hits = rule_data
+        complete_now = []
+    else:
+        hits = []
+        complete_now = []
+
+    alerts = []
+    for hit in hits:
+        if not isinstance(hit, Mapping):
+            continue
+        rule_key = hit.get("rule_key")
+        rule_type = hit.get("rule_type")
+        if rule_type is None and isinstance(rule_key, str):
+            if rule_key.startswith("rf_"):
+                rule_type = "RED_FLAG"
+            elif rule_key.startswith("pf_"):
+                rule_type = "PRIORITY_FLOOR"
+        if rule_type not in ("RED_FLAG", "PRIORITY_FLOOR"):
+            continue
+        alerts.append({
+            "rule_key": rule_key,
+            "rule_type": rule_type,
+            "reason_text": hit.get("reason_text") or hit.get("reason") or "",
+        })
+
+    candidates = log.candidates if isinstance(log.candidates, list) else []
+    if any(
+        not isinstance(candidate, Mapping)
+        or "rank" not in candidate
+        or "supporting" not in candidate
+        for candidate in candidates
+    ):
+        symptom_map = _symptom_map(knowledge_reader) if knowledge_reader is not None else {}
+        candidates = _candidates({"candidates": candidates}, symptom_map)
     return {
         "assessment_id": log.assessment_id,
         "ai_status": visit.ai_status,
@@ -362,12 +400,12 @@ def get_latest_assessment(
         "knowledge_release": release_label or (
             str(log.knowledge_release_id) if log.knowledge_release_id else None
         ),
-        "model_version": log.model_version,
+        "model_version": log.model_version or getattr(log, "model_name", None),
         "prompt_version": log.prompt_version,
         "priority": {"rule": log.priority_rule, "final": log.priority_final, "raised_by_ai": visit.priority_raised_by_ai},
-        "alerts": [{"rule_key": h.get("rule_key"), "rule_type": h.get("rule_type"), "reason_text": h.get("reason_text", h.get("reason", ""))} for h in hits],
+        "alerts": alerts,
         "complete_now": complete_now,
-        "candidates": log.candidates or [],
+        "candidates": candidates,
     }
 
 

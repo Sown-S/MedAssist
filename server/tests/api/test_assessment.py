@@ -5,6 +5,7 @@ import uuid
 from types import SimpleNamespace
 
 import pytest
+from sqlalchemy import text
 
 from app.core.database import SessionLocal
 from app.exceptions import AppError
@@ -128,7 +129,7 @@ def test_get_without_assessment_returns_business_404(client, login, knowledge_re
 
 
 def test_post_red_flag_returns_skipped_without_candidates(
-    client, login, users, knowledge_reader
+    client, login, users, knowledge_reader, owner_engine
 ):
     nurse = login("yta")
     visit_id = _visit(client, nurse, vital_signs={"spo2_pct": 80})
@@ -164,32 +165,64 @@ def test_post_red_flag_returns_skipped_without_candidates(
         db.commit()
         rule_id = triage.triage_rule_id
         release_id = release.release_id
+        source_id = source.source_id
         rule_key = triage.rule_key
 
-    knowledge_reader._release = {"release_id": release_id, "label": "AI11-RED"}
-    knowledge_reader._triage_rules = [{
-        "triage_rule_id": rule_id,
-        "rule_key": rule_key,
-        "version": 1,
-        "rule_type": "RED_FLAG",
-        "resulting_priority": "Emergency",
-        "reason_text": "SpO2 thấp",
-        "condition_logic": {
-            "type": "vital", "vital": "spo2_pct", "cmp": "<=", "value": 90,
-        },
-    }]
+    try:
+        knowledge_reader._release = {"release_id": release_id, "label": "AI11-RED"}
+        knowledge_reader._triage_rules = [{
+            "triage_rule_id": rule_id,
+            "rule_key": rule_key,
+            "version": 1,
+            "rule_type": "RED_FLAG",
+            "resulting_priority": "Emergency",
+            "reason_text": "SpO2 thấp",
+            "condition_logic": {
+                "type": "vital", "vital": "spo2_pct", "cmp": "<=", "value": 90,
+            },
+        }]
 
-    response = client.post(f"/api/v1/visits/{visit_id}/assessment", headers=nurse)
-    assert response.status_code == 202, response.text
-    body = response.json()
-    assert body["ai_status"] == "Skipped" and body["mode"] == "RuleOnly"
-    assert body["priority"] == {
-        "rule": "Emergency", "final": "Emergency", "raised_by_ai": False,
-    }
-    assert body["alerts"] == [{
-        "rule_key": rule_key, "rule_type": "RED_FLAG", "reason_text": "SpO2 thấp",
-    }]
-    assert body["candidates"] == []
+        response = client.post(f"/api/v1/visits/{visit_id}/assessment", headers=nurse)
+        assert response.status_code == 202, response.text
+        body = response.json()
+        assert body["ai_status"] == "Skipped" and body["mode"] == "RuleOnly"
+        assert body["priority"] == {
+            "rule": "Emergency", "final": "Emergency", "raised_by_ai": False,
+        }
+        assert body["alerts"] == [{
+            "rule_key": rule_key, "rule_type": "RED_FLAG", "reason_text": "SpO2 thấp",
+        }]
+        assert body["candidates"] == []
+    finally:
+        with owner_engine.begin() as conn:
+            conn.execute(
+                text(
+                    "UPDATE ai_assessment_log SET knowledge_release_id = NULL "
+                    "WHERE knowledge_release_id = :release_id"
+                ),
+                {"release_id": release_id},
+            )
+            conn.execute(
+                text(
+                    "UPDATE visit SET triage_priority_rule = 'Routine', "
+                    "triage_priority = 'Routine', priority_raised_by_ai = false, "
+                    "is_red_flag = false, red_flag_rule_id = NULL, red_flag_reason = NULL "
+                    "WHERE visit_id = :visit_id"
+                ),
+                {"visit_id": uuid.UUID(visit_id)},
+            )
+            conn.execute(
+                text("DELETE FROM triage_rule WHERE triage_rule_id = :rule_id"),
+                {"rule_id": rule_id},
+            )
+            conn.execute(
+                text("DELETE FROM knowledge_release WHERE release_id = :release_id"),
+                {"release_id": release_id},
+            )
+            conn.execute(
+                text("DELETE FROM knowledge_source WHERE source_id = :source_id"),
+                {"source_id": source_id},
+            )
 
 
 def test_get_returns_exact_completed_candidate_shape(client, login, users, knowledge_reader):
