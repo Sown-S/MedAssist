@@ -44,7 +44,13 @@ def retrieved_state(*, priority="Routine", count=2):
                     {"symptom_code": "signal_c", "polarity": "SUPPORTS", "weight": 1,
                      "is_key": True},
                 ],
-                "guidelines": [{"excerpt_key": "synthetic_guide", "excerpt": "Tri thức giả lập."}],
+                "guidelines": [{
+                    "excerpt_key": "synthetic_guide",
+                    "title": "Khuyến cáo giả lập",
+                    "content": "Tri thức giả lập.",
+                    "source_title": "Nguồn giả lập",
+                    "source_locator": None,
+                }],
             }
             for letter in "abcd"[:count]
         ],

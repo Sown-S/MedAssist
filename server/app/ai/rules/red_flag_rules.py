@@ -2,9 +2,9 @@
 
 Luật đến từ ``KnowledgeReader.active_triage_rules()``; module không đóng gói ngưỡng
 lâm sàng. Mapping dùng các trường luật hiện có: ``rule_key``, ``version``,
-``rule_type``, ``reason_text`` và ``condition_logic``. Cây điều kiện theo định dạng
-tạm của AI-01 cho đến khi có đặc tả OKF. Mức ưu tiên được suy ra từ loại luật,
-không bao giờ lấy từ ``resulting_priority`` được truyền vào.
+``rule_type``, ``reason_text`` và ``condition_logic``. Cây điều kiện dùng định dạng
+đặc tả mà AI-01 hỗ trợ. Mức ưu tiên được suy ra từ loại luật, không bao giờ lấy từ
+``resulting_priority`` được truyền vào.
 """
 
 from collections.abc import Mapping, Sequence
