@@ -34,7 +34,9 @@ from sqlalchemy.orm import Session
 from app.models import (Condition, ConditionSymptom, GuidelineExcerpt, KnowledgeRelease, KnowledgeSource, Symptom,
                         TriageRule, User)
 from app.models.user import SYSTEM_USER_ID
+from app.exceptions import AppError
 from app.services import audit_service as audit
+from app.services import knowledge_service
 from app.validation.knowledge_validators import (ConditionCode, ExcerptKey, SymptomCode, check_rule_key,
                                                  condition_logic_errors, logic_symptom_codes)
 
@@ -406,13 +408,11 @@ def apply_plan(db: Session, v: Vault, plan: Plan, *, drafter: User, approver: Us
     if db.scalar(select(KnowledgeRelease.release_id).where(KnowledgeRelease.label == v.release.label)):
         raise ImportError_(f"Nhãn '{v.release.label}' đã dùng; đổi label trong _release.md cho bản mới")
 
-    status = "Active" if approver else ("PendingApproval" if submit else "Draft")
+    # Khi duyệt ngay: ghi như một bản chờ duyệt rồi kích hoạt bằng CHÍNH hàm của API quản trị tri thức
+    status = "PendingApproval" if (submit or approver) else "Draft"
     now = func.now()
     rel = KnowledgeRelease(label=v.release.label, description=v.release.description, status=status,
-                           created_by=drafter.user_id,
-                           submitted_at=now if (submit or approver) else None,
-                           approved_by=approver.user_id if approver else None,
-                           approved_at=now if approver else None)
+                           created_by=drafter.user_id, submitted_at=now if status == "PendingApproval" else None)
     db.add(rel)
     created_sources = {}
     for s in plan.new_sources:
@@ -423,23 +423,22 @@ def apply_plan(db: Session, v: Vault, plan: Plan, *, drafter: User, approver: Us
         created_sources[id(s)] = src
     db.flush()
 
-    # Khóa (symptom_key/condition_key) phải có trước quan hệ: tạo theo thứ tự loại
-    order = {k: i for i, k in enumerate(ITEM_TYPES)}
-    for kind in ITEM_TYPES:
+    for kind in ITEM_TYPES:                               # khóa (symptom/condition) trước quan hệ
         model, keycols = _MODEL[kind]
-        batch = [c for c in sorted(plan.changes, key=lambda c: order[c.kind]) if c.kind == kind]
-        for ch in batch:
+        for ch in (c for c in plan.changes if c.kind == kind):
             values = {k: (created_sources[id(val)].source_id if isinstance(val, SourceFile) else val)
                       for k, val in ch.values.items()}
             where = [getattr(model, col) == values[col] for col in keycols]
             latest = db.scalar(select(func.max(model.version)).where(*where)) or 0
-            if approver:                                  # bản cũ rời Active trước (uq_*_active)
-                db.execute(update(model).where(*where, model.status == "Active")
-                           .values(status="Retired", retired_by=approver.user_id, retired_at=now,
-                                   retired_reason="Superseded"))
             db.add(model(**values, version=latest + 1, status=status, release_id=rel.release_id,
                          created_by=drafter.user_id))
         db.flush()
+
+    if approver:
+        try:
+            knowledge_service.activate_release(db, rel, approver)
+        except AppError as e:
+            raise ImportError_(e.message) from None
 
     retired = 0
     if approver and retire_missing:
