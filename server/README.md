@@ -142,6 +142,23 @@ uvicorn app.main:app --reload
 
 Dừng API: `Ctrl + C`.
 
+### 2.10. Chạy worker AI (terminal thứ hai)
+
+Worker là tiến trình riêng: lấy việc đánh giá AI từ hàng đợi trong PostgreSQL, gọi Ollama, ghi kết quả.
+
+```powershell
+.\venv\Scripts\activate     # ở thư mục gốc repo
+cd server
+python -m app.worker
+```
+
+- Máy **không có Ollama**: đặt `LLM_PROVIDER=none` trong `server/.env`. Kết quả AI chỉ còn xếp hạng tất định
+  (trạng thái `Degraded`, chế độ `RuleOnly`), đủ để chạy thử luồng khám.
+- Có Ollama: `OLLAMA_BASE_URL`, `OLLAMA_MODEL` trong `server/.env` (chỉ nhận địa chỉ trong máy / mạng LAN).
+- Cờ đỏ KHÔNG phụ thuộc worker: được kiểm ngay lúc xếp hàng, worker tắt vẫn hiện cảnh báo.
+
+Dừng worker: `Ctrl + C`. Việc đang chạy dở sẽ được sweeper xếp lại sau khi hết lease.
+
 ---
 
 ## 3. Chạy hằng ngày
@@ -263,6 +280,10 @@ python -m scripts.seed_drugs
 | `REFRESH_TOKEN_EXPIRE_HOURS` | | `8` | Hạn refresh token (một ca làm việc) |
 | `LOGIN_MAX_FAILURES_PER_USER` / `_PER_IP` | | `5` / `20` | Số lần sai trong 15 phút trước khi khóa 5 phút |
 | `TRUSTED_PROXIES` | | `[]` | IP proxy được tin `X-Forwarded-For` (Caddy trên máy admin) |
+| `LLM_PROVIDER` | | `ollama` | `none` = không gọi LLM (máy không có Ollama, CI) |
+| `OLLAMA_BASE_URL` / `OLLAMA_MODEL` | | `http://127.0.0.1:11434` / theo spike của Huy | LLM cục bộ cho worker |
+| `AI_ASSESSMENT_TIMEOUT_SECONDS` | | `90` | Ngân sách một lần đánh giá, tính từ lúc xếp hàng |
+| `WORKER_LEASE_SECONDS` / `WORKER_MAX_ATTEMPTS` | | `150` / `2` | Hạn thuê việc; số lần thử trước khi `Failed` |
 | `TEST_DATABASE_URL` / `TEST_MIGRATION_DATABASE_URL` | | tự suy ra | Ghi đè DB cho pytest (thường không cần) |
 
 `deploy/.env`: mật khẩu `postgres` và 3 vai trò; `MEDASSIST_CREATE_TEST_DB=1` (tạo `medassist_test`),
@@ -283,6 +304,7 @@ Tiền tố `/api/v1`. Chi tiết tham số và schema: **Swagger `/docs`** (lu�
 | Bệnh nhân | `GET/POST patients`; `GET/PATCH patients/{id}`; `GET patients/{id}/visits` | Nurse tạo/sửa; Physician, Nurse xem |
 | Lượt khám | `POST visits`; `GET/PATCH visits/{id}`; `PATCH visits/{id}/check-in`, `/start-exam`, `/release`, `/cancel`; `GET queue`; `GET visits/stale`; `POST visits/stale/cancel` | Nurse; Physician (nhận khám, trả lại, hủy lượt của mình) |
 | Thuốc, kho | `GET/POST drugs`; `GET/PATCH drugs/{id}`; `GET inventory/stock`, `/alerts`, `/reconciliation`; `GET/POST inventory/batches`; `GET inventory/batches/{id}`; `POST …/top-up`, `…/adjustments`; `GET …/movements` | Admin, Nurse; Physician xem |
+| Triệu chứng (HITL) | `GET/PUT visits/{id}/symptoms` | Nurse, Physician (lượt khám còn mở) |
 | Chẩn đoán | `GET/POST visits/{id}/diagnoses`; `PATCH diagnoses/{id}`; `POST diagnoses/{id}/retract` | Physician đang khám; Nurse xem |
 | Đơn thuốc | `GET/PUT/DELETE visits/{id}/prescription`; `POST …/prescription/confirm`, `…/prescription/reopen`; `POST visits/{id}/complete-exam` | Physician đang khám; Nurse xem |
 | Cấp phát, thu tiền | `GET billing/awaiting`; `GET/PATCH visits/{id}/invoice`; `GET …/invoice/print`; `POST …/invoice/pay`; `PATCH prescription-items/{id}/dispense`; `POST visits/{id}/dispense-all` | Nurse; Physician xem hóa đơn |

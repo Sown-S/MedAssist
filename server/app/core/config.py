@@ -53,6 +53,18 @@ class Settings(BaseSettings):
     def is_prod(self) -> bool:
         return self.ENVIRONMENT == "prod"
 
+    # --- AI: worker đánh giá và LLM cục bộ (Ollama) ---------------------------------
+    # LLM_PROVIDER=none: không gọi LLM, mọi lần chạy kết thúc Degraded/RuleOnly (Node 2 tất định).
+    # Dùng khi máy không có Ollama (demo, CI).
+    LLM_PROVIDER: Literal["ollama", "none"] = "ollama"
+    OLLAMA_BASE_URL: str = "http://127.0.0.1:11434"
+    OLLAMA_MODEL: str = "aisingapore/Gemma-SEA-LION-v3-9B-IT"   # theo spike của Huy; đổi trong .env
+    AI_ASSESSMENT_TIMEOUT_SECONDS: float = Field(default=90, gt=0, le=90)   # tính từ lúc xếp hàng
+    WORKER_POLL_SECONDS: float = Field(default=1.0, gt=0)
+    WORKER_LEASE_SECONDS: int = Field(default=150, ge=30)                   # > timeout đánh giá
+    WORKER_SWEEP_SECONDS: int = Field(default=30, ge=5)
+    WORKER_MAX_ATTEMPTS: int = Field(default=2, ge=1, le=5)
+
     DB_POOL_SIZE: int = 5
     DB_MAX_OVERFLOW: int = 5
     DB_ECHO: bool = False
