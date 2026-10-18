@@ -103,7 +103,7 @@ def test_lock_per_ip(client, users, monkeypatch):
 
 
 def test_change_own_password(client, fresh_user, logs):
-    headers = {"Authorization": "Bearer " + create_access_token(fresh_user.user_id, "Nurse")[0]}
+    headers = {"Authorization": "Bearer " + create_access_token(fresh_user.user_id, "Nurse", fresh_user.password_hash)[0]}
     bad = client.post("/api/v1/auth/change-password", headers=headers,
                       json={"old_password": "sai", "new_password": "MatkhauMoi1"})
     assert bad.status_code == 422 and bad.json()["error"]["code"] == "WRONG_PASSWORD"
@@ -119,3 +119,48 @@ def test_change_own_password(client, fresh_user, logs):
     assert _login(client, fresh_user.username, "MatkhauMoi1").status_code == 200
     (row,) = [r for r in logs(action="UPDATE", entity="users")]
     assert row.new_values == {"password_changed": True} and "MatkhauMoi1" not in str(row.new_values)
+
+
+# ---- Dấu mật khẩu: đổi / đặt lại mật khẩu thu hồi mọi token cũ ----------------------------
+def _bearer(token):
+    return {"Authorization": f"Bearer {token}"}
+
+
+def test_change_password_revokes_old_tokens(client, fresh_user):
+    old = _login(client, fresh_user.username).json()
+    other_device = _login(client, fresh_user.username).json()
+    r = client.post("/api/v1/auth/change-password", headers=_bearer(old["access_token"]),
+                    json={"old_password": PW, "new_password": "MatkhauMoi1"})
+    assert r.status_code == 204
+    for tokens in (old, other_device):
+        assert client.get("/api/v1/auth/me", headers=_bearer(tokens["access_token"])).status_code == 401
+        assert client.post("/api/v1/auth/refresh", json={"refresh_token": tokens["refresh_token"]}).status_code == 401
+    new = _login(client, fresh_user.username, "MatkhauMoi1").json()
+    assert client.get("/api/v1/auth/me", headers=_bearer(new["access_token"])).status_code == 200
+    assert client.post("/api/v1/auth/refresh", json={"refresh_token": new["refresh_token"]}).status_code == 200
+
+
+def test_admin_reset_password_revokes_old_tokens(client, fresh_user, login):
+    old = _login(client, fresh_user.username).json()
+    r = client.post(f"/api/v1/admin/users/{fresh_user.user_id}/reset-password", headers=login("admin"),
+                    json={"new_password": "DatLai12345"})
+    assert r.status_code == 204, r.text
+    assert client.get("/api/v1/auth/me", headers=_bearer(old["access_token"])).status_code == 401
+    assert client.post("/api/v1/auth/refresh", json={"refresh_token": old["refresh_token"]}).status_code == 401
+
+
+def test_token_without_password_stamp_rejected(client, fresh_user):
+    import jwt
+    from datetime import UTC, datetime, timedelta
+    now = datetime.now(UTC)
+    forged_old_format = jwt.encode({"sub": str(fresh_user.user_id), "role": "Nurse", "type": "access",
+                                    "iat": now, "exp": now + timedelta(minutes=5)},
+                                   settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
+    assert client.get("/api/v1/auth/me", headers=_bearer(forged_old_format)).status_code == 401
+
+
+def test_password_stamp_does_not_expose_hash(fresh_user):
+    import jwt
+    token, _ = create_access_token(fresh_user.user_id, "Nurse", fresh_user.password_hash)
+    payload = jwt.decode(token, options={"verify_signature": False})
+    assert len(payload["pwd"]) == 16 and payload["pwd"] not in fresh_user.password_hash

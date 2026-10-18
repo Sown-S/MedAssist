@@ -14,6 +14,7 @@ from app.core.auth import require_roles
 from app.core.database import get_db
 from app.models import User
 from app.schemas.common import Page, PhoneVN
+from app.schemas.emr import PatientHistory, PatientLookupResult, VisitRecord
 from app.schemas.patient import IdNumber, PatientCreate, PatientOut, PatientSummary, PatientUpdate
 from app.schemas.visit import (BulkCancelRequest, CancelRequest, QueueItem, VisitCreate, VisitOut,
                                VisitUpdate, VisitWithWarnings)
@@ -39,12 +40,28 @@ def _with_warnings(visit) -> VisitWithWarnings:
 def search_patients(
     q: str | None = Query(None, min_length=1, max_length=100, description="Một phần họ tên, gõ có dấu hay không dấu đều được"),
     phone: PhoneVN | None = Query(None), id_number: IdNumber | None = Query(None),
+    code: str | None = Query(None, pattern=r"^(?:[Bb][Nn]-?)?[0-9A-Fa-f]{8}$", description="Mã BN, vd BN-3F2A9C1B"),
+    birth_year: int | None = Query(None, ge=1890, le=2100, description="Năm sinh"),
     limit: int = Query(20, ge=1, le=100), offset: int = Query(0, ge=0),
     _: User = Depends(audit_view("patient", roles=CLINICAL_ROLES)), db: Session = Depends(get_db),
 ):
-    total, rows = emr_service.search_patients(db, q=q, phone=phone, id_number=id_number,
-                                              limit=limit, offset=offset)
+    """Tìm có điều kiện (AND). Ô tìm kiếm duy nhất ở quầy: dùng /patients/lookup."""
+    code_hex = code[-8:].lower() if code else None
+    total, rows = emr_service.search_patients(db, q=q, phone=phone, id_number=id_number, code=code_hex,
+                                              birth_year=birth_year, limit=limit, offset=offset)
     return Page[PatientSummary](total=total, limit=limit, offset=offset, items=rows)
+
+
+@router.get("/patients/lookup", response_model=PatientLookupResult)
+def lookup_patients(
+    term: str = Query(..., min_length=1, max_length=120,
+                      description="Mã BN, SĐT, CCCD/CMND, năm sinh, họ tên, hoặc họ tên + năm sinh"),
+    limit: int = Query(10, ge=1, le=50), offset: int = Query(0, ge=0),
+    _: User = Depends(audit_view("patient", roles=CLINICAL_ROLES)), db: Session = Depends(get_db),
+):
+    """Tra cứu nhanh một ô (US04). Nhật ký VIEW chỉ ghi tên tham số, không ghi nội dung tìm."""
+    interpreted, total, items = emr_service.quick_lookup(db, term, limit=limit, offset=offset)
+    return {"interpreted_as": interpreted, "total": total, "limit": limit, "offset": offset, "items": items}
 
 
 @router.post("/patients", response_model=PatientOut, status_code=201)
@@ -78,6 +95,24 @@ def patient_visits(patient_id: uuid.UUID, limit: int = Query(20, ge=1, le=100), 
     emr_service.get_patient(db, patient_id)
     total, rows = queue_service.patient_history(db, patient_id, limit, offset)
     return Page[VisitOut](total=total, limit=limit, offset=offset, items=rows)
+
+
+@router.get("/patients/{patient_id}/history", response_model=PatientHistory)
+def patient_history(patient_id: uuid.UUID, limit: int = Query(20, ge=1, le=100), offset: int = Query(0, ge=0),
+                    include_cancelled: bool = Query(False, description="Hiện cả lượt khám đã hủy"),
+                    _: User = Depends(audit_view("patient", roles=CLINICAL_ROLES, id_param="patient_id")),
+                    db: Session = Depends(get_db)):
+    """Hồ sơ bệnh án (US04): mới nhất trước; mỗi lượt có chẩn đoán đã xác nhận và tóm tắt đơn thuốc."""
+    return emr_service.patient_history(db, patient_id, limit=limit, offset=offset,
+                                       include_cancelled=include_cancelled)
+
+
+@router.get("/visits/{visit_id}/record", response_model=VisitRecord)
+def visit_record(visit_id: uuid.UUID,
+                 _: User = Depends(audit_view("visit", roles=CLINICAL_ROLES, id_param="visit_id")),
+                 db: Session = Depends(get_db)):
+    """Xem lại đầy đủ một lượt khám (kể cả lượt cũ): sinh hiệu, chẩn đoán, đơn thuốc, hóa đơn."""
+    return emr_service.visit_record(db, visit_id)
 
 
 # ============================================================================ Hàng đợi

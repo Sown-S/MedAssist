@@ -97,10 +97,11 @@ def update_diagnosis(db: Session, diagnosis_id: uuid.UUID, data: DiagnosisUpdate
                         for k in ("diagnosis_name", "is_primary") if k in changes and changes[k] is None])
     if changes.get("is_primary") is False and dx.is_primary:
         raise AppError(409, "PRIMARY_REQUIRED", "Đặt một chẩn đoán khác làm chẩn đoán chính trước")
-    if changes.get("is_primary") is True and not dx.is_primary:
-        _demote_primary(db, dx.visit_id, keep=dx.diagnosis_id)
+    # Kiểm tra trước khi hạ chẩn đoán chính hiện tại (không để thay đổi dở dang trong session)
     if changes.get("is_primary") is True and not dx.confirmed_by_physician:
         raise AppError(409, "DIAGNOSIS_RETRACTED", "Chẩn đoán đã rút lại không thể làm chẩn đoán chính")
+    if changes.get("is_primary") is True and not dx.is_primary:
+        _demote_primary(db, dx.visit_id, keep=dx.diagnosis_id)
     changed = [k for k, v in changes.items() if getattr(dx, k) != v]
     for k in changed:
         setattr(dx, k, changes[k])

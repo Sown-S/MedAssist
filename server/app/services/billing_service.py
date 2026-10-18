@@ -15,6 +15,7 @@ from sqlalchemy.orm import Session
 
 from app.exceptions import AppError, NotFoundError
 from app.models import Invoice, Patient, Prescription, PrescriptionItem, User, Visit
+from app.schemas.patient import patient_code
 from app.services import audit_service as audit
 from app.services import inventory_service, invoice_service, queue_service
 
@@ -190,7 +191,7 @@ def print_data(db: Session, visit_id: uuid.UUID) -> dict:
     patient = db.get(Patient, visit.patient_id)
     physician = db.get(U, visit.physician_id) if visit.physician_id else None
     return {"clinic": get_value(db, "clinic.profile"),
-            "patient": {"full_name": patient.full_name, "date_of_birth": patient.date_of_birth,
+            "patient": {"patient_code": patient_code(patient.patient_id), "full_name": patient.full_name, "date_of_birth": patient.date_of_birth,
                         "gender": patient.gender},
             "physician_name": physician.full_name if physician else None,
             "visit_date": visit.visit_date, "invoice": invoice_service.to_out(db, invoice)}
