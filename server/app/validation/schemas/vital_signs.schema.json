@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "medassist/vital_signs.schema.json",
+  "title": "Sinh hiệu (visit.vital_signs)",
+  "description": "NGUỒN DUY NHẤT về khóa, đơn vị và khoảng nhập liệu của sinh hiệu. Danh sách khóa phải khớp fn_vital_sign_keys() trong CSDL và knowledge/_spec/okf_format.md (Quy định v4). Khoảng minimum/maximum chỉ chặn GÕ NHẦM, không phải ngưỡng lâm sàng; tính cả trẻ sơ sinh. x-soft: nhận nhưng cảnh báo (không phụ thuộc tuổi). Đề xuất 10/2026 — chờ bác sĩ cố vấn duyệt.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "temperature_c": {
+      "type": "number", "minimum": 30, "maximum": 45, "x-decimals": 1,
+      "x-label": "Nhiệt độ", "x-unit": "°C", "x-hint": "kiểm tra lại có nhập °F không",
+      "x-soft": {"below": 34, "above": 42}
+    },
+    "heart_rate_bpm": {
+      "type": "integer", "minimum": 20, "maximum": 250,
+      "x-label": "Nhịp tim", "x-unit": "lần/phút"
+    },
+    "respiratory_rate_bpm": {
+      "type": "integer", "minimum": 4, "maximum": 80,
+      "x-label": "Nhịp thở", "x-unit": "lần/phút"
+    },
+    "systolic_bp_mmhg": {
+      "type": "integer", "minimum": 50, "maximum": 260,
+      "x-label": "Huyết áp tâm thu", "x-unit": "mmHg",
+      "x-soft": {"below": 70, "above": 220}
+    },
+    "diastolic_bp_mmhg": {
+      "type": "integer", "minimum": 20, "maximum": 160,
+      "x-label": "Huyết áp tâm trương", "x-unit": "mmHg",
+      "x-soft": {"above": 130}
+    },
+    "spo2_pct": {
+      "type": "integer", "minimum": 50, "maximum": 100,
+      "x-label": "SpO2", "x-unit": "%",
+      "x-soft": {"below": 70}
+    },
+    "weight_kg": {
+      "type": "number", "minimum": 0.5, "maximum": 300, "x-decimals": 1,
+      "x-label": "Cân nặng", "x-unit": "kg", "x-hint": "kiểm tra lại có nhầm với chiều cao không"
+    },
+    "height_cm": {
+      "type": "number", "minimum": 30, "maximum": 250, "x-decimals": 1,
+      "x-label": "Chiều cao", "x-unit": "cm", "x-hint": "kiểm tra lại có nhầm với cân nặng không"
+    }
+  }
+}

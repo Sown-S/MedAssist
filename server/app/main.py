@@ -1,51 +1,74 @@
-from fastapi import FastAPI, Depends
+from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy.orm import Session
+from fastapi.responses import JSONResponse
 from sqlalchemy import text
+from sqlalchemy.orm import Session
+
 from app.core.config import settings
 from app.core.database import get_db
+from app.core.logging import get_logger, setup_logging
+from app.core.middleware import RequestContextMiddleware
+from app.exceptions import register_exception_handlers
+from app.routers import (admin_router, auth_router, billing_router, clinic_router, inventory_router,
+                         prescription_router)
 
-# 1. Khởi tạo ứng dụng FastAPI Core
+setup_logging(settings.LOG_LEVEL)
+logger = get_logger("main")
+
+# 1. Khởi tạo ứng dụng. Khi chạy thật (prod) tắt /docs, /redoc, /openapi.json:
+#    không công khai danh sách endpoint trong mạng LAN phòng khám.
 app = FastAPI(
     title=settings.PROJECT_NAME,
     version=settings.VERSION,
-    description="Hệ thống hỗ trợ quyết định lâm sàng (CDSS) cho phòng khám ngoại trú"
+    description="Hệ thống hỗ trợ quyết định lâm sàng (CDSS) cho phòng khám ngoại trú",
+    docs_url=None if settings.is_prod else "/docs",
+    redoc_url=None if settings.is_prod else "/redoc",
+    openapi_url=None if settings.is_prod else "/openapi.json",
 )
 
-# 2. Cấu hình CORS (Cho phép Electron Desktop Client truy cập API)
+# 2. Middleware. Thứ tự thêm = ngược thứ tự chạy: RequestContext bọc ngoài cùng, nên cả
+#    phản hồi CORS cũng có X-Request-ID.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Trong môi trường dev/thử nghiệm, mở CORS cho mọi Origin
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_origins=settings.CORS_ORIGINS,
+    allow_credentials=False,          # Bearer token, không dùng cookie
+    allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE"],
+    allow_headers=["Authorization", "Content-Type", "X-Request-ID"],
+    expose_headers=["X-Request-ID", "Content-Disposition", "X-Export-Truncated"],
 )
+app.add_middleware(RequestContextMiddleware)
 
-# 3. Route trang chủ (Root Endpoint)
+# 3. Định dạng lỗi thống nhất
+register_exception_handlers(app)
+
+# 4. Router nghiệp vụ, tiền tố /api/v1 (Architecture v1.7)
+app.include_router(auth_router.router, prefix="/api/v1")
+app.include_router(admin_router.router, prefix="/api/v1")
+app.include_router(clinic_router.router, prefix="/api/v1")
+app.include_router(inventory_router.router, prefix="/api/v1")
+app.include_router(prescription_router.router, prefix="/api/v1")
+app.include_router(billing_router.router, prefix="/api/v1")
+
+
+# 5. Route trang chủ
 @app.get("/")
 def read_root():
     return {
         "system": "CDSS Outpatient Clinic API Engine",
         "status": "Running",
-        "docs_url": "/docs"
+        "environment": settings.ENVIRONMENT,
+        "docs_url": None if settings.is_prod else "/docs",
     }
 
-# 4. Route kiểm tra sức khỏe và kết nối Neon DB (Health Endpoint)
+
+# 6. Kiểm tra sức khỏe và kết nối PostgreSQL. Dùng cho healthcheck của Docker Compose / Caddy:
+#    200 khi DB trả lời, 503 khi không — để orchestrator biết dịch vụ chưa sẵn sàng.
+#    Không trả tên hệ quản trị CSDL hay chi tiết lỗi (chỉ ghi ra log server).
 @app.get("/health")
 def health_check(db: Session = Depends(get_db)):
     try:
-        # Chạy câu lệnh SQL đơn giản để verify kết nối tới Neon PostgreSQL thật
         db.execute(text("SELECT 1"))
-        return {
-            "status": "healthy",
-            "database": "connected",
-            "provider": "PostgreSQL",
-            "service": "CDSS Backend Service"
-        }
+        return {"status": "healthy", "database": "connected"}
     except Exception:
-        # Không trả chi tiết lỗi ra ngoài (có thể lộ host, vai trò, câu SQL)
-        return {
-            "status": "unhealthy",
-            "database": "connection_error",
-            "service": "CDSS Backend Service"
-        }
+        logger.exception("Health check: không kết nối được DB")
+        return JSONResponse(status_code=503, content={"status": "unhealthy", "database": "unavailable"})

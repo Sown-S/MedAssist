@@ -21,9 +21,13 @@ run_for_db() {
 # Database chính (POSTGRES_DB=medassist đã được entrypoint tạo sẵn)
 run_for_db "${POSTGRES_DB:-medassist}"
 
-# Database đánh giá NCKH (ERD điểm mở #12), chỉ khi bật cờ
-if [ "${MEDASSIST_CREATE_EVAL_DB:-0}" = "1" ]; then
+# Database phụ (cùng vai trò, cùng lược đồ qua Alembic), chỉ tạo khi bật cờ:
+#   medassist_eval — đánh giá NCKH (ERD điểm mở #12)
+#   medassist_test — pytest, bị xóa sạch và dựng lại mỗi lần chạy test (chỉ máy dev)
+create_extra_db() {
   psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname postgres \
-       -c "CREATE DATABASE medassist_eval"
-  run_for_db medassist_eval
-fi
+       -c "CREATE DATABASE $1"
+  run_for_db "$1"
+}
+if [ "${MEDASSIST_CREATE_EVAL_DB:-0}" = "1" ]; then create_extra_db medassist_eval; fi
+if [ "${MEDASSIST_CREATE_TEST_DB:-0}" = "1" ]; then create_extra_db medassist_test; fi

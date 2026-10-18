@@ -1,0 +1,17 @@
+# Cấu hình công cụ dữ liệu thuốc — sửa MỘT lần, các lệnh tự đọc file này.
+
+[tt19]
+# Trang văn bản (ghi vào manifest.json làm minh chứng)
+trang_van_ban = "https://vbpl.vn/van-ban/chi-tiet/thong-tu-so-19-2018-tt-byt-ban-hanh-thong-tu-ban-hanh-danh-muc-thuoc-thiet-yeu--132228?tabs=hien-thi-pdf"
+trang_tai_ve = "https://vbpl.vn/van-ban/chi-tiet/thong-tu-so-19-2018-tt-byt-ban-hanh-thong-tu-ban-hanh-danh-muc-thuoc-thiet-yeu--132228?tabs=tai-ve"
+
+# Đường dẫn file để script TỰ TẢI (không bắt buộc). Lấy bằng cách: mở trang_tai_ve, chuột phải vào file
+# .doc/.docx -> "Sao chép địa chỉ liên kết". vbpl.vn có thể chặn công cụ tự động; khi đó dùng inbox/.
+tai_truc_tiep = []
+
+# Thư mục chứa file TẢI TAY bằng trình duyệt (nút "Tải về"). Thả .doc/.docx/.html/.pdf vào đây.
+thu_muc_tai_tay = "inbox"
+
+[gia]
+# Email khai báo trong User-Agent khi tra giá (bắt buộc để chạy fetch_prices).
+email_lien_he = ""

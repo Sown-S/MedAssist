@@ -98,3 +98,49 @@ def record(
     db.add(entry)
     db.flush()   # lỗi ràng buộc (nếu có) nổ ra ngay tại đây, không đợi tới commit
     return entry
+
+# ---------------------------------------------------------------------------
+# Ghi ngay bằng session riêng — cho VIEW và lượt bị từ chối (request GET không commit,
+# request bị 403 không bao giờ tới service).
+# ---------------------------------------------------------------------------
+def record_now(**kwargs: Any) -> None:
+    """Ghi một dòng và commit ngay trong session riêng. Lỗi thì ném ra (fail closed:
+    không ghi được nhật ký thì không cho truy cập dữ liệu bệnh nhân)."""
+    from app.core.database import SessionLocal   # import muộn: tránh vòng import khi test
+
+    with SessionLocal() as db:
+        record(db, **kwargs)
+        db.commit()
+
+
+class _ViewDeduper:
+    """Gộp VIEW lặp lại của endpoint polling: một dòng / người / đối tượng / cửa sổ thời gian.
+
+    Lưu trong bộ nhớ của tiến trình (không truy vấn DB). Nhiều tiến trình thì có thể trùng
+    một dòng ở mỗi tiến trình — chấp nhận được.
+    """
+
+    def __init__(self) -> None:
+        import threading
+        self._seen: dict[tuple, float] = {}
+        self._lock = threading.Lock()
+
+    def should_log(self, key: tuple, window_seconds: int) -> bool:
+        import time
+        now = time.monotonic()
+        with self._lock:
+            last = self._seen.get(key)
+            if last is not None and now - last < window_seconds:
+                return False
+            self._seen[key] = now
+            if len(self._seen) > 10_000:   # dọn mục cũ, giữ bộ nhớ nhỏ
+                cutoff = now - 3600
+                self._seen = {k: t for k, t in self._seen.items() if t >= cutoff}
+            return True
+
+    def clear(self) -> None:
+        with self._lock:
+            self._seen.clear()
+
+
+view_deduper = _ViewDeduper()

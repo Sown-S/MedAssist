@@ -1,0 +1,24 @@
+{
+  "van_ban": "Thông tư 19/2018/TT-BYT ngày 30/08/2018 — Ban hành danh mục thuốc thiết yếu",
+  "co_quan_ban_hanh": "Bộ Y tế",
+  "trang_van_ban": "https://vbpl.vn/van-ban/chi-tiet/thong-tu-so-19-2018-tt-byt-ban-hanh-thong-tu-ban-hanh-danh-muc-thuoc-thiet-yeu--132228?tabs=hien-thi-pdf",
+  "trang_tai_ve": "https://vbpl.vn/van-ban/chi-tiet/thong-tu-so-19-2018-tt-byt-ban-hanh-thong-tu-ban-hanh-danh-muc-thuoc-thiet-yeu--132228?tabs=tai-ve",
+  "cach_lay": "Tải tay bằng trình duyệt",
+  "thoi_diem_ghi_nhan": "2026-10-18T06:57:19+00:00",
+  "files": [
+    {
+      "file": "tt19_2018_goc_1.doc",
+      "ten_file_ban_dau": "19_2018_TT-BYT_393919.doc",
+      "dinh_dang": "doc-ole",
+      "bytes": 2869248,
+      "sha256": "0adf86dc530764b43a0dfc2039769beaa1039eac6fa0e876d0ad187d71d0b1bb"
+    },
+    {
+      "file": "tt19_2018_chuyen_doi.docx",
+      "sha256": "1fb4210b6468eb5ede07c883b84b6853c8a23362101b9d74264bd7777907c266",
+      "ghi_chu": "chuyển từ tt19_2018_goc_1.doc"
+    }
+  ],
+  "chuyen_doi_docx": "Microsoft Word",
+  "file_trich_xuat": "tt19_2018_chuyen_doi.docx"
+}

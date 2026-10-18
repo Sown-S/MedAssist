@@ -29,13 +29,10 @@ VIEWS = {
 
 
 def include_object(obj, name, type_, reflected, compare_to):
-    if type_ == "table":
-        if name in VIEWS or name == "alembic_version":
-            return False
-        # Bảng có trong DB nhưng CHƯA có model (đang viết dần 25 model):
-        # bỏ qua thay vì đề xuất drop_table. Xóa bảng thật thì viết migration tay.
-        if reflected and compare_to is None:
-            return False
+    # Đủ 25 model (ERD v1.8): mọi bảng đều được so. Bảng có trong DB mà thiếu model sẽ hiện
+    # thành drop_table trong `alembic check` -> biết ngay để viết model, KHÔNG được tự xóa bảng.
+    if type_ == "table" and (name in VIEWS or name == "alembic_version"):
+        return False
     return True
 
 
