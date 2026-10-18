@@ -346,8 +346,11 @@ class DisabledLLMClient:
 def make_llm_client():
     if settings.LLM_PROVIDER == "none":
         return DisabledLLMClient(), None
-    from app.ai.llm.ollama_client import OllamaClient
-    return OllamaClient(model=settings.OLLAMA_MODEL, base_url=settings.OLLAMA_BASE_URL), settings.OLLAMA_MODEL
+    if settings.LLM_PROVIDER == "fake":
+        from app.ai.llm.fake_client import FAKE_MODEL_NAME, FakeLLMClient
+        return FakeLLMClient(), FAKE_MODEL_NAME
+    from app.ai.llm.client import LLMClient
+    return LLMClient(model=settings.OLLAMA_MODEL, base_url=settings.OLLAMA_BASE_URL), settings.OLLAMA_MODEL
 
 
 def _remaining_budget(queued_at: datetime.datetime) -> float:

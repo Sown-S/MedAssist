@@ -7,6 +7,8 @@ import uuid
 import pytest
 from sqlalchemy import select, text, update
 
+from app.ai.llm.client import LLMClient
+from app.ai.llm.fake_client import FakeLLMClient
 from app.core.database import SessionLocal, engine
 from app.models import AiAssessmentLog, TriageRule, User, Visit
 from app.services import ai_queue_service as q
@@ -190,6 +192,16 @@ def test_worker_full_with_valid_llm(make_visit, nurse_user):
     assert _visit(vid).ai_status == "Ready"
 
 
+def test_worker_full_with_fake_llm(make_visit, nurse_user):
+    vid = make_visit({"wk_fever_high": "PRESENT", "wk_cough_dry": "PRESENT", "wk_sore_throat": "PRESENT"})
+    aid = _enqueue(vid, nurse_user)
+    assert _process(FakeLLMClient(), "fake") is True
+    run = _run(aid)
+    assert run.status == "Completed" and run.mode == "Full", run.validation_result
+    assert run.model_name == "fake" and all(c["reason"].startswith("Gợi ý giả lập") for c in run.candidates)
+    assert _visit(vid).ai_status == "Ready"
+
+
 def test_preliminary_published_before_llm(make_visit, nurse_user):
     vid = make_visit({"wk_fever_high": "PRESENT", "wk_cough_dry": "PRESENT"})
     aid = _enqueue(vid, nurse_user)
@@ -307,9 +319,12 @@ def test_make_llm_client(monkeypatch):
     monkeypatch.setattr(settings, "LLM_PROVIDER", "none")
     client, model = runner.make_llm_client()
     assert isinstance(client, runner.DisabledLLMClient) and model is None
+    monkeypatch.setattr(settings, "LLM_PROVIDER", "fake")
+    client, model = runner.make_llm_client()
+    assert isinstance(client, FakeLLMClient) and model == "fake"
     monkeypatch.setattr(settings, "LLM_PROVIDER", "ollama")
     client, model = runner.make_llm_client()
-    assert type(client).__name__ == "OllamaClient" and model == settings.OLLAMA_MODEL
+    assert isinstance(client, LLMClient) and model == settings.OLLAMA_MODEL
 
 
 def test_run_forever_processes_then_stops(make_visit, nurse_user, monkeypatch):
