@@ -15,6 +15,7 @@ export const VI = {
   'Loading the symptom list…': 'Đang tải danh mục triệu chứng…',
   'Could not load the symptom list from the server.': 'Không tải được danh mục triệu chứng từ máy chủ.',
   'Try again': 'Thử lại',
+  'Re-measure vitals': 'Đo lại sinh hiệu',
   'Warning signs': 'Dấu hiệu nguy hiểm',
   'General symptoms': 'Toàn thân',
   'Respiratory & ENT': 'Hô hấp – Tai mũi họng',
