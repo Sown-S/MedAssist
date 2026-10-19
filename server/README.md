@@ -167,8 +167,10 @@ cd server
 python -m app.worker
 ```
 
-- Máy **không có Ollama**: đặt `LLM_PROVIDER=none` trong `server/.env`. Kết quả AI chỉ còn xếp hạng tất định
-  (trạng thái `Degraded`, chế độ `RuleOnly`), đủ để chạy thử luồng khám.
+- Máy **không có Ollama**: đặt trong `server/.env`
+  - `LLM_PROVIDER=fake`: LLM giả lập tất định, chạy đủ luồng `Ready`/`Full` (lý do, chip triệu chứng gợi ý).
+    Chỉ dùng cho dev, CI, demo; `ENVIRONMENT=prod` sẽ từ chối khởi động. Nhật ký AI ghi `model_name = "fake"`.
+  - `LLM_PROVIDER=none`: không gọi LLM, kết quả chỉ còn xếp hạng tất định (`Degraded`, `RuleOnly`).
 - Có Ollama: `OLLAMA_BASE_URL`, `OLLAMA_MODEL` trong `server/.env` (chỉ nhận địa chỉ trong máy / mạng LAN).
 - Cờ đỏ KHÔNG phụ thuộc worker: được kiểm ngay lúc xếp hàng, worker tắt vẫn hiện cảnh báo.
 
@@ -295,7 +297,7 @@ python -m scripts.seed_drugs
 | `REFRESH_TOKEN_EXPIRE_HOURS` | | `8` | Hạn refresh token (một ca làm việc) |
 | `LOGIN_MAX_FAILURES_PER_USER` / `_PER_IP` | | `5` / `20` | Số lần sai trong 15 phút trước khi khóa 5 phút |
 | `TRUSTED_PROXIES` | | `[]` | IP proxy được tin `X-Forwarded-For` (Caddy trên máy admin) |
-| `LLM_PROVIDER` | | `ollama` | `none` = không gọi LLM (máy không có Ollama, CI) |
+| `LLM_PROVIDER` | | `ollama` | `fake` = LLM giả lập (dev, CI, demo; cấm ở prod), `none` = không gọi LLM |
 | `OLLAMA_BASE_URL` / `OLLAMA_MODEL` | | `http://127.0.0.1:11434` / theo spike của Huy | LLM cục bộ cho worker |
 | `AI_ASSESSMENT_TIMEOUT_SECONDS` | | `90` | Ngân sách một lần đánh giá, tính từ lúc xếp hàng |
 | `WORKER_LEASE_SECONDS` / `WORKER_MAX_ATTEMPTS` | | `150` / `2` | Hạn thuê việc; số lần thử trước khi `Failed` |
