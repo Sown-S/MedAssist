@@ -298,7 +298,8 @@ python -m scripts.seed_drugs
 | `LOGIN_MAX_FAILURES_PER_USER` / `_PER_IP` | | `5` / `20` | Số lần sai trong 15 phút trước khi khóa 5 phút |
 | `TRUSTED_PROXIES` | | `[]` | IP proxy được tin `X-Forwarded-For` (Caddy trên máy admin) |
 | `LLM_PROVIDER` | | `ollama` | `fake` = LLM giả lập (dev, CI, demo; cấm ở prod), `none` = không gọi LLM |
-| `OLLAMA_BASE_URL` / `OLLAMA_MODEL` | | `http://127.0.0.1:11434` / theo spike của Huy | LLM cục bộ cho worker |
+| `OLLAMA_BASE_URL` / `OLLAMA_MODEL` | | `http://127.0.0.1:11434` / `hf.co/aisingapore/Gemma-SEA-LION-v3-9B-IT-GGUF:Q4_K_M` | LLM cục bộ cho worker (một model cho trích xuất và reasoning) |
+| `OLLAMA_KEEP_ALIVE` | | `5m` | Thời gian Ollama giữ model trong VRAM sau mỗi request; máy admin dùng `24h` |
 | `AI_ASSESSMENT_TIMEOUT_SECONDS` | | `90` | Ngân sách một lần đánh giá, tính từ lúc xếp hàng |
 | `WORKER_LEASE_SECONDS` / `WORKER_MAX_ATTEMPTS` | | `150` / `2` | Hạn thuê việc; số lần thử trước khi `Failed` |
 | `TEST_DATABASE_URL` / `TEST_MIGRATION_DATABASE_URL` | | tự suy ra | Ghi đè DB cho pytest (thường không cần) |

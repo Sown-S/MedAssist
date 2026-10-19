@@ -96,9 +96,12 @@ def update_visit(db: Session, visit_id: uuid.UUID, data: VisitUpdate, actor: Use
     visit = db.scalar(select(Visit).where(Visit.visit_id == visit_id).with_for_update())
     if visit is None:
         raise NotFoundError("Không tìm thấy lượt khám")
-    if visit.status != "Waiting":
-        raise AppError(409, "VISIT_LOCKED", "Chỉ sửa được lượt khám khi còn ở trạng thái chờ (Waiting)")
     changes = data.model_dump(exclude_unset=True)
+    # Sau check-in vẫn cho đo lại sinh hiệu để luật tính lại mức ưu tiên khi bệnh nhân chuyển nặng.
+    vitals_only = visit.status == "CheckedIn" and set(changes) <= {"vital_signs"}
+    if visit.status != "Waiting" and not vitals_only:
+        raise AppError(409, "VISIT_LOCKED",
+                       "Chỉ sửa được lượt khám khi còn chờ (Waiting); sau check-in chỉ sửa được sinh hiệu")
     if "vital_signs" in changes:
         changes["vital_signs"] = data.vital_signs.to_db() if data.vital_signs else None
     if changes.get("chief_complaint", "") is None:
