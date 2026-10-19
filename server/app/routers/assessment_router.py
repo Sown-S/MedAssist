@@ -76,12 +76,7 @@ def trigger_assessment(
     knowledge_reader: KnowledgeReader = Depends(get_knowledge_reader),
 ):
     """Chạy pha luật đồng bộ rồi xếp hàng; không chạy Node 2-4 hoặc LLM trong API."""
-    assessment_service.trigger_assessment(
-        db,
-        visit_id,
-        knowledge_reader,
-        triggered_by=actor.user_id,
-    )
+    ai_queue_service.enqueue_assessment(db, visit_id, actor, knowledge_reader)
     db.commit()
     return _latest_or_404(db, visit_id, knowledge_reader)
 

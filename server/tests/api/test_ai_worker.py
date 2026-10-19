@@ -236,6 +236,24 @@ def test_older_run_does_not_overwrite_visit(make_visit, nurse_user):
     assert _visit(vid).ai_status == "Pending" and _run(new).status == "Queued"
 
 
+def test_worker_result_keeps_complete_now(make_visit, nurse_user):
+    vid = make_visit({"wk_fever_high": "PRESENT"})
+    aid = _enqueue(vid, nurse_user)
+    assert set(_run(aid).rule_hits) == {"hits", "complete_now"}
+    with SessionLocal() as db:
+        assert q.claim_next(db).assessment_id == aid
+        db.commit()
+    with SessionLocal() as db:
+        q.write_result(db, aid, {"ai_status": "Degraded", "mode": "RuleOnly", "candidates": [],
+                                 "priority_rule": "Routine", "priority_final": "Routine", "rule_hits": [],
+                                 "complete_now": ["symptoms.wk_sore_throat"]},
+                       reader=DbKnowledgeReader(), model_name=None, prompt_version=None,
+                       latency_phase1_ms=None, latency_llm_ms=None, latency_total_ms=1)
+        db.commit()
+    assert _run(aid).rule_hits == {
+        "hits": [], "complete_now": [{"symptom_code": "wk_sore_throat", "symptom_name": "Đau họng"}]}
+
+
 def test_infrastructure_error_marks_failed(make_visit, nurse_user, monkeypatch):
     vid = make_visit({"wk_fever_high": "PRESENT"})
     aid = _enqueue(vid, nurse_user)

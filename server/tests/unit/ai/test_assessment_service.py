@@ -1,19 +1,9 @@
-from datetime import date, datetime, timezone
+from datetime import datetime, timezone
 from types import SimpleNamespace
 from uuid import uuid4
 
 import pytest
-from sqlalchemy import select
 
-from app.core.database import SessionLocal
-from app.models import (
-    AuditLog,
-    KnowledgeRelease,
-    KnowledgeSource,
-    Patient,
-    TriageRule,
-    Visit,
-)
 from app.services import assessment_service
 from tests.unit.ai.fakes import FakeKnowledgeReader
 
@@ -83,26 +73,9 @@ def test_offline_rule_only_runs_node2_without_llm():
     assert [row["condition_code"] for row in result["candidates"]] == ["flu"]
 
 
-def test_rule_hits_and_candidates_are_projected_for_polling():
-    state = {
-        "rule_hits": [
-            {"rule_key": "rf_x", "version": 2, "reason": "Cờ đỏ"},
-            {"rule_key": "pf_x", "version": 3, "reason": "Mức sàn"},
-        ],
-        "complete_now": ["symptoms.fever"],
-        "candidates": [candidate()],
-    }
+def test_candidates_are_projected_for_polling():
+    state = {"candidates": [candidate()]}
     names = {"cough": "Ho", "fever": "Sốt"}
-    projected_hits = assessment_service._rule_hits(state, symptom_map=names)
-    assert projected_hits == {
-        "hits": [
-            {"rule_key": "rf_x", "version": 2, "rule_type": "RED_FLAG",
-             "resulting_priority": "Emergency", "reason_text": "Cờ đỏ"},
-            {"rule_key": "pf_x", "version": 3, "rule_type": "PRIORITY_FLOOR",
-             "resulting_priority": "HighPriority", "reason_text": "Mức sàn"},
-        ],
-        "complete_now": [{"symptom_code": "fever", "symptom_name": "Sốt"}],
-    }
     projected = assessment_service._candidates(state, names)[0]
     assert projected["supporting"] == [{
         "symptom_code": "cough", "symptom_name": "Ho", "weight": 0.8, "is_key": True,
@@ -111,85 +84,6 @@ def test_rule_hits_and_candidates_are_projected_for_polling():
     assert projected["missing"] == [{"symptom_code": "fever", "symptom_name": "Sốt"}]
     assert projected["label"] == "Reference Suggestion"
     assert "input_features" not in projected and "prompt" not in projected
-
-
-def test_trigger_assessment_red_flag_and_queued_use_same_transaction(users):
-    with SessionLocal() as db:
-        release = KnowledgeRelease(
-            label=f"AI09-{uuid4().hex[:8]}", status="Active",
-            created_by=users["admin"].user_id, approved_by=users["bs"].user_id,
-            approved_at=datetime.now(timezone.utc),
-        )
-        source = KnowledgeSource(
-            title="Nguồn kiểm thử AI-09", organization="MedAssist",
-            created_by=users["admin"].user_id,
-        )
-        patient = Patient(full_name="Ca giả lập", date_of_birth=date(1990, 1, 1), gender="Male")
-        db.add_all([release, source, patient])
-        db.flush()
-        red = TriageRule(
-            rule_key=f"rf_test_{uuid4().hex[:8]}", version=1,
-            rule_name="Cờ đỏ kiểm thử", rule_type="RED_FLAG",
-            condition_logic={"type": "vital", "vital": "spo2_pct", "cmp": "<=", "value": 90},
-            resulting_priority="Emergency", reason_text="SpO2 thấp",
-            source_id=source.source_id, status="Active", release_id=release.release_id,
-            created_by=users["admin"].user_id,
-        )
-        db.add(red)
-        db.flush()
-        emergency_visit = Visit(
-            patient_id=patient.patient_id, nurse_id=users["yta"].user_id,
-            chief_complaint="Ca cấu trúc", vital_signs={"spo2_pct": 80},
-        )
-        queued_visit = Visit(
-            patient_id=patient.patient_id, nurse_id=users["yta"].user_id,
-            chief_complaint="Ca cấu trúc", vital_signs={"spo2_pct": 98},
-        )
-        db.add_all([emergency_visit, queued_visit])
-        db.flush()
-
-        release_data = {"release_id": release.release_id, "label": release.label}
-        red_reader = FakeKnowledgeReader(
-            release=release_data,
-            triage_rules=[rule(
-                "RED_FLAG", rule_key=red.rule_key, triage_rule_id=red.triage_rule_id,
-                condition_logic=red.condition_logic, reason_text=red.reason_text,
-            )],
-        )
-        skipped = assessment_service.trigger_assessment(
-            db, emergency_visit.visit_id, red_reader, triggered_by=users["yta"].user_id
-        )
-        class RefreshingReader(FakeKnowledgeReader):
-            refresh_calls = 0
-
-            def refresh(self):
-                self.refresh_calls += 1
-
-        queued_reader = RefreshingReader(release=release_data)
-        queued = assessment_service.trigger_assessment(
-            db, queued_visit.visit_id, queued_reader,
-            triggered_by=users["yta"].user_id,
-        )
-
-        assert skipped.status == "Skipped" and skipped.mode == "RuleOnly"
-        assert skipped.completed_at is not None and skipped.priority_final == "Emergency"
-        assert emergency_visit.ai_status == "Skipped"
-        assert emergency_visit.red_flag_rule_id == red.triage_rule_id
-        assert emergency_visit.red_flag_rule_type == "RED_FLAG"
-        assert queued.status == "Queued" and queued.mode is None and queued.completed_at is None
-        assert queued_visit.ai_status == "Pending" and queued.priority_rule == "Routine"
-        assert set(queued.input_features) == {
-            "symptoms", "vital_signs", "age_years", "age_months",
-        }
-        assert queued.input_features["vital_signs"] == {"spo2_pct": 98}
-        assert "Ca giả lập" not in str(queued.input_features)
-        assert queued_reader.refresh_calls == 1
-        audits = list(db.scalars(select(AuditLog).where(
-            AuditLog.action_type == "AI_ASSESSMENT",
-            AuditLog.entity_id.in_([emergency_visit.visit_id, queued_visit.visit_id]),
-        )))
-        assert len(audits) == 2
-        db.rollback()
 
 
 def test_latest_assessment_maps_release_label_and_polling_fields():

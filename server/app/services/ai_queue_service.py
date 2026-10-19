@@ -1,7 +1,7 @@
 """Hàng đợi đánh giá AI trên PostgreSQL (Kế hoạch v7, Sprint 3) — phần của Sơn.
 
 Luồng:
-1. ``enqueue_assessment()`` — API đánh giá (của Huy) gọi trong transaction của request.
+1. ``enqueue_assessment()`` — API POST /visits/{id}/assessment gọi trong transaction của request.
    - Chụp đặc trưng đầu vào ĐÃ XÁC NHẬN (visit_symptom + sinh hiệu + tuổi) vào ``input_features``.
    - Chạy Node 1 (cổng cờ đỏ) ĐỒNG BỘ: cờ đỏ phải hiện ngay cả khi worker hay LLM đang chết.
      Cờ đỏ -> lần chạy kết thúc luôn (Skipped/RuleOnly), không xếp hàng.
@@ -18,6 +18,8 @@ Luồng:
 Preliminary / log Running; Degraded, Skipped giữ nguyên; lỗi hạ tầng -> Failed.
 
 Nhật ký AI không chứa thông tin định danh: input_features chỉ có mã triệu chứng, sinh hiệu, tuổi.
+rule_hits luôn có dạng {"hits": [...], "complete_now": [{symptom_code, symptom_name}]} ở cả lúc xếp
+hàng và lúc worker ghi kết quả, để polling không mất danh sách "cần bổ sung ngay".
 """
 import datetime
 import json
@@ -65,8 +67,22 @@ def _enrich_hits(hits: list[dict], rules: list[dict]) -> list[dict]:
     out = []
     for hit in hits:
         rule = by_key.get((hit.get("rule_key"), hit.get("version")), {})
-        out.append({**hit, "rule_type": rule.get("rule_type"), "triage_rule_id": rule.get("triage_rule_id")})
+        rule_id = rule.get("triage_rule_id")
+        out.append({**hit, "rule_type": rule.get("rule_type"), "triage_rule_id": str(rule_id) if rule_id else None})
     return out
+
+
+def _rule_record(hits: list[dict], complete_now: list | None, reader: KnowledgeReader) -> dict[str, Any]:
+    names = {r["symptom_code"]: r.get("symptom_name") or r["symptom_code"] for r in reader.active_symptoms()}
+    missing = []
+    for item in complete_now or []:
+        code = item.removeprefix("symptoms.") if isinstance(item, str) else str(item)
+        missing.append({"symptom_code": code, "symptom_name": names.get(code, code)})
+    return {"hits": hits, "complete_now": missing}
+
+
+def _uuid(value: Any) -> uuid.UUID | None:
+    return uuid.UUID(str(value)) if value else None
 
 
 def _apply_triage(visit: Visit, *, is_red_flag: bool, hits: list[dict], priority_rule: str,
@@ -76,7 +92,7 @@ def _apply_triage(visit: Visit, *, is_red_flag: bool, hits: list[dict], priority
     if is_red_flag and (red is None or not red.get("triage_rule_id")):
         raise RuntimeError("Cờ đỏ nhưng không xác định được luật RED_FLAG đã khớp")
     visit.is_red_flag = red is not None
-    visit.red_flag_rule_id = uuid.UUID(red["triage_rule_id"]) if red else None
+    visit.red_flag_rule_id = _uuid(red["triage_rule_id"]) if red else None
     visit.red_flag_reason = red.get("reason") if red else None
     visit.triage_priority_rule = priority_rule
     visit.triage_priority = priority_final
@@ -110,9 +126,9 @@ def enqueue_assessment(db: Session, visit_id: uuid.UUID, actor: User,
 
     run = AiAssessmentLog(
         visit_id=visit_id, run_type="Assessment", triggered_by=actor.user_id,
-        input_features=features, rule_hits=hits,
+        input_features=features, rule_hits=_rule_record(hits, gate.get("complete_now"), reader),
         priority_rule=gate["priority_rule"], priority_final=gate["priority_final"],
-        knowledge_release_id=uuid.UUID(release_id) if release_id else None,
+        knowledge_release_id=_uuid(release_id),
         status="Queued")
     if gate["is_red_flag"]:
         run.status, run.mode, run.candidates, run.completed_at = "Skipped", "RuleOnly", [], func.now()
@@ -122,9 +138,9 @@ def enqueue_assessment(db: Session, visit_id: uuid.UUID, actor: User,
                   priority_rule=gate["priority_rule"], priority_final=gate["priority_final"])
     visit.ai_status = "Skipped" if gate["is_red_flag"] else "Pending"
     db.flush()
-    audit.record(db, action="CREATE", entity="ai_assessment_log", entity_id=run.assessment_id,
-                 actor_id=actor.user_id,
-                 new_values={"visit_id": str(visit_id), "status": run.status,
+    audit.record(db, action="AI_ASSESSMENT", entity="visit", entity_id=visit_id, actor_id=actor.user_id,
+                 new_values={"assessment_id": str(run.assessment_id), "run_type": "Assessment",
+                             "status": run.status, "ai_status": visit.ai_status,
                              "is_red_flag": gate["is_red_flag"], "rule_hits": [h["rule_key"] for h in hits]})
     return run
 
@@ -149,9 +165,9 @@ def enqueue_extraction(db: Session, visit_id: uuid.UUID, actor: User) -> AiAsses
                           status="Queued", candidates=[])
     db.add(run)
     db.flush()
-    audit.record(db, action="CREATE", entity="ai_assessment_log", entity_id=run.assessment_id,
-                 actor_id=actor.user_id,
-                 new_values={"visit_id": str(visit_id), "run_type": "Extraction", "status": run.status})
+    audit.record(db, action="AI_ASSESSMENT", entity="visit", entity_id=visit_id, actor_id=actor.user_id,
+                 new_values={"assessment_id": str(run.assessment_id), "run_type": "Extraction",
+                             "status": run.status})
     return run
 
 
@@ -234,12 +250,13 @@ def write_result(db: Session, assessment_id: uuid.UUID, final: dict, *, reader: 
     hits = _enrich_hits(final.get("rule_hits") or [], reader.active_triage_rules())
     llm_output = final.get("llm_output")
     run.status, run.mode = status, final.get("mode")
-    run.rule_hits, run.candidates = hits, final.get("candidates") or []
+    run.rule_hits = _rule_record(hits, final.get("complete_now"), reader)
+    run.candidates = final.get("candidates") or []
     run.priority_rule, run.priority_final = final.get("priority_rule"), final.get("priority_final")
     run.validation_result, run.error_detail = final.get("validation_result"), final.get("error")
     run.llm_output_raw = json.dumps(llm_output, ensure_ascii=False) if llm_output is not None else None
     release_id = reader.active_release().get("release_id")
-    run.knowledge_release_id = uuid.UUID(release_id) if release_id else run.knowledge_release_id
+    run.knowledge_release_id = _uuid(release_id) or run.knowledge_release_id
     run.model_name = model_name if run.mode == "Full" else None
     run.prompt_version = prompt_version if run.mode == "Full" else None
     run.latency_phase1_ms, run.latency_llm_ms, run.latency_total_ms = latency_phase1_ms, latency_llm_ms, latency_total_ms
