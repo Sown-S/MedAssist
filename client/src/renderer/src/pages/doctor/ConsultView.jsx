@@ -29,7 +29,7 @@ import VitalsFields from '../../components/VitalsFields'
 import { normalizeVitals, vitalsToForm, vitalsFromForm, vitalsText, checkVitals } from '../../api/vitals'
 import { useTakePatient, pastVisitsOf, LabOrderResults, ReleaseModal, LeaveVisitModal } from './doctorShared'
 import { SOURCES } from '../../api/symptoms'
-import { symptomLabel } from '../admin/ai/catalog'
+import { symptomName } from '../../api/symptoms'
 
 // Đơn mẫu: bấm 1 lần thêm cả nhóm thuốc (bác sĩ vẫn sửa số lượng / cách dùng sau).
 const TEMPLATES = [
@@ -1006,7 +1006,7 @@ function ConfirmedSymptoms({ list }) {
   const tag = (x) => (
     <span key={x.symptom_code} className={'sym-chip ' + x.state.toLowerCase()} title={translate(SOURCES[x.source] ?? '')}>
       <span className="sym-chip-state">{translate(x.state === 'PRESENT' ? 'Yes' : 'No')}</span>
-      <span style={{ paddingRight: 6 }}>{translate(symptomLabel(x.symptom_code))}</span>
+      <span style={{ paddingRight: 6 }}>{translate(symptomName(x.symptom_code))}</span>
     </span>
   )
   return (
