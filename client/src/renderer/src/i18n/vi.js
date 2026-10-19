@@ -9,6 +9,10 @@ export const VI = {
   'Incorrect username or password.': 'Sai tài khoản hoặc mật khẩu.',
   'This account has been disabled. Contact your administrator.': 'Tài khoản đã bị vô hiệu hóa. Liên hệ quản trị viên.',
   'This account does not belong to the selected role.': 'Tài khoản này không thuộc vai trò đã chọn.',
+  'Cannot reach the clinic server. Check the server address and the network connection.': 'Không kết nối được máy chủ phòng khám. Kiểm tra địa chỉ máy chủ và kết nối mạng.',
+  'Your password was changed. Please sign in again with the new password.': 'Đã đổi mật khẩu. Vui lòng đăng nhập lại bằng mật khẩu mới.',
+  'Your session has expired. Please sign in again.': 'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.',
+  'Condition worsened while waiting? Update the symptoms and vital signs — the priority is re-assessed when you save.': 'Bệnh nhân chuyển nặng trong lúc chờ? Cập nhật triệu chứng và sinh hiệu — mức ưu tiên được đánh giá lại khi lưu.',
   'Password must be at least 8 characters.': 'Mật khẩu tối thiểu 8 ký tự.',
   'Please enter a full name and username.': 'Vui lòng nhập họ tên và tên đăng nhập.',
   'Invalid role.': 'Vai trò không hợp lệ.',
@@ -3231,6 +3235,7 @@ export const VI = {
 }
 
 export const PATTERNS = [
+  [/^Too many failed sign-ins\. Try again in (\d+) minutes\.$/, 'Đăng nhập sai quá nhiều lần. Thử lại sau $1 phút.'],
   [/^Not in the drug catalog: (.+)$/, 'Không có trong danh mục thuốc: $1'],
   [/^Re-issued — (.+) skipped at dispensing$/, 'Lập lại — bỏ qua $1 khi cấp phát'],
   // Lỗi sinh hiệu (api/vitals.js): "<tên>: <a>–<b> <đơn vị>", "<tên>: whole number", "<tên> <giá trị> <đơn vị>" (cảnh báo mềm)
