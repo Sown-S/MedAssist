@@ -1,9 +1,10 @@
 import { MOCK_ENDPOINTS } from './mockData'
 import { getBaseUrl, tokenStore } from './serverConfig'
 
-// BẬT/TẮT Ở ĐÂY: khi ghép backend FastAPI thật, đổi USE_MOCK = false — KHÔNG cần sửa trang nào đang gọi apiGet()/apiPost().
+// BẬT/TẮT: mặc định chạy giả lập (không cần server). Dùng backend FastAPI thật: đặt VITE_USE_MOCK=false trong client/.env
+// (file riêng của máy, không commit) rồi chạy lại npm run dev — KHÔNG cần sửa trang nào đang gọi apiGet()/apiPost().
 // Địa chỉ server lấy từ serverConfig (đổi được lúc chạy), token lấy từ kho mã hoá của hệ điều hành.
-const USE_MOCK = true
+const USE_MOCK = import.meta.env.VITE_USE_MOCK !== 'false'
 
 function delay(ms) {
   return new Promise((r) => setTimeout(r, ms))
