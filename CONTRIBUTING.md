@@ -13,6 +13,16 @@
 
 Luồng: nhánh tính năng → PR vào `develop` → cuối sprint PR `develop` → `main` và gắn tag.
 
+Sau khi PR của mình được squash merge vào `develop`, đồng bộ nhánh tính năng ngay, trước khi code tiếp.
+Squash tạo commit mới trên `develop` nên nếu tiếp tục code trên lịch sử cũ, lần merge sau dễ bị conflict giả:
+
+```powershell
+git fetch origin
+git switch feature/<tên-nhánh>
+git reset --hard origin/develop     # chỉ làm khi mọi commit của nhánh đã nằm trong develop
+git push --force-with-lease
+```
+
 ## 2. Quy ước commit và tiêu đề PR (Conventional Commits)
 
 ```
@@ -64,3 +74,27 @@ CI (`.github/workflows/ci.yml`) chạy lại các bước trên trên máy GitHu
    git push origin v0.N-sprintN
    ```
 4. Trên Trello: chỉ kéo card sang Done khi PR chứa code của card đã merge vào `develop`.
+
+## 5. Quy tắc chú thích trong code
+
+Code tự nói "làm gì", chú thích chỉ nói "tại sao".
+
+Nên viết:
+- Lý do của một quyết định không hiển nhiên: ràng buộc nghiệp vụ, bảo mật, hiệu năng.
+  VD: `# Tắt /docs khi prod: không lộ danh sách endpoint trong LAN phòng khám.`
+- Tham chiếu tài liệu thay cho giải thích dài: `# AI-12`, `# Architecture v1.7 §4`.
+- Cảnh báo bẫy: thứ tự bắt buộc, side effect, giới hạn đã biết.
+- Docstring tối đa 3 dòng cho module/hàm public: mục đích và ràng buộc quan trọng.
+
+Không viết:
+- Diễn giải lại code: `# Tạo biến đếm`, `# Gọi hàm lưu DB`, `# Trả về kết quả`.
+- Đánh số "Bước 1/2/3" cho code tuyến tính khi tên hàm đã rõ.
+- Lịch sử thay đổi (`# New:`, `# Fixed:`, tên người sửa): để trong commit message.
+- Code bị comment-out: xóa đi, Git đã lưu.
+- Docstring liệt kê lại tham số khi type hint đã đủ.
+- TODO không có mã task: viết `# TODO(MA-123): ...` hoặc không viết.
+
+Chú thích dài hơn 3 dòng thì cân nhắc tách hàm hoặc đưa vào `docs/`.
+Viết tiếng Việt có dấu, câu ngắn; giữ nguyên thuật ngữ kỹ thuật tiếng Anh.
+
+Người mở PR chịu trách nhiệm xóa chú thích thừa trước khi push.
