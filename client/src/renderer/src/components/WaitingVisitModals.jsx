@@ -28,8 +28,7 @@ export function EditWaitingModal({ visit, onClose }) {
   const [f, setF] = useState({
     reason: visit.reason === '—' ? '' : visit.reason,
     days: visit.days ?? '',
-    ...vitalsToForm(normalizeVitals(visit.vitals)),
-    priority: !!visit.priority
+    ...vitalsToForm(normalizeVitals(visit.vitals))
   })
   const [syms, setSyms] = useState(symMap(visit.symptoms))
   const [tried, setTried] = useState(false)
@@ -43,7 +42,8 @@ export function EditWaitingModal({ visit, onClose }) {
     days: f.days,
     vitals: vitalsFromForm(f),
     symptoms: toPayload(syms),
-    priority: f.priority,
+    // Lễ tân không tự nâng ưu tiên: luật đánh giá lại khi lưu (backend: PUT /symptoms rồi POST /assessment).
+    priority: !!visit.priority,
     triage: tri.level,
     triageRules: [...tri.red, ...tri.high].map((x) => x.rule.id)
   })
@@ -108,12 +108,9 @@ export function EditWaitingModal({ visit, onClose }) {
             <span className="ai-soft">{translate('The priority can only be raised here, never lowered.')}</span>
           </div>
         </div>
-        <div className="priority-toggle">
-          <input type="checkbox" id="pr-edit" checked={f.priority || tri.level !== 'routine'} disabled={tri.level !== 'routine'} onChange={(e) => setF({ ...f, priority: e.target.checked })} />
-          <label htmlFor="pr-edit">
-            <Icon name="zap" /> Flag as priority (condition worsened while waiting)
-          </label>
-        </div>
+        <p className="ai-soft" style={{ fontSize: 12.5, margin: '6px 0 0' }}>
+          <Icon name="zap" /> {translate('Condition worsened while waiting? Update the symptoms and vital signs — the priority is re-assessed when you save.')}
+        </p>
         {vit.warnings.length > 0 && (
           <p className="ai-soft" style={{ color: '#FCD34D', fontSize: 12.5, margin: '4px 0 0' }}>
             <Icon name="alert" /> {translate('Unusual value — please double-check')}: {vit.warnings.map((w) => translate(w)).join(' · ')}

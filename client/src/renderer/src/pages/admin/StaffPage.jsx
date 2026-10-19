@@ -16,9 +16,10 @@ import {
   setActive,
   resetPassword,
   unlockAccount,
-  forceSignOut,
-  changeOwnPassword
+  forceSignOut
 } from '../../api/accountStore'
+import { changePassword } from '../../api/authApi'
+import { DEMO_MODE } from '../../api/client'
 import { logEvent } from '../../api/activityStore'
 import { useCatalogs, getCatalogs, upsertRow } from '../../api/catalogStore'
 import { fmtDate, fmtDateTime } from './inventory/shared'
@@ -65,7 +66,7 @@ function syncDepartment(oldName, account, user) {
 
 export default function StaffPage() {
   const { showToast } = useToast()
-  const { user: me, refreshUser } = useAuth()
+  const { user: me, refreshUser, signOutAfterPasswordChange } = useAuth()
   const cats = useCatalogs()
   const departments = cats.departments.filter((d) => d.active)
   const deptName = (code) => cats.departments.find((d) => d.code === code)?.name ?? ''
@@ -212,12 +213,11 @@ export default function StaffPage() {
   async function submitOwnPw(e) {
     e.preventDefault()
     if (ownPw.np !== ownPw.np2) return setOwnPw({ ...ownPw, err: 'The two new passwords do not match.' })
-    const res = await changeOwnPassword(me.id, ownPw.np, ownPw.old)
+    const res = await changePassword(me, ownPw.old, ownPw.np)
     if (!res.ok) return setOwnPw({ ...ownPw, err: res.error })
-    logEvent(me, 'auth.password_changed', { target: { kind: 'account', id: me.username } })
-    showToast('Password changed')
-    setOwnPw(null)
-    refresh()
+    if (DEMO_MODE) logEvent(me, 'auth.password_changed', { target: { kind: 'account', id: me.username } })
+    // Token cũ đã bị thu hồi — đăng nhập lại bằng mật khẩu mới.
+    signOutAfterPasswordChange()
   }
 
   // ---------- Lọc ----------
