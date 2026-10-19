@@ -1,9 +1,6 @@
-"""Adapter HTTP nội bộ cho Ollama. Worker gọi qua llm.client.LLMClient.
+"""Adapter HTTP nội bộ cho Ollama (`/api/generate`).
 
-Tham khảo API: https://docs.ollama.com/api/generate
-Chỉ chấp nhận loopback, địa chỉ LAN RFC1918/ULA và các hostname Docker cục bộ bên
-dưới. Alias DNS ngoài danh sách phải cấu hình bằng IP riêng. Khi triển khai cũng
-phải tắt tính năng cloud của Ollama; client không dùng thông tin xác thực.
+Chỉ chấp nhận địa chỉ loopback, LAN RFC1918/ULA và hostname Docker cục bộ.
 """
 
 from collections.abc import Mapping
@@ -52,12 +49,7 @@ def _local_url(base_url: str) -> httpx.URL:
 
 
 class OllamaClient:
-    """Chi tiết triển khai HTTP; mỗi request sở hữu một client và tự đóng client đó.
-
-    Custom transport chỉ là điểm nối cho test, không phải nhà cung cấp AI thay thế.
-    Tắt proxy từ môi trường và redirect để prompt luôn ở nội bộ. Không tự động thử
-    lại vì có thể vượt deadline của worker.
-    """
+    """Gọi Ollama cục bộ; tắt proxy môi trường, redirect và tự động retry."""
 
     def __init__(
         self,

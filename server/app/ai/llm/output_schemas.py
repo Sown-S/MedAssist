@@ -1,8 +1,6 @@
-"""Hợp đồng sinh dữ liệu phiên bản 1, dùng chung cho kiểm tra Node 4/FR12.
+"""Schema JSON đầu ra của LLM cho Node 4 và trích xuất triệu chứng (FR12).
 
-Các model này chỉ mô tả hình dạng. Không dùng chúng thay cho
-validation.knowledge_validators hoặc kiểm tra ứng viên/bằng chứng/an toàn của Node
-4. Không chấp nhận bằng chứng, mã ICD hoặc mức ưu tiên do LLM tự sinh.
+Không chấp nhận bằng chứng, mã ICD hoặc mức ưu tiên hạ thấp do LLM tự sinh.
 """
 
 from typing import Any, Literal

@@ -1,9 +1,6 @@
-"""Điều phối đánh giá chỉ trong worker; không lưu dữ liệu, tracing hay I/O thật.
+"""Điều phối Node 1-4 trong worker bằng LangGraph; tắt tracing và checkpointer.
 
-Node 1 chạy trước khi nạp các phụ thuộc graph/LLM tùy chọn. Ca không khẩn cấp dùng
-LangGraph cho Node 2 -> Node 3 -> Node 4 mà không có checkpointer. Envelope thay
-toàn bộ giá trị PipelineState; nếu cập nhật từng key theo LangGraph thì các trường
-đã bị node xóa (đặc biệt llm_output thô) có thể vẫn còn.
+Envelope thay toàn bộ ``PipelineState`` để không sót ``llm_output`` thô khi node xóa khóa.
 """
 
 import asyncio
@@ -38,20 +35,7 @@ async def run_pipeline(
     timeout_seconds: float,
     on_preliminary: PreliminaryCallback | None = None,
 ) -> PipelineState:
-    """Ghép Node 1-4 cho một lượt worker, chỉ trả kết quả đã kiểm tra.
-
-    Worker/service truyền ngân sách còn lại tính từ lúc xếp hàng. Cổng an toàn,
-    khởi tạo graph, retrieval và callback Preliminary tùy chọn đều tiêu thụ ngân
-    sách đó; không khởi động lại đồng hồ trước reasoning và không retry. Service
-    quản lý hàng đợi, transaction và metadata audit (AI-09). Service có thể await
-    ``on_preliminary`` để công bố tối đa ba gợi ý tất định trước reasoning; snapshot
-    fallback riêng vẫn giữ đủ bốn ứng viên. Không ghi trạng thái lâm sàng truyền
-    vào callback này xuống bảng log.
-
-    Lỗi LLM có kiểu/timeout trở thành Degraded/RuleOnly qua kiểm tra baseline của
-    Node 4. Cancellation và lỗi lập trình/callback/hạ tầng được truyền lên worker.
-    Endpoint API không được gọi hàm này.
-    """
+    """Chạy Node 1-4 trong ngân sách thời gian còn lại; lỗi LLM/timeout suy giảm về ``RuleOnly``."""
     started = monotonic()
     gated = run_node1(deepcopy(state), knowledge_reader)
     if gated["is_red_flag"]:
