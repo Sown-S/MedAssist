@@ -30,8 +30,8 @@ export default function CallPanel({ readOnly }) {
     confirmEntered(v.id)
     showToast(ticketNo(v.ticket) + ' — ' + translate('in the room'))
   }
-  function checkIn(v) {
-    const r = checkInVisit(v.id, user)
+  async function checkIn(v) {
+    const r = await checkInVisit(v.id, user)
     showToast(r.ok ? ticketNo(v.ticket) + ' — ' + translate('checked in') : translate(r.error))
   }
   function notHere(v) {

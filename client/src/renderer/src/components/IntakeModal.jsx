@@ -1,9 +1,11 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Modal, { ModalHeader } from './Modal'
 import { useToast } from '../context/ToastContext'
 import Icon from './Icon'
 import { useAuth } from '../context/AuthContext'
-import { createVisit, activeVisitOf, staleVisitOf, nextTicket, recordRedFlag } from '../api/queueStore'
+import { createVisit, activeVisitOf, staleVisitOf, nextTicket, recordRedFlag, syncQueue } from '../api/queueStore'
+import { DEMO_MODE } from '../api/client'
+import * as clinic from '../api/clinicApi'
 import { triage, TRIAGE_LEVELS, missingLabel } from '../api/triage'
 import { useAIConfig } from '../api/aiConfigStore'
 import { VITAL_KEYS, checkVitals, vitalsFromForm, RULE_KEY_TO_VITAL } from '../api/vitals'
@@ -44,6 +46,12 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
   const [dupes, setDupes] = useState(null) // danh sách hồ sơ có thể trùng → hỏi lại trước khi tạo mới
   const [existing, setExisting] = useState(patient)
   const [editing, setEditing] = useState(false) // sửa thông tin hành chính của hồ sơ cũ
+  // Backend thật: lượt khám được tạo sớm (khi trích xuất triệu chứng hoặc khi lưu) — server cấp số ngay.
+  const [busy, setBusy] = useState(false)
+  const [visit, setVisit] = useState(null) // { visit_id, queue_number, ... } của lượt vừa tạo
+  const [idTaken, setIdTaken] = useState(false) // CCCD đã thuộc hồ sơ khác → chỉ được dùng hồ sơ đó
+  const visitRef = useRef(null)
+  const saved = useRef(false)
 
   // Mỗi lần mở: form trống (hoặc hồ sơ được chọn từ Tra cứu).
   useEffect(() => {
@@ -54,6 +62,10 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
     setTouched(false)
     setDupes(null)
     setExisting(patient)
+    setVisit(null)
+    setIdTaken(false)
+    visitRef.current = null
+    saved.current = false
   }, [open, patient])
 
   const field = (k) => ({ value: form[k], onChange: (e) => setForm((f) => ({ ...f, [k]: e.target.value })) })
@@ -116,7 +128,86 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
     showToast(emergency ? translate('Emergency — placed at the top of the queue; doctors have been alerted') + ' · ' + ticketNo(v.ticket) : `Visit created — queue number ${ticketNo(v.ticket)}`)
   }
 
+  // ---------- Backend thật ----------
+  // Tạo (nếu chưa có) hồ sơ + lượt khám Waiting; lần sau chỉ cập nhật lời kể và sinh hiệu (chỉ được khi còn Waiting).
+  async function ensureVisit(force = false) {
+    if (visitRef.current) {
+      await clinic.updateVisit(visitRef.current.visit_id, { text: form.reason, vitals })
+      return visitRef.current
+    }
+    let p = existing
+    if (!p) {
+      const r = await clinic.createPatient({ ...form, pregnancy: pregnancyAsked ? form.pregnancy : '' }, { confirmDuplicate: force })
+      if (!r.ok) {
+        setDupes(r.duplicates)
+        setIdTaken(!!r.idTaken)
+        return null
+      }
+      p = r.patient
+      setExisting(p)
+      setDupes(null)
+    } else if (pregnancyAsked) await clinic.setPregnancy(p, form.pregnancy)
+    const v = await clinic.createVisit(p.id, { text: form.reason, vitals })
+    visitRef.current = v
+    setVisit(v)
+    syncQueue()
+    return v
+  }
+  function checkForm() {
+    setTouched(true)
+    if (vit.errors.length) {
+      showToast(translate('Check the vital signs') + ': ' + vit.errors.map((e) => translate(e)).join('; '))
+      return false
+    }
+    if (child && !String(form.weight_kg).trim()) {
+      showToast(translate('Enter the child’s weight (kg) — it is needed for the prescription.'))
+      return false
+    }
+    return !!existing || !invalid
+  }
+  // Trích xuất cần lượt khám đã có lời kể (server đọc free_text_description).
+  async function extract(text, { signal }) {
+    if (!checkForm()) throw Object.assign(new Error('form'), { code: 'FORM' })
+    const v = await ensureVisit()
+    if (!v) throw Object.assign(new Error('duplicate'), { code: 'FORM' })
+    return clinic.extractSymptoms(v.visit_id, { signal })
+  }
+  async function saveReal(force) {
+    if (!checkForm()) return
+    setBusy(true)
+    try {
+      const v = await ensureVisit(force)
+      if (!v) return
+      await clinic.putSymptoms(v.visit_id, toPayload(syms))
+      // Luật cờ đỏ / ưu tiên chạy ngay trong POST; phần AI chạy nền, bác sĩ xem ở thẻ gợi ý.
+      const a = await clinic.triggerAssessment(v.visit_id)
+      saved.current = true
+      syncQueue()
+      const level = clinic.triageOf(a.priority?.final)
+      const name = existing?.name ?? form.name.trim()
+      if (print) printTicket({ ticket: v.queue_number, name, priority: level !== 'routine', arrivedAt: v.visit_date })
+      onClose()
+      const no = ticketNo(v.queue_number)
+      if (level === 'emergency') showToast(translate('Emergency — placed at the top of the queue; doctors have been alerted') + ' · ' + no)
+      else showToast('Visit created — queue number ' + no + (level === 'high' ? ' · ' + translate('Priority') : ''))
+    } catch (e) {
+      showToast(translate(e.message))
+    } finally {
+      setBusy(false)
+    }
+  }
+  // Đóng khi lượt đã tạo nhưng chưa lưu xong → huỷ lượt đó để không còn lượt "ma" trong hàng chờ.
+  function close() {
+    if (!DEMO_MODE && visitRef.current && !saved.current)
+      clinic.cancelVisit(visitRef.current.visit_id, 'Huỷ khi đang tiếp đón (chưa lưu)').then(syncQueue, () => {})
+    onClose()
+  }
+  async function pickRecord(d) {
+    setExisting(DEMO_MODE ? d : await clinic.getPatient(d.id))
+  }
+
   function handleSave(force = false) {
+    if (!DEMO_MODE) return saveReal(force)
     setTouched(true)
     if (vit.errors.length) return showToast(translate('Check the vital signs') + ': ' + vit.errors.map((e) => translate(e)).join('; '))
     if (child && !String(form.weight_kg).trim()) return showToast(translate('Enter the child’s weight (kg) — it is needed for the prescription.'))
@@ -135,8 +226,8 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
   const err = (k) => touched && errors[k]
 
   return (
-    <Modal open={open} onClose={onClose} wide>
-      <ModalHeader title={existing ? translate('New visit') + ' — ' + existing.name : 'Register new patient & create visit'} onClose={onClose} />
+    <Modal open={open} onClose={close} wide>
+      <ModalHeader title={existing ? translate('New visit') + ' — ' + existing.name : 'Register new patient & create visit'} onClose={close} />
 
       {existing ? (
         <>
@@ -213,29 +304,41 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
                   <b>{d.name}</b>
                   <span>{d.dob}</span>
                   <span className="mono">{d.phone}</span>
-                  <button className="btn btn-primary btn-sm" onClick={() => setExisting(d)}>
+                  <button className="btn btn-primary btn-sm" onClick={() => pickRecord(d)}>
                     Use this record
                   </button>
                 </div>
               ))}
             </div>
-            <button className="btn btn-ghost btn-sm" style={{ marginTop: 8 }} onClick={() => handleSave(true)}>
-              Not the same person — create a new record
-            </button>
+            {!idTaken && (
+              <button className="btn btn-ghost btn-sm" style={{ marginTop: 8 }} onClick={() => handleSave(true)}>
+                Not the same person — create a new record
+              </button>
+            )}
           </div>
         </div>
       )}
 
       <div className="section-label">Symptoms</div>
-      <SymptomPanel value={syms} onChange={setSyms} text={form.reason} onText={(t) => setForm((f) => ({ ...f, reason: t }))} ask={askSymptoms} />
+      <SymptomPanel
+        value={syms}
+        onChange={setSyms}
+        text={form.reason}
+        onText={(t) => setForm((f) => ({ ...f, reason: t }))}
+        ask={DEMO_MODE ? askSymptoms : []}
+        onExtract={DEMO_MODE ? undefined : extract}
+      />
 
       <div className="section-label">Vital signs</div>
       <VitalsFields value={form} onChange={(k, v) => setForm((f) => ({ ...f, [k]: v }))} errorKeys={touched ? vit.errorKeys : new Set()} requireWeight={child} highlight={askVitals} />
       <div className="form-grid" style={{ marginTop: 10 }}>
-        <div className="field">
-          <label>Symptom duration (days)</label>
-          <input type="text" inputMode="numeric" placeholder={translate('optional')} {...field('days')} />
-        </div>
+        {/* Backend thật: không có trường riêng — lễ tân ghi thẳng vào lời kể, vd "Sốt 3 ngày". */}
+        {DEMO_MODE && (
+          <div className="field">
+            <label>Symptom duration (days)</label>
+            <input type="text" inputMode="numeric" placeholder={translate('optional')} {...field('days')} />
+          </div>
+        )}
         {pregnancyAsked && (
           <div className="field">
             <label>Pregnancy</label>
@@ -248,7 +351,12 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
         )}
         <div className="field">
           <label>Queue number</label>
-          <input type="text" readOnly value={ticketNo(nextTicket())} title={translate('Issued by the server when the visit is saved')} />
+          <input
+            type="text"
+            readOnly
+            value={DEMO_MODE ? ticketNo(nextTicket()) : visit ? ticketNo(visit.queue_number) : '—'}
+            title={translate('Issued by the server when the visit is saved')}
+          />
         </div>
       </div>
       {touched && vit.errors.length > 0 && (
@@ -261,7 +369,8 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
           <Icon name="alert" /> {translate('Unusual value — please double-check')}: {vWarn.map((w) => translate(w)).join(' · ')}
         </p>
       )}
-      <TriageStrip tri={tri} onTransfer={() => onRedFlag({ ...draft(), id: existing?.id, signs: redSigns() })} />
+      {/* Backend thật: luật cờ đỏ / ưu tiên chạy ở server khi lưu (POST /assessment). */}
+      {DEMO_MODE && <TriageStrip tri={tri} onTransfer={() => onRedFlag({ ...draft(), id: existing?.id, signs: redSigns() })} />}
       <label className="set-checks" style={{ display: 'flex', marginTop: 8, fontSize: 13.5 }}>
         <input type="checkbox" checked={print} onChange={(e) => setPrint(e.target.checked)} />{' '}
         <span>Print queue ticket</span>
@@ -271,10 +380,10 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
         <button className="btn btn-ghost" style={{ color: 'var(--warn)', borderColor: '#F3C9C9' }} onClick={() => onRedFlag({ ...draft(), id: existing?.id, signs: redSigns() })}>
           <Icon name="ban" /> Emergency warning signs
         </button>
-        <button className="btn btn-ghost" onClick={onClose}>
+        <button className="btn btn-ghost" onClick={close}>
           Cancel
         </button>
-        <button className="btn btn-primary" onClick={() => handleSave(false)} disabled={touched && invalid && !existing}>
+        <button className="btn btn-primary" onClick={() => handleSave(false)} disabled={busy || (touched && invalid && !existing)}>
           {emergency ? translate('Save — top of the queue (Emergency)') : existing ? 'Create visit & issue number' : 'Save & issue number'}
         </button>
       </div>

@@ -7,8 +7,9 @@ import { STATES, SOURCES, useSymptomCatalog, groupSymptoms, symptomName, request
 //  - value: { mã: { state: PRESENT|ABSENT|UNKNOWN, source: Form|Extracted|Prompt } } — chỉ chứa mục lễ tân đã chọn / xác nhận.
 //  - text / onText: lời kể của bệnh nhân (tiếng Việt, tự do).
 //  - ask: mã triệu chứng luật cờ đỏ đang thiếu (Adaptive Lite) → hiện "Hỏi ngay" để lễ tân hỏi và chọn.
+//  - onExtract(text, { signal }): trích xuất ở server (POST/GET /visits/{id}/symptom-extraction); không có thì dùng bản giả lập.
 // Đề xuất của mô hình chỉ là CHIP CHỜ XÁC NHẬN; bấm xác nhận thì mới vào value (nguồn Extracted). Chưa xác nhận = không dùng.
-export default function SymptomPanel({ value, onChange, text, onText, ask = [], disabled = false }) {
+export default function SymptomPanel({ value, onChange, text, onText, ask = [], disabled = false, onExtract = requestExtraction }) {
   const [job, setJob] = useState({ status: 'idle' }) // idle | running | done | failed
   const [proposals, setProposals] = useState([])
   const ctrl = useRef(null)
@@ -30,12 +31,14 @@ export default function SymptomPanel({ value, onChange, text, onText, ask = [], 
     const timer = setTimeout(() => c.abort(), EXTRACTION_TIMEOUT_MS)
     setJob({ status: 'running' })
     try {
-      const r = await requestExtraction(text, { signal: c.signal })
+      const r = await onExtract(text, { signal: c.signal })
       // Mã đã được lễ tân chọn thì không đề xuất lại.
       setProposals(r.proposals.filter((p) => !value[p.symptom_code]))
       setJob({ status: 'done', count: r.proposals.length })
     } catch (e) {
       if (c.signal.aborted && e.code === 'ABORTED' && ctrl.current !== c) return
+      // Thiếu thông tin bệnh nhân / hồ sơ có thể trùng: form đã báo lỗi, không phải lỗi AI.
+      if (e.code === 'FORM') return setJob({ status: 'idle' })
       setJob({ status: 'failed', timeout: e.code === 'ABORTED' })
     } finally {
       clearTimeout(timer)

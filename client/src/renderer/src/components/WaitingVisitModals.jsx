@@ -140,8 +140,8 @@ export function CancelVisitModal({ visit, onClose }) {
   const pendingFlag = redFlags.some((r) => r.visitId === visit.id && !r.doctorReview)
   const [reason, setReason] = useState('left_waiting')
   const [note, setNote] = useState('')
-  function submit() {
-    const r = cancelVisit(visit.id, { reason, note }, user)
+  async function submit() {
+    const r = await cancelVisit(visit.id, { reason, note }, user)
     if (!r.ok) return showToast(translate(r.error))
     showToast(translate('Visit cancelled') + ' — ' + ticketNo(visit.ticket))
     onClose()

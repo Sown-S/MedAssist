@@ -36,8 +36,8 @@ export default function QueueView({ readOnly, onPay, onRx }) {
         ? readyOrder(visits)
         : byStatus(tab).sort((a, b) => ([ST.FINISHED, ST.CANCELLED].includes(tab) ? b.statusAt.localeCompare(a.statusAt) : a.statusAt.localeCompare(b.statusAt)))
   // Lễ tân xác nhận bệnh nhân có mặt khi tới lượt (PATCH /visits/{id}/check-in) — bác sĩ chỉ mời được người đã check-in.
-  function checkIn(v) {
-    const r = checkInVisit(v.id, user)
+  async function checkIn(v) {
+    const r = await checkInVisit(v.id, user)
     showToast(r.ok ? translate('Checked in — doctors can now call') + ' ' + String(v.ticket).padStart(3, '0') : translate(r.error))
   }
 
