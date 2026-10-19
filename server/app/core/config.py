@@ -59,7 +59,10 @@ class Settings(BaseSettings):
     #   none: không gọi LLM, mọi lần chạy kết thúc Degraded/RuleOnly (Node 2 tất định).
     LLM_PROVIDER: Literal["ollama", "fake", "none"] = "ollama"
     OLLAMA_BASE_URL: str = "http://127.0.0.1:11434"
-    OLLAMA_MODEL: str = "aisingapore/Gemma-SEA-LION-v3-9B-IT"   # theo spike của Huy; đổi trong .env
+    # Một model cho cả trích xuất và reasoning (Huy chốt 20/10): Gemma2 9B Q4_K_M, 5.8 GB, vừa GPU 6 GB
+    OLLAMA_MODEL: str = "hf.co/aisingapore/Gemma-SEA-LION-v3-9B-IT-GGUF:Q4_K_M"
+    # Gửi kèm mỗi request; máy admin đặt 24h để model luôn nằm sẵn trong VRAM
+    OLLAMA_KEEP_ALIVE: str = "5m"
     AI_ASSESSMENT_TIMEOUT_SECONDS: float = Field(default=90, gt=0, le=90)   # tính từ lúc xếp hàng
     WORKER_POLL_SECONDS: float = Field(default=1.0, gt=0)
     WORKER_LEASE_SECONDS: int = Field(default=150, ge=30)                   # > timeout đánh giá
