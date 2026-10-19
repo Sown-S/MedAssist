@@ -90,6 +90,12 @@ export async function apiPost(path, body) {
   return realRequest(path, { method: 'POST', body: JSON.stringify(body) })
 }
 
+// PATCH / PUT / DELETE — chỉ dùng khi đã tắt giả lập (các store giả lập tự xử lý dữ liệu cục bộ).
+export function apiRequest(path, method, body) {
+  if (USE_MOCK) return Promise.reject(new Error(`[mock] ${method} ${path} chỉ có khi dùng backend thật`))
+  return realRequest(path, { method, ...(body !== undefined ? { body: JSON.stringify(body) } : {}) })
+}
+
 export const DEMO_MODE = USE_MOCK
 
 // Kiểm tra kết nối: GET /health của FastAPI trả về { database: {ok, detail}, ai: {ok, detail}, version }.
