@@ -13,6 +13,7 @@ import CallPanel from './CallPanel'
 import { EditWaitingModal, CancelVisitModal } from '../../components/WaitingVisitModals'
 import { fmt, hhmm, dmy, methodLabel, useNow, PAY_STATUS } from './shared'
 import { vitalsText } from '../../api/vitals'
+import { DEMO_MODE } from '../../api/client'
 
 // Phút chờ bắt đầu thành vàng / đỏ, theo từng chặng.
 const WAIT_LIMITS = { Waiting: [30, 60], CheckedIn: [15, 30], Examining: [30, 45], labs: [30, 60], Prescribed: [10, 20] }
@@ -93,6 +94,12 @@ export default function QueueView({ readOnly, onPay, onRx }) {
     if (v.status === ST.CHECKED_IN)
       return (
         <>
+          {/* Backend thật: sau check-in vẫn đo lại sinh hiệu / sửa triệu chứng được — luật tính lại mức ưu tiên. */}
+          {!DEMO_MODE && (
+            <button className="btn btn-ghost btn-sm" disabled={readOnly} onClick={() => setEditing(v)} title={translate('Condition worsened while waiting? Update the symptoms and vital signs — the priority is re-assessed when you save.')}>
+              <Icon name="pencil" /> Re-measure vitals
+            </button>
+          )}
           <button className="btn btn-ghost btn-sm" onClick={() => printTicket(v)}>
             <Icon name="printer" /> Print queue ticket
           </button>

@@ -1,11 +1,13 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Modal, { ModalHeader } from './Modal'
 import Icon from './Icon'
 import PatientAlerts from './PatientAlerts'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
 import { translate } from '../i18n'
-import { useQueue, updateWaitingVisit, cancelVisit, recordRedFlag, CANCEL_REASONS } from '../api/queueStore'
+import { useQueue, updateWaitingVisit, cancelVisit, recordRedFlag, CANCEL_REASONS, syncQueue, ST } from '../api/queueStore'
+import { DEMO_MODE, apiGet } from '../api/client'
+import * as clinic from '../api/clinicApi'
 import { ticketNo } from './queuePrint'
 import { vitalCheck } from './IntakeModal'
 import VitalsFields from './VitalsFields'
@@ -32,6 +34,22 @@ export function EditWaitingModal({ visit, onClose }) {
   })
   const [syms, setSyms] = useState(symMap(visit.symptoms))
   const [tried, setTried] = useState(false)
+  // Backend thật: hàng đợi không kèm sinh hiệu / lời kể / triệu chứng → tải lượt khám khi mở.
+  // Sau check-in server chỉ cho sửa sinh hiệu (lời kể khoá); triệu chứng vẫn sửa được.
+  const [loaded, setLoaded] = useState(DEMO_MODE)
+  const [busy, setBusy] = useState(false)
+  const textLocked = !DEMO_MODE && visit.status !== ST.WAITING
+  useEffect(() => {
+    if (DEMO_MODE) return
+    Promise.all([apiGet('/api/v1/visits/' + visit.id), clinic.getVisitSymptoms(visit.id)])
+      .then(([v, list]) => {
+        setF({ reason: v.free_text_description ?? v.chief_complaint ?? '', days: '', ...vitalsToForm(normalizeVitals(v.vital_signs)) })
+        setSyms(symMap(list.filter((x) => x.state !== 'UNKNOWN')))
+        setLoaded(true)
+      })
+      .catch((e) => showToast(translate(e.message)))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [visit.id])
   const vit = vitalCheck(f)
   const states = Object.fromEntries(Object.entries(syms).map(([k, x]) => [k, x.state]))
   const tri = triage({ states, age: visit.age, days: f.days, vitals: vitalsFromForm(f) })
@@ -48,9 +66,31 @@ export function EditWaitingModal({ visit, onClose }) {
     triageRules: [...tri.red, ...tri.high].map((x) => x.rule.id)
   })
 
+  async function extract(text, { signal }) {
+    await clinic.updateVisit(visit.id, { text })
+    return clinic.extractSymptoms(visit.id, { signal })
+  }
+  // Backend thật: lưu sinh hiệu (+ lời kể khi còn Waiting), triệu chứng, rồi chạy lại luật ưu tiên (POST /assessment).
+  async function saveReal() {
+    setBusy(true)
+    try {
+      await clinic.updateVisit(visit.id, textLocked ? { vitals: vitalsFromForm(f) } : { text: f.reason, vitals: vitalsFromForm(f) })
+      await clinic.putSymptoms(visit.id, toPayload(syms))
+      const a = await clinic.triggerAssessment(visit.id)
+      syncQueue()
+      const level = clinic.triageOf(a.priority?.final)
+      showToast(translate('Visit updated') + (level !== 'routine' ? ' · ' + translate(TRIAGE_LEVELS[level].label) : ''))
+      onClose()
+    } catch (e) {
+      showToast(translate(e.message))
+    } finally {
+      setBusy(false)
+    }
+  }
   function save() {
     setTried(true)
     if (vit.errors.length) return showToast(translate('Check the vital signs') + ': ' + vit.errors.map((e) => translate(e)).join('; '))
+    if (!DEMO_MODE) return saveReal()
     const r = updateWaitingVisit(visit.id, payload(), user)
     if (!r.ok) return showToast(translate(r.error))
     showToast('Visit updated')
@@ -84,9 +124,18 @@ export function EditWaitingModal({ visit, onClose }) {
       <div className="modal-body">
         <PatientAlerts p={visit} compact />
         <div className="section-label">Symptoms</div>
-        <SymptomPanel value={syms} onChange={setSyms} text={f.reason} onText={(t) => setF((x) => ({ ...x, reason: t }))} ask={askSymptoms} />
+        <SymptomPanel
+          value={syms}
+          onChange={setSyms}
+          text={f.reason}
+          onText={(t) => setF((x) => ({ ...x, reason: t }))}
+          ask={DEMO_MODE ? askSymptoms : []}
+          textLocked={textLocked}
+          onExtract={DEMO_MODE ? undefined : extract}
+        />
         <div className="section-label">Vital signs</div>
         <VitalsFields value={f} onChange={(k, v) => setF((x) => ({ ...x, [k]: v }))} errorKeys={tried ? vit.errorKeys : new Set()} highlight={askVitals} />
+        {DEMO_MODE && (
         <div className={'triage-strip ' + tri.level}>
           <span className={'badge ' + lv.tone}>{translate(lv.label)}</span>
           <div className="txt">
@@ -108,6 +157,7 @@ export function EditWaitingModal({ visit, onClose }) {
             <span className="ai-soft">{translate('The priority can only be raised here, never lowered.')}</span>
           </div>
         </div>
+        )}
         <p className="ai-soft" style={{ fontSize: 12.5, margin: '6px 0 0' }}>
           <Icon name="zap" /> {translate('Condition worsened while waiting? Update the symptoms and vital signs — the priority is re-assessed when you save.')}
         </p>
@@ -118,13 +168,15 @@ export function EditWaitingModal({ visit, onClose }) {
         )}
       </div>
       <div className="modal-foot">
+        {DEMO_MODE && (
         <button className="btn" style={{ background: 'var(--warn)', color: '#fff', marginRight: 'auto' }} onClick={() => redFlag('referred')} title={translate('Accident, critical condition, severe breathing difficulty… — beyond the clinic: transfer now')}>
           <Icon name="ban" /> Emergency — transfer now
         </button>
-        <button className="btn btn-ghost" onClick={onClose}>
+        )}
+        <button className="btn btn-ghost" style={DEMO_MODE ? undefined : { marginLeft: 'auto' }} onClick={onClose}>
           Cancel
         </button>
-        <button className="btn btn-primary" onClick={save}>
+        <button className="btn btn-primary" disabled={!loaded || busy} onClick={save}>
           <Icon name="check" /> Save
         </button>
       </div>

@@ -7,9 +7,10 @@ import { STATES, SOURCES, useSymptomCatalog, groupSymptoms, symptomName, request
 //  - value: { mã: { state: PRESENT|ABSENT|UNKNOWN, source: Form|Extracted|Prompt } } — chỉ chứa mục lễ tân đã chọn / xác nhận.
 //  - text / onText: lời kể của bệnh nhân (tiếng Việt, tự do).
 //  - ask: mã triệu chứng luật cờ đỏ đang thiếu (Adaptive Lite) → hiện "Hỏi ngay" để lễ tân hỏi và chọn.
+//  - textLocked: lời kể chỉ đọc (lượt đã check-in) — vẫn chọn triệu chứng được.
 //  - onExtract(text, { signal }): trích xuất ở server (POST/GET /visits/{id}/symptom-extraction); không có thì dùng bản giả lập.
 // Đề xuất của mô hình chỉ là CHIP CHỜ XÁC NHẬN; bấm xác nhận thì mới vào value (nguồn Extracted). Chưa xác nhận = không dùng.
-export default function SymptomPanel({ value, onChange, text, onText, ask = [], disabled = false, onExtract = requestExtraction }) {
+export default function SymptomPanel({ value, onChange, text, onText, ask = [], disabled = false, textLocked = false, onExtract = requestExtraction }) {
   const [job, setJob] = useState({ status: 'idle' }) // idle | running | done | failed
   const [proposals, setProposals] = useState([])
   const ctrl = useRef(null)
@@ -65,10 +66,10 @@ export default function SymptomPanel({ value, onChange, text, onText, ask = [], 
     <div className="sym-panel">
       <div className="field full">
         <label>Patient’s description (free text, Vietnamese)</label>
-        <textarea rows="2" disabled={disabled} placeholder="Sốt cao 2 ngày, ho có đờm, đau họng, không khó thở…" value={text} onChange={(e) => onText(e.target.value)} />
+        <textarea rows="2" disabled={disabled || textLocked} placeholder="Sốt cao 2 ngày, ho có đờm, đau họng, không khó thở…" value={text} onChange={(e) => onText(e.target.value)} />
       </div>
       <div className="sym-extract">
-        <button type="button" className="btn btn-ghost btn-sm" disabled={disabled || !text.trim() || job.status === 'running'} onClick={extract}>
+        <button type="button" className="btn btn-ghost btn-sm" disabled={disabled || textLocked || !text.trim() || job.status === 'running'} onClick={extract}>
           <Icon name="bulb" /> {job.status === 'running' ? translate('Reading the description…') : translate('Suggest symptoms from description')}
         </button>
         {job.status === 'running' && <span className="ai-soft">{translate('Runs in the background — keep entering vital signs.')}</span>}
