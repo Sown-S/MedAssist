@@ -10,7 +10,7 @@ export function useAssessment(visit) {
   const ai = useAIConfig()
   const [now, setNow] = useState(Date.now())
   const a = mockAssessment(visit, ai, now)
-  const done = ['Ready', 'Degraded', 'Skipped'].includes(a.ai_status)
+  const done = ['Ready', 'Degraded', 'Failed', 'Skipped'].includes(a.ai_status)
   useEffect(() => {
     if (done) return
     const t = setInterval(() => setNow(Date.now()), 2000)
@@ -21,8 +21,10 @@ export function useAssessment(visit) {
 
 const STATUS = {
   Pending: { label: 'AI analysis in progress…', tone: 'muted' },
+  Preliminary: { label: 'Preliminary — rule ranking', tone: 'muted' },
   Ready: { label: 'Full — ranked and explained', tone: 'ok' },
   Degraded: { label: 'Rule-only', tone: 'low' },
+  Failed: { label: 'AI assessment failed', tone: 'low' },
   Skipped: { label: 'Red flag — no AI suggestion', tone: 'low' }
 }
 const DISMISS = [
@@ -50,11 +52,7 @@ export default function AssessmentCard({ a, decisions, onAccept, onDismiss }) {
         {a.ai_status === 'Degraded' && (
           <p className="assess-banner">
             <Icon name="alert" />{' '}
-            {translate(
-              a.reason === 'off'
-                ? 'The AI module is turned off — candidates below are ranked by the approved rules only, without an AI explanation.'
-                : 'The AI model did not answer in time — candidates below are ranked by the approved rules only, without an AI explanation.'
-            )}
+            {translate('The AI model is unavailable — candidates below are ranked by the approved rules only, without an AI explanation.')}
           </p>
         )}
         {a.ai_status === 'Skipped' && (
@@ -62,13 +60,19 @@ export default function AssessmentCard({ a, decisions, onAccept, onDismiss }) {
             <Icon name="ban" /> {translate('A red-flag rule matched — the pipeline stopped before the AI model, so no diagnosis is suggested. Assess and refer if needed.')}
           </p>
         )}
+        {a.ai_status === 'Failed' && (
+          <p className="assess-banner">
+            <Icon name="alert" /> {translate('The AI assessment could not be completed — examine and diagnose as usual.')}
+          </p>
+        )}
         {a.ai_status === 'Pending' && <p className="ai-soft assess-note">{translate('Waiting for the result — you can keep examining; it appears here automatically.')}</p>}
+        {a.ai_status === 'Preliminary' && <p className="ai-soft assess-note">{translate('Preliminary ranking by the approved rules — the AI explanation will appear here automatically.')}</p>}
 
-        {a.candidates.map((c, i) => (
+        {a.candidates.map((c) => (
           <div className="assess-cand" key={c.condition_code}>
             <div className="assess-cand-top">
-              <span className="assess-rank">{i + 1}</span>
-              <span className="mono">{c.icd10}</span> <b>{translate(c.name)}</b>
+              <span className="assess-rank">{c.rank}</span>
+              {c.icd10_code && <span className="mono">{c.icd10_code}</span>} <b>{c.name_vi}</b>
               <span className="assess-score" title={translate('Match score')}>
                 <span style={{ width: Math.round(c.score * 100) + '%' }} />
               </span>
@@ -109,18 +113,18 @@ export default function AssessmentCard({ a, decisions, onAccept, onDismiss }) {
             </div>
             <div className="assess-evidence">
               {c.supporting.map((s) => (
-                <span key={'s' + s} className="ev sup" title={translate('Supporting finding')}>
-                  + {translate(s)}
+                <span key={'s' + s.symptom_code} className="ev sup" title={translate('Supporting finding')}>
+                  + {s.symptom_name}
                 </span>
               ))}
               {c.contradicting.map((s) => (
-                <span key={'c' + s} className="ev con" title={translate('Contradicting finding')}>
-                  − {translate(s)}
+                <span key={'c' + s.symptom_code} className="ev con" title={translate('Contradicting finding')}>
+                  − {s.symptom_name}
                 </span>
               ))}
               {c.missing.map((s) => (
-                <span key={'m' + s} className="ev mis" title={translate('Not yet known')}>
-                  ? {translate(s)}
+                <span key={'m' + s.symptom_code} className="ev mis" title={translate('Not yet known')}>
+                  ? {s.symptom_name}
                 </span>
               ))}
             </div>
@@ -130,14 +134,13 @@ export default function AssessmentCard({ a, decisions, onAccept, onDismiss }) {
         {['Ready', 'Degraded'].includes(a.ai_status) && !a.candidates.length && (
           <p className="ai-soft assess-note">{translate('No condition in the approved knowledge base matches the symptoms recorded at check-in.')}</p>
         )}
-        {a.missing.length > 0 && (
+        {a.complete_now.length > 0 && (
           <p className="assess-note need">
-            {translate('Still unknown — ask or measure')}: {a.missing.map((k) => translate(k)).join(', ')}
+            {translate('Still unknown — ask or measure')}: {a.complete_now.map((x) => x.symptom_name).join(', ')}
           </p>
         )}
         <p className="ai-soft assess-meta">
-          {translate('Knowledge')} {a.knowledge_release} · {translate('model')} {a.model_version} · {translate('prompt')} {a.prompt_version}
-          {a.candidates.length > 0 && ' · ' + translate('rules') + ' ' + a.candidates.map((c) => c.rule_id + ' v' + c.rule_version).join(', ')}
+          {translate('Knowledge')} {a.knowledge_release ?? '—'} · {translate('model')} {a.model_version ?? '—'} · {translate('prompt')} {a.prompt_version ?? '—'}
         </p>
       </div>
     </div>
