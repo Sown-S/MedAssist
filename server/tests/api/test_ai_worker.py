@@ -1,5 +1,5 @@
-"""Knowledge Reader (DB, cache theo epoch), xếp hàng đánh giá (Node 1 đồng bộ), worker (SKIP LOCKED,
-lease, sweeper), ghi kết quả vào ai_assessment_log + visit."""
+"""Knowledge Reader (DB, cache theo epoch), xếp hàng đánh giá (Node 1 đồng bộ) và trích xuất triệu chứng,
+worker (SKIP LOCKED, lease, sweeper), ghi kết quả vào ai_assessment_log + visit."""
 import asyncio
 import datetime
 import uuid
@@ -10,7 +10,8 @@ from sqlalchemy import select, text, update
 from app.ai.llm.client import LLMClient
 from app.ai.llm.fake_client import FakeLLMClient
 from app.core.database import SessionLocal, engine
-from app.models import AiAssessmentLog, TriageRule, User, Visit
+from app.ai.extraction import feature_extractor
+from app.models import AiAssessmentLog, Patient, TriageRule, User, Visit
 from app.services import ai_queue_service as q
 from app.services.knowledge_reader import DbKnowledgeReader
 from app.worker import runner
@@ -235,6 +236,24 @@ def test_older_run_does_not_overwrite_visit(make_visit, nurse_user):
     assert _visit(vid).ai_status == "Pending" and _run(new).status == "Queued"
 
 
+def test_worker_result_keeps_complete_now(make_visit, nurse_user):
+    vid = make_visit({"wk_fever_high": "PRESENT"})
+    aid = _enqueue(vid, nurse_user)
+    assert set(_run(aid).rule_hits) == {"hits", "complete_now"}
+    with SessionLocal() as db:
+        assert q.claim_next(db).assessment_id == aid
+        db.commit()
+    with SessionLocal() as db:
+        q.write_result(db, aid, {"ai_status": "Degraded", "mode": "RuleOnly", "candidates": [],
+                                 "priority_rule": "Routine", "priority_final": "Routine", "rule_hits": [],
+                                 "complete_now": ["symptoms.wk_sore_throat"]},
+                       reader=DbKnowledgeReader(), model_name=None, prompt_version=None,
+                       latency_phase1_ms=None, latency_llm_ms=None, latency_total_ms=1)
+        db.commit()
+    assert _run(aid).rule_hits == {
+        "hits": [], "complete_now": [{"symptom_code": "wk_sore_throat", "symptom_name": "Đau họng"}]}
+
+
 def test_infrastructure_error_marks_failed(make_visit, nurse_user, monkeypatch):
     vid = make_visit({"wk_fever_high": "PRESENT"})
     aid = _enqueue(vid, nurse_user)
@@ -365,3 +384,106 @@ def test_run_forever_survives_db_errors(monkeypatch):
         await asyncio.wait_for(task, timeout=5)
     asyncio.run(_main())
     assert calls["n"] >= 2                                     # vẫn tiếp tục vòng lặp sau lỗi
+
+
+# ---------------------------------------------------------------------------- trích xuất triệu chứng
+NOTE = "Sốt cao 2 ngày, không ho khan, chưa rõ đau họng."
+
+
+@pytest.fixture
+def text_visit(client, nurse, make_visit):
+    def _make(note=NOTE):
+        vid = make_visit({})
+        r = client.patch(f"/api/v1/visits/{vid}", headers=nurse, json={"free_text_description": note})
+        assert r.status_code == 200, r.text
+        return vid
+    return _make
+
+
+class _RecordingLLM(FakeLLMClient):
+    def __init__(self):
+        self.prompts = []
+
+    async def generate_json(self, *, prompt, schema, timeout_seconds):
+        self.prompts.append(prompt)
+        return await super().generate_json(prompt=prompt, schema=schema, timeout_seconds=timeout_seconds)
+
+
+def _extractions(vid):
+    with SessionLocal() as db:
+        return list(db.scalars(select(AiAssessmentLog)
+                               .where(AiAssessmentLog.visit_id == uuid.UUID(vid),
+                                      AiAssessmentLog.run_type == "Extraction")
+                               .order_by(AiAssessmentLog.queued_at)))
+
+
+def test_extraction_api_then_worker_returns_suggestions_only(client, nurse, text_visit):
+    vid = text_visit()
+    r = client.post(f"/api/v1/visits/{vid}/symptom-extraction", headers=nurse)
+    assert r.status_code == 202, r.text
+    assert r.json()["status"] == "Queued" and r.json()["suggestions"] == []
+    ai_status_before = _visit(vid).ai_status
+
+    assert _process(FakeLLMClient(), "fake") is True
+    body = client.get(f"/api/v1/visits/{vid}/symptom-extraction", headers=nurse).json()
+    assert body["status"] == "Completed" and body["completed_at"]
+    got = {s["symptom_code"]: s for s in body["suggestions"]}
+    assert got["wk_fever_high"]["status"] == "PRESENT" and got["wk_fever_high"]["symptom_name"] == "Sốt cao"
+    assert got["wk_cough_dry"]["status"] == "ABSENT" and got["wk_sore_throat"]["status"] == "UNKNOWN"
+    assert all(s["label"] == "Reference Suggestion" and s["requires_confirmation"] for s in body["suggestions"])
+
+    run = _extractions(vid)[-1]
+    assert run.model_name == "fake" and run.prompt_version == feature_extractor.EXTRACTION_PROMPT_VERSION
+    assert _visit(vid).ai_status == ai_status_before
+    assert client.get(f"/api/v1/visits/{vid}/symptoms", headers=nurse).json() == []
+
+
+def test_extraction_masks_patient_identifiers(client, nurse, text_visit):
+    vid = text_visit()
+    with SessionLocal() as db:
+        name = db.get(Patient, _visit(vid).patient_id).full_name
+    r = client.patch(f"/api/v1/visits/{vid}", headers=nurse,
+                     json={"free_text_description": f"{name} sốt cao từ hôm qua"})
+    assert r.status_code == 200, r.text
+    client.post(f"/api/v1/visits/{vid}/symptom-extraction", headers=nurse)
+    llm = _RecordingLLM()
+    assert _process(llm, "fake") is True
+    assert llm.prompts and all(name not in p for p in llm.prompts)
+
+
+def test_extraction_requires_free_text_and_nurse(client, nurse, doctor, make_visit, text_visit):
+    vid = make_visit({})
+    r = client.post(f"/api/v1/visits/{vid}/symptom-extraction", headers=nurse)
+    assert r.status_code == 422 and r.json()["error"]["code"] == "NO_FREE_TEXT"
+    assert client.get(f"/api/v1/visits/{vid}/symptom-extraction", headers=nurse).status_code == 404
+    assert client.post(f"/api/v1/visits/{text_visit()}/symptom-extraction", headers=doctor).status_code == 403
+
+
+def test_extraction_claimed_before_assessment_and_supersedes_queued(client, nurse, nurse_user, text_visit):
+    vid = text_visit()
+    aid = _enqueue(vid, nurse_user)
+    client.post(f"/api/v1/visits/{vid}/symptom-extraction", headers=nurse)
+    client.post(f"/api/v1/visits/{vid}/symptom-extraction", headers=nurse)
+    first, second = _extractions(vid)
+    assert first.status == "Skipped" and first.error_detail == "SUPERSEDED"
+
+    assert _process(FakeLLMClient(), "fake") is True
+    assert _run(second.assessment_id).status == "Completed"
+    assert _run(aid).status == "Queued"
+
+
+def test_extraction_failure_keeps_visit_ai_status(client, nurse, text_visit, monkeypatch):
+    vid = text_visit()
+    client.post(f"/api/v1/visits/{vid}/symptom-extraction", headers=nurse)
+    ai_status_before = _visit(vid).ai_status
+
+    async def boom(*args, **kwargs):
+        raise RuntimeError("hạ tầng lỗi")
+
+    monkeypatch.setattr(feature_extractor, "extract_symptoms", boom)
+    assert _process(FakeLLMClient(), "fake") is True
+    run = _extractions(vid)[-1]
+    assert run.status == "Failed" and run.error_detail == "RuntimeError"
+    assert _visit(vid).ai_status == ai_status_before
+    body = client.get(f"/api/v1/visits/{vid}/symptom-extraction", headers=nurse).json()
+    assert body["status"] == "Failed" and body["suggestions"] == []
