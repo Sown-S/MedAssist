@@ -34,6 +34,7 @@ Client nhập địa chỉ `https://192.168.1.10` (đúng IP/tên đã cấp ch�
 | Việc | Lệnh |
 | --- | --- |
 | Bật / cập nhật sau khi kéo code mới | `.\deploy\scripts\start.ps1` |
+| Cho máy dev mượn Ollama (chỉ giai đoạn phát triển) | `.\deploy\scripts\start.ps1 -OllamaLan`; chạy lại `start.ps1` không có `-OllamaLan` để đóng cổng |
 | Tắt (giữ dữ liệu) | `.\deploy\scripts\stop.ps1` |
 | Sao lưu ngay | `.\deploy\scripts\backup.ps1` (giữ 14 bản mới nhất trong `deploy\backups\`) |
 | Khôi phục | `.\deploy\scripts\restore.ps1 -File deploy\backups\<file>.dump` |
