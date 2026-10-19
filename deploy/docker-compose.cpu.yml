@@ -1,0 +1,5 @@
+# Máy không có GPU NVIDIA (máy dự phòng): Ollama chạy CPU, LLM chậm hơn nên dễ rơi về Rule-only.
+# Dùng kèm file chính: .\deploy\scripts\start.ps1 -Cpu
+services:
+  ollama:
+    deploy: !reset {}

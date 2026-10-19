@@ -79,6 +79,19 @@ def test_update_only_while_waiting(client, nurse, patient_id):
     assert r.status_code == 409 and r.json()["error"]["code"] == "VISIT_LOCKED"
 
 
+def test_vitals_editable_after_check_in(client, nurse, doctor, patient_id):
+    vid = _visit(client, nurse, patient_id).json()["visit_id"]
+    client.patch(f"/api/v1/visits/{vid}/check-in", headers=nurse)
+    r = client.patch(f"/api/v1/visits/{vid}", headers=nurse, json={"vital_signs": {"spo2_pct": 88}})
+    assert r.status_code == 200 and r.json()["vital_signs"] == {"spo2_pct": 88}
+    r = client.patch(f"/api/v1/visits/{vid}", headers=nurse,
+                     json={"vital_signs": {"spo2_pct": 90}, "free_text_description": "Khó thở hơn"})
+    assert r.status_code == 409 and r.json()["error"]["code"] == "VISIT_LOCKED"
+    client.patch(f"/api/v1/visits/{vid}/start-exam", headers=doctor)
+    r = client.patch(f"/api/v1/visits/{vid}", headers=nurse, json={"vital_signs": {"spo2_pct": 90}})
+    assert r.status_code == 409
+
+
 def test_full_flow_to_examining_and_claim_race(client, nurse, doctor, doctor2, patient_id, logs, users):
     vid = _visit(client, nurse, patient_id).json()["visit_id"]
     assert client.patch(f"/api/v1/visits/{vid}/start-exam", headers=doctor).status_code == 409   # chưa check-in
