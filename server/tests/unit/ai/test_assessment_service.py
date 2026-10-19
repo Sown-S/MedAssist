@@ -1,15 +1,12 @@
-import asyncio
-from datetime import date, datetime, timedelta, timezone
+from datetime import date, datetime, timezone
 from types import SimpleNamespace
 from uuid import uuid4
 
 import pytest
 from sqlalchemy import select
 
-from app.ai.pipeline.node3_reasoning import REASONING_PROMPT_VERSION
 from app.core.database import SessionLocal
 from app.models import (
-    AiAssessmentLog,
     AuditLog,
     KnowledgeRelease,
     KnowledgeSource,
@@ -190,71 +187,6 @@ def test_trigger_assessment_red_flag_and_queued_use_same_transaction(users):
         audits = list(db.scalars(select(AuditLog).where(
             AuditLog.action_type == "AI_ASSESSMENT",
             AuditLog.entity_id.in_([emergency_visit.visit_id, queued_visit.visit_id]),
-        )))
-        assert len(audits) == 2
-        db.rollback()
-
-
-def test_execute_queued_assessment_publishes_preliminary_and_completes(users, monkeypatch):
-    with SessionLocal() as db:
-        patient = Patient(full_name="Ca worker giả lập", date_of_birth=date(1985, 5, 2), gender="Female")
-        db.add(patient)
-        db.flush()
-        visit = Visit(
-            patient_id=patient.patient_id, nurse_id=users["yta"].user_id,
-            chief_complaint="Ca cấu trúc", triage_priority_rule="Routine",
-            triage_priority="Routine", ai_status="Pending", is_red_flag=False,
-        )
-        db.add(visit)
-        db.flush()
-        now = datetime.now(timezone.utc)
-        log = AiAssessmentLog(
-            visit_id=visit.visit_id, run_type="Assessment", triggered_by=users["yta"].user_id,
-            status="Running", priority_rule="Routine", priority_final="Routine",
-            rule_hits={"hits": [], "complete_now": []}, candidates=[], queued_at=now,
-            started_at=now, lease_until=now + timedelta(seconds=120),
-        )
-        db.add(log)
-        db.flush()
-
-        async def pipeline(state, reader, client, session, *, timeout_seconds, on_preliminary):
-            preliminary = {
-                "input_features": state["input_features"], "priority_rule": "Routine",
-                "priority_final": "Routine", "rule_hits": [], "complete_now": [],
-                "is_red_flag": False, "ai_status": "Preliminary", "mode": "RuleOnly",
-                "candidates": [candidate(reason=None)],
-            }
-            await on_preliminary(preliminary)
-            persisted = session.get(AiAssessmentLog, log.assessment_id)
-            persisted_visit = session.get(Visit, visit.visit_id)
-            assert persisted.status == "Running"
-            assert persisted.candidates[0]["supporting"][0]["symptom_name"] == "Ho"
-            assert persisted_visit.ai_status == "Preliminary"
-            return {
-                **preliminary,
-                "priority_final": "HighPriority", "ai_status": "Completed", "mode": "Full",
-                "candidates": [candidate()],
-                "validation_result": {"valid": True, "errors": [], "schema_version": "1"},
-            }
-
-        monkeypatch.setattr(assessment_service, "run_pipeline", pipeline)
-        reader = FakeKnowledgeReader(symptoms=[
-            {"symptom_code": "cough", "symptom_name": "Ho"},
-            {"symptom_code": "fever", "symptom_name": "Sốt"},
-        ])
-        client = SimpleNamespace(model_name="gemma", model_version="9b")
-        completed = asyncio.run(assessment_service.execute_queued_assessment(
-            db, log.assessment_id, reader, client
-        ))
-
-        assert completed.status == "Completed" and completed.mode == "Full"
-        assert completed.prompt_version == REASONING_PROMPT_VERSION
-        assert completed.model_name == "gemma" and completed.model_version == "9b"
-        assert completed.latency_llm_ms is not None and completed.latency_llm_ms >= 0
-        assert visit.ai_status == "Ready"
-        assert visit.triage_priority == "HighPriority" and visit.priority_raised_by_ai is True
-        audits = list(db.scalars(select(AuditLog).where(
-            AuditLog.action_type == "AI_ASSESSMENT", AuditLog.entity_id == visit.visit_id,
         )))
         assert len(audits) == 2
         db.rollback()

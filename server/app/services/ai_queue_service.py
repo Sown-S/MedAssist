@@ -10,6 +10,9 @@ Luồng:
    ``sweep_expired()`` thu hồi lease quá hạn (worker chết giữa chừng).
 3. Worker ghi gợi ý sơ bộ (``write_preliminary``) rồi kết quả cuối (``write_result``) hoặc lỗi
    (``write_failure``). Chỉ lần chạy MỚI NHẤT của lượt khám được cập nhật lượt khám.
+4. Trích xuất triệu chứng (FR12): ``enqueue_extraction()`` xếp hàng ``run_type='Extraction'``, worker
+   lấy trước Assessment (y tá đang chờ, ngân sách 30 giây), ghi gợi ý bằng ``write_extraction()``.
+   Gợi ý chỉ nằm trong nhật ký AI; y tá xác nhận qua PUT /visits/{id}/symptoms. Không đổi visit.ai_status.
 
 Ánh xạ trạng thái (chốt 18/10): Completed -> visit Ready / log Completed; Preliminary -> visit
 Preliminary / log Running; Degraded, Skipped giữ nguyên; lỗi hạ tầng -> Failed.
@@ -21,7 +24,7 @@ import json
 import uuid
 from typing import Any
 
-from sqlalchemy import func, select, text, update
+from sqlalchemy import case, func, select, text, update
 from sqlalchemy.orm import Session
 
 from app.ai.interfaces import KnowledgeReader
@@ -29,6 +32,7 @@ from app.ai.pipeline.node1_red_flag_gate import run_node1
 from app.core.config import settings
 from app.exceptions import AppError
 from app.models import AiAssessmentLog, Patient, User, Visit, VisitSymptom
+from app.models.user import SYSTEM_USER_ID
 from app.services import audit_service as audit
 from app.services.queue_service import get_visit
 
@@ -125,13 +129,40 @@ def enqueue_assessment(db: Session, visit_id: uuid.UUID, actor: User,
     return run
 
 
+def enqueue_extraction(db: Session, visit_id: uuid.UUID, actor: User) -> AiAssessmentLog:
+    """Xếp hàng trích xuất triệu chứng từ visit.free_text_description. Bên gọi commit."""
+    visit = db.scalar(select(Visit).where(Visit.visit_id == visit_id).with_for_update())
+    if visit is None:
+        get_visit(db, visit_id)
+    if visit.status not in ASSESSABLE_STATUSES:
+        raise AppError(409, "VISIT_CLOSED", "Lượt khám đã kết thúc, không chạy trích xuất",
+                       [{"current": visit.status}])
+    if not (visit.free_text_description or "").strip():
+        raise AppError(422, "NO_FREE_TEXT", "Lượt khám chưa có mô tả tự do để trích xuất",
+                       [{"field": "free_text_description"}])
+
+    db.execute(update(AiAssessmentLog)
+               .where(AiAssessmentLog.visit_id == visit_id, AiAssessmentLog.run_type == "Extraction",
+                      AiAssessmentLog.status == "Queued")
+               .values(status="Skipped", error_detail="SUPERSEDED", completed_at=func.now()))
+    run = AiAssessmentLog(visit_id=visit_id, run_type="Extraction", triggered_by=actor.user_id,
+                          status="Queued", candidates=[])
+    db.add(run)
+    db.flush()
+    audit.record(db, action="CREATE", entity="ai_assessment_log", entity_id=run.assessment_id,
+                 actor_id=actor.user_id,
+                 new_values={"visit_id": str(visit_id), "run_type": "Extraction", "status": run.status})
+    return run
+
+
 # ============================================================================ 2. worker lấy việc
 def claim_next(db: Session) -> AiAssessmentLog | None:
-    """Lấy một việc Queued cũ nhất (FIFO), khóa bằng SKIP LOCKED để nhiều worker không tranh nhau.
-    Bên gọi commit ngay để lease có hiệu lực với worker khác."""
+    """Lấy một việc Queued, Extraction trước rồi FIFO; khóa bằng SKIP LOCKED để nhiều worker không
+    tranh nhau. Bên gọi commit ngay để lease có hiệu lực với worker khác."""
     candidate = (select(AiAssessmentLog.assessment_id)
-                 .where(AiAssessmentLog.status == "Queued", AiAssessmentLog.run_type == "Assessment")
-                 .order_by(AiAssessmentLog.queued_at, AiAssessmentLog.assessment_id)
+                 .where(AiAssessmentLog.status == "Queued")
+                 .order_by(case((AiAssessmentLog.run_type == "Extraction", 0), else_=1),
+                           AiAssessmentLog.queued_at, AiAssessmentLog.assessment_id)
                  .limit(1).with_for_update(skip_locked=True).scalar_subquery())
     lease = text(f"now() + interval '{int(settings.WORKER_LEASE_SECONDS)} seconds'")
     assessment_id = db.scalar(update(AiAssessmentLog)
@@ -226,6 +257,8 @@ def write_result(db: Session, assessment_id: uuid.UUID, final: dict, *, reader: 
 def _finish_failed(db: Session, run: AiAssessmentLog, code: str) -> None:
     run.status, run.error_detail = "Failed", code[:200]
     run.lease_until, run.completed_at = None, func.now()
+    if run.run_type != "Assessment":
+        return
     visit = _open_visit_for(db, run)
     if visit is not None:
         visit.ai_status = "Failed"
@@ -238,3 +271,36 @@ def write_failure(db: Session, assessment_id: uuid.UUID, code: str) -> None:
     if run is not None and run.status == "Running":
         _finish_failed(db, run, code)
         db.flush()
+
+
+def write_extraction(db: Session, assessment_id: uuid.UUID, suggestions: list[dict], *,
+                     model_name: str | None, prompt_version: str, latency_total_ms: int) -> None:
+    run = db.get(AiAssessmentLog, assessment_id)
+    if run is None or run.status != "Running":
+        return
+    run.status, run.mode, run.candidates = "Completed", None, suggestions
+    run.model_name, run.prompt_version = model_name, prompt_version
+    run.latency_llm_ms = run.latency_total_ms = latency_total_ms
+    run.lease_until, run.completed_at = None, func.now()
+    audit.record(db, action="AI_ASSESSMENT", entity="visit", entity_id=run.visit_id,
+                 actor_id=run.triggered_by or SYSTEM_USER_ID,
+                 new_values={"assessment_id": str(run.assessment_id), "run_type": "Extraction",
+                             "status": "Completed", "suggestion_count": len(suggestions)})
+    db.flush()
+
+
+# ============================================================================ 4. polling trích xuất
+def get_latest_extraction(db: Session, visit_id: uuid.UUID, reader: KnowledgeReader) -> dict[str, Any] | None:
+    get_visit(db, visit_id)
+    run = db.scalar(select(AiAssessmentLog)
+                    .where(AiAssessmentLog.visit_id == visit_id, AiAssessmentLog.run_type == "Extraction")
+                    .order_by(AiAssessmentLog.queued_at.desc(), AiAssessmentLog.assessment_id.desc())
+                    .limit(1))
+    if run is None:
+        return None
+    names = {row["symptom_code"]: row.get("symptom_name") or row["symptom_code"]
+             for row in reader.active_symptoms()}
+    suggestions = [{**row, "symptom_name": names.get(row["symptom_code"], row["symptom_code"])}
+                   for row in (run.candidates or [])] if run.status == "Completed" else []
+    return {"extraction_id": run.assessment_id, "status": run.status, "suggestions": suggestions,
+            "completed_at": run.completed_at}

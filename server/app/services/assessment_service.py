@@ -20,7 +20,6 @@ from app.ai.interfaces import KnowledgeReader, LLMClient
 from app.ai.pipeline.graph import ASSESSMENT_TIMEOUT_SECONDS, run_pipeline
 from app.ai.pipeline.node1_red_flag_gate import run_node1
 from app.ai.pipeline.node2_graph_retrieval import run_node2
-from app.ai.pipeline.node3_reasoning import REASONING_PROMPT_VERSION as PROMPT_VERSION
 from app.exceptions import NotFoundError
 from app.models.ai_assessment_log import AiAssessmentLog
 from app.models.knowledge_release import KnowledgeRelease
@@ -261,73 +260,6 @@ def trigger_assessment(
     db.add(log)
     db.flush()
     _audit(db, log, visit, triggered_by)
-    return log
-
-
-async def execute_queued_assessment(
-    db: Session,
-    assessment_id: UUID,
-    knowledge_reader: KnowledgeReader,
-    llm_client: LLMClient,
-    *,
-    actor_id: UUID | None = None,
-    model_name: str | None = None,
-    model_version: str | None = None,
-) -> AiAssessmentLog:
-    """Thực thi một log đã claim; worker sở hữu transaction bao ngoài."""
-    log = db.get(AiAssessmentLog, assessment_id)
-    if log is None:
-        raise ValueError("Assessment không tồn tại")
-    visit = db.get(Visit, log.visit_id)
-    if visit is None:
-        raise NotFoundError("Không tìm thấy lượt khám")
-    patient = db.get(Patient, visit.patient_id)
-    if patient is None:
-        raise NotFoundError("Không tìm thấy bệnh nhân")
-    if log.status != "Running":
-        raise ValueError("Assessment chưa ở trạng thái Running")
-    queued_at = log.queued_at or _now()
-    remaining = max(0.0, ASSESSMENT_TIMEOUT_SECONDS - (_now() - queued_at).total_seconds())
-    state = {"input_features": _features(db, visit, patient)}
-    symptom_map = _symptom_map(knowledge_reader)
-
-    async def preliminary(snapshot: Mapping[str, Any]) -> None:
-        log.candidates = _candidates(snapshot, symptom_map)
-        visit.ai_status = "Preliminary"
-        db.flush()
-        _audit(db, log, visit, actor_id or log.triggered_by)
-        db.commit()
-
-    llm_started = monotonic()
-    result = await run_pipeline(
-        state, knowledge_reader, llm_client, db,
-        timeout_seconds=remaining, on_preliminary=preliminary,
-    )
-    log.latency_llm_ms = round((monotonic() - llm_started) * 1000)
-    status = result.get("ai_status", "Degraded")
-    log.status = status
-    log.mode = result.get("mode", "RuleOnly")
-    log.priority_final = result.get("priority_final", log.priority_rule)
-    log.rule_hits = _rule_hits(
-        result, list(knowledge_reader.active_triage_rules()), symptom_map
-    )
-    log.candidates = _candidates(result, symptom_map)
-    log.validation_result = result.get("validation_result")
-    log.prompt_version = PROMPT_VERSION
-    log.model_name = model_name or getattr(llm_client, "model_name", None) or getattr(
-        llm_client, "model", None
-    )
-    log.model_version = model_version or getattr(llm_client, "model_version", None) or getattr(
-        llm_client, "version", None
-    )
-    log.completed_at = _now()
-    log.latency_total_ms = round((_now() - queued_at).total_seconds() * 1000)
-    visit.ai_status = {"Completed": "Ready", "Degraded": "Degraded", "Skipped": "Skipped"}.get(status, "Failed")
-    if log.priority_rule == "Routine" and log.priority_final == "HighPriority" and status == "Completed":
-        visit.triage_priority = "HighPriority"
-        visit.priority_raised_by_ai = True
-    _audit(db, log, visit, actor_id or log.triggered_by)
-    db.flush()
     return log
 
 
