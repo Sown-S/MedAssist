@@ -53,6 +53,8 @@ async function refreshTokens() {
   return true
 }
 
+// Sai mật khẩu ở /auth/login cũng trả 401 — không được hiểu là token hết hạn.
+const NO_REFRESH = ['/api/v1/auth/login', '/api/v1/auth/refresh']
 async function realRequest(path, options = {}, retried = false) {
   const token = await tokenStore.get('access')
   const res = await fetch(getBaseUrl() + path, {
@@ -63,7 +65,7 @@ async function realRequest(path, options = {}, retried = false) {
       ...options.headers
     }
   })
-  if (res.status === 401 && !retried && !path.startsWith('/api/v1/auth/')) {
+  if (res.status === 401 && !retried && !NO_REFRESH.includes(path)) {
     refreshing ??= refreshTokens().finally(() => (refreshing = null))
     if (await refreshing) return realRequest(path, options, true)
     await tokenStore.clear()
