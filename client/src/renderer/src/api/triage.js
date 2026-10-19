@@ -9,7 +9,8 @@
 // Backend thật: POST /visits/{id}/assessment trả priority + is_red_flag + rule hits trong < 2 giây (Architecture 5.1.3).
 import { getState } from './aiConfigStore'
 import { evaluateCase } from '../pages/admin/ai/ruleEngine'
-import { symptomLabel, vitalOf } from '../pages/admin/ai/catalog'
+import { vitalOf } from '../pages/admin/ai/catalog'
+import { symptomName } from './symptoms'
 import { ruleVitals } from './vitals'
 
 export const TRIAGE_LEVELS = {
@@ -20,7 +21,7 @@ export const TRIAGE_LEVELS = {
 
 // Nhãn của 1 mục còn thiếu: 'age' | 'days' | 'sym:<mã>' | khoá sinh hiệu ngắn (temp, hr…).
 export const missingLabel = (k) =>
-  k === 'age' ? 'Age' : k === 'days' ? 'Symptom duration' : k.startsWith('sym:') ? symptomLabel(k.slice(4)) : vitalOf(k)?.label ?? k
+  k === 'age' ? 'Age' : k === 'days' ? 'Symptom duration' : k.startsWith('sym:') ? symptomName(k.slice(4)) : vitalOf(k)?.label ?? k
 
 export function triage({ states = {}, age = null, days = null, vitals = {} }) {
   const ai = getState()
