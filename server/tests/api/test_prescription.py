@@ -62,13 +62,15 @@ def test_diagnosis_validation_and_permissions(client, doctor, doctor2, nurse, ex
 
 # ---------------------------------------------------------------------------- đơn nháp
 def test_draft_shows_context_and_stock(client, doctor, nurse, examining, drug):
-    vid = examining(medical_history={"chronic_conditions": ["Tăng huyết áp"]}, allergy_notes="Dị ứng penicillin")
+    vid = examining(medical_history={"chronic_conditions": ["Tăng huyết áp"], "is_pregnant": True},
+                    allergy_notes="Dị ứng penicillin", gender="Female")
     did, _ = drug({60: 30})
     r = client.put(f"/api/v1/visits/{vid}/prescription", headers=doctor, json={"items": [_item(did, 10, days=5)]})
     assert r.status_code == 200, r.text
     body = r.json()
     assert body["status"] == "Draft" and body["items"][0]["usable_quantity"] == 30
     assert body["patient_context"]["chronic_conditions"] == ["Tăng huyết áp"]
+    assert body["patient_context"]["is_pregnant"] is True
     assert body["patient_context"]["allergy_notes"] == "Dị ứng penicillin"
     assert "không kiểm tra tương tác" in body["patient_context"]["disclaimer"]
     assert client.get(f"/api/v1/visits/{vid}/prescription", headers=nurse).status_code == 200

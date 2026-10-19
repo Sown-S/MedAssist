@@ -141,6 +141,17 @@ def test_queue_order_priority_then_fifo(client, nurse, doctor):
     assert item["patient_name"].startswith("Thứ Tự") and "vital_signs" not in item
 
 
+def test_queue_shows_examining_with_physician(client, nurse, doctor, patient_id, users):
+    vid = _visit(client, nurse, patient_id).json()["visit_id"]
+    waiting = next(q for q in client.get("/api/v1/queue", headers=nurse).json() if q["visit_id"] == vid)
+    assert waiting["physician_id"] is None and waiting["physician_name"] is None
+    client.patch(f"/api/v1/visits/{vid}/check-in", headers=nurse)
+    client.patch(f"/api/v1/visits/{vid}/start-exam", headers=doctor)
+    item = next(q for q in client.get("/api/v1/queue", headers=nurse).json() if q["visit_id"] == vid)
+    assert item["status"] == "Examining" and item["exam_started_at"]
+    assert item["physician_id"] == str(users["bs"].user_id) and item["physician_name"] == users["bs"].full_name
+
+
 def test_stale_visits_listed_and_bulk_cancelled(client, nurse, patient_id, users):
     with SessionLocal() as db:
         old = Visit(patient_id=patient_id, nurse_id=users["yta"].user_id, chief_complaint="Hôm qua")
