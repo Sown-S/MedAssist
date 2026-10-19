@@ -15,6 +15,8 @@ class DiagnosisCreate(BaseModel):
     icd10_code: CleanStr | None = Field(default=None, max_length=10)
     is_primary: bool = True
     clinical_notes: str | None = Field(default=None, max_length=4000)
+    assessment_id: uuid.UUID | None = Field(
+        default=None, description="Lần chạy AI mà bác sĩ đang xem; bỏ trống thì server lấy lần mới nhất")
 
 
 class DiagnosisUpdate(BaseModel):
@@ -35,6 +37,7 @@ class DiagnosisOut(BaseModel):
     diagnosis_name: str
     is_primary: bool
     confirmed_by_physician: bool
+    assessment_id: uuid.UUID | None
     matches_top_suggestion: bool | None
     clinical_notes: str | None
     created_at: datetime

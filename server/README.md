@@ -125,10 +125,25 @@ python -m scripts.seed_drugs
 ```
 Kết quả: `Thuốc mới: 386, ... lô mới: 386 ...`. Xem [mục 6](#6-nạp--cập-nhật-danh-mục-thuốc).
 
+### 2.7b. Nạp tri thức lâm sàng (OKF của Tuấn, thư mục `knowledge/`)
+
+```powershell
+python -m scripts.import_okf --dry-run          # kiểm tra + xem thay đổi, không ghi
+python -m scripts.import_okf --approve-as bs    # máy dev: tạo bản phát hành và kích hoạt ngay
+```
+
+- Script kiểm toàn bộ thư mục trước (mã, độ dài, nguồn, `condition_logic`, chạy thử bằng bộ đánh giá luật của
+  pipeline); có lỗi thì in danh sách và **không ghi gì**.
+- Chỉ mục mới hoặc có nội dung khác mới tạo phiên bản mới; chạy lại khi không có gì đổi thì báo "Không có thay đổi".
+- Bản sửa sau: đổi `label` trong `knowledge/_release.md` (vd `KB-2026.02`) rồi chạy lại.
+- Không có `--approve-as`: tạo bản **Draft** (thêm `--submit` để gửi duyệt) chờ bác sĩ duyệt qua API quản trị tri thức.
+- Người duyệt phải là Physician khác người soạn (mặc định người soạn là tài khoản `system`, đổi bằng `--as <admin>`).
+- `--retire-missing`: mục đang Active mà đã bị xóa khỏi thư mục sẽ bị tắt khi kích hoạt.
+
 ### 2.8. Chạy test (nên làm lần đầu để chắc môi trường đúng)
 
 ```powershell
-pytest            # ~1 phút, phải ra: 218 passed
+pytest            # ~2 phút, phải ra: 999 passed
 ```
 
 ### 2.9. Chạy API
@@ -141,6 +156,25 @@ uvicorn app.main:app --reload
 - Kiểm tra kết nối DB: <http://127.0.0.1:8000/health> → `{"status": "healthy", "database": "connected", ...}`
 
 Dừng API: `Ctrl + C`.
+
+### 2.10. Chạy worker AI (terminal thứ hai)
+
+Worker là tiến trình riêng: lấy việc đánh giá AI từ hàng đợi trong PostgreSQL, gọi Ollama, ghi kết quả.
+
+```powershell
+.\venv\Scripts\activate     # ở thư mục gốc repo
+cd server
+python -m app.worker
+```
+
+- Máy **không có Ollama**: đặt trong `server/.env`
+  - `LLM_PROVIDER=fake`: LLM giả lập tất định, chạy đủ luồng `Ready`/`Full` (lý do, chip triệu chứng gợi ý).
+    Chỉ dùng cho dev, CI, demo; `ENVIRONMENT=prod` sẽ từ chối khởi động. Nhật ký AI ghi `model_name = "fake"`.
+  - `LLM_PROVIDER=none`: không gọi LLM, kết quả chỉ còn xếp hạng tất định (`Degraded`, `RuleOnly`).
+- Có Ollama: `OLLAMA_BASE_URL`, `OLLAMA_MODEL` trong `server/.env` (chỉ nhận địa chỉ trong máy / mạng LAN).
+- Cờ đỏ KHÔNG phụ thuộc worker: được kiểm ngay lúc xếp hàng, worker tắt vẫn hiện cảnh báo.
+
+Dừng worker: `Ctrl + C`. Việc đang chạy dở sẽ được sweeper xếp lại sau khi hết lease.
 
 ---
 
@@ -263,6 +297,10 @@ python -m scripts.seed_drugs
 | `REFRESH_TOKEN_EXPIRE_HOURS` | | `8` | Hạn refresh token (một ca làm việc) |
 | `LOGIN_MAX_FAILURES_PER_USER` / `_PER_IP` | | `5` / `20` | Số lần sai trong 15 phút trước khi khóa 5 phút |
 | `TRUSTED_PROXIES` | | `[]` | IP proxy được tin `X-Forwarded-For` (Caddy trên máy admin) |
+| `LLM_PROVIDER` | | `ollama` | `fake` = LLM giả lập (dev, CI, demo; cấm ở prod), `none` = không gọi LLM |
+| `OLLAMA_BASE_URL` / `OLLAMA_MODEL` | | `http://127.0.0.1:11434` / theo spike của Huy | LLM cục bộ cho worker |
+| `AI_ASSESSMENT_TIMEOUT_SECONDS` | | `90` | Ngân sách một lần đánh giá, tính từ lúc xếp hàng |
+| `WORKER_LEASE_SECONDS` / `WORKER_MAX_ATTEMPTS` | | `150` / `2` | Hạn thuê việc; số lần thử trước khi `Failed` |
 | `TEST_DATABASE_URL` / `TEST_MIGRATION_DATABASE_URL` | | tự suy ra | Ghi đè DB cho pytest (thường không cần) |
 
 `deploy/.env`: mật khẩu `postgres` và 3 vai trò; `MEDASSIST_CREATE_TEST_DB=1` (tạo `medassist_test`),
@@ -283,9 +321,13 @@ Tiền tố `/api/v1`. Chi tiết tham số và schema: **Swagger `/docs`** (lu�
 | Bệnh nhân | `GET/POST patients`; `GET/PATCH patients/{id}`; `GET patients/{id}/visits` | Nurse tạo/sửa; Physician, Nurse xem |
 | Lượt khám | `POST visits`; `GET/PATCH visits/{id}`; `PATCH visits/{id}/check-in`, `/start-exam`, `/release`, `/cancel`; `GET queue`; `GET visits/stale`; `POST visits/stale/cancel` | Nurse; Physician (nhận khám, trả lại, hủy lượt của mình) |
 | Thuốc, kho | `GET/POST drugs`; `GET/PATCH drugs/{id}`; `GET inventory/stock`, `/alerts`, `/reconciliation`; `GET/POST inventory/batches`; `GET inventory/batches/{id}`; `POST …/top-up`, `…/adjustments`; `GET …/movements` | Admin, Nurse; Physician xem |
+| Triệu chứng (HITL) | `GET/PUT visits/{id}/symptoms` | Nurse, Physician (lượt khám còn mở) |
 | Chẩn đoán | `GET/POST visits/{id}/diagnoses`; `PATCH diagnoses/{id}`; `POST diagnoses/{id}/retract` | Physician đang khám; Nurse xem |
 | Đơn thuốc | `GET/PUT/DELETE visits/{id}/prescription`; `POST …/prescription/confirm`, `…/prescription/reopen`; `POST visits/{id}/complete-exam` | Physician đang khám; Nurse xem |
 | Cấp phát, thu tiền | `GET billing/awaiting`; `GET/PATCH visits/{id}/invoice`; `GET …/invoice/print`; `POST …/invoice/pay`; `PATCH prescription-items/{id}/dispense`; `POST visits/{id}/dispense-all` | Nurse; Physician xem hóa đơn |
+| Tri thức: bản phát hành | `GET/POST admin/knowledge/releases`; `GET …/releases/{id}` (kèm thay đổi); `POST …/{id}/submit`; `POST …/{id}/approve`, `…/{id}/reject` | Admin soạn, gửi duyệt; Physician duyệt / từ chối |
+| Tri thức: soạn nháp | `PUT admin/knowledge/symptoms/{mã}`, `conditions/{mã}`, `relations/{bệnh}/{triệu chứng}`, `excerpts/{mã}`, `rules/{mã}`; `DELETE …/{loại}/{mã}/draft`; `GET/POST admin/knowledge/sources` | Admin |
+| Tri thức: xem, tắt khẩn cấp | `GET admin/knowledge/{loại}` (lọc `status`, `q`); `GET …/{loại}/{mã}/versions`; `GET …/{loại}/{mã}/dependents`; `POST …/{loại}/{mã}/deactivate` | Admin, Physician xem; Admin tắt |
 | Hệ thống | `GET /health`, `GET /` (không có tiền tố) | Không cần đăng nhập |
 
 Quy ước chung: tiền trả về **dạng số** (VNĐ); mọi GET dữ liệu bệnh nhân ghi nhật ký VIEW; header

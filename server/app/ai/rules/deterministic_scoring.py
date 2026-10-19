@@ -1,8 +1,8 @@
 """Chấm điểm Node 2 thuần và tạm thời trên một snapshot reader Active.
 
-Mapping reader tạm (phải đối chiếu với OKF và reader thật): một bệnh có
-``condition_code``, ``name_vi``, ``icd10_code`` tùy chọn, ``symptoms`` lồng bên
-trong (các hàng quan hệ bệnh-triệu chứng) và ``guidelines`` (các hàng trích đoạn).
+Mapping reader: một bệnh có ``condition_code``, ``name_vi``, ``icd10_code`` tùy
+chọn, ``symptoms`` lồng bên trong (các hàng quan hệ bệnh-triệu chứng) và
+``guidelines`` (các hàng trích đoạn đã được chiếu về hợp đồng hiển thị).
 Quan hệ dùng ``symptom_code``, ``polarity`` (SUPPORTS/CONTRADICTS), ``weight``
 trong [0, 1] và ``is_key``. Mọi hàng phải đến từ các hàm Active của reader.
 
@@ -122,10 +122,7 @@ def rank_conditions(
                 contradicting.append(evidence)
                 contradicted_weight += weight
 
-        guidelines = sorted(
-            _objects(condition.get("guidelines", ()), "condition.guidelines"),
-            key=lambda item: _text(item, "excerpt_key"),
-        )
+        guidelines = _guidelines(condition.get("guidelines", ()))
         if not matched_weight:
             continue
         coverage = matched_weight / support_total
@@ -141,7 +138,7 @@ def rank_conditions(
             "precision": float(precision),
             "supporting_evidence": sorted(supporting, key=lambda item: item["symptom_code"]),
             "contradicting_evidence": sorted(contradicting, key=lambda item: item["symptom_code"]),
-            "guidelines": deepcopy([dict(item) for item in guidelines]),
+            "guidelines": deepcopy(guidelines),
             "unknown_key_symptoms": sorted(unknown),
             "label": "Reference Suggestion",
         }
@@ -178,3 +175,30 @@ def _weight(value: object) -> Fraction:
     ):
         raise ScoringFormatError("weight phải là số hữu hạn trong [0, 1]")
     return Fraction(str(value))
+
+
+def _guidelines(value: object) -> list[dict[str, str | None]]:
+    """Chiếu guideline của reader về đúng hợp đồng ổn định mà Node 2 công bố."""
+    projected: list[dict[str, str | None]] = []
+    seen: set[str] = set()
+    for item in _objects(value, "condition.guidelines"):
+        excerpt_key = _text(item, "excerpt_key")
+        if excerpt_key in seen:
+            raise ScoringFormatError("Bệnh có guideline trùng excerpt_key")
+        seen.add(excerpt_key)
+        source_locator = item.get("source_locator")
+        if source_locator is not None and (
+            not isinstance(source_locator, str) or not source_locator.strip()
+        ):
+            raise ScoringFormatError("source_locator phải là chuỗi không rỗng hoặc null")
+        projected.append(
+            {
+                "excerpt_key": excerpt_key,
+                "title": _text(item, "title"),
+                "content": _text(item, "content"),
+                "source_title": _text(item, "source_title"),
+                "source_locator": source_locator,
+            }
+        )
+    projected.sort(key=lambda item: item["excerpt_key"] or "")
+    return projected

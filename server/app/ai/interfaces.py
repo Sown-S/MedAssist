@@ -25,10 +25,11 @@ class KnowledgeReader(Protocol):
     def active_conditions(self) -> Sequence[JsonObject]:
         """Trả các bệnh Active cùng ``symptoms``/``guidelines`` Active lồng bên trong.
 
-        Mapping tạm của Node 2: condition_code, name_vi, icd10_code; symptoms chứa
-        symptom_code, polarity, weight, is_key; guidelines chứa excerpt_key cùng
-        các trường excerpt/source. Phải đối chiếu với OKF và reader thật trước khi
-        tích hợp production.
+        Hợp đồng Node 2: condition_code, name_vi, icd10_code; symptoms chứa
+        symptom_code, polarity, weight, is_key; mỗi phần tử guidelines chứa đúng
+        excerpt_key, title, content, source_title và source_locator. Knowledge
+        Reader lấy source_title từ KnowledgeSource.title; source_locator có thể
+        là null. Mọi hàng phải thuộc bản phát hành Active đang dùng cho lượt chạy.
         """
         ...
 
