@@ -1,19 +1,20 @@
 ---
 schema: okf_spec_v1
 label: KB-2026.01
-description: Đặc tả định dạng OKF và ràng buộc toàn vẹn của bộ tri thức lâm sàng MedAssist.
+description: Đặc tả định dạng OKF, quy ước mã slug, 8 khóa sinh hiệu và cấu trúc condition_logic
+  của MedAssist.
 ---
 
 # ĐẶC TẢ ĐỊNH DẠNG OKF & MARKDOWN NẠP TRI THỨC LÂM SÀNG (MEDASSIST KB v1.0)
 
-## 1. Cấu trúc thư mục chuẩn của `okf_vault/`
+## 1. Cấu trúc thư mục chuẩn của `knowledge/` (Obsidian Vault)
+- `_spec/okf_format.md`: Tài liệu đặc tả định dạng OKF, quy ước mã slug, 8 khóa sinh hiệu chuẩn và cấu trúc cây `condition_logic`.
 - `_release.md`: Metadata của bản phát hành tri thức (`knowledge_release`).
 - `sources/*.md`: Danh mục tài liệu nguồn của Bộ Y tế (`knowledge_source`). Có cả `source_key` (để liên kết giữa các file Markdown và kiểm tra với `check_okf.py`) và `edition` (Số quyết định, ví dụ `"Quyết định số 361/QĐ-BYT"`, dùng làm khóa tự nhiên ổn định để tra cứu trong bảng `knowledge_source` khi chạy `import_okf.py`).
 - `symptoms/symptom_catalog.md`: Danh mục triệu chứng nguyên tử chuẩn hóa (`symptom` & `symptom_key`).
 - `conditions/<disease_group>/<condition_code>.md`: Đặc tả bệnh lý (`condition`), quan hệ triệu chứng (`condition_symptom`) và đoạn trích phác đồ (`guideline_excerpt`).
 - `rules/red_flags/rf_*.md`: Chỉ chứa các file luật Cờ đỏ (`rule_type: RED_FLAG`, `resulting_priority: Emergency`).
 - `rules/priority_floors/pf_*.md`: Chỉ chứa các file luật Sàn ưu tiên cao (`rule_type: PRIORITY_FLOOR`, `resulting_priority: HighPriority`).
-- `exports/`: Chứa các file báo cáo đối soát CSV/JSON (không nạp vào CSDL).
 
 ## 2. Ràng buộc toàn vẹn với CSDL PostgreSQL (Database Design v1.4)
 1. **Định dạng mã slug (`chk_*_code_format`)**: Mọi `symptom_code` (<= 50 ký tự), `condition_code` (<= 80 ký tự), `excerpt_key` (<= 80 ký tự) phải khớp biểu thức chính quy `^[a-z0-9]+(_[a-z0-9]+)*$`.
@@ -22,4 +23,40 @@ description: Đặc tả định dạng OKF và ràng buộc toàn vẹn của b
    - Luật `PRIORITY_FLOOR` phải có `rule_key` bắt đầu bằng `pf_` và `resulting_priority: "HighPriority"`.
 3. **Tính đóng của tập tri thức (`v_knowledge_integrity_issues`)**:
    - Mọi `symptom_code` xuất hiện trong `relations` của bệnh hoặc trong `condition_logic` của luật đều phải tồn tại trong `symptoms/symptom_catalog.md`.
-   - Mọi khóa `vital` trong `condition_logic` chỉ được thuộc 8 khóa chuẩn của `fn_vital_sign_keys()`: `temperature_c`, `heart_rate_bpm`, `respiratory_rate_bpm`, `systolic_bp_mmhg`, `diastolic_bp_mmhg`, `spo2_pct`, `weight_kg`, `height_cm`.
+   - Mọi khóa `vital` trong `condition_logic` chỉ được thuộc 8 khóa chuẩn của `fn_vital_sign_keys()`:
+     1. `temperature_c` (Nhiệt độ cơ thể - °C)
+     2. `heart_rate_bpm` (Nhịp tim / Mạch - lần/phút)
+     3. `respiratory_rate_bpm` (Nhịp thở - lần/phút)
+     4. `systolic_bp_mmhg` (Huyết áp tâm thu - mmHg)
+     5. `diastolic_bp_mmhg` (Huyết áp tâm trương - mmHg)
+     6. `spo2_pct` (Độ bão hòa oxy máu ngoại vi SpO2 - %)
+     7. `weight_kg` (Cân nặng - kg)
+     8. `height_cm` (Chiều cao - cm)
+
+## 3. Đặc tả Cấu trúc Cây Biểu thức `condition_logic` (Bảng `triage_rule`)
+Trường `condition_logic` trong các file luật `rf_*.md` và `pf_*.md` được lưu vào cột `triage_rule.condition_logic` (`JSONB`) và được đánh giá bởi Node 1 theo **logic 3 giá trị Kleene (`TRUE`, `FALSE`, `UNKNOWN`)**:
+
+### 3.1. Nút tổ hợp (`AND` / `OR`)
+- Gồm 2 trường bắt buộc:
+  - `op`: Nhận giá trị `"AND"` hoặc `"OR"`.
+  - `args`: Danh sách chứa từ **2 nút con trở lên** (mỗi phần tử là một Nút tổ hợp hoặc Nút lá).
+
+### 3.2. Ba loại Nút lá điều kiện nguyên tử (`symptom`, `vital`, `age`)
+1. **Nút lá Triệu chứng (`type: "symptom"`)**:
+   - `type`: `"symptom"`
+   - `symptom_code`: Mã slug thuộc `symptom_catalog.md` (ví dụ: `"sym_respiratory_failure"`).
+   - `state`: Chỉ nhận `"PRESENT"` hoặc `"ABSENT"`. Nếu triệu chứng trong lượt khám là `"UNKNOWN"` (hoặc chưa nhập), nút lá trả về `UNKNOWN`.
+2. **Nút lá Sinh hiệu (`type: "vital"`)**:
+   - `type`: `"vital"`
+   - `vital`: Một trong 8 khóa chuẩn của `fn_vital_sign_keys()` (ví dụ: `"spo2_pct"`).
+   - `cmp`: Toán tử so sánh thuộc tập `["<", "<=", ">", ">=", "=="]`.
+   - `value`: Giá trị số (`int` hoặc `float`, ví dụ: `92`). Nếu sinh hiệu chưa đo trong `visit.vital_signs`, nút lá trả về `UNKNOWN`.
+3. **Nút lá Tuổi (`type: "age"`)**:
+   - `type`: `"age"`
+   - `cmp`: Toán tử so sánh thuộc tập `["<", "<=", ">", ">=", "=="]`.
+   - `value`: Số tuổi tính theo năm (`int` hoặc `float` >= 0).
+
+### 3.3. Quy tắc đánh giá Kleene 3 giá trị tại Node 1
+- `OR`: Trả về `TRUE` nếu có ít nhất 1 nhánh `TRUE`; trả về `FALSE` nếu tất cả các nhánh đều `FALSE`; ngược lại trả về `UNKNOWN`.
+- `AND`: Trả về `FALSE` nếu có ít nhất 1 nhánh `FALSE`; trả về `TRUE` nếu tất cả các nhánh đều `TRUE`; ngược lại trả về `UNKNOWN`.
+- Nếu một luật `RED_FLAG` trả về `UNKNOWN`, Node 1 không gán `Emergency` mà trả về danh sách các triệu chứng/sinh hiệu đang `UNKNOWN` để Điều dưỡng đo hoặc hỏi bổ sung ngay ("Complete Now") trước khi đưa bệnh nhân vào hàng đợi.
