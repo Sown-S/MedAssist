@@ -1,0 +1,6 @@
+# Chỉ giai đoạn phát triển: máy dev trong nhóm gọi Ollama của máy admin qua LAN.
+# Ollama không có xác thực, nên không bật khi phòng khám chạy thật. Dùng: start.ps1 -OllamaLan
+services:
+  ollama:
+    ports:
+      - "11434:11434"
