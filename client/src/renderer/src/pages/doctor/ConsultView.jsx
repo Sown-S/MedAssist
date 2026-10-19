@@ -17,7 +17,7 @@ import { useVisitArchive } from '../../api/visitArchive'
 import { useRxReviews, openReviewsFor, resolveReview, verdictOf } from '../../api/rxReviewStore'
 import { useInventory, findDrugByName, stockOf, eligibleFor, daysLeft } from '../../api/inventoryStore'
 import { controlledKind, CONTROLLED_LABEL, soldOutside } from '../../api/rxSafety'
-import { icdLabel, typeOf, ICD10 } from '../admin/ai/catalog'
+import { ICD10 } from '../admin/ai/catalog'
 import { unitLabel } from '../admin/inventory/shared'
 import { useNow, dmy, hhmm } from '../reception/shared'
 import LabOrderModal, { printLabOrder } from './LabOrderModal'
@@ -396,13 +396,14 @@ function ConsultForm({ visit, user, onDone, onNext }) {
   function decideAi(c, decision, reason) {
     logEvent(user, decision === 'accepted' ? 'ai.suggestion_accepted' : 'ai.suggestion_dismissed', { target, params: { patient: visit.name, code: c.condition_code, reason } })
     setAiDecision((x) => ({ ...x, [c.condition_code]: decision }))
-    if (decision === 'accepted') set({ diagnosis: `${c.icd10} — ${translate(c.name)}` })
+    if (decision === 'accepted') set({ diagnosis: [c.icd10_code, c.name_vi].filter(Boolean).join(' — ') })
   }
   // Quyết định của bác sĩ so với gợi ý đứng đầu (ERD: physician_decision + matches_top_suggestion) — tính lúc chốt đơn.
   const aiOutcome = () => {
     const top = ai.candidates[0]
     if (!top) return { assessmentId: ai.assessment_id, decision: 'NoSuggestion', matchesTop: null }
-    const same = d.diagnosis.trim().startsWith(top.icd10)
+    const dx = d.diagnosis.trim()
+    const same = top.icd10_code ? dx.startsWith(top.icd10_code) : dx.includes(top.name_vi)
     return { assessmentId: ai.assessment_id, decision: same ? 'AcceptedTop' : 'ChoseOther', matchesTop: same, status: ai.ai_status }
   }
 
@@ -628,15 +629,13 @@ function ConsultForm({ visit, user, onDone, onNext }) {
           </div>
         ))}
         {ai.alerts.map((f) => (
-          <div key={f.rule.id} className="warn-banner show danger" style={{ margin: '10px 0' }}>
+          <div key={f.rule_key} className="warn-banner show danger" style={{ margin: '10px 0' }}>
             <div className="icon">
               <Icon name="ban" />
             </div>
             <div className="txt">
-              <b>
-                {translate(typeOf(f.rule.type).label)} · {f.rule.icd} {translate(icdLabel(f.rule.icd))}
-              </b>
-              {f.rule.rationale}
+              <b>{translate(f.rule_type === 'RED_FLAG' ? 'Red flag' : 'Priority')}</b>
+              {f.reason_text}
             </div>
           </div>
         ))}
