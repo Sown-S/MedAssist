@@ -1,8 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import Icon from './Icon'
 import { translate } from '../i18n'
-import { STATES, SOURCES, activeSymptoms, requestExtraction, EXTRACTION_TIMEOUT_MS } from '../api/symptoms'
-import { symptomLabel } from '../pages/admin/ai/catalog'
+import { STATES, SOURCES, useSymptomCatalog, groupSymptoms, symptomName, requestExtraction, EXTRACTION_TIMEOUT_MS } from '../api/symptoms'
 
 // Nhập triệu chứng có cấu trúc + trích xuất từ mô tả tự do có NGƯỜI XÁC NHẬN (HITL — FR12, FR14, Architecture 5.1.2).
 //  - value: { mã: { state: PRESENT|ABSENT|UNKNOWN, source: Form|Extracted|Prompt } } — chỉ chứa mục lễ tân đã chọn / xác nhận.
@@ -14,6 +13,7 @@ export default function SymptomPanel({ value, onChange, text, onText, ask = [], 
   const [proposals, setProposals] = useState([])
   const ctrl = useRef(null)
   useEffect(() => () => ctrl.current?.abort(), [])
+  const catalog = useSymptomCatalog()
 
   const setState = (code, state, source = 'Form') => {
     const next = { ...value }
@@ -54,8 +54,9 @@ export default function SymptomPanel({ value, onChange, text, onText, ask = [], 
   const flip = (p) => setProposals((list) => list.map((x) => (x.symptom_code === p.symptom_code ? { ...x, state: x.state === 'PRESENT' ? 'ABSENT' : 'PRESENT' } : x)))
   const drop = (p) => setProposals((list) => list.filter((x) => x.symptom_code !== p.symptom_code))
 
-  const asking = ask.filter((code) => !value[code])
-  const list = activeSymptoms()
+  // Chỉ nhắc mã có trong danh mục đang dùng (luật giả lập dùng mã của danh mục mẫu).
+  const inCatalog = new Set(catalog.list.map((s) => s.key))
+  const asking = ask.filter((code) => !value[code] && inCatalog.has(code))
 
   return (
     <div className="sym-panel">
@@ -90,7 +91,7 @@ export default function SymptomPanel({ value, onChange, text, onText, ask = [], 
                 <button type="button" className="sym-chip-state" disabled={disabled} onClick={() => flip(p)} title={translate('Switch Yes / No')}>
                   {translate(p.state === 'PRESENT' ? 'Yes' : 'No')}
                 </button>
-                <span>{translate(symptomLabel(p.symptom_code))}</span>
+                <span>{translate(symptomName(p.symptom_code))}</span>
                 <button type="button" className="sym-chip-ok" disabled={disabled} onClick={() => accept(p)} title={translate('Confirm')}>
                   <Icon name="check" />
                 </button>
@@ -108,7 +109,7 @@ export default function SymptomPanel({ value, onChange, text, onText, ask = [], 
           <Icon name="alert" /> <b>{translate('Ask now')}:</b>
           {asking.map((code) => (
             <span key={code} className="sym-ask-item">
-              {translate(symptomLabel(code))}
+              {translate(symptomName(code))}
               <button type="button" className="btn btn-ghost btn-sm" disabled={disabled} onClick={() => setState(code, 'PRESENT', 'Prompt')}>
                 {translate('Yes')}
               </button>
@@ -120,26 +121,40 @@ export default function SymptomPanel({ value, onChange, text, onText, ask = [], 
         </div>
       )}
 
-      <div className="sym-grid">
-        {list.map((s) => {
-          const cur = value[s.key]?.state ?? 'UNKNOWN'
-          return (
-            <div key={s.key} className={'sym-row' + (cur !== 'UNKNOWN' ? ' set' : '') + (ask.includes(s.key) && cur === 'UNKNOWN' ? ' ask' : '')}>
-              <span className="sym-name">
-                {translate(s.label)}
-                {value[s.key] && value[s.key].source !== 'Form' && <small className="sym-src">{translate(SOURCES[value[s.key].source])}</small>}
-              </span>
-              <span className="ai-seg sym-seg">
-                {STATES.map((x) => (
-                  <button type="button" key={x.key} disabled={disabled} className={(cur === x.key ? 'active ' : '') + x.key.toLowerCase()} onClick={() => setState(s.key, x.key)}>
-                    {translate(x.label)}
-                  </button>
-                ))}
-              </span>
-            </div>
-          )
-        })}
-      </div>
+      {catalog.status === 'loading' && <p className="ai-soft">{translate('Loading the symptom list…')}</p>}
+      {catalog.status === 'failed' && (
+        <p className="sym-warn">
+          <Icon name="alert" /> {translate('Could not load the symptom list from the server.')}{' '}
+          <button type="button" className="btn btn-ghost btn-sm" onClick={catalog.reload}>
+            {translate('Try again')}
+          </button>
+        </p>
+      )}
+      {groupSymptoms(catalog.list).map((g) => (
+        <div key={g.key}>
+          {g.label && <div className="sym-group">{translate(g.label)}</div>}
+          <div className="sym-grid">
+            {g.items.map((s) => {
+              const cur = value[s.key]?.state ?? 'UNKNOWN'
+              return (
+                <div key={s.key} className={'sym-row' + (cur !== 'UNKNOWN' ? ' set' : '') + (ask.includes(s.key) && cur === 'UNKNOWN' ? ' ask' : '')}>
+                  <span className="sym-name">
+                    {translate(s.label)}
+                    {value[s.key] && value[s.key].source !== 'Form' && <small className="sym-src">{translate(SOURCES[value[s.key].source])}</small>}
+                  </span>
+                  <span className="ai-seg sym-seg">
+                    {STATES.map((x) => (
+                      <button type="button" key={x.key} disabled={disabled} className={(cur === x.key ? 'active ' : '') + x.key.toLowerCase()} onClick={() => setState(s.key, x.key)}>
+                        {translate(x.label)}
+                      </button>
+                    ))}
+                  </span>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      ))}
     </div>
   )
 }
