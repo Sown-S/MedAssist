@@ -97,5 +97,4 @@ Không viết:
 Chú thích dài hơn 3 dòng thì cân nhắc tách hàm hoặc đưa vào `docs/`.
 Viết tiếng Việt có dấu, câu ngắn; giữ nguyên thuật ngữ kỹ thuật tiếng Anh.
 
-Khi dùng AI (Claude, Copilot, Cursor...) sinh code, người mở PR chịu trách nhiệm xóa chú thích thừa trước khi push.
-Quy tắc cho Claude nằm ở `CLAUDE.md` tại gốc repo.
+Người mở PR chịu trách nhiệm xóa chú thích thừa trước khi push.

@@ -1,10 +1,6 @@
-"""FR12: trích xuất tạm từ văn bản tiếng Việt đã che định danh, chỉ chạy ở worker.
+"""Trích xuất triệu chứng tạm thời từ văn bản tiếng Việt đã che định danh (FR12).
 
-Bên gọi phải chạy Node 1 trước, truyền thời gian hàng đợi còn lại và mọi giá trị
-định danh đã biết (tên, địa chỉ, ngày sinh, điện thoại, giấy tờ và bí danh có trong
-ghi chú). Che bằng mẫu chỉ bổ sung cho các giá trị đó, không phải bộ nhận diện thực
-thể có tên dùng chung. Module này không ghi log, lưu dữ liệu hoặc đổi trạng thái
-lâm sàng. Chỉ sau khi điều dưỡng xác nhận mới được chép đề xuất vào input_features.
+Chỉ chạy trong worker sau cổng Node 1; không ghi dữ liệu hay tự xác nhận triệu chứng.
 """
 
 import asyncio
@@ -31,12 +27,8 @@ EXTRACTION_TIMEOUT_SECONDS = 30
 _CODES = TypeAdapter(list[knowledge_validators.SymptomCode])
 _MASK = "[REDACTED]"
 
-# Tên/địa chỉ/giấy tờ có nhãn có thể chứa khoảng trắng, dấu câu và chữ số. Che thận
-# trọng toàn bộ trường, kể cả dấu phẩy trong địa chỉ. Các từ mơ hồ thường xuất hiện
-# tự nhiên trong câu lâm sàng (``bệnh nhân``, ``BN``, ``patient``) phải có dấu
-# ``:``/``=`` rõ ràng; nếu không, câu như "Bệnh nhân đau đầu 2 ngày" sẽ bị mất nội
-# dung triệu chứng. Danh sách giá trị định danh đã biết bên dưới xử lý tên không có
-# dấu phân cách rõ ràng.
+# Các nhãn mơ hồ (bệnh nhân, BN, patient) bắt buộc có dấu ':' hoặc '=' để không xóa nhầm
+# câu lâm sàng như "Bệnh nhân đau đầu 2 ngày".
 _IDENTITY_FIELDS = re.compile(
     r"(?i)\b(?:địa\s*chỉ|dia\s*chi|address|nơi\s*ở|noi\s*o)"
     r"\s*[:=]?\s*[^\r\n;!?]+"
@@ -51,8 +43,7 @@ _IDENTITY_FIELDS = re.compile(
 _CONTACT_PATTERNS = (
     re.compile(r"[\w.+-]+@[\w.-]+\.[^\W\d_]{2,}", re.UNICODE),
     re.compile(r"\b[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}\b", re.I),
-    re.compile(r"\b\d{4}[-/]\d{1,2}[-/]\d{1,2}\b|\b\d{1,2}[/.-]\d{1,2}[/.-]\d{2,4}\b"),
-    # Số điện thoại/giấy tờ, kể cả +84, khoảng trắng, dấu chấm, gạch nối hoặc ngoặc.
+    re.compile(r"\b\d{4}[-/]\d{1,2}[-/]\d{1,2}\b|\b\d\d?[/.-]\d\d?[/.-]\d{2,4}\b"),
     re.compile(r"(?<!\w)\+?\d(?:[\s().-]*\d){8,14}(?!\w)"),
 )
 
@@ -74,20 +65,8 @@ async def extract_symptoms(
     identifiers: Sequence[str],
     timeout_seconds: float,
 ) -> list[SymptomSuggestion]:
-    """Trả đề xuất thuộc catalog Active, không bao giờ là đặc trưng đã xác nhận.
-
-    Chỉ gọi từ worker qua assessment_service, bên ngoài graph đánh giá.
-    ``gate_state`` phải là kết quả Node 1 trên dữ liệu đã xác nhận; có cờ đỏ thì bỏ
-    qua trích xuất. ``identifiers`` luôn bắt buộc, kể cả danh sách rỗng, để worker
-    chủ động cung cấp mọi giá trị định danh đã biết trước khi suy luận. Không đưa
-    object/metadata bệnh nhân thô vào prompt.
-
-    ``timeout_seconds`` là thời gian còn lại tính từ lúc xếp hàng, tối đa 30 giây.
-    Chuẩn bị và kiểm tra cùng tiêu thụ ngân sách này. Hết giờ, lỗi LLM có kiểu hoặc
-    đầu ra sai đều trả []; không thử lại. Hủy từ worker và lỗi hạ tầng/lập trình
-    được truyền lên. Session chỉ chuyển cho validator Active dùng chung, không được
-    dùng để ghi, commit hoặc rollback tại đây.
-    """
+    """Trả đề xuất thuộc catalog Active từ văn bản đã che định danh (tối đa 30 giây).
+    Bỏ qua nếu Node 1 báo cờ đỏ; trả ``[]`` khi quá hạn, lỗi LLM hoặc đầu ra không hợp lệ."""
     started = monotonic()
     if (
         gate_state.get("is_red_flag") is True

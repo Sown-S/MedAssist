@@ -1,21 +1,6 @@
-"""Đánh giá ``condition_logic`` phân loại bằng logic ba giá trị Kleene mạnh.
+"""Đánh giá cây ``condition_logic`` bằng logic ba giá trị Kleene mạnh (TRUE/FALSE/UNKNOWN).
 
-Định dạng cây:
-
-* nhóm: ``{"op": "AND" | "OR", "args": [node, ...]}``
-* lá triệu chứng: ``{"type": "symptom", "symptom_code": str, "state":
-  "PRESENT" | "ABSENT"}``
-* lá sinh hiệu: ``{"type": "vital", "vital": str, "cmp": "<" | "<=" | ">" |
-  ">=" | "==",
-  "value": number}``
-* lá tuổi: ``{"type": "age", "unit": "years" | "months", "cmp": "<" | "<=" |
-  ">" | ">=" | "==",
-  "value": number}``
-
-Đặc trưng đầu vào dùng ``symptoms`` (mã -> PRESENT/ABSENT/UNKNOWN),
-``vital_signs`` (khóa -> số), ``age_years`` và ``age_months`` tùy chọn. Thiếu giá
-trị cho kết quả UNKNOWN; luật sai định dạng phát sinh
-:class:`ConditionFormatError`.
+Đặc tả nút nhóm (``AND``/``OR``) và lá (``symptom``, ``vital``, ``age``) theo ``knowledge/_spec/okf_format.md``.
 """
 
 from collections.abc import Callable, Mapping, Sequence

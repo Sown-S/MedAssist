@@ -1,8 +1,4 @@
-"""Payload polling đánh giá AI và chạy pipeline offline cho bộ đánh giá đóng băng.
-
-Xếp hàng và ghi kết quả nằm ở ai_queue_service; module này chỉ chiếu dữ liệu đã lưu
-ra hợp đồng API, không trả hồ sơ bệnh nhân hay prompt.
-"""
+"""Dựng payload polling đánh giá AI và chạy pipeline offline cho bộ đánh giá đóng băng."""
 
 from __future__ import annotations
 
