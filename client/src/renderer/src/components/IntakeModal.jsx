@@ -10,7 +10,7 @@ import { VITAL_KEYS, checkVitals, vitalsFromForm, RULE_KEY_TO_VITAL } from '../a
 import { toPayload } from '../api/symptoms'
 import VitalsFields from './VitalsFields'
 import SymptomPanel from './SymptomPanel'
-import { registerPatient, findDuplicates, ageOf, updatePatientAdmin, idNumberOwner } from '../api/patientStore'
+import { registerPatient, findDuplicates, ageOf, updatePatientAdmin, idNumberOwner, setPregnancy } from '../api/patientStore'
 import { translate } from '../i18n'
 import { printTicket, ticketNo } from './queuePrint'
 import PatientAlerts from './PatientAlerts'
@@ -19,7 +19,7 @@ const PHONE_RE = /^0\d{9}$/
 const DOB_RE = /^\d{1,2}\/\d{1,2}\/\d{4}$/
 const ID_RE = /^\d{12}$/ // CCCD 12 số — không bắt buộc
 const VITALS_EMPTY = Object.fromEntries(VITAL_KEYS.map((d) => [d.key, '']))
-const EMPTY = { name: '', dob: '', gender: 'Female', phone: '', idNumber: '', history: '', allergies: '', ...VITALS_EMPTY, days: '', pregnancy: '', reason: '', ticket: '', insuranceNo: '' }
+const EMPTY = { name: '', dob: '', gender: 'Female', phone: '', idNumber: '', history: '', allergies: '', ...VITALS_EMPTY, days: '', pregnancy: '', reason: '', ticket: '' }
 
 // Kiểm tra sinh hiệu theo khoảng của vital_signs.schema.json (api/vitals.js) — dùng chung với màn sửa lượt chờ.
 export function vitalCheck(f) {
@@ -31,15 +31,14 @@ const askPregnancy = (gender, age) => gender === 'Female' && age !== '' && age >
 
 // Hai cách dùng:
 //  - patient = null    → đăng ký bệnh nhân mới (kiểm tra trùng SĐT / họ tên + ngày sinh trước khi tạo) rồi cấp số.
-//  - patient = {...}   → tiếp đón bệnh nhân cũ: thông tin hành chính chỉ đọc, chỉ nhập lý do khám, sinh hiệu, ưu tiên.
+//  - patient = {...}   → tiếp đón bệnh nhân cũ: thông tin hành chính chỉ đọc, chỉ nhập lý do khám, triệu chứng, sinh hiệu.
+// Mức ưu tiên do luật đặt (backend: POST /visits/{id}/assessment) — lễ tân không tự nâng tay.
 // onRedFlag(patient) — mở cảnh báo dấu hiệu nguy hiểm, kèm thông tin đang nhập để ghi nhận chuyển tuyến.
 export default function IntakeModal({ open, onClose, onRedFlag, patient = null }) {
   const { showToast } = useToast()
   const { user } = useAuth()
   const [form, setForm] = useState(EMPTY)
   const [syms, setSyms] = useState({}) // triệu chứng ĐÃ XÁC NHẬN: { mã: { state, source } }
-  const [objectType, setObjectType] = useState('fee') // 'fee' | 'bhyt'
-  const [priority, setPriority] = useState(false)
   const [print, setPrint] = useState(true)
   const [touched, setTouched] = useState(false)
   const [dupes, setDupes] = useState(null) // danh sách hồ sơ có thể trùng → hỏi lại trước khi tạo mới
@@ -49,11 +48,9 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
   // Mỗi lần mở: form trống (hoặc hồ sơ được chọn từ Tra cứu).
   useEffect(() => {
     if (!open) return
-    setForm({ ...EMPTY, insuranceNo: patient?.insuranceNo ?? '' })
+    setForm({ ...EMPTY, pregnancy: patient?.pregnancy ?? '' })
     setSyms({})
-    setObjectType(patient?.payer === 'bhyt' ? 'bhyt' : 'fee')
     setEditing(false)
-    setPriority(false)
     setTouched(false)
     setDupes(null)
     setExisting(patient)
@@ -92,9 +89,8 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
     const old = staleVisitOf(p.id)
     if (old) return showToast(translate('This patient still has an open visit from') + ' ' + old.carriedFrom.split('-').reverse().join('/') + ' — ' + translate('close it or collect payment first (banner at the top of Reception).'))
     // TODO: khi có API thật — POST /visits; server cấp số thứ tự.
-    // Hồ sơ cũ đổi đối tượng / số thẻ BHYT → cập nhật luôn vào hồ sơ (ghi nhật ký).
-    if (existing && (objectType !== (existing.payer ?? 'fee') || form.insuranceNo.trim().toUpperCase() !== (existing.insuranceNo ?? '')))
-      updatePatientAdmin(existing.id, { payer: objectType, insuranceNo: objectType === 'bhyt' ? form.insuranceNo : '' }, user)
+    // Mang thai lưu ở hồ sơ bệnh nhân (medical_history.is_pregnant), không ở lượt khám.
+    if (existing && pregnancyAsked) setPregnancy(existing.id, form.pregnancy, user)
     const r = createVisit(
       p,
       {
@@ -103,13 +99,10 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
         days: form.days,
         vitals,
         pregnancy: pregnancyAsked ? form.pregnancy : '',
-        // Mức sàn do luật đặt; lễ tân chỉ nâng được (tick Ưu tiên), không hạ được.
-        priority: priority || tri.level !== 'routine',
-        triage: emergency ? 'emergency' : tri.level === 'high' || priority ? 'high' : 'routine',
+        priority: tri.level !== 'routine',
+        triage: tri.level,
         triageRules: [...tri.red, ...tri.high].map((f) => f.rule.id),
-        ticket: '',
-        payer: objectType,
-        insuranceNo: objectType === 'bhyt' ? form.insuranceNo : ''
+        ticket: ''
       },
       user
     )
@@ -136,7 +129,7 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
       const d = findDuplicates(form)
       if (d.length) return setDupes(d)
     }
-    finish(registerPatient({ ...form, payer: objectType, insuranceNo: objectType === 'bhyt' ? form.insuranceNo : '' }, user))
+    finish(registerPatient({ ...form, pregnancy: pregnancyAsked ? form.pregnancy : '' }, user))
   }
 
   const err = (k) => touched && errors[k]
@@ -160,9 +153,6 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
           </div>
           {editing && <EditPatient p={existing} onSaved={(p) => (setExisting(p), setEditing(false))} />}
           <PatientAlerts p={existing} />
-          <div className="form-grid" style={{ marginTop: 8 }}>
-            <PayerFields objectType={objectType} setObjectType={setObjectType} field={field} />
-          </div>
         </>
       ) : (
         <>
@@ -196,8 +186,6 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
               <input type="text" inputMode="numeric" placeholder="0xx xxx xxx xxx" className={err('idNumber') ? 'field-error' : ''} {...field('idNumber')} />
               <div className={'field-error-msg' + (err('idNumber') ? ' show' : '')}>12 digits, or leave empty</div>
             </div>
-            <div />
-            <PayerFields objectType={objectType} setObjectType={setObjectType} field={field} />
             <div className="field full" style={{ gridColumn: 'span 2' }}>
               <label>Medical history (chronic conditions)</label>
               <input type="text" placeholder="Hypertension, diabetes…" {...field('history')} />
@@ -274,12 +262,6 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
         </p>
       )}
       <TriageStrip tri={tri} onTransfer={() => onRedFlag({ ...draft(), id: existing?.id, signs: redSigns() })} />
-      <div className="priority-toggle">
-        <input type="checkbox" id="pr" checked={priority || tri.level !== 'routine'} disabled={tri.level !== 'routine'} onChange={(e) => setPriority(e.target.checked)} />
-        <label htmlFor="pr">
-          <Icon name="zap" /> Flag as priority (elderly, children with high fever — <b>still seen at the clinic</b>)
-        </label>
-      </div>
       <label className="set-checks" style={{ display: 'flex', marginTop: 8, fontSize: 13.5 }}>
         <input type="checkbox" checked={print} onChange={(e) => setPrint(e.target.checked)} />{' '}
         <span>Print queue ticket</span>
@@ -330,29 +312,6 @@ function TriageStrip({ tri, onTransfer }) {
         </button>
       )}
     </div>
-  )
-}
-
-// Đối tượng thanh toán + số thẻ BHYT (lưu vào hồ sơ và lượt khám — màn thu tiền đọc lại, không nhập lại).
-function PayerFields({ objectType, setObjectType, field }) {
-  return (
-    <>
-      <div className="field">
-        <label>Payer type</label>
-        <select value={objectType} onChange={(e) => setObjectType(e.target.value)}>
-          <option value="fee">Self-pay</option>
-          <option value="bhyt">Health insurance</option>
-        </select>
-      </div>
-      {objectType === 'bhyt' ? (
-        <div className="field">
-          <label>Insurance card number</label>
-          <input type="text" placeholder="DN4790123456789" {...field('insuranceNo')} />
-        </div>
-      ) : (
-        <div />
-      )}
-    </>
   )
 }
 

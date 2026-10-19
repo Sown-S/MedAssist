@@ -161,7 +161,6 @@ function PatientDetail({ p, visits, onClose }) {
       <div className="form-grid cols-4" style={{ marginBottom: 10 }}>
         <Info label="Gender" value={translate(p.gender)} />
         <Info label="Age" value={ageOf(p.dob) !== '' ? String(ageOf(p.dob)) : '—'} />
-        <Info label="Payer type" value={translate(p.payer === 'bhyt' ? 'Health insurance' : 'Self-pay')} />
         <Info label="Visits" value={String(visits.length)} />
       </div>
       <div className="section-label">Visit history</div>
