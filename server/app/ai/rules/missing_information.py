@@ -1,16 +1,4 @@
-"""Đề xuất FR14 tất định từ các ứng viên dẫn đầu của Node 2.
-
-Sử dụng ``unknown_key_symptoms`` của Node 2 và catalog triệu chứng Active từ cùng
-snapshot đánh giá. Chỉ ba ứng viên đầu đóng góp theo thứ tự xếp hạng được truyền.
-Trong mỗi ứng viên, sắp mã và bỏ mã trùng đã được ứng viên hạng cao hơn đề xuất.
-
-Triệu chứng đã xác nhận nhưng bị bỏ qua được hiểu là UNKNOWN như Node 2. Kiểm tra
-lại trạng thái để không hỏi lại triệu chứng sau đó đã thành PRESENT/ABSENT. Văn bản
-tự do, trích xuất chưa xác nhận, sinh hiệu và tuổi không đóng góp vào đề xuất FR14.
-Helper này trả mã triệu chứng nội bộ, không trả chẩn đoán hay payload hiển thị; lớp
-đầu ra thêm nhãn "Reference Suggestion". Hàm không gọi LLM, truy vấn tri thức, log,
-ghi dữ liệu hoặc đổi ưu tiên.
-"""
+"""Tổng hợp triệu chứng then chốt còn ``UNKNOWN`` từ tối đa 3 ứng viên dẫn đầu của Node 2 (FR14)."""
 
 from collections.abc import Mapping, Sequence
 
@@ -28,14 +16,7 @@ def find_missing_information(
     candidates: Sequence[JsonObject],
     symptoms: Sequence[JsonObject],
 ) -> list[str]:
-    """Liệt kê triệu chứng key UNKNOWN không trùng, liên quan ứng viên dẫn đầu.
-
-    ``candidates`` phải là danh sách đóng đã xếp hạng do Node 2 tạo sau cổng Node
-    1; truyền danh sách rỗng cho trạng thái cờ đỏ kết thúc. ``symptoms`` phải đến
-    từ ``KnowledgeReader.active_symptoms()``. Phép giao catalog giới hạn đề xuất
-    tại đây; kiểm tra Active/mã dùng chung ở biên ứng dụng vẫn nằm trong
-    ``validation.knowledge_validators``.
-    """
+    """Trả danh sách mã triệu chứng key đang ``UNKNOWN`` (không trùng, chỉ thuộc catalog Active)."""
     if not isinstance(input_features, Mapping):
         raise MissingInformationFormatError("input_features phải là object")
     observed = input_features.get("symptoms", {})
