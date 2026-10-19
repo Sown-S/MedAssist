@@ -1,6 +1,7 @@
 """Schema phản hồi công khai cho đánh giá AI của một lượt khám."""
 
 import uuid
+from datetime import datetime
 from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
@@ -68,3 +69,22 @@ class AssessmentOut(BaseModel):
     alerts: list[AlertOut]
     complete_now: list[MissingInformationOut]
     candidates: list[CandidateOut] = Field(max_length=3)
+
+
+class ExtractionSuggestionOut(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    symptom_code: str
+    symptom_name: str
+    status: Literal["PRESENT", "ABSENT", "UNKNOWN"]
+    label: Literal["Reference Suggestion"]
+    requires_confirmation: Literal[True]
+
+
+class ExtractionOut(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    extraction_id: uuid.UUID
+    status: Literal["Queued", "Running", "Completed", "Failed", "Skipped"]
+    suggestions: list[ExtractionSuggestionOut]
+    completed_at: datetime | None

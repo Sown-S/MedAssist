@@ -105,6 +105,22 @@ def test_post_queues_repeatable_assessment_and_get_polls_latest(
     assert accepted_views[0].new_values["dedupe_window_s"] == 300
 
 
+def test_post_supersedes_queued_and_rejects_closed_visit(client, login, knowledge_reader):
+    nurse = login("yta")
+    visit_id = _visit(client, nurse)
+    first = client.post(f"/api/v1/visits/{visit_id}/assessment", headers=nurse).json()
+    client.post(f"/api/v1/visits/{visit_id}/assessment", headers=nurse)
+    with SessionLocal() as db:
+        old = db.get(AiAssessmentLog, uuid.UUID(first["assessment_id"]))
+        assert old.status == "Skipped" and old.error_detail == "SUPERSEDED"
+
+    cancelled = client.patch(f"/api/v1/visits/{visit_id}/cancel", headers=nurse,
+                             json={"reason": "Bệnh nhân về"})
+    assert cancelled.status_code == 200, cancelled.text
+    closed = client.post(f"/api/v1/visits/{visit_id}/assessment", headers=nurse)
+    assert closed.status_code == 409 and closed.json()["error"]["code"] == "VISIT_CLOSED"
+
+
 def test_post_requires_nurse(client, login, knowledge_reader):
     nurse = login("yta")
     visit_id = _visit(client, nurse)
