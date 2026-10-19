@@ -80,3 +80,6 @@ class QueueItem(BaseModel):
     ai_status: str
     visit_date: datetime
     checked_in_at: datetime | None
+    physician_id: uuid.UUID | None
+    physician_name: str | None
+    exam_started_at: datetime | None

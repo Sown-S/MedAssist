@@ -155,7 +155,7 @@ def _patient_context(db: Session, visit: Visit) -> dict:
     p = db.get(Patient, visit.patient_id)
     mh = p.medical_history or {}
     return {"chronic_conditions": mh.get("chronic_conditions", []), "medical_notes": mh.get("notes"),
-            "allergy_notes": p.allergy_notes}
+            "is_pregnant": mh.get("is_pregnant"), "allergy_notes": p.allergy_notes}
 
 
 def prescription_view(db: Session, visit_id: uuid.UUID) -> dict:

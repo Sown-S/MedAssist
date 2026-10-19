@@ -63,3 +63,11 @@ def put_symptoms(db: Session, visit_id: uuid.UUID, data: SymptomsPut, actor: Use
                      new_values={"symptoms_confirmed": {k: counts.get(k, 0) for k in ("PRESENT", "ABSENT", "UNKNOWN")},
                                  "rows_changed": changed})
     return list_symptoms(db, visit_id)
+
+
+def active_catalog(db: Session) -> list[dict]:
+    """Danh mục triệu chứng Active cho màn tiếp đón (mã OKF chuẩn, dùng cho PUT /visits/{id}/symptoms)."""
+    rows = db.execute(select(Symptom.symptom_code, Symptom.symptom_name, Symptom.category)
+                      .where(Symptom.status == "Active")
+                      .order_by(Symptom.category.nulls_last(), Symptom.symptom_name)).all()
+    return [{"symptom_code": c, "symptom_name": n, "category": cat} for c, n, cat in rows]
