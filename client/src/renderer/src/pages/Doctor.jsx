@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import Icon from '../components/Icon'
 import { useAuth } from '../context/AuthContext'
-import { useQueue, isMine, reviewRedFlag, inRoom } from '../api/queueStore'
+import { useQueue, useQueueSync, isMine, reviewRedFlag, inRoom } from '../api/queueStore'
 import { translate } from '../i18n'
 import { hhmm } from './reception/shared'
 import DoctorHome from './doctor/DoctorHome'
@@ -26,6 +26,7 @@ const VIEWS = {
 // Trang Bác sĩ: tổng quan + phòng khám + đơn thuốc + tủ thuốc (?view=…, ?visit=… cho bệnh nhân đang khám).
 export default function Doctor() {
   const { user } = useAuth()
+  useQueueSync() // backend thật: hỏi lại hàng đợi vài giây một lần
   const { visits, redFlags } = useQueue()
   // Ca cờ đỏ lễ tân vừa ghi nhận, chưa bác sĩ nào xem — hiện trên mọi màn của Bác sĩ.
   const pendingRF = redFlags.filter((r) => !r.doctorReview)
