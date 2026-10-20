@@ -2,8 +2,12 @@
 // Lưu theo NGÀY: mở lại app trong ngày vẫn còn hàng chờ; sang ngày mới thì tạo hàng chờ mẫu mới,
 // giờ đến / giờ đổi trạng thái tính lùi từ lúc mở app để dữ liệu mẫu luôn khớp "hôm nay".
 // Số thứ tự: nhập theo phiếu bệnh nhân bốc ở máy lấy số bên ngoài, hoặc để trống cho hệ thống cấp.
-// Backend thật: GET /queue/today, POST /visits, PATCH /visits/{id}, POST /queue/call, POST /red-flags.
-import { useSyncExternalStore } from 'react'
+// Khi tắt giả lập (DEMO_MODE = false): danh sách lượt khám lấy từ GET /queue (useQueueSync), check-in và huỷ lượt
+// gọi API thật; không tạo dữ liệu mẫu, không lưu localStorage. Các phần chưa có API vẫn chạy cục bộ.
+import { useEffect, useSyncExternalStore } from 'react'
+import { DEMO_MODE } from './client'
+import { fetchQueue, checkIn as apiCheckIn, cancelVisit as apiCancelVisit } from './clinicApi'
+import { VI } from '../i18n/vi'
 import { getSettings } from './settingsStore'
 import { logEvent } from './activityStore'
 import { getPatients, ageOf, updatePatientClinical } from './patientStore'
@@ -187,15 +191,16 @@ function read() {
     return null
   }
 }
-let state = read() ?? seed()
+let state = DEMO_MODE ? read() ?? seed() : { day: today(), visits: [], redFlags: [], calling: null, calls: [], stale: [] }
 const listeners = new Set()
 function commit(next) {
   state = next
-  try {
-    localStorage.setItem(KEY, JSON.stringify(state))
-  } catch {
-    /* chỉ giữ trong phiên */
-  }
+  if (DEMO_MODE)
+    try {
+      localStorage.setItem(KEY, JSON.stringify(state))
+    } catch {
+      /* chỉ giữ trong phiên */
+    }
   listeners.forEach((fn) => fn())
 }
 commit(state)
@@ -208,6 +213,32 @@ export function useQueue() {
   return useSyncExternalStore(subscribe, getQueue)
 }
 const patch = (id, fields) => commit({ ...state, visits: state.visits.map((v) => (v.id === id ? { ...v, ...fields } : v)) })
+
+// ---------- Đồng bộ với server (chỉ khi tắt giả lập) ----------
+// Gọi ở màn Lễ tân / Bác sĩ (quyền đọc hàng đợi); Admin không gọi được GET /queue.
+let syncing = null
+export function syncQueue() {
+  if (DEMO_MODE) return Promise.resolve(true)
+  syncing ??= fetchQueue()
+    .then((visits) => (commit({ ...state, visits }), true))
+    .catch(() => false)
+    .finally(() => (syncing = null))
+  return syncing
+}
+export function useQueueSync(ms = 3000) {
+  useEffect(() => {
+    if (DEMO_MODE) return
+    syncQueue()
+    const t = setInterval(syncQueue, ms)
+    return () => clearInterval(t)
+  }, [ms])
+}
+// Lỗi API → { ok: false, error } như các hàm giả lập (câu tiếng Việt của server).
+const viaApi = (call) =>
+  call.then(
+    () => syncQueue().then(() => ({ ok: true })),
+    (e) => ({ ok: false, error: e.message })
+  )
 
 // Lượt khám / đơn thuốc này có phải của bác sĩ đang đăng nhập không — so theo ID tài khoản (đổi họ tên hay trùng tên
 // vẫn đúng); dữ liệu cũ chưa có doctorId thì so theo họ tên như trước.
@@ -261,6 +292,7 @@ export const readyOrder = (visits = state.visits) => visits.filter((v) => v.stat
 
 // Lễ tân: tới lượt, bệnh nhân có mặt ở quầy → check-in (backend: PATCH /visits/{id}/check-in, Waiting → CheckedIn).
 export function checkInVisit(id, user) {
+  if (!DEMO_MODE) return viaApi(apiCheckIn(id))
   const v = state.visits.find((x) => x.id === id)
   if (!v || v.status !== ST.WAITING) return { ok: false, error: 'Only waiting visits can be checked in.' }
   const at = new Date().toISOString()
@@ -563,6 +595,13 @@ export function leaveVisit(id, { reason, note = '', draft = null }, user) {
 // Quầy huỷ lượt đang CHỜ khám (Waiting / CheckedIn — backend: PATCH /visits/{id}/cancel {reason}): bệnh nhân về trước khi được gọi,
 // hoặc tiếp đón nhầm / trùng lượt. Không xoá — lượt sang Cancelled kèm lý do.
 export function cancelVisit(id, { reason, note = '' }, user) {
+  if (!DEMO_MODE) {
+    if (!CANCEL_REASONS.some((r) => r.key === reason)) return Promise.resolve({ ok: false, error: 'Choose a reason.' })
+    if (reason === 'other' && !note.trim()) return Promise.resolve({ ok: false, error: 'Describe what happened.' })
+    const label = CANCEL_REASONS.find((r) => r.key === reason).label
+    // Server lưu lý do dạng chữ (audit_log) — ghi tiếng Việt.
+    return viaApi(apiCancelVisit(id, [VI[label] ?? label, note.trim()].filter(Boolean).join(' — ')))
+  }
   const v = state.visits.find((x) => x.id === id)
   if (!v || !isQueued(v)) return { ok: false, error: 'Only visits still waiting for consultation can be cancelled here.' }
   // Bệnh nhân đang có ca cờ đỏ chờ bác sĩ đánh giá: không cho quầy tự đóng lượt — bác sĩ quyết (chuyển tuyến / khám tại chỗ).

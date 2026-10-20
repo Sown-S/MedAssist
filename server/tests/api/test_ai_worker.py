@@ -344,6 +344,8 @@ def test_make_llm_client(monkeypatch):
     monkeypatch.setattr(settings, "LLM_PROVIDER", "ollama")
     client, model = runner.make_llm_client()
     assert isinstance(client, LLMClient) and model == settings.OLLAMA_MODEL
+    monkeypatch.setattr(settings, "OLLAMA_KEEP_ALIVE", "24h")
+    assert runner.make_llm_client()[0]._ollama.keep_alive == "24h"
 
 
 def test_run_forever_processes_then_stops(make_visit, nurse_user, monkeypatch):
