@@ -27,8 +27,8 @@ export function useTakePatient(open) {
   const [needRoom, setNeedRoom] = useState(null) // lệnh mời đang chờ bác sĩ chọn phòng (chưa bắt đầu ca)
   const duty = useDuty()
 
-  function run(target, force = false) {
-    const r = target ? takePatient(target.id, user, { force }) : takeNext(user, { force })
+  async function run(target, force = false) {
+    const r = await (target ? takePatient(target.id, user, { force }) : takeNext(user, { force }))
     if (r.needDuty) return setNeedRoom({ target, force })
     if (r.ok) {
       setBusy(null)
@@ -198,8 +198,8 @@ export function LabOrderResults({ order, summary }) {
 export function ReleaseModal({ visit, draft, onClose, onDone }) {
   const { user } = useAuth()
   const { showToast } = useToast()
-  function submit() {
-    const r = releaseVisit(visit.id, { draft: draft ?? getDraft(visit.id) ?? null }, user)
+  async function submit() {
+    const r = await releaseVisit(visit.id, { draft: draft ?? getDraft(visit.id) ?? null }, user)
     if (!r.ok) return showToast(translate(r.error))
     deleteDraft(visit.id)
     showToast('Returned to the waiting queue')
@@ -231,8 +231,8 @@ export function LeaveVisitModal({ visit, draft, onClose, onDone }) {
   const { showToast } = useToast()
   const [reason, setReason] = useState(visit.labOut ? 'no_return' : 'left_exam')
   const [note, setNote] = useState('')
-  function submit() {
-    const r = leaveVisit(visit.id, { reason, note, draft: draft ?? getDraft(visit.id) ?? null }, user)
+  async function submit() {
+    const r = await leaveVisit(visit.id, { reason, note, draft: draft ?? getDraft(visit.id) ?? null }, user)
     if (!r.ok) return showToast(translate(r.error))
     deleteDraft(visit.id)
     showToast('Visit closed — your notes were kept in the patient’s history')
