@@ -79,6 +79,19 @@ def test_update_only_while_waiting(client, nurse, patient_id):
     assert r.status_code == 409 and r.json()["error"]["code"] == "VISIT_LOCKED"
 
 
+def test_vitals_editable_after_check_in(client, nurse, doctor, patient_id):
+    vid = _visit(client, nurse, patient_id).json()["visit_id"]
+    client.patch(f"/api/v1/visits/{vid}/check-in", headers=nurse)
+    r = client.patch(f"/api/v1/visits/{vid}", headers=nurse, json={"vital_signs": {"spo2_pct": 88}})
+    assert r.status_code == 200 and r.json()["vital_signs"] == {"spo2_pct": 88}
+    r = client.patch(f"/api/v1/visits/{vid}", headers=nurse,
+                     json={"vital_signs": {"spo2_pct": 90}, "free_text_description": "Khó thở hơn"})
+    assert r.status_code == 409 and r.json()["error"]["code"] == "VISIT_LOCKED"
+    client.patch(f"/api/v1/visits/{vid}/start-exam", headers=doctor)
+    r = client.patch(f"/api/v1/visits/{vid}", headers=nurse, json={"vital_signs": {"spo2_pct": 90}})
+    assert r.status_code == 409
+
+
 def test_full_flow_to_examining_and_claim_race(client, nurse, doctor, doctor2, patient_id, logs, users):
     vid = _visit(client, nurse, patient_id).json()["visit_id"]
     assert client.patch(f"/api/v1/visits/{vid}/start-exam", headers=doctor).status_code == 409   # chưa check-in
@@ -139,6 +152,17 @@ def test_queue_order_priority_then_fifo(client, nurse, doctor):
     assert order == [vids[2], vids[0], vids[1]]
     item = next(q for q in queue if q["visit_id"] == vids[0])
     assert item["patient_name"].startswith("Thứ Tự") and "vital_signs" not in item
+
+
+def test_queue_shows_examining_with_physician(client, nurse, doctor, patient_id, users):
+    vid = _visit(client, nurse, patient_id).json()["visit_id"]
+    waiting = next(q for q in client.get("/api/v1/queue", headers=nurse).json() if q["visit_id"] == vid)
+    assert waiting["physician_id"] is None and waiting["physician_name"] is None
+    client.patch(f"/api/v1/visits/{vid}/check-in", headers=nurse)
+    client.patch(f"/api/v1/visits/{vid}/start-exam", headers=doctor)
+    item = next(q for q in client.get("/api/v1/queue", headers=nurse).json() if q["visit_id"] == vid)
+    assert item["status"] == "Examining" and item["exam_started_at"]
+    assert item["physician_id"] == str(users["bs"].user_id) and item["physician_name"] == users["bs"].full_name
 
 
 def test_stale_visits_listed_and_bulk_cancelled(client, nurse, patient_id, users):

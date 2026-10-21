@@ -43,7 +43,8 @@ def make_llm_client():
         from app.ai.llm.fake_client import FAKE_MODEL_NAME, FakeLLMClient
         return FakeLLMClient(), FAKE_MODEL_NAME
     from app.ai.llm.client import LLMClient
-    return LLMClient(model=settings.OLLAMA_MODEL, base_url=settings.OLLAMA_BASE_URL), settings.OLLAMA_MODEL
+    return (LLMClient(model=settings.OLLAMA_MODEL, base_url=settings.OLLAMA_BASE_URL,
+                      keep_alive=settings.OLLAMA_KEEP_ALIVE), settings.OLLAMA_MODEL)
 
 
 def _remaining_budget(queued_at: datetime.datetime, limit: float | None = None) -> float:

@@ -13,6 +13,7 @@ import CallPanel from './CallPanel'
 import { EditWaitingModal, CancelVisitModal } from '../../components/WaitingVisitModals'
 import { fmt, hhmm, dmy, methodLabel, useNow, PAY_STATUS } from './shared'
 import { vitalsText } from '../../api/vitals'
+import { DEMO_MODE } from '../../api/client'
 
 // Phút chờ bắt đầu thành vàng / đỏ, theo từng chặng.
 const WAIT_LIMITS = { Waiting: [30, 60], CheckedIn: [15, 30], Examining: [30, 45], labs: [30, 60], Prescribed: [10, 20] }
@@ -36,8 +37,8 @@ export default function QueueView({ readOnly, onPay, onRx }) {
         ? readyOrder(visits)
         : byStatus(tab).sort((a, b) => ([ST.FINISHED, ST.CANCELLED].includes(tab) ? b.statusAt.localeCompare(a.statusAt) : a.statusAt.localeCompare(b.statusAt)))
   // Lễ tân xác nhận bệnh nhân có mặt khi tới lượt (PATCH /visits/{id}/check-in) — bác sĩ chỉ mời được người đã check-in.
-  function checkIn(v) {
-    const r = checkInVisit(v.id, user)
+  async function checkIn(v) {
+    const r = await checkInVisit(v.id, user)
     showToast(r.ok ? translate('Checked in — doctors can now call') + ' ' + String(v.ticket).padStart(3, '0') : translate(r.error))
   }
 
@@ -93,6 +94,12 @@ export default function QueueView({ readOnly, onPay, onRx }) {
     if (v.status === ST.CHECKED_IN)
       return (
         <>
+          {/* Backend thật: sau check-in vẫn đo lại sinh hiệu / sửa triệu chứng được — luật tính lại mức ưu tiên. */}
+          {!DEMO_MODE && (
+            <button className="btn btn-ghost btn-sm" disabled={readOnly} onClick={() => setEditing(v)} title={translate('Condition worsened while waiting? Update the symptoms and vital signs — the priority is re-assessed when you save.')}>
+              <Icon name="pencil" /> Re-measure vitals
+            </button>
+          )}
           <button className="btn btn-ghost btn-sm" onClick={() => printTicket(v)}>
             <Icon name="printer" /> Print queue ticket
           </button>

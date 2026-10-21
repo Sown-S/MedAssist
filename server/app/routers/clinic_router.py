@@ -14,7 +14,7 @@ from app.core.auth import require_roles
 from app.core.database import get_db
 from app.models import User
 from app.schemas.common import Page, PhoneVN
-from app.schemas.visit_symptom import SymptomsPut, VisitSymptomOut
+from app.schemas.visit_symptom import SymptomCatalogItem, SymptomsPut, VisitSymptomOut
 from app.schemas.emr import PatientHistory, PatientLookupResult, VisitRecord
 from app.schemas.patient import IdNumber, PatientCreate, PatientOut, PatientSummary, PatientUpdate
 from app.schemas.visit import (BulkCancelRequest, CancelRequest, QueueItem, VisitCreate, VisitOut,
@@ -117,6 +117,12 @@ def visit_record(visit_id: uuid.UUID,
 
 
 # ============================================================================ Triệu chứng đã xác nhận (HITL)
+@router.get("/symptoms", response_model=list[SymptomCatalogItem])
+def symptom_catalog(_: User = Depends(require_roles(*CLINICAL_ROLES)), db: Session = Depends(get_db)):
+    """Danh mục triệu chứng đang Active. Không ghi VIEW: không phải dữ liệu bệnh nhân."""
+    return symptom_service.active_catalog(db)
+
+
 @router.get("/visits/{visit_id}/symptoms", response_model=list[VisitSymptomOut])
 def visit_symptoms(visit_id: uuid.UUID,
                    _: User = Depends(audit_view("visit", roles=CLINICAL_ROLES, id_param="visit_id")),

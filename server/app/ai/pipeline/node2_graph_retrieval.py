@@ -1,9 +1,4 @@
-"""Retrieval tất định trong worker sau cổng an toàn Node 1.
-
-Bốn ứng viên là danh sách đóng nội bộ cho reasoning/validation sau đó, không phải
-kết quả hiển thị. Lớp đầu ra cuối phải giới hạn còn ba. Node này không ghi database,
-không log, không đổi ưu tiên và không gọi LLM.
-"""
+"""Node 2: truy vấn và chấm điểm tất định tối đa 4 ứng viên nội bộ sau Node 1."""
 
 from app.ai.interfaces import KnowledgeReader
 from app.ai.pipeline.state import PipelineState
@@ -13,12 +8,7 @@ MAX_CANDIDATES = 4
 
 
 def run_node2(state: PipelineState, knowledge_reader: KnowledgeReader) -> PipelineState:
-    """Trả trạng thái retrieval mới từ đặc trưng đã xác nhận và dữ liệu Active.
-
-    Node 1 phải điền xong kết quả an toàn. Trạng thái cờ đỏ kết thúc sẽ trả ngay,
-    không đọc tri thức hoặc giữ gợi ý chẩn đoán. Việc lưu kết quả Preliminary
-    Rule-only thuộc service của AI-09.
-    """
+    """Trả tối đa 4 ứng viên bệnh từ đặc trưng đã xác nhận và tri thức Active."""
     result = state.copy()
     for key in ("candidates", "llm_output", "validation_result", "error"):
         result.pop(key, None)

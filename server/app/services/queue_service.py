@@ -24,6 +24,7 @@ from app.services import audit_service as audit
 
 OPEN_STATUSES = ("Waiting", "CheckedIn", "Examining", "Prescribed")
 QUEUE_STATUSES = ("Waiting", "CheckedIn")
+QUEUE_VIEW_STATUSES = (*QUEUE_STATUSES, "Examining")    # màn lễ tân thấy cả người đang trong phòng
 _QUEUE_LOCK_KEY = 4_206_202_610          # khóa advisory cấp số thứ tự trong ngày
 
 # Thứ tự ưu tiên hàng đợi: chưa phân luồng (NULL) xếp như Routine
@@ -95,9 +96,12 @@ def update_visit(db: Session, visit_id: uuid.UUID, data: VisitUpdate, actor: Use
     visit = db.scalar(select(Visit).where(Visit.visit_id == visit_id).with_for_update())
     if visit is None:
         raise NotFoundError("Không tìm thấy lượt khám")
-    if visit.status != "Waiting":
-        raise AppError(409, "VISIT_LOCKED", "Chỉ sửa được lượt khám khi còn ở trạng thái chờ (Waiting)")
     changes = data.model_dump(exclude_unset=True)
+    # Sau check-in vẫn cho đo lại sinh hiệu để luật tính lại mức ưu tiên khi bệnh nhân chuyển nặng.
+    vitals_only = visit.status == "CheckedIn" and set(changes) <= {"vital_signs"}
+    if visit.status != "Waiting" and not vitals_only:
+        raise AppError(409, "VISIT_LOCKED",
+                       "Chỉ sửa được lượt khám khi còn chờ (Waiting); sau check-in chỉ sửa được sinh hiệu")
     if "vital_signs" in changes:
         changes["vital_signs"] = data.vital_signs.to_db() if data.vital_signs else None
     if changes.get("chief_complaint", "") is None:
@@ -192,16 +196,17 @@ def mark_finished(db: Session, visit_id: uuid.UUID, actor: User) -> Visit:
 # ---------------------------------------------------------------------------- truy vấn
 def queue_today(db: Session) -> list[dict]:
     rows = db.execute(
-        select(Visit, Patient.full_name, Patient.date_of_birth, Patient.gender)
+        select(Visit, Patient.full_name, Patient.date_of_birth, Patient.gender, User.full_name)
         .join(Patient, Patient.patient_id == Visit.patient_id)
-        .where(Visit.queue_date == func.current_date(), Visit.status.in_(QUEUE_STATUSES))
+        .outerjoin(User, User.user_id == Visit.physician_id)
+        .where(Visit.queue_date == func.current_date(), Visit.status.in_(QUEUE_VIEW_STATUSES))
         .order_by(_PRIORITY_RANK.desc(), Visit.visit_date, Visit.queue_number)).all()
     return [{**{k: getattr(v, k) for k in ("visit_id", "queue_number", "status", "patient_id",
                                            "chief_complaint", "triage_priority", "is_red_flag",
                                            "red_flag_reason", "priority_raised_by_ai", "ai_status",
-                                           "visit_date", "checked_in_at")},
-             "patient_name": name, "date_of_birth": dob, "gender": gender}
-            for v, name, dob, gender in rows]
+                                           "visit_date", "checked_in_at", "physician_id", "exam_started_at")},
+             "patient_name": name, "date_of_birth": dob, "gender": gender, "physician_name": physician}
+            for v, name, dob, gender, physician in rows]
 
 
 def stale_open_visits(db: Session) -> list[Visit]:

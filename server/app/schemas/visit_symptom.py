@@ -42,3 +42,9 @@ class VisitSymptomOut(BaseModel):
     state: str
     source: str
     confirmed_at: datetime
+
+
+class SymptomCatalogItem(BaseModel):
+    symptom_code: str
+    symptom_name: str
+    category: str | None

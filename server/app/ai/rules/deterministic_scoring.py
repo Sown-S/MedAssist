@@ -1,23 +1,6 @@
-"""Chấm điểm Node 2 thuần và tạm thời trên một snapshot reader Active.
+"""Chấm điểm tất định Node 2 trên tập bệnh và triệu chứng Active.
 
-Mapping reader: một bệnh có ``condition_code``, ``name_vi``, ``icd10_code`` tùy
-chọn, ``symptoms`` lồng bên trong (các hàng quan hệ bệnh-triệu chứng) và
-``guidelines`` (các hàng trích đoạn đã được chiếu về hợp đồng hiển thị).
-Quan hệ dùng ``symptom_code``, ``polarity`` (SUPPORTS/CONTRADICTS), ``weight``
-trong [0, 1] và ``is_key``. Mọi hàng phải đến từ các hàm Active của reader.
-
-Công thức tạm, cần xem lại sau đánh giá Sprint 3:
-* coverage = trọng số SUPPORTS PRESENT / trọng số của mọi SUPPORTS;
-* precision = số SUPPORTS PRESENT / số triệu chứng PRESENT trong catalog;
-* score = trung bình điều hòa(coverage, precision) * (1 - tỷ lệ phản bác), trong đó
-  tỷ lệ phản bác = trọng số bị phản bác / trọng số mọi quan hệ dùng được.
-CONTRADICTS PRESENT và SUPPORTS ABSENT là bằng chứng phản bác. CONTRADICTS ABSENT
-là trung tính: thiếu bằng chứng phản bác không phải bằng chứng ủng hộ bệnh. UNKNOWN
-(kể cả triệu chứng bị bỏ qua) không bao giờ là bằng chứng. Bỏ qua quan hệ trọng số
-0. Chỉ lấy bệnh có bằng chứng ủng hộ dương.
-
-Các điểm này chỉ hỗ trợ xếp hạng, không phải xác suất hay ngưỡng lâm sàng. Module
-không tự cung cấp dữ kiện lâm sàng, mục catalog hoặc hướng dẫn.
+Điểm dựa trên trung bình điều hòa của ``coverage`` và ``precision`` trừ tỷ lệ bằng chứng phản bác.
 """
 
 from collections.abc import Mapping, Sequence
@@ -39,13 +22,7 @@ def rank_conditions(
     conditions: Sequence[JsonObject],
     symptoms: Sequence[JsonObject],
 ) -> list[dict[str, Any]]:
-    """Xếp hạng mọi bệnh được hỗ trợ; Node 2 áp giới hạn bốn ứng viên.
-
-    Nội bộ dùng phân số chính xác để thứ tự quan hệ không ảnh hưởng điểm sát nhau
-    hoặc hòa. Xuất float thông thường để state pipeline tuần tự hóa được. Phép giao
-    catalog giới hạn retrieval tại đây; việc kiểm tra mã/Active dùng chung ở các
-    biên vẫn thuộc ``validation.knowledge_validators``.
-    """
+    """Xếp hạng các bệnh có bằng chứng ủng hộ dương; tính nội bộ bằng ``Fraction`` để tránh lệch thứ tự."""
     if not isinstance(input_features, Mapping):
         raise ScoringFormatError("input_features phải là object")
     observed = input_features.get("symptoms", {})

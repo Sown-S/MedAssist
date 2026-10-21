@@ -1,5 +1,7 @@
 import { createContext, useContext, useEffect, useRef, useState } from 'react'
-import { ROLES, verifyLogin, recordLogin, sessionStillValid } from '../api/accountStore'
+import { ROLES, recordLogin, sessionStillValid } from '../api/accountStore'
+import * as authApi from '../api/authApi'
+import { DEMO_MODE, setSessionExpiredHandler } from '../api/client'
 import { logEvent } from '../api/activityStore'
 import { getSettings } from '../api/settingsStore'
 
@@ -30,11 +32,12 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null) // null = chưa đăng nhập
   const [notice, setNotice] = useState('') // lý do bị đăng xuất, hiện ở màn đăng nhập
 
-  // Bước 1: kiểm tra thông tin. Không đặt user ở đây để còn xử lý "bắt buộc đổi mật khẩu".
+  // Bước 1: kiểm tra thông tin. Không đặt user ở đây để còn xử lý "bắt buộc đổi mật khẩu" (chỉ có ở bản demo).
+  // API thật: vai trò lấy từ server (GET /auth/me), không tin vai trò chọn ở màn đăng nhập.
   async function authenticate(username, password, roleKey) {
-    // TODO backend thật: POST /auth/login → JWT + role từ server (không tin role chọn ở client).
-    const res = await verifyLogin(username, password, roleKey)
-    if (!res.ok)
+    const res = await authApi.login(username, password, roleKey)
+    // Nhật ký đăng nhập: bản demo tự ghi; API thật do server ghi (audit_log).
+    if (!res.ok && DEMO_MODE)
       logEvent({ name: username.trim() || '?', username: username.trim(), roleKey }, 'auth.login_failed', {
         params: { username: username.trim(), reason: res.error },
         result: 'failure'
@@ -43,13 +46,26 @@ export function AuthProvider({ children }) {
   }
   function startSession(account) {
     const u = toSessionUser(account)
-    recordLogin(u.id)
-    logEvent(u, 'auth.login', { target: { kind: 'account', id: u.username, label: u.name } })
+    if (DEMO_MODE) {
+      recordLogin(u.id)
+      logEvent(u, 'auth.login', { target: { kind: 'account', id: u.username, label: u.name } })
+    }
     setNotice('')
     setUser(u)
   }
+  // Kết thúc phiên; notice = lý do hiện ở màn đăng nhập (bị đăng xuất tự động, vừa đổi mật khẩu...).
+  function endSession(notice = '') {
+    authApi.logout()
+    setNotice(notice)
+    setUser(null)
+  }
   function logout() {
-    if (user) logEvent(user, 'auth.logout', { target: { kind: 'account', id: user.username, label: user.name } })
+    if (user && DEMO_MODE) logEvent(user, 'auth.logout', { target: { kind: 'account', id: user.username, label: user.name } })
+    endSession()
+  }
+  // Đổi mật khẩu thành công: server thu hồi mọi token cũ → về màn đăng nhập, đăng nhập lại bằng mật khẩu mới.
+  function signOutAfterPasswordChange() {
+    setNotice('Your password was changed. Please sign in again with the new password.')
     setUser(null)
   }
   // Sau khi người dùng tự sửa thông tin của mình (VD đổi họ tên) — cập nhật tên trên thanh trên cùng.
@@ -57,9 +73,17 @@ export function AuthProvider({ children }) {
     setUser((u) => (u && u.id === account.id ? { ...toSessionUser(account), sessionVersion: u.sessionVersion } : u))
   }
 
-  // Bản thật: server từ chối token cũ → client nhận 401 và về màn đăng nhập. Ở đây kiểm tra định kỳ.
+  // API thật: refresh token cũng bị từ chối (hết 8 giờ, bị vô hiệu hoá, đổi mật khẩu ở máy khác) → về màn đăng nhập.
   useEffect(() => {
-    if (!user) return
+    setSessionExpiredHandler(() => {
+      setNotice('Your session has expired. Please sign in again.')
+      setUser(null)
+    })
+  }, [])
+
+  // Bản demo: không có server từ chối token nên kiểm tra định kỳ trong localStorage.
+  useEffect(() => {
+    if (!user || !DEMO_MODE) return
     const t = setInterval(() => {
       if (sessionStillValid(user.id, user.sessionVersion)) return
       setNotice('Your session was ended by an administrator. Please sign in again.')
@@ -79,9 +103,8 @@ export function AuthProvider({ children }) {
     const t = setInterval(() => {
       const mins = getSettings().security.idleMinutes
       if (!mins || Date.now() - lastActive.current < mins * 60000) return
-      logEvent(user, 'auth.auto_logout', { target: { kind: 'account', id: user.username, label: user.name }, params: { minutes: mins } })
-      setNotice(`You were signed out after ${mins} minutes of inactivity.`)
-      setUser(null)
+      if (DEMO_MODE) logEvent(user, 'auth.auto_logout', { target: { kind: 'account', id: user.username, label: user.name }, params: { minutes: mins } })
+      endSession(`You were signed out after ${mins} minutes of inactivity.`)
     }, 10000)
     return () => {
       events.forEach((e) => window.removeEventListener(e, touch))
@@ -90,7 +113,7 @@ export function AuthProvider({ children }) {
   }, [user])
 
   return (
-    <AuthContext.Provider value={{ user, notice, authenticate, startSession, logout, refreshUser }}>{children}</AuthContext.Provider>
+    <AuthContext.Provider value={{ user, notice, authenticate, startSession, logout, signOutAfterPasswordChange, refreshUser }}>{children}</AuthContext.Provider>
   )
 }
 

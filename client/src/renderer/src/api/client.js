@@ -1,9 +1,10 @@
 import { MOCK_ENDPOINTS } from './mockData'
 import { getBaseUrl, tokenStore } from './serverConfig'
 
-// BẬT/TẮT Ở ĐÂY: khi ghép backend FastAPI thật, đổi USE_MOCK = false — KHÔNG cần sửa trang nào đang gọi apiGet()/apiPost().
+// BẬT/TẮT: mặc định chạy giả lập (không cần server). Dùng backend FastAPI thật: đặt VITE_USE_MOCK=false trong client/.env
+// (file riêng của máy, không commit) rồi chạy lại npm run dev — KHÔNG cần sửa trang nào đang gọi apiGet()/apiPost().
 // Địa chỉ server lấy từ serverConfig (đổi được lúc chạy), token lấy từ kho mã hoá của hệ điều hành.
-const USE_MOCK = true
+const USE_MOCK = import.meta.env.VITE_USE_MOCK !== 'false'
 
 function delay(ms) {
   return new Promise((r) => setTimeout(r, ms))
@@ -53,6 +54,8 @@ async function refreshTokens() {
   return true
 }
 
+// Sai mật khẩu ở /auth/login cũng trả 401 — không được hiểu là token hết hạn.
+const NO_REFRESH = ['/api/v1/auth/login', '/api/v1/auth/refresh']
 async function realRequest(path, options = {}, retried = false) {
   const token = await tokenStore.get('access')
   const res = await fetch(getBaseUrl() + path, {
@@ -63,7 +66,7 @@ async function realRequest(path, options = {}, retried = false) {
       ...options.headers
     }
   })
-  if (res.status === 401 && !retried && !path.startsWith('/api/v1/auth/')) {
+  if (res.status === 401 && !retried && !NO_REFRESH.includes(path)) {
     refreshing ??= refreshTokens().finally(() => (refreshing = null))
     if (await refreshing) return realRequest(path, options, true)
     await tokenStore.clear()
@@ -85,6 +88,12 @@ export async function apiPost(path, body) {
     return { ok: true }
   }
   return realRequest(path, { method: 'POST', body: JSON.stringify(body) })
+}
+
+// PATCH / PUT / DELETE — chỉ dùng khi đã tắt giả lập (các store giả lập tự xử lý dữ liệu cục bộ).
+export function apiRequest(path, method, body) {
+  if (USE_MOCK) return Promise.reject(new Error(`[mock] ${method} ${path} chỉ có khi dùng backend thật`))
+  return realRequest(path, { method, ...(body !== undefined ? { body: JSON.stringify(body) } : {}) })
 }
 
 export const DEMO_MODE = USE_MOCK

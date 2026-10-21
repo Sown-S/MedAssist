@@ -55,3 +55,12 @@ def test_audit_counts_only(client, nurse, visit_id, wk_knowledge, logs):
     row = [r for r in logs(action="UPDATE", entity="visit") if r.new_values.get("symptoms_confirmed")][-1]
     assert row.new_values["symptoms_confirmed"] == {"PRESENT": 1, "ABSENT": 0, "UNKNOWN": 1}
     assert "wk_fever_high" not in str(row.new_values)
+
+
+def test_symptom_catalog_for_clinical_roles(client, nurse, login, wk_knowledge):
+    r = client.get("/api/v1/symptoms", headers=nurse)
+    assert r.status_code == 200
+    got = {s["symptom_code"]: s for s in r.json()}
+    assert got["wk_fever_high"] == {"symptom_code": "wk_fever_high", "symptom_name": "Sốt cao", "category": "test"}
+    assert client.get("/api/v1/symptoms", headers=login("bs")).status_code == 200
+    assert client.get("/api/v1/symptoms", headers=login("admin")).status_code == 403

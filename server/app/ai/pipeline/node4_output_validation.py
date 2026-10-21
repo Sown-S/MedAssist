@@ -1,9 +1,6 @@
-"""Ranh giới trong worker giữa reasoning chưa tin cậy và kết quả được hiển thị.
+"""Node 4: kiểm duyệt đầu ra LLM trước khi công bố tối đa 3 ứng viên.
 
-LLM v1 chỉ được sắp xếp lại ứng viên Node 2, giải thích và đề nghị nâng ưu tiên.
-Bằng chứng, mã ICD và hướng dẫn được sao chép từ Node 2, không lấy từ model.
-Validator tri thức dùng chung chịu trách nhiệm kiểm tra slug và catalog Active.
-Không log/lưu dữ liệu bệnh nhân, đầu ra model hoặc exception validation.
+Chỉ nhận thứ tự xếp hạng, lý do tiếng Việt có dẫn mã bằng chứng và đề nghị nâng ưu tiên từ LLM.
 """
 
 from copy import deepcopy
@@ -57,14 +54,7 @@ _VIETNAMESE_MARKS = frozenset("\u0300\u0301\u0302\u0303\u0306\u0309\u031b\u0323"
 
 
 def run_node4(state: PipelineState, db: Session) -> PipelineState:
-    """Kiểm tra một proposal Node 3 và trả state mới với tối đa ba kết quả.
-
-    Thành công là Completed/Full. Reasoning sai trở thành Degraded/RuleOnly với
-    ứng viên tất định và mức sàn ưu tiên hiện có. Dữ liệu bằng chứng/catalog
-    baseline sai sẽ không trả gợi ý. ``validation_result`` và ``error`` chỉ chứa
-    mã cố định, phù hợp metadata audit về sau. Lỗi database/hạ tầng được truyền lên
-    worker; hàm này không ghi, commit, rollback, gọi reader hoặc gọi LLM.
-    """
+    """Kiểm tra proposal từ Node 3; suy giảm về ``Degraded``/``RuleOnly`` nếu không hợp lệ."""
     result = state.copy()
     for key in ("llm_output", "validation_result", "error"):
         result.pop(key, None)

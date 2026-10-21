@@ -118,8 +118,7 @@ export function registerPatient(data, user) {
     gender: data.gender,
     allergies: data.allergies.trim(),
     history: data.history.trim(),
-    payer: data.payer === 'bhyt' ? 'bhyt' : 'fee',
-    insuranceNo: (data.insuranceNo ?? '').trim().toUpperCase(),
+    pregnancy: data.pregnancy ?? '',
     idNumber: digits(data.idNumber)
   }
   commit([...patients, p])
@@ -127,17 +126,17 @@ export function registerPatient(data, user) {
   return p
 }
 
-// Sửa thông tin HÀNH CHÍNH (họ tên, SĐT, ngày sinh, giới, đối tượng / số thẻ BHYT) — nhập nhầm lúc đăng ký thì sửa,
+// Sửa thông tin HÀNH CHÍNH (họ tên, SĐT, ngày sinh, giới, CCCD) — nhập nhầm lúc đăng ký thì sửa,
 // không tạo hồ sơ mới (tránh trùng hồ sơ). Ghi nhật ký kèm giá trị trước / sau. Dị ứng & bệnh nền do bác sĩ sửa (bên dưới).
 // Backend thật: PATCH /patients/{id}.
-export const ADMIN_FIELDS = ['name', 'phone', 'dob', 'gender', 'payer', 'insuranceNo', 'idNumber']
+// BHYT (đối tượng, số thẻ) đã bỏ: backend không quản lý BHYT.
+export const ADMIN_FIELDS = ['name', 'phone', 'dob', 'gender', 'idNumber']
 export function updatePatientAdmin(id, fields, user) {
   const old = findPatient(id)
   if (!old) return { ok: false, error: 'Patient not found.' }
   const next = {}
   for (const k of ADMIN_FIELDS) if (k in fields) next[k] = k === 'phone' || k === 'idNumber' ? digits(fields[k]) : String(fields[k] ?? '').trim()
   if (next.idNumber && idNumberOwner(next.idNumber, id)) return { ok: false, error: 'This ID card number already belongs to another patient record.' }
-  if ('insuranceNo' in next) next.insuranceNo = next.insuranceNo.toUpperCase()
   if ('name' in next && !next.name) return { ok: false, error: 'Enter the full name.' }
   const changed = Object.keys(next).filter((k) => (old[k] ?? '') !== next[k])
   if (!changed.length) return { ok: true, changed: false }
@@ -166,6 +165,22 @@ export function updatePatientClinical(id, { allergies, history }, user) {
     before: { allergies: old.allergies ?? '', history: old.history ?? '' },
     after: next,
     level: next.allergies !== (old.allergies ?? '') ? 'warning' : undefined
+  })
+  return { ok: true, changed: true }
+}
+
+// Tình trạng mang thai ('yes' | 'no' | '' = chưa hỏi) — lưu ở HỒ SƠ bệnh nhân, lễ tân hỏi lại mỗi lần tiếp đón.
+// Backend thật: PATCH /patients/{id} với medical_history.is_pregnant (true / false / null).
+export function setPregnancy(id, pregnancy, user) {
+  const old = findPatient(id)
+  if (!old) return { ok: false, error: 'Patient not found.' }
+  if ((old.pregnancy ?? '') === pregnancy) return { ok: true, changed: false }
+  commit(patients.map((p) => (p.id === id ? { ...p, pregnancy } : p)))
+  logEvent(user, 'patient.update', {
+    target: { kind: 'patient', id, label: old.name },
+    params: { patient: old.name, fields: 'pregnancy' },
+    before: { pregnancy: old.pregnancy ?? '' },
+    after: { pregnancy }
   })
   return { ok: true, changed: true }
 }
