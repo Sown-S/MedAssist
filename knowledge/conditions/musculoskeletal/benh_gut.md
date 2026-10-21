@@ -1,58 +1,65 @@
 ---
 schema: okf_condition_v1
 condition_code: benh_gut
-name_vi: Bệnh Gút (Gout)
-name_en: Gout
+name_vi: Bệnh gút
+name_en: gout
 icd10_code: M10.9
 disease_group: musculoskeletal
-description: Bệnh viêm khớp do lắng đọng vi tinh thể muối urat natri trong các mô
-  do tăng acid uric máu, đặc trưng bởi những đợt viêm khớp cấp tính dữ dội tái phát
-  và hạt tôphi.
+description: Bệnh gút là bệnh viêm khớp do vi tinh thể, đặc trưng bởi những đợt viêm
+  khớp cấp tái phát, có lắng đọng tinh thể muối urat natri trong các mô, gây ra do
+  tăng acid uric trong máu. Đây là bệnh do rối loạn chuyển hóa nhân purin, thuộc nhóm
+  bệnh rối loạn.
 relations:
-- symptom_code: acute_podagra_first_mtp
+- symptom_code: fever_low_grade
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
-  source_key: moh_co_xuong_khop_2014
+  weight: 0.77
+  is_key: false
+  source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: tophi_nodules
+- symptom_code: skin_cellulitis_pus_abscess
   polarity: SUPPORTS
-  weight: 0.95
+  weight: 0.9
   is_key: true
-  source_key: moh_co_xuong_khop_2014
+  source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: myalgia_arthralgia
   polarity: SUPPORTS
-  weight: 0.75
-  is_key: false
-  source_key: moh_co_xuong_khop_2014
+  weight: 0.84
+  is_key: true
+  source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: fever_low_grade
+- symptom_code: asymmetric_oligoarthritis_lower
   polarity: SUPPORTS
-  weight: 0.6
-  is_key: false
-  source_key: moh_co_xuong_khop_2014
+  weight: 0.9
+  is_key: true
+  source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: symmetric_polyarthritis
-  polarity: CONTRADICTS
-  weight: 0.5
-  is_key: false
-  source_key: moh_co_xuong_khop_2014
+- symptom_code: acute_podagra_tophi
+  polarity: SUPPORTS
+  weight: 0.98
+  is_key: true
+  source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: morning_stiffness_over_1h
-  polarity: CONTRADICTS
-  weight: 0.45
-  is_key: false
-  source_key: moh_co_xuong_khop_2014
+- symptom_code: bone_pain_fracture_lesion
+  polarity: SUPPORTS
+  weight: 0.92
+  is_key: true
+  source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 excerpts:
 - excerpt_key: benh_gut_chan_doan
-  title: Chẩn đoán lâm sàng Bệnh Gút theo tiêu chuẩn Bennet và Wood (1968)
-  source_key: moh_co_xuong_khop_2014
+  title: Tiêu chuẩn chẩn đoán lâm sàng Bệnh gút
+  source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
-  source_locator: Mục 3.1 & 3.3 - Bệnh Gút (Quyết định số 361/QĐ-BYT, trang 89-91)
+  source_locator: Mục Chẩn đoán lâm sàng (Quyết định số 361/QĐ-BYT)
 ---
 
 ## excerpt: benh_gut_chan_doan
-- Cơn gút cấp xuất hiện đột ngột vào ban đêm (thường sau bữa ăn giàu purin hoặc uống rượu), hay gặp nhất tại khớp bàn - ngón chân cái (60-70%) với tính chất sưng to, nóng, đỏ, phù nề, căng bóng, đau dữ dội và khỏi hoàn toàn trong vòng 5-14 ngày.
-- Giai đoạn mạn tính xuất hiện hạt tôphi ở vành tai, khuỷu tay, ngón chân cái và đáp ứng nhanh với Colchicin trong 48 giờ.
+- Cơn gút cấp:
+- Xuất hiện đột ngột ban đêm, bệnh nhân thức dậy vì đau ở khớp, thường là
+- khớp bàn - ngón chân cái (60 - 70% ): khớp sưng to, đỏ, phù nề, căng bóng, nóng, đau
+- dữ dội và ngày càng tăng, va chạm nhẹ cũng rất đau, thay đổi thứ tự: bàn chân, cổ chân,
+- gối, bàn tay, cổ tay, khuỷu, hiếm thấy ở khớp háng, vai, cột sống. Lúc đầu chỉ viêm một
+- khớp sau đó có thể viêm nhiều khớp.
+- Ngoài khớp ra, túi thanh dịch, gân, bao khớp cũng có thể bị thương tổn.
+- Các dấu hiệu viêm có thể kéo dài nhiều ngày, thường từ 5-7 ngày rồi các dấu
