@@ -4,8 +4,8 @@ rule_key: rf_respiratory_failure
 rule_name: 'Cờ đỏ: Suy hô hấp cấp (Khó thở nặng, SpO2 < 92% hoặc nhịp thở >= 30 lần/phút)'
 rule_type: RED_FLAG
 resulting_priority: Emergency
-source_key: moh_cum_mua_2025
-source_edition: Quyết định số 1840/QĐ-BYT
+source_key: moh_qd_1327_2014
+source_edition: Quyết định số 1327/QĐ-BYT
 reason_text: 'CẤP CỨU: Bệnh nhân có dấu hiệu suy hô hấp cấp (khó thở nặng, SpO2 <
   92% hoặc nhịp thở >= 30 lần/phút), cần hỗ trợ hô hấp ngay.'
 condition_logic:

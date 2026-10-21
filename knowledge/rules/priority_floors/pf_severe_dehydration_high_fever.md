@@ -5,8 +5,8 @@ rule_name: 'Sàn ưu tiên cao: Sốt cao >= 39°C kèm dấu hiệu mất nư�
   niêm mạc'
 rule_type: PRIORITY_FLOOR
 resulting_priority: HighPriority
-source_key: moh_cum_mua_2025
-source_edition: Quyết định số 1840/QĐ-BYT
+source_key: moh_qd_1327_2014
+source_edition: Quyết định số 1327/QĐ-BYT
 reason_text: 'ƯU TIÊN CAO: Bệnh nhân sốt cao >= 39°C hoặc có dấu hiệu mất nước, nôn
   nhiều, chấm xuất huyết, cần ưu tiên khám sớm.'
 condition_logic:
