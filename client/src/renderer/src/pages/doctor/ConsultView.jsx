@@ -22,6 +22,8 @@ import { unitLabel } from '../admin/inventory/shared'
 import { useNow, dmy, hhmm } from '../reception/shared'
 import LabOrderModal, { printLabOrder } from './LabOrderModal'
 import AssessmentCard, { useAssessment } from './AssessmentCard'
+import { DEMO_MODE } from '../../api/client'
+import { getVisitDetail } from '../../api/clinicApi'
 import { printPrescription } from './printRx'
 import { getDraft, saveDraft, deleteDraft } from '../../api/draftStore'
 import DocumentModal from './DocumentModal'
@@ -317,7 +319,9 @@ export default function ConsultView({ visitId, onSelect, onRx }) {
       )}
 
       {current ? (
-        <ConsultForm key={current.id} visit={current} user={user} onDone={() => onSelect(null)} onNext={next} />
+        <ServerVisit key={current.id} visit={current}>
+          {(v) => <ConsultForm key={v.id} visit={v} user={user} onDone={() => onSelect(null)} onNext={next} />}
+        </ServerVisit>
       ) : (
         <div className="card doc-empty">
           <div className="empty-state">
@@ -334,6 +338,21 @@ export default function ConsultView({ visitId, onSelect, onRx }) {
       {dialog}
     </div>
   )
+}
+
+// Backend thật: hàng đợi chỉ có thông tin tóm tắt → tải sinh hiệu, triệu chứng đã xác nhận, hồ sơ (dị ứng, bệnh nền,
+// mang thai) trước khi mở phiếu khám, để phiếu khởi tạo đúng dữ liệu. Giả lập: dùng thẳng lượt khám trong store.
+function ServerVisit({ visit, children }) {
+  const [detail, setDetail] = useState(null)
+  const [error, setError] = useState('')
+  useEffect(() => {
+    if (DEMO_MODE) return
+    getVisitDetail(visit.id, visit.patientId).then(setDetail, (e) => setError(e.message))
+  }, [visit.id, visit.patientId])
+  if (DEMO_MODE) return children(visit)
+  if (error) return <p className="ai-soft">{translate(error)}</p>
+  if (!detail) return <p className="ai-soft">{translate('Loading the visit…')}</p>
+  return children({ ...visit, ...detail })
 }
 
 function ConsultForm({ visit, user, onDone, onNext }) {
@@ -447,6 +466,8 @@ function ConsultForm({ visit, user, onDone, onNext }) {
           : null
 
   function finalize(andNext = false) {
+    // Chẩn đoán, kê đơn, chốt đơn qua API thuộc Sprint 4 — chưa lưu lên server thì không chốt ở máy này (tránh lệch dữ liệu).
+    if (!DEMO_MODE) return showToast(translate('Saving the diagnosis and prescription to the server is not available yet (Sprint 4).'))
     setTried(true)
     if (problem) {
       if (problem.startsWith('Enter the child') || problem.startsWith('Check the vital')) setTab('vitals')
@@ -525,7 +546,7 @@ function ConsultForm({ visit, user, onDone, onNext }) {
             </h2>
             <div className="sub">
               {translate(visit.gender)}
-              {visit.age !== '' ? ' · ' + visit.age + ' ' + translate('yrs') : ''} · <span className="mono">{visit.patientId}</span> · <span className="mono">{visit.phone}</span>
+              {visit.age !== '' ? ' · ' + visit.age + ' ' + translate('yrs') : ''} · <span className="mono">{visit.patientCode ?? visit.patientId}</span> · <span className="mono">{visit.phone}</span>
             </div>
           </div>
           <span className="status-chip">{STATUS_CHIP[visit.status]}</span>

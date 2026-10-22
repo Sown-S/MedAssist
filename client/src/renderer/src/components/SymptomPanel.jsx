@@ -16,6 +16,8 @@ export default function SymptomPanel({ value, onChange, text, onText, ask = [], 
   const ctrl = useRef(null)
   useEffect(() => () => ctrl.current?.abort(), [])
   const catalog = useSymptomCatalog()
+  // Nhóm thu gọn / mở rộng. Mặc định mở: dấu hiệu nguy hiểm, nhóm đã có lựa chọn hoặc đang được nhắc hỏi.
+  const [openGroups, setOpenGroups] = useState({})
 
   const setState = (code, state, source = 'Form') => {
     const next = { ...value }
@@ -134,9 +136,19 @@ export default function SymptomPanel({ value, onChange, text, onText, ask = [], 
           </button>
         </p>
       )}
-      {groupSymptoms(catalog.list).map((g) => (
-        <div key={g.key}>
-          {g.label && <div className="sym-group">{translate(g.label)}</div>}
+      {groupSymptoms(catalog.list).map((g) => {
+        const picked = g.items.filter((s) => value[s.key]).length
+        const isOpen = !g.label || (openGroups[g.key] ?? (g.key === 'red_flag_sign' || picked > 0 || g.items.some((s) => ask.includes(s.key))))
+        return (
+        <div key={g.key} className={'sym-section' + (g.label ? ' grouped' : '') + (g.key === 'red_flag_sign' ? ' danger' : '')}>
+          {g.label && (
+            <button type="button" className="sym-group" aria-expanded={isOpen} onClick={() => setOpenGroups((o) => ({ ...o, [g.key]: !isOpen }))}>
+              <Icon name={isOpen ? 'chevronDown' : 'chevronRight'} />
+              <span>{translate(g.label)}</span>
+              <span className="sym-count">{picked > 0 ? picked + '/' + g.items.length : g.items.length}</span>
+            </button>
+          )}
+          {isOpen && (
           <div className="sym-grid">
             {g.items.map((s) => {
               const cur = value[s.key]?.state ?? 'UNKNOWN'
@@ -157,8 +169,10 @@ export default function SymptomPanel({ value, onChange, text, onText, ask = [], 
               )
             })}
           </div>
+          )}
         </div>
-      ))}
+        )
+      })}
     </div>
   )
 }
