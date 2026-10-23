@@ -1,0 +1,79 @@
+/* Kho theo lô, kiểm kho, nhà cung cấp, quản lý danh mục */
+
+/* ===== Kho: tồn theo lô, danh mục thuốc, kiểm kho ===== */
+table.dt th.num,table.dt td.num{text-align:right;}
+.inv-sort{cursor:pointer;user-select:none;}
+.inv-sort:hover{color:var(--ink);}
+.inv-sort.on{color:#BFDBFE;}
+.inv-sort-ic{font-size:10px;opacity:.7;}
+.inv-table td{vertical-align:top;}
+.inv-drug{display:flex;gap:6px;align-items:flex-start;}
+.inv-drug > .icn{margin-top:3px;color:var(--ink-soft);}
+.inv-status{display:flex;flex-direction:column;gap:4px;align-items:flex-start;}
+.inv-exp{white-space:nowrap;}
+.inv-exp.warn{color:#FCD34D;}
+.inv-exp.bad{color:#FCA5A5;font-weight:600;}
+.inv-plus{color:#86EFAC;}
+.inv-minus{color:#FCA5A5;}
+.essential-chip.inv-ctrl{background:rgba(168,85,247,.18);color:#D8B4FE;}
+.inv-open td{background:rgba(59,130,246,.06);border-bottom-color:transparent;}
+.inv-batches > td{background:rgba(255,255,255,.03);padding:10px 14px 14px 32px;}
+.inv-batch-box table.dt{font-size:13px;}
+.inv-batch-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px;font-size:13.5px;}
+.inv-expired td{background:rgba(239,68,68,.07);}
+.inv-fefo{margin-left:6px;font-size:10.5px;}
+.inv-count{width:80px;text-align:right;}
+.inv-flags{display:flex;flex-direction:column;gap:8px;margin-top:12px;}
+.inv-ledger-sum td{background:var(--surface-alt);}
+.rx-drop{position:absolute;top:100%;left:0;right:0;z-index:20;margin-top:4px;}
+.rx-drop .icd-opt{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.rx-stock{display:flex;align-items:center;gap:4px;font-size:11.5px;margin-top:3px;font-weight:600;}
+.rx-stock.danger{color:#FCA5A5;}
+.rx-stock.caution{color:#FCD34D;}
+
+/* ===== Phiên kiểm kho ===== */
+.st-start{max-width:860px;}
+.st-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;padding-bottom:12px;border-bottom:1px solid var(--border);}
+.st-title{display:flex;align-items:center;gap:8px;font-size:16px;margin-bottom:4px;}
+.st-title .badge{display:inline-flex;align-items:center;gap:4px;}
+.st-progress{display:flex;align-items:center;gap:12px;margin:12px 0 4px;flex-wrap:wrap;}
+.st-bar{flex:0 0 220px;height:8px;border-radius:8px;background:rgba(255,255,255,.08);overflow:hidden;}
+.st-bar div{height:100%;background:var(--success);transition:width .2s;}
+.st-table td{vertical-align:middle;}
+.st-large td{background:rgba(239,68,68,.12);}
+.st-large td:first-child{box-shadow:inset 3px 0 0 var(--warn);}
+.st-reason{max-width:210px;padding:5px 8px;font-size:12.5px;}
+.st-reason.missing,.st-note.missing{border-color:rgba(239,68,68,.7);}
+.st-note{min-width:140px;padding:5px 8px;font-size:12.5px;}
+.st-note:disabled{opacity:.4;}
+.st-second{margin-top:14px;padding:12px 14px;border:1px solid rgba(168,85,247,.4);background:rgba(168,85,247,.08);border-radius:12px;}
+.st-second .section-label{margin-top:0;}
+
+/* ===== Nhà cung cấp & công nợ ===== */
+.sp-overdue td{background:rgba(239,68,68,.07);}
+.sp-overdue td:first-child{box-shadow:inset 3px 0 0 var(--warn);}
+.sp-warn{color:#FCD34D;font-weight:600;}
+.sp-info{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;font-size:13.5px;background:var(--surface-alt);border-radius:12px;padding:12px 14px;}
+.sp-info .lbl{font-size:11.5px;color:var(--ink-soft);font-weight:700;text-transform:uppercase;letter-spacing:.03em;margin-bottom:2px;}
+.rc-file{display:inline-flex;align-items:center;gap:6px;cursor:pointer;max-width:100%;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}
+.rc-facts{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:12px;font-size:13px;color:var(--ink-soft);}
+.rc-facts b{color:var(--ink);}
+
+/* ===== Quản lý danh mục ===== */
+.side-subitem{white-space:normal;line-height:1.3;}
+.side-group.open .side-sub{max-height:900px;}
+.cat-crumb{cursor:pointer;text-decoration:underline dotted;}
+.cat-crumb:hover{color:var(--ink);}
+.cat-search-card{padding:14px 16px;}
+.cat-search{min-width:0;width:100%;}
+.cat-search input{font-size:15px;padding:10px 0;}
+.cat-results{margin-top:10px;max-height:320px;overflow:auto;display:flex;flex-direction:column;}
+.cat-result{display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:8px;cursor:pointer;font-size:13.5px;}
+.cat-result:hover{background:var(--surface-hover);}
+.cat-issue{margin-top:3px;}
+.cat-lines{display:flex;flex-direction:column;gap:6px;}
+.cat-line{display:flex;align-items:center;gap:8px;}
+.cat-line .ai-inline-input[type=number]{width:70px;}
+.cat-line-name{flex:1;min-width:0;}
+.cat-line.rx .ai-select:first-child{flex:0 0 200px;}
+.cat-line.rx .ai-select:nth-child(3){flex:0 0 140px;}

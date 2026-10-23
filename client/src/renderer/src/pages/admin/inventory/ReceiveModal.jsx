@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import Modal, { ModalHeader } from '../../../components/Modal'
 import Icon from '../../../components/Icon'
 import { useToast } from '../../../context/ToastContext'
+import { translate } from '../../../i18n'
 import { receiveStock, daysLeft, todayISO } from '../../../api/inventoryStore'
 import { unitLabel, fmtMoney } from './shared'
 
@@ -31,10 +32,12 @@ export default function ReceiveModal({ drug, drugs, user, onClose }) {
   if (!(cost >= 0)) errors.push('Enter the purchase price.')
   const shortLife = f.expiry && daysLeft(f.expiry) >= 0 && daysLeft(f.expiry) < 180
 
-  function save() {
+  async function save() {
     setTried(true)
     if (errors.length) return
-    receiveStock({ drugId: f.drugId, lot: f.lot.trim().toUpperCase(), expiry: f.expiry, qty, cost }, user)
+    // Backend thật trả Promise { ok, error } (vd số lô đã có); bản giả lập trả id ngay.
+    const r = await receiveStock({ drugId: f.drugId, lot: f.lot.trim().toUpperCase(), expiry: f.expiry, qty, cost }, user)
+    if (r?.ok === false) return showToast(translate(r.error))
     showToast('Stock received')
     onClose()
   }

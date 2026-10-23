@@ -6,7 +6,8 @@
 // gọi API thật; không tạo dữ liệu mẫu, không lưu localStorage. Các phần chưa có API vẫn chạy cục bộ.
 import { useEffect, useSyncExternalStore } from 'react'
 import { DEMO_MODE } from './client'
-import { fetchQueue, checkIn as apiCheckIn, cancelVisit as apiCancelVisit } from './clinicApi'
+import { fetchQueue, checkIn as apiCheckIn, cancelVisit as apiCancelVisit, startExam as apiStartExam, releaseVisit as apiRelease } from './clinicApi'
+import { reopenPrescription as apiReopen } from './examApi'
 import { VI } from '../i18n/vi'
 import { getSettings } from './settingsStore'
 import { logEvent } from './activityStore'
@@ -219,8 +220,13 @@ const patch = (id, fields) => commit({ ...state, visits: state.visits.map((v) =>
 let syncing = null
 export function syncQueue() {
   if (DEMO_MODE) return Promise.resolve(true)
+  // Giữ các trường chỉ có ở máy này (phòng khám, giờ mời...) — server ghi đè phần còn lại.
   syncing ??= fetchQueue()
-    .then((visits) => (commit({ ...state, visits }), true))
+    .then((list) => {
+      const prev = new Map(state.visits.map((v) => [v.id, v]))
+      commit({ ...state, visits: list.map((v) => ({ ...prev.get(v.id), ...v })) })
+      return true
+    })
     .catch(() => false)
     .finally(() => (syncing = null))
   return syncing
@@ -419,6 +425,18 @@ export function takePatient(id, user, { force = false } = {}) {
   const busy = inRoomOf(user).filter((x) => x.id !== id)
   if (busy.length && !(force && v.priority))
     return { ok: false, busy: busy[0], target: v, error: 'Finish the patient in your room first — finalize the visit or send them for lab tests.' }
+  // Backend thật: server quyết định ai nhận được (409 VISIT_TAKEN nếu bác sĩ khác nhận trước); phòng khám ghi ở máy này.
+  if (!DEMO_MODE) {
+    if (reopen) return { ok: true, visit: v }
+    return apiStartExam(id).then(
+      async () => {
+        await syncQueue()
+        patch(id, { room: dutyOf(user)?.room ?? '', calledAt: new Date().toISOString() })
+        return { ok: true, visit: state.visits.find((x) => x.id === id) ?? v }
+      },
+      (e) => (syncQueue(), { ok: false, error: e.message })
+    )
+  }
   const at = new Date().toISOString()
   // Phòng khám của bác sĩ đang trực được ghi vào lượt khám (lễ tân hướng bệnh nhân đúng phòng); đang nghỉ mà mời bệnh nhân = làm tiếp.
   const duty = dutyOf(user)
@@ -465,6 +483,18 @@ export function recallVisit(id, user) {
   const v = state.visits.find((x) => x.id === id)
   if (!v || v.status !== ST.PRESCRIBED) return { ok: false, error: 'Only prescriptions still awaiting payment can be recalled.' }
   if (!isMine(v, user)) return { ok: false, error: 'Only the prescribing doctor can recall this prescription.' }
+  // Backend thật: server kiểm lại (chưa thu tiền, chưa cấp thuốc), hoàn kho, hủy đơn + hóa đơn, lượt khám về Examining.
+  if (!DEMO_MODE) {
+    if (inRoomOf(user).length) return { ok: false, error: 'Finish the patient in your room first — finalize the visit or send them for lab tests.' }
+    return apiReopen(id, 'Bác sĩ thu hồi đơn để sửa').then(
+      async () => {
+        await syncQueue()
+        logEvent(user, 'rx.recall', { target: { kind: 'patient', id: v.patientId, label: v.name }, params: { patient: v.name, rx: String(v.ticket).padStart(3, '0') } })
+        return { ok: true }
+      },
+      (e) => ({ ok: false, error: e.message })
+    )
+  }
   const cur = v.invoiceId && invoiceById(v.invoiceId)
   if (cur?.status === 'paid') return { ok: false, error: 'This visit has already been paid — the prescription can no longer be reopened.' }
   if ((v.rx ?? []).some((l) => l.dispense_status === 'Dispensed')) return { ok: false, error: 'Some drugs have already been dispensed — the prescription can no longer be reopened.' }
@@ -586,6 +616,10 @@ export function leaveVisit(id, { reason, note = '', draft = null }, user) {
   if (!v || v.status !== ST.EXAMINING || !isMine(v, user)) return { ok: false, error: 'Only your own patients in consultation or out for lab tests can be closed.' }
   if (!LEFT_REASONS.some((r) => r.key === reason)) return { ok: false, error: 'Choose a reason.' }
   if (reason === 'other' && !note.trim()) return { ok: false, error: 'Describe what happened.' }
+  if (!DEMO_MODE) {
+    const label = LEFT_REASONS.find((r) => r.key === reason).label
+    return viaApi(apiCancelVisit(id, [VI[label] ?? label, note.trim()].filter(Boolean).join(' — ')))
+  }
   const at = new Date().toISOString()
   patch(id, { status: ST.CANCELLED, labOut: false, statusAt: at, left: { reason, note: note.trim(), at, by: user.name, from: v.status }, draftNotes: draft, released: null })
   logEvent(user, 'visit.left', { target: { kind: 'patient', id: v.patientId, label: v.name }, params: { patient: v.name, reason, note: note.trim() }, level: 'warning' })
@@ -655,6 +689,7 @@ export function markLabReturned(id) {
 export function releaseVisit(id, { draft = null } = {}, user) {
   const v = state.visits.find((x) => x.id === id)
   if (!v || v.status !== ST.EXAMINING || !isMine(v, user)) return { ok: false, error: 'Only your own patients in consultation can be returned to the queue.' }
+  if (!DEMO_MODE) return viaApi(apiRelease(id))
   const at = new Date().toISOString()
   patch(id, { status: ST.CHECKED_IN, labOut: false, statusAt: at, doctor: '', doctorId: null, room: '', released: { by: user.name, at, draft } })
   logEvent(user, 'visit.release', { target: { kind: 'patient', id: v.patientId, label: v.name }, params: { patient: v.name } })

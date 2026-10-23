@@ -2,52 +2,64 @@
 schema: okf_condition_v1
 condition_code: viem_cot_song_dinh_khop
 name_vi: Viêm cột sống dính khớp
-name_en: Ankylosing spondylitis
+name_en: Ankylosing Spondylitis
 icd10_code: M45
 disease_group: musculoskeletal
-description: Bệnh thấp viêm mạn tính đặc trưng bởi tổn thương khớp cùng chậu, cột
-  sống và các khớp lớn ở chi dưới, thường kèm viêm điểm bám gân và có xu hướng gây
-  dính khớp.
+description: Viêm cột sống dính khớp là một bệnh thấp viêm đặc trưng bởi tổn thương
+  khớp cùng chậu, cột sống và các khớp ở chi dưới, thường kèm theo viêm các điểm bám
+  gân. Bệnh tiến triển chậm song có xu hướng dính khớp. Bệnh viêm cột sống dính khớp
+  có.
 relations:
-- symptom_code: inflammatory_low_back_pain
+- symptom_code: conjunctivitis_uveitis_red_eye
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
-  source_key: moh_co_xuong_khop_2014
-  source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: sacroiliac_buttock_pain
-  polarity: SUPPORTS
-  weight: 0.9
-  is_key: true
-  source_key: moh_co_xuong_khop_2014
-  source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: enthesitis_heel_pain
-  polarity: SUPPORTS
-  weight: 0.85
-  is_key: true
-  source_key: moh_co_xuong_khop_2014
-  source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: morning_stiffness_over_1h
-  polarity: SUPPORTS
-  weight: 0.75
+  weight: 0.8
   is_key: false
-  source_key: moh_co_xuong_khop_2014
+  source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: mechanical_spinal_pain
-  polarity: CONTRADICTS
-  weight: 0.55
+- symptom_code: nausea_vomiting_diarrhea
+  polarity: SUPPORTS
+  weight: 0.77
   is_key: false
-  source_key: moh_co_xuong_khop_2014
+  source_key: moh_qd_361_2014
+  source_edition: Quyết định số 361/QĐ-BYT
+- symptom_code: myalgia_arthralgia
+  polarity: SUPPORTS
+  weight: 0.8
+  is_key: true
+  source_key: moh_qd_361_2014
+  source_edition: Quyết định số 361/QĐ-BYT
+- symptom_code: inflammatory_sacroiliac_back_pain
+  polarity: SUPPORTS
+  weight: 0.98
+  is_key: true
+  source_key: moh_qd_361_2014
+  source_edition: Quyết định số 361/QĐ-BYT
+- symptom_code: enthesitis_achilles_heel
+  polarity: SUPPORTS
+  weight: 0.96
+  is_key: true
+  source_key: moh_qd_361_2014
+  source_edition: Quyết định số 361/QĐ-BYT
+- symptom_code: bone_pain_fracture_lesion
+  polarity: SUPPORTS
+  weight: 0.94
+  is_key: true
+  source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 excerpts:
 - excerpt_key: viem_cot_song_dinh_khop_chan_doan
-  title: Tiêu chuẩn New York sửa đổi (1984) chẩn đoán Viêm cột sống dính khớp
-  source_key: moh_co_xuong_khop_2014
+  title: Tiêu chuẩn chẩn đoán lâm sàng Viêm cột sống dính khớp
+  source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
-  source_locator: Mục 3.1 & 3.3 - Viêm cột sống dính khớp (Quyết định số 361/QĐ-BYT,
-    trang 48-50)
+  source_locator: Mục Chẩn đoán lâm sàng (Quyết định số 361/QĐ-BYT)
 ---
 
 ## excerpt: viem_cot_song_dinh_khop_chan_doan
-- Đau vùng cột sống thắt lưng kéo dài >= 3 tháng kiểu viêm (cải thiện khi luyện tập, không giảm khi nghỉ) kèm cứng cột sống.
-- Đau vùng mông một hoặc hai bên do viêm khớp cùng chậu, viêm các khớp gốc chi dưới (khớp háng, khớp gối) và viêm điểm bám tận tại gân Achilles hoặc cân gan chân.
+- Triệu chứng sớm nhất, thường là đau tại cột sống thắt lưng hoặc vùng lưng-thắt
+- lưng. Đau kiểu viêm, kèm theo hiện tượng cứng cột sống.
+- Viêm khớp cùng chậu biểu hiện bởi hiện tượng đau tại vùng mông, một hoặc
+- Viêm khớp: thể điển hình, thường biểu hiện viêm các khớp gốc chi đối xứng
+- hai bên (khớp háng, khớp gối chiếm 20%). Đôi khi giai đoạn sớm chỉ biểu hiện viêm
+- một khớp, lúc này cần chẩn đoán phân biệt với viêm khớp nhiễm khuẩn, đặc biệt là
+- Viêm các điểm bám tận của gân thường gặp nhất tại gân Achilles, cân gan chân.
+- Viêm kết mạc mắt và các triệu chứng tiêu hóa gặp khoảng 5-10% (tiêu chảy,

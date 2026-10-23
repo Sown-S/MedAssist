@@ -8,16 +8,21 @@ import { ticketNo } from '../../components/queuePrint'
 import CallPanel from './CallPanel'
 import DutyBoard from '../../components/DutyBoard'
 import { fmt, dmy } from './shared'
+import { DEMO_MODE } from '../../api/client'
+import { useAwaiting, fromAwaiting } from '../../api/billingApi'
+
+// Backend thật: lượt Prescribed không có trong GET /queue → lấy từ GET /billing/awaiting, đổi sang dạng lượt khám.
 
 // Trang chủ Lễ tân: các ô tổng quan bấm vào được + thao tác nhanh + gọi số + danh sách cần thu tiền.
 export default function Dashboard({ go, readOnly, onRegister, onSearch, onPay }) {
   const { showToast } = useToast()
   const { visits, redFlags, calling } = useQueue()
   const invoices = useInvoices()
+  const awaiting = useAwaiting({ enabled: !DEMO_MODE })
   const today = dayOf(new Date().toISOString())
   const todayInv = invoices.filter((x) => dayOf(x.createdAt) === today && x.status !== 'cancelled')
   // Lượt đã chốt đơn còn việc ở quầy: chưa thu tiền và / hoặc chưa cấp phát xong.
-  const unpaid = visits.filter((v) => v.status === ST.PRESCRIBED)
+  const unpaid = DEMO_MODE ? visits.filter((v) => v.status === ST.PRESCRIBED) : awaiting.list.map(fromAwaiting)
   const processing = todayInv.filter((x) => x.status === 'pending' && x.method === 'transfer').length
   const paid = todayInv.filter((x) => x.status === 'paid').length
   // Doanh thu hôm nay = hoá đơn đã thu trong ngày (theo giờ thu tiền).
@@ -123,7 +128,7 @@ export default function Dashboard({ go, readOnly, onRegister, onSearch, onPay })
                   {v.carriedFrom ? ' · ' + translate('Unpaid from') + ' ' + dmy(v.carriedFrom + 'T00:00:00') : ''}
                 </small>
               </span>
-              <span className="mono amt">{fmt(estimateTotal(v))}</span>
+              <span className="mono amt">{fmt(DEMO_MODE ? estimateTotal(v) : v.total)}</span>
               <button className="btn btn-primary btn-sm" disabled={readOnly} onClick={() => onPay(v)}>
                 Dispense &amp; collect
               </button>
