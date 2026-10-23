@@ -153,7 +153,7 @@ uvicorn app.main:app --reload
 ```
 
 - Swagger (tài liệu + thử API): <http://127.0.0.1:8000/docs>
-- Kiểm tra kết nối DB: <http://127.0.0.1:8000/health> → `{"status": "healthy", "database": "connected", ...}`
+- Kiểm tra kết nối: <http://127.0.0.1:8000/health> → `{"status": "healthy", "database": {"ok": true, ...}, "ai": {"ok": ..., "detail": ...}, "version": ...}`
 
 Dừng API: `Ctrl + C`.
 
@@ -318,6 +318,7 @@ Tiền tố `/api/v1`. Chi tiết tham số và schema: **Swagger `/docs`** (lu�
 | Xác thực | `POST auth/login`, `auth/refresh`, `auth/logout`, `auth/change-password`; `GET auth/me` | Mọi người |
 | Tài khoản | `GET/POST admin/users`; `GET/PATCH admin/users/{id}`; `POST admin/users/{id}/reset-password` | Admin |
 | Nhật ký | `GET admin/audit-logs`; `GET admin/audit-logs/export` (xlsx mặc định, csv) | Admin |
+| Báo cáo, nhật ký AI | `GET reports/summary` (`date_from`, `date_to`, mặc định hôm nay); `GET admin/ai-logs` (lọc ngày, `run_type`, `status`, `mode`; chỉ metadata) | Admin |
 | Tham số | `GET admin/settings`; `PUT admin/settings/{key}` | Admin |
 | Bệnh nhân | `GET/POST patients`; `GET/PATCH patients/{id}`; `GET patients/{id}/visits` | Nurse tạo/sửa; Physician, Nurse xem |
 | Lượt khám | `POST visits`; `GET/PATCH visits/{id}`; `PATCH visits/{id}/check-in`, `/start-exam`, `/release`, `/cancel`; `GET queue`; `GET visits/stale`; `POST visits/stale/cancel` | Nurse; Physician (nhận khám, trả lại, hủy lượt của mình) |
@@ -325,11 +326,11 @@ Tiền tố `/api/v1`. Chi tiết tham số và schema: **Swagger `/docs`** (lu�
 | Triệu chứng (HITL) | `GET/PUT visits/{id}/symptoms` | Nurse, Physician (lượt khám còn mở) |
 | Chẩn đoán | `GET/POST visits/{id}/diagnoses`; `PATCH diagnoses/{id}`; `POST diagnoses/{id}/retract` | Physician đang khám; Nurse xem |
 | Đơn thuốc | `GET/PUT/DELETE visits/{id}/prescription`; `POST …/prescription/confirm`, `…/prescription/reopen`; `POST visits/{id}/complete-exam` | Physician đang khám; Nurse xem |
-| Cấp phát, thu tiền | `GET billing/awaiting`; `GET/PATCH visits/{id}/invoice`; `GET …/invoice/print`; `POST …/invoice/pay`; `PATCH prescription-items/{id}/dispense`; `POST visits/{id}/dispense-all` | Nurse; Physician xem hóa đơn |
+| Cấp phát, thu tiền | `GET billing/awaiting`; `GET billing/invoices` (`date`, `include_cancelled`); `GET/PATCH visits/{id}/invoice`; `GET …/invoice/print`; `POST …/invoice/pay`; `PATCH prescription-items/{id}/dispense`; `POST visits/{id}/dispense-all` | Nurse; Physician xem hóa đơn |
 | Tri thức: bản phát hành | `GET/POST admin/knowledge/releases`; `GET …/releases/{id}` (kèm thay đổi); `POST …/{id}/submit`; `POST …/{id}/approve`, `…/{id}/reject` | Admin soạn, gửi duyệt; Physician duyệt / từ chối |
 | Tri thức: soạn nháp | `PUT admin/knowledge/symptoms/{mã}`, `conditions/{mã}`, `relations/{bệnh}/{triệu chứng}`, `excerpts/{mã}`, `rules/{mã}`; `DELETE …/{loại}/{mã}/draft`; `GET/POST admin/knowledge/sources` | Admin |
 | Tri thức: xem, tắt khẩn cấp | `GET admin/knowledge/{loại}` (lọc `status`, `q`); `GET …/{loại}/{mã}/versions`; `GET …/{loại}/{mã}/dependents`; `POST …/{loại}/{mã}/deactivate` | Admin, Physician xem; Admin tắt |
-| Hệ thống | `GET /health`, `GET /` (không có tiền tố) | Không cần đăng nhập |
+| Hệ thống | `GET /health` (CSDL lỗi trả 503; AI lỗi vẫn 200, `ai.ok = false`), `GET /` (không có tiền tố) | Không cần đăng nhập |
 
 Quy ước chung: tiền trả về **dạng số** (VNĐ); mọi GET dữ liệu bệnh nhân ghi nhật ký VIEW; header
 `X-Request-ID` có trong mọi phản hồi (gửi kèm khi báo lỗi).

@@ -10,7 +10,8 @@ from app.core.logging import get_logger, setup_logging
 from app.core.middleware import RequestContextMiddleware
 from app.exceptions import register_exception_handlers
 from app.routers import (admin_router, auth_router, billing_router, clinic_router, inventory_router, knowledge_router,
-                         prescription_router, assessment_router)
+                         prescription_router, assessment_router, report_router)
+from app.services import health_service
 
 setup_logging(settings.LOG_LEVEL)
 logger = get_logger("main")
@@ -50,6 +51,7 @@ app.include_router(prescription_router.router, prefix="/api/v1")
 app.include_router(billing_router.router, prefix="/api/v1")
 app.include_router(knowledge_router.router, prefix="/api/v1")
 app.include_router(assessment_router.router, prefix="/api/v1")
+app.include_router(report_router.router, prefix="/api/v1")
 
 # 5. Route trang chủ
 @app.get("/")
@@ -62,14 +64,17 @@ def read_root():
     }
 
 
-# 6. Kiểm tra sức khỏe và kết nối PostgreSQL. Dùng cho healthcheck của Docker Compose / Caddy:
-#    200 khi DB trả lời, 503 khi không — để orchestrator biết dịch vụ chưa sẵn sàng.
+# 6. Kiểm tra sức khỏe. Dùng cho healthcheck của Docker Compose và ô Trạng thái hệ thống ở client.
+#    503 chỉ khi CSDL không trả lời; AI lỗi vẫn 200 vì còn xếp hạng theo luật.
 #    Không trả tên hệ quản trị CSDL hay chi tiết lỗi (chỉ ghi ra log server).
 @app.get("/health")
 def health_check(db: Session = Depends(get_db)):
     try:
         db.execute(text("SELECT 1"))
-        return {"status": "healthy", "database": "connected"}
     except Exception:
         logger.exception("Health check: không kết nối được DB")
-        return JSONResponse(status_code=503, content={"status": "unhealthy", "database": "unavailable"})
+        return JSONResponse(status_code=503, content={
+            "status": "unhealthy", "database": {"ok": False, "detail": "Không kết nối được CSDL"},
+            "ai": {"ok": None, "detail": ""}, "version": settings.VERSION})
+    return {"status": "healthy", "database": {"ok": True, "detail": ""}, "ai": health_service.ai_status(db),
+            "version": settings.VERSION}
