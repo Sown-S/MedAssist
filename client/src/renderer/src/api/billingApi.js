@@ -9,6 +9,10 @@ import { apiGet, apiPost, apiRequest, ApiError } from './client'
 const V1 = '/api/v1'
 
 export const getAwaiting = () => apiGet(`${V1}/billing/awaiting`)
+// Lịch sử hóa đơn của một ngày (yyyy-mm-dd, bỏ trống = hôm nay), có patient_name, queue_number.
+// Hóa đơn bị hủy do sửa (lập lại mã mới) chỉ trả khi includeCancelled.
+export const listInvoices = (date, includeCancelled = false) =>
+  apiGet(`${V1}/billing/invoices?${new URLSearchParams({ ...(date ? { date } : {}), include_cancelled: includeCancelled })}`)
 export async function getInvoice(visitId) {
   try {
     return await apiGet(`${V1}/visits/${visitId}/invoice`)

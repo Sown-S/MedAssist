@@ -3475,14 +3475,55 @@ export const VI = {
   // Kiểm tra kết nối, báo cáo
   'Not reported': 'Chưa báo',
   'The server does not report this yet': 'Máy chủ chưa báo mục này',
-  'Reports are not available yet': 'Chưa có báo cáo',
-  'The clinic server does not provide the report API yet (revenue, visits per day, AI acceptance rate).':
-    'Máy chủ phòng khám chưa có API báo cáo (doanh thu, số lượt khám mỗi ngày, tỉ lệ chấp nhận gợi ý AI).',
-  'Not available yet — the clinic server has no report API.': 'Chưa có — máy chủ phòng khám chưa có API báo cáo.',
-  'The AI acceptance rate will appear here once the clinic server provides the report API.':
-    'Tỉ lệ chấp nhận gợi ý AI sẽ hiện ở đây khi máy chủ phòng khám có API báo cáo.',
+  'Could not load today’s figures': 'Không tải được số liệu hôm nay',
+  'Not available — could not load the report.': 'Chưa có — không tải được báo cáo.',
+  'AI assessments today': 'Lượt đánh giá AI hôm nay',
+  'Rule-only results (model unavailable)': 'Kết quả chỉ theo luật (mô hình không chạy)',
+  Revenue: 'Doanh thu',
+  'paid invoices': 'hóa đơn đã thu',
+  'Revenue by day': 'Doanh thu theo ngày',
+  'Accepted top suggestion': 'Chọn đúng gợi ý đứng đầu',
+  'Chose another diagnosis': 'Chọn chẩn đoán khác',
+  'No suggestion shown': 'Không có gợi ý',
+  Assessments: 'Lượt đánh giá',
+  'Full (rules + model)': 'Đầy đủ (luật + mô hình)',
+  'Rule-only (model unavailable)': 'Chỉ theo luật (mô hình không chạy)',
+  Failed: 'Lỗi',
+  'Skipped (red flag)': 'Bỏ qua (cờ đỏ)',
+  'Average AI assessment time': 'Thời gian đánh giá AI trung bình',
+  'Free-text extractions completed': 'Trích xuất từ lời kể thành công',
+  'Precision, recall and F1 are measured on the frozen test set, not on clinic data.':
+    'Precision, recall và F1 được đo trên bộ test đã đóng băng, không tính trên dữ liệu phòng khám.',
   // Phím tắt màn khám
-  'No AI suggestion to accept yet.': 'Chưa có gợi ý AI để chấp nhận.'
+  'No AI suggestion to accept yet.': 'Chưa có gợi ý AI để chấp nhận.',
+  // Lịch sử hóa đơn theo ngày (quầy)
+  'Visits with work left at the desk. Invoices already issued are listed by day below.':
+    'Các lượt khám còn việc ở quầy. Hóa đơn đã lập xem theo ngày ở bên dưới.',
+  'Invoices by day': 'Hóa đơn theo ngày',
+  'Show cancelled invoices': 'Hiện hóa đơn đã hủy',
+  'No invoices on this day.': 'Không có hóa đơn nào trong ngày này.',
+  // Nhật ký AI (Admin)
+  'AI run log': 'Nhật ký AI',
+  'Every AI run with the knowledge release, model and prompt versions, timing and the doctor’s decision. No patient data is shown.':
+    'Mỗi lượt chạy AI kèm phiên bản tri thức, model, prompt, thời gian chạy và quyết định của bác sĩ. Không hiện dữ liệu bệnh nhân.',
+  'Run type': 'Loại lượt chạy',
+  Mode: 'Chế độ',
+  runs: 'lượt chạy',
+  Queued: 'Đang xếp hàng',
+  Run: 'Lượt chạy',
+  'Priority (rule → final)': 'Mức ưu tiên (luật → cuối)',
+  'Suggested codes': 'Mã bệnh gợi ý',
+  'Doctor’s decision': 'Quyết định của bác sĩ',
+  Assessment: 'Đánh giá',
+  'Symptom extraction': 'Trích xuất triệu chứng',
+  'Rules + model': 'Luật + mô hình',
+  'Rules only': 'Chỉ theo luật',
+  attempts: 'lần thử',
+  'Knowledge release': 'Bản phát hành tri thức',
+  'Model / prompt': 'Model / prompt',
+  'Time: rules / model / total': 'Thời gian: luật / mô hình / tổng',
+  'Started → finished': 'Bắt đầu → kết thúc',
+  'No runs match.': 'Không có lượt chạy nào khớp.'
 }
 
 export const PATTERNS = [
