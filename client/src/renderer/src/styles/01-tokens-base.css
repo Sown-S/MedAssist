@@ -1,0 +1,46 @@
+/* Biến màu (dark glass), reset, body, font, thanh cuộn */
+
+:root{
+  /* ===== Reskin theo phong cách "dark glass" của dhruvpatel16120/clinic-management-system =====
+     (bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900, card = bg-white/5 + backdrop-blur-xl
+     + border-white/10, input cùng tông, nút màu đặc blue/green/red, accent cyan #22d3ee từ chính
+     tailwind.config.js của họ). Mọi TÊN biến giữ nguyên để không phải sửa bất kỳ component nào. */
+  --bg-solid:#0f172a;
+  --surface:rgba(255,255,255,.05);
+  --surface-alt:rgba(255,255,255,.08);
+  --surface-hover:rgba(255,255,255,.12);
+  --solid:#1e293b;
+  --ink:#F8FAFC;
+  --ink-soft:#94A3B8;
+  --primary:#3B82F6;
+  --primary-dark:#2563EB;
+  --primary-soft:rgba(59,130,246,.16);
+  --accent:#22D3EE;
+  --priority:#F59E0B;
+  --priority-soft:rgba(245,158,11,.16);
+  --warn:#EF4444;
+  --warn-soft:rgba(239,68,68,.16);
+  --success:#22C55E;
+  --border:rgba(255,255,255,.10);
+  --field-bg:rgba(255,255,255,.05);
+  --radius:16px;
+  --blur:blur(20px);
+}
+*{box-sizing:border-box;}
+body{
+  margin:0;
+  min-height:100vh;
+  background:linear-gradient(135deg,#0F172A 0%,#1E3A8A 50%,#0F172A 100%);
+  background-attachment:fixed;
+  color:var(--ink);
+  font-family:'Plus Jakarta Sans Variable',sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,.display{font-family:'Plus Jakarta Sans Variable',sans-serif;}
+.mono{font-family:'IBM Plex Mono',monospace;letter-spacing:0.02em;}
+/* Nền tối cho cả khung cửa sổ + thanh cuộn tông tối: không để lộ dải trắng ở mép phải khi trang dài phải cuộn. */
+html{background:#0F172A;color-scheme:dark;}
+::-webkit-scrollbar{width:7px;height:7px;}
+::-webkit-scrollbar-track,::-webkit-scrollbar-corner{background:transparent;}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,.18);border-radius:10px;}
+::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,.3);}

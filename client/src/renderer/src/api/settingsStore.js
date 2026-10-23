@@ -3,6 +3,7 @@
 // mọi giá trị và tự áp dụng phần do server đảm nhiệm (lịch sao lưu, giờ làm mới số thứ tự...).
 import { useSyncExternalStore } from 'react'
 import { logEvent } from './activityStore'
+import { apiGet, apiRequest, ApiError, DEMO_MODE } from './client'
 
 const KEY = 'medassist_settings_v1'
 const COUNTERS_KEY = 'medassist_counters_v1'
@@ -149,6 +150,45 @@ export function changedPaths(draft) {
   const a = flatten(state.values)
   const b = flatten(draft)
   return Object.keys(b).filter((k) => !same(a[k], b[k]))
+}
+
+// ===================== Backend thật: tham số vận hành trên server (GET / PUT /api/v1/admin/settings — chỉ Admin) =====================
+// Server giữ 4 tham số dùng cho nghiệp vụ (cảnh báo sắp hết hạn, khoảng an toàn hạn dùng khi trừ kho, thông tin phòng khám
+// in trên phiếu, phí khám mặc định trên hóa đơn). Các cài đặt còn lại (in ấn, giao diện...) vẫn là cài đặt của máy này.
+const SERVER_SETTINGS = [
+  { key: 'inventory.near_expiry_days', paths: ['ops.nearDays'], get: (v) => Math.round(Number(v.ops.nearDays)), set: (v, x) => ({ ...v, ops: { ...v.ops, nearDays: x } }) },
+  { key: 'inventory.min_remaining_shelf_days', paths: ['ops.shelfBufferDays'], get: (v) => Math.round(Number(v.ops.shelfBufferDays)), set: (v, x) => ({ ...v, ops: { ...v.ops, shelfBufferDays: x } }) },
+  { key: 'billing.default_consultation_fee', paths: ['ops.consultFee'], get: (v) => Math.round(Number(v.ops.consultFee)), set: (v, x) => ({ ...v, ops: { ...v.ops, consultFee: x } }) },
+  {
+    key: 'clinic.profile',
+    paths: ['clinic.name', 'clinic.address', 'clinic.phone'],
+    get: (v) => ({ name: v.clinic.name, address: v.clinic.address, phone: v.clinic.phone }),
+    set: (v, x) => ({ ...v, clinic: { ...v.clinic, name: x.name ?? '', address: x.address ?? '', phone: x.phone ?? '' } })
+  }
+]
+// Nạp giá trị trên server vào cài đặt của máy này (gọi khi Admin mở trang Cài đặt).
+export async function loadServerSettings() {
+  if (DEMO_MODE) return
+  const rows = await apiGet('/api/v1/admin/settings')
+  let values = state.values
+  for (const s of SERVER_SETTINGS) {
+    const row = rows.find((r) => r.setting_key === s.key)
+    if (row) values = s.set(values, row.value)
+  }
+  state = { ...state, values }
+  write(KEY, state)
+  listeners.forEach((fn) => fn())
+}
+// Ghi các tham số server có thay đổi trong bản nháp. Lỗi → { ok: false, error } (giữ nguyên, không lưu ở máy).
+export async function saveServerSettings(draft) {
+  if (DEMO_MODE) return { ok: true }
+  const changed = new Set(changedPaths(draft))
+  try {
+    for (const s of SERVER_SETTINGS) if (s.paths.some((p) => changed.has(p))) await apiRequest(`/api/v1/admin/settings/${s.key}`, 'PUT', { value: s.get(draft) })
+    return { ok: true }
+  } catch (e) {
+    return { ok: false, error: e instanceof ApiError ? (e.details?.[0]?.message ?? e.message) : e.message }
+  }
 }
 
 // labelOf(path) → nhãn tiếng Anh của trường (để nhật ký hiển thị theo ngôn ngữ), show(path, v) → chuỗi giá trị.

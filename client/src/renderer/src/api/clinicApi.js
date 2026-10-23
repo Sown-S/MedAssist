@@ -103,6 +103,30 @@ export const updateVisit = (visitId, { text, vitals }) =>
 export const putSymptoms = (visitId, symptoms) => apiRequest(`${V1}/visits/${visitId}/symptoms`, 'PUT', { symptoms })
 export const getVisitSymptoms = (visitId) => apiGet(`${V1}/visits/${visitId}/symptoms`)
 export const checkIn = (visitId) => apiRequest(`${V1}/visits/${visitId}/check-in`, 'PATCH')
+// Bác sĩ nhận khám (CheckedIn → Examining). Bác sĩ khác nhận trước → 409 VISIT_TAKEN.
+export const startExam = (visitId) => apiRequest(`${V1}/visits/${visitId}/start-exam`, 'PATCH')
+// Trả về hàng chờ (nhận nhầm) — không được khi đã có chẩn đoán (409 HAS_DIAGNOSIS).
+export const releaseVisit = (visitId) => apiRequest(`${V1}/visits/${visitId}/release`, 'PATCH')
+
+// Chi tiết cho phiếu khám (hàng đợi chỉ có thông tin tóm tắt): sinh hiệu, lời kể, triệu chứng đã xác nhận, hồ sơ.
+export async function getVisitDetail(visitId, patientId) {
+  const [v, symptoms, p] = await Promise.all([
+    apiGet(`${V1}/visits/${visitId}`),
+    getVisitSymptoms(visitId),
+    getPatient(patientId)
+  ])
+  return {
+    reason: v.free_text_description || v.chief_complaint,
+    vitals: v.vital_signs ?? {},
+    symptoms: symptoms.filter((x) => x.state !== 'UNKNOWN'),
+    allergies: p.allergies,
+    history: p.history,
+    pregnancy: p.pregnancy,
+    phone: p.phone,
+    patientCode: p.code,
+    dob: p.dob
+  }
+}
 export const cancelVisit = (visitId, reason) => apiRequest(`${V1}/visits/${visitId}/cancel`, 'PATCH', { reason })
 
 // ---------- Đánh giá AI / phân loại ----------

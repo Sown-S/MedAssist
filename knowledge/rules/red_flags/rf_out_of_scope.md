@@ -4,8 +4,8 @@ rule_key: rf_out_of_scope
 rule_name: 'Cờ đỏ: Triệu chứng nguy hiểm nằm ngoài phạm vi danh mục chuẩn'
 rule_type: RED_FLAG
 resulting_priority: Emergency
-source_key: moh_cum_mua_2025
-source_edition: Quyết định số 1840/QĐ-BYT
+source_key: moh_qd_1327_2014
+source_edition: Quyết định số 1327/QĐ-BYT
 reason_text: 'CẤP CỨU: Bệnh nhân có triệu chứng bất thường ngoài phạm vi danh mục
   an toàn, dừng gợi ý AI để Bác sĩ khám trực tiếp ngay.'
 condition_logic:

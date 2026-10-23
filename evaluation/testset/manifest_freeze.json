@@ -1,0 +1,30 @@
+{
+  "freeze_version": "testset-v1.0-frozen",
+  "frozen_at": "2026-10-22T10:26:19",
+  "git_tag_recommended": "testset-v1.0-frozen",
+  "knowledge_snapshot": {
+    "total_conditions": 44,
+    "groups": {
+      "infectious": 4,
+      "musculoskeletal": 38,
+      "respiratory": 2
+    },
+    "total_symptoms": 60,
+    "total_triage_rules": 11,
+    "total_sources": 7
+  },
+  "combined_sha256": "74dc489a5857a6647250558e8ede3e6da9b2930c8a00289e65bbe3387ef164e7",
+  "files": [
+    {
+      "path": "evaluation/testset/symptom_extraction_testset.jsonl",
+      "num_cases": 20,
+      "sha256": "abefc1859d8abd4e4617ea910baefc12e1015defbb7990c35efef8dbfdc4d972"
+    },
+    {
+      "path": "evaluation/testset/clinical_cases_labeled.jsonl",
+      "num_cases": 16,
+      "sha256": "09f27316a1d7faa0fe5380beedec4aade662af13b4ca0b378fa800da9904dee8"
+    }
+  ],
+  "policy_note": "Đóng băng bộ test theo Nguyên tắc vàng #6 (Quy định v5): Không chỉnh rule hay prompt dựa trên bộ test này."
+}

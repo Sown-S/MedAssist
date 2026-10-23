@@ -1,53 +1,53 @@
 ---
 schema: okf_condition_v1
 condition_code: thoai_hoa_khop_goi
-name_vi: Thoái hóa khớp gối
-name_en: Knee osteoarthritis
+name_vi: Thoái hoá khớp gối
+name_en: Thoái hoá khớp gối
 icd10_code: M17.9
 disease_group: musculoskeletal
-description: Tổn thương thoái hóa mạn tính mất cân bằng giữa tổng hợp và hủy hoại
-  của sụn khớp và xương dưới sụn tại khớp gối, gây đau khớp kiểu cơ học và hạn chế
-  vận động.
+description: 'Thoái hoá khớp gối là hậu quả của quá trình cơ học và sinh học làm mất
+  cân bằng giữa tổng hợp và huỷ hoại của sụn và xương dưới sụn. Sự mất cân bằng này
+  có thể được bắt đầu bởi nhiều yếu tố: di truyền, phát triển, chuyển hoá và chấn
+  thương, biểu hiện.'
 relations:
-- symptom_code: knee_crepitus_mechanical_pain
+- symptom_code: myalgia_arthralgia
   polarity: SUPPORTS
-  weight: 0.95
+  weight: 0.8
   is_key: true
-  source_key: moh_co_xuong_khop_2014
+  source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: morning_stiffness_under_30m
   polarity: SUPPORTS
-  weight: 0.9
+  weight: 0.92
   is_key: true
-  source_key: moh_co_xuong_khop_2014
+  source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: myalgia_arthralgia
+- symptom_code: knee_effusion_crepitus_locking
   polarity: SUPPORTS
-  weight: 0.75
-  is_key: false
-  source_key: moh_co_xuong_khop_2014
+  weight: 0.92
+  is_key: true
+  source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: morning_stiffness_over_1h
-  polarity: CONTRADICTS
-  weight: 0.65
+- symptom_code: fatigue_malaise
+  polarity: SUPPORTS
+  weight: 0.7
   is_key: false
-  source_key: moh_co_xuong_khop_2014
-  source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: fever_high
-  polarity: CONTRADICTS
-  weight: 0.8
-  is_key: false
-  source_key: moh_co_xuong_khop_2014
+  source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 excerpts:
 - excerpt_key: thoai_hoa_khop_goi_chan_doan
-  title: Tiêu chuẩn ACR 1991 chẩn đoán Thoái hóa khớp gối
-  source_key: moh_co_xuong_khop_2014
+  title: Tiêu chuẩn chẩn đoán lâm sàng Thoái hoá khớp gối
+  source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
-  source_locator: Mục 3.1 - Chẩn đoán và điều trị thoái hóa khớp gối (Quyết định số
-    361/QĐ-BYT, trang 124)
+  source_locator: Mục Chẩn đoán lâm sàng (Quyết định số 361/QĐ-BYT)
 ---
 
 ## excerpt: thoai_hoa_khop_goi_chan_doan
-- Đau khớp gối có tính chất cơ học (tăng khi đi lại, lên xuống cầu thang, giảm khi nghỉ ngơi).
-- Cứng khớp buổi sáng kéo dài dưới 30 phút (dấu hiệu phá rỉ khớp), có tiếng lục khục khi cử động khớp gối, tuổi thường trên 38 và có gai xương ở rìa khớp trên phim X-quang.
+- Áp dụng tiêu chuẩn chẩn đoán của Hội thấp khớp học Mỹ-ACR (American
+- Có gai xương ở rìa khớp (trên Xquang).
+- Dịch khớp là dịch thoái hoá.
+- Tuổi trên 38.
+- Cứng khớp dưới 30 phút.
+- Có dấu hiệu lục khục khi cử động khớp.
+- Các dấu hiệu khác:
+- Tràn dịch khớp: đôi khi thấy ở khớp gối, do phản ứng viêm của màng hoạt dịch.

@@ -12,6 +12,7 @@ import Doctor from './pages/Doctor'
 import Admin from './pages/Admin'
 import Reports from './pages/Reports'
 import ShiftEndModal from './pages/doctor/ShiftEndModal'
+import { useServerOnline } from './api/connectivity'
 
 // Mỗi tab khai báo sẵn "role nào được thấy nó" — thêm/bớt vai trò sau này chỉ sửa mảng allow.
 // Đặt lịch hẹn, sổ quỹ, chốt ca nằm ngoài phạm vi (Proposal §6.2) — Lễ tân chỉ có Tiếp đón (hàng chờ ngay trên trang chủ).
@@ -30,6 +31,7 @@ function Shell() {
   const navigate = useNavigate()
   // Bác sĩ bấm Đăng xuất → kiểm tra việc còn dở (bệnh nhân trong phòng, đang đi xét nghiệm, cờ đỏ) trước.
   const [leaving, setLeaving] = useState(false)
+  const serverOnline = useServerOnline()
   if (!user) return <Login />
 
   const visibleTabs = TABS.filter((t) => t.allow.includes(user.roleKey))
@@ -66,6 +68,18 @@ function Shell() {
           ))}
         </nav>
       </div>
+      {/* Mất kết nối máy chủ (NFR08): Lễ tân có banner + khoá nút riêng trong trang; các vai trò khác dùng banner chung này. */}
+      {!serverOnline && user.roleKey !== 'reception' && (
+        <div className="warn-banner show caution" style={{ margin: '12px 24px 0' }}>
+          <div className="icon">
+            <Icon name="alert" />
+          </div>
+          <div className="txt">
+            <b>No connection to the clinic server — read-only mode</b>
+            <span>Saving is blocked until the connection returns; what is on screen was loaded earlier.</span>
+          </div>
+        </div>
+      )}
 
       <Routes>
         <Route path="/" element={<Navigate to={user.home} replace />} />

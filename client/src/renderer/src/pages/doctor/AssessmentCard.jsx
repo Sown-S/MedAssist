@@ -3,19 +3,29 @@ import Icon from '../../components/Icon'
 import { translate } from '../../i18n'
 import { useAIConfig } from '../../api/aiConfigStore'
 import { mockAssessment } from '../../api/assessmentMock'
+import { DEMO_MODE } from '../../api/client'
+import { getAssessment, missingName } from '../../api/clinicApi'
+
+// Chưa có kết quả từ server (đang tải, hoặc lượt chưa được đánh giá — 404).
+const EMPTY = { assessment_id: null, ai_status: 'Pending', mode: null, knowledge_release: null, model_version: null, prompt_version: null, priority: null, alerts: [], complete_now: [], candidates: [] }
 
 // Lấy kết quả đánh giá AI của lượt khám, tự làm mới mỗi 2 giây cho tới khi có kết quả cuối (polling — Architecture 5.1.4).
-// Backend thật: thay mockAssessment bằng GET /api/v1/visits/{id}/assessment.
+// Giả lập: assessmentMock; backend thật: GET /api/v1/visits/{id}/assessment (404 = lượt chưa được đánh giá).
 export function useAssessment(visit) {
   const ai = useAIConfig()
   const [now, setNow] = useState(Date.now())
-  const a = mockAssessment(visit, ai, now)
-  const done = ['Ready', 'Degraded', 'Failed', 'Skipped'].includes(a.ai_status)
+  const [server, setServer] = useState(EMPTY)
+  const a = DEMO_MODE ? mockAssessment(visit, ai, now) : server
+  const done = ['Ready', 'Degraded', 'Failed', 'Skipped', 'None'].includes(a.ai_status)
   useEffect(() => {
     if (done) return
-    const t = setInterval(() => setNow(Date.now()), 2000)
+    const tick = DEMO_MODE
+      ? () => setNow(Date.now())
+      : () => getAssessment(visit.id).then((r) => setServer(r ?? { ...EMPTY, ai_status: 'None' }), () => {})
+    if (!DEMO_MODE) tick()
+    const t = setInterval(tick, 2000)
     return () => clearInterval(t)
-  }, [done])
+  }, [done, visit.id])
   return a
 }
 
@@ -25,6 +35,7 @@ const STATUS = {
   Ready: { label: 'Full — ranked and explained', tone: 'ok' },
   Degraded: { label: 'Rule-only', tone: 'low' },
   Failed: { label: 'AI assessment failed', tone: 'low' },
+  None: { label: 'Not assessed yet', tone: 'muted' },
   Skipped: { label: 'Red flag — no AI suggestion', tone: 'low' }
 }
 const DISMISS = [
@@ -68,7 +79,7 @@ export default function AssessmentCard({ a, decisions, onAccept, onDismiss }) {
         {a.ai_status === 'Pending' && <p className="ai-soft assess-note">{translate('Waiting for the result — you can keep examining; it appears here automatically.')}</p>}
         {a.ai_status === 'Preliminary' && <p className="ai-soft assess-note">{translate('Preliminary ranking by the approved rules — the AI explanation will appear here automatically.')}</p>}
 
-        {a.candidates.map((c) => (
+        {a.candidates.map((c, i) => (
           <div className="assess-cand" key={c.condition_code}>
             <div className="assess-cand-top">
               <span className="assess-rank">{c.rank}</span>
@@ -102,8 +113,9 @@ export default function AssessmentCard({ a, decisions, onAccept, onDismiss }) {
                 </select>
               ) : (
                 <span className="ai-sug-actions">
-                  <button className="btn btn-ghost btn-sm" onClick={() => onAccept(c)}>
+                  <button className="btn btn-ghost btn-sm" onClick={() => onAccept(c)} title={i === 0 ? 'Alt+D' : undefined}>
                     <Icon name="check" /> <span>{translate('Accept')}</span>
+                    {i === 0 && <kbd>Alt+D</kbd>}
                   </button>
                   <button className="btn btn-ghost btn-sm" onClick={() => setDismissing(c.condition_code)}>
                     <Icon name="x" /> <span>{translate('Dismiss')}</span>
@@ -136,7 +148,7 @@ export default function AssessmentCard({ a, decisions, onAccept, onDismiss }) {
         )}
         {a.complete_now.length > 0 && (
           <p className="assess-note need">
-            {translate('Still unknown — ask or measure')}: {a.complete_now.map((x) => x.symptom_name).join(', ')}
+            {translate('Still unknown — ask or measure')}: {a.complete_now.map(missingName).join(', ')}
           </p>
         )}
         <p className="ai-soft assess-meta">

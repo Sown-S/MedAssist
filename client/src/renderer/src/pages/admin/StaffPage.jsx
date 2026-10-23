@@ -452,7 +452,7 @@ export default function StaffPage() {
                                   <button className="btn btn-ghost btn-sm" onClick={() => askReset(a)}>
                                     Reset password
                                   </button>
-                                  {a.active && (
+                                  {a.active && DEMO_MODE && (
                                     <button className="btn btn-ghost btn-sm" onClick={() => askForceSignOut(a)}>
                                       Force sign-out
                                     </button>
