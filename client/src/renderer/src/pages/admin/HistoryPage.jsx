@@ -9,6 +9,8 @@ import { describe, roleLabel, TYPE_LABEL, LEVELS, TARGET_LABEL, targetPage, targ
 import { todayISO } from '../../api/inventoryStore'
 import { Empty } from './ai/ui'
 import { Pager, paginate, exportCsv } from './inventory/shared'
+import { DEMO_MODE } from '../../api/client'
+import AuditLogLive from './AuditLogLive'
 
 const PAGE_SIZE = 15
 const p2 = (n) => String(n).padStart(2, '0')
@@ -32,7 +34,12 @@ function LevelTag({ level }) {
   )
 }
 
-export default function HistoryPage({ onNavigate }) {
+// Backend thật: nhật ký audit_log trên server (AuditLogLive). Giả lập: nhật ký hoạt động ghi ở máy này (bên dưới).
+export default function HistoryPage(props) {
+  return DEMO_MODE ? <HistoryDemo {...props} /> : <AuditLogLive />
+}
+
+function HistoryDemo({ onNavigate }) {
   const all = useActivity() // mới nhất ở đầu
   const { user } = useAuth()
   const [q, setQ] = useState('')

@@ -40,8 +40,8 @@ export default function RxReviewPanel({ visit, onRecalled }) {
     setVerdict('ok')
     showToast(verdict === 'ok' ? 'Review saved' : 'Review saved — you will be reminded at this patient’s next visit')
   }
-  function recall() {
-    const r = recallVisit(visit.id, user)
+  async function recall() {
+    const r = await recallVisit(visit.id, user)
     if (!r.ok) return showToast(translate(r.error))
     showToast('Prescription recalled — edit it in the consultation room')
     onRecalled(visit.id)

@@ -1,0 +1,137 @@
+/* Bác sĩ: điều hướng, hàng đợi, khám, kê đơn, tủ thuốc */
+
+/* ===== Bác sĩ: điều hướng, hàng đợi, kê đơn, tủ thuốc ===== */
+.doc-nav{margin-bottom:18px;}
+.doc-nav button svg{width:16px;height:16px;}
+.doc-nav-cnt{font-family:'IBM Plex Mono';font-size:11px;background:var(--primary);color:#fff;border-radius:10px;padding:1px 7px;}
+.doc-layout{grid-template-columns:270px minmax(0,1.15fr) minmax(0,1fr);}
+@media (max-width:1250px){.doc-layout{grid-template-columns:240px minmax(0,1fr);}.doc-layout .doc-work>.card:last-of-type{grid-column:2;}}
+.doc-work{display:contents;}
+.doc-empty{grid-column:span 2;}
+.dq{position:sticky;top:12px;max-height:calc(100vh - 210px);overflow:auto;}
+.dq-h{display:flex;align-items:center;justify-content:space-between;font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-soft);margin:12px 0 6px;}
+.dq-h .cnt{font-family:'IBM Plex Mono';background:var(--surface-alt);border-radius:10px;padding:1px 8px;}
+.dq-item{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:10px;border:1px solid var(--border);background:var(--surface);margin-bottom:6px;cursor:pointer;transition:border-color .15s,background .15s;}
+.dq-item:hover{border-color:var(--primary);}
+.dq-item.active{border-color:var(--accent);background:var(--primary-soft);}
+.dq-item.muted{opacity:.55;cursor:default;}
+.dq-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;}
+.dq-main b{font-size:13.5px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.dq-main small{font-size:11.5px;color:var(--ink-soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.dq-tags{display:flex;flex-wrap:wrap;gap:4px;align-items:center;font-size:11px;margin-top:2px;}
+.dq-item .btn-sm{padding:5px 9px;font-size:12px;}
+.doc-ta{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:9px;font-size:14px;font-family:inherit;background:var(--field-bg);color:var(--ink);resize:vertical;}
+.doc-ta:focus{outline:none;border-color:var(--accent);}
+.req{color:#F87171;}
+.field-error .icd-picker>input{border-color:#F87171;}
+.rx-quick{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:12px;margin:-2px 0 12px;}
+.chip-btn{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;border:1px solid var(--border);background:var(--surface);color:var(--ink-soft);font:600 12px 'Plus Jakarta Sans Variable';cursor:pointer;}
+.chip-btn:hover{color:var(--ink);border-color:var(--primary);}
+.chip-btn.accent{color:#67E8F9;border-color:rgba(34,211,238,.35);}
+.chip-btn svg{width:13px;height:13px;}
+.rx-lines{display:flex;flex-direction:column;gap:8px;}
+.rx-line{padding:10px 12px;border:1px solid var(--border);border-radius:11px;background:var(--surface);}
+.rx-line.bad{border-color:rgba(248,113,113,.6);}
+.rx-line-top{display:flex;align-items:center;gap:8px;}
+.rx-line-top b{font-size:14px;color:var(--ink);flex:1;min-width:0;}
+.rx-ess{display:inline-flex;align-items:center;gap:4px;font-size:11.5px;color:var(--ink-soft);cursor:pointer;}
+.rx-line-fields{display:flex;gap:8px;margin-top:8px;}
+.rx-qty{display:flex;align-items:center;gap:6px;flex-shrink:0;}
+.rx-qty input{width:72px;}
+.rx-qty .ai-soft{font-size:12px;}
+.rx-line-fields input{padding:7px 9px;border:1px solid var(--border);border-radius:8px;background:var(--field-bg);color:var(--ink);font-size:13.5px;font-family:inherit;}
+.rx-usage{flex:1;min-width:0;}
+.rx-ok{display:flex;align-items:center;gap:6px;font-size:12.5px;color:#4ADE80;margin:12px 0 0;}
+.rx-ok svg{width:15px;height:15px;}
+.rx-reminder{display:flex;gap:10px;align-items:flex-start;margin:12px 0 0;padding:10px 12px;border-radius:11px;background:var(--surface-alt);border:1px dashed var(--border);font-size:13px;color:var(--ink);}
+.rx-reminder>svg{width:17px;height:17px;flex-shrink:0;color:#FCD34D;margin-top:2px;}
+.rx-reminder>div{display:flex;flex-direction:column;gap:3px;}
+.rx-reminder small{font-size:12px;color:var(--ink-soft);}
+.rx-diag{font-size:13.5px;color:var(--ink);margin:6px 0;}
+.doc-vitals{grid-template-columns:repeat(5,minmax(0,1fr));}
+.drug-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px;}
+.drug-card{display:flex;flex-direction:column;gap:10px;padding:16px 18px;border-radius:var(--radius);background:var(--surface);border:1px solid var(--border);transition:border-color .15s,transform .15s;}
+.drug-card:hover{border-color:var(--primary);transform:translateY(-2px);}
+.drug-card.out{opacity:.7;}
+.drug-top{display:flex;justify-content:space-between;gap:8px;align-items:flex-start;}
+.drug-top b{display:block;font-size:15px;color:var(--ink);}
+.drug-top small{font-size:12px;color:var(--ink-soft);}
+.drug-tags{display:flex;gap:5px;flex-wrap:wrap;min-height:4px;}
+.drug-facts{display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--ink-soft);}
+.drug-facts>span{display:flex;align-items:center;gap:6px;}
+.drug-facts svg{width:15px;height:15px;color:var(--accent);}
+.drug-facts b{color:var(--ink);}
+.drug-rules-btn{display:flex;align-items:center;gap:6px;padding:6px 10px;border-radius:9px;border:1px solid rgba(251,191,36,.3);background:rgba(251,191,36,.08);color:#FCD34D;font:600 12px 'Plus Jakarta Sans Variable';cursor:pointer;}
+.drug-rules-btn svg{width:14px;height:14px;}
+.drug-rules{margin:0;padding:0 0 0 2px;list-style:none;display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--ink-soft);}
+
+/* ===== Bác sĩ: thu gọn / mở rộng, danh sách chờ, cận lâm sàng, đánh giá đơn, tủ thuốc ===== */
+/* Khối thu gọn có hiệu ứng: grid-template-rows 0fr ↔ 1fr (không cần biết trước chiều cao). */
+.collapse{display:grid;grid-template-rows:0fr;transition:grid-template-rows .2s ease;}
+.collapse>div{overflow:hidden;min-height:0;}
+.open>.collapse{grid-template-rows:1fr;}
+@media (prefers-reduced-motion:reduce){.collapse,.dq-h svg,.wait-head>svg{transition:none;}}
+.dq-group .dq-h{width:100%;background:none;border:none;cursor:pointer;padding:4px 2px;font-family:inherit;gap:6px;border-radius:7px;}
+.dq-group .dq-h:hover{color:var(--ink);}
+.dq-group .dq-h>span:first-child{margin-right:auto;}
+.dq-h svg{width:14px;height:14px;transition:transform .2s ease;transform:rotate(-90deg);}
+.dq-group.open>.dq-h svg{transform:none;}
+.dq-empty{font-size:12px;color:var(--ink-soft);margin:2px 4px 8px;}
+.dq-note{font-size:11.5px;color:#FCD34D;margin:6px 2px 4px;line-height:1.4;}
+.dq-item.static{cursor:default;}
+.dq-item.static:hover{border-color:var(--border);}
+.dq-item.done{opacity:.8;}
+.pay-row.clickable{cursor:pointer;border-radius:9px;transition:background .15s;}
+.pay-row.clickable:hover{background:var(--surface-hover);}
+
+.busy-current{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;background:var(--surface-alt);border:1px solid var(--border);margin-bottom:10px;}
+.busy-current b{display:block;color:var(--ink);}
+.busy-current small{font-size:12px;color:var(--ink-soft);}
+
+.wait-list{max-height:min(68vh,640px);overflow:auto;display:flex;flex-direction:column;gap:8px;}
+.wait-item{border:1px solid var(--border);border-radius:12px;background:var(--surface);}
+.wait-item.open{border-color:var(--primary);}
+.wait-head{display:flex;align-items:center;gap:10px;width:100%;padding:10px 12px;background:none;border:none;cursor:pointer;color:var(--ink);font-family:inherit;text-align:left;}
+.wait-head>svg{width:16px;height:16px;color:var(--ink-soft);transition:transform .2s ease;flex-shrink:0;}
+.wait-item.open .wait-head>svg{transform:rotate(180deg);}
+.wait-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;}
+.wait-main b{font-size:14px;color:var(--ink);}
+.wait-main small{font-size:12px;color:var(--ink-soft);}
+.wait-body{padding:0 14px 14px;}
+.brief .pl-alerts{margin:0 0 10px;}
+.brief-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;font-size:13px;color:var(--ink);}
+.brief-grid>div,.brief-last{display:flex;flex-direction:column;gap:3px;}
+.brief-k{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-soft);}
+.brief-last{margin-top:10px;padding:10px 12px;border-radius:10px;background:var(--surface-alt);font-size:13px;color:var(--ink);}
+.brief-last small{font-size:12px;color:var(--ink-soft);}
+@media (max-width:640px){.brief-grid{grid-template-columns:1fr;}}
+
+.lab-list{display:flex;flex-direction:column;gap:10px;max-height:min(62vh,600px);overflow:auto;}
+.lab-list-item{border:1px solid var(--border);border-radius:12px;padding:12px 14px;background:var(--surface);}
+.lab-list-head{display:flex;align-items:center;gap:10px;margin-bottom:6px;}
+.lab-res{margin-top:6px;}
+.lab-res-head{display:flex;flex-wrap:wrap;gap:5px;font-size:12px;color:var(--ink-soft);margin-bottom:4px;}
+table.dt.lab-res-table td{padding:5px 8px;font-size:13px;}
+table.dt.lab-res-table td:first-child{width:52%;color:var(--ink-soft);}
+.lab-res-sum{font-size:13px;color:var(--ink);margin:6px 0 0;}
+.lab-entry{display:flex;flex-direction:column;gap:6px;margin-bottom:8px;}
+.lab-entry .lab-ordered{margin-bottom:2px;}
+.lab-entry-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px;align-items:center;font-size:13px;color:var(--ink-soft);}
+.lab-entry-row input{padding:6px 9px;border:1px solid var(--border);border-radius:8px;background:var(--field-bg);color:var(--ink);font-size:13px;font-family:inherit;}
+.lab-entry-row input:focus{outline:none;border-color:var(--accent);}
+
+.rx-review{margin-top:14px;padding-top:4px;border-top:1px solid var(--border);}
+.rx-review-warn{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--ink);}
+.rx-review-item{display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:8px 10px;border-radius:10px;background:var(--surface-alt);margin-bottom:6px;font-size:12.5px;}
+.rx-review-item p{flex-basis:100%;margin:2px 0 0;font-size:13px;color:var(--ink);}
+.rx-review-form{margin-top:10px;display:flex;flex-direction:column;gap:8px;}
+.rx-review-verdicts{display:flex;gap:6px;flex-wrap:wrap;}
+.chip-btn.on.ok{color:#4ADE80;border-color:rgba(74,222,128,.5);background:rgba(34,197,94,.12);}
+.chip-btn.on.warn{color:#FCD34D;border-color:rgba(252,211,77,.5);background:var(--priority-soft);}
+.chip-btn.on.low{color:#FCA5A5;border-color:rgba(248,113,113,.5);background:var(--warn-soft);}
+.rx-review-actions{display:flex;align-items:center;justify-content:flex-end;gap:8px;}
+.rx-review-actions .btn-ghost{margin-right:auto;}
+
+.exp-days{font-size:11px;font-family:'IBM Plex Mono';color:var(--ink-soft);margin-left:4px;}
+.exp-days.near{color:#FCD34D;}
+.exp-days.soon{color:#FCA5A5;font-weight:700;}

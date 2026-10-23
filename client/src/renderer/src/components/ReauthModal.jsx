@@ -21,7 +21,7 @@ export default function ReauthModal({ open, title, confirmLabel = 'Confirm', dan
   async function submit(e) {
     e.preventDefault()
     setBusy(true)
-    const ok = await verifyPassword(user.id, pw)
+    const ok = await verifyPassword(user.id, pw, user.username)
     setBusy(false)
     if (!ok) return setErr('Incorrect password.')
     setPw('')

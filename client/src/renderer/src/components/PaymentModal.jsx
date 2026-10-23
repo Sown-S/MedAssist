@@ -14,6 +14,8 @@ import { getSettings, PAYMENT_METHODS } from '../api/settingsStore'
 import { printReceipt } from './queuePrint'
 import { translate } from '../i18n'
 import { dmy } from '../pages/reception/shared'
+import { DEMO_MODE } from '../api/client'
+import PaymentModalLive from './PaymentModalLive'
 
 // CẤP PHÁT & THU TIỀN cho một lượt đã chốt đơn (Prescribed) — đúng luồng backend lượt 6c:
 //  - Kho đã trừ lúc bác sĩ chốt đơn (FEFO, lô còn hạn qua hết đợt) → ở đây chỉ GHI NHẬN cấp phát từng dòng:
@@ -30,7 +32,12 @@ const DS = {
 // Loại dòng dịch vụ: nhóm 'consult' của danh mục Dịch vụ = Khám; còn lại (thủ thuật, tiêm, chẩn đoán hình ảnh, xét nghiệm) = Cận lâm sàng.
 const typeOfService = (group) => (group === 'consult' ? 'Consultation' : 'Paraclinical')
 
-export default function PaymentModal({ open, onClose, patient, initialTab = 'dispense' }) {
+// Backend thật: đọc đơn + hóa đơn từ server (PaymentModalLive). Giả lập: dữ liệu trong queueStore / invoiceStore bên dưới.
+export default function PaymentModal(props) {
+  return DEMO_MODE ? <PaymentModalDemo {...props} /> : <PaymentModalLive {...props} />
+}
+
+function PaymentModalDemo({ open, onClose, patient, initialTab = 'dispense' }) {
   const { showToast } = useToast()
   const { user } = useAuth()
   const { visits } = useQueue()
