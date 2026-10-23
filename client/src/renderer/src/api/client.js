@@ -14,7 +14,7 @@ function delay(ms) {
 // thay vì tưởng nhầm là mọi thứ luôn "tức thì" rồi bị bất ngờ khi ghép API thật.
 async function mockRequest(path) {
   await delay(300 + Math.random() * 300)
-  const handler = MOCK_ENDPOINTS[path]
+  const handler = MOCK_ENDPOINTS[path.split('?')[0]]
   if (!handler) {
     throw new Error(`[mock] No mock endpoint for: ${path}`)
   }

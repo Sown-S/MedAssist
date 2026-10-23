@@ -429,9 +429,17 @@ Cách ghép: **giữ nguyên chữ ký hàm** của store, thay thân bằng l�
 | `inventoryStore` | `GET/POST drugs`, `GET/PATCH drugs/{id}`, `GET inventory/stock`, `…/alerts`, `GET/POST inventory/batches`, `POST …/top-up`, `GET …/movements` |
 | `settingsStore` | `GET admin/settings`, `PUT admin/settings/{key}` |
 | `activityStore` | `GET admin/audit-logs`, `GET admin/audit-logs/export` (xlsx/csv, đọc dạng blob) |
-| `client.checkHealth` | `GET /health` → `{ database: {ok, detail}, ai: {ok, detail}, version }` |
+| `client.checkHealth` | `GET /health` → `{ status, database: {ok, detail}, ai: {ok, detail}, version }` (AI lỗi vẫn 200, chỉ CSDL lỗi mới 503) |
+| `reportsApi` | `GET reports/summary?date_from&date_to` (Admin — số thô, client tự định dạng; `Reports.jsx`, `admin/DashboardPage.jsx`), `GET admin/ai-logs` (tab Nhật ký AI) |
+| `billingApi.listInvoices` | `GET billing/invoices?date&include_cancelled` (Lễ tân — hóa đơn theo ngày) |
 
-**Backend chưa có endpoint** (client đang chạy cục bộ — xem danh sách gửi Sơn): tín hiệu "bác sĩ sẵn sàng / đang gọi" của bảng gọi, ca trực & phòng, phiếu chỉ định xét nghiệm, thống kê ẩn danh cho Admin, huỷ hoá đơn đã thu, ca cờ đỏ (`red_flags`), duyệt tri thức (Sprint 3), báo cáo (`Reports.jsx`, `admin/DashboardPage.jsx` còn dùng `useApiData`).
+Precision / Recall / F1 không hiện ở trang Báo cáo: phòng khám không có nhãn đúng, các chỉ số này đo trên testset v1.0 (`evaluation/`).
+
+**Không cần API mới:** ca cờ đỏ lấy từ `is_red_flag`, `red_flag_reason` trong `GET /queue`.
+
+**Chỉ chạy cục bộ trên từng máy, không làm backend** (không nằm trong FR nào): tín hiệu "bác sĩ sẵn sàng / đang gọi" của bảng gọi, ca trực & phòng.
+
+**Ngoài phạm vi, không làm backend:** phiếu chỉ định xét nghiệm (Proposal 6.2 — phí cận lâm sàng nhập tay trên hóa đơn); hủy hóa đơn đã thu (Paid là trạng thái cuối). Hai chức năng này chỉ có ở bản giả lập.
 
 **Chức năng chỉ desktop làm được** (máy in nhiệt, file): viết ở `src/main` → expose qua `src/preload` (`window.api.xxx`) → gọi từ renderer.
 
