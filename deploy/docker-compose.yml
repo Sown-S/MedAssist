@@ -7,7 +7,7 @@ x-server-env: &server-env
   TZ: Asia/Ho_Chi_Minh
   DATABASE_URL: postgresql+psycopg://medassist_app:${MEDASSIST_APP_PASSWORD:?}@db:5432/medassist
   JWT_SECRET_KEY: ${JWT_SECRET_KEY:?Thiếu JWT_SECRET_KEY trong deploy/.env}
-  CORS_ORIGINS: ${CORS_ORIGINS:-[]}
+  CORS_ORIGINS: '${CORS_ORIGINS:-["app://medassist"]}'
   TRUSTED_PROXIES: '["172.28.0.2/32"]'
   LLM_PROVIDER: ollama
   OLLAMA_BASE_URL: http://ollama:11434

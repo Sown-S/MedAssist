@@ -9,7 +9,8 @@ Tùy chọn: --dir <thư mục OKF> (mặc định ../knowledge), --as <username
 'system'), --retire-missing (mục đang Active mà không còn trong thư mục -> Retired/Deactivated khi kích hoạt).
 
 Quy tắc (đặc tả knowledge/_spec/okf_format.md + quyết định 18/10):
-- Nhận diện file theo trường ``schema``; ``okf_spec_v1`` và thư mục ``exports/`` bị bỏ qua.
+- Nhận diện file theo trường ``schema``; tài liệu (``okf_spec_v1``, ``okf_review_log_v1``) và thư mục
+  ``exports/`` bị bỏ qua.
 - Nguồn tra theo khóa tự nhiên (organization, edition); ``source_key`` chỉ dùng để liên kết trong thư mục.
 - condition_logic kiểm theo đặc tả chung (app.validation.knowledge_validators) VÀ chạy thử bằng chính
   bộ đánh giá của pipeline (app.ai.rules.condition_evaluator) để chắc chắn luật dùng được.
@@ -125,7 +126,7 @@ class RuleFile(_Sourced):
 
 _MODELS = {"okf_release_v1": ReleaseFile, "okf_source_v1": SourceFile, "okf_symptom_catalog_v1": SymptomCatalogFile,
            "okf_condition_v1": ConditionFile, "okf_triage_rule_v1": RuleFile}
-_IGNORED_SCHEMAS = {"okf_spec_v1"}
+_IGNORED_SCHEMAS = {"okf_spec_v1", "okf_review_log_v1"}
 
 
 # ============================================================================ đọc + kiểm tra thư mục

@@ -156,9 +156,15 @@ def test_prod_settings_guard():
     assert Settings(_env_file=None, **base).is_prod
 
 
-def test_health_ok_and_minimal(client):
+def test_health_ok_and_minimal(client, monkeypatch):
+    from app.core.config import settings
+    from app.services import health_service
+    monkeypatch.setattr(settings, "LLM_PROVIDER", "fake")
+    monkeypatch.setattr(health_service, "_stuck_queue", lambda _db: False)
     r = client.get("/health")
-    assert r.status_code == 200 and r.json() == {"status": "healthy", "database": "connected"}
+    assert r.status_code == 200 and r.json() == {
+        "status": "healthy", "database": {"ok": True, "detail": ""},
+        "ai": {"ok": True, "detail": "LLM giả lập"}, "version": settings.VERSION}
 
 
 def test_health_503_when_db_down(client):
@@ -174,5 +180,6 @@ def test_health_503_when_db_down(client):
         r = client.get("/health")
     finally:
         app.dependency_overrides.pop(get_db, None)
-    assert r.status_code == 503 and r.json() == {"status": "unhealthy", "database": "unavailable"}
+    body = r.json()
+    assert r.status_code == 503 and body["status"] == "unhealthy" and body["database"]["ok"] is False
     assert "secret-host" not in r.text
