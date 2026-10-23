@@ -1,0 +1,45 @@
+/* Đăng nhập v2 (thẻ vai trò) */
+
+/* ===== Login v2 (role cards) ===== */
+.login-wrap{width:410px;max-width:100%;}
+.login-card{width:100%;padding:40px 28px 36px;}
+.login-screen .login-field{margin-bottom:22px;gap:8px;}
+.login-screen .role-card{padding:20px 4px;gap:8px;}
+.login-screen .login-submit{margin-top:8px;}
+.login-screen .login-note{margin-top:20px;}
+.login-head{text-align:center;margin-bottom:26px;}
+.login-head .login-title{margin:0 0 8px;color:#fff;}
+.login-head .sub{margin:0;font-size:15.5px;color:#fff;}
+.login-screen .login-field label,.login-screen .role-card,.login-screen .login-note,.login-screen .login-footer{color:#fff;}
+.login-screen .role-card .ic{color:#fff;}
+.login-screen .role-card.active .ic{color:var(--accent);}
+.login-logo{width:58px;height:58px;border-radius:18px;margin:0 auto 16px;background:linear-gradient(135deg,var(--primary),var(--accent));display:flex;align-items:center;justify-content:center;color:#fff;box-shadow:0 10px 30px -8px rgba(34,211,238,.5);}
+.login-logo svg{width:32px;height:32px;}
+.login-title{text-align:center;font-family:'Plus Jakarta Sans Variable';font-size:30px !important;font-weight:700;letter-spacing:-.01em;}
+.login-field label{font-size:13.5px;}
+.login-field input{font-size:15px;padding:12px 12px;}
+.login-err{font-size:13.5px;}
+.role-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.role-card{display:flex;flex-direction:column;align-items:center;gap:4px;padding:14px 6px;border:1px solid var(--border);border-radius:12px;background:var(--surface-alt);color:var(--ink);cursor:pointer;font-family:'Plus Jakarta Sans Variable';transition:border-color .15s,background .15s;}
+.role-card:hover{background:var(--surface-hover);}
+.role-card.active{border-color:var(--accent);background:rgba(34,211,238,.10);box-shadow:0 0 0 1px var(--accent) inset;}
+.role-card .ic{display:flex;color:var(--ink-soft);margin-bottom:2px;}
+.role-card .ic svg{width:24px;height:24px;}
+.role-card.active .ic{color:var(--accent);}
+.role-card b{font-size:14px;}
+.input-ic{position:relative;display:flex;align-items:center;}
+.input-ic>span{position:absolute;left:12px;display:flex;color:var(--ink-soft);}
+.input-ic svg{width:17px;height:17px;}
+.input-ic input{width:100%;padding-left:38px;padding-right:40px;}
+.input-ic .eye{position:absolute;right:8px;display:flex;background:none;border:none;cursor:pointer;color:var(--ink-soft);}
+.login-submit{width:100%;padding:13px;margin-top:4px;font-size:15px;}
+.login-note{font-size:12.5px;color:var(--ink-soft);margin:14px 0 0;line-height:1.5;}
+.login-screen .login-note{text-align:center;}
+.login-note code{font-family:'IBM Plex Mono';color:var(--accent);}
+.login-footer{margin-top:18px;display:flex;align-items:center;justify-content:center;gap:6px;font-size:12.5px;color:var(--ink-soft);}
+.login-footer svg{width:14px;height:14px;}
+.login-field select{padding:10px 12px;border:1px solid var(--border);border-radius:10px;background:var(--field-bg);color:var(--ink);font-family:'Plus Jakarta Sans Variable';font-size:13.5px;}
+.login-field select option{background:var(--solid);}
+.login-field input{width:100%;box-sizing:border-box;}
+.modal-body{padding:4px 2px 8px;}
+.modal-foot{display:flex;justify-content:flex-end;gap:8px;margin-top:10px;}

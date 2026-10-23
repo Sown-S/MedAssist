@@ -14,8 +14,11 @@ import Dashboard from './reception/Dashboard'
 import QueueView from './reception/QueueView'
 import InvoicesView from './reception/InvoicesView'
 import PrescriptionsView, { RxDetail } from './reception/PrescriptionsView'
+import BillingLiveView from './reception/BillingLiveView'
+import { DEMO_MODE } from '../api/client'
 import { hhmm } from './reception/shared'
 import useCallAnnouncer from '../components/useCallAnnouncer'
+import { useServerOnline } from '../api/connectivity'
 
 // Công cụ cho nhà phát triển (giả lập mất mạng...): chỉ hiện khi chạy với VITE_DEV_TOOLS=true, lễ tân không thấy.
 const DEV_TOOLS = import.meta.env.VITE_DEV_TOOLS === 'true'
@@ -55,7 +58,9 @@ export default function Reception() {
   const view = VIEWS[params.get('view')] ? params.get('view') : 'home'
   const go = (v, status) => setParams(v === 'home' ? {} : { view: v, ...(status ? { status } : {}) })
 
-  const online = useOnline()
+  // Mất mạng (navigator.onLine) hoặc không tới được máy chủ (GET /health — api/connectivity.js).
+  const serverOnline = useServerOnline()
+  const online = useOnline() && serverOnline
   const [simulateOffline, setSimulateOffline] = useState(false)
   // Mất kết nối → chỉ đọc: vẫn xem được, mọi nút ghi bị khoá.
   const readOnly = !online || simulateOffline
@@ -181,8 +186,19 @@ export default function Reception() {
         <Dashboard go={go} readOnly={readOnly} onRegister={() => setIntake({ patient: null })} onSearch={() => setSearchOpen(true)} onPay={pay} />
       )}
       {view === 'queue' && <QueueView readOnly={readOnly} onPay={pay} onRx={setRxOf} />}
-      {view === 'invoices' && <InvoicesView key={params.get('status') ?? ''} initialStatus={params.get('status') ?? ''} readOnly={readOnly} canVoid={canVoid} onPay={pay} />}
-      {view === 'prescriptions' && <PrescriptionsView readOnly={readOnly} onPay={pay} onRx={setRxOf} />}
+      {/* Backend thật: server chưa có API liệt kê hóa đơn / đơn thuốc theo kỳ → hiện các lượt còn việc ở quầy. */}
+      {view === 'invoices' &&
+        (DEMO_MODE ? (
+          <InvoicesView key={params.get('status') ?? ''} initialStatus={params.get('status') ?? ''} readOnly={readOnly} canVoid={canVoid} onPay={pay} />
+        ) : (
+          <BillingLiveView mode="invoices" readOnly={readOnly} onPay={(v) => pay({ ...v, tab: 'pay' })} />
+        ))}
+      {view === 'prescriptions' &&
+        (DEMO_MODE ? (
+          <PrescriptionsView readOnly={readOnly} onPay={pay} onRx={setRxOf} />
+        ) : (
+          <BillingLiveView mode="prescriptions" readOnly={readOnly} onPay={pay} />
+        ))}
 
       <IntakeModal open={!!intake} patient={intake?.patient ?? null} onClose={() => setIntake(null)} onRedFlag={setRedFlag} />
       <SearchModal
@@ -196,7 +212,7 @@ export default function Reception() {
       />
       {rxOf && <RxDetail visit={rxOf} readOnly={readOnly} onClose={() => setRxOf(null)} onPay={pay} />}
       {paying && (
-        <PaymentModal key={paying.id} open initialTab="dispense" onClose={() => setPaying(null)} patient={paying} />
+        <PaymentModal key={paying.id} open initialTab={paying.tab ?? 'dispense'} onClose={() => setPaying(null)} patient={paying} />
       )}
       {staleOpen && <StaleVisitsModal readOnly={readOnly} onClose={() => setStaleOpen(false)} onPay={pay} />}
       <RedFlagModal open={!!redFlag} patient={redFlag} onClose={() => setRedFlag(null)} onReferred={() => setIntake(null)} />

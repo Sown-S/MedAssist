@@ -5,9 +5,10 @@
 // Không quản lý nhà cung cấp, công nợ, kiểm kho (Proposal §6.2 — ngoài phạm vi).
 // Lưu tạm trong localStorage để thao tác demo không mất khi chuyển trang.
 // Backend thật: thay các hàm ghi bằng POST/PATCH; xuất kho FEFO và chặn lô hết hạn PHẢI kiểm lại ở server.
-import { useSyncExternalStore } from 'react'
+import { useEffect, useSyncExternalStore } from 'react'
 import { getSettings } from './settingsStore'
 import { logEvent } from './activityStore'
+import { apiGet, apiPost, apiRequest, ApiError, DEMO_MODE } from './client'
 
 // v3: bỏ nhà cung cấp, phiếu nhập, công nợ, kiểm kho (dữ liệu v2 cũ được tạo lại từ đầu).
 const KEY = 'medassist_inventory_v3'
@@ -139,15 +140,16 @@ function load() {
   const drugs = saved.drugs.map((d) => (d.strengthMg === undefined && SEED_DOSING[d.id] ? { ...SEED_DOSING[d.id], ...d } : d))
   return { ...saved, drugs }
 }
-let state = load()
+let state = DEMO_MODE ? load() : { drugs: [], batches: [], moves: [] }
 const listeners = new Set()
 function commit(next) {
   state = next
-  try {
-    localStorage.setItem(KEY, JSON.stringify(state))
-  } catch {
-    /* chỉ giữ trong phiên */
-  }
+  if (DEMO_MODE)
+    try {
+      localStorage.setItem(KEY, JSON.stringify(state))
+    } catch {
+      /* chỉ giữ trong phiên */
+    }
   listeners.forEach((fn) => fn())
 }
 const subscribe = (fn) => {
@@ -156,7 +158,98 @@ const subscribe = (fn) => {
 }
 export const getInventory = () => state
 export function useInventory() {
+  // Backend thật: nạp lần đầu khi có màn hình cần kho (đã đăng nhập) — không nạp lúc khởi động app (chưa có token).
+  useEffect(() => {
+    if (!DEMO_MODE && !liveLoaded) reloadInventory()
+  }, [])
   return useSyncExternalStore(subscribe, getInventory)
+}
+
+// ===================== Backend thật: /api/v1/drugs, /inventory/batches (inventory_router.py) =====================
+// Server lưu tên hoạt chất, tên thương mại, hàm lượng, dạng bào chế, đơn vị, giá bán, ngưỡng đặt hàng; tồn theo lô.
+// Thẻ kho: không có API "mọi phiếu" — nạp theo từng thuốc khi mở (loadMovesFor). Trừ / hoàn kho do server làm
+// lúc bác sĩ xác nhận đơn và lễ tân cấp phát, không gọi từ client.
+let liveLoaded = false
+let liveLoading = null
+const liveName = (d) => [d.trade_name && d.trade_name !== d.generic_name ? d.trade_name : d.generic_name, d.strength].filter(Boolean).join(' ')
+const fromServerDrug = (d, cost = 0) => ({
+  id: d.drug_id,
+  name: liveName(d),
+  ingredient: d.generic_name,
+  tradeName: d.trade_name,
+  strength: d.strength,
+  form: d.dosage_form,
+  atc: d.active_ingredient_code ?? '',
+  drugClass: d.drug_class ?? '',
+  unit: d.unit,
+  kind: 'drug',
+  group: 'regular',
+  essential: false,
+  cost,
+  price: Number(d.sale_price) || 0,
+  threshold: d.reorder_level ?? 0,
+  use30: 0,
+  active: d.is_active
+})
+const fromServerBatch = (b) => ({
+  id: b.batch_id,
+  drugId: b.drug_id,
+  lot: b.batch_number,
+  expiry: b.expiry_date,
+  qty: b.remaining_quantity,
+  initialQty: b.initial_quantity,
+  receivedAt: String(b.created_at).slice(0, 10),
+  createdAt: b.created_at,
+  cost: Number(b.import_price) || 0
+})
+async function fetchLive() {
+  const drugs = []
+  for (let offset = 0; ; offset += 200) {
+    const page = await apiGet(`/api/v1/drugs?active_only=false&limit=200&offset=${offset}`)
+    drugs.push(...page.items)
+    if (drugs.length >= page.total || !page.items.length) break
+  }
+  const batches = (await apiGet('/api/v1/inventory/batches?include_depleted=true')).map(fromServerBatch)
+  // Giá nhập gần nhất của từng thuốc (để gợi ý khi nhập lô mới).
+  const lastCost = {}
+  for (const b of [...batches].sort((x, y) => x.createdAt.localeCompare(y.createdAt))) lastCost[b.drugId] = b.cost
+  return { drugs: drugs.map((d) => fromServerDrug(d, lastCost[d.drug_id] ?? 0)), batches }
+}
+export function reloadInventory() {
+  if (DEMO_MODE) return Promise.resolve()
+  liveLoading ??= fetchLive()
+    .then((x) => {
+      liveLoaded = true
+      commit({ ...state, ...x })
+    })
+    .catch(() => {})
+    .finally(() => (liveLoading = null))
+  return liveLoading
+}
+const liveError = (e) => (e instanceof ApiError ? (e.details?.[0]?.message ?? e.message) : 'Cannot reach the clinic server. Check the server address and the network connection.')
+
+// Thẻ kho một thuốc: lô nhập (số lượng ban đầu) + các phiếu của server, tính tồn sau mỗi phiếu.
+const MOVE_OF = { Deduct: 'out', Restore: 'return' }
+export async function loadMovesFor(drugId) {
+  if (DEMO_MODE) return
+  const lots = state.batches.filter((b) => b.drugId === drugId)
+  const rows = (await Promise.all(lots.map((b) => apiGet(`/api/v1/inventory/batches/${b.id}/movements`).then((ms) => ms.map((m) => [b, m]))))).flat()
+  const moves = [
+    ...lots.map((b) => ({ id: 'in-' + b.id, at: b.createdAt, drugId, batchId: b.id, lot: b.lot, type: 'in', qty: b.initialQty, ref: b.lot, by: '', note: '' })),
+    ...rows.map(([b, m]) => ({
+      id: m.movement_id,
+      at: m.created_at,
+      drugId,
+      batchId: b.id,
+      lot: b.lot,
+      type: MOVE_OF[m.movement_type] ?? (m.quantity_change >= 0 ? 'in' : 'out'),
+      qty: m.quantity_change,
+      ref: m.reason_code ?? m.movement_type,
+      by: '',
+      note: m.note ?? ''
+    }))
+  ]
+  commit({ ...state, moves: recomputeBalances([...state.moves.filter((m) => m.drugId !== drugId), ...moves]) })
 }
 export function resetInventoryDemo() {
   commit(seed())
@@ -215,6 +308,18 @@ function addMoves(s, newMoves) {
 }
 const drugName = (id) => state.drugs.find((d) => d.id === id)?.name ?? id
 
+// Backend thật: data theo trường của server (generic_name, trade_name, strength, dosage_form, unit, sale_price,
+// reorder_level, drug_class, active_ingredient_code). Trả { ok, id } hoặc { ok: false, error }.
+export async function saveDrugLive(id, body) {
+  try {
+    const r = id ? await apiRequest(`/api/v1/drugs/${id}`, 'PATCH', body) : await apiPost('/api/v1/drugs', body)
+    await reloadInventory()
+    return { ok: true, id: r.drug_id }
+  } catch (e) {
+    return { ok: false, error: liveError(e) }
+  }
+}
+
 export function upsertDrug(data, user) {
   const exists = data.id && state.drugs.some((d) => d.id === data.id)
   const id = exists ? data.id : nextId(state.drugs, 'D', 2)
@@ -225,12 +330,19 @@ export function upsertDrug(data, user) {
   return id
 }
 export function setDrugActive(id, active, user, note) {
+  if (!DEMO_MODE) return saveDrugLive(id, { is_active: active })
   commit({ ...state, drugs: state.drugs.map((d) => (d.id === id ? { ...d, active, updatedAt: new Date().toISOString(), updatedBy: user.name } : d)) })
   logEvent(user, active ? 'drug.reactivate' : 'drug.discontinue', { target: { kind: 'drug', id, label: drugName(id) }, params: { drug: drugName(id), note }, before: !active, after: active })
 }
 
 // Nhập 1 lô mới (backend: POST /inventory/batches — batch_number, expiry_date, initial_quantity, import_price).
 export function receiveStock({ drugId, lot, expiry, qty, cost }, user) {
+  // Backend thật: trả Promise { ok, id } | { ok: false, error } (vd BATCH_EXISTS: số lô đã có cho thuốc này).
+  if (!DEMO_MODE)
+    return apiPost('/api/v1/inventory/batches', { drug_id: drugId, batch_number: lot, expiry_date: expiry, quantity: qty, import_price: cost }).then(
+      async (b) => (await reloadInventory(), { ok: true, id: b.batch_id }),
+      (e) => ({ ok: false, error: liveError(e) })
+    )
   const id = nextId(state.batches, 'B')
   const at = new Date().toISOString()
   const batches = [...state.batches, { id, drugId, lot, expiry, qty, receivedAt: todayISO(), cost }]

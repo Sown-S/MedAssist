@@ -98,7 +98,8 @@ export function apiRequest(path, method, body) {
 
 export const DEMO_MODE = USE_MOCK
 
-// Kiểm tra kết nối: GET /health của FastAPI trả về { database: {ok, detail}, ai: {ok, detail}, version }.
+// Kiểm tra kết nối: GET /health của FastAPI. Server hiện trả { status, database: 'connected' | 'unavailable' } (503 khi CSDL lỗi);
+// dạng mở rộng { database: {ok, detail}, ai: {ok, detail}, version } cũng đọc được. Mục server không báo → ok = null (chưa rõ).
 // Trang chủ (ô Trạng thái hệ thống) và Cài đặt › Kết nối dùng chung hàm này.
 // Chế độ demo: không có server → trả về số liệu mẫu, đánh dấu sample = true để giao diện ghi rõ.
 export async function checkHealth() {
@@ -118,8 +119,12 @@ export async function checkHealth() {
   try {
     const res = await fetch(getBaseUrl() + '/health', { signal: AbortSignal.timeout(5000) })
     const ms = Math.round(performance.now() - t0)
-    const h = res.ok ? await res.json() : {}
-    const svc = (key, name, x, up) => ({ key, name, ok: !!x?.ok, state: x?.ok ? up : 'Unavailable', detail: x?.detail ?? '' })
+    const h = await res.json().catch(() => ({}))
+    const svc = (key, name, x, up) => {
+      if (x == null) return { key, name, ok: null, state: 'Not reported', detail: 'The server does not report this yet' }
+      const ok = typeof x === 'string' ? x === 'connected' : !!x.ok
+      return { key, name, ok, state: ok ? up : 'Unavailable', detail: typeof x === 'string' ? '' : x.detail ?? '' }
+    }
     return {
       sample: false,
       checkedAt: new Date().toISOString(),

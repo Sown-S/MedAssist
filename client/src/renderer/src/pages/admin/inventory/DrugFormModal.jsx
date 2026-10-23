@@ -6,12 +6,19 @@ import { useToast } from '../../../context/ToastContext'
 import { upsertDrug, isRxOnly } from '../../../api/inventoryStore'
 import { UNITS, fmtMoney } from './shared'
 import { getSettings } from '../../../api/settingsStore'
+import { DEMO_MODE } from '../../../api/client'
+import DrugFormLive from './DrugFormLive'
 
 const BLANK = { name: '', ingredient: '', atc: '', unit: 'tablet', kind: 'drug', group: 'regular', essential: false, cost: '', price: '', threshold: '', strengthMg: '', maxMgDay: '', maxMgKgDay: '', controlledType: 'H' }
 const optNum = (v) => (v === '' || v == null ? null : Number(String(v).replace(',', '.')))
 
+// Backend thật: trường theo danh mục thuốc của server (DrugFormLive). Giả lập: form bên dưới.
+export default function DrugFormModal(props) {
+  return DEMO_MODE ? <DrugFormDemo {...props} /> : <DrugFormLive {...props} />
+}
+
 // Dữ liệu GỐC của thuốc (danh mục). Tồn kho theo lô KHÔNG sửa ở đây — dùng Nhập kho / Kiểm kho.
-export default function DrugFormModal({ drug, drugs, user, onClose }) {
+function DrugFormDemo({ drug, drugs, user, onClose }) {
   const { showToast } = useToast()
   const [f, setF] = useState(BLANK)
   const [tried, setTried] = useState(false)
