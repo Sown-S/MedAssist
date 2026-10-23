@@ -11,7 +11,7 @@ import { useAuth } from '../../context/AuthContext'
 import { logEvent } from '../../api/activityStore'
 import { translate } from '../../i18n'
 import { VI } from '../../i18n/vi'
-import { useQueue, waitingOrder, readyOrder, ST, inRoom, atLabs, minutesSince, finalizeVisit, labOrderSummary, labRows, updateVisitClinical, isMine, leftReasonLabel, recallPatient, confirmEntered, markNotPresent } from '../../api/queueStore'
+import { useQueue, waitingOrder, readyOrder, ST, inRoom, atLabs, minutesSince, finalizeVisit, labOrderSummary, labRows, updateVisitClinical, isMine, leftReasonLabel, recallPatient, confirmEntered, markNotPresent, syncQueue } from '../../api/queueStore'
 import { useRxHistory, RX } from '../../api/rxHistory'
 import { useVisitArchive } from '../../api/visitArchive'
 import { useRxReviews, openReviewsFor, resolveReview, verdictOf } from '../../api/rxReviewStore'
@@ -24,6 +24,10 @@ import LabOrderModal, { printLabOrder } from './LabOrderModal'
 import AssessmentCard, { useAssessment } from './AssessmentCard'
 import { DEMO_MODE } from '../../api/client'
 import { getVisitDetail } from '../../api/clinicApi'
+import { useServerDrugs, findServerDrug, reloadServerDrugs } from '../../api/serverDrugs'
+import { syncDiagnoses, savePrescription, confirmPrescription, completeExam, shortageOf } from '../../api/examApi'
+import { isServerOnline } from '../../api/connectivity'
+import ServerHistory from './ServerHistory'
 import { printPrescription } from './printRx'
 import { getDraft, saveDraft, deleteDraft } from '../../api/draftStore'
 import DocumentModal from './DocumentModal'
@@ -92,11 +96,50 @@ function stockIssue(item, inv) {
   if (s.usable < need) return { level: 'caution', text: 'Not enough stock', usable: s.usable, unit: d.unit }
   return null
 }
+// Backend thật: tồn lấy từ v_drug_stock của server (còn hạn). Lô đủ hạn cho cả liệu trình do server kiểm khi xác nhận đơn.
+function serverStockIssue(item, drugs) {
+  const d = (item.drugId && drugs.find((x) => x.id === item.drugId)) || findServerDrug(item.name, drugs)
+  if (!d) return drugs.length ? { level: 'danger', text: 'Not in the drug catalog on the server' } : null
+  const need = parseInt(item.qty, 10) || 0
+  if (!d.active) return { level: 'danger', text: 'Discontinued in the drug catalog' }
+  if (d.stock.usable === 0 && d.stock.expired > 0) return { level: 'danger', text: 'Only expired batches left — cannot be dispensed' }
+  if (d.stock.usable === 0) return { level: 'danger', text: 'Out of stock' }
+  if (d.stock.usable < need) return { level: 'caution', text: 'Not enough stock', usable: d.stock.usable, unit: d.unit }
+  return null
+}
 
 // Bản nháp phiếu khám theo từng lượt khám — giữ lại khi bác sĩ chuyển qua lại giữa các bệnh nhân / các màn,
 // và lưu xuống máy (draftStore) để tắt app không mất phiếu đang viết dở.
 let seq = 0
-const lineOf = (d) => ({ id: 'r' + Date.now() + '-' + ++seq, name: d.name, qty: '', unit: d.unit, usage: '', essential: !!d.essential, dose: blankDose() })
+// drugId: id thuốc trên server (backend thật) — dòng chép từ đơn cũ / đơn mẫu không có thì tra theo tên lúc chốt.
+const lineOf = (d) => ({ id: 'r' + Date.now() + '-' + ++seq, drugId: DEMO_MODE ? undefined : d.id, name: d.name, qty: '', unit: d.unit, usage: '', essential: !!d.essential, dose: blankDose() })
+
+// Dòng thuốc trên phiếu → PrescriptionItemIn của server. Liều có cấu trúc: liều từng cữ + số lần/ngày + số ngày;
+// thuốc dùng khi cần: cách dùng ghi tay, số ngày tính từ số lượng nếu có thể. Trả { item } hoặc { error }.
+function serverItem(l, drugs) {
+  const drug = (l.drugId && drugs.find((x) => x.id === l.drugId)) || findServerDrug(l.name, drugs)
+  if (!drug) return { error: translate('Not in the drug catalog on the server') + ': ' + l.name }
+  const qty = parseInt(l.qty, 10)
+  const daily = perDay(l.dose)
+  const days = num(l.dose?.days) > 0 ? Math.round(num(l.dose.days)) : daily > 0 && qty > 0 ? Math.ceil(qty / daily) : 0
+  if (!(days > 0)) return { error: translate('Enter the number of days for') + ' ' + l.name }
+  const slots = SLOTS.filter(([k]) => num(l.dose?.[k]) > 0)
+  const unit = unitVi(l.unit)
+  const dosage = slots.length ? slots.map(([k, , vi]) => `${vi} ${l.dose[k]} ${unit}`).join(', ') : l.usage.trim()
+  const meal = MEALS.find((m) => m.key === l.dose?.meal)?.vi
+  const frequency = slots.length ? `${slots.length} lần/ngày` + (meal ? `, ${meal}` : '') : 'Theo hướng dẫn'
+  return {
+    item: {
+      drug_id: drug.id,
+      dosage: dosage.slice(0, 100),
+      frequency: frequency.slice(0, 100),
+      duration_days: days,
+      quantity: qty,
+      instruction: l.usage.trim().slice(0, 1000) || null
+    },
+    line: { ...l, drugId: drug.id }
+  }
+}
 function initDraft(v) {
   return {
     exam: v.exam ?? '',
@@ -120,6 +163,8 @@ function draftOf(v) {
   return { ...d, vitals: vitalsToForm(normalizeVitals(d.vitals)) }
 }
 // Từ Tủ thuốc: thêm thuốc vào đơn đang kê của bệnh nhân.
+const DRUG_SEARCH_ID = 'consult-drug-search'
+
 export function addDrugToDraft(visit, d) {
   const dr = draftOf(visit)
   if (!dr.rx.some((x) => x.name === d.name)) saveDraft(visit.id, { ...dr, rx: [...dr.rx, lineOf(d)] })
@@ -358,6 +403,8 @@ function ServerVisit({ visit, children }) {
 function ConsultForm({ visit, user, onDone, onNext }) {
   const { showToast } = useToast()
   const inv = useInventory()
+  const srv = useServerDrugs({ enabled: !DEMO_MODE })
+  const issueOf = (it) => (DEMO_MODE ? stockIssue(it, inv) : serverStockIssue(it, srv.drugs))
   const allHistory = useRxHistory()
   const { visits } = useQueue()
   const archive = useVisitArchive()
@@ -449,7 +496,7 @@ function ConsultForm({ visit, user, onDone, onNext }) {
   // Đơn gần nhất trong MỌI lần khám trước (kể cả lượt đã xong hôm nay), không chỉ lịch sử các ngày trước.
   const last = past.find((v) => v.rx?.length)
 
-  const issues = d.rx.map((it) => ({ it, issue: stockIssue(it, inv) })).filter((x) => x.issue && x.issue.level !== 'info')
+  const issues = d.rx.map((it) => ({ it, issue: issueOf(it) })).filter((x) => x.issue && x.issue.level !== 'info')
   // Proposal FR03: hệ thống KHÔNG đánh giá đơn (không kiểm tra tương tác, liều, trùng đơn) — chỉ nhắc dị ứng / bệnh nền
   // dạng chỉ đọc. Chỉ chặn khi thiếu dữ liệu bắt buộc: chẩn đoán, số lượng + cách dùng, cân nặng trẻ em (in trên đơn).
   const incomplete = d.rx.some((l) => !(parseInt(l.qty) > 0) || !l.usage.trim())
@@ -465,14 +512,47 @@ function ConsultForm({ visit, user, onDone, onNext }) {
           ? 'Check the vital signs before finalizing.'
           : null
 
+  // Backend thật: đồng bộ chẩn đoán → lưu đơn nháp → xác nhận (server trừ kho FEFO, lập hóa đơn). Không có thuốc
+  // → "Hoàn tất khám". Thiếu thuốc (409 STOCK_SHORTAGE) → liệt kê từng thuốc, chẩn đoán đã lưu giữ nguyên, chốt lại được.
+  async function finalizeOnServer(andNext) {
+    const mapped = d.rx.map((l) => serverItem(l, srv.drugs))
+    const bad = mapped.find((x) => x.error)
+    if (bad) return showToast(bad.error)
+    const notes = [d.hpi.trim() && 'Bệnh sử: ' + d.hpi.trim(), typeof d.exam === 'string' && d.exam.trim() && 'Khám: ' + d.exam.trim(), typeof d.plan === 'string' && d.plan.trim() && 'Hướng xử trí: ' + d.plan.trim()]
+      .filter(Boolean)
+      .join('\n')
+      .slice(0, 4000)
+    try {
+      await syncDiagnoses(visit.id, { primary: d.diagnosis, extra: d.diagnosesExtra ?? [], notes: notes || null, candidates: ai.candidates, assessmentId: ai.assessment_id })
+      if (mapped.length) {
+        await savePrescription(visit.id, mapped.map((x) => x.item))
+        await confirmPrescription(visit.id)
+      } else await completeExam(visit.id)
+    } catch (e) {
+      if (e.code === 'STOCK_SHORTAGE') {
+        setShort(shortageOf(e, mapped.map((x) => x.line)))
+        reloadServerDrugs()
+      }
+      return showToast(e.message || translate('Something went wrong'))
+    }
+    setShort(null)
+    deleteDraft(visit.id)
+    reloadServerDrugs()
+    await syncQueue()
+    showToast(mapped.length ? 'Prescription confirmed — stock deducted, sent to reception for dispensing and payment' : 'Visit completed — sent to reception for payment')
+    onDone()
+    if (andNext) onNext?.()
+  }
+
   function finalize(andNext = false) {
-    // Chẩn đoán, kê đơn, chốt đơn qua API thuộc Sprint 4 — chưa lưu lên server thì không chốt ở máy này (tránh lệch dữ liệu).
-    if (!DEMO_MODE) return showToast(translate('Saving the diagnosis and prescription to the server is not available yet (Sprint 4).'))
+    // Không tới được máy chủ → chỉ đọc (NFR08): không chốt, phiếu nháp vẫn giữ ở máy này.
+    if (!DEMO_MODE && !isServerOnline()) return showToast(translate('No connection to the clinic server — the visit cannot be finalized now. Your notes are kept on this computer.'))
     setTried(true)
     if (problem) {
       if (problem.startsWith('Enter the child') || problem.startsWith('Check the vital')) setTab('vitals')
       return showToast(translate(problem))
     }
+    if (!DEMO_MODE) return finalizeOnServer(andNext)
     const rx = d.rx.map((l) => ({ name: l.name, qty: parseInt(l.qty), unit: l.unit, usage: l.usage.trim(), essential: l.essential, ...(perDay(l.dose) > 0 ? { dose: l.dose } : {}) }))
     const r = finalizeVisit(
       visit.id,
@@ -504,17 +584,31 @@ function ConsultForm({ visit, user, onDone, onNext }) {
   }
   // Nút và phím tắt đi chung 1 khoá — nhấn Ctrl+Enter liên tiếp hay vừa bấm vừa nhấn phím cũng chỉ chốt 1 đơn.
   const [runFinalize, finalizing] = useAsyncAction(finalize)
-  // Phím tắt: Ctrl+Enter chốt đơn, Alt+L chỉ định xét nghiệm.
+  // Phím tắt (BC08): Ctrl+Enter chốt đơn, Alt+D chấp nhận gợi ý đứng đầu làm chẩn đoán, Alt+T tới ô tìm thuốc,
+  // Alt+L chỉ định xét nghiệm.
   const finalizeRef = useRef(runFinalize)
   finalizeRef.current = runFinalize
+  const acceptTopRef = useRef(null)
+  acceptTopRef.current = () => {
+    const top = ai.candidates[0]
+    if (!top) return showToast(translate('No AI suggestion to accept yet.'))
+    if (aiDecision[top.condition_code] !== 'accepted') decideAi(top, 'accepted')
+  }
   useEffect(() => {
     const onKey = (e) => {
+      const alt = e.altKey && !e.ctrlKey && !e.metaKey
       if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
         e.preventDefault()
         finalizeRef.current(e.shiftKey)
-      } else if (e.altKey && !e.ctrlKey && e.key.toLowerCase() === 'l') {
+      } else if (alt && e.key.toLowerCase() === 'l') {
         e.preventDefault()
         setLabOpen(true)
+      } else if (alt && e.key.toLowerCase() === 'd') {
+        e.preventDefault()
+        acceptTopRef.current()
+      } else if (alt && e.key.toLowerCase() === 't') {
+        e.preventDefault()
+        document.getElementById(DRUG_SEARCH_ID)?.focus()
       }
     }
     window.addEventListener('keydown', onKey)
@@ -671,7 +765,7 @@ function ConsultForm({ visit, user, onDone, onNext }) {
             Vitals
           </button>
           <button className={'itab' + (tab === 'hist' ? ' active' : '')} onClick={() => setTab('hist')}>
-            History <span className="itab-cnt">{past.length}</span>
+            History {DEMO_MODE && <span className="itab-cnt">{past.length}</span>}
           </button>
         </div>
 
@@ -788,17 +882,24 @@ function ConsultForm({ visit, user, onDone, onNext }) {
             <div className="symptom-box">{visit.history ? translate(visit.history) : translate('No chronic conditions on record.')}</div>
             <div className="section-label">Drug allergies</div>
             <div className="symptom-box">{visit.allergies ? translate(visit.allergies) : translate('No recorded drug allergies.')}</div>
-            <div className="section-label">
-              Previous visits <span className="itab-cnt">{past.length}</span>
-            </div>
-            {past.length ? (
-              <div className="timeline">
-                {past.map((v) => (
-                  <VisitCard key={v.id + (v.day ?? '')} v={v} onReuse={applyLines} />
-                ))}
-              </div>
+            {/* Backend thật: lịch sử khám lấy từ server (FR04), không tính lượt đang khám. */}
+            {!DEMO_MODE ? (
+              <ServerHistory patientId={visit.patientId} excludeVisitId={visit.id} />
             ) : (
-              <p className="ai-soft" style={{ fontSize: 13 }}>No earlier visits in the system.</p>
+              <>
+                <div className="section-label">
+                  Previous visits <span className="itab-cnt">{past.length}</span>
+                </div>
+                {past.length ? (
+                  <div className="timeline">
+                    {past.map((v) => (
+                      <VisitCard key={v.id + (v.day ?? '')} v={v} onReuse={applyLines} />
+                    ))}
+                  </div>
+                ) : (
+                  <p className="ai-soft" style={{ fontSize: 13 }}>No earlier visits in the system.</p>
+                )}
+              </>
             )}
           </div>
         )}
@@ -808,7 +909,7 @@ function ConsultForm({ visit, user, onDone, onNext }) {
         <div className="card-title" style={{ marginBottom: 8 }}>
           <Icon name="clipboard" /> Prescription <span className="cnt">{d.rx.length}</span>
         </div>
-        <DrugPicker onPick={addDrug} />
+        <DrugPicker onPick={addDrug} drugs={DEMO_MODE ? undefined : srv.drugs} inputId={DRUG_SEARCH_ID} title="Alt+T" />
         <div className="rx-quick">
           <span className="ai-soft">Templates:</span>
           {TEMPLATES.map((t) => (
@@ -826,7 +927,7 @@ function ConsultForm({ visit, user, onDone, onNext }) {
         {d.rx.length > 0 ? (
           <div className="rx-lines">
             {d.rx.map((it) => {
-              const issue = stockIssue(it, inv)
+              const issue = issueOf(it)
               const bad = tried && (!(parseInt(it.qty) > 0) || !it.usage.trim())
               const daily = perDay(it.dose)
               return (

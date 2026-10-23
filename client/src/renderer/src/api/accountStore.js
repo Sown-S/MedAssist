@@ -6,6 +6,51 @@
 // ở đây chỉ mô phỏng đúng luồng để giao diện được viết đúng.
 import { logEvent } from './activityStore'
 import { getSettings } from './settingsStore'
+import { apiGet, apiPost, apiRequest, ApiError, DEMO_MODE } from './client'
+
+// ===================== Backend thật: /api/v1/admin/users (admin_router.py) =====================
+// Server lưu: họ tên, vai trò, SĐT, email, bật / tắt. Không có mã NV, khoa phòng, số chứng chỉ, trạng thái khoá
+// (khoá do server tự đếm và tự hết sau 5 phút) — các trường đó để trống. Tắt tài khoản = thu hồi mọi phiên.
+const ROLE_OF = { Physician: 'doctor', Nurse: 'reception', Admin: 'admin' }
+const SERVER_ROLE = { doctor: 'Physician', reception: 'Nurse', admin: 'Admin' }
+const fromServer = (u) => ({
+  id: u.user_id,
+  staffCode: '',
+  username: u.username,
+  fullName: u.full_name,
+  roleKey: ROLE_OF[u.role],
+  phone: u.phone ?? '',
+  email: u.email ?? '',
+  departmentCode: '',
+  licenseNo: '',
+  active: u.is_active,
+  mustChange: false,
+  createdAt: u.created_at,
+  createdBy: null,
+  lastLoginAt: null,
+  passwordChangedAt: null,
+  failedAttempts: 0,
+  locked: false,
+  lockedUntil: null,
+  sessionVersion: 0
+})
+const apiError = (e) => (e instanceof ApiError ? (e.details?.[0]?.message ?? e.message) : 'Cannot reach the clinic server. Check the server address and the network connection.')
+const live = async (fn) => {
+  try {
+    return await fn()
+  } catch (e) {
+    return { ok: false, error: apiError(e) }
+  }
+}
+async function listLive() {
+  const out = []
+  for (let offset = 0; ; offset += 200) {
+    const page = await apiGet(`/api/v1/admin/users?limit=200&offset=${offset}`)
+    out.push(...page.items)
+    if (out.length >= page.total || !page.items.length) return out.map(fromServer)
+  }
+}
+const patchLive = (id, body) => apiRequest(`/api/v1/admin/users/${id}`, 'PATCH', body)
 
 const KEY = 'medassist_accounts_v1'
 
@@ -122,6 +167,7 @@ export function publicView(a) {
 }
 
 export async function listAccounts() {
+  if (!DEMO_MODE) return listLive()
   return (await load()).map(publicView)
 }
 
@@ -169,7 +215,17 @@ export function sessionStillValid(id, sessionVersion) {
 }
 
 // Xác thực lại mật khẩu của chính người đang thao tác (admin) trước thao tác nhạy cảm.
-export async function verifyPassword(id, password) {
+// Backend thật: thử đăng nhập bằng chính tài khoản đó (server đếm sai mật khẩu và khoá như đăng nhập thường);
+// token trả về bị bỏ đi, phiên đang dùng giữ nguyên.
+export async function verifyPassword(id, password, username) {
+  if (!DEMO_MODE) {
+    try {
+      await apiPost('/api/v1/auth/login', { username, password })
+      return true
+    } catch {
+      return false
+    }
+  }
   const a = (await load()).find((x) => x.id === id)
   return !!a && (await hash(password, a.salt)) === a.hash
 }
@@ -191,11 +247,19 @@ const NAME_IS_USERNAME = 'The full name is the same as the username. Enter the s
 const sameAsUsername = (fullName, username) => fullName.trim().toLowerCase() === username.trim().toLowerCase()
 
 export async function createAccount({ username, fullName, roleKey, phone = '', departmentCode = '', licenseNo = '' }, by) {
-  const list = await load()
   const u = username.trim()
   if (!u || !fullName.trim()) return { ok: false, error: 'Please enter a full name and username.' }
   if (sameAsUsername(fullName, u)) return { ok: false, error: NAME_IS_USERNAME }
   if (!ROLES[roleKey]) return { ok: false, error: 'Invalid role.' }
+  // Backend thật: mật khẩu tạm sinh ở máy này, gửi một lần qua HTTPS; server băm Argon2id. Admin đưa cho nhân viên.
+  if (!DEMO_MODE) {
+    const password = genPassword()
+    return live(async () => {
+      const r = await apiPost('/api/v1/admin/users', { username: u.toLowerCase(), full_name: fullName.trim(), role: SERVER_ROLE[roleKey], password, phone: phone.trim() || null })
+      return { ok: true, account: fromServer(r), password }
+    })
+  }
+  const list = await load()
   if (list.some((x) => x.username.toLowerCase() === u.toLowerCase()))
     return { ok: false, error: 'This username already exists.' }
   const password = genPassword()
@@ -226,6 +290,15 @@ function activeAdmins(list) {
 
 // Sửa thông tin: họ tên, mã NV, SĐT, vai trò, khoa phòng & số chứng chỉ hành nghề (bác sĩ).
 export async function updateAccount(id, data) {
+  // Backend thật: server tự chặn tự hạ quyền / tắt Admin cuối cùng; đổi vai trò làm token cũ mất hiệu lực.
+  if (!DEMO_MODE)
+    return live(async () => {
+      const before = (await listLive()).find((x) => x.id === id)
+      const fullName = (data.fullName ?? before?.fullName ?? '').trim()
+      if (before && sameAsUsername(fullName, before.username)) return { ok: false, error: NAME_IS_USERNAME }
+      const r = await patchLive(id, { full_name: fullName, role: SERVER_ROLE[data.roleKey ?? before?.roleKey], phone: (data.phone ?? '').trim() || null })
+      return { ok: true, account: fromServer(r), before }
+    })
   const list = await load()
   const a = list.find((x) => x.id === id)
   if (!a) return { ok: false, error: 'Account not found.' }
@@ -254,6 +327,7 @@ export async function updateAccount(id, data) {
 }
 
 export async function setActive(id, active) {
+  if (!DEMO_MODE) return live(async () => (await patchLive(id, { is_active: active }), { ok: true }))
   const list = await load()
   const a = list.find((x) => x.id === id)
   if (!a) return { ok: false, error: 'Account not found.' }
@@ -263,7 +337,10 @@ export async function setActive(id, active) {
   return { ok: true }
 }
 
+// Server không có mở khoá / đăng xuất cưỡng bức: khoá tự hết sau 5 phút; thu hồi phiên = tắt tài khoản.
+const NOT_ON_SERVER = { ok: false, error: 'Not available with the clinic server — a locked account unlocks by itself after 5 minutes; disable the account to end its sessions.' }
 export async function unlockAccount(id) {
+  if (!DEMO_MODE) return NOT_ON_SERVER
   const list = await load()
   if (!list.some((x) => x.id === id)) return { ok: false, error: 'Account not found.' }
   patch(id, { locked: false, lockedUntil: null, failedAttempts: 0 })
@@ -272,6 +349,7 @@ export async function unlockAccount(id) {
 
 // Đăng xuất cưỡng bức: tăng sessionVersion → mọi phiên đang mở của tài khoản này hết hiệu lực.
 export async function forceSignOut(id) {
+  if (!DEMO_MODE) return NOT_ON_SERVER
   const list = await load()
   const a = list.find((x) => x.id === id)
   if (!a) return { ok: false, error: 'Account not found.' }
@@ -281,6 +359,11 @@ export async function forceSignOut(id) {
 
 // Đặt lại mật khẩu: sinh mật khẩu tạm mới, buộc đổi ở lần đăng nhập tới, mở khoá và đá các phiên đang mở.
 export async function resetPassword(id) {
+  // Backend thật: đổi mật khẩu = server thu hồi mọi token cũ của tài khoản đó.
+  if (!DEMO_MODE) {
+    const password = genPassword()
+    return live(async () => (await apiPost(`/api/v1/admin/users/${id}/reset-password`, { new_password: password }), { ok: true, password }))
+  }
   const list = await load()
   const a = list.find((x) => x.id === id)
   if (!a) return { ok: false, error: 'Account not found.' }

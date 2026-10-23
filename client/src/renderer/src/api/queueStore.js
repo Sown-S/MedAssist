@@ -7,6 +7,7 @@
 import { useEffect, useSyncExternalStore } from 'react'
 import { DEMO_MODE } from './client'
 import { fetchQueue, checkIn as apiCheckIn, cancelVisit as apiCancelVisit, startExam as apiStartExam, releaseVisit as apiRelease } from './clinicApi'
+import { reopenPrescription as apiReopen } from './examApi'
 import { VI } from '../i18n/vi'
 import { getSettings } from './settingsStore'
 import { logEvent } from './activityStore'
@@ -482,6 +483,18 @@ export function recallVisit(id, user) {
   const v = state.visits.find((x) => x.id === id)
   if (!v || v.status !== ST.PRESCRIBED) return { ok: false, error: 'Only prescriptions still awaiting payment can be recalled.' }
   if (!isMine(v, user)) return { ok: false, error: 'Only the prescribing doctor can recall this prescription.' }
+  // Backend thật: server kiểm lại (chưa thu tiền, chưa cấp thuốc), hoàn kho, hủy đơn + hóa đơn, lượt khám về Examining.
+  if (!DEMO_MODE) {
+    if (inRoomOf(user).length) return { ok: false, error: 'Finish the patient in your room first — finalize the visit or send them for lab tests.' }
+    return apiReopen(id, 'Bác sĩ thu hồi đơn để sửa').then(
+      async () => {
+        await syncQueue()
+        logEvent(user, 'rx.recall', { target: { kind: 'patient', id: v.patientId, label: v.name }, params: { patient: v.name, rx: String(v.ticket).padStart(3, '0') } })
+        return { ok: true }
+      },
+      (e) => ({ ok: false, error: e.message })
+    )
+  }
   const cur = v.invoiceId && invoiceById(v.invoiceId)
   if (cur?.status === 'paid') return { ok: false, error: 'This visit has already been paid — the prescription can no longer be reopened.' }
   if ((v.rx ?? []).some((l) => l.dispense_status === 'Dispensed')) return { ok: false, error: 'Some drugs have already been dispensed — the prescription can no longer be reopened.' }

@@ -11,10 +11,17 @@ import { useRxHistory } from '../../api/rxHistory'
 import { pastVisitsOf } from './doctorShared'
 import { VisitCard } from './ConsultView'
 import DocumentModal from './DocumentModal'
+import { DEMO_MODE } from '../../api/client'
+import PatientLookupLive from './PatientLookupLive'
 
 // Bác sĩ tra cứu hồ sơ BẤT KỲ bệnh nhân nào (không chỉ người đang trong hàng chờ) — VD bệnh nhân gọi điện hỏi kết quả,
 // cần xem đơn cũ, ghi bổ sung kết quả về muộn, in tóm tắt bệnh án / giấy chuyển tuyến. Mỗi lần mở hồ sơ được ghi nhật ký.
+// Backend thật: tra cứu + lịch sử khám từ server (PatientLookupLive). Giả lập: dữ liệu trong các store bên dưới.
 export default function PatientLookup() {
+  return DEMO_MODE ? <PatientLookupDemo /> : <PatientLookupLive />
+}
+
+function PatientLookupDemo() {
   const { user } = useAuth()
   usePatients()
   const { visits } = useQueue()

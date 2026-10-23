@@ -1,13 +1,17 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Modal, { ModalHeader } from '../../../components/Modal'
 import Icon from '../../../components/Icon'
 import { translate } from '../../../i18n'
-import { reasonLabel } from '../../../api/inventoryStore'
+import { reasonLabel, loadMovesFor } from '../../../api/inventoryStore'
 import { MOVE_TYPES, fmtDateTime, unitLabel, exportCsv } from './shared'
 
 // Thẻ kho: toàn bộ lịch sử nhập / xuất / điều chỉnh / huỷ của 1 thuốc, kèm người thao tác và tồn sau phiếu.
+// Backend thật: nạp phiếu của các lô thuốc này khi mở (loadMovesFor) — bản giả lập đã có sẵn trong moves.
 export default function StockCardModal({ drug, moves, onClose }) {
   const [type, setType] = useState('all')
+  useEffect(() => {
+    if (drug) loadMovesFor(drug.id).catch(() => {})
+  }, [drug])
   if (!drug) return null
   const list = moves.filter((m) => m.drugId === drug.id && (type === 'all' || m.type === type))
   return (

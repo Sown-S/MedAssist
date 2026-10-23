@@ -9,6 +9,9 @@ import { translate } from '../../i18n'
 import {
   useSettings,
   saveSettings,
+  saveServerSettings,
+  loadServerSettings,
+  getSettings,
   changedPaths,
   formatNumber,
   PAPERS,
@@ -183,6 +186,15 @@ export default function SettingsPage({ params, onNavigate, setLeaveGuard }) {
   const [tab, setTab] = useState(params?.tab && TABS.some((t) => t.key === params.tab) ? params.tab : 'clinic')
   const [draft, setDraft] = useState(saved.values)
   const [reauth, setReauth] = useState(null)
+  // Backend thật: lấy tham số vận hành đang dùng trên server (phí khám, hạn dùng, thông tin phòng khám) rồi làm mới bản nháp.
+  useEffect(() => {
+    if (DEMO_MODE) return
+    loadServerSettings().then(
+      () => setDraft(getSettings()),
+      (e) => showToast(e.message)
+    )
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const changed = useMemo(() => new Set(changedPaths(draft)), [draft, saved])
   const errors = useMemo(() => validate(draft), [draft])
@@ -204,8 +216,11 @@ export default function SettingsPage({ params, onNavigate, setLeaveGuard }) {
   const num = (p) => ({ type: 'number', value: val(p), onChange: (e) => set(p, e.target.value === '' ? '' : Number(e.target.value)) })
   const tabChanged = (k) => [...changed].some((p) => TAB_OF(p) === k)
 
-  function doSave() {
+  async function doSave() {
     setReauth(null)
+    // Backend thật: ghi tham số vận hành lên server trước; lỗi thì không lưu gì ở máy này.
+    const r = await saveServerSettings(draft)
+    if (!r.ok) return showToast(translate(r.error))
     const n = saveSettings(draft, user, labelOf, showValue)
     showToast(n ? 'Settings saved' : 'No changes')
   }
@@ -780,7 +795,7 @@ function ConnectionTab({ onNavigate }) {
                   <b>{s.name}</b>
                   <span>{s.detail}</span>
                 </span>
-                <span className={'badge ' + (s.ok ? 'ok' : 'low')}>{s.state}</span>
+                <span className={'badge ' + (s.ok ? 'ok' : s.ok === null ? 'muted' : 'low')}>{s.state}</span>
               </div>
             ))}
             <div className="ai-small ai-soft" style={{ marginTop: 8 }}>
@@ -806,7 +821,7 @@ function ConnectionTab({ onNavigate }) {
           <div className="ai-small ai-soft">
             {ai ? (
               <>
-                <span className={'badge ' + (ai.ok ? 'ok' : 'low')}>{ai.state}</span> <span>{ai.detail}</span>
+                <span className={'badge ' + (ai.ok ? 'ok' : ai.ok === null ? 'muted' : 'low')}>{ai.state}</span> <span>{ai.detail}</span>
               </>
             ) : (
               <span>—</span>

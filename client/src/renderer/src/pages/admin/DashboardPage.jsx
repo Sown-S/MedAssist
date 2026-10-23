@@ -6,7 +6,7 @@ import { LoadingBlock, ErrorBlock } from '../../components/DataState'
 import { useApiData } from '../../hooks/useApiData'
 import { listAccounts } from '../../api/accountStore'
 import { useInventory, stockOf } from '../../api/inventoryStore'
-import { checkHealth } from '../../api/client'
+import { checkHealth, DEMO_MODE } from '../../api/client'
 import { getSettings } from '../../api/settingsStore'
 import { useBackupLog } from '../../api/backupStore'
 import { useActivity } from '../../api/activityStore'
@@ -79,13 +79,16 @@ function RevenueChart({ days }) {
 
 export default function DashboardPage({ onNavigate }) {
   const navigate = useNavigate()
-  const { data: summary, loading: l1, error: e1 } = useApiData('/reports/summary')
+  // Backend thật chưa có API báo cáo (/reports/summary, /admin/dashboard) → các ô số liệu hiện "—" thay vì báo lỗi cả trang.
+  // Admin cũng không xem hàng đợi (dữ liệu bệnh nhân) nên hai ô hàng đợi chỉ có ở bản giả lập.
+  const { data: summary, loading: l1, error: e1 } = useApiData(DEMO_MODE ? '/reports/summary' : null)
   const { visits } = useQueue()
   const inv = useInventory()
   const activity = useActivity()
   // Nhật ký mẫu xếp cũ → mới; hoạt động phát sinh trong phiên nối vào cuối (mới nhất).
   const log = activity // mới nhất ở đầu
-  const { data: dash, loading: l6, error: e6 } = useApiData('/admin/dashboard')
+  const { data: dash, loading: l6, error: e6 } = useApiData(DEMO_MODE ? '/admin/dashboard' : null)
+  const NA = '—'
   const [accounts, setAccounts] = useState(null)
   const [health, setHealth] = useState(null)
   const backup = useBackupLog()[0]
@@ -117,11 +120,11 @@ export default function DashboardPage({ onNavigate }) {
       {ready && (
         <>
           <div className="stat-bar">
-            <StatCard value={summary.stats.visits} label="Visits today" />
-            <StatCard value={visits.filter(isQueued).length} label="Waiting for consultation" />
-            <StatCard value={visits.filter((v) => v.status === ST.PRESCRIBED).length} label="Awaiting payment" />
-            <StatCard value={summary.stats.revenue} label="Today's revenue" />
-            <StatCard value={summary.stats.redFlags} label="Red-flag referrals" />
+            <StatCard value={summary?.stats.visits ?? NA} label="Visits today" />
+            <StatCard value={DEMO_MODE ? visits.filter(isQueued).length : NA} label="Waiting for consultation" />
+            <StatCard value={DEMO_MODE ? visits.filter((v) => v.status === ST.PRESCRIBED).length : NA} label="Awaiting payment" />
+            <StatCard value={summary?.stats.revenue ?? NA} label="Today's revenue" />
+            <StatCard value={summary?.stats.redFlags ?? NA} label="Red-flag referrals" />
           </div>
 
           <div className="dash-grid">
@@ -159,7 +162,7 @@ export default function DashboardPage({ onNavigate }) {
                     <b>{s.name}</b>
                     <span>{s.detail}</span>
                   </span>
-                  <span className={'badge ' + (s.ok ? 'ok' : 'low')}>{s.state}</span>
+                  <span className={'badge ' + (s.ok ? 'ok' : s.ok === null ? 'muted' : 'low')}>{s.state}</span>
                 </div>
               ))}
               {/* Sao lưu: lấy từ lịch sử sao lưu thật (Cài đặt › Sao lưu), quá 2 ngày chưa sao lưu thì cảnh báo. */}
@@ -181,27 +184,33 @@ export default function DashboardPage({ onNavigate }) {
                   View reports <Icon name="chevronRight" />
                 </span>
               </div>
-              <RevenueChart days={dash.revenue7d} />
+              {dash ? <RevenueChart days={dash.revenue7d} /> : <p className="ai-soft">Not available yet — the clinic server has no report API.</p>}
             </div>
 
             <div className="dash-stack">
               <div className="card">
                 <div className="card-title">AI decision support</div>
-                <div className="ai-metric">
-                  <span className="val">{summary.stats.aiMatch}</span>
-                  <span>of AI suggestions matched the doctor's confirmed diagnosis</span>
-                </div>
-                <div className="bar-track" style={{ flex: 'none', margin: '10px 0 12px' }}>
-                  <div className="bar-fill" style={{ width: summary.stats.aiMatch }} />
-                </div>
-                <div className="pref-row inline">
-                  <span>Suggestions still unconfirmed</span>
-                  <b>{dash.ai.unconfirmed}</b>
-                </div>
-                <div className="pref-row inline">
-                  <span>Rules configured</span>
-                  <b>{dash.stats.aiRules}</b>
-                </div>
+                {summary && dash ? (
+                  <>
+                    <div className="ai-metric">
+                      <span className="val">{summary.stats.aiMatch}</span>
+                      <span>of AI suggestions matched the doctor's confirmed diagnosis</span>
+                    </div>
+                    <div className="bar-track" style={{ flex: 'none', margin: '10px 0 12px' }}>
+                      <div className="bar-fill" style={{ width: summary.stats.aiMatch }} />
+                    </div>
+                    <div className="pref-row inline">
+                      <span>Suggestions still unconfirmed</span>
+                      <b>{dash.ai.unconfirmed}</b>
+                    </div>
+                    <div className="pref-row inline">
+                      <span>Rules configured</span>
+                      <b>{dash.stats.aiRules}</b>
+                    </div>
+                  </>
+                ) : (
+                  <p className="ai-soft">The AI acceptance rate will appear here once the clinic server provides the report API.</p>
+                )}
                 <button className="btn btn-ghost btn-sm" style={{ marginTop: 10 }} onClick={() => onNavigate('ai')}>
                   Open AI configuration
                 </button>

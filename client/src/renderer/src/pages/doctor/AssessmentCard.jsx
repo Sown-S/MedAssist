@@ -79,7 +79,7 @@ export default function AssessmentCard({ a, decisions, onAccept, onDismiss }) {
         {a.ai_status === 'Pending' && <p className="ai-soft assess-note">{translate('Waiting for the result — you can keep examining; it appears here automatically.')}</p>}
         {a.ai_status === 'Preliminary' && <p className="ai-soft assess-note">{translate('Preliminary ranking by the approved rules — the AI explanation will appear here automatically.')}</p>}
 
-        {a.candidates.map((c) => (
+        {a.candidates.map((c, i) => (
           <div className="assess-cand" key={c.condition_code}>
             <div className="assess-cand-top">
               <span className="assess-rank">{c.rank}</span>
@@ -113,8 +113,9 @@ export default function AssessmentCard({ a, decisions, onAccept, onDismiss }) {
                 </select>
               ) : (
                 <span className="ai-sug-actions">
-                  <button className="btn btn-ghost btn-sm" onClick={() => onAccept(c)}>
+                  <button className="btn btn-ghost btn-sm" onClick={() => onAccept(c)} title={i === 0 ? 'Alt+D' : undefined}>
                     <Icon name="check" /> <span>{translate('Accept')}</span>
+                    {i === 0 && <kbd>Alt+D</kbd>}
                   </button>
                   <button className="btn btn-ghost btn-sm" onClick={() => setDismissing(c.condition_code)}>
                     <Icon name="x" /> <span>{translate('Dismiss')}</span>
