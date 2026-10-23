@@ -109,6 +109,12 @@ def test_errors_are_reported(vault_copy):
     assert "exports" not in errors
 
 
+def test_document_schemas_are_ignored(vault_copy):
+    (vault_copy / "_spec/bien_ban.md").write_text("---\nschema: okf_review_log_v1\nlabel: X\n---\n# Biên bản\n",
+                                                  encoding="utf-8")
+    assert okf.load_vault(vault_copy).errors == []
+
+
 def test_rule_prefix_and_source_edition(vault_copy):
     _edit(vault_copy / "rules/red_flags/rf_respiratory_failure.md", "rule_type: RED_FLAG", "rule_type: PRIORITY_FLOOR")
     rule = _first(vault_copy, "rules/priority_floors/*.md")

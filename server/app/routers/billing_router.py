@@ -1,4 +1,5 @@
 """Cấp phát thuốc và thu tiền (US03, US06): Nurse thao tác; Physician, Nurse xem hóa đơn."""
+import datetime
 import uuid
 
 from fastapi import APIRouter, Depends
@@ -8,8 +9,8 @@ from app.core.audit_view import CLINICAL_ROLES, DEFAULT_POLL_WINDOW, audit_view
 from app.core.auth import require_roles
 from app.core.database import get_db
 from app.models import User
-from app.schemas.invoice import (AwaitingPaymentItem, BillingResult, DispenseRequest, InvoiceEdit, InvoiceOut,
-                                 InvoicePrint, PaymentRequest)
+from app.schemas.invoice import (AwaitingPaymentItem, BillingResult, DispenseRequest, InvoiceEdit,
+                                 InvoiceHistoryItem, InvoiceOut, InvoicePrint, PaymentRequest)
 from app.services import billing_service, invoice_service
 
 router = APIRouter(tags=["billing"])
@@ -28,6 +29,14 @@ def awaiting(_: User = Depends(audit_view("visit", roles=("Nurse",), dedupe_seco
              db: Session = Depends(get_db)):
     """Lượt khám đang chờ cấp phát / thu tiền (Prescribed), cũ nhất trước."""
     return billing_service.awaiting_payment(db)
+
+
+@router.get("/billing/invoices", response_model=list[InvoiceHistoryItem])
+def invoice_history(date: datetime.date | None = None, include_cancelled: bool = False,
+                    _: User = Depends(audit_view("invoice", roles=("Nurse",), dedupe_seconds=DEFAULT_POLL_WINDOW)),
+                    db: Session = Depends(get_db)):
+    """Lịch sử hóa đơn trong ngày (mặc định hôm nay). Hóa đơn bị hủy do sửa chỉ hiện khi include_cancelled."""
+    return billing_service.invoice_history(db, date, include_cancelled)
 
 
 @router.get("/visits/{visit_id}/invoice", response_model=InvoiceOut)

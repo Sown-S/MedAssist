@@ -85,6 +85,23 @@ class AwaitingPaymentItem(BaseModel):
     pending_items: int
 
 
+class InvoiceHistoryItem(BaseModel):
+    invoice_id: uuid.UUID
+    invoice_code: str
+    visit_id: uuid.UUID
+    queue_number: int | None
+    patient_name: str
+    consultation_fee: MoneyOut
+    paraclinical_fee: MoneyOut
+    drug_fee: MoneyOut
+    total_amount: MoneyOut
+    payment_method: str
+    payment_status: str
+    paid_at: datetime | None
+    cancelled_at: datetime | None
+    created_at: datetime
+
+
 class PrintPatient(BaseModel):
     patient_code: str
     full_name: str

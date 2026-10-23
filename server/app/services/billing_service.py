@@ -7,10 +7,11 @@
   * Lượt khám tự Finished khi hóa đơn Paid VÀ không còn dòng thuốc Pending (đơn -> Dispensed).
   * Hủy lượt khám ở Prescribed (bệnh nhân bỏ về): chỉ khi chưa cấp thuốc nào, chưa thu tiền.
 """
+import datetime
 import uuid
 from decimal import Decimal
 
-from sqlalchemy import func, select
+from sqlalchemy import Date, cast, func, select
 from sqlalchemy.orm import Session
 
 from app.exceptions import AppError, NotFoundError
@@ -181,6 +182,23 @@ def awaiting_payment(db: Session) -> list[dict]:
                     "payment_status": inv.payment_status if inv else None,
                     "has_prescription": rx is not None, "pending_items": pending})
     return out
+
+
+def invoice_history(db: Session, day: datetime.date | None, include_cancelled: bool) -> list[dict]:
+    """Hóa đơn trong ngày, mới nhất trước. Hóa đơn đã thu xếp theo ngày thu, còn lại theo ngày lập."""
+    day = day or db.scalar(select(func.current_date()))
+    stmt = (select(Invoice, Visit.queue_number, Patient.full_name)
+            .join(Visit, Visit.visit_id == Invoice.visit_id)
+            .join(Patient, Patient.patient_id == Visit.patient_id)
+            .where(cast(func.coalesce(Invoice.paid_at, Invoice.created_at), Date) == day))
+    if not include_cancelled:
+        stmt = stmt.where(Invoice.payment_status != "Cancelled")
+    rows = db.execute(stmt.order_by(func.coalesce(Invoice.paid_at, Invoice.created_at).desc())).all()
+    return [{"invoice_id": inv.invoice_id, "invoice_code": inv.invoice_code, "visit_id": inv.visit_id,
+             "queue_number": qn, "patient_name": name, "consultation_fee": inv.consultation_fee,
+             "paraclinical_fee": inv.paraclinical_fee, "drug_fee": inv.drug_fee, "total_amount": inv.total_amount,
+             "payment_method": inv.payment_method, "payment_status": inv.payment_status, "paid_at": inv.paid_at,
+             "cancelled_at": inv.cancelled_at, "created_at": inv.created_at} for inv, qn, name in rows]
 
 
 def print_data(db: Session, visit_id: uuid.UUID) -> dict:
