@@ -1249,6 +1249,8 @@ export const VI = {
   '(expired)': '(đã hết hạn)',
   'days left': 'ngày nữa',
   of: 'trên',
+  'Go to page': 'Đến trang',
+  Select: 'Chọn',
   'Dispensed with invoice': 'Xuất theo hoá đơn',
   System: 'Hệ thống',
   'All groups': 'Tất cả nhóm',

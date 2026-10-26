@@ -21,7 +21,10 @@
 .dev-tools{display:flex;align-items:center;gap:10px;margin-bottom:14px;padding:6px 10px;border:1px dashed var(--border);border-radius:10px;font-size:12px;color:var(--ink-soft);width:fit-content;}
 .dev-tools label{display:flex;align-items:center;gap:6px;cursor:pointer;}
 /* Sinh hiệu 8 khoá + triệu chứng ba trạng thái (HITL) */
-.vitals-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px 14px;}
+.vitals-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px 14px;align-items:end;}
+.intake-extra{align-items:end;}
+.intake-print{display:flex;align-items:center;gap:8px;height:40px;font-size:13.5px;color:var(--ink);cursor:pointer;}
+.intake-print input{accent-color:var(--primary);}
 @media (max-width:900px){.vitals-grid{grid-template-columns:repeat(2,minmax(0,1fr));}}
 .field-ask{border-color:var(--priority) !important;background:var(--priority-soft) !important;}
 .sym-panel{display:flex;flex-direction:column;gap:8px;}

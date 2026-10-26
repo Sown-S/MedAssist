@@ -218,6 +218,7 @@ const PATHS = {
   chevronUp: <path d="m18 15-6-6-6 6" />,
   chevronDown: <path d="m6 9 6 6 6-6" />,
   chevronRight: <path d="m9 18 6-6-6-6" />,
+  arrowLeft: <path d="m12 19-7-7 7-7M19 12H5" />,
   chevronsLeft: <path d="m11 17-5-5 5-5M18 17l-5-5 5-5" />,
   chevronsRight: <path d="m13 17 5-5-5-5M6 17l5-5-5-5" />
 }
