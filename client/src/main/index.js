@@ -118,9 +118,11 @@ function loadProjectCAs() {
   }
 }
 const PROJECT_CAS = loadProjectCAs()
+// Máy mới cài chưa lưu serverUrl: renderer dùng địa chỉ mặc định này, main phải ghim CA cho đúng địa chỉ đó.
+const DEFAULT_SERVER_URL = import.meta.env.VITE_API_BASE_URL || 'https://localhost'
 const serverHost = () => {
   try {
-    return new URL(readJson('config.json').serverUrl).hostname
+    return new URL(readJson('config.json').serverUrl || DEFAULT_SERVER_URL).hostname
   } catch {
     return null
   }
