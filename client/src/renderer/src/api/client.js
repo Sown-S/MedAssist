@@ -38,6 +38,9 @@ export class ApiError extends Error {
 // Gặp 401 vì access token hết hạn → đổi bằng refresh token một lần rồi gọi lại; refresh cũng 401 → về màn đăng nhập.
 let onSessionExpired = () => {}
 export const setSessionExpiredHandler = (fn) => (onSessionExpired = fn)
+// 403 PASSWORD_CHANGE_REQUIRED: tài khoản đang bị bắt đổi mật khẩu (vd admin vừa đặt lại) → về màn đổi mật khẩu.
+let onPasswordChangeRequired = () => {}
+export const setPasswordChangeRequiredHandler = (fn) => (onPasswordChangeRequired = fn)
 let refreshing = null
 async function refreshTokens() {
   const refresh = await tokenStore.get('refresh')
@@ -72,7 +75,11 @@ async function realRequest(path, options = {}, retried = false) {
     await tokenStore.clear()
     onSessionExpired()
   }
-  if (!res.ok) throw new ApiError(res.status, await res.json().catch(() => null))
+  if (!res.ok) {
+    const err = new ApiError(res.status, await res.json().catch(() => null))
+    if (err.code === 'PASSWORD_CHANGE_REQUIRED') onPasswordChangeRequired()
+    throw err
+  }
   return res.status === 204 ? null : res.json()
 }
 

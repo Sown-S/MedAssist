@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import Modal, { ModalHeader } from '../../components/Modal'
 import ReauthModal from '../../components/ReauthModal'
+import ChangePasswordModal from '../../components/ChangePasswordModal'
 import Icon from '../../components/Icon'
 import Button from '../../components/Button'
 import { LoadingBlock, ErrorBlock } from '../../components/DataState'
@@ -18,12 +19,10 @@ import {
   unlockAccount,
   forceSignOut
 } from '../../api/accountStore'
-import { changePassword } from '../../api/authApi'
 import { DEMO_MODE } from '../../api/client'
 import { logEvent } from '../../api/activityStore'
 import { useCatalogs, getCatalogs, upsertRow } from '../../api/catalogStore'
 import { fmtDate, fmtDateTime } from './inventory/shared'
-import { getSettings } from '../../api/settingsStore'
 import { translate } from '../../i18n'
 
 const EMPTY = { fullName: '', username: '', roleKey: 'doctor', phone: '', staffCode: '', departmentCode: '', licenseNo: '' }
@@ -66,7 +65,7 @@ function syncDepartment(oldName, account, user) {
 
 export default function StaffPage() {
   const { showToast } = useToast()
-  const { user: me, refreshUser, signOutAfterPasswordChange } = useAuth()
+  const { user: me, refreshUser } = useAuth()
   const cats = useCatalogs()
   const departments = cats.departments.filter((d) => d.active)
   const deptName = (code) => cats.departments.find((d) => d.code === code)?.name ?? ''
@@ -81,7 +80,7 @@ export default function StaffPage() {
   const [formErr, setFormErr] = useState('')
   const [reauth, setReauth] = useState(null) // { title, message, confirmLabel, danger, run }
   const [secret, setSecret] = useState(null) // { account, password, reset } — mật khẩu tạm, chỉ hiện 1 lần
-  const [ownPw, setOwnPw] = useState(null) // { old, np, np2, err }
+  const [ownPw, setOwnPw] = useState(false)
   const [confirm, setConfirm] = useState(null) // { title, message, confirmLabel, run }
 
   async function refresh() {
@@ -209,15 +208,6 @@ export default function StaffPage() {
     logEvent(me, a.active ? 'account.disable' : 'account.enable', { ...target(a), params: { account: a.username }, before: a.active, after: !a.active })
     showToast(a.active ? 'Account disabled' : 'Account re-enabled')
     refresh()
-  }
-  async function submitOwnPw(e) {
-    e.preventDefault()
-    if (ownPw.np !== ownPw.np2) return setOwnPw({ ...ownPw, err: 'The two new passwords do not match.' })
-    const res = await changePassword(me, ownPw.old, ownPw.np)
-    if (!res.ok) return setOwnPw({ ...ownPw, err: res.error })
-    if (DEMO_MODE) logEvent(me, 'auth.password_changed', { target: { kind: 'account', id: me.username } })
-    // Token cũ đã bị thu hồi — đăng nhập lại bằng mật khẩu mới.
-    signOutAfterPasswordChange()
   }
 
   // ---------- Lọc ----------
@@ -439,7 +429,7 @@ export default function StaffPage() {
                                 Edit
                               </button>
                               {self ? (
-                                <button className="btn btn-ghost btn-sm" onClick={() => setOwnPw({ old: '', np: '', np2: '', err: '' })}>
+                                <button className="btn btn-ghost btn-sm" onClick={() => setOwnPw(true)}>
                                   Change password
                                 </button>
                               ) : (
@@ -565,36 +555,7 @@ export default function StaffPage() {
       </Modal>
 
       {/* Tự đổi mật khẩu của mình */}
-      <Modal open={!!ownPw} onClose={() => setOwnPw(null)}>
-        {ownPw && (
-          <form onSubmit={submitOwnPw}>
-            <ModalHeader title="Change your password" onClose={() => setOwnPw(null)} />
-            <div className="modal-body">
-              {ownPw.err && <div className="login-err show">{ownPw.err}</div>}
-              <div className="login-field">
-                <label>Current password</label>
-                <input type="password" autoFocus autoComplete="current-password" value={ownPw.old} onChange={(e) => setOwnPw({ ...ownPw, old: e.target.value })} />
-              </div>
-              <div className="login-field">
-                <label>{`New password (at least ${getSettings().security.minLength} characters)`}</label>
-                <input type="password" autoComplete="new-password" value={ownPw.np} onChange={(e) => setOwnPw({ ...ownPw, np: e.target.value })} />
-              </div>
-              <div className="login-field">
-                <label>Confirm new password</label>
-                <input type="password" autoComplete="new-password" value={ownPw.np2} onChange={(e) => setOwnPw({ ...ownPw, np2: e.target.value })} />
-              </div>
-            </div>
-            <div className="modal-foot">
-              <button type="button" className="btn btn-ghost" onClick={() => setOwnPw(null)}>
-                Cancel
-              </button>
-              <button type="submit" className="btn btn-primary" disabled={!ownPw.old || !ownPw.np}>
-                Change password
-              </button>
-            </div>
-          </form>
-        )}
-      </Modal>
+      <ChangePasswordModal open={ownPw} onClose={() => setOwnPw(false)} />
 
       {/* Xác nhận thường (buộc đăng xuất) */}
       <Modal open={!!confirm} onClose={() => setConfirm(null)}>
