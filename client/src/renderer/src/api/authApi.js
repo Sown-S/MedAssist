@@ -30,7 +30,7 @@ export async function login(username, password, roleKey) {
     await tokenStore.set('access', t.access_token)
     await tokenStore.set('refresh', t.refresh_token)
     const me = await apiGet('/api/v1/auth/me')
-    const account = { id: me.user_id, username: me.username, fullName: me.full_name, roleKey: ROLE_OF[me.role], mustChange: false }
+    const account = { id: me.user_id, username: me.username, fullName: me.full_name, roleKey: ROLE_OF[me.role], mustChange: !!me.must_change_password }
     if (account.roleKey !== roleKey) {
       await logout()
       return { ok: false, error: 'This account does not belong to the selected role.' }
