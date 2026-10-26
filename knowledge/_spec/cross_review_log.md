@@ -1,8 +1,5 @@
 ---
 schema: okf_review_log_v1
-label: KB-2026.01
-description: 'Biên bản rà soát chéo kho tri thức OKF (44 bệnh: 4 infectious, 38 musculoskeletal,
-  2 respiratory) và bộ ca kiểm thử.'
 ---
 
 # BIÊN BẢN RÀ SOÁT CHÉO KHO TRI THỨC OKF & BỘ CA KIỂM THỬ (SPRINT 3)

@@ -53,7 +53,8 @@ def create_user(db: Session, data: UserCreate, actor: User) -> User:
         raise AppError(409, "USERNAME_TAKEN", f"Tên đăng nhập '{data.username}' đã tồn tại",
                        [{"field": "username", "in": "body", "message": "Đã tồn tại"}])
     user = User(username=data.username, full_name=data.full_name, role=data.role,
-                password_hash=hash_password(data.password), email=data.email, phone=data.phone)
+                password_hash=hash_password(data.password), email=data.email, phone=data.phone,
+                must_change_password=True)
     db.add(user)
     db.flush()
     audit.record(db, action="CREATE", entity="users", entity_id=user.user_id, actor_id=actor.user_id,
@@ -94,5 +95,6 @@ def update_user(db: Session, user_id: uuid.UUID, data: UserUpdate, actor: User) 
 def reset_password(db: Session, user_id: uuid.UUID, new_password: str, actor: User) -> None:
     user = _get_editable(db, user_id, for_update=True)
     user.password_hash = hash_password(new_password)
+    user.must_change_password = True
     audit.record(db, action="UPDATE", entity="users", entity_id=user.user_id, actor_id=actor.user_id,
                  new_values={"password_reset_by_admin": True})

@@ -64,4 +64,5 @@ class UserOut(BaseModel):
     email: str | None
     phone: str | None
     is_active: bool
+    must_change_password: bool
     created_at: datetime

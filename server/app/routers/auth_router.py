@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, Request, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.core.auth import get_current_user
+from app.core.auth import get_user_allow_password_change
 from app.core.database import get_db
 from app.core.request_meta import client_ip, user_agent
 from app.core.security import (burn_verify_time, create_access_token, create_refresh_token,
@@ -84,7 +84,7 @@ def refresh(body: RefreshRequest, db: Session = Depends(get_db)) -> TokenRespons
 
 
 @router.post("/logout", status_code=status.HTTP_204_NO_CONTENT)
-def logout(request: Request, user: User = Depends(get_current_user),
+def logout(request: Request, user: User = Depends(get_user_allow_password_change),
            db: Session = Depends(get_db)) -> None:
     # JWT không trạng thái: client xóa cả hai token; server ghi nhận đăng xuất (US07)
     audit.record(db, action="LOGOUT", entity="users", entity_id=user.user_id, actor_id=user.user_id,
@@ -93,13 +93,14 @@ def logout(request: Request, user: User = Depends(get_current_user),
 
 
 @router.get("/me", response_model=UserMe)
-def me(user: User = Depends(get_current_user)) -> User:
+def me(user: User = Depends(get_user_allow_password_change)) -> User:
     return user
 
 
 @router.post("/change-password", status_code=status.HTTP_204_NO_CONTENT)
 def change_password(body: ChangePasswordRequest, request: Request,
-                    user: User = Depends(get_current_user), db: Session = Depends(get_db)) -> None:
+                    user: User = Depends(get_user_allow_password_change),
+                    db: Session = Depends(get_db)) -> None:
     if not verify_password(body.old_password, user.password_hash):
         raise AppError(422, "WRONG_PASSWORD", "Mật khẩu hiện tại không đúng",
                        [{"field": "old_password", "in": "body", "message": "Không đúng"}])
@@ -107,6 +108,7 @@ def change_password(body: ChangePasswordRequest, request: Request,
         raise AppError(422, "VALIDATION_ERROR", "Mật khẩu mới phải khác mật khẩu cũ",
                        [{"field": "new_password", "in": "body", "message": "Phải khác mật khẩu cũ"}])
     user.password_hash = hash_password(body.new_password)
+    user.must_change_password = False
     audit.record(db, action="UPDATE", entity="users", entity_id=user.user_id, actor_id=user.user_id,
                  new_values={"password_changed": True},
                  ip_address=client_ip(request), user_agent=user_agent(request))

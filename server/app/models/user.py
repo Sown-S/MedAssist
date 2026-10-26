@@ -26,4 +26,6 @@ class User(Base):
     email: Mapped[str | None] = mapped_column(String(100))
     phone: Mapped[str | None] = mapped_column(String(20))
     is_active: Mapped[bool] = mapped_column(Boolean, server_default=text("true"))
+    # Alembic 0004: mật khẩu do Admin đặt (tạo mới, đặt lại) phải được chủ tài khoản đổi trước khi dùng hệ thống
+    must_change_password: Mapped[bool] = mapped_column(Boolean, server_default=text("false"))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=text("now()"))
