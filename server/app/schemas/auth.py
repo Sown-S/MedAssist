@@ -35,3 +35,4 @@ class UserMe(BaseModel):
     username: str
     full_name: str
     role: str
+    must_change_password: bool
