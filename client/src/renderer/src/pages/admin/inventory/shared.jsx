@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { translate } from '../../../i18n'
 import { getSettings, PAPERS } from '../../../api/settingsStore'
 import { getDevice } from '../../../api/deviceSettings'
@@ -88,8 +89,24 @@ export function exportCsv(fileName, headers, rows) {
   URL.revokeObjectURL(url)
 }
 
+// Hiện tối đa PAGER_WINDOW nút trang quanh trang hiện tại (kèm trang đầu / cuối); nhiều trang thì có ô nhảy tới trang.
+const PAGER_WINDOW = 5
 export function Pager({ page, pages, total, from, to, onPage }) {
+  const [jump, setJump] = useState('')
   if (total === 0) return null
+  const start = Math.max(1, Math.min(page - Math.floor(PAGER_WINDOW / 2) + 1, pages - PAGER_WINDOW + 1))
+  const end = Math.min(pages, start + PAGER_WINDOW - 1)
+  const btn = (n) => (
+    <button key={n} className={page === n ? 'active' : ''} onClick={() => onPage(n)}>
+      {n}
+    </button>
+  )
+  function go(e) {
+    e.preventDefault()
+    const n = parseInt(jump, 10)
+    if (n >= 1) onPage(Math.min(n, pages))
+    setJump('')
+  }
   return (
     <div className="pager">
       <span>
@@ -102,14 +119,23 @@ export function Pager({ page, pages, total, from, to, onPage }) {
         <button disabled={page === 1} onClick={() => onPage(page - 1)}>
           ‹
         </button>
-        {Array.from({ length: pages }, (_, i) => (
-          <button key={i} className={page === i + 1 ? 'active' : ''} onClick={() => onPage(i + 1)}>
-            {i + 1}
-          </button>
-        ))}
+        {start > 1 && btn(1)}
+        {start > 2 && <span className="pager-gap">…</span>}
+        {Array.from({ length: end - start + 1 }, (_, i) => btn(start + i))}
+        {end < pages - 1 && <span className="pager-gap">…</span>}
+        {end < pages && btn(pages)}
         <button disabled={page === pages} onClick={() => onPage(page + 1)}>
           ›
         </button>
+        {pages > PAGER_WINDOW && (
+          <form className="pager-jump" onSubmit={go}>
+            <span>Go to page</span>
+            <input type="number" min="1" max={pages} value={jump} onChange={(e) => setJump(e.target.value)} />
+            <button type="submit" disabled={!jump}>
+              Select
+            </button>
+          </form>
+        )}
       </div>
     </div>
   )
