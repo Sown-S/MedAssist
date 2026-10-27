@@ -96,7 +96,7 @@ pip install -r requirements.txt
 ### 2.5. Tạo bảng (Alembic)
 
 ```powershell
-alembic upgrade head        # 0001 lược đồ v1.8 (25 bảng) -> 0002 tài khoản system -> 0003 chỉ mục -> 0004, 0005 (ERD v1.9)
+alembic upgrade head        # 0001 lược đồ v1.8 (25 bảng) -> 0002 tài khoản system -> 0003 chỉ mục -> 0004–0006 (ERD v1.9)
 alembic current             # phải in: 0003 (head)
 ```
 
@@ -317,8 +317,7 @@ Tiền tố `/api/v1`. Chi tiết tham số và schema: **Swagger `/docs`** (lu�
 |---|---|---|
 | Xác thực | `POST auth/login`, `auth/refresh`, `auth/logout`, `auth/change-password`; `GET auth/me`; `GET auth/password-policy` (không cần đăng nhập) | Mọi người |
 | Tài khoản | `GET/POST admin/users`; `GET/PATCH admin/users/{id}`; `POST admin/users/{id}/reset-password`, `…/unlock` | Admin |
-| Khoa phòng | `GET departments` (`include_inactive`); `POST admin/departments`; `PATCH admin/departments/{id}` | Mọi vai trò xem; Admin sửa |
-| Ca trực | `GET duty`; `POST duty/start`; `PATCH duty/break`; `DELETE duty` | Mọi vai trò xem; Physician tự bắt đầu / nghỉ / kết thúc ca |
+| Phòng | `GET rooms` (`include_inactive`); `POST admin/rooms`; `PATCH admin/rooms/{id}` | Mọi vai trò xem; Admin sửa. Gán bác sĩ vào phòng bằng `room_id` của tài khoản |
 | Nhật ký | `GET admin/audit-logs`; `GET admin/audit-logs/export` (xlsx mặc định, csv) | Admin |
 | Báo cáo, nhật ký AI | `GET reports/summary` (`date_from`, `date_to`, mặc định hôm nay); `GET admin/ai-logs` (lọc ngày, `run_type`, `status`, `mode`; chỉ metadata) | Admin |
 | Tham số | `GET admin/settings`; `PUT admin/settings/{key}` | Admin |
@@ -369,14 +368,14 @@ Quy ước chung: tiền trả về **dạng số** (VNĐ); mọi GET dữ liệ
 server/
 ├── app/
 │   ├── core/          # cấu hình, DB, bảo mật (JWT, Argon2id), phân quyền, nhật ký VIEW, request-id
-│   ├── models/        # 27 model ORM theo ERD v1.9
-│   ├── routers/       # auth, admin, clinic, department, inventory, prescription, billing, knowledge, assessment, report
+│   ├── models/        # 26 model ORM theo ERD v1.9
+│   ├── routers/       # auth, admin, clinic, room, inventory, prescription, billing, knowledge, assessment, report
 │   ├── schemas/       # Pydantic vào/ra
 │   ├── services/      # nghiệp vụ (audit, user, emr, queue, inventory, prescription, invoice, billing, settings)
 │   ├── validation/    # kiểm tra dùng chung: sinh hiệu (JSON Schema), mã OKF, tham số
 │   ├── exceptions.py  # định dạng lỗi thống nhất
 │   └── main.py
-├── alembic/           # migration 0001–0005 (alembic.ini ở server/)
+├── alembic/           # migration 0001–0006 (alembic.ini ở server/)
 ├── db/                # initdb (vai trò, múi giờ), lược đồ v1.8, tài khoản system
 ├── data/              # drugs.csv + README (nguồn danh mục thuốc)
 ├── scripts/           # create_user, seed_drugs (dùng code của app)

@@ -16,16 +16,14 @@ class VisitCreate(BaseModel):
     chief_complaint: CleanStr = Field(min_length=1, max_length=2000, description="Lý do khám")
     vital_signs: VitalSigns | None = None
     free_text_description: str | None = Field(default=None, max_length=4000)
-    department_id: uuid.UUID | None = Field(default=None, description="Khoa/phòng lễ tân hướng bệnh nhân tới")
 
 
 class VisitUpdate(BaseModel):
-    """Waiting: sửa mọi trường. CheckedIn: chỉ sửa vital_signs và department_id."""
+    """Waiting: sửa mọi trường. CheckedIn: chỉ sửa vital_signs."""
     model_config = ConfigDict(extra="forbid")
     chief_complaint: CleanStr | None = Field(default=None, min_length=1, max_length=2000)
     vital_signs: VitalSigns | None = None
     free_text_description: str | None = Field(default=None, max_length=4000)
-    department_id: uuid.UUID | None = None
 
 
 class CancelRequest(BaseModel):
@@ -42,7 +40,6 @@ class VisitOut(BaseModel):
     patient_id: uuid.UUID
     nurse_id: uuid.UUID
     physician_id: uuid.UUID | None
-    department_id: uuid.UUID | None
     status: str
     queue_date: date
     queue_number: int | None
@@ -86,6 +83,5 @@ class QueueItem(BaseModel):
     physician_id: uuid.UUID | None
     physician_name: str | None
     exam_started_at: datetime | None
-    department_id: uuid.UUID | None
-    department_name: str | None
-    room: str | None
+    room: str | None = Field(default=None, description="Mã phòng khám của bác sĩ đang khám")
+    room_name: str | None = None

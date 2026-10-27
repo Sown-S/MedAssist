@@ -18,10 +18,9 @@ from sqlalchemy import case, func, select, text, update
 from sqlalchemy.orm import Session
 
 from app.exceptions import AppError, NotFoundError
-from app.models import Department, Diagnosis, Patient, User, Visit
+from app.models import Diagnosis, Patient, Room, User, Visit
 from app.schemas.visit import VisitCreate, VisitUpdate
 from app.services import audit_service as audit
-from app.services import department_service
 
 OPEN_STATUSES = ("Waiting", "CheckedIn", "Examining", "Prescribed")
 QUEUE_STATUSES = ("Waiting", "CheckedIn")
@@ -79,10 +78,8 @@ def create_visit(db: Session, data: VisitCreate, actor: User) -> Visit:
     next_number = db.scalar(select(func.coalesce(func.max(Visit.queue_number), 0) + 1)
                             .where(Visit.queue_date == func.current_date()))
 
-    if data.department_id:
-        department_service.require_active(db, data.department_id)
     visit = Visit(patient_id=data.patient_id, nurse_id=actor.user_id, queue_number=next_number,
-                  department_id=data.department_id, chief_complaint=data.chief_complaint,
+                  chief_complaint=data.chief_complaint,
                   vital_signs=data.vital_signs.to_db() if data.vital_signs else None,
                   free_text_description=data.free_text_description)
     db.add(visit)
@@ -100,13 +97,11 @@ def update_visit(db: Session, visit_id: uuid.UUID, data: VisitUpdate, actor: Use
     if visit is None:
         raise NotFoundError("Không tìm thấy lượt khám")
     changes = data.model_dump(exclude_unset=True)
-    # Sau check-in vẫn cho đo lại sinh hiệu (luật tính lại mức ưu tiên) và chuyển phòng khám.
-    after_check_in = visit.status == "CheckedIn" and set(changes) <= {"vital_signs", "department_id"}
-    if visit.status != "Waiting" and not after_check_in:
+    # Sau check-in vẫn cho đo lại sinh hiệu để luật tính lại mức ưu tiên khi bệnh nhân chuyển nặng.
+    vitals_only = visit.status == "CheckedIn" and set(changes) <= {"vital_signs"}
+    if visit.status != "Waiting" and not vitals_only:
         raise AppError(409, "VISIT_LOCKED",
-                       "Chỉ sửa được lượt khám khi còn chờ (Waiting); sau check-in chỉ sửa được sinh hiệu và phòng khám")
-    if changes.get("department_id"):
-        department_service.require_active(db, changes["department_id"])
+                       "Chỉ sửa được lượt khám khi còn chờ (Waiting); sau check-in chỉ sửa được sinh hiệu")
     if "vital_signs" in changes:
         changes["vital_signs"] = data.vital_signs.to_db() if data.vital_signs else None
     if changes.get("chief_complaint", "") is None:
@@ -132,13 +127,9 @@ def check_in(db: Session, visit_id: uuid.UUID, actor: User) -> Visit:
 
 
 def start_exam(db: Session, visit_id: uuid.UUID, actor: User) -> Visit:
-    """Bác sĩ nhận khám: chỉ một bác sĩ thắng (WHERE physician_id IS NULL). Đang trực thì lượt khám ghi khoa của ca."""
-    values = {"physician_id": actor.user_id, "exam_started_at": func.now()}
-    on_duty = department_service.current_department(db, actor.user_id)
-    if on_duty:
-        values["department_id"] = on_duty
+    """Bác sĩ nhận khám: chỉ một bác sĩ thắng (WHERE physician_id IS NULL)."""
     return _transition(db, visit_id, actor, from_status=("CheckedIn",), to_status="Examining",
-                       values=values,
+                       values={"physician_id": actor.user_id, "exam_started_at": func.now()},
                        extra_where=(Visit.physician_id.is_(None),), conflict_code="VISIT_TAKEN")
 
 
@@ -205,21 +196,19 @@ def mark_finished(db: Session, visit_id: uuid.UUID, actor: User) -> Visit:
 # ---------------------------------------------------------------------------- truy vấn
 def queue_today(db: Session) -> list[dict]:
     rows = db.execute(
-        select(Visit, Patient.full_name, Patient.date_of_birth, Patient.gender, User.full_name,
-               Department.name, Department.room)
+        select(Visit, Patient.full_name, Patient.date_of_birth, Patient.gender, User.full_name, Room.code, Room.name)
         .join(Patient, Patient.patient_id == Visit.patient_id)
         .outerjoin(User, User.user_id == Visit.physician_id)
-        .outerjoin(Department, Department.department_id == Visit.department_id)
+        .outerjoin(Room, Room.room_id == User.room_id)
         .where(Visit.queue_date == func.current_date(), Visit.status.in_(QUEUE_VIEW_STATUSES))
         .order_by(_PRIORITY_RANK.desc(), Visit.visit_date, Visit.queue_number)).all()
     return [{**{k: getattr(v, k) for k in ("visit_id", "queue_number", "status", "patient_id",
                                            "chief_complaint", "triage_priority", "is_red_flag",
                                            "red_flag_reason", "priority_raised_by_ai", "ai_status",
-                                           "visit_date", "checked_in_at", "physician_id", "exam_started_at",
-                                           "department_id")},
+                                           "visit_date", "checked_in_at", "physician_id", "exam_started_at")},
              "patient_name": name, "date_of_birth": dob, "gender": gender, "physician_name": physician,
-             "department_name": dept_name, "room": room}
-            for v, name, dob, gender, physician, dept_name, room in rows]
+             "room": room, "room_name": room_name}
+            for v, name, dob, gender, physician, room, room_name in rows]
 
 
 def stale_open_visits(db: Session) -> list[Visit]:

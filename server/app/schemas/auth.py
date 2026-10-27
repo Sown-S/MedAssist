@@ -38,7 +38,9 @@ class UserMe(BaseModel):
     must_change_password: bool
     staff_code: str | None
     license_no: str | None
-    department_id: uuid.UUID | None
+    room_id: uuid.UUID | None
+    room_code: str | None = None
+    room_name: str | None = None
 
 
 class PasswordPolicy(BaseModel):
