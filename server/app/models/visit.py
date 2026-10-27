@@ -28,11 +28,13 @@ class Visit(Base):
         CheckConstraint("triage_priority::text = ANY (ARRAY['Emergency'::character varying, 'HighPriority'::character varying, 'Routine'::character varying]::text[])", name='visit_triage_priority_check'),
         CheckConstraint("triage_priority_rule::text = ANY (ARRAY['Emergency'::character varying, 'HighPriority'::character varying, 'Routine'::character varying]::text[])", name='visit_triage_priority_rule_check'),
         CheckConstraint('vital_signs IS NULL OR jsonb_typeof(vital_signs) = \'object\'::text AND (vital_signs - fn_vital_sign_keys()) = \'{}\'::jsonb AND NOT jsonb_path_exists(vital_signs, \'$.*?(@.type() != "number")\'::jsonpath)', name='chk_visit_vital_signs_keys'),
+        ForeignKeyConstraint(['department_id'], ['department.department_id'], name='fk_visit_department'),
         ForeignKeyConstraint(['nurse_id'], ['users.user_id'], name='visit_nurse_id_fkey'),
         ForeignKeyConstraint(['patient_id'], ['patient.patient_id'], name='visit_patient_id_fkey'),
         ForeignKeyConstraint(['physician_id'], ['users.user_id'], name='visit_physician_id_fkey'),
         ForeignKeyConstraint(['red_flag_rule_id', 'red_flag_rule_type'], ['triage_rule.triage_rule_id', 'triage_rule.rule_type'], name='fk_visit_red_flag_rule'),
         PrimaryKeyConstraint('visit_id', name='visit_pkey'),
+        Index('idx_visit_department', 'department_id', 'queue_date'),
         Index('idx_visit_patient', 'patient_id', text('visit_date DESC')),
         Index('idx_visit_physician', 'physician_id'),
         Index('idx_visit_queue', 'queue_date', 'status', 'triage_priority', 'visit_date', postgresql_where="((status)::text = ANY ((ARRAY['Waiting'::character varying, 'CheckedIn'::character varying])::text[]))"),
@@ -43,6 +45,7 @@ class Visit(Base):
     patient_id: Mapped[uuid.UUID] = mapped_column(Uuid, nullable=False)
     nurse_id: Mapped[uuid.UUID] = mapped_column(Uuid, nullable=False)
     physician_id: Mapped[uuid.UUID | None] = mapped_column(Uuid)
+    department_id: Mapped[uuid.UUID | None] = mapped_column(Uuid)
     visit_date: Mapped[datetime.datetime] = mapped_column(DateTime(True), nullable=False, server_default=text('now()'))
     queue_date: Mapped[datetime.date] = mapped_column(Date, nullable=False, server_default=text('CURRENT_DATE'))
     status: Mapped[str] = mapped_column(String(20), nullable=False, server_default=text("'Waiting'::character varying"))

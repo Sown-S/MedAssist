@@ -96,7 +96,7 @@ pip install -r requirements.txt
 ### 2.5. Tạo bảng (Alembic)
 
 ```powershell
-alembic upgrade head        # 0001 lược đồ v1.8 (25 bảng) -> 0002 tài khoản system -> 0003 chỉ mục
+alembic upgrade head        # 0001 lược đồ v1.8 (25 bảng) -> 0002 tài khoản system -> 0003 chỉ mục -> 0004, 0005 (ERD v1.9)
 alembic current             # phải in: 0003 (head)
 ```
 
@@ -315,8 +315,10 @@ Tiền tố `/api/v1`. Chi tiết tham số và schema: **Swagger `/docs`** (lu�
 
 | Nhóm | Đường dẫn | Vai trò |
 |---|---|---|
-| Xác thực | `POST auth/login`, `auth/refresh`, `auth/logout`, `auth/change-password`; `GET auth/me` | Mọi người |
-| Tài khoản | `GET/POST admin/users`; `GET/PATCH admin/users/{id}`; `POST admin/users/{id}/reset-password` | Admin |
+| Xác thực | `POST auth/login`, `auth/refresh`, `auth/logout`, `auth/change-password`; `GET auth/me`; `GET auth/password-policy` (không cần đăng nhập) | Mọi người |
+| Tài khoản | `GET/POST admin/users`; `GET/PATCH admin/users/{id}`; `POST admin/users/{id}/reset-password`, `…/unlock` | Admin |
+| Khoa phòng | `GET departments` (`include_inactive`); `POST admin/departments`; `PATCH admin/departments/{id}` | Mọi vai trò xem; Admin sửa |
+| Ca trực | `GET duty`; `POST duty/start`; `PATCH duty/break`; `DELETE duty` | Mọi vai trò xem; Physician tự bắt đầu / nghỉ / kết thúc ca |
 | Nhật ký | `GET admin/audit-logs`; `GET admin/audit-logs/export` (xlsx mặc định, csv) | Admin |
 | Báo cáo, nhật ký AI | `GET reports/summary` (`date_from`, `date_to`, mặc định hôm nay); `GET admin/ai-logs` (lọc ngày, `run_type`, `status`, `mode`; chỉ metadata) | Admin |
 | Tham số | `GET admin/settings`; `PUT admin/settings/{key}` | Admin |
@@ -352,7 +354,8 @@ Quy ước chung: tiền trả về **dạng số** (VNĐ); mọi GET dữ liệ
 | `pip install` báo `No matching distribution` | Khác phiên bản Python | Dùng Python 3.14 như máy Sơn |
 | `pip install` lỗi đọc `requirements.txt` (ký tự lạ) | File bị ghi UTF-16 (PowerShell `>`) | Ghi lại: `python -m pip freeze \| Out-File -Encoding ascii requirements.txt` |
 | `alembic check` báo có thay đổi | Sửa model mà chưa có revision | Báo Sơn — mọi thay đổi bảng đi qua migration |
-| Đăng nhập trả `429` `RATE_LIMITED` | Sai mật khẩu 5 lần trong 15 phút | Đợi 5 phút (hoặc Admin `reset-password`) |
+| Đăng nhập trả `429` `RATE_LIMITED` | Sai mật khẩu 5 lần trong 15 phút | Đợi 5 phút, hoặc Admin `unlock` / `reset-password` |
+| API trả `403` `PASSWORD_CHANGE_REQUIRED` | Tài khoản do Admin tạo hoặc vừa đặt lại mật khẩu | Đổi mật khẩu (`auth/change-password`) rồi đăng nhập lại |
 | API trả `401` sau một lúc | Access token hết hạn (15 phút) | Đăng nhập lại / `auth/refresh` |
 | API trả `403` | Sai vai trò (vd Admin xem bệnh nhân) | Đúng thiết kế — dùng tài khoản đúng vai trò |
 | `[Errno 10048]` khi chạy uvicorn | Cổng 8000 đang bị dùng (uvicorn cũ còn chạy) | Đóng terminal cũ, hoặc `uvicorn app.main:app --reload --port 8001` |
@@ -366,14 +369,14 @@ Quy ước chung: tiền trả về **dạng số** (VNĐ); mọi GET dữ liệ
 server/
 ├── app/
 │   ├── core/          # cấu hình, DB, bảo mật (JWT, Argon2id), phân quyền, nhật ký VIEW, request-id
-│   ├── models/        # 25 model ORM theo ERD v1.8
-│   ├── routers/       # auth, admin, clinic, inventory, prescription, billing
+│   ├── models/        # 27 model ORM theo ERD v1.9
+│   ├── routers/       # auth, admin, clinic, department, inventory, prescription, billing, knowledge, assessment, report
 │   ├── schemas/       # Pydantic vào/ra
 │   ├── services/      # nghiệp vụ (audit, user, emr, queue, inventory, prescription, invoice, billing, settings)
 │   ├── validation/    # kiểm tra dùng chung: sinh hiệu (JSON Schema), mã OKF, tham số
 │   ├── exceptions.py  # định dạng lỗi thống nhất
 │   └── main.py
-├── alembic/           # migration 0001–0003 (alembic.ini ở server/)
+├── alembic/           # migration 0001–0005 (alembic.ini ở server/)
 ├── db/                # initdb (vai trò, múi giờ), lược đồ v1.8, tài khoản system
 ├── data/              # drugs.csv + README (nguồn danh mục thuốc)
 ├── scripts/           # create_user, seed_drugs (dùng code của app)
@@ -383,5 +386,5 @@ server/
 └── requirements.txt
 ```
 
-Tài liệu liên quan: ERD v1.8, Architecture v1.7, *Quy định v5*, *Cấu trúc v5*; `server/data/README.md`;
+Tài liệu liên quan: ERD v1.9, Architecture v1.7, *Quy định v5*, *Cấu trúc v5*; `server/data/README.md`;
 `tools/drug_data/README.md`.

@@ -2,7 +2,7 @@ import uuid
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from app.core.security import MIN_PASSWORD_LENGTH
+from app.schemas.common import NewPassword
 
 
 class LoginRequest(BaseModel):
@@ -25,7 +25,7 @@ class TokenResponse(BaseModel):
 
 class ChangePasswordRequest(BaseModel):
     old_password: str = Field(min_length=1, max_length=128)
-    new_password: str = Field(min_length=MIN_PASSWORD_LENGTH, max_length=128)
+    new_password: NewPassword
 
 
 class UserMe(BaseModel):
@@ -36,3 +36,15 @@ class UserMe(BaseModel):
     full_name: str
     role: str
     must_change_password: bool
+    staff_code: str | None
+    license_no: str | None
+    department_id: uuid.UUID | None
+
+
+class PasswordPolicy(BaseModel):
+    """Chính sách mật khẩu và khóa đăng nhập server đang áp dụng (client hiển thị chỉ đọc)."""
+    min_length: int
+    require_letters_and_digits: bool
+    max_failed_attempts: int
+    failed_window_minutes: int
+    lock_minutes: int
