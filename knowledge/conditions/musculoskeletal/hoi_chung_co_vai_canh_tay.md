@@ -7,12 +7,25 @@ icd10_code: M53.1
 disease_group: musculoskeletal
 description: Hội chứng cổ vai cánh tay (cervical scapulohumeral syndrome), còn gọi
   là hội chứng vai cánh tay (scapulohumeral syndrome) hay bệnh lý rễ tủy cổ (cervical
-  radiculopathy), là một nhóm các triệu chứng lâm sàng liên quan đến các bệnh lý cột.
+  radiculopathy), là một nhóm các triệu chứng lâm sàng liên quan đến các bệnh lý cột
+  sống cổ có kèm theo các rối loạn chức năng rễ, dây.
 relations:
-- symptom_code: chills_rigors
+- symptom_code: cervical_radiculopathy_spurling
   polarity: SUPPORTS
-  weight: 0.8
-  is_key: false
+  weight: 0.97
+  is_key: true
+  source_key: moh_qd_361_2014
+  source_edition: Quyết định số 361/QĐ-BYT
+- symptom_code: bone_pain_fracture_lesion
+  polarity: SUPPORTS
+  weight: 0.94
+  is_key: true
+  source_key: moh_qd_361_2014
+  source_edition: Quyết định số 361/QĐ-BYT
+- symptom_code: dizziness_vertigo
+  polarity: SUPPORTS
+  weight: 0.9
+  is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: sweating_profuse
@@ -21,28 +34,10 @@ relations:
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: fatigue_malaise
+- symptom_code: herpetic_dermatomal_pain_blister
   polarity: SUPPORTS
-  weight: 0.7
-  is_key: false
-  source_key: moh_qd_361_2014
-  source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: weight_loss_anorexia
-  polarity: SUPPORTS
-  weight: 0.75
-  is_key: false
-  source_key: moh_qd_361_2014
-  source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: headache_dull
-  polarity: SUPPORTS
-  weight: 0.75
-  is_key: false
-  source_key: moh_qd_361_2014
-  source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: dizziness_vertigo
-  polarity: SUPPORTS
-  weight: 0.79
-  is_key: false
+  weight: 0.96
+  is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: nocturnal_asthma_dyspnea
@@ -54,6 +49,12 @@ relations:
 - symptom_code: mechanical_spinal_pain_stiffness
   polarity: SUPPORTS
   weight: 0.92
+  is_key: true
+  source_key: moh_qd_361_2014
+  source_edition: Quyết định số 361/QĐ-BYT
+- symptom_code: tinnitus_ear_fullness
+  polarity: SUPPORTS
+  weight: 0.88
   is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT

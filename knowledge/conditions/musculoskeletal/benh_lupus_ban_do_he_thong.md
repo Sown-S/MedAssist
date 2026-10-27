@@ -8,36 +8,30 @@ disease_group: musculoskeletal
 description: Lupus ban đỏ hệ thống là bệnh lý của mô liên kết có tổn thương nhiều
   cơ quan do hệ thống miễn dịch của cơ thể bị rối loạn, đặc trưng bởi sự có mặt của
   kháng thể kháng nhân và nhiều tự kháng thể khác. Các cơ quan thường bị tổn thương
-  bao gồm khớp, da,.
+  bao gồm khớp, da, thận, tế bào máu, tim, phổi, thần kinh….
 relations:
-- symptom_code: fever_prolonged
+- symptom_code: malar_butterfly_photosensitivity
   polarity: SUPPORTS
-  weight: 0.85
+  weight: 0.98
   is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: fatigue_malaise
+- symptom_code: serositis_pleural_pericardial
   polarity: SUPPORTS
-  weight: 0.7
+  weight: 0.89
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: weight_loss_anorexia
+- symptom_code: myalgia_arthralgia
   polarity: SUPPORTS
-  weight: 0.75
-  is_key: false
+  weight: 0.84
+  is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: lymphadenopathy_splenomegaly
+- symptom_code: skin_sclerosis_raynaud
   polarity: SUPPORTS
-  weight: 0.82
-  is_key: false
-  source_key: moh_qd_361_2014
-  source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: anemia_pallor_jaundice
-  polarity: SUPPORTS
-  weight: 0.8
-  is_key: false
+  weight: 0.97
+  is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: oral_mucosal_ulcers
@@ -46,15 +40,21 @@ relations:
   is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: malar_butterfly_photosensitivity
+- symptom_code: lymphadenopathy_splenomegaly
   polarity: SUPPORTS
-  weight: 0.98
+  weight: 0.84
+  is_key: false
+  source_key: moh_qd_361_2014
+  source_edition: Quyết định số 361/QĐ-BYT
+- symptom_code: asymmetric_oligoarthritis_lower
+  polarity: SUPPORTS
+  weight: 0.9
   is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: skin_sclerosis_raynaud
+- symptom_code: fever_prolonged
   polarity: SUPPORTS
-  weight: 0.97
+  weight: 0.85
   is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT

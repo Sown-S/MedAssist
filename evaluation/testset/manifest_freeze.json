@@ -1,30 +1,38 @@
 {
   "freeze_version": "testset-v1.0-frozen",
-  "frozen_at": "2026-10-22T10:26:19",
+  "frozen_at": "2026-10-27T10:09:04",
   "git_tag_recommended": "testset-v1.0-frozen",
   "knowledge_snapshot": {
-    "total_conditions": 44,
+    "total_conditions": 84,
     "groups": {
-      "infectious": 4,
-      "musculoskeletal": 38,
+      "dermatology": 3,
+      "ent": 50,
+      "infectious": 3,
+      "musculoskeletal": 26,
       "respiratory": 2
     },
-    "total_symptoms": 60,
+    "total_symptoms": 86,
     "total_triage_rules": 11,
-    "total_sources": 7
+    "total_sources": 9
   },
-  "combined_sha256": "74dc489a5857a6647250558e8ede3e6da9b2930c8a00289e65bbe3387ef164e7",
+  "combined_sha256": "5f6a9cdf6ecac3b1e8792bb7e0f3f0a94e4f49d3b2f80a73b8c219c204206ee9",
   "files": [
     {
       "path": "evaluation/testset/symptom_extraction_testset.jsonl",
-      "num_cases": 20,
-      "sha256": "abefc1859d8abd4e4617ea910baefc12e1015defbb7990c35efef8dbfdc4d972"
+      "num_cases": 19,
+      "sha256": "3d1d2dedfd0c7999532ae75827fcd2b042e9e355820fa0fc09c24e4ac842c72a"
     },
     {
       "path": "evaluation/testset/clinical_cases_labeled.jsonl",
-      "num_cases": 16,
-      "sha256": "09f27316a1d7faa0fe5380beedec4aade662af13b4ca0b378fa800da9904dee8"
+      "num_cases": 13,
+      "sha256": "3a0426c516ac296c0520a2d39e9e71d5030d37fb652abbc7c42b415a25c2082e"
     }
   ],
+  "retired_cases": {
+    "EXT-011": "Dùng mã triệu chứng knee_effusion_crepitus_locking / morning_stiffness_under_30m không còn trong catalog.",
+    "CLIN-003": "Bệnh tay_chan_mieng bị loại khỏi vault (ít hơn 3 quan hệ triệu chứng).",
+    "CLIN-012": "Bệnh thoai_hoa_khop_goi / u_sun_mang_hoat_dich và 2 mã triệu chứng của ca không còn trong vault.",
+    "CLIN-016": "Bệnh nhuoc_co không còn trong vault."
+  },
   "policy_note": "Đóng băng bộ test theo Nguyên tắc vàng #6 (Quy định v5): Không chỉnh rule hay prompt dựa trên bộ test này."
 }

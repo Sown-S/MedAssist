@@ -8,22 +8,28 @@ disease_group: respiratory
 description: Phổi tắc nghẽn mạn tính là bệnh lý lâm sàng được chẩn đoán và điều trị
   theo hướng dẫn chuyên môn của Bộ Y tế.
 relations:
-- symptom_code: fever_prolonged
+- symptom_code: history_smoking_dust_exposure
   polarity: SUPPORTS
-  weight: 0.85
+  weight: 0.98
   is_key: true
   source_key: moh_qd_4562_2018
   source_edition: Quyết định số 4562/QĐ-BYT
-- symptom_code: sweating_profuse
+- symptom_code: wheezing_bronchospasm
   polarity: SUPPORTS
-  weight: 0.75
-  is_key: false
+  weight: 0.98
+  is_key: true
   source_key: moh_qd_4562_2018
   source_edition: Quyết định số 4562/QĐ-BYT
-- symptom_code: fatigue_malaise
+- symptom_code: dyspnea_chronic_exertional
   polarity: SUPPORTS
-  weight: 0.72
-  is_key: false
+  weight: 0.96
+  is_key: true
+  source_key: moh_qd_4562_2018
+  source_edition: Quyết định số 4562/QĐ-BYT
+- symptom_code: cough_productive_sputum
+  polarity: SUPPORTS
+  weight: 0.94
+  is_key: true
   source_key: moh_qd_4562_2018
   source_edition: Quyết định số 4562/QĐ-BYT
 - symptom_code: weight_loss_anorexia
@@ -32,28 +38,22 @@ relations:
   is_key: false
   source_key: moh_qd_4562_2018
   source_edition: Quyết định số 4562/QĐ-BYT
-- symptom_code: headache_dull
+- symptom_code: nausea_vomiting_diarrhea
   polarity: SUPPORTS
-  weight: 0.77
+  weight: 0.79
   is_key: false
   source_key: moh_qd_4562_2018
   source_edition: Quyết định số 4562/QĐ-BYT
-- symptom_code: dizziness_vertigo
+- symptom_code: snoring_sleep_apnea
   polarity: SUPPORTS
-  weight: 0.77
-  is_key: false
+  weight: 0.98
+  is_key: true
   source_key: moh_qd_4562_2018
   source_edition: Quyết định số 4562/QĐ-BYT
-- symptom_code: lymphadenopathy_splenomegaly
+- symptom_code: cough_dry
   polarity: SUPPORTS
-  weight: 0.8
-  is_key: false
-  source_key: moh_qd_4562_2018
-  source_edition: Quyết định số 4562/QĐ-BYT
-- symptom_code: anemia_pallor_jaundice
-  polarity: SUPPORTS
-  weight: 0.8
-  is_key: false
+  weight: 0.87
+  is_key: true
   source_key: moh_qd_4562_2018
   source_edition: Quyết định số 4562/QĐ-BYT
 excerpts:
@@ -72,4 +72,4 @@ excerpts:
 - Bảng 5.3. Phác đồ điều trị khó thở bằng Morphin ở bệnh nhân BPTNMT
 - Biểu đồ 3.1. Hướng dẫn xử trí ban đầu đợt cấp BPTNMT&HPQ………………..…… 34
 - Biểu đồ 3.2. Hướng dẫn dùng kháng sinh cho đợt cấp BPTNMT mức độ trung bình ... 36
-- Biểu đồ 3.3. Điều trị kháng sinh cho bệnh nhân đợt cấp BPTNMT nhập viện .............. 38
+- Sáng kiến toàn cầu cho BPTNMT

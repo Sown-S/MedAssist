@@ -7,12 +7,28 @@ icd10_code: C79.5
 disease_group: musculoskeletal
 description: Ung thư di căn xương (Bone metastases) là tình trạng những tế bào ung
   thư từ ổ nguyên phát di căn đến tổ chức xương làm tổn hại đến cấu trúc của xương.
-  Hệ thống xương là một trong những cơ quan hay bị ung thư di căn nhất và thường gây
-  ảnh hưởng.
 relations:
-- symptom_code: fatigue_malaise
+- symptom_code: bone_pain_fracture_lesion
   polarity: SUPPORTS
-  weight: 0.7
+  weight: 0.98
+  is_key: true
+  source_key: moh_qd_361_2014
+  source_edition: Quyết định số 361/QĐ-BYT
+- symptom_code: asymmetric_oligoarthritis_lower
+  polarity: SUPPORTS
+  weight: 0.9
+  is_key: true
+  source_key: moh_qd_361_2014
+  source_edition: Quyết định số 361/QĐ-BYT
+- symptom_code: dizziness_vertigo
+  polarity: SUPPORTS
+  weight: 0.88
+  is_key: true
+  source_key: moh_qd_361_2014
+  source_edition: Quyết định số 361/QĐ-BYT
+- symptom_code: anemia_pallor_jaundice
+  polarity: SUPPORTS
+  weight: 0.8
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
@@ -22,28 +38,10 @@ relations:
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: dizziness_vertigo
+- symptom_code: fatigue_malaise
   polarity: SUPPORTS
-  weight: 0.75
+  weight: 0.7
   is_key: false
-  source_key: moh_qd_361_2014
-  source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: anemia_pallor_jaundice
-  polarity: SUPPORTS
-  weight: 0.8
-  is_key: false
-  source_key: moh_qd_361_2014
-  source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: asymmetric_oligoarthritis_lower
-  polarity: SUPPORTS
-  weight: 0.9
-  is_key: true
-  source_key: moh_qd_361_2014
-  source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: bone_pain_fracture_lesion
-  polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 excerpts:

@@ -5,44 +5,14 @@ name_vi: Cúm mùa
 name_en: Cúm mùa
 icd10_code: J11.1
 disease_group: infectious
-description: GS.TS. Trần Văn Thuấn | Thứ trưởng Bộ Y tế. TS. Phạm Ngọc Thạch | Giám
-  đốc Bệnh viện Bệnh Nhiệt đới Trung ương. TS. Nguyễn Trọng Khoa | Phó Cục trưởng
-  Cục Quản lý Khám, chữa bệnh;.
+description: CHẨN ĐOÁN VÀ ĐIỀU TRỊ CÚM MÙA (Ban hành kèm theo Quyết định số 1840/QĐ-BYT
+  ngày 03/06/2025) Cúm mùa (Seasonal Influenza) là một bệnh nhiễm trùng hô hấp cấp
+  tính do những chủng vi rút cúm đang lưu hành (A/H1N1; A/H3N2; B) gây ra.
 relations:
-- symptom_code: chills_rigors
+- symptom_code: nausea_vomiting_diarrhea
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.77
   is_key: false
-  source_key: moh_qd_1840_2025
-  source_edition: Quyết định số 1840/QĐ-BYT
-- symptom_code: fatigue_malaise
-  polarity: SUPPORTS
-  weight: 0.7
-  is_key: false
-  source_key: moh_qd_1840_2025
-  source_edition: Quyết định số 1840/QĐ-BYT
-- symptom_code: headache_dull
-  polarity: SUPPORTS
-  weight: 0.75
-  is_key: false
-  source_key: moh_qd_1840_2025
-  source_edition: Quyết định số 1840/QĐ-BYT
-- symptom_code: cough_dry
-  polarity: SUPPORTS
-  weight: 0.85
-  is_key: true
-  source_key: moh_qd_1840_2025
-  source_edition: Quyết định số 1840/QĐ-BYT
-- symptom_code: sore_throat_dysphagia
-  polarity: SUPPORTS
-  weight: 0.75
-  is_key: false
-  source_key: moh_qd_1840_2025
-  source_edition: Quyết định số 1840/QĐ-BYT
-- symptom_code: rhinorrhea_nasal_congestion
-  polarity: SUPPORTS
-  weight: 0.82
-  is_key: true
   source_key: moh_qd_1840_2025
   source_edition: Quyết định số 1840/QĐ-BYT
 - symptom_code: dyspnea_chronic_exertional
@@ -51,9 +21,39 @@ relations:
   is_key: true
   source_key: moh_qd_1840_2025
   source_edition: Quyết định số 1840/QĐ-BYT
-- symptom_code: nausea_vomiting_diarrhea
+- symptom_code: nasal_obstruction_stuffiness
   polarity: SUPPORTS
-  weight: 0.77
+  weight: 0.9
+  is_key: true
+  source_key: moh_qd_1840_2025
+  source_edition: Quyết định số 1840/QĐ-BYT
+- symptom_code: rhinorrhea_nasal_congestion
+  polarity: SUPPORTS
+  weight: 0.86
+  is_key: true
+  source_key: moh_qd_1840_2025
+  source_edition: Quyết định số 1840/QĐ-BYT
+- symptom_code: cough_dry
+  polarity: SUPPORTS
+  weight: 0.85
+  is_key: true
+  source_key: moh_qd_1840_2025
+  source_edition: Quyết định số 1840/QĐ-BYT
+- symptom_code: chills_rigors
+  polarity: SUPPORTS
+  weight: 0.8
+  is_key: false
+  source_key: moh_qd_1840_2025
+  source_edition: Quyết định số 1840/QĐ-BYT
+- symptom_code: myalgia_arthralgia
+  polarity: SUPPORTS
+  weight: 0.8
+  is_key: true
+  source_key: moh_qd_1840_2025
+  source_edition: Quyết định số 1840/QĐ-BYT
+- symptom_code: headache_dull
+  polarity: SUPPORTS
+  weight: 0.75
   is_key: false
   source_key: moh_qd_1840_2025
   source_edition: Quyết định số 1840/QĐ-BYT
