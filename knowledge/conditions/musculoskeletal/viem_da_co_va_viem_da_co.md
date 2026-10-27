@@ -8,24 +8,30 @@ disease_group: musculoskeletal
 description: Viêm da cơ và viêm đa cơ được xếp vào nhóm bệnh tự miễn với tổn thương
   cơ bản là tình trạng viêm mạn tính của các bó cơ vân (viêm đa cơ) với biểu hiện
   đặc trưng của bệnh là yếu cơ vùng gốc chi đối xứng hai bên; khi có kèm theo tổn
-  thương da thì.
+  thương da thì được gọi là bệnh viêm da cơ.
 relations:
-- symptom_code: fatigue_malaise
+- symptom_code: heliotrope_gottron_sign
   polarity: SUPPORTS
-  weight: 0.7
-  is_key: false
-  source_key: moh_qd_361_2014
-  source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: weight_loss_anorexia
-  polarity: SUPPORTS
-  weight: 0.75
-  is_key: false
-  source_key: moh_qd_361_2014
-  source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: maculopapular_rash
-  polarity: SUPPORTS
-  weight: 0.9
+  weight: 0.98
   is_key: true
+  source_key: moh_qd_361_2014
+  source_edition: Quyết định số 361/QĐ-BYT
+- symptom_code: serositis_pleural_pericardial
+  polarity: SUPPORTS
+  weight: 0.89
+  is_key: false
+  source_key: moh_qd_361_2014
+  source_edition: Quyết định số 361/QĐ-BYT
+- symptom_code: myalgia_arthralgia
+  polarity: SUPPORTS
+  weight: 0.84
+  is_key: true
+  source_key: moh_qd_361_2014
+  source_edition: Quyết định số 361/QĐ-BYT
+- symptom_code: nausea_vomiting_diarrhea
+  polarity: SUPPORTS
+  weight: 0.79
+  is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: skin_sclerosis_raynaud
@@ -34,28 +40,22 @@ relations:
   is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: heliotrope_gottron_sign
+- symptom_code: proximal_muscle_weakness_wasting
   polarity: SUPPORTS
-  weight: 0.98
+  weight: 0.97
   is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: cough_dry
+- symptom_code: hoarseness_dysphonia_stridor
   polarity: SUPPORTS
-  weight: 0.85
+  weight: 0.94
   is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: sore_throat_dysphagia
+- symptom_code: tonsillitis_adenoid_pharyngitis
   polarity: SUPPORTS
-  weight: 0.75
-  is_key: false
-  source_key: moh_qd_361_2014
-  source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: serositis_pleural_pericardial
-  polarity: SUPPORTS
-  weight: 0.89
-  is_key: false
+  weight: 0.92
+  is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 excerpts:
@@ -71,7 +71,7 @@ excerpts:
 - Toàn thân: Bệnh nhân thường có cảm giác mệt mỏi, sốt, có thể sút cân, đặc
 - biệt khi bệnh viêm da cơ, viêm đa cơ kết hợp với ung thư.
 - Yếu cơ vùng gốc chi, đối xứng hai bên, bệnh nhân có dấu hiệu ghế đẩu dương
+- tính. Yếu cơ vùng hầu họng làm bệnh nhân khó nuốt hoặc khàn tiếng, yếu cơ liên sườn
 - dẫn đến khó thở.
 - Đau cơ: gặp ở khoảng 50% các bệnh nhân viêm da cơ/ viêm đa cơ, thường gặp
 - nhiều hơn trong viêm da cơ.
-- Xơ hóa cơ có thể làm cơ rắn chắc và gây co rút cơ, gây hạn chế vận động khớp.

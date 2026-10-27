@@ -26,28 +26,121 @@ symptoms:
   symptom_name: Đau nhức đầu âm ỉ hoặc dữ dội
   category: constitutional
 - symptom_code: dizziness_vertigo
-  symptom_name: Chóng mặt, hoa mắt, ù tai, mất thăng bằng
-  category: constitutional
+  symptom_name: Chóng mặt xoay tròn, hoa mắt, mất thăng bằng hoặc động mắt
+  category: neurological
 - symptom_code: lymphadenopathy_splenomegaly
-  symptom_name: Hạch ngoại vi sưng to, gan to hoặc lách to
+  symptom_name: Hạch ngoại vi sưng to (hạch cổ, góc hàm, bẹn), gan to hoặc lách to
   category: constitutional
 - symptom_code: anemia_pallor_jaundice
   symptom_name: Da xanh xao, niêm mạc nhợt (thiếu máu) hoặc vàng da
   category: constitutional
-- symptom_code: koplik_spots
-  symptom_name: Hạt Koplik trắng xám có quầng đỏ ở niêm mạc má
-  category: infectious_sign
+- symptom_code: hearing_loss_deafness
+  symptom_name: Nghe kém, giảm thính lực (dẫn truyền, tiếp nhận hoặc hỗn hợp), điếc
+  category: ent
+- symptom_code: tinnitus_ear_fullness
+  symptom_name: Ù tai (tiếng ve kêu, tiếng trầm/cao), cảm giác đầy nặng trong tai
+  category: ent
+- symptom_code: otorrhea_ear_discharge
+  symptom_name: Chảy dịch tai, chảy mủ tai (nhầy trong, đặc vàng hoặc thối khẳn) hoặc
+    chảy máu tai
+  category: ent
+- symptom_code: otalgia_ear_pain
+  symptom_name: Đau nhức trong tai, đau vùng xương chũm hoặc đau tăng khi kéo vành
+    tai
+  category: ent
+- symptom_code: tympanic_membrane_lesion
+  symptom_name: Màng nhĩ thủng, co lõm, phồng đục hoặc có khối cholesteatoma
+  category: ent
+- symptom_code: facial_nerve_palsy_bell
+  symptom_name: Liệt mặt ngoại biên (mặt lệch, mắt nhắm không kín, dấu hiệu Charles
+    Bell dương tính)
+  category: neurological
+- symptom_code: external_ear_swelling_fistula
+  symptom_name: Sưng tấy, nhọt, biến dạng vành tai/ống tai ngoài hoặc lỗ rò luân nhĩ
+  category: ent
+- symptom_code: nasal_obstruction_stuffiness
+  symptom_name: Ngạt tắc mũi một bên hoặc hai bên, thở bằng miệng, nói giọng mũi kín
+  category: ent
+- symptom_code: rhinorrhea_nasal_congestion
+  symptom_name: Sổ mũi, chảy nước mũi trong, dịch nhầy hoặc mủ xanh vàng
+  category: ent
+- symptom_code: allergic_sneezing_nasal_itch
+  symptom_name: Ngứa mũi, hắt hơi từng tràng liên tục, niêm mạc mũi nhợt phù nề
+  category: ent
+- symptom_code: facial_sinus_pain_anosmia
+  symptom_name: Đau nhức vùng mặt/hốc mắt/trán và giảm hoặc mất khứu giác (mất ngửi)
+  category: ent
+- symptom_code: nasal_polyp_sinonasal_mass
+  symptom_name: Khối polyp hốc mũi, u nhú, u nhầy hoặc khối u vùng mũi xoang/vòm mũi
+    họng
+  category: ent
+- symptom_code: epistaxis_nasal_bleeding
+  symptom_name: Chảy máu mũi (chảy máu cam) tái diễn hoặc xì mũi lẫn máu
+  category: ent
+- symptom_code: tonsillitis_adenoid_pharyngitis
+  symptom_name: Niêm mạc họng đỏ, amidan hoặc VA sưng to có chấm mủ/giả mạc, nuốt
+    đau/vướng
+  category: ent
+- symptom_code: snoring_sleep_apnea
+  symptom_name: Ngủ ngáy to, cơn ngừng thở tắc nghẽn khi ngủ (AHI tăng) và buồn ngủ
+    ban ngày
+  category: ent
+- symptom_code: hoarseness_dysphonia_stridor
+  symptom_name: Khàn tiếng, mất tiếng, rối loạn giọng hoặc khó thở thanh quản (thở
+    rít thì hít vào)
+  category: ent
+- symptom_code: head_neck_mass_fistula_trauma
+  symptom_name: Khối u vùng cổ/lưỡi/tuyến nước bọt/tuyến giáp, lỗ rò bẩm sinh vùng
+    cổ hoặc vết thương đầu cổ
+  category: ent
+- symptom_code: pruritus_intense_skin_itch
+  symptom_name: Ngứa da (ngứa râm ran hoặc ngứa dữ dội tăng về đêm, vết cào gãi)
+  category: dermatologic
 - symptom_code: maculopapular_rash
-  symptom_name: Phát ban hồng dát sẩn trên da (mọc tuần tự hoặc rải rác)
+  symptom_name: Dát đỏ, hồng ban hoặc phát ban dát sẩn trên da
   category: dermatologic
 - symptom_code: vesicular_blister_rash
-  symptom_name: Phỏng nước, mụn nước hoặc bọng nước ở lòng bàn tay, bàn chân, da
+  symptom_name: Phỏng nước, mụn nước hoặc bọng nước nông/sâu, dập vỡ tạo vết trợt
+    và đóng vảy tiết
+  category: dermatologic
+- symptom_code: pustular_furuncle_folliculitis
+  symptom_name: Sẩn viêm nang lông, mụn mủ, nhọt có ngòi mủ hoặc nhân trứng cá (comedon)
+  category: dermatologic
+- symptom_code: scaly_plaque_hyperkeratosis
+  symptom_name: Mảng đỏ da bong vảy (vảy trắng, vảy mỡ, vảy phấn, vảy cá) hoặc dày
+    sừng, lichen hóa
+  category: dermatologic
+- symptom_code: urticarial_wheal_angioedema
+  symptom_name: Sẩn phù mày đay nổi nhanh lặn nhanh hoặc phù mạch (phù Quincke)
+  category: dermatologic
+- symptom_code: verrucous_papule_nodule_ulcer
+  symptom_name: Sẩn sùi, hạt cơm, sẩn lõm giữa (u mềm lây), củ lao/phong, u da hoặc
+    loét da mạn tính
+  category: dermatologic
+- symptom_code: fungal_ringworm_nail_hair_lesion
+  symptom_name: Mảng da hình đa cung có mụn nước rìa, dát lang ben, rụng tóc hoặc
+    móng dày mủn
+  category: dermatologic
+- symptom_code: herpetic_dermatomal_pain_blister
+  symptom_name: Chùm mụn nước trên nền đỏ phân bố dọc đường đi dây thần kinh kèm đau
+    rát bỏng (Zona)
+  category: dermatologic
+- symptom_code: genital_ulcer_chancre_discharge
+  symptom_name: Vết trợt/săng sinh dục, sùi mào gà, tiểu buốt, chảy mủ niệu đạo hoặc
+    khí hư âm đạo
+  category: dermatologic
+- symptom_code: pigmentary_macule_patch
+  symptom_name: Dát mất sắc tố trắng (bạch biến) hoặc dát tăng sắc tố nâu/đen (sạm
+    da, rám má, gai đen)
   category: dermatologic
 - symptom_code: oral_mucosal_ulcers
-  symptom_name: Loét niêm mạc miệng, lợi, lưỡi hoặc mũi họng
+  symptom_name: Loét niêm mạc miệng, lợi, lưỡi (aphthose) hoặc mũi họng
   category: dermatologic
 - symptom_code: malar_butterfly_photosensitivity
   symptom_name: Ban đỏ hình cánh bướm ở mặt, ban dạng đĩa, nhạy cảm ánh sáng
+  category: dermatologic
+- symptom_code: salmon_pink_evanescent_rash
+  symptom_name: Ban màu cá hồi thoáng qua xuất hiện khi sốt cao
   category: dermatologic
 - symptom_code: skin_sclerosis_raynaud
   symptom_name: Dày da, xơ cứng da đầu chi/lan tỏa kèm hội chứng Raynaud
@@ -63,11 +156,14 @@ symptoms:
   symptom_name: Sẩn cục hồng ban nút rắn đau dưới da mặt trước hai cẳng chân
   category: dermatologic
 - symptom_code: skin_cellulitis_pus_abscess
-  symptom_name: Da và mô mềm sưng nóng đỏ đau, mụn mủ, nhọt hoặc chảy mủ
+  symptom_name: Da và mô mềm sưng nóng đỏ đau, ổ áp xe hoặc chảy mủ
   category: dermatologic
 - symptom_code: petechiae_mucosal_bleeding
   symptom_name: Chấm xuất huyết dưới da hoặc chảy máu niêm mạc
   category: dermatologic
+- symptom_code: koplik_spots
+  symptom_name: Hạt Koplik trắng xám có quầng đỏ ở niêm mạc má
+  category: infectious_sign
 - symptom_code: conjunctivitis_uveitis_red_eye
   symptom_name: Đỏ mắt, viêm kết mạc, viêm màng bồ đào, chảy nước mắt hoặc sợ ánh
     sáng
@@ -75,11 +171,11 @@ symptoms:
 - symptom_code: cough_dry
   symptom_name: Ho khan hoặc ho từng cơn
   category: respiratory
+- symptom_code: cough_productive_sputum
+  symptom_name: Ho khạc đờm mạn tính hoặc đờm nhầy mủ
+  category: respiratory
 - symptom_code: sore_throat_dysphagia
   symptom_name: Đau rát họng, nuốt đau hoặc nuốt nghẹn
-  category: respiratory
-- symptom_code: rhinorrhea_nasal_congestion
-  symptom_name: Sổ mũi, chảy nước mũi, hắt hơi, nghẹt mũi (viêm long hô hấp)
   category: respiratory
 - symptom_code: dyspnea_chronic_exertional
   symptom_name: Khó thở khi gắng sức hoặc khó thở tiến triển tăng dần
@@ -92,6 +188,10 @@ symptoms:
   symptom_name: Cơn khó thở, ho, nặng ngực xuất hiện về đêm hoặc sáng sớm, thay đổi
     theo mùa
   category: respiratory
+- symptom_code: history_smoking_dust_exposure
+  symptom_name: Tiền sử hút thuốc lá, thuốc lào hoặc tiếp xúc khói bụi độc hại lâu
+    năm
+  category: respiratory
 - symptom_code: serositis_pleural_pericardial
   symptom_name: Tràn dịch màng phổi, tràn dịch màng ngoài tim (viêm đa màng)
   category: respiratory
@@ -103,9 +203,6 @@ symptoms:
   category: musculoskeletal
 - symptom_code: morning_stiffness_over_1h
   symptom_name: Cứng khớp buổi sáng kéo dài trên 1 giờ
-  category: musculoskeletal
-- symptom_code: morning_stiffness_under_30m
-  symptom_name: Cứng khớp buổi sáng ngắn dưới 30 phút (dấu hiệu phá rỉ khớp)
   category: musculoskeletal
 - symptom_code: symmetric_polyarthritis_hands
   symptom_name: Viêm đa khớp đối xứng hai bên (đặc biệt khớp cổ tay, bàn ngón, ngón
@@ -137,17 +234,9 @@ symptoms:
   symptom_name: Đau cổ gáy lan xuống vai, cánh tay kèm tê bì kiểu rễ (nghiệm pháp
     Spurling dương tính)
   category: musculoskeletal
-- symptom_code: knee_effusion_crepitus_locking
-  symptom_name: Sưng đau khớp gối, tràn dịch khớp gối, tiếng lục khục hoặc dấu hiệu
-    kẹt khớp
-  category: musculoskeletal
 - symptom_code: hip_groin_pain_limping
   symptom_name: Đau khớp háng/bẹn, đi khập khiễng, hạn chế động tác dạng và xoay trong
     khớp háng
-  category: musculoskeletal
-- symptom_code: shoulder_periarthritis_restricted
-  symptom_name: Đau vùng khớp vai, giả liệt khớp vai hoặc đông cứng hạn chế vận động
-    khớp vai
   category: musculoskeletal
 - symptom_code: tendinitis_finkelstein_trigger_elbow
   symptom_name: 'Viêm gân cục bộ: đau mỏm trâm quay (Finkelstein +), ngón tay lò xo
@@ -165,6 +254,10 @@ symptoms:
   symptom_name: Đau nhức xương sâu (tăng về đêm), biến dạng xương, lún xẹp đốt sống
     hoặc gãy xương bệnh lý
   category: musculoskeletal
+- symptom_code: startle_myoclonus_ataxia
+  symptom_name: Giật mình chới với lúc bắt đầu giấc ngủ, ngủ gà, run chi hoặc đi loạng
+    choạng
+  category: neurological
 - symptom_code: sym_respiratory_failure
   symptom_name: Khó thở nặng, thở co kéo, tím tái (dấu hiệu suy hô hấp cấp)
   category: red_flag_sign

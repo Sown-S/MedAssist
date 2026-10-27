@@ -10,22 +10,10 @@ description: Bệnh sởi là bệnh truyền nhiễm gây dịch lây qua đư�
   có thể xuất hiện ở người lớn do chưa được tiêm phòng hoặc đã tiêm phòng nhưng chưa
   được tiêm đầy đủ.
 relations:
-- symptom_code: fever_high
+- symptom_code: maculopapular_rash
   polarity: SUPPORTS
-  weight: 0.9
+  weight: 0.94
   is_key: true
-  source_key: moh_qd_1327_2014
-  source_edition: Quyết định số 1327/QĐ-BYT
-- symptom_code: fever_low_grade
-  polarity: SUPPORTS
-  weight: 0.75
-  is_key: false
-  source_key: moh_qd_1327_2014
-  source_edition: Quyết định số 1327/QĐ-BYT
-- symptom_code: lymphadenopathy_splenomegaly
-  polarity: SUPPORTS
-  weight: 0.8
-  is_key: false
   source_key: moh_qd_1327_2014
   source_edition: Quyết định số 1327/QĐ-BYT
 - symptom_code: koplik_spots
@@ -34,16 +22,28 @@ relations:
   is_key: true
   source_key: moh_qd_1327_2014
   source_edition: Quyết định số 1327/QĐ-BYT
-- symptom_code: maculopapular_rash
+- symptom_code: scaly_plaque_hyperkeratosis
   polarity: SUPPORTS
   weight: 0.94
   is_key: true
   source_key: moh_qd_1327_2014
   source_edition: Quyết định số 1327/QĐ-BYT
-- symptom_code: conjunctivitis_uveitis_red_eye
+- symptom_code: fever_high
   polarity: SUPPORTS
-  weight: 0.8
-  is_key: false
+  weight: 0.9
+  is_key: true
+  source_key: moh_qd_1327_2014
+  source_edition: Quyết định số 1327/QĐ-BYT
+- symptom_code: rhinorrhea_nasal_congestion
+  polarity: SUPPORTS
+  weight: 0.86
+  is_key: true
+  source_key: moh_qd_1327_2014
+  source_edition: Quyết định số 1327/QĐ-BYT
+- symptom_code: pruritus_intense_skin_itch
+  polarity: SUPPORTS
+  weight: 0.86
+  is_key: true
   source_key: moh_qd_1327_2014
   source_edition: Quyết định số 1327/QĐ-BYT
 - symptom_code: cough_dry
@@ -52,10 +52,10 @@ relations:
   is_key: true
   source_key: moh_qd_1327_2014
   source_edition: Quyết định số 1327/QĐ-BYT
-- symptom_code: rhinorrhea_nasal_congestion
+- symptom_code: lymphadenopathy_splenomegaly
   polarity: SUPPORTS
-  weight: 0.8
-  is_key: true
+  weight: 0.82
+  is_key: false
   source_key: moh_qd_1327_2014
   source_edition: Quyết định số 1327/QĐ-BYT
 excerpts:

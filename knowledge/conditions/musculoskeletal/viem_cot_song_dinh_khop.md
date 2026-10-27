@@ -7,27 +7,8 @@ icd10_code: M45
 disease_group: musculoskeletal
 description: Viêm cột sống dính khớp là một bệnh thấp viêm đặc trưng bởi tổn thương
   khớp cùng chậu, cột sống và các khớp ở chi dưới, thường kèm theo viêm các điểm bám
-  gân. Bệnh tiến triển chậm song có xu hướng dính khớp. Bệnh viêm cột sống dính khớp
-  có.
+  gân. Bệnh tiến triển chậm song có xu hướng dính khớp.
 relations:
-- symptom_code: conjunctivitis_uveitis_red_eye
-  polarity: SUPPORTS
-  weight: 0.8
-  is_key: false
-  source_key: moh_qd_361_2014
-  source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: nausea_vomiting_diarrhea
-  polarity: SUPPORTS
-  weight: 0.77
-  is_key: false
-  source_key: moh_qd_361_2014
-  source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: myalgia_arthralgia
-  polarity: SUPPORTS
-  weight: 0.8
-  is_key: true
-  source_key: moh_qd_361_2014
-  source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: inflammatory_sacroiliac_back_pain
   polarity: SUPPORTS
   weight: 0.98
@@ -43,6 +24,24 @@ relations:
 - symptom_code: bone_pain_fracture_lesion
   polarity: SUPPORTS
   weight: 0.94
+  is_key: true
+  source_key: moh_qd_361_2014
+  source_edition: Quyết định số 361/QĐ-BYT
+- symptom_code: nausea_vomiting_diarrhea
+  polarity: SUPPORTS
+  weight: 0.77
+  is_key: false
+  source_key: moh_qd_361_2014
+  source_edition: Quyết định số 361/QĐ-BYT
+- symptom_code: conjunctivitis_uveitis_red_eye
+  polarity: SUPPORTS
+  weight: 0.8
+  is_key: false
+  source_key: moh_qd_361_2014
+  source_edition: Quyết định số 361/QĐ-BYT
+- symptom_code: myalgia_arthralgia
+  polarity: SUPPORTS
+  weight: 0.8
   is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT

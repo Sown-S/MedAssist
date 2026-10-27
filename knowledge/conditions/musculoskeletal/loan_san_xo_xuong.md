@@ -8,18 +8,24 @@ disease_group: musculoskeletal
 description: Loạn sản xơ xương (Fibrous dysplasia of bone) là bệnh lý xương mạn tính
   không di truyền, trong đó mô xương bình thường bị thay thế bởi mô xơ. Đặc trưng
   lâm sàng của bệnh là tổn thương xương tiến triển lành tính, biến dạng xương, đau
-  xương, gãy.
+  xương, gãy xương.
 relations:
-- symptom_code: headache_dull
+- symptom_code: bone_pain_fracture_lesion
   polarity: SUPPORTS
-  weight: 0.75
-  is_key: false
+  weight: 0.96
+  is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: dizziness_vertigo
+- symptom_code: hearing_loss_deafness
   polarity: SUPPORTS
-  weight: 0.75
-  is_key: false
+  weight: 0.92
+  is_key: true
+  source_key: moh_qd_361_2014
+  source_edition: Quyết định số 361/QĐ-BYT
+- symptom_code: verrucous_papule_nodule_ulcer
+  polarity: SUPPORTS
+  weight: 0.92
+  is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: asymmetric_oligoarthritis_lower
@@ -28,10 +34,16 @@ relations:
   is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: bone_pain_fracture_lesion
+- symptom_code: tinnitus_ear_fullness
   polarity: SUPPORTS
-  weight: 0.96
+  weight: 0.88
   is_key: true
+  source_key: moh_qd_361_2014
+  source_edition: Quyết định số 361/QĐ-BYT
+- symptom_code: headache_dull
+  polarity: SUPPORTS
+  weight: 0.75
+  is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 excerpts:

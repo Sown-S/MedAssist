@@ -8,11 +8,11 @@ disease_group: musculoskeletal
 description: 'Đau thần kinh tọa (sciatica pain) còn gọi là đau thần kinh hông to,
   biểu hiện bởi cảm giác đau dọc theo đường đi của thần kinh tọa: đau tại cột sống
   thắt lưng lan tới mặt ngoài đùi, mặt trước ngoài cẳng chân, mắt cá ngoài và tận
-  ở các ngón chân. Tùy theo vị.'
+  ở các ngón chân.'
 relations:
-- symptom_code: rhinorrhea_nasal_congestion
+- symptom_code: sciatica_lasegue_positive
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.98
   is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
@@ -28,9 +28,9 @@ relations:
   is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: sciatica_lasegue_positive
+- symptom_code: allergic_sneezing_nasal_itch
   polarity: SUPPORTS
-  weight: 0.98
+  weight: 0.92
   is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
