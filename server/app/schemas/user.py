@@ -50,7 +50,7 @@ class UserCreate(BaseModel):
     phone: PhoneVN | None = None
     staff_code: StaffCode | None = None
     license_no: CleanStr | None = Field(default=None, max_length=30, description="Số chứng chỉ hành nghề (bác sĩ)")
-    department_id: uuid.UUID | None = Field(default=None, description="Khoa được phân công (bác sĩ)")
+    room_id: uuid.UUID | None = Field(default=None, description="Phòng khám cố định (chỉ bác sĩ)")
 
 
 class UserUpdate(BaseModel):
@@ -63,7 +63,7 @@ class UserUpdate(BaseModel):
     phone: PhoneVN | None = None
     staff_code: StaffCode | None = None
     license_no: CleanStr | None = Field(default=None, max_length=30)
-    department_id: uuid.UUID | None = None
+    room_id: uuid.UUID | None = None
 
 
 class PasswordReset(BaseModel):
@@ -82,8 +82,9 @@ class UserOut(BaseModel):
     must_change_password: bool
     staff_code: str | None
     license_no: str | None
-    department_id: uuid.UUID | None
-    department_name: str | None = None
+    room_id: uuid.UUID | None
+    room_code: str | None = None
+    room_name: str | None = None
     created_at: datetime
     # Tính từ audit_log, không phải cột (ERD v1.9 mục 2.1)
     created_by: str | None = None

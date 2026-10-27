@@ -6,20 +6,19 @@ from sqlalchemy.orm import Session
 
 from app.core.security import hash_password
 from app.exceptions import AppError, NotFoundError
-from app.models import AuditLog, Department
+from app.models import AuditLog
 from app.models.user import SYSTEM_USER_ID, User
 from app.schemas.user import UserCreate, UserUpdate
 from app.services import audit_service as audit
-from app.services import login_guard
-from app.services.department_service import require_active
+from app.services import login_guard, room_service
 
-_PUBLIC_FIELDS = ["full_name", "role", "is_active", "email", "phone", "staff_code", "license_no", "department_id"]
+_PUBLIC_FIELDS = ["full_name", "role", "is_active", "email", "phone", "staff_code", "license_no", "room_id"]
 _COLUMNS = ("user_id", "username", "full_name", "role", "email", "phone", "is_active", "must_change_password",
-            "staff_code", "license_no", "department_id", "created_at")
+            "staff_code", "license_no", "room_id", "created_at")
 
 
 def to_out(db: Session, users: list[User]) -> list[dict]:
-    """Thêm các trường tính từ audit_log và tên khoa (ERD v1.9 mục 2.1: không lưu thành cột)."""
+    """Thêm các trường tính từ audit_log và mã, tên phòng (ERD v1.9 mục 2.1: không lưu thành cột)."""
     ids = [u.user_id for u in users]
     if not ids:
         return []
@@ -31,18 +30,18 @@ def to_out(db: Session, users: list[User]) -> list[dict]:
                                  .join(creator, creator.c.user_id == AuditLog.user_id)
                                  .where(AuditLog.action_type == "CREATE", AuditLog.target_entity == "users",
                                         AuditLog.entity_id.in_(ids))).all())
-    dept_ids = {u.department_id for u in users if u.department_id}
-    dept_names = dict(db.execute(select(Department.department_id, Department.name)
-                                 .where(Department.department_id.in_(dept_ids))).all()) if dept_ids else {}
+    rooms = room_service.room_labels(db, {u.room_id for u in users if u.room_id})
     return [{**{k: getattr(u, k) for k in _COLUMNS},
-             "department_name": dept_names.get(u.department_id),
+             "room_code": rooms.get(u.room_id, (None, None))[0],
+             "room_name": rooms.get(u.room_id, (None, None))[1],
              "created_by": created_by.get(u.user_id),
              "last_login_at": last_login.get(u.user_id),
              "locked_until": login_guard.locked_until(db, u)} for u in users]
 
 
-def _check_profile(db: Session, data, user_id: uuid.UUID | None = None) -> None:
+def _check_profile(db: Session, data, user: User | None = None) -> None:
     fields = data.model_fields_set
+    user_id = user.user_id if user else None
     if "staff_code" in fields and data.staff_code:
         stmt = select(User.user_id).where(User.staff_code == data.staff_code)
         if user_id:
@@ -50,8 +49,14 @@ def _check_profile(db: Session, data, user_id: uuid.UUID | None = None) -> None:
         if db.scalar(stmt):
             raise AppError(409, "STAFF_CODE_TAKEN", f"Mã nhân viên '{data.staff_code}' đã được dùng",
                            [{"field": "staff_code", "in": "body", "message": "Đã tồn tại"}])
-    if "department_id" in fields and data.department_id:
-        require_active(db, data.department_id)
+    role = data.role if "role" in fields and data.role else (user.role if user else None)
+    room_id = data.room_id if "room_id" in fields else (user.room_id if user else None)
+    if room_id and role != "Physician":
+        raise AppError(422, "ROOM_PHYSICIAN_ONLY", "Chỉ bác sĩ được gán phòng khám",
+                       [{"field": "room_id", "in": "body", "message": "Bỏ trống khi không phải bác sĩ"}])
+    reactivated = user is not None and not user.is_active and getattr(data, "is_active", None) is True
+    if room_id and ("room_id" in fields or reactivated):
+        room_service.check_assignable(db, room_id, user_id)
 
 
 def _get_editable(db: Session, user_id: uuid.UUID, *, for_update: bool = False) -> User:
@@ -96,7 +101,7 @@ def create_user(db: Session, data: UserCreate, actor: User) -> User:
     _check_profile(db, data)
     user = User(username=data.username, full_name=data.full_name, role=data.role,
                 password_hash=hash_password(data.password), email=data.email, phone=data.phone,
-                staff_code=data.staff_code, license_no=data.license_no, department_id=data.department_id,
+                staff_code=data.staff_code, license_no=data.license_no, room_id=data.room_id,
                 must_change_password=True)
     db.add(user)
     db.flush()
@@ -114,7 +119,7 @@ def _active_admins(db: Session) -> int:
 def update_user(db: Session, user_id: uuid.UUID, data: UserUpdate, actor: User) -> User:
     user = _get_editable(db, user_id, for_update=True)
     changes = data.model_dump(exclude_unset=True)
-    _check_profile(db, data, user_id)
+    _check_profile(db, data, user)
 
     loses_admin = user.role == "Admin" and user.is_active and (
         changes.get("role", "Admin") != "Admin" or changes.get("is_active", True) is False)

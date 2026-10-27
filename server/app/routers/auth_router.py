@@ -17,6 +17,7 @@ from app.models.user import User
 from app.schemas.auth import (ChangePasswordRequest, LoginRequest, PasswordPolicy, RefreshRequest, TokenResponse,
                               UserMe)
 from app.services import audit_service as audit
+from app.services import user_service
 from app.services.login_guard import check_login_allowed
 
 router = APIRouter(prefix="/auth", tags=["auth"])
@@ -104,8 +105,8 @@ def password_policy() -> PasswordPolicy:
 
 
 @router.get("/me", response_model=UserMe)
-def me(user: User = Depends(get_user_allow_password_change)) -> User:
-    return user
+def me(user: User = Depends(get_user_allow_password_change), db: Session = Depends(get_db)) -> dict:
+    return user_service.to_out(db, [user])[0]
 
 
 @router.post("/change-password", status_code=status.HTTP_204_NO_CONTENT)
