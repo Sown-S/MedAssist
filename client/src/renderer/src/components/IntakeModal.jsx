@@ -277,13 +277,13 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
               <input type="text" inputMode="numeric" placeholder="0xx xxx xxx xxx" className={err('idNumber') ? 'field-error' : ''} {...field('idNumber')} />
               <div className={'field-error-msg' + (err('idNumber') ? ' show' : '')}>12 digits, or leave empty</div>
             </div>
-            <div className="field full" style={{ gridColumn: 'span 2' }}>
-              <label>Medical history (chronic conditions)</label>
-              <input type="text" placeholder="Hypertension, diabetes…" {...field('history')} />
-            </div>
             <div className="field">
               <label>Drug allergies</label>
               <input type="text" placeholder="Penicillin…" {...field('allergies')} />
+            </div>
+            <div className="field full">
+              <label>Medical history (chronic conditions)</label>
+              <input type="text" placeholder="Hypertension, diabetes…" {...field('history')} />
             </div>
           </div>
         </>
@@ -331,7 +331,7 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
 
       <div className="section-label">Vital signs</div>
       <VitalsFields value={form} onChange={(k, v) => setForm((f) => ({ ...f, [k]: v }))} errorKeys={touched ? vit.errorKeys : new Set()} requireWeight={child} highlight={askVitals} />
-      <div className="form-grid" style={{ marginTop: 10 }}>
+      <div className="form-grid intake-extra" style={{ marginTop: 10 }}>
         {/* Backend thật: không có trường riêng — lễ tân ghi thẳng vào lời kể, vd "Sốt 3 ngày". */}
         {DEMO_MODE && (
           <div className="field">
@@ -358,6 +358,10 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
             title={translate('Issued by the server when the visit is saved')}
           />
         </div>
+        <label className="intake-print">
+          <input type="checkbox" checked={print} onChange={(e) => setPrint(e.target.checked)} />
+          <span>Print queue ticket</span>
+        </label>
       </div>
       {touched && vit.errors.length > 0 && (
         <p className="ai-soft" style={{ color: '#FCA5A5', fontSize: 12.5, margin: '4px 0 8px' }}>
@@ -371,10 +375,6 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
       )}
       {/* Backend thật: luật cờ đỏ / ưu tiên chạy ở server khi lưu (POST /assessment). */}
       {DEMO_MODE && <TriageStrip tri={tri} onTransfer={() => onRedFlag({ ...draft(), id: existing?.id, signs: redSigns() })} />}
-      <label className="set-checks" style={{ display: 'flex', marginTop: 8, fontSize: 13.5 }}>
-        <input type="checkbox" checked={print} onChange={(e) => setPrint(e.target.checked)} />{' '}
-        <span>Print queue ticket</span>
-      </label>
 
       <div className="form-actions">
         <button className="btn btn-ghost" style={{ color: 'var(--warn)', borderColor: '#F3C9C9' }} onClick={() => onRedFlag({ ...draft(), id: existing?.id, signs: redSigns() })}>

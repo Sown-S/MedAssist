@@ -7,6 +7,7 @@ import { useAuth } from '../../../context/AuthContext'
 import ItemsTab from './ItemsTab'
 import ReleaseTab, { ReviewPanel, ReleaseBadge } from './ReleaseTab'
 import SourcesTab from './SourcesTab'
+import AiLogsTab from './AiLogsTab'
 import { useKnowledge, useNames, groupByKey, errorText } from './shared'
 
 // Trang Cấu hình AI khi chạy với backend thật: tri thức OKF lưu ở server, duyệt theo bản phát hành (FR11, Architecture 5.1.10).
@@ -42,7 +43,8 @@ export default function KnowledgeLive({ reviewOnly = false }) {
     : [
         { key: 'items', label: 'Knowledge base' },
         { key: 'release', label: 'Release' },
-        { key: 'sources', label: 'Sources' }
+        { key: 'sources', label: 'Sources' },
+        { key: 'ailogs', label: 'AI run log' }
       ]
 
   return (
@@ -147,6 +149,7 @@ export default function KnowledgeLive({ reviewOnly = false }) {
         {tab === 'release' && <ReleaseTab data={data} names={names} onChanged={reload} autoCreate={askRelease} />}
         {tab === 'sources' && <SourcesTab data={data} canEdit={canEdit} onChanged={reload} />}
         {tab === 'review' && <ReviewPanel data={data} names={names} onChanged={reload} />}
+        {tab === 'ailogs' && <AiLogsTab />}
       </div>
       <p className="ai-foot-note">
         <Icon name="alert" /> <span>{translate('Knowledge is authored in Obsidian (OKF) and imported with import_okf, or edited here. Every change is versioned and written to the activity log.')}</span>

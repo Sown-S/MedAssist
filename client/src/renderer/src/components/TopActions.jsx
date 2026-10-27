@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import Icon from './Icon'
 import Modal, { ModalHeader } from './Modal'
+import ChangePasswordModal from './ChangePasswordModal'
 import { useToast } from '../context/ToastContext'
 import { LANGUAGES, getLang, setLang, translate } from '../i18n'
 import { useNavigate } from 'react-router-dom'
@@ -31,7 +32,7 @@ const HELP = {
 }
 
 export default function TopActions({ user }) {
-  const [open, setOpen] = useState(null) // 'bell' | 'help' | 'settings' | null
+  const [open, setOpen] = useState(null) // 'bell' | 'help' | 'settings' | 'password' | null
   const [unread, setUnread] = useState(true)
   const bellRef = useRef(null)
   const { redFlags, visits } = useQueue()
@@ -148,6 +149,9 @@ export default function TopActions({ user }) {
             <b>{v}</b>
           </div>
         ))}
+        <button className="btn btn-ghost btn-sm" style={{ marginTop: 8 }} onClick={() => setOpen('password')}>
+          <Icon name="lock" /> Change password
+        </button>
         <div className="section-label">Language</div>
         <div className="itabs" style={{ marginBottom: 0 }}>
           {LANGUAGES.map((l) => (
@@ -164,6 +168,8 @@ export default function TopActions({ user }) {
           The display language is saved on this computer only. Times are shown in Vietnam time (GMT+7).
         </p>
       </Modal>
+
+      <ChangePasswordModal open={open === 'password'} onClose={() => setOpen(null)} />
     </>
   )
 }

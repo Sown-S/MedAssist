@@ -24,7 +24,7 @@ const fromServer = (u) => ({
   departmentCode: '',
   licenseNo: '',
   active: u.is_active,
-  mustChange: false,
+  mustChange: !!u.must_change_password,
   createdAt: u.created_at,
   createdBy: null,
   lastLoginAt: null,

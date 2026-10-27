@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
-import { changeOwnPassword } from "../api/accountStore";
+import { changePassword } from "../api/authApi";
+import { DEMO_MODE } from "../api/client";
 import { getSettings } from "../api/settingsStore";
 import { LANGUAGES, getLang, setLang } from "../i18n";
 import { logEvent } from "../api/activityStore";
@@ -91,7 +92,7 @@ const ROLE_CARDS = [
 ];
 
 export default function Login() {
-  const { authenticate, startSession, notice } = useAuth();
+  const { authenticate, startSession, logout, notice } = useAuth();
   const [roleKey, setRoleKey] = useState("doctor");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -122,11 +123,38 @@ export default function Login() {
     setError("");
     if (np !== np2) return setError("The two new passwords do not match.");
     setBusy(true);
-    const res = await changeOwnPassword(pending.id, np, password);
+    const res = await changePassword(pending, password, np);
+    if (!res.ok) {
+      setBusy(false);
+      return setError(res.error);
+    }
+    if (DEMO_MODE) {
+      setBusy(false);
+      logEvent({ name: pending.fullName, username: pending.username, roleKey: pending.roleKey }, 'auth.password_changed', { target: { kind: 'account', id: pending.username } });
+      return startSession({ ...pending, mustChange: false });
+    }
+    // API thật: server đã thu hồi token cũ → đăng nhập lại bằng mật khẩu mới để lấy token không còn bị chặn.
+    const again = await authenticate(username, np, roleKey);
     setBusy(false);
-    if (!res.ok) return setError(res.error);
-    logEvent({ name: pending.fullName, username: pending.username, roleKey: pending.roleKey }, 'auth.password_changed', { target: { kind: 'account', id: pending.username } });
-    startSession({ ...pending, mustChange: false });
+    setPending(null);
+    setNp("");
+    setNp2("");
+    if (!again.ok || again.account.mustChange) {
+      if (again.ok) logout();
+      setPassword("");
+      return setError(again.ok ? "Please sign in again with the new password." : again.error);
+    }
+    startSession(again.account);
+  }
+
+  // Thoát màn đặt mật khẩu: huỷ token của lần đăng nhập dở dang.
+  function cancelChange() {
+    logout();
+    setPending(null);
+    setPassword("");
+    setNp("");
+    setNp2("");
+    setError("");
   }
 
   return (
@@ -143,7 +171,7 @@ export default function Login() {
             {pending
               ? pending.expired
                 ? "Your password has expired — please set a new one."
-                : "This is your first sign-in — please set a password of your own."
+                : "Please set a password of your own before continuing."
               : "Sign in to the MedAssist clinic management system"}
           </p>
         </div>
@@ -262,6 +290,11 @@ export default function Login() {
               >
                 {busy ? "Saving…" : "Save & Continue"}
               </Button>
+              <p className="login-note">
+                <button type="button" className="btn btn-ghost btn-sm" onClick={cancelChange} disabled={busy}>
+                  Back to sign in
+                </button>
+              </p>
             </form>
           )}
         </div>

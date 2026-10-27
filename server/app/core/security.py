@@ -24,9 +24,19 @@ _DUMMY_HASH = _hasher.hash("medassist-dummy-password")
 MIN_PASSWORD_LENGTH = 8
 
 
-def hash_password(password: str) -> str:
+def password_problem(password: str) -> str | None:
+    """Lý do mật khẩu mới không đạt chính sách, None nếu đạt. Client đọc cùng chính sách qua /auth/password-policy."""
     if len(password) < MIN_PASSWORD_LENGTH:
-        raise ValueError(f"Mật khẩu phải có ít nhất {MIN_PASSWORD_LENGTH} ký tự")
+        return f"Mật khẩu phải có ít nhất {MIN_PASSWORD_LENGTH} ký tự"
+    if not (any(c.isalpha() for c in password) and any(c.isdigit() for c in password)):
+        return "Mật khẩu phải có cả chữ và số"
+    return None
+
+
+def hash_password(password: str) -> str:
+    problem = password_problem(password)
+    if problem:
+        raise ValueError(problem)
     return _hasher.hash(password)
 
 

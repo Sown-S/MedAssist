@@ -164,3 +164,32 @@ def test_password_stamp_does_not_expose_hash(fresh_user):
     token, _ = create_access_token(fresh_user.user_id, "Nurse", fresh_user.password_hash)
     payload = jwt.decode(token, options={"verify_signature": False})
     assert len(payload["pwd"]) == 16 and payload["pwd"] not in fresh_user.password_hash
+
+
+# ---- Mật khẩu do Admin đặt: phải đổi trước khi dùng API khác ----------------------------
+def test_admin_set_password_must_be_changed_before_other_api(client, users, login):
+    admin = login("admin")
+    username = f"nv_{uuid.uuid4().hex[:8]}"
+    r = client.post("/api/v1/admin/users", headers=admin,
+                    json={"username": username, "full_name": "Nhân viên mới", "role": "Nurse", "password": PW})
+    assert r.status_code == 201 and r.json()["must_change_password"] is True
+    user_id = r.json()["user_id"]
+
+    tokens = _login(client, username).json()
+    me = client.get("/api/v1/auth/me", headers=_bearer(tokens["access_token"]))
+    assert me.status_code == 200 and me.json()["must_change_password"] is True
+    blocked = client.get("/api/v1/_test/patients", headers=_bearer(tokens["access_token"]))
+    assert blocked.status_code == 403 and blocked.json()["error"]["code"] == "PASSWORD_CHANGE_REQUIRED"
+
+    r = client.post("/api/v1/auth/change-password", headers=_bearer(tokens["access_token"]),
+                    json={"old_password": PW, "new_password": "MatkhauMoi1"})
+    assert r.status_code == 204
+    new = _login(client, username, "MatkhauMoi1").json()
+    assert client.get("/api/v1/auth/me", headers=_bearer(new["access_token"])).json()["must_change_password"] is False
+    assert client.get("/api/v1/_test/patients", headers=_bearer(new["access_token"])).status_code == 200
+
+    r = client.post(f"/api/v1/admin/users/{user_id}/reset-password", headers=admin,
+                    json={"new_password": "DatLai12345"})
+    assert r.status_code == 204
+    again = _login(client, username, "DatLai12345").json()
+    assert client.get("/api/v1/_test/patients", headers=_bearer(again["access_token"])).status_code == 403

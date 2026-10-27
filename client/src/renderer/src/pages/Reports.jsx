@@ -1,11 +1,44 @@
+import { useState } from 'react'
 import { LoadingBlock, ErrorBlock } from '../components/DataState'
 import { useApiData } from '../hooks/useApiData'
-import Icon from '../components/Icon'
-import { DEMO_MODE } from '../api/client'
+import { PERIODS, rangeOf, reportPath, fillDays, vnd, percent } from '../api/reportsApi'
+import { translate } from '../i18n'
 
-// Backend thật chưa có GET /reports/summary (doanh thu, lượt khám, tỉ lệ chấp nhận gợi ý AI) → báo rõ thay vì lỗi.
+// Báo cáo vận hành cho Admin (Proposal 6.2): số liệu tổng hợp chỉ đọc, không drill-down, không xuất file.
+// Precision / Recall / F1 KHÔNG tính ở đây — phòng khám không có nhãn đúng; đo trên testset v1.0 (evaluation/).
+function BarRow({ label, value, of, text, color }) {
+  const pct = of > 0 ? Math.round((value / of) * 100) : 0
+  return (
+    <div className="bar-row">
+      <span className="lbl">{label}</span>
+      <div className="bar-track">
+        <div className="bar-fill" style={{ width: pct + '%', ...(color ? { background: color } : {}) }} />
+      </div>
+      <span className="num">{text ?? value}</span>
+    </div>
+  )
+}
+
+function Stat({ value, label, amber }) {
+  return (
+    <div className="stat-card">
+      <div className={'dot' + (amber ? ' amber' : '')} />
+      <div className="txt">
+        <span className="val">{value}</span>
+        <span className="lbl">{label}</span>
+      </div>
+    </div>
+  )
+}
+
 export default function Reports() {
-  const { data, loading, error } = useApiData(DEMO_MODE ? '/reports/summary' : null)
+  const [period, setPeriod] = useState('today')
+  const range = rangeOf(period)
+  const { data, loading, error } = useApiData(reportPath(range))
+  const rev = data?.revenue
+  const ai = data?.ai
+  const a = ai?.assessments
+  const d = ai?.decisions
 
   return (
     <div className="page">
@@ -17,88 +50,74 @@ export default function Reports() {
       </div>
 
       <div className="report-toolbar">
-        <select>
-          <option>Today</option>
-          <option>This week</option>
-          <option>This month</option>
+        <select value={period} onChange={(e) => setPeriod(e.target.value)}>
+          {PERIODS.map((p) => (
+            <option key={p.key} value={p.key}>
+              {p.label}
+            </option>
+          ))}
         </select>
-        <button className="btn btn-ghost btn-sm"><Icon name="download" /> Export to Excel</button>
       </div>
 
-      {!DEMO_MODE && (
-        <div className="warn-banner show caution">
-          <div className="icon">
-            <Icon name="alert" />
-          </div>
-          <div className="txt">
-            <b>Reports are not available yet</b>
-            The clinic server does not provide the report API yet (revenue, visits per day, AI acceptance rate).
-          </div>
-        </div>
-      )}
       {loading && <LoadingBlock text="Loading report..." />}
       {error && <ErrorBlock message={error} />}
 
-      {data && (
+      {data && !loading && (
         <>
           <div className="stat-bar">
-            <div className="stat-card">
-              <div className="dot" />
-              <div className="txt">
-                <span className="val">{data.stats.visits}</span>
-                <span className="lbl">Total visits</span>
-              </div>
-            </div>
-            <div className="stat-card">
-              <div className="dot" />
-              <div className="txt">
-                <span className="val">{data.stats.revenue}</span>
-                <span className="lbl">Today's revenue</span>
-              </div>
-            </div>
-            <div className="stat-card">
-              <div className="dot amber" />
-              <div className="txt">
-                <span className="val">{data.stats.redFlags}</span>
-                <span className="lbl">Red-flag referrals</span>
-              </div>
-            </div>
-            <div className="stat-card">
-              <div className="dot" />
-              <div className="txt">
-                <span className="val">{data.stats.aiMatch}</span>
-                <span className="lbl">AI–doctor diagnosis match</span>
-              </div>
-            </div>
+            <Stat value={data.visits.total} label="Total visits" />
+            <Stat value={vnd(rev.total)} label="Revenue" />
+            <Stat value={data.visits.red_flags} label="Red-flag referrals" amber />
+            <Stat value={percent(d.acceptance_rate)} label="AI–doctor diagnosis match" />
           </div>
 
           <div className="report-grid">
             <div className="card">
-              <div className="card-title">Revenue breakdown</div>
-              {data.revenue.map((r) => (
-                <div className="bar-row" key={r.label}>
-                  <span className="lbl">{r.label}</span>
-                  <div className="bar-track">
-                    <div className="bar-fill" style={{ width: r.pct + '%', background: r.color }} />
+              <div className="card-title">
+                Revenue breakdown <span className="cnt">{rev.invoices_paid} {translate('paid invoices')}</span>
+              </div>
+              <BarRow label="Consultation" value={Number(rev.consultation)} of={Number(rev.total)} text={vnd(rev.consultation)} />
+              <BarRow label="Paraclinical" value={Number(rev.paraclinical)} of={Number(rev.total)} text={vnd(rev.paraclinical)} />
+              <BarRow label="Medication" value={Number(rev.drug)} of={Number(rev.total)} text={vnd(rev.drug)} color="var(--priority)" />
+              {period !== 'today' && (
+                <>
+                  <div className="section-label" style={{ marginTop: 14 }}>
+                    Revenue by day
                   </div>
-                  <span className="num">{r.amt}</span>
-                </div>
-              ))}
+                  {fillDays(rev.by_day, range).map((x) => (
+                    <BarRow key={x.day} label={x.day} value={x.amt} of={Math.max(...rev.by_day.map((y) => Number(y.total)), 1)} text={vnd(x.amt)} />
+                  ))}
+                </>
+              )}
             </div>
+
             <div className="card">
-              <div className="card-title">AI module performance (experimental)</div>
-              {data.aiPerf.map((r) => (
-                <div className="bar-row" key={r.label}>
-                  <span className="lbl">{r.label}</span>
-                  <div className="bar-track">
-                    <div className="bar-fill" style={{ width: r.pct + '%' }} />
-                  </div>
-                  <span className="num">{r.num}</span>
-                </div>
-              ))}
+              <div className="card-title">AI module</div>
+              <BarRow label="Accepted top suggestion" value={d.accepted_top} of={d.accepted_top + d.chose_other + d.no_suggestion} />
+              <BarRow label="Chose another diagnosis" value={d.chose_other} of={d.accepted_top + d.chose_other + d.no_suggestion} />
+              <BarRow label="No suggestion shown" value={d.no_suggestion} of={d.accepted_top + d.chose_other + d.no_suggestion} />
+              <div className="section-label" style={{ marginTop: 14 }}>
+                Assessments
+              </div>
+              <BarRow label="Full (rules + model)" value={a.full} of={a.total} />
+              <BarRow label="Rule-only (model unavailable)" value={a.rule_only} of={a.total} />
+              <BarRow label="Failed" value={a.failed} of={a.total} />
+              <BarRow label="Skipped (red flag)" value={a.skipped} of={a.total} />
+              <div className="pref-row inline">
+                <span>Average AI assessment time</span>
+                <b>{a.avg_latency_ms == null ? '—' : (a.avg_latency_ms / 1000).toFixed(1) + ' s'}</b>
+              </div>
+              <div className="pref-row inline">
+                <span>Free-text extractions completed</span>
+                <b>
+                  {ai.extractions.completed} / {ai.extractions.total}
+                </b>
+              </div>
+              <p className="ai-soft" style={{ fontSize: 12.5, marginTop: 10 }}>
+                Precision, recall and F1 are measured on the frozen test set, not on clinic data.
+              </p>
             </div>
           </div>
-
         </>
       )}
     </div>

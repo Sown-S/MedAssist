@@ -98,8 +98,8 @@ export default function Reception() {
       <div className="page-head">
         <div>
           {view !== 'home' && (
-            <button className="back-link" onClick={() => go('home')}>
-              ← <span>Back to dashboard</span>
+            <button className="btn btn-ghost btn-sm back-btn" onClick={() => go('home')}>
+              <Icon name="arrowLeft" /> <span>Back to dashboard</span>
             </button>
           )}
           <h1>{VIEWS[view].title}</h1>

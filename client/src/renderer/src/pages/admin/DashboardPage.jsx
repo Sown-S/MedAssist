@@ -6,11 +6,12 @@ import { LoadingBlock, ErrorBlock } from '../../components/DataState'
 import { useApiData } from '../../hooks/useApiData'
 import { listAccounts } from '../../api/accountStore'
 import { useInventory, stockOf } from '../../api/inventoryStore'
-import { checkHealth, DEMO_MODE } from '../../api/client'
+import { checkHealth } from '../../api/client'
 import { getSettings } from '../../api/settingsStore'
 import { useBackupLog } from '../../api/backupStore'
 import { useActivity } from '../../api/activityStore'
-import { useQueue, isQueued, ST } from '../../api/queueStore'
+import { rangeOf, reportPath, fillDays, vnd, percent } from '../../api/reportsApi'
+import { translate } from '../../i18n'
 import { describe, roleLabel, LEVELS } from '../../api/activityMessages'
 import { fmtDateTime } from './inventory/shared'
 
@@ -54,7 +55,7 @@ const fmtVnd = (n) => n.toLocaleString('vi-VN') + 'đ'
 
 function RevenueChart({ days }) {
   const [hover, setHover] = useState(null)
-  const max = Math.max(...days.map((d) => d.amt))
+  const max = Math.max(...days.map((d) => d.amt), 1) // 7 ngày đều chưa thu tiền → cột cao 0, không chia cho 0
   const shown = hover ?? days.length - 1 // mặc định ghi nhãn cho hôm nay
 
   return (
@@ -79,16 +80,18 @@ function RevenueChart({ days }) {
 
 export default function DashboardPage({ onNavigate }) {
   const navigate = useNavigate()
-  // Backend thật chưa có API báo cáo (/reports/summary, /admin/dashboard) → các ô số liệu hiện "—" thay vì báo lỗi cả trang.
-  // Admin cũng không xem hàng đợi (dữ liệu bệnh nhân) nên hai ô hàng đợi chỉ có ở bản giả lập.
-  const { data: summary, loading: l1, error: e1 } = useApiData(DEMO_MODE ? '/reports/summary' : null)
-  const { visits } = useQueue()
+  // Số liệu hôm nay và doanh thu 7 ngày: GET /reports/summary (số tổng hợp, không có dữ liệu bệnh nhân — Admin xem được).
+  // Báo cáo lỗi (VD server cũ chưa có endpoint) → các ô hiện "—" kèm dòng báo, phần còn lại của trang vẫn dùng được.
+  const days7 = rangeOf('7d')
+  const { data: summary, error: e1 } = useApiData(reportPath(rangeOf('today')))
+  const { data: week } = useApiData(reportPath(days7))
   const inv = useInventory()
   const activity = useActivity()
   // Nhật ký mẫu xếp cũ → mới; hoạt động phát sinh trong phiên nối vào cuối (mới nhất).
   const log = activity // mới nhất ở đầu
-  const { data: dash, loading: l6, error: e6 } = useApiData(DEMO_MODE ? '/admin/dashboard' : null)
   const NA = '—'
+  const byStatus = summary?.visits.by_status
+  const ai = summary?.ai
   const [accounts, setAccounts] = useState(null)
   const [health, setHealth] = useState(null)
   const backup = useBackupLog()[0]
@@ -98,9 +101,7 @@ export default function DashboardPage({ onNavigate }) {
     checkHealth().then(setHealth)
   }, [])
 
-  const loading = l1 || l6 || !accounts
-  const error = e1 || e6
-  const ready = !loading && !error
+  const ready = !!accounts
 
   const alerts = ready ? buildAlerts(inv, accounts, log) : []
   const recent = ready ? log.slice(0, 6) : []
@@ -114,17 +115,17 @@ export default function DashboardPage({ onNavigate }) {
         </div>
       </div>
 
-      {loading && !error && <LoadingBlock />}
-      {error && <ErrorBlock message={error} />}
+      {!ready && <LoadingBlock />}
+      {e1 && <ErrorBlock message={translate('Could not load today’s figures') + ': ' + e1} />}
 
       {ready && (
         <>
           <div className="stat-bar">
-            <StatCard value={summary?.stats.visits ?? NA} label="Visits today" />
-            <StatCard value={DEMO_MODE ? visits.filter(isQueued).length : NA} label="Waiting for consultation" />
-            <StatCard value={DEMO_MODE ? visits.filter((v) => v.status === ST.PRESCRIBED).length : NA} label="Awaiting payment" />
-            <StatCard value={summary?.stats.revenue ?? NA} label="Today's revenue" />
-            <StatCard value={summary?.stats.redFlags ?? NA} label="Red-flag referrals" />
+            <StatCard value={summary?.visits.total ?? NA} label="Visits today" />
+            <StatCard value={byStatus ? byStatus.Waiting + byStatus.CheckedIn : NA} label="Waiting for consultation" />
+            <StatCard value={byStatus?.Prescribed ?? NA} label="Awaiting payment" />
+            <StatCard value={summary ? vnd(summary.revenue.total) : NA} label="Today's revenue" />
+            <StatCard value={summary?.visits.red_flags ?? NA} label="Red-flag referrals" />
           </div>
 
           <div className="dash-grid">
@@ -184,32 +185,32 @@ export default function DashboardPage({ onNavigate }) {
                   View reports <Icon name="chevronRight" />
                 </span>
               </div>
-              {dash ? <RevenueChart days={dash.revenue7d} /> : <p className="ai-soft">Not available yet — the clinic server has no report API.</p>}
+              {week ? <RevenueChart days={fillDays(week.revenue.by_day, days7)} /> : <p className="ai-soft">Not available — could not load the report.</p>}
             </div>
 
             <div className="dash-stack">
               <div className="card">
                 <div className="card-title">AI decision support</div>
-                {summary && dash ? (
+                {ai ? (
                   <>
                     <div className="ai-metric">
-                      <span className="val">{summary.stats.aiMatch}</span>
+                      <span className="val">{percent(ai.decisions.acceptance_rate)}</span>
                       <span>of AI suggestions matched the doctor's confirmed diagnosis</span>
                     </div>
                     <div className="bar-track" style={{ flex: 'none', margin: '10px 0 12px' }}>
-                      <div className="bar-fill" style={{ width: summary.stats.aiMatch }} />
+                      <div className="bar-fill" style={{ width: percent(ai.decisions.acceptance_rate ?? 0) }} />
                     </div>
                     <div className="pref-row inline">
-                      <span>Suggestions still unconfirmed</span>
-                      <b>{dash.ai.unconfirmed}</b>
+                      <span>AI assessments today</span>
+                      <b>{ai.assessments.total}</b>
                     </div>
                     <div className="pref-row inline">
-                      <span>Rules configured</span>
-                      <b>{dash.stats.aiRules}</b>
+                      <span>Rule-only results (model unavailable)</span>
+                      <b>{ai.assessments.rule_only}</b>
                     </div>
                   </>
                 ) : (
-                  <p className="ai-soft">The AI acceptance rate will appear here once the clinic server provides the report API.</p>
+                  <p className="ai-soft">Not available — could not load the report.</p>
                 )}
                 <button className="btn btn-ghost btn-sm" style={{ marginTop: 10 }} onClick={() => onNavigate('ai')}>
                   Open AI configuration

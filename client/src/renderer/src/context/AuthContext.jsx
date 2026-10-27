@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useRef, useState } from 'react'
 import { ROLES, recordLogin, sessionStillValid } from '../api/accountStore'
 import * as authApi from '../api/authApi'
-import { DEMO_MODE, setSessionExpiredHandler } from '../api/client'
+import { DEMO_MODE, setSessionExpiredHandler, setPasswordChangeRequiredHandler } from '../api/client'
 import { logEvent } from '../api/activityStore'
 import { getSettings } from '../api/settingsStore'
 
@@ -32,8 +32,8 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null) // null = chưa đăng nhập
   const [notice, setNotice] = useState('') // lý do bị đăng xuất, hiện ở màn đăng nhập
 
-  // Bước 1: kiểm tra thông tin. Không đặt user ở đây để còn xử lý "bắt buộc đổi mật khẩu" (chỉ có ở bản demo).
-  // API thật: vai trò lấy từ server (GET /auth/me), không tin vai trò chọn ở màn đăng nhập.
+  // Bước 1: kiểm tra thông tin. Không đặt user ở đây để còn xử lý "bắt buộc đổi mật khẩu" (mustChange).
+  // API thật: vai trò và cờ must_change_password lấy từ server (GET /auth/me), không tin vai trò chọn ở màn đăng nhập.
   async function authenticate(username, password, roleKey) {
     const res = await authApi.login(username, password, roleKey)
     // Nhật ký đăng nhập: bản demo tự ghi; API thật do server ghi (audit_log).
@@ -79,6 +79,8 @@ export function AuthProvider({ children }) {
       setNotice('Your session has expired. Please sign in again.')
       setUser(null)
     })
+    // Server bắt đổi mật khẩu giữa phiên (vd admin vừa đặt lại) → đăng nhập lại sẽ vào thẳng màn đặt mật khẩu mới.
+    setPasswordChangeRequiredHandler(() => endSession('You need to change your password before continuing. Please sign in again.'))
   }, [])
 
   // Bản demo: không có server từ chối token nên kiểm tra định kỳ trong localStorage.
