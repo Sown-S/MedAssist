@@ -203,6 +203,8 @@ export function toQueueVisit(q) {
     statusAt: q.exam_started_at ?? q.checked_in_at ?? q.visit_date,
     doctor: q.physician_name ?? '',
     doctorId: q.physician_id,
+    // Phòng của bác sĩ đang khám (null khi chưa ai nhận) — lượt khám không lưu phòng riêng
+    room: q.room_name || q.room || '',
     symptoms: [],
     vitals: {},
     rx: [],

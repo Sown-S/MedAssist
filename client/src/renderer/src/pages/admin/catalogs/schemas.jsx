@@ -103,22 +103,6 @@ export const SCHEMAS = {
     ],
     csv: ['code', 'name', 'level', 'type', 'parent', 'mergedFrom', 'effectiveFrom']
   },
-  departments: {
-    title: 'Departments',
-    group: 'admin',
-    desc: 'Clinic departments, rooms and the doctors assigned to each',
-    fields: [
-      { key: 'code', label: 'Code', required: true },
-      { key: 'name', label: 'Name', required: true },
-      { key: 'room', label: 'Room' },
-      { key: 'doctors', label: 'Doctors', type: 'doctors', wide: true }
-    ],
-    columns: [
-      { key: 'room', label: 'Room' },
-      { key: 'doctors', label: 'Doctors', render: (r) => (r.doctors?.length ? r.doctors.join(', ') : <span className="ai-soft">—</span>) }
-    ],
-    csv: ['code', 'name', 'room', 'doctors']
-  },
   icd: {
     title: 'Diseases (ICD-10)',
     group: 'medical',

@@ -16,7 +16,6 @@ import { RX, archiveVisits } from './rxHistory'
 import { archiveDay } from './visitArchive'
 import { staleDraft } from './draftStore'
 import { normalizeVitals } from './vitals'
-import { dutyOf, setBreak } from './dutyStore'
 import { getInvoices, issueInvoice, payInvoice, setInvoiceMethod, replaceInvoiceItems, cancelInvoice, sampleItems, invoiceById, activeInvoiceOf, itemType, dayOf } from './invoiceStore'
 import { getInventory, findDrugByName, deductForCourse, restoreAllocations } from './inventoryStore'
 import { soldOutside } from './rxSafety'
@@ -220,7 +219,7 @@ const patch = (id, fields) => commit({ ...state, visits: state.visits.map((v) =>
 let syncing = null
 export function syncQueue() {
   if (DEMO_MODE) return Promise.resolve(true)
-  // Giữ các trường chỉ có ở máy này (phòng khám, giờ mời...) — server ghi đè phần còn lại.
+  // Giữ các trường chỉ có ở máy này (giờ mời, đang đi xét nghiệm...) — server ghi đè phần còn lại (cả phòng khám).
   syncing ??= fetchQueue()
     .then((list) => {
       const prev = new Map(state.visits.map((v) => [v.id, v]))
@@ -420,27 +419,28 @@ export function takePatient(id, user, { force = false } = {}) {
   if (other) return { ok: false, error: v.labOut ? 'This patient is out for lab tests under another doctor.' : 'Another doctor is already seeing this patient.' }
   const resume = atLabs(v) // khám tiếp sau xét nghiệm
   const reopen = inRoom(v) // mở lại bệnh nhân đang ở trong phòng mình
-  // Gọi bệnh nhân vào phòng mà chưa "Bắt đầu ca" (chưa chọn phòng) → quầy không biết hướng bệnh nhân tới phòng nào.
-  if (!reopen && !dutyOf(user)) return { ok: false, needDuty: true, target: v, error: 'Start your shift (choose your room) before calling patients.' }
   const busy = inRoomOf(user).filter((x) => x.id !== id)
   if (busy.length && !(force && v.priority))
     return { ok: false, busy: busy[0], target: v, error: 'Finish the patient in your room first — finalize the visit or send them for lab tests.' }
-  // Backend thật: server quyết định ai nhận được (409 VISIT_TAKEN nếu bác sĩ khác nhận trước); phòng khám ghi ở máy này.
+  // Backend thật: server quyết định ai nhận được (409 VISIT_TAKEN nếu bác sĩ khác nhận trước);
+  // phòng lấy từ GET /queue (phòng cố định của bác sĩ đang khám).
   if (!DEMO_MODE) {
     if (reopen) return { ok: true, visit: v }
+    if (resume) {
+      // Đi xét nghiệm chỉ là cờ ở máy này, server vẫn Examining: không gọi start-exam (server trả 409 INVALID_TRANSITION).
+      patch(id, { labOut: false, resumedFromLabs: true, calledAt: new Date().toISOString(), entered: false })
+      return { ok: true, visit: state.visits.find((x) => x.id === id) }
+    }
     return apiStartExam(id).then(
       async () => {
         await syncQueue()
-        patch(id, { room: dutyOf(user)?.room ?? '', calledAt: new Date().toISOString() })
+        patch(id, { calledAt: new Date().toISOString() })
         return { ok: true, visit: state.visits.find((x) => x.id === id) ?? v }
       },
       (e) => (syncQueue(), { ok: false, error: e.message })
     )
   }
   const at = new Date().toISOString()
-  // Phòng khám của bác sĩ đang trực được ghi vào lượt khám (lễ tân hướng bệnh nhân đúng phòng); đang nghỉ mà mời bệnh nhân = làm tiếp.
-  const duty = dutyOf(user)
-  if (duty?.status === 'break') setBreak(user, false)
   const fresh = !reopen // vừa được mời (không phải mở lại bệnh nhân đang ở trong phòng)
   const next = {
     ...state,
@@ -455,7 +455,8 @@ export function takePatient(id, user, { force = false } = {}) {
             doctor: user.name,
             doctorId: user.id,
             absent: false,
-            room: duty?.room ?? x.room ?? '',
+            // Phòng khám cố định của bác sĩ: lễ tân hướng bệnh nhân đúng phòng.
+            room: user.room || x.room || '',
             ...(fresh ? { calledAt: at, entered: false, resumedFromLabs: resume } : {})
           }
         : x

@@ -10,10 +10,8 @@ import ConsultView from './doctor/ConsultView'
 import DrugCabinetView from './doctor/DrugCabinetView'
 import PrescriptionsView, { RxDetail } from './reception/PrescriptionsView'
 import RxReviewPanel from './doctor/RxReviewPanel'
-import ShiftEndModal from './doctor/ShiftEndModal'
 import PatientLookup from './doctor/PatientLookup'
 import DocumentModal from './doctor/DocumentModal'
-import DutyBar from './doctor/DutyBar'
 
 const VIEWS = {
   home: { icon: 'home', tab: 'Overview', title: 'Doctor dashboard', sub: 'Today’s queue, your patients and prescriptions at a glance' },
@@ -35,7 +33,6 @@ export default function Doctor() {
   const visitId = params.get('visit')
   const go = (v, visit) => setParams(v === 'home' ? {} : { view: v, ...(visit ? { visit } : {}) })
   const [rxOf, setRxOf] = useState(null)
-  const [ending, setEnding] = useState(false)
   // Ca cờ đỏ bác sĩ vừa quyết định chuyển tuyến → mở luôn giấy chuyển tuyến để in.
   const [referral, setReferral] = useState(null)
   const inRoomCount = visits.filter((v) => inRoom(v) && isMine(v, user)).length
@@ -98,10 +95,16 @@ export default function Doctor() {
         ))}
       </div>
       <span className="doc-nav-right">
-      <DutyBar />
-      <button className="btn btn-ghost btn-sm doc-shift-btn" onClick={() => setEnding(true)} title={translate('Hand over open patients and close your shift')}>
-        <Icon name="clock" /> End shift
-      </button>
+        {/* Phòng khám cố định do Quản trị viên gán ở Tài khoản nhân viên — không có ca trực */}
+        {user.room ? (
+          <span className="doc-room" title={translate('Your consultation room')}>
+            <Icon name="stethoscope" /> {user.room}
+          </span>
+        ) : (
+          <span className="doc-room warn" title={translate('Reception cannot direct patients to you until you have a room.')}>
+            <Icon name="alert" /> No room assigned — ask an administrator
+          </span>
+        )}
       </span>
       </div>
 
@@ -112,15 +115,6 @@ export default function Doctor() {
       {view === 'patients' && <PatientLookup />}
       {referral && <DocumentModal subject={referral} initial="referral" onClose={() => setReferral(null)} />}
 
-      {ending && (
-        <ShiftEndModal
-          onClose={() => setEnding(false)}
-          onOpenVisit={(id) => {
-            setEnding(false)
-            go('consult', id)
-          }}
-        />
-      )}
       {rxOf && (
         <RxDetail visit={rxOf} readOnly onClose={() => setRxOf(null)}>
           <RxReviewPanel

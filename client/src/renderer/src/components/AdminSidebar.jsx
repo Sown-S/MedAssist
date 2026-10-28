@@ -14,7 +14,7 @@ const NAV = [
     ]
   },
   { id: 'ai', icon: 'bulb', label: 'AI configuration' },
-  { id: 'doctor-shifts', icon: 'stethoscope', label: 'Doctor shifts' },
+  { id: 'rooms', icon: 'stethoscope', label: 'Rooms' },
   { id: 'inventory', icon: 'box', label: 'Stock & expiry' },
   // Các danh mục (hành chính, y tế) mở từ trang trung tâm — sidebar chỉ giữ 1 mục để menu không phải cuộn.
   { id: 'catalog', icon: 'folder', label: 'Catalog management', match: (p) => p === 'drugs' || p.startsWith('cat-') },

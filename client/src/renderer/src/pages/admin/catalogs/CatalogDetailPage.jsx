@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import Icon from '../../../components/Icon'
 import Modal, { ModalHeader } from '../../../components/Modal'
 import { translate } from '../../../i18n'
@@ -6,7 +6,6 @@ import { useAuth } from '../../../context/AuthContext'
 import { useToast } from '../../../context/ToastContext'
 import { useCatalogs, upsertRow, setRowActive, importRows } from '../../../api/catalogStore'
 import { useInventory, todayISO } from '../../../api/inventoryStore'
-import { listAccounts } from '../../../api/accountStore'
 import { ConfirmDialog, Empty } from '../ai/ui'
 import { Pager, paginate, exportCsv, fmtMoney, fmtDate, fmtDateTime } from '../inventory/shared'
 import { SCHEMAS, optLabel, resolveRef, packageTotal } from './schemas'
@@ -63,7 +62,6 @@ export function parseCatalogCsv(key, text) {
       let v = cells[head.indexOf(k)] ?? ''
       const f = s.fields.find((x) => x.key === k)
       if (f?.type === 'money' || f?.type === 'number') v = v === '' ? null : Number(String(v).replace(/[^\d.-]/g, ''))
-      if (f?.type === 'doctors') v = v ? v.split(';').map((x) => x.trim()).filter(Boolean) : []
       if (k === 'code' && s.upperCode) v = String(v).toUpperCase()
       r[k] = v
     }
@@ -278,7 +276,7 @@ function RowForm({ catalogKey, row, all, cats, inv, user, onClose }) {
   const [f, setF] = useState(() => {
     const init = { ...row }
     for (const fd of s.fields) {
-      if (init[fd.key] === undefined) init[fd.key] = fd.type === 'select' ? (fd.options[0]?.key ?? '') : ['doctors', 'pkgItems', 'rxItems', 'advicePick'].includes(fd.type) ? [] : ''
+      if (init[fd.key] === undefined) init[fd.key] = fd.type === 'select' ? (fd.options[0]?.key ?? '') : ['pkgItems', 'rxItems', 'advicePick'].includes(fd.type) ? [] : ''
     }
     if (catalogKey === 'address' && isNew) init.level = 'commune'
     if (catalogKey === 'services') init.priceFrom = todayISO()
@@ -417,7 +415,6 @@ function FieldInput({ fd, value, onChange, cats, inv }) {
   if (fd.type === 'date') return <input type="date" value={value ?? ''} onChange={(e) => onChange(e.target.value)} />
   if (fd.type === 'money' || fd.type === 'number')
     return <input type="number" min="0" step={fd.type === 'money' ? 1000 : 'any'} value={value ?? ''} onChange={(e) => onChange(e.target.value)} />
-  if (fd.type === 'doctors') return <DoctorPicker value={value ?? []} onChange={onChange} />
   if (fd.type === 'pkgItems') return <PackageItems value={value ?? []} onChange={onChange} cats={cats} />
   if (fd.type === 'rxItems') return <RxItems value={value ?? []} onChange={onChange} cats={cats} inv={inv} />
   if (fd.type === 'advicePick') return <AdvicePick value={value ?? []} onChange={onChange} cats={cats} />
@@ -435,30 +432,6 @@ function FieldInput({ fd, value, onChange, cats, inv }) {
       </select>
     )
   return <input value={value ?? ''} onChange={(e) => onChange(e.target.value)} />
-}
-
-// Bác sĩ: tài khoản vai trò Bác sĩ + bác sĩ có sẵn trong dữ liệu mẫu.
-function DoctorPicker({ value, onChange }) {
-  const [names, setNames] = useState(['Trần Minh', 'Nguyễn Văn Dũng'])
-  useEffect(() => {
-    listAccounts().then((list) =>
-      setNames((x) => [...new Set([...x, ...list.filter((a) => a.roleKey === 'doctor' && a.active).map((a) => a.fullName)])])
-    )
-  }, [])
-  const options = [...new Set([...names, ...value])]
-  return (
-    <div className="ai-sym-picker">
-      {options.map((n) => {
-        const on = value.includes(n)
-        return (
-          <button key={n} type="button" className={'ai-sym' + (on ? ' on' : '')} onClick={() => onChange(on ? value.filter((x) => x !== n) : [...value, n])}>
-            {on && <Icon name="check" />}
-            <span>{n}</span>
-          </button>
-        )
-      })}
-    </div>
-  )
 }
 
 function PackageItems({ value, onChange, cats }) {
