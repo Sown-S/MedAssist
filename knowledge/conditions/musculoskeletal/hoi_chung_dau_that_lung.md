@@ -8,24 +8,18 @@ disease_group: musculoskeletal
 description: Đau cột sống thắt lưng hay còn gọi là đau lưng vùng thấp (Low back pain)
   là hội chứng do đau khu trú trong khoảng từ ngang mức L1 đến nếp lằn mông (có thể
   ở một bên hoặc cả hai bên), đây là một hội chứng xương khớp hay gặp nhất trong thực
-  hành.
+  hành lâm sàng.
 relations:
-- symptom_code: weight_loss_anorexia
+- symptom_code: mechanical_spinal_pain_stiffness
   polarity: SUPPORTS
-  weight: 0.75
-  is_key: false
+  weight: 0.94
+  is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: anemia_pallor_jaundice
   polarity: SUPPORTS
   weight: 0.82
   is_key: false
-  source_key: moh_qd_361_2014
-  source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: mechanical_spinal_pain_stiffness
-  polarity: SUPPORTS
-  weight: 0.94
-  is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: sciatica_lasegue_positive
@@ -38,6 +32,12 @@ relations:
   polarity: SUPPORTS
   weight: 0.92
   is_key: true
+  source_key: moh_qd_361_2014
+  source_edition: Quyết định số 361/QĐ-BYT
+- symptom_code: weight_loss_anorexia
+  polarity: SUPPORTS
+  weight: 0.75
+  is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 excerpts:

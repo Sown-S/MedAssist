@@ -8,23 +8,23 @@ disease_group: musculoskeletal
 description: Hồng ban nút (Erythema nodosum) là tình trạng viêm của các tế bào mỡ
   dưới da (panniculitis) biểu hiện dưới dạng sẩn hoặc u cục nhỏ màu đỏ, thường gặp
   nhất ở hai cẳng chân. Cơ chế bệnh sinh chưa biết rõ, thường xảy ra ở người mang
-  gen HLA B8.
+  gen HLA B8 (80%) và 6% có tính chất gia đình.
 relations:
-- symptom_code: fatigue_malaise
+- symptom_code: erythema_nodosum_shins
   polarity: SUPPORTS
-  weight: 0.7
-  is_key: false
+  weight: 0.98
+  is_key: true
+  source_key: moh_qd_361_2014
+  source_edition: Quyết định số 361/QĐ-BYT
+- symptom_code: urticarial_wheal_angioedema
+  polarity: SUPPORTS
+  weight: 0.95
+  is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: maculopapular_rash
   polarity: SUPPORTS
   weight: 0.9
-  is_key: true
-  source_key: moh_qd_361_2014
-  source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: erythema_nodosum_shins
-  polarity: SUPPORTS
-  weight: 0.98
   is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
@@ -44,6 +44,12 @@ relations:
   polarity: SUPPORTS
   weight: 0.8
   is_key: true
+  source_key: moh_qd_361_2014
+  source_edition: Quyết định số 361/QĐ-BYT
+- symptom_code: fatigue_malaise
+  polarity: SUPPORTS
+  weight: 0.7
+  is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 excerpts:

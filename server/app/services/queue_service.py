@@ -18,7 +18,7 @@ from sqlalchemy import case, func, select, text, update
 from sqlalchemy.orm import Session
 
 from app.exceptions import AppError, NotFoundError
-from app.models import Diagnosis, Patient, User, Visit
+from app.models import Diagnosis, Patient, Room, User, Visit
 from app.schemas.visit import VisitCreate, VisitUpdate
 from app.services import audit_service as audit
 
@@ -196,17 +196,19 @@ def mark_finished(db: Session, visit_id: uuid.UUID, actor: User) -> Visit:
 # ---------------------------------------------------------------------------- truy vấn
 def queue_today(db: Session) -> list[dict]:
     rows = db.execute(
-        select(Visit, Patient.full_name, Patient.date_of_birth, Patient.gender, User.full_name)
+        select(Visit, Patient.full_name, Patient.date_of_birth, Patient.gender, User.full_name, Room.code, Room.name)
         .join(Patient, Patient.patient_id == Visit.patient_id)
         .outerjoin(User, User.user_id == Visit.physician_id)
+        .outerjoin(Room, Room.room_id == User.room_id)
         .where(Visit.queue_date == func.current_date(), Visit.status.in_(QUEUE_VIEW_STATUSES))
         .order_by(_PRIORITY_RANK.desc(), Visit.visit_date, Visit.queue_number)).all()
     return [{**{k: getattr(v, k) for k in ("visit_id", "queue_number", "status", "patient_id",
                                            "chief_complaint", "triage_priority", "is_red_flag",
                                            "red_flag_reason", "priority_raised_by_ai", "ai_status",
                                            "visit_date", "checked_in_at", "physician_id", "exam_started_at")},
-             "patient_name": name, "date_of_birth": dob, "gender": gender, "physician_name": physician}
-            for v, name, dob, gender, physician in rows]
+             "patient_name": name, "date_of_birth": dob, "gender": gender, "physician_name": physician,
+             "room": room, "room_name": room_name}
+            for v, name, dob, gender, physician, room, room_name in rows]
 
 
 def stale_open_visits(db: Session) -> list[Visit]:

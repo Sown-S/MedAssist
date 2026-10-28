@@ -2,7 +2,9 @@
 import re
 from typing import Annotated
 
-from pydantic import AfterValidator, BaseModel, BeforeValidator
+from pydantic import AfterValidator, BaseModel, BeforeValidator, Field
+
+from app.core.security import MIN_PASSWORD_LENGTH, password_problem
 
 _SPACES = re.compile(r"\s+")
 
@@ -36,3 +38,14 @@ class Page[T](BaseModel):
     limit: int
     offset: int
     items: list[T]
+
+
+def _new_password(v: str) -> str:
+    problem = password_problem(v)
+    if problem:
+        raise ValueError(problem)
+    return v
+
+
+# Mật khẩu mới (tạo tài khoản, đặt lại, tự đổi): đủ độ dài và có cả chữ lẫn số
+NewPassword = Annotated[str, Field(min_length=MIN_PASSWORD_LENGTH, max_length=128), AfterValidator(_new_password)]

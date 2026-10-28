@@ -14,16 +14,16 @@ relations:
   is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
+- symptom_code: skin_cellulitis_pus_abscess
+  polarity: SUPPORTS
+  weight: 0.9
+  is_key: true
+  source_key: moh_qd_361_2014
+  source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: fever_prolonged
   polarity: SUPPORTS
   weight: 0.85
   is_key: true
-  source_key: moh_qd_361_2014
-  source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: fatigue_malaise
-  polarity: SUPPORTS
-  weight: 0.7
-  is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: weight_loss_anorexia
@@ -32,10 +32,10 @@ relations:
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: skin_cellulitis_pus_abscess
+- symptom_code: fatigue_malaise
   polarity: SUPPORTS
-  weight: 0.9
-  is_key: true
+  weight: 0.7
+  is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 excerpts:

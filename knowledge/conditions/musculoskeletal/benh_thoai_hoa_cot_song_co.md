@@ -10,33 +10,15 @@ description: Thoái hóa cột sống cổ (Cervical spondylosis) là bệnh lý
   thế vận động. Tổn thương cơ bản của bệnh là tình trạng thoái hóa sụn khớp và/hoặc
   đĩa đệm ở cột sống cổ.
 relations:
-- symptom_code: fatigue_malaise
+- symptom_code: cervical_radiculopathy_spurling
   polarity: SUPPORTS
-  weight: 0.7
-  is_key: false
-  source_key: moh_qd_361_2014
-  source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: headache_dull
-  polarity: SUPPORTS
-  weight: 0.75
-  is_key: false
+  weight: 0.97
+  is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: dizziness_vertigo
   polarity: SUPPORTS
-  weight: 0.79
-  is_key: false
-  source_key: moh_qd_361_2014
-  source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: sore_throat_dysphagia
-  polarity: SUPPORTS
-  weight: 0.75
-  is_key: false
-  source_key: moh_qd_361_2014
-  source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: rhinorrhea_nasal_congestion
-  polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.9
   is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
@@ -46,15 +28,33 @@ relations:
   is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
+- symptom_code: allergic_sneezing_nasal_itch
+  polarity: SUPPORTS
+  weight: 0.92
+  is_key: true
+  source_key: moh_qd_361_2014
+  source_edition: Quyết định số 361/QĐ-BYT
+- symptom_code: tonsillitis_adenoid_pharyngitis
+  polarity: SUPPORTS
+  weight: 0.92
+  is_key: true
+  source_key: moh_qd_361_2014
+  source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: mechanical_spinal_pain_stiffness
   polarity: SUPPORTS
   weight: 0.92
   is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: cervical_radiculopathy_spurling
+- symptom_code: bone_pain_fracture_lesion
   polarity: SUPPORTS
-  weight: 0.97
+  weight: 0.92
+  is_key: true
+  source_key: moh_qd_361_2014
+  source_edition: Quyết định số 361/QĐ-BYT
+- symptom_code: tinnitus_ear_fullness
+  polarity: SUPPORTS
+  weight: 0.88
   is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT

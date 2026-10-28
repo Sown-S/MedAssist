@@ -186,19 +186,19 @@ def list_users(role: Role | None = None, is_active: bool | None = None,
                limit: int = Query(50, ge=1, le=200), offset: int = Query(0, ge=0),
                _: User = Depends(_admin_users), db: Session = Depends(get_db)):
     total, rows = user_service.list_users(db, role=role, is_active=is_active, q=q, limit=limit, offset=offset)
-    return Page[UserOut](total=total, limit=limit, offset=offset, items=rows)
+    return Page[UserOut](total=total, limit=limit, offset=offset, items=user_service.to_out(db, rows))
 
 
 @router.get("/users/{user_id}", response_model=UserOut)
 def get_user(user_id: uuid.UUID, _: User = Depends(_admin_users), db: Session = Depends(get_db)):
-    return user_service.get_user(db, user_id)
+    return user_service.to_out(db, [user_service.get_user(db, user_id)])[0]
 
 
 @router.post("/users", response_model=UserOut, status_code=201)
 def create_user(body: UserCreate, actor: User = Depends(_admin_users), db: Session = Depends(get_db)):
     user = user_service.create_user(db, body, actor)
     db.commit()
-    return user
+    return user_service.to_out(db, [user])[0]
 
 
 @router.patch("/users/{user_id}", response_model=UserOut)
@@ -206,7 +206,7 @@ def update_user(user_id: uuid.UUID, body: UserUpdate, actor: User = Depends(_adm
                 db: Session = Depends(get_db)):
     user = user_service.update_user(db, user_id, body, actor)
     db.commit()
-    return user
+    return user_service.to_out(db, [user])[0]
 
 
 @router.post("/users/{user_id}/reset-password", status_code=204)
@@ -214,6 +214,14 @@ def reset_password(user_id: uuid.UUID, body: PasswordReset, actor: User = Depend
                    db: Session = Depends(get_db)) -> None:
     user_service.reset_password(db, user_id, body.new_password, actor)
     db.commit()
+
+
+@router.post("/users/{user_id}/unlock", response_model=UserOut)
+def unlock_user(user_id: uuid.UUID, actor: User = Depends(_admin_users), db: Session = Depends(get_db)):
+    """Mở khóa tài khoản bị khóa vì đăng nhập sai nhiều lần."""
+    user = user_service.unlock_user(db, user_id, actor)
+    db.commit()
+    return user_service.to_out(db, [user])[0]
 
 
 # ---------------------------------------------------------------------------

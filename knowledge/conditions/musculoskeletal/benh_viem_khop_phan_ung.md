@@ -7,36 +7,11 @@ icd10_code: M02.9
 disease_group: musculoskeletal
 description: Viêm khớp phản ứng được đặc trưng bởi tình trạng viêm khớp vô khuẩn tiếp
   theo sau tình trạng nhiễm trùng, thường là nhiễm trùng đường tiết niệu - sinh dục
-  hoặc đường tiêu hoá. Biểu hiện viêm có thể từ một đến vài khớp, thường gặp các khớp
-  lớn ở.
+  hoặc đường tiêu hoá.
 relations:
-- symptom_code: fever_low_grade
+- symptom_code: asymmetric_oligoarthritis_lower
   polarity: SUPPORTS
-  weight: 0.75
-  is_key: false
-  source_key: moh_qd_361_2014
-  source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: fatigue_malaise
-  polarity: SUPPORTS
-  weight: 0.72
-  is_key: false
-  source_key: moh_qd_361_2014
-  source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: weight_loss_anorexia
-  polarity: SUPPORTS
-  weight: 0.77
-  is_key: false
-  source_key: moh_qd_361_2014
-  source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: anemia_pallor_jaundice
-  polarity: SUPPORTS
-  weight: 0.8
-  is_key: false
-  source_key: moh_qd_361_2014
-  source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: psoriatic_plaque_nail_pitting
-  polarity: SUPPORTS
-  weight: 0.97
+  weight: 0.96
   is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
@@ -46,16 +21,40 @@ relations:
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: myalgia_arthralgia
+- symptom_code: psoriatic_plaque_nail_pitting
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.97
   is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: asymmetric_oligoarthritis_lower
+- symptom_code: weight_loss_anorexia
   polarity: SUPPORTS
-  weight: 0.96
+  weight: 0.77
+  is_key: false
+  source_key: moh_qd_361_2014
+  source_edition: Quyết định số 361/QĐ-BYT
+- symptom_code: fatigue_malaise
+  polarity: SUPPORTS
+  weight: 0.72
+  is_key: false
+  source_key: moh_qd_361_2014
+  source_edition: Quyết định số 361/QĐ-BYT
+- symptom_code: inflammatory_sacroiliac_back_pain
+  polarity: SUPPORTS
+  weight: 0.95
   is_key: true
+  source_key: moh_qd_361_2014
+  source_edition: Quyết định số 361/QĐ-BYT
+- symptom_code: bone_pain_fracture_lesion
+  polarity: SUPPORTS
+  weight: 0.92
+  is_key: true
+  source_key: moh_qd_361_2014
+  source_edition: Quyết định số 361/QĐ-BYT
+- symptom_code: anemia_pallor_jaundice
+  polarity: SUPPORTS
+  weight: 0.8
+  is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 excerpts:

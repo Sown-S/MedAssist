@@ -10,15 +10,9 @@ description: Bệnh gút là bệnh viêm khớp do vi tinh thể, đặc trưng
   tăng acid uric trong máu. Đây là bệnh do rối loạn chuyển hóa nhân purin, thuộc nhóm
   bệnh rối loạn.
 relations:
-- symptom_code: fever_low_grade
+- symptom_code: acute_podagra_tophi
   polarity: SUPPORTS
-  weight: 0.77
-  is_key: false
-  source_key: moh_qd_361_2014
-  source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: skin_cellulitis_pus_abscess
-  polarity: SUPPORTS
-  weight: 0.9
+  weight: 0.98
   is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
@@ -28,21 +22,33 @@ relations:
   is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: asymmetric_oligoarthritis_lower
+- symptom_code: fever_low_grade
   polarity: SUPPORTS
-  weight: 0.9
-  is_key: true
+  weight: 0.77
+  is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: acute_podagra_tophi
+- symptom_code: external_ear_swelling_fistula
   polarity: SUPPORTS
-  weight: 0.98
+  weight: 0.92
   is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: bone_pain_fracture_lesion
   polarity: SUPPORTS
   weight: 0.92
+  is_key: true
+  source_key: moh_qd_361_2014
+  source_edition: Quyết định số 361/QĐ-BYT
+- symptom_code: skin_cellulitis_pus_abscess
+  polarity: SUPPORTS
+  weight: 0.9
+  is_key: true
+  source_key: moh_qd_361_2014
+  source_edition: Quyết định số 361/QĐ-BYT
+- symptom_code: asymmetric_oligoarthritis_lower
+  polarity: SUPPORTS
+  weight: 0.9
   is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT

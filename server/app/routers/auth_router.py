@@ -7,14 +7,17 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.core.auth import get_user_allow_password_change
+from app.core.config import settings
 from app.core.database import get_db
 from app.core.request_meta import client_ip, user_agent
-from app.core.security import (burn_verify_time, create_access_token, create_refresh_token,
+from app.core.security import (MIN_PASSWORD_LENGTH, burn_verify_time, create_access_token, create_refresh_token,
                                decode_token, hash_password, stamp_matches, verify_password)
 from app.exceptions import AppError
 from app.models.user import User
-from app.schemas.auth import ChangePasswordRequest, LoginRequest, RefreshRequest, TokenResponse, UserMe
+from app.schemas.auth import (ChangePasswordRequest, LoginRequest, PasswordPolicy, RefreshRequest, TokenResponse,
+                              UserMe)
 from app.services import audit_service as audit
+from app.services import user_service
 from app.services.login_guard import check_login_allowed
 
 router = APIRouter(prefix="/auth", tags=["auth"])
@@ -92,9 +95,18 @@ def logout(request: Request, user: User = Depends(get_user_allow_password_change
     db.commit()
 
 
+@router.get("/password-policy", response_model=PasswordPolicy)
+def password_policy() -> PasswordPolicy:
+    """Không cần đăng nhập: màn đổi mật khẩu lần đầu cũng cần biết yêu cầu."""
+    return PasswordPolicy(min_length=MIN_PASSWORD_LENGTH, require_letters_and_digits=True,
+                          max_failed_attempts=settings.LOGIN_MAX_FAILURES_PER_USER,
+                          failed_window_minutes=settings.LOGIN_WINDOW_MINUTES,
+                          lock_minutes=settings.LOGIN_LOCK_MINUTES)
+
+
 @router.get("/me", response_model=UserMe)
-def me(user: User = Depends(get_user_allow_password_change)) -> User:
-    return user
+def me(user: User = Depends(get_user_allow_password_change), db: Session = Depends(get_db)) -> dict:
+    return user_service.to_out(db, [user])[0]
 
 
 @router.post("/change-password", status_code=status.HTTP_204_NO_CONTENT)

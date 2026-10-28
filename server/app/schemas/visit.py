@@ -83,3 +83,5 @@ class QueueItem(BaseModel):
     physician_id: uuid.UUID | None
     physician_name: str | None
     exam_started_at: datetime | None
+    room: str | None = Field(default=None, description="Mã phòng khám của bác sĩ đang khám")
+    room_name: str | None = None

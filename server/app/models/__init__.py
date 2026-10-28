@@ -1,4 +1,4 @@
-"""Toàn bộ 25 model theo ERD v1.8 — import ở đây để Alembic autogenerate thấy đủ bảng.
+"""Toàn bộ 26 model theo ERD v1.9 — import ở đây để Alembic autogenerate thấy đủ bảng.
 
 Model phải khớp lược đồ do revision 0001 (medassist_schema_v1_8.sql) tạo.
 Kiểm tra: `alembic check` -> "No new upgrade operations detected"; test_db_guards.py.
@@ -10,6 +10,7 @@ from app.core.database import Base  # noqa: F401
 from app.models.user import User  # noqa: F401
 from app.models.system_setting import SystemSetting  # noqa: F401
 from app.models.audit_log import AuditLog  # noqa: F401
+from app.models.room import Room  # noqa: F401
 
 # Tri thức (OKF)
 from app.models.knowledge_source import KnowledgeSource  # noqa: F401
