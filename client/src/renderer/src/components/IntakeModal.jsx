@@ -13,6 +13,7 @@ import { toPayload } from '../api/symptoms'
 import VitalsFields from './VitalsFields'
 import SymptomPanel from './SymptomPanel'
 import { registerPatient, findDuplicates, ageOf, updatePatientAdmin, idNumberOwner, setPregnancy } from '../api/patientStore'
+import { todayISO } from '../api/inventoryStore'
 import { translate } from '../i18n'
 import { printTicket, ticketNo } from './queuePrint'
 import PatientAlerts from './PatientAlerts'
@@ -22,6 +23,27 @@ const DOB_RE = /^\d{1,2}\/\d{1,2}\/\d{4}$/
 const ID_RE = /^\d{12}$/ // CCCD 12 số — không bắt buộc
 const VITALS_EMPTY = Object.fromEntries(VITAL_KEYS.map((d) => [d.key, '']))
 const EMPTY = { name: '', dob: '', gender: 'Female', phone: '', idNumber: '', history: '', allergies: '', ...VITALS_EMPTY, days: '', pregnancy: '', reason: '', ticket: '' }
+
+// Gõ số liền nhau → tự chèn dấu "/" thành dd/mm/yyyy.
+const maskDob = (s) => {
+  const d = s.replace(/\D/g, '').slice(0, 8)
+  return [d.slice(0, 2), d.slice(2, 4), d.slice(4)].filter(Boolean).join('/')
+}
+
+// Ô ngày sinh: hiển thị dd/mm/yyyy (ô date gốc của Chromium hiện theo vùng của Windows, máy en-US thành mm/dd/yyyy),
+// nút lịch mở bảng chọn ngày gốc. Form vẫn giữ dd/mm/yyyy như patientStore; lịch không cho chọn ngày tương lai.
+function DobInput({ value, onChange, className }) {
+  const picker = useRef(null)
+  return (
+    <div className="dob-input">
+      <input type="text" inputMode="numeric" placeholder="dd/mm/yyyy" className={className} value={value} onChange={(e) => onChange(maskDob(e.target.value))} />
+      <button type="button" className="dob-cal" tabIndex={-1} title={translate('Choose from calendar')} onClick={() => picker.current?.showPicker()}>
+        <Icon name="calendar" />
+      </button>
+      <input ref={picker} type="date" className="dob-native" tabIndex={-1} aria-hidden="true" min="1900-01-01" max={todayISO()} value={clinic.isoDob(value) ?? ''} onChange={(e) => onChange(clinic.dmyDob(e.target.value))} />
+    </div>
+  )
+}
 
 // Kiểm tra sinh hiệu theo khoảng của vital_signs.schema.json (api/vitals.js) — dùng chung với màn sửa lượt chờ.
 export function vitalCheck(f) {
@@ -257,7 +279,7 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
             </div>
             <div className="field">
               <label>Date of birth *</label>
-              <input type="text" placeholder="dd/mm/yyyy" className={err('dob') ? 'field-error' : ''} {...field('dob')} />
+              <DobInput className={err('dob') ? 'field-error' : ''} value={form.dob} onChange={(dob) => setForm((f) => ({ ...f, dob }))} />
               <div className={'field-error-msg' + (err('dob') ? ' show' : '')}>Enter a valid date (dd/mm/yyyy)</div>
             </div>
             <div className="field">
@@ -446,7 +468,7 @@ function EditPatient({ p, onSaved }) {
         </div>
         <div className="field">
           <label>Date of birth *</label>
-          <input type="text" placeholder="dd/mm/yyyy" {...bind('dob')} />
+          <DobInput value={f.dob} onChange={(dob) => setF({ ...f, dob })} />
         </div>
         <div className="field">
           <label>Gender</label>

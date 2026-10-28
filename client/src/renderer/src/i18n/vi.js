@@ -2182,6 +2182,7 @@ export const VI = {
   'Full name *': 'Họ tên *',
   'Date of birth *': 'Ngày sinh *',
   'Enter a valid date (dd/mm/yyyy)': 'Nhập ngày hợp lệ (dd/mm/yyyy)',
+  'Choose from calendar': 'Chọn trên lịch',
   'Phone number *': 'Số điện thoại *',
   'Medical history (chronic conditions)': 'Tiền sử (bệnh nền)',
   'Hypertension, diabetes…': 'Tăng huyết áp, đái tháo đường…',
