@@ -24,6 +24,7 @@ import {
 } from '../../api/settingsStore'
 import { useBackupLog, createBackup, verifyBackupFile, restoreBackup } from '../../api/backupStore'
 import { checkHealth, DEMO_MODE } from '../../api/client'
+import { fetchPasswordPolicy } from '../../api/accountStore'
 import ServerAddress from '../../components/ServerAddress'
 import { useDevice, setDevice, getDevice } from '../../api/deviceSettings'
 import { printHtml, printHeaderHtml, fmtDateTime, fmtMoney } from './inventory/shared'
@@ -73,6 +74,7 @@ const FIELDS = {
   'security.maxFailed': ['Lock after failed sign-ins', 'now'],
   'security.lockMinutes': ['Lock duration (minutes)', 'now'],
   'security.lock': ['Sign-in lock', 'server'],
+  'security.policy': ['Password rules', 'server'],
   'backup.server': ['Automatic backup', 'server'],
   'security.idleMinutes': ['Sign out after inactivity', 'now'],
   'backup.enabled': ['Automatic backup', 'server'],
@@ -186,6 +188,8 @@ export default function SettingsPage({ params, onNavigate, setLeaveGuard }) {
   const [tab, setTab] = useState(params?.tab && TABS.some((t) => t.key === params.tab) ? params.tab : 'clinic')
   const [draft, setDraft] = useState(saved.values)
   const [reauth, setReauth] = useState(null)
+  // Chính sách mật khẩu và khoá tài khoản của server (chạy thật: chỉ đọc, server ép).
+  const [policy, setPolicy] = useState(null)
   // Backend thật: lấy tham số vận hành đang dùng trên server (phí khám, hạn dùng, thông tin phòng khám) rồi làm mới bản nháp.
   useEffect(() => {
     if (DEMO_MODE) return
@@ -193,6 +197,7 @@ export default function SettingsPage({ params, onNavigate, setLeaveGuard }) {
       () => setDraft(getSettings()),
       (e) => showToast(e.message)
     )
+    fetchPasswordPolicy().then(setPolicy)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -361,24 +366,39 @@ export default function SettingsPage({ params, onNavigate, setLeaveGuard }) {
       {tab === 'security' && (
         <div className="card">
           <div className="set-grid">
-            <Field {...fp('security.minLength')} hint="Checked when a password is set or changed.">
-              <input {...num('security.minLength')} min="8" max="64" />
-            </Field>
-            <Field {...fp('security.requireMix')}>
-              <Switch checked={val('security.requireMix')} onChange={(v) => set('security.requireMix', v)} />
-            </Field>
-            <Field {...fp('security.expiryDays')} hint="When a password is older than this, the user must set a new one at sign-in.">
-              <select value={val('security.expiryDays')} onChange={(e) => set('security.expiryDays', Number(e.target.value))}>
-                {SECURITY_EXPIRY.map((x) => (
-                  <option key={x.key} value={x.key}>
-                    {x.label}
-                  </option>
-                ))}
-              </select>
-            </Field>
+            {DEMO_MODE ? (
+              <>
+                <Field {...fp('security.minLength')} hint="Checked when a password is set or changed.">
+                  <input {...num('security.minLength')} min="8" max="64" />
+                </Field>
+                <Field {...fp('security.requireMix')}>
+                  <Switch checked={val('security.requireMix')} onChange={(v) => set('security.requireMix', v)} />
+                </Field>
+                <Field {...fp('security.expiryDays')} hint="When a password is older than this, the user must set a new one at sign-in.">
+                  <select value={val('security.expiryDays')} onChange={(e) => set('security.expiryDays', Number(e.target.value))}>
+                    {SECURITY_EXPIRY.map((x) => (
+                      <option key={x.key} value={x.key}>
+                        {x.label}
+                      </option>
+                    ))}
+                  </select>
+                </Field>
+              </>
+            ) : (
+              // Chạy thật: server ép chính sách mật khẩu (GET /auth/password-policy) — chỉ hiển thị, không sửa ở đây.
+              <Field path="security.policy" wide hint="Fixed on the clinic server — shown for reference only.">
+                <div className="symptom-box" style={{ padding: '8px 11px', fontSize: 13.5 }}>
+                  {policy
+                    ? translate(`At least ${policy.minLength} characters`) + (policy.requireMix ? ' · ' + translate('letters and digits') : '')
+                    : translate('Cannot read the password policy from the server.')}
+                </div>
+              </Field>
+            )}
             <Field path="security.lock" wide hint="Fixed on the clinic server — shown for reference only. Administrators can unlock earlier in Staff accounts.">
               <div className="symptom-box" style={{ padding: '8px 11px', fontSize: 13.5 }}>
-                {translate('5 wrong passwords within 15 minutes (20 from one computer) → the account is locked for 5 minutes.')}
+                {policy
+                  ? translate(`${policy.maxFailed} wrong passwords within ${policy.failedWindow} minutes → the account is locked for ${policy.lockMinutes} minutes.`)
+                  : translate('5 wrong passwords within 15 minutes (20 from one computer) → the account is locked for 5 minutes.')}
               </div>
             </Field>
             <Field {...fp('security.idleMinutes')} hint="Recommended on shared clinic computers: patient data stays on screen otherwise.">

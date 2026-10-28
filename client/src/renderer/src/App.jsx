@@ -11,7 +11,9 @@ import Reception from './pages/Reception'
 import Doctor from './pages/Doctor'
 import Admin from './pages/Admin'
 import Reports from './pages/Reports'
-import ShiftEndModal from './pages/doctor/ShiftEndModal'
+import Modal, { ModalHeader } from './components/Modal'
+import { useQueue, isMine, inRoom, atLabs } from './api/queueStore'
+import { translate } from './i18n'
 import { useServerOnline } from './api/connectivity'
 
 // Mỗi tab khai báo sẵn "role nào được thấy nó" — thêm/bớt vai trò sau này chỉ sửa mảng allow.
@@ -29,10 +31,12 @@ const TABS = [
 function Shell() {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
-  // Bác sĩ bấm Đăng xuất → kiểm tra việc còn dở (bệnh nhân trong phòng, đang đi xét nghiệm, cờ đỏ) trước.
+  // Bác sĩ bấm Đăng xuất mà còn bệnh nhân trong phòng / đang đi xét nghiệm → nhắc trước (không có ca trực để kết thúc).
   const [leaving, setLeaving] = useState(false)
   const serverOnline = useServerOnline()
+  const { visits } = useQueue()
   if (!user) return <Login />
+  const openVisits = user.roleKey === 'doctor' ? visits.filter((v) => (inRoom(v) || atLabs(v)) && isMine(v, user)) : []
 
   const visibleTabs = TABS.filter((t) => t.allow.includes(user.roleKey))
 
@@ -52,7 +56,7 @@ function Shell() {
         </div>
         <div className="top-actions">
           <TopActions user={user} />
-          <button className="logout-btn" onClick={() => (user.roleKey === 'doctor' ? setLeaving(true) : logout())}>
+          <button className="logout-btn" onClick={() => (openVisits.length ? setLeaving(true) : logout())}>
             Sign out
           </button>
         </div>
@@ -117,20 +121,45 @@ function Shell() {
           }
         />
       </Routes>
-      {leaving && (
-        <ShiftEndModal
-          signingOut
-          onClose={() => setLeaving(false)}
-          onOpenVisit={(id) => {
-            setLeaving(false)
-            navigate('/doctor?view=consult&visit=' + id)
-          }}
-          onSignOut={() => {
-            setLeaving(false)
-            logout()
-          }}
-        />
-      )}
+      <Modal open={leaving} onClose={() => setLeaving(false)}>
+        <ModalHeader title={translate('Patients still with you')} onClose={() => setLeaving(false)} />
+        <div className="modal-body">
+          <p className="ai-soft" style={{ fontSize: 13.5, marginTop: 0 }}>
+            Finalize these visits, or use “Return to queue” so another doctor can take them, before signing out.
+          </p>
+          {openVisits.map((v) => (
+            <button
+              key={v.id}
+              className="alert-row"
+              onClick={() => {
+                setLeaving(false)
+                navigate('/doctor?view=consult&visit=' + v.id)
+              }}
+            >
+              <span className="p-ticket">{String(v.ticket).padStart(3, '0')}</span>
+              <span className="alert-txt">
+                <b>{v.name}</b>
+                <span>{atLabs(v) ? translate('Out for lab tests') : translate('In my room')}</span>
+              </span>
+              <Icon name="chevronRight" />
+            </button>
+          ))}
+        </div>
+        <div className="modal-foot">
+          <button className="btn btn-ghost" onClick={() => setLeaving(false)}>
+            Cancel
+          </button>
+          <button
+            className="btn btn-primary"
+            onClick={() => {
+              setLeaving(false)
+              logout()
+            }}
+          >
+            Sign out anyway
+          </button>
+        </div>
+      </Modal>
     </div>
   )
 }

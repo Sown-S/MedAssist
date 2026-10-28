@@ -7,34 +7,53 @@
 import { logEvent } from './activityStore'
 import { getSettings } from './settingsStore'
 import { apiGet, apiPost, apiRequest, ApiError, DEMO_MODE } from './client'
+import { roomById } from './roomStore'
 
 // ===================== Backend thật: /api/v1/admin/users (admin_router.py) =====================
-// Server lưu: họ tên, vai trò, SĐT, email, bật / tắt. Không có mã NV, khoa phòng, số chứng chỉ, trạng thái khoá
-// (khoá do server tự đếm và tự hết sau 5 phút) — các trường đó để trống. Tắt tài khoản = thu hồi mọi phiên.
+// Server lưu: họ tên, vai trò, SĐT, email, mã NV, số chứng chỉ, phòng khám của bác sĩ (room_id), bật / tắt,
+// khoá tạm (locked_until, server tự đếm và tự hết). Chưa có hết hạn mật khẩu, đăng xuất cưỡng bức. Tắt tài khoản = thu hồi mọi phiên.
 const ROLE_OF = { Physician: 'doctor', Nurse: 'reception', Admin: 'admin' }
 const SERVER_ROLE = { doctor: 'Physician', reception: 'Nurse', admin: 'Admin' }
 const fromServer = (u) => ({
   id: u.user_id,
-  staffCode: '',
+  staffCode: u.staff_code ?? '',
   username: u.username,
   fullName: u.full_name,
   roleKey: ROLE_OF[u.role],
   phone: u.phone ?? '',
   email: u.email ?? '',
-  departmentCode: '',
-  licenseNo: '',
+  roomId: u.room_id ?? null,
+  roomCode: u.room_code ?? '',
+  roomName: u.room_name ?? '',
+  licenseNo: u.license_no ?? '',
   active: u.is_active,
   mustChange: !!u.must_change_password,
   createdAt: u.created_at,
-  createdBy: null,
-  lastLoginAt: null,
+  createdBy: u.created_by ?? null,
+  lastLoginAt: u.last_login_at ?? null,
   passwordChangedAt: null,
   failedAttempts: 0,
-  locked: false,
-  lockedUntil: null,
+  locked: u.locked_until != null,
+  lockedUntil: u.locked_until ?? null,
   sessionVersion: 0
 })
-const apiError = (e) => (e instanceof ApiError ? (e.details?.[0]?.message ?? e.message) : 'Cannot reach the clinic server. Check the server address and the network connection.')
+// Hồ sơ nhân viên gửi lên POST / PATCH /admin/users. room_id chỉ cho bác sĩ: đổi sang vai trò khác thì gửi null.
+const staffBody = (d, roleKey) => ({
+  staff_code: (d.staffCode ?? '').trim() || null,
+  license_no: roleKey === 'doctor' ? (d.licenseNo ?? '').trim() || null : null,
+  room_id: roleKey === 'doctor' ? d.roomId || null : null
+})
+const ROOM_ERRORS = {
+  INVALID_ROOM: 'This room cannot be assigned — it is a lab room, no longer in use or does not exist.',
+  ROOM_PHYSICIAN_ONLY: 'Only doctors can have a consultation room.',
+  STAFF_CODE_TAKEN: 'This staff code is already used.'
+}
+const roomTaken = (by) => (by ? `This room already belongs to ${by}. Each consultation room has one doctor.` : 'This room already belongs to another doctor. Each consultation room has one doctor.')
+const apiError = (e) => {
+  if (!(e instanceof ApiError)) return 'Cannot reach the clinic server. Check the server address and the network connection.'
+  if (e.code === 'ROOM_TAKEN') return roomTaken(e.details?.[0]?.by)
+  return ROOM_ERRORS[e.code] ?? e.details?.[0]?.message ?? e.message
+}
 const live = async (fn) => {
   try {
     return await fn()
@@ -53,6 +72,17 @@ async function listLive() {
 const patchLive = (id, body) => apiRequest(`/api/v1/admin/users/${id}`, 'PATCH', body)
 
 const KEY = 'medassist_accounts_v1'
+
+// Chính sách mật khẩu và khoá tài khoản do server ép (GET /auth/password-policy, không cần đăng nhập).
+// Cài đặt › Bảo mật hiển thị chỉ đọc khi chạy thật. Lỗi mạng → null.
+export async function fetchPasswordPolicy() {
+  try {
+    const p = await apiGet('/api/v1/auth/password-policy')
+    return { minLength: p.min_length, requireMix: p.require_letters_and_digits, maxFailed: p.max_failed_attempts, failedWindow: p.failed_window_minutes, lockMinutes: p.lock_minutes }
+  } catch {
+    return null
+  }
+}
 
 export const ROLES = {
   doctor: { label: 'Doctor', home: '/doctor' },
@@ -114,7 +144,7 @@ const codeOf = (id) => 'NV' + String(id).padStart(3, '0')
 const migrate = (x) => ({
   staffCode: codeOf(x.id),
   phone: '',
-  departmentCode: '',
+  roomId: null,
   licenseNo: '',
   createdAt: null,
   createdBy: null,
@@ -162,8 +192,17 @@ function patch(id, fields) {
 }
 
 export function publicView(a) {
-  const { salt, hash: h, ...rest } = a
-  return { ...rest, locked: lockActive(a) }
+  const { salt, hash: h, departmentCode, ...rest } = a
+  const room = a.roomId ? roomById(a.roomId) : null
+  return { ...rest, roomCode: room?.code ?? '', roomName: room?.name ?? '', locked: lockActive(a) }
+}
+// Bản demo: phòng không gán được hoặc đã thuộc bác sĩ đang hoạt động khác → lỗi như 422 INVALID_ROOM / 409 ROOM_TAKEN.
+function roomConflict(list, id, roomId, roleKey, active = true) {
+  if (roleKey !== 'doctor' || !roomId || !active) return null
+  const room = roomById(roomId)
+  if (!room || room.type !== 'Exam' || !room.active) return ROOM_ERRORS.INVALID_ROOM
+  const other = list.find((x) => x.id !== id && x.roleKey === 'doctor' && x.active && x.roomId === roomId)
+  return other ? roomTaken(other.fullName) : null
 }
 
 export async function listAccounts() {
@@ -246,7 +285,7 @@ function nextStaffCode(list) {
 const NAME_IS_USERNAME = 'The full name is the same as the username. Enter the staff member’s real full name — it appears on the top bar and on printed documents.'
 const sameAsUsername = (fullName, username) => fullName.trim().toLowerCase() === username.trim().toLowerCase()
 
-export async function createAccount({ username, fullName, roleKey, phone = '', departmentCode = '', licenseNo = '' }, by) {
+export async function createAccount({ username, fullName, roleKey, phone = '', staffCode = '', roomId = null, licenseNo = '' }, by) {
   const u = username.trim()
   if (!u || !fullName.trim()) return { ok: false, error: 'Please enter a full name and username.' }
   if (sameAsUsername(fullName, u)) return { ok: false, error: NAME_IS_USERNAME }
@@ -255,13 +294,22 @@ export async function createAccount({ username, fullName, roleKey, phone = '', d
   if (!DEMO_MODE) {
     const password = genPassword()
     return live(async () => {
-      const r = await apiPost('/api/v1/admin/users', { username: u.toLowerCase(), full_name: fullName.trim(), role: SERVER_ROLE[roleKey], password, phone: phone.trim() || null })
+      const r = await apiPost('/api/v1/admin/users', {
+        username: u.toLowerCase(),
+        full_name: fullName.trim(),
+        role: SERVER_ROLE[roleKey],
+        password,
+        phone: phone.trim() || null,
+        ...staffBody({ staffCode, roomId, licenseNo }, roleKey)
+      })
       return { ok: true, account: fromServer(r), password }
     })
   }
   const list = await load()
   if (list.some((x) => x.username.toLowerCase() === u.toLowerCase()))
     return { ok: false, error: 'This username already exists.' }
+  const conflict = roomConflict(list, null, roomId, roleKey)
+  if (conflict) return { ok: false, error: conflict }
   const password = genPassword()
   const salt = newSalt()
   const acc = migrate({
@@ -271,7 +319,7 @@ export async function createAccount({ username, fullName, roleKey, phone = '', d
     fullName: fullName.trim(),
     roleKey,
     phone: phone.trim(),
-    departmentCode: roleKey === 'doctor' ? departmentCode : '',
+    roomId: roleKey === 'doctor' ? roomId || null : null,
     licenseNo: roleKey === 'doctor' ? licenseNo.trim() : '',
     active: true,
     mustChange: true, // nhân viên mới phải tự đặt mật khẩu ở lần đăng nhập đầu
@@ -288,7 +336,7 @@ function activeAdmins(list) {
   return list.filter((x) => x.roleKey === 'admin' && x.active)
 }
 
-// Sửa thông tin: họ tên, mã NV, SĐT, vai trò, khoa phòng & số chứng chỉ hành nghề (bác sĩ).
+// Sửa thông tin: họ tên, mã NV, SĐT, vai trò, phòng khám & số chứng chỉ hành nghề (bác sĩ).
 export async function updateAccount(id, data) {
   // Backend thật: server tự chặn tự hạ quyền / tắt Admin cuối cùng; đổi vai trò làm token cũ mất hiệu lực.
   if (!DEMO_MODE)
@@ -296,7 +344,8 @@ export async function updateAccount(id, data) {
       const before = (await listLive()).find((x) => x.id === id)
       const fullName = (data.fullName ?? before?.fullName ?? '').trim()
       if (before && sameAsUsername(fullName, before.username)) return { ok: false, error: NAME_IS_USERNAME }
-      const r = await patchLive(id, { full_name: fullName, role: SERVER_ROLE[data.roleKey ?? before?.roleKey], phone: (data.phone ?? '').trim() || null })
+      const roleKey = data.roleKey ?? before?.roleKey
+      const r = await patchLive(id, { full_name: fullName, role: SERVER_ROLE[roleKey], phone: (data.phone ?? '').trim() || null, ...staffBody({ ...before, ...data }, roleKey) })
       return { ok: true, account: fromServer(r), before }
     })
   const list = await load()
@@ -311,13 +360,16 @@ export async function updateAccount(id, data) {
     return { ok: false, error: 'The last administrator cannot be moved to another role.' }
   const staffCode = (data.staffCode ?? a.staffCode).trim()
   if (staffCode && list.some((x) => x.id !== id && x.staffCode === staffCode)) return { ok: false, error: 'This staff code is already used.' }
+  const roomId = roleKey === 'doctor' ? (data.roomId !== undefined ? data.roomId : a.roomId) || null : null
+  const conflict = roomConflict(list, id, roomId, roleKey, a.active)
+  if (conflict) return { ok: false, error: conflict }
   const next = {
     ...a,
     fullName,
     staffCode,
     roleKey,
     phone: (data.phone ?? a.phone).trim(),
-    departmentCode: roleKey === 'doctor' ? data.departmentCode ?? a.departmentCode : '',
+    roomId,
     licenseNo: roleKey === 'doctor' ? (data.licenseNo ?? a.licenseNo).trim() : ''
   }
   // Đổi vai trò → phiên đang mở hết hiệu lực, người dùng phải đăng nhập lại với vai trò mới.
@@ -333,14 +385,17 @@ export async function setActive(id, active) {
   if (!a) return { ok: false, error: 'Account not found.' }
   if (!active && a.roleKey === 'admin' && activeAdmins(list).length <= 1)
     return { ok: false, error: 'The last administrator cannot be disabled.' }
+  // Mở lại bác sĩ mà phòng của họ đã giao người khác → như 409 ROOM_TAKEN của server.
+  const conflict = active && roomConflict(list, id, a.roomId, a.roleKey)
+  if (conflict) return { ok: false, error: conflict }
   patch(id, { active })
   return { ok: true }
 }
 
-// Server không có mở khoá / đăng xuất cưỡng bức: khoá tự hết sau 5 phút; thu hồi phiên = tắt tài khoản.
-const NOT_ON_SERVER = { ok: false, error: 'Not available with the clinic server — a locked account unlocks by itself after 5 minutes; disable the account to end its sessions.' }
+// Server chưa có đăng xuất cưỡng bức: thu hồi phiên = tắt tài khoản.
+const NOT_ON_SERVER = { ok: false, error: 'Not available with the clinic server — disable the account to end its sessions.' }
 export async function unlockAccount(id) {
-  if (!DEMO_MODE) return NOT_ON_SERVER
+  if (!DEMO_MODE) return live(async () => ({ ok: true, account: fromServer(await apiPost(`/api/v1/admin/users/${id}/unlock`)) }))
   const list = await load()
   if (!list.some((x) => x.id === id)) return { ok: false, error: 'Account not found.' }
   patch(id, { locked: false, lockedUntil: null, failedAttempts: 0 })

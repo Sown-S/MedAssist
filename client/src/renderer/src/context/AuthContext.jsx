@@ -24,6 +24,9 @@ export function toSessionUser(account) {
     role: r.label,
     av: (words.length > 1 ? words[0][0] + words[words.length - 1][0] : words[0][0]).toUpperCase(),
     home: r.home,
+    // Phòng khám cố định của bác sĩ ('' = chưa được gán): ghi vào lượt khám để lễ tân hướng bệnh nhân đúng phòng.
+    roomId: account.roomId ?? null,
+    room: account.roomName ?? '',
     sessionVersion: account.sessionVersion ?? 0
   }
 }

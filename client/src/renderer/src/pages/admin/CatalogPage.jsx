@@ -11,7 +11,7 @@ import { exportCatalog, readCatalogFile, ImportModal } from './catalogs/CatalogD
 // Trang trung tâm của Quản lý danh mục: mỗi dòng là 1 danh mục, bấm để mở trang chi tiết.
 // Thuốc & vật tư có trang riêng (dùng chung dữ liệu với Kho).
 const ORDER = [
-  { group: 'Administrative catalogs', keys: ['general', 'address', 'departments'] },
+  { group: 'Administrative catalogs', keys: ['general', 'address'] },
   { group: 'Medical catalogs', keys: ['icd', '@drugs', 'services', 'packages', 'labs', 'units', 'routes', 'rxtemplates', 'advice'] }
 ]
 const latest = (list, k = 'updatedAt') => list.reduce((m, r) => (r[k] > m ? r[k] : m), '')
@@ -28,7 +28,6 @@ function review(key, cats, inv) {
     const custom = cats.icd.filter((x) => x.custom && x.active).length
     if (custom) r.push(`${custom} custom codes to verify`)
   }
-  if (key === 'departments' && cats.departments.some((d) => d.active && !d.doctors?.length)) r.push('Some departments have no doctor')
   if (key === 'packages' && cats.packages.some((p) => p.active && p.items.some((it) => !refActive(it.ref, cats)))) r.push('A package includes a discontinued service')
   if (key === 'rxtemplates' && cats.rxtemplates.some((t) => t.active && t.items.some((it) => !inv.drugs.find((d) => d.id === it.drugId)?.active)))
     r.push('A template uses a discontinued drug')

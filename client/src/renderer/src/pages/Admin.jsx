@@ -14,7 +14,7 @@ import HistoryPage from './admin/HistoryPage'
 import StaffPage from './admin/StaffPage'
 import SettingsPage from './admin/SettingsPage'
 import RoadmapPage from './admin/RoadmapPage'
-import DoctorShiftsPage from './admin/DoctorShiftsPage'
+import RoomsPage from './admin/RoomsPage'
 
 // Bảng tra "id trang" -> component, thay cho 12 khối <div class="admin-page" id="page-xxx">
 // ẩn/hiện bằng CSS trong bản HTML gốc. Giờ chỉ 1 component được render tại 1 thời điểm.
@@ -30,7 +30,7 @@ const PAGES = {
   staff: StaffPage,
   settings: SettingsPage,
   roadmap: RoadmapPage,
-  'doctor-shifts': DoctorShiftsPage
+  rooms: RoomsPage
 }
 
 export default function Admin() {

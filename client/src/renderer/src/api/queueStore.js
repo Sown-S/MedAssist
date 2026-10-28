@@ -16,7 +16,6 @@ import { RX, archiveVisits } from './rxHistory'
 import { archiveDay } from './visitArchive'
 import { staleDraft } from './draftStore'
 import { normalizeVitals } from './vitals'
-import { dutyOf, setBreak } from './dutyStore'
 import { getInvoices, issueInvoice, payInvoice, setInvoiceMethod, replaceInvoiceItems, cancelInvoice, sampleItems, invoiceById, activeInvoiceOf, itemType, dayOf } from './invoiceStore'
 import { getInventory, findDrugByName, deductForCourse, restoreAllocations } from './inventoryStore'
 import { soldOutside } from './rxSafety'
@@ -193,15 +192,44 @@ function read() {
   }
 }
 let state = DEMO_MODE ? read() ?? seed() : { day: today(), visits: [], redFlags: [], calling: null, calls: [], stale: [] }
+
+// Backend thật: server chưa lưu việc đi xét nghiệm (phiếu chỉ định giấy, lượt vẫn Examining) — giữ các trường này ở máy
+// bác sĩ (localStorage, trong ngày) để tải lại / mở lại app không mất bệnh nhân đang đi xét nghiệm và phiếu chỉ định.
+const LAB_KEY = 'medassist_lab_local_v1'
+const LAB_FIELDS = ['labOut', 'labOrders', 'labReturnedAt', 'resumedFromLabs']
+function readLabLocal() {
+  try {
+    const s = JSON.parse(localStorage.getItem(LAB_KEY))
+    return s?.day === today() ? s.byId : {}
+  } catch {
+    return {}
+  }
+}
+let labLocal = DEMO_MODE ? {} : readLabLocal()
+function saveLabLocal(visits) {
+  const byId = { ...labLocal }
+  for (const v of visits) {
+    const f = Object.fromEntries(LAB_FIELDS.filter((k) => v[k] && !(Array.isArray(v[k]) && !v[k].length)).map((k) => [k, v[k]]))
+    if (Object.keys(f).length) byId[v.id] = { ...f, doctorId: v.doctorId }
+    else delete byId[v.id]
+  }
+  labLocal = byId
+  try {
+    localStorage.setItem(LAB_KEY, JSON.stringify({ day: today(), byId }))
+  } catch {
+    /* chỉ giữ trong phiên */
+  }
+}
+
 const listeners = new Set()
 function commit(next) {
   state = next
-  if (DEMO_MODE)
-    try {
-      localStorage.setItem(KEY, JSON.stringify(state))
-    } catch {
-      /* chỉ giữ trong phiên */
-    }
+  try {
+    if (DEMO_MODE) localStorage.setItem(KEY, JSON.stringify(state))
+    else saveLabLocal(state.visits)
+  } catch {
+    /* chỉ giữ trong phiên */
+  }
   listeners.forEach((fn) => fn())
 }
 commit(state)
@@ -220,11 +248,19 @@ const patch = (id, fields) => commit({ ...state, visits: state.visits.map((v) =>
 let syncing = null
 export function syncQueue() {
   if (DEMO_MODE) return Promise.resolve(true)
-  // Giữ các trường chỉ có ở máy này (phòng khám, giờ mời...) — server ghi đè phần còn lại.
+  // Giữ các trường chỉ có ở máy này (giờ mời, đang đi xét nghiệm...) — server ghi đè phần còn lại (cả phòng khám).
   syncing ??= fetchQueue()
     .then((list) => {
       const prev = new Map(state.visits.map((v) => [v.id, v]))
-      commit({ ...state, visits: list.map((v) => ({ ...prev.get(v.id), ...v })) })
+      const visits = list.map((v) => {
+        const local = prev.get(v.id) ?? labLocal[v.id]
+        const m = { ...labLocal[v.id], ...prev.get(v.id), ...v }
+        // Cờ đi xét nghiệm chỉ còn đúng khi lượt vẫn Examining với CÙNG bác sĩ. Đã trả về hàng chờ, chốt đơn, huỷ,
+        // hay bác sĩ khác nhận (máy khác) → bỏ cờ cũ, nếu không bệnh nhân bị kẹt ở nhóm "Đang đi xét nghiệm".
+        const sameExam = v.status === ST.EXAMINING && (!local?.doctorId || local.doctorId === v.doctorId)
+        return sameExam ? m : { ...m, labOut: false, resumedFromLabs: false, labReturnedAt: null }
+      })
+      commit({ ...state, visits })
       return true
     })
     .catch(() => false)
@@ -420,27 +456,29 @@ export function takePatient(id, user, { force = false } = {}) {
   if (other) return { ok: false, error: v.labOut ? 'This patient is out for lab tests under another doctor.' : 'Another doctor is already seeing this patient.' }
   const resume = atLabs(v) // khám tiếp sau xét nghiệm
   const reopen = inRoom(v) // mở lại bệnh nhân đang ở trong phòng mình
-  // Gọi bệnh nhân vào phòng mà chưa "Bắt đầu ca" (chưa chọn phòng) → quầy không biết hướng bệnh nhân tới phòng nào.
-  if (!reopen && !dutyOf(user)) return { ok: false, needDuty: true, target: v, error: 'Start your shift (choose your room) before calling patients.' }
   const busy = inRoomOf(user).filter((x) => x.id !== id)
   if (busy.length && !(force && v.priority))
     return { ok: false, busy: busy[0], target: v, error: 'Finish the patient in your room first — finalize the visit or send them for lab tests.' }
-  // Backend thật: server quyết định ai nhận được (409 VISIT_TAKEN nếu bác sĩ khác nhận trước); phòng khám ghi ở máy này.
+  // Backend thật: server quyết định ai nhận được (409 VISIT_TAKEN nếu bác sĩ khác nhận trước);
+  // phòng lấy từ GET /queue (phòng cố định của bác sĩ đang khám).
   if (!DEMO_MODE) {
     if (reopen) return { ok: true, visit: v }
+    if (resume) {
+      // Đi xét nghiệm chỉ là cờ ở máy này, server vẫn Examining: không gọi start-exam (server trả 409 INVALID_TRANSITION).
+      // Máy quầy chưa nhận được lệnh gọi qua server → không hiện thanh "quầy đang gọi" (entered: true).
+      patch(id, { labOut: false, resumedFromLabs: true, calledAt: new Date().toISOString(), entered: true })
+      return { ok: true, visit: state.visits.find((x) => x.id === id) }
+    }
     return apiStartExam(id).then(
       async () => {
         await syncQueue()
-        patch(id, { room: dutyOf(user)?.room ?? '', calledAt: new Date().toISOString() })
+        patch(id, { calledAt: new Date().toISOString() })
         return { ok: true, visit: state.visits.find((x) => x.id === id) ?? v }
       },
       (e) => (syncQueue(), { ok: false, error: e.message })
     )
   }
   const at = new Date().toISOString()
-  // Phòng khám của bác sĩ đang trực được ghi vào lượt khám (lễ tân hướng bệnh nhân đúng phòng); đang nghỉ mà mời bệnh nhân = làm tiếp.
-  const duty = dutyOf(user)
-  if (duty?.status === 'break') setBreak(user, false)
   const fresh = !reopen // vừa được mời (không phải mở lại bệnh nhân đang ở trong phòng)
   const next = {
     ...state,
@@ -455,7 +493,8 @@ export function takePatient(id, user, { force = false } = {}) {
             doctor: user.name,
             doctorId: user.id,
             absent: false,
-            room: duty?.room ?? x.room ?? '',
+            // Phòng khám cố định của bác sĩ: lễ tân hướng bệnh nhân đúng phòng.
+            room: user.room || x.room || '',
             ...(fresh ? { calledAt: at, entered: false, resumedFromLabs: resume } : {})
           }
         : x
@@ -530,6 +569,15 @@ export const labRows = (o) => [
   ...o.tests.map((x) => ({ key: o.id + ':' + x.code, name: x.name, result: x.result ?? '' })),
   ...(o.other ? [{ key: o.id + ':other', name: o.other, result: o.otherResult ?? '' }] : [])
 ]
+// Ghi kết quả { "<mã phiếu>:<mã xét nghiệm>": kết quả } vào đúng dòng của các phiếu chỉ định.
+function withLabResults(orders = [], labResults = {}) {
+  const val = (key, old) => (labResults[key] ?? old ?? '').trim()
+  return orders.map((o) => ({
+    ...o,
+    tests: o.tests.map((x) => ({ ...x, result: val(o.id + ':' + x.code, x.result) })),
+    ...(o.other ? { otherResult: val(o.id + ':other', o.otherResult) } : {})
+  }))
+}
 // Chốt đơn & kết thúc khám (backend: POST …/prescription/confirm, hoặc …/complete-exam khi không kê đơn):
 // lưu chẩn đoán + đơn thuốc, lượt sang Prescribed ("Chờ thanh toán") để lễ tân cấp phát, thu tiền.
 // rx: [{ name, qty, unit, usage, essential }]; override: lý do bác sĩ vẫn kê dù có cảnh báo tương tác mức nặng.
@@ -540,12 +588,7 @@ export function finalizeVisit(id, { rx, diagnosis, diagnosesExtra = [], hpi = ''
   const v = state.visits.find((x) => x.id === id)
   if (!v || v.status !== ST.EXAMINING) return { ok: false, error: 'This patient is not in consultation.' }
   const at = new Date().toISOString()
-  const val = (key, old) => (labResults[key] ?? old ?? '').trim()
-  const labOrders = (v.labOrders ?? []).map((o) => ({
-    ...o,
-    tests: o.tests.map((x) => ({ ...x, result: val(o.id + ':' + x.code, x.result) })),
-    ...(o.other ? { otherResult: val(o.id + ':other', o.otherResult) } : {})
-  }))
+  const labOrders = withLabResults(v.labOrders, labResults)
   const entered = labOrders.flatMap((o, i) => labRows(o).filter((r, j) => r.result && r.result !== (labRows(v.labOrders[i])[j].result ?? '')))
   // Trừ kho NGAY khi chốt đơn (một giao dịch, FEFO, chỉ lô còn hạn qua hết đợt dùng) — thiếu thì chặn, không đổi gì.
   const { drugs } = getInventory()

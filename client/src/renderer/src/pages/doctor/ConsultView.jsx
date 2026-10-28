@@ -518,7 +518,19 @@ function ConsultForm({ visit, user, onDone, onNext }) {
     const mapped = d.rx.map((l) => serverItem(l, srv.drugs))
     const bad = mapped.find((x) => x.error)
     if (bad) return showToast(bad.error)
-    const notes = [d.hpi.trim() && 'Bệnh sử: ' + d.hpi.trim(), typeof d.exam === 'string' && d.exam.trim() && 'Khám: ' + d.exam.trim(), typeof d.plan === 'string' && d.plan.trim() && 'Hướng xử trí: ' + d.plan.trim()]
+    // Kết quả xét nghiệm (phiếu giấy) chưa có bảng riêng trên server → ghi kèm ghi chú chẩn đoán để không mất khi chốt.
+    const labs = (visit.labOrders ?? [])
+      .flatMap(labRows)
+      .map((r) => [r.name, (d.labResults[r.key] ?? r.result ?? '').trim()])
+      .filter(([, res]) => res)
+      .map(([name, res]) => name + ': ' + res)
+    if (d.labResult.trim()) labs.push('Kết luận: ' + d.labResult.trim())
+    const notes = [
+      d.hpi.trim() && 'Bệnh sử: ' + d.hpi.trim(),
+      typeof d.exam === 'string' && d.exam.trim() && 'Khám: ' + d.exam.trim(),
+      labs.length && 'Xét nghiệm: ' + labs.join('; '),
+      typeof d.plan === 'string' && d.plan.trim() && 'Hướng xử trí: ' + d.plan.trim()
+    ]
       .filter(Boolean)
       .join('\n')
       .slice(0, 4000)

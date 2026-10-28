@@ -18,7 +18,7 @@ const HELP = {
     ['Lab tests', 'Order lab tests from the consultation room and print the order sheet. The patient brings back paper results; note the key results before finalizing.'],
     ['Red-flag cases', 'Cases recorded by reception appear in red on top of your pages — decide whether to refer or see the patient at the clinic.'],
     ['Prescribing', 'Enter Morning / Noon / Afternoon / Evening doses and the number of days — quantity and directions fill in automatically. Children under 12 need a weight.'],
-    ['Leaving & end of shift', 'Leaving the room: “Return to queue”. Patient gone: “Patient left”. Before going home: “End shift”.'],
+    ['Your room', 'Each doctor works in a fixed room set by the administrator in Staff accounts — no shifts to start or end. Leaving the room: “Return to queue”. Patient gone: “Patient left”.'],
     ['Keyboard shortcuts', 'Alt+N — call the next patient · Alt+L — order lab tests · Ctrl+Enter — finalize the visit']
   ],
   reception: [

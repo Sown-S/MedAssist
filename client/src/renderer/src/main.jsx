@@ -5,6 +5,11 @@ import ReactDOM from 'react-dom/client'
 import { HashRouter } from 'react-router-dom'
 import App from './App'
 import '@fontsource-variable/plus-jakarta-sans'
+// Font cho số và mã: đóng gói cùng app, máy không cài IBM Plex Mono sẽ hiện font có chân (Times).
+import '@fontsource/ibm-plex-mono/400.css'
+import '@fontsource/ibm-plex-mono/500.css'
+import '@fontsource/ibm-plex-mono/600.css'
+import '@fontsource/ibm-plex-mono/700.css'
 import './global.css'
 import { loadServerConfig } from './api/serverConfig'
 

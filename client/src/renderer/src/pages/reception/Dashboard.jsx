@@ -6,7 +6,6 @@ import { estimateTotal } from '../../api/billing'
 import { useToast } from '../../context/ToastContext'
 import { ticketNo } from '../../components/queuePrint'
 import CallPanel from './CallPanel'
-import DutyBoard from '../../components/DutyBoard'
 import { fmt, dmy } from './shared'
 import { DEMO_MODE } from '../../api/client'
 import { useAwaiting, fromAwaiting } from '../../api/billingApi'
@@ -141,9 +140,6 @@ export default function Dashboard({ go, readOnly, onRegister, onSearch, onPay })
             </button>
           </div>
         </div>
-      </div>
-      <div style={{ marginTop: 18 }}>
-        <DutyBoard />
       </div>
     </>
   )

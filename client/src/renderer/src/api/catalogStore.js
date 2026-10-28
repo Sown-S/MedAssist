@@ -72,13 +72,6 @@ const ADDRESS = rows(
   { updatedAt: T1 }
 )
 
-// ---------- Khoa phòng ----------
-const DEPARTMENTS = rows([
-  { code: 'K01', name: 'Nội tổng quát', room: 'P.101', doctors: ['Trần Minh'] },
-  { code: 'K02', name: 'Nhi', room: 'P.102', doctors: ['Nguyễn Văn Dũng'] },
-  { code: 'K03', name: 'Tai Mũi Họng', room: 'P.103', doctors: [] }
-])
-
 // ---------- Bệnh (ICD-10) — bản mẫu các mã hay gặp ở phòng khám ngoại trú ----------
 const ICD = rows(
   [
@@ -252,7 +245,6 @@ const ADVICE = rows(
 const SEED = {
   general: GENERAL,
   address: ADDRESS,
-  departments: DEPARTMENTS,
   icd: ICD,
   services: SERVICES,
   packages: PACKAGES,
@@ -275,7 +267,9 @@ function read() {
     return null
   }
 }
-let state = { ...seed(), ...(read() ?? {}) }
+// Bỏ khóa "departments" của các bản trước (khoa phòng đã thay bằng phòng khám — roomStore).
+const { departments: _legacy, ...saved } = read() ?? {}
+let state = { ...seed(), ...saved }
 const listeners = new Set()
 function commit(next) {
   state = next
