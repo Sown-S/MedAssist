@@ -7,18 +7,11 @@ icd10_code: L13.0
 disease_group: dermatology
 description: Bệnh đƣợc xếp vào nhóm bệnh da bọng nƣớc. Thƣơng tổn chủ yếu là những
   bọng nƣớc nhỏ tập trung thành đám, thành cụm trên nền da đỏ nhƣ bệnh herpes nên
-  đƣợc gọi là "Viêm da dạng herpes của Duhring-Brocq". Bệnh gặp chủ yếu ở ngƣời da
-  trắng, tỷ lệ 10-39/100.000 dân, ít gặp hơn ở ngƣời da đen.
+  đƣợc gọi là "Viêm da dạng herpes của Duhring-Brocq".
 relations:
 - symptom_code: vesicular_blister_rash
   polarity: SUPPORTS
   weight: 0.98
-  is_key: true
-  source_key: moh_qd_75_2015
-  source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: maculopapular_rash
-  polarity: SUPPORTS
-  weight: 0.94
   is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
@@ -35,6 +28,12 @@ relations:
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: head_neck_mass_fistula_trauma
+  polarity: SUPPORTS
+  weight: 0.94
+  is_key: true
+  source_key: moh_qd_75_2015
+  source_edition: Quyết định số 75/QĐ-BYT
+- symptom_code: maculopapular_rash
   polarity: SUPPORTS
   weight: 0.94
   is_key: true

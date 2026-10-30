@@ -9,6 +9,12 @@ description: Là bệnh lý do tổn thương thần kinh hồi quy nhánh chi p
   quản là cơ nhẫn phễu sau. Tổn thương có thể là một bên hoặc cả hai bên thần kinh
   chi phối do nhiều nguyên nhân khác nhau.
 relations:
+- symptom_code: trismus_tetanic_spasm
+  polarity: SUPPORTS
+  weight: 0.98
+  is_key: true
+  source_key: moh_qd_5643_2015
+  source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: hoarseness_dysphonia_stridor
   polarity: SUPPORTS
   weight: 0.96

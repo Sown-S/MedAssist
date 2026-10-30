@@ -5,32 +5,26 @@ name_vi: Vỡ xương đá
 name_en: Vỡ xương đá
 icd10_code: S02.1
 disease_group: ent
-description: 'Vỡ xương đá là một bệnh thường gặp liên quan đến hoạt động của con người
+description: Vỡ xương đá là một bệnh thường gặp liên quan đến hoạt động của con người
   như tai nạn giao thông, tai nạn thể thao… Mức độ trầm trọng của vỡ xương đá bao
   gồm các biến chứng tai và nguy cơ viêm màng não nặng do thông thương khoang dưới
-  nhện với Phân loại đường vỡ: Tên gọi là Temporal bone.'
+  nhện với.
 relations:
+- symptom_code: meningeal_neck_stiffness_kernig
+  polarity: SUPPORTS
+  weight: 0.96
+  is_key: true
+  source_key: moh_qd_5643_2015
+  source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: hearing_loss_deafness
   polarity: SUPPORTS
   weight: 0.96
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: dizziness_vertigo
-  polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
-  source_key: moh_qd_5643_2015
-  source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: otorrhea_ear_discharge
   polarity: SUPPORTS
   weight: 0.96
-  is_key: true
-  source_key: moh_qd_5643_2015
-  source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: otalgia_ear_pain
-  polarity: SUPPORTS
-  weight: 0.9
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
@@ -49,6 +43,12 @@ relations:
 - symptom_code: malar_butterfly_photosensitivity
   polarity: SUPPORTS
   weight: 0.95
+  is_key: true
+  source_key: moh_qd_5643_2015
+  source_edition: Quyết định số 5643/QĐ-BYT
+- symptom_code: dizziness_vertigo
+  polarity: SUPPORTS
+  weight: 0.92
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT

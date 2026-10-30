@@ -7,7 +7,8 @@ icd10_code: M65.3
 disease_group: musculoskeletal
 description: Ngón tay lò xo (Trigger finger) là tình trạng viêm bao gân của các gân
   gấp các ngón tay gây chít hẹp bao gân. Một số trường hợp gân gấp bị viêm xuất hiện
-  hạt xơ, làm di động của gân gấp qua vị trí hạt xơ bị cản trở.
+  hạt xơ, làm di động của gân gấp qua vị trí hạt xơ bị cản trở. Mỗi lần gấp hay duỗi
+  ngón tay.
 relations:
 - symptom_code: tendinitis_finkelstein_trigger_elbow
   polarity: SUPPORTS

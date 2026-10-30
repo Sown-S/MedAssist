@@ -10,12 +10,6 @@ description: Viêm tai giữa (VTG) mạn tính được định nghĩa là tìn
   bị thủng, chảy tai, phù nề niêm mạc trong tai giữa và xương chũm (sào đạo, sào bào,
   thông bào).
 relations:
-- symptom_code: otalgia_ear_pain
-  polarity: SUPPORTS
-  weight: 0.94
-  is_key: true
-  source_key: moh_qd_5643_2015
-  source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: otorrhea_ear_discharge
   polarity: SUPPORTS
   weight: 0.98
@@ -28,21 +22,21 @@ relations:
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: external_ear_swelling_fistula
+- symptom_code: genital_ulcer_chancre_discharge
+  polarity: SUPPORTS
+  weight: 0.96
+  is_key: true
+  source_key: moh_qd_5643_2015
+  source_edition: Quyết định số 5643/QĐ-BYT
+- symptom_code: otalgia_ear_pain
   polarity: SUPPORTS
   weight: 0.94
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: headache_dull
+- symptom_code: external_ear_swelling_fistula
   polarity: SUPPORTS
-  weight: 0.77
-  is_key: false
-  source_key: moh_qd_5643_2015
-  source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: genital_ulcer_chancre_discharge
-  polarity: SUPPORTS
-  weight: 0.96
+  weight: 0.94
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
@@ -55,6 +49,12 @@ relations:
 - symptom_code: hearing_loss_deafness
   polarity: SUPPORTS
   weight: 0.92
+  is_key: true
+  source_key: moh_qd_5643_2015
+  source_edition: Quyết định số 5643/QĐ-BYT
+- symptom_code: fever_high
+  polarity: SUPPORTS
+  weight: 0.9
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT

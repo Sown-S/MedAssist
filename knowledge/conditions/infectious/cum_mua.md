@@ -9,12 +9,6 @@ description: CHẨN ĐOÁN VÀ ĐIỀU TRỊ CÚM MÙA (Ban hành kèm theo Quy�
   ngày 03/06/2025) Cúm mùa (Seasonal Influenza) là một bệnh nhiễm trùng hô hấp cấp
   tính do những chủng vi rút cúm đang lưu hành (A/H1N1; A/H3N2; B) gây ra.
 relations:
-- symptom_code: nausea_vomiting_diarrhea
-  polarity: SUPPORTS
-  weight: 0.77
-  is_key: false
-  source_key: moh_qd_1840_2025
-  source_edition: Quyết định số 1840/QĐ-BYT
 - symptom_code: dyspnea_chronic_exertional
   polarity: SUPPORTS
   weight: 0.92
@@ -39,16 +33,22 @@ relations:
   is_key: true
   source_key: moh_qd_1840_2025
   source_edition: Quyết định số 1840/QĐ-BYT
-- symptom_code: chills_rigors
+- symptom_code: nausea_vomiting_diarrhea
   polarity: SUPPORTS
-  weight: 0.8
-  is_key: false
+  weight: 0.82
+  is_key: true
   source_key: moh_qd_1840_2025
   source_edition: Quyết định số 1840/QĐ-BYT
 - symptom_code: myalgia_arthralgia
   polarity: SUPPORTS
   weight: 0.8
   is_key: true
+  source_key: moh_qd_1840_2025
+  source_edition: Quyết định số 1840/QĐ-BYT
+- symptom_code: chills_rigors
+  polarity: SUPPORTS
+  weight: 0.8
+  is_key: false
   source_key: moh_qd_1840_2025
   source_edition: Quyết định số 1840/QĐ-BYT
 - symptom_code: headache_dull

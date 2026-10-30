@@ -8,7 +8,7 @@ disease_group: musculoskeletal
 description: Loạn sản xơ xương (Fibrous dysplasia of bone) là bệnh lý xương mạn tính
   không di truyền, trong đó mô xương bình thường bị thay thế bởi mô xơ. Đặc trưng
   lâm sàng của bệnh là tổn thương xương tiến triển lành tính, biến dạng xương, đau
-  xương, gãy xương.
+  xương, gãy.
 relations:
 - symptom_code: bone_pain_fracture_lesion
   polarity: SUPPORTS

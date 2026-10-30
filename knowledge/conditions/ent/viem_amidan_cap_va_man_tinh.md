@@ -5,10 +5,10 @@ name_vi: Viêm amidan cấp và mạn tính
 name_en: Viêm amidan cấp và mạn tính
 icd10_code: J35.0
 disease_group: ent
-description: 'Viêm amiđan cấp tính là viêm sung huyết và xuất tiết của amiđan khẩu
+description: Viêm amiđan cấp tính là viêm sung huyết và xuất tiết của amiđan khẩu
   cái, thường gặp ở trẻ ở lứa tuổi học đường 5-15 tuổi, do vi khuẩn hoặc virus gây
   nên, thường thấy ở thời kỳ đầu của nhiều bệnh viêm nhiễm vì vậy có người coi amiđan
-  là "cửa vào" của một số vi khuẩn hay virus như: viêm.'
+  là.
 relations:
 - symptom_code: tonsillitis_adenoid_pharyngitis
   polarity: SUPPORTS

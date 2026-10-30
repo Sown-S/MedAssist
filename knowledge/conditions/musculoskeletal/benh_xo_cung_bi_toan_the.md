@@ -7,23 +7,12 @@ icd10_code: M34.9
 disease_group: musculoskeletal
 description: Xơ cứng bì toàn thể là một bệnh hệ thống chưa rõ nguyên nhân với đặc
   điểm giảm độ đàn hồi, xơ cứng ở da, tổn thương vi mạch và tổn thương các cơ quan
-  nội tạng (chủ yếu ở đường tiêu hóa, mạch máu, tim, phổi, thận).
+  nội tạng (chủ yếu ở đường tiêu hóa, mạch máu, tim, phổi, thận). Xơ cứng bì toàn
+  thể là một bệnh tự.
 relations:
 - symptom_code: skin_sclerosis_raynaud
   polarity: SUPPORTS
   weight: 0.98
-  is_key: true
-  source_key: moh_qd_361_2014
-  source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: serositis_pleural_pericardial
-  polarity: SUPPORTS
-  weight: 0.87
-  is_key: false
-  source_key: moh_qd_361_2014
-  source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: myalgia_arthralgia
-  polarity: SUPPORTS
-  weight: 0.82
   is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
@@ -54,6 +43,18 @@ relations:
 - symptom_code: bone_pain_fracture_lesion
   polarity: SUPPORTS
   weight: 0.92
+  is_key: true
+  source_key: moh_qd_361_2014
+  source_edition: Quyết định số 361/QĐ-BYT
+- symptom_code: pruritus_intense_skin_itch
+  polarity: SUPPORTS
+  weight: 0.86
+  is_key: true
+  source_key: moh_qd_361_2014
+  source_edition: Quyết định số 361/QĐ-BYT
+- symptom_code: cough_dry
+  polarity: SUPPORTS
+  weight: 0.85
   is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT

@@ -7,8 +7,7 @@ icd10_code: J01.9
 disease_group: ent
 description: 'Viêm mũi xoang được hiểu theo nghĩa rộng là viêm mũi và các xoang cạnh
   mũi, gây ra một nhóm các rối loạn. Phân loại viêm mũi xoang theo thời gian bị viêm
-  gồm có: cấp tính (từ 4 tuần trở lại), bán cấp tính (4-12 tuần) và mạn tính (trên
-  12 tuần).'
+  gồm có: cấp tính (từ 4 tuần trở.'
 relations:
 - symptom_code: nasal_obstruction_stuffiness
   polarity: SUPPORTS

@@ -6,17 +6,12 @@ name_en: Acne
 icd10_code: L70.0
 disease_group: dermatology
 description: Trứng cá (acne) là bệnh da thông thƣờng gây nên do tăng tiết chất bã
-  và viêm của hệ thống nang lông tuyến bã.
+  và viêm của hệ thống nang lông tuyến bã. Bệnh biểu hiện bằng nhiều loại tổn thƣơng
+  khác nhau nhƣ mụn cám, sẩn, sẩn.
 relations:
 - symptom_code: pustular_furuncle_folliculitis
   polarity: SUPPORTS
   weight: 0.98
-  is_key: true
-  source_key: moh_qd_75_2015
-  source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: skin_cellulitis_pus_abscess
-  polarity: SUPPORTS
-  weight: 0.92
   is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
@@ -27,6 +22,12 @@ relations:
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: scaly_plaque_hyperkeratosis
+  polarity: SUPPORTS
+  weight: 0.92
+  is_key: true
+  source_key: moh_qd_75_2015
+  source_edition: Quyết định số 75/QĐ-BYT
+- symptom_code: skin_cellulitis_pus_abscess
   polarity: SUPPORTS
   weight: 0.92
   is_key: true

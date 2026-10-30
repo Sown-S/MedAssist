@@ -7,7 +7,7 @@ icd10_code: J33.9
 disease_group: ent
 description: Polyp mũi là tổn thương giả u do thoái hoái cục bộ của niêm mạc mũi hay
   xoang mà chủ yếu là tổ chức đệm. Polyp mũi là bệnh rất thường gặp, có thể đơn thuần
-  ở hốc mũi, có thể ở các xoang hay cả ở mũi và xoang.
+  ở hốc mũi, có thể ở các xoang.
 relations:
 - symptom_code: facial_sinus_pain_anosmia
   polarity: SUPPORTS
@@ -15,15 +15,15 @@ relations:
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: nasal_obstruction_stuffiness
-  polarity: SUPPORTS
-  weight: 0.94
-  is_key: true
-  source_key: moh_qd_5643_2015
-  source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: nasal_polyp_sinonasal_mass
   polarity: SUPPORTS
   weight: 0.95
+  is_key: true
+  source_key: moh_qd_5643_2015
+  source_edition: Quyết định số 5643/QĐ-BYT
+- symptom_code: nasal_obstruction_stuffiness
+  polarity: SUPPORTS
+  weight: 0.94
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT

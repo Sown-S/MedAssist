@@ -6,20 +6,10 @@ name_en: Enthesitis Related Arthritis
 icd10_code: M08.1
 disease_group: musculoskeletal
 description: Viêm khớp thiếu niên tự phát thể viêm cột sống dính khớp còn được gọi
-  là thể viêm điểm bám gân (ERA).
+  là thể viêm điểm bám gân (ERA). Đây là một trong số các thể lâm sàng của nhóm bệnh
+  viêm khớp thiếu niên tự phát, chiếm 4 – 15% nhóm bệnh lý viêm khớp mạn tính thiếu
+  niên,.
 relations:
-- symptom_code: conjunctivitis_uveitis_red_eye
-  polarity: SUPPORTS
-  weight: 0.82
-  is_key: false
-  source_key: moh_qd_361_2014
-  source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: myalgia_arthralgia
-  polarity: SUPPORTS
-  weight: 0.82
-  is_key: true
-  source_key: moh_qd_361_2014
-  source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: psoriatic_plaque_nail_pitting
   polarity: SUPPORTS
   weight: 0.95
@@ -50,7 +40,19 @@ relations:
   is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
+- symptom_code: myalgia_arthralgia
+  polarity: SUPPORTS
+  weight: 0.82
+  is_key: true
+  source_key: moh_qd_361_2014
+  source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: lymphadenopathy_splenomegaly
+  polarity: SUPPORTS
+  weight: 0.82
+  is_key: false
+  source_key: moh_qd_361_2014
+  source_edition: Quyết định số 361/QĐ-BYT
+- symptom_code: conjunctivitis_uveitis_red_eye
   polarity: SUPPORTS
   weight: 0.82
   is_key: false

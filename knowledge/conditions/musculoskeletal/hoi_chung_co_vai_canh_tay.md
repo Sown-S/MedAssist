@@ -7,31 +7,12 @@ icd10_code: M53.1
 disease_group: musculoskeletal
 description: Hội chứng cổ vai cánh tay (cervical scapulohumeral syndrome), còn gọi
   là hội chứng vai cánh tay (scapulohumeral syndrome) hay bệnh lý rễ tủy cổ (cervical
-  radiculopathy), là một nhóm các triệu chứng lâm sàng liên quan đến các bệnh lý cột
-  sống cổ có kèm theo các rối loạn chức năng rễ, dây.
+  radiculopathy), là một nhóm các triệu chứng lâm sàng liên quan đến các bệnh lý cột.
 relations:
 - symptom_code: cervical_radiculopathy_spurling
   polarity: SUPPORTS
-  weight: 0.97
+  weight: 0.98
   is_key: true
-  source_key: moh_qd_361_2014
-  source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: bone_pain_fracture_lesion
-  polarity: SUPPORTS
-  weight: 0.94
-  is_key: true
-  source_key: moh_qd_361_2014
-  source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: dizziness_vertigo
-  polarity: SUPPORTS
-  weight: 0.9
-  is_key: true
-  source_key: moh_qd_361_2014
-  source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: sweating_profuse
-  polarity: SUPPORTS
-  weight: 0.77
-  is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: herpetic_dermatomal_pain_blister
@@ -46,9 +27,27 @@ relations:
   is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
+- symptom_code: bone_pain_fracture_lesion
+  polarity: SUPPORTS
+  weight: 0.94
+  is_key: true
+  source_key: moh_qd_361_2014
+  source_edition: Quyết định số 361/QĐ-BYT
+- symptom_code: visual_acuity_decreased_blur
+  polarity: SUPPORTS
+  weight: 0.92
+  is_key: true
+  source_key: moh_qd_361_2014
+  source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: mechanical_spinal_pain_stiffness
   polarity: SUPPORTS
   weight: 0.92
+  is_key: true
+  source_key: moh_qd_361_2014
+  source_edition: Quyết định số 361/QĐ-BYT
+- symptom_code: dizziness_vertigo
+  polarity: SUPPORTS
+  weight: 0.9
   is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
