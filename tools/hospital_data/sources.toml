@@ -108,3 +108,39 @@ so_huu = "Public"
 tinh = "Quảng Ngãi"
 bo_sung = true
 can_xem = "nguồn cấp phép cũ (2022), kiểm tra tên hiện hành"
+
+[[nguon]]
+id = "hanoi_truc_thuoc"
+co_quan = "Sở Y tế thành phố Hà Nội"
+van_ban = "Các đơn vị trực thuộc Sở Y tế Hà Nội (bảng 1: bệnh viện)"
+url = "https://tracuuqlhn.hanoi.gov.vn/don-vi-truc-thuoc/-/asset_publisher/4IVkx5Jltnbg/content/aa"
+files = ["don_vi_truc_thuoc.html"]
+parser = "html_table"
+cot_ten = 1
+so_huu = "Public"
+tinh = "Hà Nội"
+
+[[nguon]]
+id = "hcm_qd10_2025"
+co_quan = "Sở Y tế Thành phố Hồ Chí Minh"
+van_ban = "Danh sách cơ sở y tế trực thuộc Sở (ban hành kèm Quyết định 10/2025/QĐ-UBND ngày 01/7/2025)"
+url = "http://medinet.gov.vn/co-so-y-te/danh-sach-co-so-y-te-so-y-te-hcm-cmobile4636-72856.aspx"
+files = ["danh_sach_co_so_y_te.html"]
+parser = "html_list"
+khoi = "ContentODM"
+# Mục Trung tâm Y tế bỏ: 38 TTYT đã đổi thành TTYT khu vực từ 2025, tên mới có ở hcm_ksk_2026
+muc = ["Bệnh viện đa khoa", "Bệnh viện chuyên khoa"]
+so_huu = "Public"
+tinh = "Hồ Chí Minh"
+
+[[nguon]]
+id = "danang_truc_thuoc"
+co_quan = "Sở Y tế thành phố Đà Nẵng"
+van_ban = "Các đơn vị trực thuộc Sở Y tế Đà Nẵng (gồm Quảng Nam cũ)"
+url = "https://soyte.danang.gov.vn/cac-don-vi-truc-thuoc"
+files = ["cac_don_vi_truc_thuoc.html"]
+parser = "html_js_data"
+truong_ten = "ten_don_vi"
+truong_dia_chi = "dia_chi_moi"
+so_huu = "Public"
+tinh = "Đà Nẵng"

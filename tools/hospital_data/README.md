@@ -18,10 +18,13 @@ ghép từ **văn bản công bố của Bộ Y tế và Sở Y tế** (đã the
 | `danang_tb6539_2026` | Sở Y tế Đà Nẵng | Thông báo 6539/TB-SYT ngày 29/5/2026 (gồm Quảng Nam cũ) |
 | `gialai_cv6710_2026` | Sở Y tế Gia Lai | Công văn 6710/SYT-NVY ngày 25/8/2026 (gồm Bình Định cũ) |
 | `hue_truc_thuoc`, `hue_du_dieu_kien` | Sở Y tế Huế | Đơn vị trực thuộc Sở; cơ sở y tế đủ điều kiện |
-| `quangngai_tu_nhan` | Sở Y tế Quảng Ngãi | Danh sách cơ sở KCB tư nhân |
+| `quangngai_tu_nhan`, `quangngai_emr_2025`, `quangngai_gphd_cong_lap` | Sở Y tế Quảng Ngãi | Cơ sở KCB tư nhân; cơ sở triển khai bệnh án điện tử; giấy phép hoạt động khối nhà nước (2022, chỉ bổ sung địa chỉ) |
+| `hanoi_truc_thuoc` | Sở Y tế Hà Nội | Đơn vị trực thuộc Sở (bảng bệnh viện) |
+| `hcm_qd10_2025` | Sở Y tế TP. Hồ Chí Minh | Danh sách cơ sở y tế kèm QĐ 10/2025/QĐ-UBND (chỉ hai mục bệnh viện) |
+| `danang_truc_thuoc` | Sở Y tế Đà Nẵng | Đơn vị trực thuộc Sở (gồm Quảng Nam cũ) |
 
-Còn thiếu: bệnh viện công của Quảng Ngãi (gồm Kon Tum cũ). Bệnh viện trực thuộc Bộ không ghi địa chỉ trong văn bản xếp
-cấp; tỉnh của chúng lấy theo `byt_tinh.csv` (cần người duyệt xác nhận).
+Bệnh viện trực thuộc Bộ không ghi địa chỉ trong văn bản xếp cấp; tỉnh của chúng lấy theo `byt_tinh.csv` (cần người duyệt
+xác nhận). Khi hai nguồn ghi hai tên của cùng một cơ sở (đổi tên sau sắp xếp 2025), `duyet.csv` giữ tên ở văn bản mới hơn.
 
 Chỉ giữ **Bệnh viện, Viện có giường bệnh, Trung tâm Y tế**; bỏ phòng khám, trạm y tế, CDC, trung tâm kiểm nghiệm,
 viện pháp y. Tên viết tắt (`BVĐK`, `TTYT`...) được viết đầy đủ; phần "thuộc Công ty..." bị bỏ.

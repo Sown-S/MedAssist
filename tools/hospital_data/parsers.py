@@ -97,5 +97,39 @@ def xlsx_table(path: Path, cfg: dict) -> list[dict]:
                  vi_tri=f"dòng {head + 1 + k}" + (f" (VB {clean(r[vb])})" if vb is not None else ""))
             for k, r in enumerate(rows[head + 1:], start=1) if r and r[ten]]
 
+def html_js_data(path: Path, cfg: dict) -> list[dict]:
+    """Mảng `const data = [...]` trong script của trang (trang đơn vị trực thuộc Sở Y tế Đà Nẵng nạp danh sách bằng JS)."""
+    import json
+    text = path.read_text(encoding="utf-8")
+    body = text[text.index("[", text.index("const data =")):]
+    # Một phần mảng viết kiểu object literal của JS: khóa không có ngoặc kép, dấu phẩy cuối
+    body = re.sub(r'([{,]\s*)([A-Za-z_]\w*)\s*:', r'\1"\2":', body)
+    body = re.sub(r",(\s*[}\]])", r"\1", body)
+    items, _ = json.JSONDecoder().raw_decode(body)
+    return [_row(it[cfg["truong_ten"]], it.get(cfg.get("truong_dia_chi", ""), ""), cfg.get("so_huu", ""),
+                 vi_tri=f"STT {it.get('stt', k)}") for k, it in enumerate(items, start=1)]
 
-PARSERS = {f.__name__: f for f in (byt_xep_cap, hcm_ksk, danang_ksk, gialai_cv, html_table, xlsx_table)}
+
+def html_list(path: Path, cfg: dict) -> list[dict]:
+    """Danh sách trong khối `khoi` (class), chia mục La Mã; chỉ đọc mục có tên chứa một chuỗi trong `muc` (nếu khai).
+
+Vị trí ghi cả tên mục vì nguồn HCM đánh trùng số mục.
+"""
+    from bs4 import BeautifulSoup
+    soup = BeautifulSoup(path.read_text(encoding="utf-8", errors="ignore"), "html.parser")
+    lines = [clean(s) for s in soup.find(class_=cfg["khoi"]).get_text("\n").split("\n")]
+    out, muc = [], ""
+    for line in filter(None, lines):
+        if re.match(r"^[IVX]+\.\s", line):
+            muc = line
+            continue
+        if cfg.get("muc") and not any(m in muc for m in cfg["muc"]):
+            continue
+        m = re.match(r"^(?:(\d+)\.\s*)?(.+?)[;.]?$", line)
+        out.append(_row(m.group(2), so_huu=cfg.get("so_huu", ""),
+                        vi_tri=f"mục '{muc}'" + (f" số {m.group(1)}" if m.group(1) else "")))
+    return out
+
+
+PARSERS = {f.__name__: f for f in (byt_xep_cap, hcm_ksk, danang_ksk, gialai_cv, html_table, xlsx_table,
+                                       html_js_data, html_list)}

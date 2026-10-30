@@ -86,5 +86,29 @@
     "van_ban": "Danh sách cấp giấy phép hoạt động cơ sở KCB (sheet Nhà Nước, số liệu đến 2022, trước sáp nhập)",
     "url": "",
     "ghi_nhan": "2026-10-30"
+  },
+  "hanoi_truc_thuoc/don_vi_truc_thuoc.html": {
+    "sha256": "749fd7fbc8869e0b1f7f3771a406b3db8d06d2f452845478a00284337443070b",
+    "bytes": 44954,
+    "co_quan": "Sở Y tế thành phố Hà Nội",
+    "van_ban": "Các đơn vị trực thuộc Sở Y tế Hà Nội (bảng 1: bệnh viện)",
+    "url": "https://tracuuqlhn.hanoi.gov.vn/don-vi-truc-thuoc/-/asset_publisher/4IVkx5Jltnbg/content/aa",
+    "ghi_nhan": "2026-10-30"
+  },
+  "hcm_qd10_2025/danh_sach_co_so_y_te.html": {
+    "sha256": "7e6dbf5d182fa0c9948da5fa00715cd33faee0e35d272e288e6b90cc19be7b62",
+    "bytes": 76598,
+    "co_quan": "Sở Y tế Thành phố Hồ Chí Minh",
+    "van_ban": "Danh sách cơ sở y tế trực thuộc Sở (ban hành kèm Quyết định 10/2025/QĐ-UBND ngày 01/7/2025)",
+    "url": "http://medinet.gov.vn/co-so-y-te/danh-sach-co-so-y-te-so-y-te-hcm-cmobile4636-72856.aspx",
+    "ghi_nhan": "2026-10-30"
+  },
+  "danang_truc_thuoc/cac_don_vi_truc_thuoc.html": {
+    "sha256": "e9d45ba75a7b8112fbd1a147a11a657389904e0f72204c4c1b2849bce9c03a43",
+    "bytes": 184938,
+    "co_quan": "Sở Y tế thành phố Đà Nẵng",
+    "van_ban": "Các đơn vị trực thuộc Sở Y tế Đà Nẵng (gồm Quảng Nam cũ)",
+    "url": "https://soyte.danang.gov.vn/cac-don-vi-truc-thuoc",
+    "ghi_nhan": "2026-10-30"
   }
 }

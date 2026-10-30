@@ -5,7 +5,7 @@ import openpyxl
 import pytest
 
 from hospital_data import build
-from hospital_data.parsers import html_table, xlsx_table
+from hospital_data.parsers import html_js_data, html_list, html_table, xlsx_table
 
 
 @pytest.mark.parametrize("raw, name", [
@@ -63,6 +63,33 @@ def test_html_table(tmp_path):
                  "<td>Phường Kon Tum</td></tr></table>", encoding="utf-8")
     (row,) = html_table(f, {"cot_ten": 1, "cot_dia_chi": [4, 5], "so_huu": "Private"})
     assert (row["ten"], row["dia_chi"], row["so_huu"]) == ("Bệnh viện Mắt", "33 Triệu Việt Vương, Phường Kon Tum", "Private")
+
+
+def test_html_js_data_accepts_js_object_literal(tmp_path):
+    f = tmp_path / "d.html"
+    f.write_text("""<script>const data = [
+        {"stt": 1, "ten_don_vi": "Bệnh viện Đà Nẵng", "dia_chi_moi": ""},
+        {
+            stt: 5,
+            ten_don_vi: "Bệnh viện Ung bướu Đà Nẵng",
+            dia_chi_moi: "Đường Hoàng Thị Loan, phường Hòa Khánh",
+        },
+    ];</script>""", encoding="utf-8")
+    rows = html_js_data(f, {"truong_ten": "ten_don_vi", "truong_dia_chi": "dia_chi_moi"})
+    assert [(r["ten"], r["dia_chi"], r["vi_tri"]) for r in rows] == [
+        ("Bệnh viện Đà Nẵng", "", "STT 1"),
+        ("Bệnh viện Ung bướu Đà Nẵng", "Đường Hoàng Thị Loan, phường Hòa Khánh", "STT 5")]
+
+
+def test_html_list_reads_only_chosen_sections(tmp_path):
+    f = tmp_path / "l.html"
+    f.write_text("""<div class="ContentODM"><p>I. Chi cục</p><p>1. Chi cục Dân số</p>
+        <p>II. Bệnh viện chuyên khoa</p><p>1. Bệnh viện Từ Dũ;</p><p>2. Bệnh viện Mắt.</p>
+        <p>V. Trung tâm Y tế</p><p>Trung tâm Y tế Quận 1;</p></div>""", encoding="utf-8")
+    rows = html_list(f, {"khoi": "ContentODM", "muc": ["Bệnh viện chuyên khoa"]})
+    assert [(r["ten"], r["vi_tri"]) for r in rows] == [
+        ("Bệnh viện Từ Dũ", "mục 'II. Bệnh viện chuyên khoa' số 1"),
+        ("Bệnh viện Mắt", "mục 'II. Bệnh viện chuyên khoa' số 2")]
 
 
 def test_xlsx_table(tmp_path):
