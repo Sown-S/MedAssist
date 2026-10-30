@@ -74,6 +74,11 @@ npm run dev        # Vite dev server + cửa sổ Electron, sửa code thấy ng
 3. `server/.env` cho phép nguồn của dev server: `CORS_ORIGINS=["http://localhost:5173","http://127.0.0.1:5173"]`.
 4. Đăng nhập bằng tài khoản tạo bằng `scripts.create_user` (`admin`, `bs01`, `yta01`).
 
+**Mở nhiều vai trò trên một máy (test)**: thêm tham số `--profile=<tên>` (chữ, số, gạch ngang) vào shortcut, vd
+`"…\MedAssist.exe" --profile=bacsi`. Mỗi hồ sơ có thư mục dữ liệu riêng `%APPDATA%\MedAssist-<tên>` (token, địa chỉ máy chủ,
+`localStorage`), nên lễ tân, bác sĩ, quản trị đăng nhập song song không đè phiên nhau. Không có tham số thì app dùng thư mục mặc định
+như cũ. Xóa thư mục `MedAssist-<tên>` để bỏ một hồ sơ.
+
 **Bản cài cho phòng khám**: build với `VITE_USE_MOCK=false`, có file CA trong `certs/` (xem `certs/README.md`).
 Bản đóng gói tải giao diện từ `app://medassist`, nên server phải có `CORS_ORIGINS=["app://medassist"]` (mặc định của `deploy/.env.example`)
 và chỉ nhận địa chỉ `https://` khi server không phải máy này.

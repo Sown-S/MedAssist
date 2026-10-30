@@ -4,6 +4,7 @@ import { pathToFileURL } from 'url'
 import { readFileSync, writeFileSync, existsSync, readdirSync } from 'fs'
 import { X509Certificate } from 'crypto'
 import { verifyAgainstCAs } from './certPin'
+import { profileFromArgs } from './profile'
 import { is } from '@electron-toolkit/utils'
 
 // Bản build tải giao diện qua giao thức riêng app://medassist (không dùng file://): Origin gửi lên server là
@@ -25,6 +26,9 @@ function serveApp() {
 // ---------- Lưu trữ cục bộ của từng máy (thư mục userData) ----------
 // secure.json: token đăng nhập, mã hoá bằng safeStorage (DPAPI trên Windows) — không lưu chữ thường (TC03).
 // config.json: cấu hình riêng máy này (địa chỉ server...), không bí mật.
+// Phải đặt trước khi app sẵn sàng: Chromium mở localStorage, cache theo userData ngay lúc khởi động.
+const PROFILE = profileFromArgs(process.argv)
+if (PROFILE) app.setPath('userData', join(app.getPath('appData'), `${app.getName()}-${PROFILE}`))
 const fileOf = (name) => join(app.getPath('userData'), name)
 const readJson = (name) => {
   try {
