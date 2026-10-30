@@ -24,19 +24,13 @@ const ID_RE = /^\d{12}$/ // CCCD 12 số — không bắt buộc
 const VITALS_EMPTY = Object.fromEntries(VITAL_KEYS.map((d) => [d.key, '']))
 const EMPTY = { name: '', dob: '', gender: 'Female', phone: '', idNumber: '', history: '', allergies: '', ...VITALS_EMPTY, days: '', pregnancy: '', reason: '', ticket: '' }
 
-// Gõ số liền nhau → tự chèn dấu "/" thành dd/mm/yyyy.
-const maskDob = (s) => {
-  const d = s.replace(/\D/g, '').slice(0, 8)
-  return [d.slice(0, 2), d.slice(2, 4), d.slice(4)].filter(Boolean).join('/')
-}
-
 // Ô ngày sinh: hiển thị dd/mm/yyyy (ô date gốc của Chromium hiện theo vùng của Windows, máy en-US thành mm/dd/yyyy),
 // nút lịch mở bảng chọn ngày gốc. Form vẫn giữ dd/mm/yyyy như patientStore; lịch không cho chọn ngày tương lai.
 function DobInput({ value, onChange, className }) {
   const picker = useRef(null)
   return (
     <div className="dob-input">
-      <input type="text" inputMode="numeric" placeholder="dd/mm/yyyy" className={className} value={value} onChange={(e) => onChange(maskDob(e.target.value))} />
+      <input type="text" inputMode="numeric" placeholder="dd/mm/yyyy" className={className} value={value} onChange={(e) => onChange(clinic.maskDob(e.target.value))} />
       <button type="button" className="dob-cal" tabIndex={-1} title={translate('Choose from calendar')} onClick={() => picker.current?.showPicker()}>
         <Icon name="calendar" />
       </button>
