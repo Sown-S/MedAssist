@@ -218,3 +218,5 @@ export function toQueueVisit(q) {
   }
 }
 export const fetchQueue = async () => (await apiGet(`${V1}/queue`)).map(toQueueVisit)
+export const fetchStale = async () => (await apiGet(`${V1}/visits/stale`)).map((q) => ({ ...toQueueVisit(q), carriedFrom: q.queue_date }))
+export const cancelStale = (ids, reason) => apiPost(`${V1}/visits/stale/cancel`, { visit_ids: ids, reason })

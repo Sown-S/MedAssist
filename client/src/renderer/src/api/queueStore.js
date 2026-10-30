@@ -6,7 +6,7 @@
 // gọi API thật; không tạo dữ liệu mẫu, không lưu localStorage. Các phần chưa có API vẫn chạy cục bộ.
 import { useEffect, useSyncExternalStore } from 'react'
 import { DEMO_MODE } from './client'
-import { fetchQueue, checkIn as apiCheckIn, cancelVisit as apiCancelVisit, startExam as apiStartExam, releaseVisit as apiRelease } from './clinicApi'
+import { fetchQueue, fetchStale, cancelStale as apiCancelStale, checkIn as apiCheckIn, cancelVisit as apiCancelVisit, startExam as apiStartExam, releaseVisit as apiRelease } from './clinicApi'
 import { reopenPrescription as apiReopen } from './examApi'
 import { VI } from '../i18n/vi'
 import { getSettings } from './settingsStore'
@@ -267,6 +267,14 @@ export function syncQueue() {
     .finally(() => (syncing = null))
   return syncing
 }
+// Lượt chờ khám còn mở từ ngày trước (GET /visits/stale, chỉ Lễ tân).
+export function syncStale() {
+  if (DEMO_MODE) return Promise.resolve(true)
+  return fetchStale().then(
+    (stale) => (commit({ ...state, stale }), true),
+    () => false
+  )
+}
 export function useQueueSync(ms = 3000) {
   useEffect(() => {
     if (DEMO_MODE) return
@@ -307,6 +315,13 @@ export function closeStaleVisit(id, { reason, note = '' }, user) {
   if (!v) return { ok: false, error: 'Visit not found.' }
   if (!STALE_REASONS.some((r) => r.key === reason)) return { ok: false, error: 'Choose a reason.' }
   if (reason === 'other' && !note.trim()) return { ok: false, error: 'Describe what happened.' }
+  if (!DEMO_MODE) {
+    const label = STALE_REASONS.find((r) => r.key === reason).label
+    return apiCancelStale([id], [VI[label] ?? label, note.trim()].filter(Boolean).join(' — ')).then(
+      () => syncStale().then(() => ({ ok: true })),
+      (e) => ({ ok: false, error: e.message })
+    )
+  }
   commit({ ...state, stale: state.stale.filter((x) => x.id !== id) })
   logEvent(user, 'visit.cancel', {
     target: { kind: 'patient', id: v.patientId, label: v.name },

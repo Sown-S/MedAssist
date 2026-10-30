@@ -146,8 +146,8 @@ def put_visit_symptoms(visit_id: uuid.UUID, body: SymptomsPut, actor: User = Dep
 @router.get("/queue", response_model=list[QueueItem])
 def queue(_: User = Depends(audit_view("visit", roles=CLINICAL_ROLES, dedupe_seconds=DEFAULT_POLL_WINDOW)),
           db: Session = Depends(get_db)):
-    """Hàng đợi hôm nay (Waiting, CheckedIn): Emergency > HighPriority > Routine/chưa phân luồng,
-    cùng mức thì ai vào trước xếp trước. Client hỏi lại khoảng 2 giây một lần (US10)."""
+    """Hàng đợi hôm nay và lượt Examining còn dở từ ngày trước: Emergency > HighPriority > Routine/chưa
+    phân luồng, cùng mức thì ai vào trước xếp trước. Client hỏi lại khoảng 2 giây một lần (US10)."""
     return queue_service.queue_today(db)
 
 
@@ -159,7 +159,7 @@ def create_visit(body: VisitCreate, actor: User = Depends(_nurse_visit), db: Ses
     return _with_warnings(visit)
 
 
-@router.get("/visits/stale", response_model=list[VisitOut])
+@router.get("/visits/stale", response_model=list[QueueItem])
 def stale_visits(_: User = Depends(audit_view("visit", roles=("Nurse",))), db: Session = Depends(get_db)):
     """Lượt khám còn mở từ ngày trước, để y tá hủy."""
     return queue_service.stale_open_visits(db)

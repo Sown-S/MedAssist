@@ -20,8 +20,8 @@ export default function StaleVisitsModal({ readOnly, onClose, onPay }) {
   const [reason, setReason] = useState('left_waiting')
   const [note, setNote] = useState('')
 
-  function close(v) {
-    const r = closeStaleVisit(v.id, { reason, note }, user)
+  async function close(v) {
+    const r = await closeStaleVisit(v.id, { reason, note }, user)
     if (!r.ok) return showToast(translate(r.error))
     showToast(translate('Visit closed') + ' — ' + ticketNo(v.ticket) + ' ' + v.name)
     setClosing(null)
