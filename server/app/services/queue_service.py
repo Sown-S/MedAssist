@@ -14,7 +14,7 @@
 """
 import uuid
 
-from sqlalchemy import case, func, select, text, update
+from sqlalchemy import case, func, or_, select, text, update
 from sqlalchemy.orm import Session
 
 from app.exceptions import AppError, NotFoundError
@@ -194,15 +194,15 @@ def mark_finished(db: Session, visit_id: uuid.UUID, actor: User) -> Visit:
 
 
 # ---------------------------------------------------------------------------- truy vấn
-def queue_today(db: Session) -> list[dict]:
+def _queue_rows(db: Session, *where, order_by=None) -> list[dict]:
     rows = db.execute(
         select(Visit, Patient.full_name, Patient.date_of_birth, Patient.gender, User.full_name, Room.code, Room.name)
         .join(Patient, Patient.patient_id == Visit.patient_id)
         .outerjoin(User, User.user_id == Visit.physician_id)
         .outerjoin(Room, Room.room_id == User.room_id)
-        .where(Visit.queue_date == func.current_date(), Visit.status.in_(QUEUE_VIEW_STATUSES))
-        .order_by(_PRIORITY_RANK.desc(), Visit.visit_date, Visit.queue_number)).all()
-    return [{**{k: getattr(v, k) for k in ("visit_id", "queue_number", "status", "patient_id",
+        .where(*where)
+        .order_by(*(order_by or (_PRIORITY_RANK.desc(), Visit.visit_date, Visit.queue_number)))).all()
+    return [{**{k: getattr(v, k) for k in ("visit_id", "queue_date", "queue_number", "status", "patient_id",
                                            "chief_complaint", "triage_priority", "is_red_flag",
                                            "red_flag_reason", "priority_raised_by_ai", "ai_status",
                                            "visit_date", "checked_in_at", "physician_id", "exam_started_at")},
@@ -211,11 +211,16 @@ def queue_today(db: Session) -> list[dict]:
             for v, name, dob, gender, physician, room, room_name in rows]
 
 
-def stale_open_visits(db: Session) -> list[Visit]:
-    """Lượt khám còn mở từ những ngày trước (không hiện trong hàng đợi hôm nay)."""
-    return list(db.scalars(select(Visit).where(Visit.queue_date < func.current_date(),
-                                               Visit.status.in_(QUEUE_STATUSES))
-                           .order_by(Visit.queue_date, Visit.queue_number)))
+def queue_today(db: Session) -> list[dict]:
+    # Lượt Examining của ngày trước vẫn hiện: khám vắt qua nửa đêm không được rơi khỏi phòng bác sĩ.
+    return _queue_rows(db, Visit.status.in_(QUEUE_VIEW_STATUSES),
+                       or_(Visit.queue_date == func.current_date(), Visit.status == "Examining"))
+
+
+def stale_open_visits(db: Session) -> list[dict]:
+    """Lượt chờ khám còn mở từ những ngày trước (không hiện trong hàng đợi hôm nay)."""
+    return _queue_rows(db, Visit.queue_date < func.current_date(), Visit.status.in_(QUEUE_STATUSES),
+                       order_by=(Visit.queue_date, Visit.queue_number))
 
 
 def cancel_stale(db: Session, visit_ids: list[uuid.UUID], reason: str, actor: User) -> list[uuid.UUID]:

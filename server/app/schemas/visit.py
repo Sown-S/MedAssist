@@ -66,6 +66,7 @@ class VisitWithWarnings(VisitOut):
 class QueueItem(BaseModel):
     """Một dòng hàng đợi (US10): đủ để hiển thị, không gồm sinh hiệu chi tiết."""
     visit_id: uuid.UUID
+    queue_date: date
     queue_number: int | None
     status: str
     patient_id: uuid.UUID
