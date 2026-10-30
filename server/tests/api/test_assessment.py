@@ -321,3 +321,30 @@ def test_missing_knowledge_reader_reports_service_unavailable(monkeypatch):
         assessment_router.get_knowledge_reader(SimpleNamespace())
     assert caught.value.status_code == 503
     assert caught.value.code == "KNOWLEDGE_UNAVAILABLE"
+
+
+def test_get_knowledge_reader_reuses_cached_db_reader_and_refreshes(monkeypatch):
+    calls = {"init": 0, "refresh": 0}
+
+    class DummyDbReader:
+        def __init__(self, bind=None):
+            self.bind = bind
+            calls["init"] += 1
+
+        def refresh(self):
+            calls["refresh"] += 1
+            return SimpleNamespace(release={"epoch": 1}, triage_rules=[], conditions=[], symptoms=[])
+
+    fake_module = SimpleNamespace(DbKnowledgeReader=DummyDbReader)
+    monkeypatch.setattr(assessment_router, "import_module", lambda name: fake_module)
+    monkeypatch.setattr(assessment_router, "_reader_cache", {})
+    fake_bind = object()
+    fake_db = SimpleNamespace(get_bind=lambda: fake_bind)
+
+    first = assessment_router.get_knowledge_reader(fake_db)
+    second = assessment_router.get_knowledge_reader(fake_db)
+
+    assert first is not second
+    assert first.active_release() == second.active_release() == {"epoch": 1}
+    assert assessment_router._reader_cache[(DummyDbReader, fake_bind)].bind is fake_bind
+    assert calls == {"init": 1, "refresh": 2}

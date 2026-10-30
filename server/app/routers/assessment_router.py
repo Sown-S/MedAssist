@@ -2,11 +2,13 @@
 
 import uuid
 from importlib import import_module
+from threading import Lock
 
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 
 from app.ai.interfaces import KnowledgeReader
+from app.ai.snapshot_reader import SnapshotReader
 from app.core.audit_view import CLINICAL_ROLES, audit_view
 from app.core.auth import require_roles
 from app.core.database import get_db
@@ -31,8 +33,12 @@ def _knowledge_unavailable() -> AppError:
     )
 
 
+_reader_cache: dict[tuple[object, object], KnowledgeReader] = {}
+_reader_cache_lock = Lock()
+
+
 def get_knowledge_reader(db: Session = Depends(get_db)) -> KnowledgeReader:
-    """Tạo reader DB khi module tích hợp đã có; test có thể override dependency này."""
+    """Cache reader theo engine, cố định snapshot riêng cho từng request."""
     try:
         module = import_module("app.services.knowledge_reader")
     except ModuleNotFoundError as exc:
@@ -48,10 +54,16 @@ def get_knowledge_reader(db: Session = Depends(get_db)) -> KnowledgeReader:
         return reader_type(db)
     db_reader_type = getattr(module, "DbKnowledgeReader", None)
     if callable(db_reader_type):
-        reader = db_reader_type()
-        if hasattr(reader, "refresh"):
-            reader.refresh()
-        return reader
+        bind = db.get_bind() if hasattr(db, "get_bind") else None
+        key = (db_reader_type, bind)
+        with _reader_cache_lock:
+            reader = _reader_cache.get(key)
+            if reader is None:
+                reader = db_reader_type(bind) if bind is not None else db_reader_type()
+                _reader_cache[key] = reader
+        # refresh trả một snapshot nhất quán. Không đọc lại các active_* trên
+        # reader chung vì request khác có thể vừa refresh sang epoch mới.
+        return SnapshotReader(reader.refresh())
     raise _knowledge_unavailable()
 
 

@@ -87,7 +87,7 @@ def test_node1_node2_node3_send_closed_candidates_and_existing_evidence():
     assert state == original
     assert result is not state
     assert len(client.calls) == 1
-    assert client.calls[0]["schema"] == reasoning_json_schema()
+    assert client.calls[0]["schema"] == reasoning_json_schema([c["condition_code"] for c in state["candidates"]])
     assert client.calls[0]["timeout_seconds"] == 12.5
     data = payload(client)
     assert data["priority_rule"] == data["priority_final"] == "Routine"
@@ -121,6 +121,20 @@ def test_four_internal_candidates_are_sent_without_applying_the_display_limit():
     assert len(payload(client)["candidates"]) == 4
     assert result["llm_output"] == response
     assert len(result["candidates"]) == 4
+
+
+def test_request_schema_limits_codes_and_keeps_independent_default_schema():
+    schema = reasoning_json_schema(["condition_a", "condition_b"])
+    assert schema["properties"]["ranking"]["minItems"] == 2
+    assert schema["properties"]["ranking"]["maxItems"] == 2
+    code_schema = schema["$defs"]["RankedCondition"]["properties"]["condition_code"]
+    assert code_schema["enum"] == ["condition_a", "condition_b"]
+    assert "enum" not in reasoning_json_schema()["$defs"]["RankedCondition"]["properties"]["condition_code"]
+    assert REASONING_PROMPT_VERSION == "reasoning-v3"
+    assert "[symptom_code]" in load_prompt(REASONING_PROMPT_VERSION)
+    assert "reasoning-v1" in load_prompt("reasoning-v1")
+    assert "reasoning-v2" in load_prompt("reasoning-v2")
+    assert "không tự viết lại tên bệnh" in load_prompt(REASONING_PROMPT_VERSION)
 
 
 @pytest.mark.parametrize("priority", ["Routine", "HighPriority"])
