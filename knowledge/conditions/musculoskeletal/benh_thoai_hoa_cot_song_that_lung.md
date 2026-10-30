@@ -7,8 +7,15 @@ icd10_code: M47.8
 disease_group: musculoskeletal
 description: Thoái hóa cột sống thắt lưng (Spondylosis hoặc Oteoarthritis of lumbar
   spine) là bệnh mạn tính tiến triển từ từ tăng dần gây đau, hạn chế vận động, biến
-  dạng cột sống thắt lưng mà không có biểu hiện viêm.
+  dạng cột sống thắt lưng mà không có biểu hiện viêm. Tổn thương cơ bản của bệnh là
+  tình trạng thoái.
 relations:
+- symptom_code: sciatica_lasegue_positive
+  polarity: SUPPORTS
+  weight: 0.98
+  is_key: true
+  source_key: moh_qd_361_2014
+  source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: bone_pain_fracture_lesion
   polarity: SUPPORTS
   weight: 0.98
@@ -21,34 +28,34 @@ relations:
   is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
+- symptom_code: morning_stiffness_under_30m
+  polarity: SUPPORTS
+  weight: 0.94
+  is_key: true
+  source_key: moh_qd_361_2014
+  source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: mechanical_spinal_pain_stiffness
   polarity: SUPPORTS
   weight: 0.94
   is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: weight_loss_anorexia
+- symptom_code: myalgia_arthralgia
   polarity: SUPPORTS
-  weight: 0.77
-  is_key: false
-  source_key: moh_qd_361_2014
-  source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: sciatica_lasegue_positive
-  polarity: SUPPORTS
-  weight: 0.98
+  weight: 0.8
   is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: anemia_pallor_jaundice
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.82
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: myalgia_arthralgia
+- symptom_code: weight_loss_anorexia
   polarity: SUPPORTS
-  weight: 0.8
-  is_key: true
+  weight: 0.77
+  is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 excerpts:

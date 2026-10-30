@@ -7,7 +7,8 @@ icd10_code: M89.0
 disease_group: musculoskeletal
 description: Viêm khớp vẩy nến là một bệnh được xếp vào nhóm bệnh lý cột sống huyết
   thanh âm tính. Đó là bệnh lý kết hợp thương tổn vẩy nến ở da và/ hoặc móng và tình
-  trạng viêm khớp ngoại biên, có kèm theo tổn thương tại cột sống.
+  trạng viêm khớp ngoại biên, có kèm theo tổn thương tại cột sống. Ở người lớn, có
+  từ 5 đến.
 relations:
 - symptom_code: psoriatic_plaque_nail_pitting
   polarity: SUPPORTS
@@ -15,15 +16,15 @@ relations:
   is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: asymmetric_oligoarthritis_lower
-  polarity: SUPPORTS
-  weight: 0.94
-  is_key: true
-  source_key: moh_qd_361_2014
-  source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: inflammatory_sacroiliac_back_pain
   polarity: SUPPORTS
   weight: 0.95
+  is_key: true
+  source_key: moh_qd_361_2014
+  source_edition: Quyết định số 361/QĐ-BYT
+- symptom_code: asymmetric_oligoarthritis_lower
+  polarity: SUPPORTS
+  weight: 0.94
   is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT

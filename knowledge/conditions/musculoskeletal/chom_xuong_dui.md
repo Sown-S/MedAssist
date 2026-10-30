@@ -3,12 +3,19 @@ schema: okf_condition_v1
 condition_code: chom_xuong_dui
 name_vi: Chỏm xương đùi
 name_en: Avascular necrosis
-icd10_code: M89.1
+icd10_code: M89.2
 disease_group: musculoskeletal
 description: Hoại tử vô mạch (Avascular Necrosis- AVN) chỏm xương đùi hay còn gọi
   là hoại tử vô khuẩn chỏm xương đùi là bệnh có tổn thương hoại tử tế bào xương và
-  tủy xương do bị thiếu máu nuôi phần trên chỏm xương đùi.
+  tủy xương do bị thiếu máu nuôi phần trên chỏm xương đùi. Vùng hoại tử lúc đầu tạo
+  ra các vùng.
 relations:
+- symptom_code: hip_groin_pain_limping
+  polarity: SUPPORTS
+  weight: 0.95
+  is_key: true
+  source_key: moh_qd_361_2014
+  source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: bone_pain_fracture_lesion
   polarity: SUPPORTS
   weight: 0.94
@@ -21,15 +28,9 @@ relations:
   is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: hip_groin_pain_limping
-  polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
-  source_key: moh_qd_361_2014
-  source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: anemia_pallor_jaundice
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.82
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT

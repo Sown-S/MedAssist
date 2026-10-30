@@ -8,7 +8,7 @@ disease_group: musculoskeletal
 description: Viêm màng hoạt dịch khớp háng thoáng qua còn được gọi là viêm màng hoạt
   dịch do nhiễm độc (toxic synovitis) là tình trạng viêm khu trú ở màng hoạt dịch
   khớp háng một bên với tính chất khởi phát đột ngột, khỏi nhanh chóng trong vòng
-  7-10 ngày mà không để lại di chứng.
+  7-10 ngày mà.
 relations:
 - symptom_code: hip_groin_pain_limping
   polarity: SUPPORTS
@@ -16,15 +16,15 @@ relations:
   is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: myalgia_arthralgia
-  polarity: SUPPORTS
-  weight: 0.82
-  is_key: true
-  source_key: moh_qd_361_2014
-  source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: bone_pain_fracture_lesion
   polarity: SUPPORTS
   weight: 0.92
+  is_key: true
+  source_key: moh_qd_361_2014
+  source_edition: Quyết định số 361/QĐ-BYT
+- symptom_code: myalgia_arthralgia
+  polarity: SUPPORTS
+  weight: 0.82
   is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT

@@ -8,11 +8,17 @@ disease_group: ent
 description: 'Viêm mũi xoang mạn tính là viêm niêm mạc mũi xoang với các triệu chứng:
   đau nhức âm ỉ vùng mặt, ngạt mũi, giảm ngửi, ho, khịt khạc đờm, soi mũi thấy khe
   giữa, đôi khi cả khe trên có mủ. Người bệnh có thể bị sốt, kém tập trung, người
-  mệt mỏi. Các triệu chứng này kéo dài trên 12 tuần.'
+  mệt mỏi. Các.'
 relations:
 - symptom_code: facial_sinus_pain_anosmia
   polarity: SUPPORTS
   weight: 0.98
+  is_key: true
+  source_key: moh_qd_5643_2015
+  source_edition: Quyết định số 5643/QĐ-BYT
+- symptom_code: nasal_polyp_sinonasal_mass
+  polarity: SUPPORTS
+  weight: 0.95
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
@@ -22,21 +28,15 @@ relations:
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: rhinorrhea_nasal_congestion
-  polarity: SUPPORTS
-  weight: 0.9
-  is_key: true
-  source_key: moh_qd_5643_2015
-  source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: allergic_sneezing_nasal_itch
   polarity: SUPPORTS
   weight: 0.94
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: nasal_polyp_sinonasal_mass
+- symptom_code: rhinorrhea_nasal_congestion
   polarity: SUPPORTS
-  weight: 0.95
+  weight: 0.9
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT

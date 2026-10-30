@@ -7,7 +7,7 @@ icd10_code: B37.8
 disease_group: ent
 description: 'Nấm thanh quản là một hình thái viêm thanh quản đặc hiệu do các vi nấm
   gây ra. Thông thường có bốn loại nấm có thể gây bệnh ở thanh quản là: Aspergillus,
-  Candida, Histoplasma và Blastomyces.'
+  Candida, Histoplasma và Blastomyces. Nhưng do phân bố về địa lí, ở Việt Nam thông.'
 relations:
 - symptom_code: hoarseness_dysphonia_stridor
   polarity: SUPPORTS

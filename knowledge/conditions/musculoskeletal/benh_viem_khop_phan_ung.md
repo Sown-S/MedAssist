@@ -7,36 +7,31 @@ icd10_code: M02.9
 disease_group: musculoskeletal
 description: Viêm khớp phản ứng được đặc trưng bởi tình trạng viêm khớp vô khuẩn tiếp
   theo sau tình trạng nhiễm trùng, thường là nhiễm trùng đường tiết niệu - sinh dục
-  hoặc đường tiêu hoá.
+  hoặc đường tiêu hoá. Biểu hiện viêm có thể từ một đến vài khớp, thường gặp các khớp
+  lớn ở.
 relations:
-- symptom_code: asymmetric_oligoarthritis_lower
-  polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
-  source_key: moh_qd_361_2014
-  source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: conjunctivitis_uveitis_red_eye
-  polarity: SUPPORTS
-  weight: 0.86
-  is_key: false
-  source_key: moh_qd_361_2014
-  source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: psoriatic_plaque_nail_pitting
   polarity: SUPPORTS
   weight: 0.97
   is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: weight_loss_anorexia
+- symptom_code: corneal_ulcer_hypopyon_keratitis
   polarity: SUPPORTS
-  weight: 0.77
-  is_key: false
+  weight: 0.96
+  is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: fatigue_malaise
+- symptom_code: genital_ulcer_chancre_discharge
   polarity: SUPPORTS
-  weight: 0.72
-  is_key: false
+  weight: 0.96
+  is_key: true
+  source_key: moh_qd_361_2014
+  source_edition: Quyết định số 361/QĐ-BYT
+- symptom_code: asymmetric_oligoarthritis_lower
+  polarity: SUPPORTS
+  weight: 0.96
+  is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: inflammatory_sacroiliac_back_pain
@@ -51,10 +46,16 @@ relations:
   is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: anemia_pallor_jaundice
+- symptom_code: ocular_pain_photophobia_tearing
+  polarity: SUPPORTS
+  weight: 0.9
+  is_key: true
+  source_key: moh_qd_361_2014
+  source_edition: Quyết định số 361/QĐ-BYT
+- symptom_code: myalgia_arthralgia
   polarity: SUPPORTS
   weight: 0.8
-  is_key: false
+  is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 excerpts:

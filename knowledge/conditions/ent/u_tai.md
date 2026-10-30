@@ -6,26 +6,10 @@ name_en: Ù tai
 icd10_code: H93.1
 disease_group: ent
 description: Ù tai là tiếng kêu không mong muốn có nguồn gốc từ chính hệ thống thính
-  giác hoặc các cơ quan lân cận và thường không thể nghe được bởi người khác.
+  giác hoặc các cơ quan lân cận và thường không thể nghe được bởi người khác. Phần
+  lớn ù tai là những tiếng kêu đơn âm, tuy nhiên có trường hợp tiếng ù có dạng là
+  những âm phức.
 relations:
-- symptom_code: tinnitus_ear_fullness
-  polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
-  source_key: moh_qd_5643_2015
-  source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: dizziness_vertigo
-  polarity: SUPPORTS
-  weight: 0.9
-  is_key: true
-  source_key: moh_qd_5643_2015
-  source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: fatigue_malaise
-  polarity: SUPPORTS
-  weight: 0.72
-  is_key: false
-  source_key: moh_qd_5643_2015
-  source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: otorrhea_ear_discharge
   polarity: SUPPORTS
   weight: 0.94
@@ -44,9 +28,27 @@ relations:
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
+- symptom_code: tinnitus_ear_fullness
+  polarity: SUPPORTS
+  weight: 0.92
+  is_key: true
+  source_key: moh_qd_5643_2015
+  source_edition: Quyết định số 5643/QĐ-BYT
+- symptom_code: dizziness_vertigo
+  polarity: SUPPORTS
+  weight: 0.9
+  is_key: true
+  source_key: moh_qd_5643_2015
+  source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: anemia_pallor_jaundice
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.82
+  is_key: false
+  source_key: moh_qd_5643_2015
+  source_edition: Quyết định số 5643/QĐ-BYT
+- symptom_code: fatigue_malaise
+  polarity: SUPPORTS
+  weight: 0.72
   is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT

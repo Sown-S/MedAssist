@@ -3,16 +3,21 @@ schema: okf_condition_v1
 condition_code: viem_mui_xoang_do_nam
 name_vi: Viêm mũi xoang do nấm
 name_en: Viêm mũi xoang do nấm
-icd10_code: B49
+icd10_code: B49.1
 disease_group: ent
 description: 'Là tình trạng viêm mũi xoang kéo dài với sự hiện diện của nấm gây tổn
   thương niêm mạc và tổ chức xung quanh. Nấm mũi xoang có bốn thể: thể không xâm nhập
-  còn gọi là u nấm, thể xâm nhập giả u; thể xâm lấn và thể viêm mũi xoang dị ứng với
-  nấm.'
+  còn gọi là u nấm, thể xâm nhập.'
 relations:
 - symptom_code: myasthenic_ptosis_diplopia_fatigue
   polarity: SUPPORTS
   weight: 0.98
+  is_key: true
+  source_key: moh_qd_5643_2015
+  source_edition: Quyết định số 5643/QĐ-BYT
+- symptom_code: diplopia_strabismus_proptosis
+  polarity: SUPPORTS
+  weight: 0.97
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
@@ -28,6 +33,12 @@ relations:
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
+- symptom_code: skin_cellulitis_pus_abscess
+  polarity: SUPPORTS
+  weight: 0.92
+  is_key: true
+  source_key: moh_qd_5643_2015
+  source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: bone_pain_fracture_lesion
   polarity: SUPPORTS
   weight: 0.92
@@ -40,21 +51,9 @@ relations:
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: skin_cellulitis_pus_abscess
-  polarity: SUPPORTS
-  weight: 0.9
-  is_key: true
-  source_key: moh_qd_5643_2015
-  source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: epistaxis_nasal_bleeding
   polarity: SUPPORTS
   weight: 0.88
-  is_key: true
-  source_key: moh_qd_5643_2015
-  source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: rhinorrhea_nasal_congestion
-  polarity: SUPPORTS
-  weight: 0.86
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT

@@ -5,10 +5,12 @@ name_vi: Viêm thanh quản cấp tính
 name_en: Viêm thanh quản cấp tính
 icd10_code: J04.0
 disease_group: ent
-description: Viêm thanh quản cấp tính (VTQ cấp) là tình trạng viêm niêm mạc của thanh
-  quản kéo dài dưới 3 tuần.
+description: 'Viêm thanh quản cấp tính (VTQ cấp) là tình trạng viêm niêm mạc của thanh
+  quản kéo dài dưới 3 tuần. VTQ cấp có rất nhiều nguyên nhân và biểu hiện lâm sàng
+  cũng rất khác nhau, tùy theo nguyên nhân, và lứa tuổi bệnh được phân loại: VTQ cấp
+  ở trẻ em,.'
 relations:
-- symptom_code: hoarseness_dysphonia_stridor
+- symptom_code: trismus_tetanic_spasm
   polarity: SUPPORTS
   weight: 0.98
   is_key: true
@@ -20,10 +22,10 @@ relations:
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: sore_throat_dysphagia
+- symptom_code: hoarseness_dysphonia_stridor
   polarity: SUPPORTS
-  weight: 0.77
-  is_key: false
+  weight: 0.98
+  is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: nocturnal_asthma_dyspnea
@@ -50,9 +52,9 @@ relations:
   is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: fatigue_malaise
+- symptom_code: sore_throat_dysphagia
   polarity: SUPPORTS
-  weight: 0.7
+  weight: 0.77
   is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT

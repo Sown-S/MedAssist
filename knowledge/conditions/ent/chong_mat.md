@@ -7,7 +7,8 @@ icd10_code: H81.9
 disease_group: ent
 description: Chóng mặt là một ảo giác hoàn toàn trái ngược về mặt vận động hoặc về
   tư thế của người bệnh. Từ chóng mặt dùng để chỉ tất cả những cảm giác mất thăng
-  bằng có nguồn gốc từ cơ quan tiền đình.
+  bằng có nguồn gốc từ cơ quan tiền đình. Chóng mặt có thể biểu hiện dưới dạng những
+  cảm giác.
 relations:
 - symptom_code: dizziness_vertigo
   polarity: SUPPORTS
@@ -33,15 +34,15 @@ relations:
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: anemia_pallor_jaundice
-  polarity: SUPPORTS
-  weight: 0.8
-  is_key: false
-  source_key: moh_qd_5643_2015
-  source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: nausea_vomiting_diarrhea
   polarity: SUPPORTS
-  weight: 0.75
+  weight: 0.8
+  is_key: true
+  source_key: moh_qd_5643_2015
+  source_edition: Quyết định số 5643/QĐ-BYT
+- symptom_code: anemia_pallor_jaundice
+  polarity: SUPPORTS
+  weight: 0.82
   is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT

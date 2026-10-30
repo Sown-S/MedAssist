@@ -7,7 +7,7 @@ icd10_code: C32.9
 disease_group: ent
 description: Ung thư thanh quản là các khối u ác tính xuất phát từ biểu mô thanh quản
   Ung thư thanh quản thuộc vùng đường hô hấp - tiêu hóa trên (V.A.D.S). Ở Việt Nam
-  ngày càng gặp nhiều thể ung thư thanh quản đơn thuần hơn là ung thư hạ họng.
+  ngày càng gặp nhiều thể ung thư thanh quản đơn thuần hơn là.
 relations:
 - symptom_code: hoarseness_dysphonia_stridor
   polarity: SUPPORTS

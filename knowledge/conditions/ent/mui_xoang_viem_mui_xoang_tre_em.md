@@ -7,7 +7,8 @@ icd10_code: J01.8
 disease_group: ent
 description: Viêm mũi xoang (VMX) là tình trạng viêm niêm mạc mũi và các xoang cạnh
   mũi, gây ra do nhiều nguyên nhân khác nhau như nhiễm khuẩn, siêu vi, dị ứng... bệnh
-  thường hay gặp ở trẻ em dưới 6 tuổi.
+  thường hay gặp ở trẻ em dưới 6 tuổi. Tùy theo thời gian diễn biến của bệnh, viêm
+  mũi xoang.
 relations:
 - symptom_code: allergic_sneezing_nasal_itch
   polarity: SUPPORTS
@@ -15,9 +16,15 @@ relations:
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: rhinorrhea_nasal_congestion
+- symptom_code: nasal_polyp_sinonasal_mass
   polarity: SUPPORTS
-  weight: 0.9
+  weight: 0.95
+  is_key: true
+  source_key: moh_qd_5643_2015
+  source_edition: Quyết định số 5643/QĐ-BYT
+- symptom_code: history_smoking_dust_exposure
+  polarity: SUPPORTS
+  weight: 0.94
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
@@ -27,15 +34,9 @@ relations:
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: fatigue_malaise
+- symptom_code: rhinorrhea_nasal_congestion
   polarity: SUPPORTS
-  weight: 0.72
-  is_key: false
-  source_key: moh_qd_5643_2015
-  source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: nasal_polyp_sinonasal_mass
-  polarity: SUPPORTS
-  weight: 0.95
+  weight: 0.9
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
@@ -45,13 +46,13 @@ relations:
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: fever_low_grade
+- symptom_code: nausea_vomiting_diarrhea
   polarity: SUPPORTS
-  weight: 0.75
-  is_key: false
+  weight: 0.8
+  is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: headache_dull
+- symptom_code: fever_low_grade
   polarity: SUPPORTS
   weight: 0.75
   is_key: false

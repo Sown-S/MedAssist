@@ -27,18 +27,6 @@ relations:
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: otalgia_ear_pain
-  polarity: SUPPORTS
-  weight: 0.9
-  is_key: true
-  source_key: moh_qd_5643_2015
-  source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: headache_dull
-  polarity: SUPPORTS
-  weight: 0.77
-  is_key: false
-  source_key: moh_qd_5643_2015
-  source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: hearing_loss_deafness
   polarity: SUPPORTS
   weight: 0.92
@@ -54,6 +42,18 @@ relations:
 - symptom_code: bone_pain_fracture_lesion
   polarity: SUPPORTS
   weight: 0.92
+  is_key: true
+  source_key: moh_qd_5643_2015
+  source_edition: Quyết định số 5643/QĐ-BYT
+- symptom_code: fever_high
+  polarity: SUPPORTS
+  weight: 0.9
+  is_key: true
+  source_key: moh_qd_5643_2015
+  source_edition: Quyết định số 5643/QĐ-BYT
+- symptom_code: otalgia_ear_pain
+  polarity: SUPPORTS
+  weight: 0.9
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT

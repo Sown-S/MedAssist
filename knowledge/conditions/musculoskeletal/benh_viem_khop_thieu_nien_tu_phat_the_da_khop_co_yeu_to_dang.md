@@ -6,19 +6,15 @@ name_vi: Bệnh viêm khớp thiếu niên tự phát thể đa khớp có yếu
 name_en: Juvenile Idiopathic Arthritis
 icd10_code: M08.0
 disease_group: musculoskeletal
-description: Viêm khớp thiếu niên tự phát theo ILAR là nhóm bệnh viêm khớp mạn tính
-  khởi phát bệnh trên 6 tuần ở trẻ em dưới 16 tuổi.
+description: 'Viêm khớp thiếu niên tự phát theo ILAR là nhóm bệnh viêm khớp mạn tính
+  khởi phát bệnh trên 6 tuần ở trẻ em dưới 16 tuổi. Biểu hiện lâm sàng không đồng
+  nhất gồm: thể ít khớp; thể đa khớp RF (+); thể đa khớp RF (-); thể hệ thống; thể
+  viêm khớp vẩy.'
 relations:
 - symptom_code: symmetric_polyarthritis_hands
   polarity: SUPPORTS
   weight: 0.97
   is_key: true
-  source_key: moh_qd_361_2014
-  source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: serositis_pleural_pericardial
-  polarity: SUPPORTS
-  weight: 0.87
-  is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: bone_pain_fracture_lesion
@@ -33,16 +29,22 @@ relations:
   is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: conjunctivitis_uveitis_red_eye
-  polarity: SUPPORTS
-  weight: 0.8
-  is_key: false
-  source_key: moh_qd_361_2014
-  source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: myalgia_arthralgia
   polarity: SUPPORTS
   weight: 0.8
   is_key: true
+  source_key: moh_qd_361_2014
+  source_edition: Quyết định số 361/QĐ-BYT
+- symptom_code: serositis_pleural_pericardial
+  polarity: SUPPORTS
+  weight: 0.87
+  is_key: false
+  source_key: moh_qd_361_2014
+  source_edition: Quyết định số 361/QĐ-BYT
+- symptom_code: conjunctivitis_uveitis_red_eye
+  polarity: SUPPORTS
+  weight: 0.8
+  is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: fever_low_grade

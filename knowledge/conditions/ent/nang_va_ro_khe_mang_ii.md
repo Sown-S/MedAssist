@@ -3,7 +3,7 @@ schema: okf_condition_v1
 condition_code: nang_va_ro_khe_mang_ii
 name_vi: Nang và rò khe mang II
 name_en: Nang và rò khe mang II
-icd10_code: Q18.0
+icd10_code: Q18.1
 disease_group: ent
 description: Nang và rò khe mang II là do còn tồn tại khe mang II và xoang cổ trong
   quá trình phát triển phôi thai, các thành phần này lẽ ra sẽ biến mất đi trong quá
@@ -24,6 +24,12 @@ relations:
 - symptom_code: hearing_loss_deafness
   polarity: SUPPORTS
   weight: 0.92
+  is_key: true
+  source_key: moh_qd_5643_2015
+  source_edition: Quyết định số 5643/QĐ-BYT
+- symptom_code: sore_throat_dysphagia
+  polarity: SUPPORTS
+  weight: 0.78
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
