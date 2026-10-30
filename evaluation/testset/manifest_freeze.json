@@ -1,38 +1,39 @@
 {
-  "freeze_version": "testset-v1.0-frozen",
-  "frozen_at": "2026-10-27T10:09:04",
-  "git_tag_recommended": "testset-v1.0-frozen",
+  "freeze_version": "testset-v1.1-frozen",
+  "frozen_at": "2026-10-30T16:44:51",
+  "git_tag_recommended": "testset-v1.1-frozen",
   "knowledge_snapshot": {
-    "total_conditions": 84,
+    "total_conditions": 124,
     "groups": {
       "dermatology": 3,
-      "ent": 50,
-      "infectious": 3,
-      "musculoskeletal": 26,
+      "ent": 38,
+      "gastrointestinal": 1,
+      "infectious": 14,
+      "musculoskeletal": 55,
+      "ophthalmology": 11,
       "respiratory": 2
     },
-    "total_symptoms": 86,
+    "total_symptoms": 99,
     "total_triage_rules": 11,
-    "total_sources": 9
+    "total_sources": 11
   },
-  "combined_sha256": "5f6a9cdf6ecac3b1e8792bb7e0f3f0a94e4f49d3b2f80a73b8c219c204206ee9",
+  "combined_sha256": "325af92284417727f9a471c90e98ad3e4fb89dcdcf9356977d4fd2f69543404c",
   "files": [
     {
       "path": "evaluation/testset/symptom_extraction_testset.jsonl",
-      "num_cases": 19,
-      "sha256": "3d1d2dedfd0c7999532ae75827fcd2b042e9e355820fa0fc09c24e4ac842c72a"
+      "num_cases": 30,
+      "sha256": "02851c6e12b49ac6244074a84ced23af37c4960b3ac28709d5b9ceda244f3363"
     },
     {
       "path": "evaluation/testset/clinical_cases_labeled.jsonl",
-      "num_cases": 13,
-      "sha256": "3a0426c516ac296c0520a2d39e9e71d5030d37fb652abbc7c42b415a25c2082e"
+      "num_cases": 19,
+      "sha256": "f209b7cdf5730e3ba080245590c2e9f5f50aba935a2a6151e2e6611881bff36a"
     }
   ],
   "retired_cases": {
-    "EXT-011": "Dùng mã triệu chứng knee_effusion_crepitus_locking / morning_stiffness_under_30m không còn trong catalog.",
-    "CLIN-003": "Bệnh tay_chan_mieng bị loại khỏi vault (ít hơn 3 quan hệ triệu chứng).",
-    "CLIN-012": "Bệnh thoai_hoa_khop_goi / u_sun_mang_hoat_dich và 2 mã triệu chứng của ca không còn trong vault.",
-    "CLIN-016": "Bệnh nhuoc_co không còn trong vault."
+    "CLIN-012": "condition_code chưa có: thoai_hoa_khop_goi, u_sun_mang_hoat_dich",
+    "CLIN-016": "condition_code chưa có: nhuoc_co",
+    "CLIN-021": "condition_code chưa có: glocom_goc_dong_nguyen_phat, glocom_goc_mo_nguyen_phat"
   },
   "policy_note": "Đóng băng bộ test theo Nguyên tắc vàng #6 (Quy định v5): Không chỉnh rule hay prompt dựa trên bộ test này."
 }

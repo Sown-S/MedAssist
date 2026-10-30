@@ -15,12 +15,6 @@ relations:
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: fatigue_malaise
-  polarity: SUPPORTS
-  weight: 0.72
-  is_key: false
-  source_key: moh_qd_5643_2015
-  source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: nasal_polyp_sinonasal_mass
   polarity: SUPPORTS
   weight: 0.95
@@ -41,13 +35,19 @@ relations:
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: sweating_profuse
   polarity: SUPPORTS
-  weight: 0.75
+  weight: 0.77
   is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: headache_dull
   polarity: SUPPORTS
   weight: 0.75
+  is_key: false
+  source_key: moh_qd_5643_2015
+  source_edition: Quyết định số 5643/QĐ-BYT
+- symptom_code: fatigue_malaise
+  polarity: SUPPORTS
+  weight: 0.72
   is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT

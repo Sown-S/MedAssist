@@ -12,13 +12,7 @@ description: Thoái hóa cột sống cổ (Cervical spondylosis) là bệnh lý
 relations:
 - symptom_code: cervical_radiculopathy_spurling
   polarity: SUPPORTS
-  weight: 0.97
-  is_key: true
-  source_key: moh_qd_361_2014
-  source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: dizziness_vertigo
-  polarity: SUPPORTS
-  weight: 0.9
+  weight: 0.98
   is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
@@ -49,6 +43,12 @@ relations:
 - symptom_code: bone_pain_fracture_lesion
   polarity: SUPPORTS
   weight: 0.92
+  is_key: true
+  source_key: moh_qd_361_2014
+  source_edition: Quyết định số 361/QĐ-BYT
+- symptom_code: dizziness_vertigo
+  polarity: SUPPORTS
+  weight: 0.9
   is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT

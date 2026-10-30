@@ -10,15 +10,21 @@ description: Bệnh sởi là bệnh truyền nhiễm gây dịch lây qua đư�
   có thể xuất hiện ở người lớn do chưa được tiêm phòng hoặc đã tiêm phòng nhưng chưa
   được tiêm đầy đủ.
 relations:
-- symptom_code: maculopapular_rash
-  polarity: SUPPORTS
-  weight: 0.94
-  is_key: true
-  source_key: moh_qd_1327_2014
-  source_edition: Quyết định số 1327/QĐ-BYT
 - symptom_code: koplik_spots
   polarity: SUPPORTS
   weight: 0.98
+  is_key: true
+  source_key: moh_qd_1327_2014
+  source_edition: Quyết định số 1327/QĐ-BYT
+- symptom_code: corneal_ulcer_hypopyon_keratitis
+  polarity: SUPPORTS
+  weight: 0.96
+  is_key: true
+  source_key: moh_qd_1327_2014
+  source_edition: Quyết định số 1327/QĐ-BYT
+- symptom_code: maculopapular_rash
+  polarity: SUPPORTS
+  weight: 0.94
   is_key: true
   source_key: moh_qd_1327_2014
   source_edition: Quyết định số 1327/QĐ-BYT
@@ -50,12 +56,6 @@ relations:
   polarity: SUPPORTS
   weight: 0.85
   is_key: true
-  source_key: moh_qd_1327_2014
-  source_edition: Quyết định số 1327/QĐ-BYT
-- symptom_code: lymphadenopathy_splenomegaly
-  polarity: SUPPORTS
-  weight: 0.82
-  is_key: false
   source_key: moh_qd_1327_2014
   source_edition: Quyết định số 1327/QĐ-BYT
 excerpts:

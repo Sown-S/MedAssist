@@ -7,7 +7,8 @@ icd10_code: J31.2
 disease_group: ent
 description: 'Viêm họng mạn tính là tình trạng viêm họng kéo dài, thể hiện dưới ba
   hình thức chính là: xuất tiết, quá phát và teo. Các bệnh tích có thể lan toả hoặc
-  khu trú.'
+  khu trú. Thể điển hình của viêm họng mạn tính và viêm họng mạn tính toả lan, viêm
+  họng mạn tính khu.'
 relations:
 - symptom_code: tonsillitis_adenoid_pharyngitis
   polarity: SUPPORTS
@@ -21,13 +22,13 @@ relations:
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: sore_throat_dysphagia
+- symptom_code: nausea_vomiting_diarrhea
   polarity: SUPPORTS
-  weight: 0.75
-  is_key: false
+  weight: 0.8
+  is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: nausea_vomiting_diarrhea
+- symptom_code: sore_throat_dysphagia
   polarity: SUPPORTS
   weight: 0.75
   is_key: false

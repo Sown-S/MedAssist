@@ -10,6 +10,12 @@ description: Viêm thanh quản là quá trình viêm xảy ra ở thanh quản 
   tiết thay đổi vào mùa lạnh. Gọi là viêm thanh quản cấp tính khi triệu chứng kéo
   dài dưới 3 tuần.
 relations:
+- symptom_code: trismus_tetanic_spasm
+  polarity: SUPPORTS
+  weight: 0.98
+  is_key: true
+  source_key: moh_qd_5643_2015
+  source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: hoarseness_dysphonia_stridor
   polarity: SUPPORTS
   weight: 0.98
@@ -47,12 +53,6 @@ relations:
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: rhinorrhea_nasal_congestion
-  polarity: SUPPORTS
-  weight: 0.86
-  is_key: true
-  source_key: moh_qd_5643_2015
-  source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: pruritus_intense_skin_itch
   polarity: SUPPORTS
   weight: 0.86
   is_key: true

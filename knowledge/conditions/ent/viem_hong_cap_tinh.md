@@ -7,25 +7,12 @@ icd10_code: J02.9
 disease_group: ent
 description: Viêm họng là viêm niêm mạc và tổ chức dưới niêm mạc ở họng. Nói đến viêm
   họng chủ yếu là nói đến viêm ở họng miệng. Viêm họng cấp tính tức là viêm cấp tính
-  của niêm mạc họng miệng kết hợp chủ yếu với viêm amiđan (A) khẩu cái, một số ít
-  trường hợp kết hợp với viêm amiđan đáy lưỡi.
+  của niêm mạc họng miệng kết hợp chủ.
 relations:
 - symptom_code: tonsillitis_adenoid_pharyngitis
   polarity: SUPPORTS
   weight: 0.96
   is_key: true
-  source_key: moh_qd_5643_2015
-  source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: cough_dry
-  polarity: SUPPORTS
-  weight: 0.87
-  is_key: true
-  source_key: moh_qd_5643_2015
-  source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: sore_throat_dysphagia
-  polarity: SUPPORTS
-  weight: 0.77
-  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: vesicular_blister_rash
@@ -46,9 +33,21 @@ relations:
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
+- symptom_code: skin_cellulitis_pus_abscess
+  polarity: SUPPORTS
+  weight: 0.9
+  is_key: true
+  source_key: moh_qd_5643_2015
+  source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: cough_productive_sputum
   polarity: SUPPORTS
   weight: 0.9
+  is_key: true
+  source_key: moh_qd_5643_2015
+  source_edition: Quyết định số 5643/QĐ-BYT
+- symptom_code: cough_dry
+  polarity: SUPPORTS
+  weight: 0.87
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT

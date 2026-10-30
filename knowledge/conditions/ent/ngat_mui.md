@@ -7,14 +7,9 @@ icd10_code: R09.8
 disease_group: ent
 description: Ngạt mũi là một trong những triệu chứng thường gặp nhất, không chỉ trong
   các bệnh mũi xoang mà trong nhiều trường hợp, đây chỉ là rối loạn cơ năng thông
-  thường.
+  thường. Ngạt mũi có thể gặp ở một hoặc hai hốc mũi, có thể thay đổi từng lúc, từng
+  thời.
 relations:
-- symptom_code: nasal_obstruction_stuffiness
-  polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
-  source_key: moh_qd_5643_2015
-  source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: snoring_sleep_apnea
   polarity: SUPPORTS
   weight: 0.96
@@ -24,6 +19,12 @@ relations:
 - symptom_code: nasal_polyp_sinonasal_mass
   polarity: SUPPORTS
   weight: 0.95
+  is_key: true
+  source_key: moh_qd_5643_2015
+  source_edition: Quyết định số 5643/QĐ-BYT
+- symptom_code: nasal_obstruction_stuffiness
+  polarity: SUPPORTS
+  weight: 0.92
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT

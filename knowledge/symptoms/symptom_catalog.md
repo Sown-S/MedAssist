@@ -29,11 +29,57 @@ symptoms:
   symptom_name: Chóng mặt xoay tròn, hoa mắt, mất thăng bằng hoặc động mắt
   category: neurological
 - symptom_code: lymphadenopathy_splenomegaly
-  symptom_name: Hạch ngoại vi sưng to (hạch cổ, góc hàm, bẹn), gan to hoặc lách to
+  symptom_name: Hạch ngoại vi sưng to (hạch cổ, góc hàm, trước tai, bẹn), gan to hoặc
+    lách to
   category: constitutional
 - symptom_code: anemia_pallor_jaundice
-  symptom_name: Da xanh xao, niêm mạc nhợt (thiếu máu) hoặc vàng da
+  symptom_name: Da xanh xao, niêm mạc nhợt (thiếu máu) hoặc vàng da, vàng mắt
   category: constitutional
+- symptom_code: meningeal_neck_stiffness_kernig
+  symptom_name: 'Hội chứng màng não: cứng gáy, dấu hiệu Kernig/Brudzinski dương tính,
+    nôn vọt'
+  category: neurological
+- symptom_code: trismus_tetanic_spasm
+  symptom_name: Khít hàm (cứng hàm), co cứng cơ toàn thân và cơn co giật trên nền
+    co cứng (uốn ván)
+  category: neurological
+- symptom_code: eschar_ulcer_bite_lesion
+  symptom_name: Vết loét ngoài da hình bầu dục có vảy đen (eschar) không đau do ấu
+    trùng mò đốt
+  category: infectious_sign
+- symptom_code: dysentery_tenesmus_bloody_stool
+  symptom_name: 'Hội chứng lỵ: đau quặn bụng từng cơn, mót rặn và đi ngoài phân nhầy
+    máu'
+  category: gastrointestinal
+- symptom_code: koplik_spots
+  symptom_name: Hạt Koplik trắng xám có quầng đỏ ở niêm mạc má
+  category: infectious_sign
+- symptom_code: visual_acuity_decreased_blur
+  symptom_name: Nhìn mờ, giảm thị lực một hoặc hai mắt, quáng gà hoặc thu hẹp thị
+    trường
+  category: ophthalmology
+- symptom_code: ocular_pain_photophobia_tearing
+  symptom_name: Đau nhức mắt/hốc mắt, cộm chói, sợ ánh sáng và chảy nước mắt
+  category: ophthalmology
+- symptom_code: conjunctival_ciliary_injection_discharge
+  symptom_name: Đỏ mắt, cương tụ kết mạc hoặc cương tụ rìa, phù mi và nhiều dử mắt/tiết
+    tố mủ
+  category: ophthalmology
+- symptom_code: corneal_ulcer_hypopyon_keratitis
+  symptom_name: Ổ loét giác mạc (hình cành cây, địa đồ, áp xe vòng), tủa sau giác
+    mạc, Tyndall (+) hoặc mủ tiền phòng
+  category: ophthalmology
+- symptom_code: intraocular_pressure_glaucoma_cupping
+  symptom_name: Tăng nhãn áp (> 24 mmHg), nhìn đèn có quầng xanh đỏ, tiền phòng nông
+    và lõm teo đĩa thị
+  category: ophthalmology
+- symptom_code: diplopia_strabismus_proptosis
+  symptom_name: Song thị (nhìn đôi), lác mắt, hạn chế vận nhãn hoặc lồi mắt
+  category: ophthalmology
+- symptom_code: retinal_vitreous_optic_disc_lesion
+  symptom_name: Đục/xuất huyết dịch kính, bong thanh dịch võng mạc, xuất huyết võng
+    mạc hoặc phù/teo gai thị
+  category: ophthalmology
 - symptom_code: hearing_loss_deafness
   symptom_name: Nghe kém, giảm thính lực (dẫn truyền, tiếp nhận hoặc hỗn hợp), điếc
   category: ent
@@ -161,9 +207,6 @@ symptoms:
 - symptom_code: petechiae_mucosal_bleeding
   symptom_name: Chấm xuất huyết dưới da hoặc chảy máu niêm mạc
   category: dermatologic
-- symptom_code: koplik_spots
-  symptom_name: Hạt Koplik trắng xám có quầng đỏ ở niêm mạc má
-  category: infectious_sign
 - symptom_code: conjunctivitis_uveitis_red_eye
   symptom_name: Đỏ mắt, viêm kết mạc, viêm màng bồ đào, chảy nước mắt hoặc sợ ánh
     sáng
@@ -196,13 +239,16 @@ symptoms:
   symptom_name: Tràn dịch màng phổi, tràn dịch màng ngoài tim (viêm đa màng)
   category: respiratory
 - symptom_code: nausea_vomiting_diarrhea
-  symptom_name: Buồn nôn, nôn ói, đau bụng hoặc tiêu chảy
+  symptom_name: Buồn nôn, nôn ói, đau bụng hoặc tiêu chảy phân lỏng nhiều lần
   category: gastrointestinal
 - symptom_code: myalgia_arthralgia
   symptom_name: Đau mỏi cơ, đau nhức khớp
   category: musculoskeletal
 - symptom_code: morning_stiffness_over_1h
   symptom_name: Cứng khớp buổi sáng kéo dài trên 1 giờ
+  category: musculoskeletal
+- symptom_code: morning_stiffness_under_30m
+  symptom_name: Cứng khớp buổi sáng ngắn dưới 30 phút (dấu hiệu phá rỉ khớp)
   category: musculoskeletal
 - symptom_code: symmetric_polyarthritis_hands
   symptom_name: Viêm đa khớp đối xứng hai bên (đặc biệt khớp cổ tay, bàn ngón, ngón
@@ -233,6 +279,10 @@ symptoms:
 - symptom_code: cervical_radiculopathy_spurling
   symptom_name: Đau cổ gáy lan xuống vai, cánh tay kèm tê bì kiểu rễ (nghiệm pháp
     Spurling dương tính)
+  category: musculoskeletal
+- symptom_code: knee_effusion_crepitus_locking
+  symptom_name: Sưng đau khớp gối, tràn dịch khớp gối, tiếng lục khục hoặc dấu hiệu
+    kẹt khớp
   category: musculoskeletal
 - symptom_code: hip_groin_pain_limping
   symptom_name: Đau khớp háng/bẹn, đi khập khiễng, hạn chế động tác dạng và xoay trong

@@ -8,23 +8,11 @@ disease_group: musculoskeletal
 description: Lupus ban đỏ hệ thống là bệnh lý của mô liên kết có tổn thương nhiều
   cơ quan do hệ thống miễn dịch của cơ thể bị rối loạn, đặc trưng bởi sự có mặt của
   kháng thể kháng nhân và nhiều tự kháng thể khác. Các cơ quan thường bị tổn thương
-  bao gồm khớp, da, thận, tế bào máu, tim, phổi, thần kinh….
+  bao gồm khớp, da,.
 relations:
 - symptom_code: malar_butterfly_photosensitivity
   polarity: SUPPORTS
   weight: 0.98
-  is_key: true
-  source_key: moh_qd_361_2014
-  source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: serositis_pleural_pericardial
-  polarity: SUPPORTS
-  weight: 0.89
-  is_key: false
-  source_key: moh_qd_361_2014
-  source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: myalgia_arthralgia
-  polarity: SUPPORTS
-  weight: 0.84
   is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
@@ -40,12 +28,6 @@ relations:
   is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: lymphadenopathy_splenomegaly
-  polarity: SUPPORTS
-  weight: 0.84
-  is_key: false
-  source_key: moh_qd_361_2014
-  source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: asymmetric_oligoarthritis_lower
   polarity: SUPPORTS
   weight: 0.9
@@ -56,6 +38,24 @@ relations:
   polarity: SUPPORTS
   weight: 0.85
   is_key: true
+  source_key: moh_qd_361_2014
+  source_edition: Quyết định số 361/QĐ-BYT
+- symptom_code: myalgia_arthralgia
+  polarity: SUPPORTS
+  weight: 0.84
+  is_key: true
+  source_key: moh_qd_361_2014
+  source_edition: Quyết định số 361/QĐ-BYT
+- symptom_code: serositis_pleural_pericardial
+  polarity: SUPPORTS
+  weight: 0.89
+  is_key: false
+  source_key: moh_qd_361_2014
+  source_edition: Quyết định số 361/QĐ-BYT
+- symptom_code: lymphadenopathy_splenomegaly
+  polarity: SUPPORTS
+  weight: 0.84
+  is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 excerpts:

@@ -7,7 +7,8 @@ icd10_code: J00
 disease_group: ent
 description: Viêm mũi họng cấp tính là viêm cấp tính niêm mạc vùng mũi và họng, thường
   kết hợp với viêm amiddan, VA,... thuộc vòng bạch huyết Waldeyer khi bệnh nhân còn
-  các tổ chức lympho này.
+  các tổ chức lympho này. Đây là một bệnh lý cấp tính hay gặp trong chuyên khoa tai
+  mũi.
 relations:
 - symptom_code: tonsillitis_adenoid_pharyngitis
   polarity: SUPPORTS

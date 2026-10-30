@@ -7,6 +7,8 @@ icd10_code: C79.5
 disease_group: musculoskeletal
 description: Ung thư di căn xương (Bone metastases) là tình trạng những tế bào ung
   thư từ ổ nguyên phát di căn đến tổ chức xương làm tổn hại đến cấu trúc của xương.
+  Hệ thống xương là một trong những cơ quan hay bị ung thư di căn nhất và thường gây
+  ảnh hưởng.
 relations:
 - symptom_code: bone_pain_fracture_lesion
   polarity: SUPPORTS
@@ -28,7 +30,7 @@ relations:
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: anemia_pallor_jaundice
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.82
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT

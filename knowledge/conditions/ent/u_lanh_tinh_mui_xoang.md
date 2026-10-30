@@ -7,7 +7,7 @@ icd10_code: D14.2
 disease_group: ent
 description: Là u lành rất thường gặp, có thể đơn thuần ở hốc mũi, có thể trong các
   xoang mặt hay cả ở mũi và xoang. Polyp mũi thực ra không phải là khối u mà là thoái
-  hoá cục bộ của niêm mạc mũi hay xoang mà chủ yếu là lớp tổ chức đệm.
+  hoá cục bộ của niêm mạc.
 relations:
 - symptom_code: nasal_polyp_sinonasal_mass
   polarity: SUPPORTS
@@ -21,15 +21,15 @@ relations:
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: rhinorrhea_nasal_congestion
-  polarity: SUPPORTS
-  weight: 0.9
-  is_key: true
-  source_key: moh_qd_5643_2015
-  source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: nocturnal_asthma_dyspnea
   polarity: SUPPORTS
   weight: 0.95
+  is_key: true
+  source_key: moh_qd_5643_2015
+  source_edition: Quyết định số 5643/QĐ-BYT
+- symptom_code: rhinorrhea_nasal_congestion
+  polarity: SUPPORTS
+  weight: 0.9
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
