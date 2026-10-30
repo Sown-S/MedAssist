@@ -9,13 +9,25 @@ description: 'Viêm mũi xoang được hiểu theo nghĩa rộng là viêm mũi
   mũi, gây ra một nhóm các rối loạn. Phân loại viêm mũi xoang theo thời gian bị viêm
   gồm có: cấp tính (từ 4 tuần trở.'
 relations:
-- symptom_code: nasal_obstruction_stuffiness
+- symptom_code: nasal_polyp_sinonasal_mass
   polarity: SUPPORTS
-  weight: 0.9
+  weight: 0.95
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: facial_sinus_pain_anosmia
+  polarity: SUPPORTS
+  weight: 0.94
+  is_key: true
+  source_key: moh_qd_5643_2015
+  source_edition: Quyết định số 5643/QĐ-BYT
+- symptom_code: nasal_obstruction_stuffiness
+  polarity: SUPPORTS
+  weight: 0.92
+  is_key: true
+  source_key: moh_qd_5643_2015
+  source_edition: Quyết định số 5643/QĐ-BYT
+- symptom_code: rhinorrhea_nasal_congestion
   polarity: SUPPORTS
   weight: 0.9
   is_key: true
@@ -27,15 +39,21 @@ relations:
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: rhinorrhea_nasal_congestion
+- symptom_code: nausea_vomiting_diarrhea
   polarity: SUPPORTS
-  weight: 0.86
+  weight: 0.8
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: headache_dull
   polarity: SUPPORTS
   weight: 0.75
+  is_key: false
+  source_key: moh_qd_5643_2015
+  source_edition: Quyết định số 5643/QĐ-BYT
+- symptom_code: fatigue_malaise
+  polarity: SUPPORTS
+  weight: 0.7
   is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
@@ -48,11 +66,11 @@ excerpts:
 ---
 
 ## excerpt: viem_mui_xoang_cap_tinh_chan_doan
-- Chẩn đoán hình ảnh:
-- Chụp cắt lớp vi tính (CT Scanner) là phương pháp đang được lựa chọn
-- trong chẩn đoán viêm mũi xoang. Tuy nhiên hình ảnh trong viêm mũi xoang cấp tính
-- Chụp cộng hưởng từ (MRI) của xoang thường ít được thực hiện hơn CT
-- Xét nghiệm:
-- Xét nghiệm không thực sự có giá trị trong việc đánh giá viêm mũi xoang cấp tính.
-- Tuy nhiên trong một số trường hợp viêm mũi xoang cấp tính cũng cần tiến hành một số
-- Viêm mũi xoang cấp tính cần chẩn đoán phân biệt với nhiều bệnh khác gồm có:
+- Viêm mũi xoang được hiểu theo nghĩa rộng là viêm mũi và các xoang cạnh mũi,
+- Phân loại viêm mũi xoang theo thời gian bị viêm gồm có: cấp tính (từ 4 tuần trở
+- lại), bán cấp tính (4-12 tuần) và mạn tính (trên 12 tuần). Có thể phân chia thành viêm
+- chứng của viêm mũi xoang mạn tính) và viêm mũi xoang cấp tính kịch phát.
+- Viêm mũi xoang do các nhóm nguyên nhân chính như sau:
+- 2.1. Sau cảm cúm (viêm nhiễm virus đường hô hấp trên)
+- Viêm mũi xoang do nhiễm khuẩn cấp tính điển hình thường bắt đầu với viêm
+- nhiễm virus đường hô hấp trên kéo dài hơn 10 ngày. Trong một số trường hợp, viêm

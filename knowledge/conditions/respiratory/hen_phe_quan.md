@@ -9,27 +9,39 @@ description: 'Định nghĩa của hen nặng và hen khó điều trị đượ
   hen không kiểm soát. Hen không kiểm soát bao gồm một hoặc hai yếu tố sau: Kiểm soát
   triệu chứng kém.'
 relations:
-- symptom_code: dyspnea_chronic_exertional
+- symptom_code: nocturnal_asthma_dyspnea
   polarity: SUPPORTS
-  weight: 0.85
-  is_key: true
-  source_key: moh_qd_3942_2017
-  source_edition: Quyết định số 3942/QĐ-BYT
-- symptom_code: cough_productive_sputum
-  polarity: SUPPORTS
-  weight: 0.82
+  weight: 0.98
   is_key: true
   source_key: moh_qd_3942_2017
   source_edition: Quyết định số 3942/QĐ-BYT
 - symptom_code: wheezing_bronchospasm
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.96
+  is_key: true
+  source_key: moh_qd_3942_2017
+  source_edition: Quyết định số 3942/QĐ-BYT
+- symptom_code: dyspnea_chronic_exertional
+  polarity: SUPPORTS
+  weight: 0.92
+  is_key: true
+  source_key: moh_qd_3942_2017
+  source_edition: Quyết định số 3942/QĐ-BYT
+- symptom_code: cough_dry
+  polarity: SUPPORTS
+  weight: 0.88
+  is_key: true
+  source_key: moh_qd_3942_2017
+  source_edition: Quyết định số 3942/QĐ-BYT
+- symptom_code: rhinorrhea_nasal_congestion
+  polarity: SUPPORTS
+  weight: 0.78
   is_key: false
   source_key: moh_qd_3942_2017
   source_edition: Quyết định số 3942/QĐ-BYT
-- symptom_code: fatigue_malaise
-  polarity: SUPPORTS
-  weight: 0.7
+- symptom_code: fever_high
+  polarity: CONTRADICTS
+  weight: 0.8
   is_key: false
   source_key: moh_qd_3942_2017
   source_edition: Quyết định số 3942/QĐ-BYT

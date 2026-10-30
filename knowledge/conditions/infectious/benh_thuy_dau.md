@@ -10,12 +10,6 @@ description: Thủy đậu là một bệnh truyền nhiễm cấp tính do viru
   chủ yếu ở trẻ em, biểu hiện bằng sốt và phát ban dạng nốt phỏng, thường diễn biến
   lành tính. Ở người.
 relations:
-- symptom_code: genital_ulcer_chancre_discharge
-  polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
-  source_key: moh_qd_5642_2015
-  source_edition: Quyết định số 5642/QĐ-BYT
 - symptom_code: vesicular_blister_rash
   polarity: SUPPORTS
   weight: 0.95
@@ -32,6 +26,12 @@ relations:
   polarity: SUPPORTS
   weight: 0.7
   is_key: false
+  source_key: moh_qd_5642_2015
+  source_edition: Quyết định số 5642/QĐ-BYT
+- symptom_code: fever_high
+  polarity: SUPPORTS
+  weight: 0.85
+  is_key: true
   source_key: moh_qd_5642_2015
   source_edition: Quyết định số 5642/QĐ-BYT
 excerpts:

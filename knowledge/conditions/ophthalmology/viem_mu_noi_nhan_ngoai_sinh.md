@@ -5,13 +5,19 @@ name_vi: Viêm mủ nội nhãn ngoại sinh
 name_en: Viêm mủ nội nhãn ngoại sinh
 icd10_code: H44.1
 disease_group: ophthalmology
-description: Viêm mủ nội nhãn đƣợc dùng trong lâm sàng để chỉ tình trạng viêm của
+description: Viêm mủ nội nhãn được dùng trong lâm sàng để chỉ tình trạng viêm của
   các thành phần trong nhãn cầu đặc trƣng bởi sự xâm nhập của bạch cầu đa nhân trung
-  tính gây hoại tử mủ do các tác nhân gây bệnh vào mắt sau chấn thƣơng mắt hoặc.
+  tính gây hoại tử mủ do các tác nhân gây bệnh vào mắt sau chấn thương mắt hoặc.
 relations:
 - symptom_code: corneal_ulcer_hypopyon_keratitis
   polarity: SUPPORTS
   weight: 0.98
+  is_key: true
+  source_key: moh_qd_40_2015
+  source_edition: Quyết định số 40/QĐ-BYT
+- symptom_code: ocular_pain_photophobia_tearing
+  polarity: SUPPORTS
+  weight: 0.96
   is_key: true
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
@@ -28,12 +34,6 @@ relations:
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: visual_acuity_decreased_blur
-  polarity: SUPPORTS
-  weight: 0.94
-  is_key: true
-  source_key: moh_qd_40_2015
-  source_edition: Quyết định số 40/QĐ-BYT
-- symptom_code: ocular_pain_photophobia_tearing
   polarity: SUPPORTS
   weight: 0.94
   is_key: true
@@ -66,10 +66,10 @@ excerpts:
 ---
 
 ## excerpt: viem_mu_noi_nhan_ngoai_sinh_chan_doan
-- Thể cấp tính: bệnh thƣờng biểu hiện sau chấn thƣơng hay sau phẫu thuật
-- trong tuần đầu. Các triệu chứng thƣờng rầm rộ.
+- Thể cấp tính: bệnh thường biểu hiện sau chấn thương hay sau phẫu thuật
+- trong tuần đầu. Các triệu chứng thường rầm rộ.
 - Cơ năng: phản ứng viêm biểu hiện:
-- Sƣng nề mi mắt, chảy nƣớc mắt, khó mở mắt.
+- Sưng nề mi mắt, chảy nước mắt, khó mở mắt.
 - Nóng: Bệnh nhân có cảm giác nóng ở mi và mắt.
 - Đỏ: Mi và kết mạc đỏ rực lên.
 - Đau nhức mắt, buồn nôn, có thể kèm nhức đầu.

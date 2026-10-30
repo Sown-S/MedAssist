@@ -10,12 +10,6 @@ description: Viêm khớp thiếu niên tự phát thể hệ thống chiếm 5 
   đặc trưng, kèm các tổn thương lan tỏa ngoài khớp (da, mạch máu, tim, phổi, gan,
   lách, hạch ...).
 relations:
-- symptom_code: urticarial_wheal_angioedema
-  polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
-  source_key: moh_qd_361_2014
-  source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: salmon_pink_evanescent_rash
   polarity: SUPPORTS
   weight: 0.95
@@ -53,6 +47,12 @@ relations:
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: maculopapular_rash
+  polarity: SUPPORTS
+  weight: 0.9
+  is_key: true
+  source_key: moh_qd_361_2014
+  source_edition: Quyết định số 361/QĐ-BYT
+- symptom_code: enthesitis_achilles_heel
   polarity: SUPPORTS
   weight: 0.9
   is_key: true

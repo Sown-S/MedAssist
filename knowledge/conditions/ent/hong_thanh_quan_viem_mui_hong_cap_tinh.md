@@ -12,7 +12,7 @@ description: Viêm mũi họng cấp tính là viêm cấp tính niêm mạc vù
 relations:
 - symptom_code: tonsillitis_adenoid_pharyngitis
   polarity: SUPPORTS
-  weight: 0.98
+  weight: 0.96
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT

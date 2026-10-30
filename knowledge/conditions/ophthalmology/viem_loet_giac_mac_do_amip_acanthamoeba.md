@@ -20,16 +20,16 @@ relations:
   is_key: true
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
-- symptom_code: skin_cellulitis_pus_abscess
+- symptom_code: ocular_pain_photophobia_tearing
   polarity: SUPPORTS
   weight: 0.9
   is_key: true
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
-- symptom_code: ocular_pain_photophobia_tearing
+- symptom_code: skin_cellulitis_pus_abscess
   polarity: SUPPORTS
-  weight: 0.8
-  is_key: false
+  weight: 0.9
+  is_key: true
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 excerpts:
@@ -42,10 +42,10 @@ excerpts:
 
 ## excerpt: viem_loet_giac_mac_do_amip_acanthamoeba_chan_doan
 - Triệu chứng cơ năng
-- Nhìn mờ, chói, chảy nƣớc mắt.
-- Đau nhức rất nhiều (đôi khi không tƣơng xứng với tổn thƣơng trên giác mạc).
+- Nhìn mờ, chói, chảy nước mắt.
+- Đau nhức rất nhiều (đôi khi không tương xứng với tổn thương trên giác mạc).
 - Triệu chứng thực thể
-- Giai đoạn sớm (1-4 tuần đầu): tổn thƣơng không điển hình với những ổ
+- Giai đoạn sớm (1-4 tuần đầu): tổn thương không điển hình với những ổ
 - viêm quanh rìa. Đôi khi có viêm giác mạc chấm nông hoặc loét giác mạc hình
 - cành cây (giống viêm loét giác mạc do herpes).
 - Giai đoạn muộn: giác mạc có ổ loét tròn hoặc hình bầu dục, xung quanh

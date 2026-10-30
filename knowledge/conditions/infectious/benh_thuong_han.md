@@ -10,12 +10,6 @@ description: Bệnh thương hàn (Typhoid fever) là một bệnh cấp tính t
   có nhiều biến chứng nặng như xuất huyết tiêu hóa, thủng ruột, viêm cơ tim, viêm
   não dễ dẫn đến.
 relations:
-- symptom_code: meningeal_neck_stiffness_kernig
-  polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
-  source_key: moh_qd_5642_2015
-  source_edition: Quyết định số 5642/QĐ-BYT
 - symptom_code: fever_high
   polarity: SUPPORTS
   weight: 0.9
@@ -29,12 +23,6 @@ relations:
   source_key: moh_qd_5642_2015
   source_edition: Quyết định số 5642/QĐ-BYT
 - symptom_code: dizziness_vertigo
-  polarity: SUPPORTS
-  weight: 0.88
-  is_key: true
-  source_key: moh_qd_5642_2015
-  source_edition: Quyết định số 5642/QĐ-BYT
-- symptom_code: epistaxis_nasal_bleeding
   polarity: SUPPORTS
   weight: 0.88
   is_key: true
@@ -55,6 +43,18 @@ relations:
 - symptom_code: lymphadenopathy_splenomegaly
   polarity: SUPPORTS
   weight: 0.82
+  is_key: false
+  source_key: moh_qd_5642_2015
+  source_edition: Quyết định số 5642/QĐ-BYT
+- symptom_code: fever_low_grade
+  polarity: SUPPORTS
+  weight: 0.75
+  is_key: false
+  source_key: moh_qd_5642_2015
+  source_edition: Quyết định số 5642/QĐ-BYT
+- symptom_code: headache_dull
+  polarity: SUPPORTS
+  weight: 0.75
   is_key: false
   source_key: moh_qd_5642_2015
   source_edition: Quyết định số 5642/QĐ-BYT

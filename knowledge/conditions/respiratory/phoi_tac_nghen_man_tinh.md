@@ -8,52 +8,34 @@ disease_group: respiratory
 description: Phổi tắc nghẽn mạn tính là bệnh lý lâm sàng được chẩn đoán và điều trị
   theo hướng dẫn chuyên môn của Bộ Y tế.
 relations:
-- symptom_code: snoring_sleep_apnea
-  polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
-  source_key: moh_qd_4562_2018
-  source_edition: Quyết định số 4562/QĐ-BYT
-- symptom_code: wheezing_bronchospasm
-  polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
-  source_key: moh_qd_4562_2018
-  source_edition: Quyết định số 4562/QĐ-BYT
 - symptom_code: history_smoking_dust_exposure
-  polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
-  source_key: moh_qd_4562_2018
-  source_edition: Quyết định số 4562/QĐ-BYT
-- symptom_code: dyspnea_chronic_exertional
   polarity: SUPPORTS
   weight: 0.96
   is_key: true
   source_key: moh_qd_4562_2018
   source_edition: Quyết định số 4562/QĐ-BYT
-- symptom_code: nocturnal_asthma_dyspnea
+- symptom_code: cough_productive_sputum
   polarity: SUPPORTS
   weight: 0.95
   is_key: true
   source_key: moh_qd_4562_2018
   source_edition: Quyết định số 4562/QĐ-BYT
-- symptom_code: cough_productive_sputum
+- symptom_code: dyspnea_chronic_exertional
   polarity: SUPPORTS
   weight: 0.94
   is_key: true
   source_key: moh_qd_4562_2018
   source_edition: Quyết định số 4562/QĐ-BYT
-- symptom_code: bone_pain_fracture_lesion
+- symptom_code: wheezing_bronchospasm
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.85
+  is_key: false
   source_key: moh_qd_4562_2018
   source_edition: Quyết định số 4562/QĐ-BYT
-- symptom_code: dizziness_vertigo
+- symptom_code: fatigue_malaise
   polarity: SUPPORTS
-  weight: 0.88
-  is_key: true
+  weight: 0.72
+  is_key: false
   source_key: moh_qd_4562_2018
   source_edition: Quyết định số 4562/QĐ-BYT
 excerpts:
