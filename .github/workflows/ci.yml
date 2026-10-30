@@ -88,7 +88,7 @@ jobs:
         run: python -m pytest --cov=app --cov=scripts --cov-report=term --cov-fail-under=90
 
   tools:
-    name: tools/drug_data, hospital_data (không cần DB)
+    name: tools/drug_data (không cần DB)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
