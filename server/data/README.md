@@ -7,6 +7,15 @@ Nạp bằng `python -m scripts.seed_drugs` (chạy trong `server/`). Script đi
 Thêm `--no-batches` để chỉ nạp danh mục, không tạo lô (dùng khi cài máy admin).
 Thêm `--deactivate-others` để ngừng dùng các thuốc đang dùng nhưng không có trong file (không xóa, có ghi nhật ký).
 
+Trên máy admin, chạy trong container `api`:
+
+```powershell
+docker compose -f deploy\docker-compose.yml --env-file deploy\.env exec api python -m scripts.seed_drugs --no-batches
+```
+
+Hiện có 386 thuốc: 100 thuốc chọn tay và 286 thuốc thêm tự động từ Phụ lục I. Mọi dòng đã có giá; giá của thuốc
+không tra được là **giá ước tính** (cột `price_source` bắt đầu bằng `uoc-tinh:`).
+
 ### Nguồn và cách chọn
 
 - **Hoạt chất, hàm lượng, dạng bào chế:** chọn từ **Phụ lục I — Danh mục thuốc hóa dược, vắc xin, sinh phẩm
