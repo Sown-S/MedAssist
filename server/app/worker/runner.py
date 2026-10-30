@@ -25,6 +25,7 @@ from app.core.database import SessionLocal
 from app.models import Patient, Visit
 from app.services import ai_queue_service as q
 from app.services.knowledge_reader import DbKnowledgeReader
+from app.worker.test_mode import assessment_test_mode
 
 log = logging.getLogger("medassist.worker")
 
@@ -48,8 +49,13 @@ def make_llm_client():
 
 
 def _remaining_budget(queued_at: datetime.datetime, limit: float | None = None) -> float:
-    waited = (datetime.datetime.now(datetime.UTC) - queued_at).total_seconds()
-    return max(0.0, (settings.AI_ASSESSMENT_TIMEOUT_SECONDS if limit is None else limit) - waited)
+    target = float(settings.AI_ASSESSMENT_TIMEOUT_SECONDS if limit is None else limit)
+    if target <= 0:
+        return 0.0
+    # Tính cả thời gian chờ; lease không được cấp lại ngân sách đã hết.
+    # Nếu đồng hồ lệch khiến queued_at ở tương lai, không vượt ngân sách gốc.
+    waited = max(0.0, (datetime.datetime.now(datetime.UTC) - queued_at).total_seconds())
+    return max(0.0, target - waited)
 
 
 def _known_identifiers(patient: Patient) -> list[str]:
@@ -97,6 +103,7 @@ async def process_one(reader: DbKnowledgeReader, llm_client, model_name: str | N
             return False
         assessment_id, queued_at, features = run.assessment_id, run.queued_at, dict(run.input_features or {})
         run_type, visit_id = run.run_type, run.visit_id
+        attempt_count = run.attempt_count
         db.commit()
 
     if run_type == "Extraction":
@@ -116,9 +123,10 @@ async def process_one(reader: DbKnowledgeReader, llm_client, model_name: str | N
     try:
         reader.refresh()                                  # một snapshot nhất quán cho cả lần chạy
         with session_factory() as rdb:                    # Node 4 chỉ đọc (kiểm mã Active)
-            final = await run_pipeline({"input_features": features}, reader, llm_client, rdb,
-                                       timeout_seconds=_remaining_budget(queued_at),
-                                       on_preliminary=on_preliminary)
+            async with assessment_test_mode(assessment_id, attempt_count, session_factory):
+                final = await run_pipeline({"input_features": features}, reader, llm_client, rdb,
+                                           timeout_seconds=_remaining_budget(queued_at),
+                                           on_preliminary=on_preliminary)
             rdb.rollback()
     except asyncio.CancelledError:
         raise                                             # để lease hết hạn, sweeper thu hồi

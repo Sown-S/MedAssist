@@ -15,6 +15,7 @@ from sqlalchemy.orm import Session
 from app.ai.interfaces import KnowledgeReader, LLMClient
 from app.ai.pipeline.node1_red_flag_gate import run_node1
 from app.ai.pipeline.state import PipelineState
+from app.ai.test_mode import unlimited_assessment
 
 PreliminaryCallback = Callable[[PipelineState], Awaitable[None]]
 ASSESSMENT_TIMEOUT_SECONDS = 90
@@ -48,7 +49,7 @@ async def run_pipeline(
         or not math.isfinite(timeout_seconds)
     ):
         raise ValueError("Assessment timeout must be finite seconds.")
-    deadline = started + min(timeout_seconds, ASSESSMENT_TIMEOUT_SECONDS)
+    deadline = None if unlimited_assessment.get() else started + min(timeout_seconds, ASSESSMENT_TIMEOUT_SECONDS)
 
     # LangGraph/LangSmith chỉ là phụ thuộc chạy cục bộ. Tắt rõ tracing từ môi
     # trường, callback kế thừa và debug vì state graph/payload lỗi có thể chứa dữ
@@ -76,7 +77,7 @@ def _compile_worker_graph(
     knowledge_reader: KnowledgeReader,
     llm_client: LLMClient,
     db: Session,
-    deadline: float,
+    deadline: float | None,
     on_preliminary: PreliminaryCallback | None,
 ) -> Any:
     from langgraph.graph import END, START, StateGraph
@@ -102,13 +103,14 @@ def _compile_worker_graph(
         preliminary = envelope["preliminary"]
         if not preliminary["candidates"]:
             return {"assessment": deepcopy(preliminary)}
-        remaining = deadline - monotonic()
-        if remaining <= 0:
+        remaining = None if deadline is None else deadline - monotonic()
+        if remaining is not None and remaining <= 0:
             return {"assessment": deepcopy(preliminary), "llm_failure": "LLM_TIMEOUT"}
         try:
             async with asyncio.timeout(remaining):
                 reasoning = await run_node3(
-                    deepcopy(preliminary), llm_client, timeout_seconds=remaining
+                    deepcopy(preliminary), llm_client,
+                    timeout_seconds=ASSESSMENT_TIMEOUT_SECONDS if remaining is None else remaining
                 )
         except (LLMTimeoutError, TimeoutError):
             return {"assessment": deepcopy(preliminary), "llm_failure": "LLM_TIMEOUT"}
