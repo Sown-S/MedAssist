@@ -81,10 +81,24 @@ class ExtractionSuggestionOut(BaseModel):
     requires_confirmation: Literal[True]
 
 
+class VitalProposalOut(BaseModel):
+    """Đề xuất từ lời kể lúc xếp hàng trích xuất; y tá xác nhận riêng, huyết áp theo cặp (group)."""
+    model_config = ConfigDict(extra="forbid")
+
+    key: str
+    value: int | float
+    evidence: str
+    group: Literal["blood_pressure"] | None
+    current: int | float | None
+    requires_confirmation: Literal[True]
+
+
 class ExtractionOut(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     extraction_id: uuid.UUID
     status: Literal["Queued", "Running", "Completed", "Failed", "Skipped"]
     suggestions: list[ExtractionSuggestionOut]
+    vital_proposals: list[VitalProposalOut] = []
+    text_changed: bool = Field(False, description="Lời kể đã sửa sau lần trích xuất: yêu cầu trích xuất lại")
     completed_at: datetime | None

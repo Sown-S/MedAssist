@@ -1,0 +1,53 @@
+tinh,ten,hanh_dong,ten_moi,dia_chi,so_huu,ly_do
+Gia Lai,Bệnh viện Phong - Da Liễu Trung ương Quy Hòa,bo,,,,trùng BV Phong và Da liễu TW Quy Hòa (tên theo Bộ Y tế)
+Gia Lai,Bệnh viện Phong và Da liễu Trung ương Quy Hòa,giu,,,,
+Huế,Bệnh viện Đa khoa Trung ương Huế cơ sở 2,bo,,,,trùng BV Trung ương Huế cơ sở 2
+Huế,Bệnh viện Trung ương Huế Cơ sở 2,giu,Bệnh viện Trung ương Huế cơ sở 2,"TDP Thượng An 2, phường Phong Thái, thành phố Huế",,địa chỉ theo danh sách Sở Y tế Huế
+Huế,Bệnh viện Phục hồi chức năng thành phố Huế (Cơ sở 1),giu,,,,
+Huế,Bệnh viện Phục hồi chức năng thành phố Huế (Cơ sở 2),giu,,,,
+Huế,Bệnh viện Phục hồi chức năng tỉnh Thừa Thiên Huế,bo,,,,tên cũ của BV PHCN thành phố Huế cơ sở 1
+Huế,Bệnh viện Răng hàm mặt,bo,,,,trùng BV Răng Hàm Mặt Huế
+Huế,Bệnh viện Răng Hàm Mặt Huế,giu,,"83 Nguyễn Huệ, phường Thuận Hóa, thành phố Huế",Public,
+Huế,Bệnh viện Tâm thần,bo,,,,trùng BV Tâm thần Huế
+Huế,Bệnh viện Tâm Thần Huế,giu,Bệnh viện Tâm thần Huế,"39 Phạm Thị Liên, phường Kim Long, thành phố Huế",Public,
+Hà Nội,Bệnh viện đa khoa Bảo Sơn 2,giu,,,,
+Hà Nội,Bệnh viện đa khoa Chữ Thập Xanh,giu,,,,
+Hà Nội,Bệnh viện đa khoa Đồng Tâm,giu,,,,
+Hà Nội,Bệnh viện đa khoa Phạm Ngọc Thạch,giu,,,,
+Hà Nội,Bệnh viện đa khoa Quốc tế Vinmec Smart City,giu,,,,
+Hà Nội,Bệnh viện đại học PHENIKAA,giu,Bệnh viện Đại học Phenikaa,,,
+Hà Nội,Bệnh viện Đại học Quốc gia Hà Nội,giu,,,,
+Hà Nội,Bệnh viện Đông Đô,giu,,,,
+Hà Nội,Bệnh viện Mặt trời,giu,,,,
+Hà Nội,Bệnh viện Quốc tế Thăng Long Lạc Việt,giu,,,,
+Hà Nội,Bệnh viện Tuệ Tĩnh,giu,,,,
+Hà Nội,Bệnh viện Đại học Y Dược,giu,"Bệnh viện Đại học Y Dược, Đại học Quốc gia Hà Nội",,,bỏ phần 'thuộc' làm tên dễ nhầm
+Hà Nội,"Bệnh viện đa khoa Hồng Ngọc – Phúc Trường Minh, số 8 đường Châu Văn Liêm, phường Phú Đô, quận Nam Từ Liêm",bo,,,,tên lẫn địa chỉ; trùng BV đa khoa Hồng Ngọc - Phúc Trường Minh
+Hà Nội,Bệnh viện đa khoa Hồng Ngọc-Phúc Trường Minh,giu,Bệnh viện đa khoa Hồng Ngọc – Phúc Trường Minh,"Số 8 đường Châu Văn Liêm, phường Phú Đô, Nam Từ Liêm",,
+Hà Nội,Bệnh viện đa khoa huyện Phú Xuyên,bo,,,,trùng BV đa khoa Phú Xuyên (cấp huyện đã bỏ)
+Hà Nội,Bệnh viện đa khoa Phú Xuyên,giu,,,,
+Hà Nội,Bệnh viện Medlatec,bo,,,,trùng BV đa khoa Medlatec (cùng địa chỉ)
+Hà Nội,Bệnh viện đa khoa Medlatec,giu,,,,
+Hà Nội,Bệnh viện Quốc tế Dolife,bo,,,,trùng BV Đa khoa Quốc tế Dolife (cùng địa chỉ)
+Hà Nội,Bệnh viện đa khoa quốc tế DOLIFE,giu,Bệnh viện Đa khoa Quốc tế Dolife,,,
+Hồ Chí Minh,Bệnh viện Chỉnh hình và Phục hồi chức năng Thành phố Hồ Chí Minh,giu,,,,
+Hồ Chí Minh,Bệnh viện đa khoa Củ Chi,giu,,,,khác BVĐK khu vực Củ Chi (địa chỉ khác)
+Hồ Chí Minh,Bệnh viện đa khoa khu vực Củ Chi,giu,,,,bệnh viện mới 1.000 giường
+Hồ Chí Minh,Bệnh viện đa khoa Thủ Đức,giu,,,,khác BVĐK khu vực Thủ Đức (địa chỉ khác)
+Hồ Chí Minh,Bệnh viện đa khoa khu vực Thủ Đức,giu,,,,bệnh viện mới khánh thành
+Quảng Ngãi,Bệnh viện Đa khoa Đặng Thuỳ Trâm,bo,,,,trùng BVĐK khu vực Đặng Thùy Trâm
+Quảng Ngãi,Bệnh viện đa khoa Khu vực Đặng Thùy Trâm,giu,Bệnh viện Đa khoa khu vực Đặng Thùy Trâm,,,UBND tỉnh còn làm việc với bệnh viện (8/2025)
+Quảng Ngãi,Bệnh viện Đa khoa Dung Quất,bo,,,,không xác nhận được còn hoạt động (chỉ có trong cấp phép 2022)
+Quảng Ngãi,Bệnh viện Đa khoa Mộ Đức,bo,,,,tên trước khi thành Trung tâm Y tế Mộ Đức
+Quảng Ngãi,Trung tâm Y tế huyện Mộ Đức,giu,Trung tâm Y tế Mộ Đức,,,cấp huyện đã bỏ từ 7/2025
+Quảng Ngãi,Bệnh viện đa khoa tỉnh Quảng Ngãi,giu,,-,,địa chỉ trong cấp phép 2022 chưa chắc còn đúng
+Quảng Ngãi,Bệnh viện Đa khoa TP Quảng Ngãi,bo,,,,không xác nhận được còn hoạt động (chỉ có trong cấp phép 2022)
+Quảng Ngãi,Bệnh viện Tâm thần tỉnh Quảng Ngãi,bo,,,,không có trong danh sách năm 2025 (chỉ có trong cấp phép 2022)
+Quảng Ngãi,Trung tâm Y tế huyện Ba Tơ,giu,Trung tâm Y tế Ba Tơ,,,cấp huyện đã bỏ từ 7/2025
+Quảng Ngãi,Trung tâm Y tế huyện Tây Trà,bo,,,,huyện Tây Trà đã nhập vào Trà Bồng (2019)
+Quảng Ngãi,Trung tâm Y tế Quân Dân Y Kết Hợp Huyện Lý Sơn,bo,,,,tên cũ của TTYT Quân dân y đặc khu Lý Sơn
+Quảng Ngãi,Trung tâm Y tế Quân Dân Y kết hợp Lý Sơn,bo,,,,tên cũ của TTYT Quân dân y đặc khu Lý Sơn
+Đà Nẵng,Bệnh viện Đa khoa Quảng Nam,giu,,,,khác BVĐK khu vực Quảng Nam (Tam Kỳ / Điện Bàn)
+Đà Nẵng,Bệnh viện Đa khoa khu vực Quảng Nam,giu,,,,
+Đà Nẵng,Bệnh viện Đa khoa Vĩnh Đức,giu,,,,
+Đà Nẵng,Bệnh viện đại học y khoa Phan Châu Trinh,giu,Bệnh viện Đại học Y khoa Phan Châu Trinh,,,

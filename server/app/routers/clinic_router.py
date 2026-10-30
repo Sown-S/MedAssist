@@ -17,7 +17,8 @@ from app.schemas.common import Page, PhoneVN
 from app.schemas.visit_symptom import SymptomCatalogItem, SymptomsPut, VisitSymptomOut
 from app.schemas.emr import PatientHistory, PatientLookupResult, VisitRecord
 from app.schemas.patient import IdNumber, PatientCreate, PatientOut, PatientSummary, PatientUpdate
-from app.schemas.visit import (BulkCancelRequest, CancelRequest, QueueItem, VisitCreate, VisitOut,
+from app.schemas.visit import (BulkCancelRequest, CancelRequest, EmergencyReferralCreate, QueueItem,
+                               ReferralFacilityOut, ReferralIn, ReferralUpdate, VisitCreate, VisitOut,
                                VisitUpdate, VisitWithWarnings)
 from app.services import emr_service, queue_service, symptom_service
 from app.validation.schema_validators import vital_sign_warnings
@@ -28,6 +29,7 @@ _nurse_patient = require_roles("Nurse", audit_entity="patient")
 _nurse_visit = require_roles("Nurse", audit_entity="visit")
 _physician_visit = require_roles("Physician", audit_entity="visit")
 _clinical_visit = require_roles(*CLINICAL_ROLES, audit_entity="visit")
+_clinical = require_roles(*CLINICAL_ROLES)
 
 
 def _with_warnings(visit) -> VisitWithWarnings:
@@ -212,5 +214,77 @@ def release(visit_id: uuid.UUID, actor: User = Depends(_physician_visit), db: Se
 def cancel(visit_id: uuid.UUID, body: CancelRequest, actor: User = Depends(_clinical_visit),
            db: Session = Depends(get_db)):
     visit = queue_service.cancel(db, visit_id, body.reason, actor)
+    db.commit()
+    return visit
+
+
+# ============================================================================ Chuyển tuyến (ERD v2.0)
+@router.get("/referral-facilities", response_model=list[ReferralFacilityOut])
+def search_referral_facilities(
+    q: str = Query(..., min_length=2, max_length=100, description="Một phần tên (có dấu hay không) hoặc mã KCB"),
+    limit: int = Query(10, ge=1, le=50), _: User = Depends(_clinical), db: Session = Depends(get_db),
+):
+    return queue_service.search_facilities(db, q, limit)
+
+
+@router.patch("/visits/{visit_id}/refer", response_model=VisitOut)
+def refer(visit_id: uuid.UUID, body: ReferralIn, actor: User = Depends(_clinical_visit),
+          db: Session = Depends(get_db)):
+    """Physician: lượt đang khám của mình. Nurse: lượt đang chờ chuyển nặng. Lượt kết thúc, không hóa đơn."""
+    visit = queue_service.refer(db, visit_id, body, actor)
+    db.commit()
+    return visit
+
+
+@router.post("/visits/emergency-referral", response_model=VisitOut, status_code=201)
+def emergency_referral(body: EmergencyReferralCreate, actor: User = Depends(_nurse_visit),
+                       db: Session = Depends(get_db)):
+    visit = queue_service.emergency_referral(db, body, actor)
+    db.commit()
+    return visit
+
+
+@router.patch("/visits/{visit_id}/referral", response_model=VisitOut)
+def update_referral(visit_id: uuid.UUID, body: ReferralUpdate, actor: User = Depends(_physician_visit),
+                    db: Session = Depends(get_db)):
+    """Bác sĩ bổ sung giấy chuyển tuyến của lượt đã chuyển (kể cả lượt lễ tân chuyển ở quầy)."""
+    visit = queue_service.update_referral(db, visit_id, body, actor)
+    db.commit()
+    return visit
+
+
+# ============================================================================ Xét nghiệm, mời vào phòng
+@router.patch("/visits/{visit_id}/lab-out", response_model=VisitOut)
+def lab_out(visit_id: uuid.UUID, actor: User = Depends(_physician_visit), db: Session = Depends(get_db)):
+    visit = queue_service.set_lab_out(db, visit_id, True, actor)
+    db.commit()
+    return visit
+
+
+@router.patch("/visits/{visit_id}/lab-return", response_model=VisitOut)
+def lab_return(visit_id: uuid.UUID, actor: User = Depends(_physician_visit), db: Session = Depends(get_db)):
+    visit = queue_service.set_lab_out(db, visit_id, False, actor)
+    db.commit()
+    return visit
+
+
+@router.post("/queue/call-next", response_model=VisitOut)
+def call_next(actor: User = Depends(_physician_visit), db: Session = Depends(get_db)):
+    """Bác sĩ sẵn sàng nhận người tiếp: quầy thấy called_at mới qua GET /queue và mời bệnh nhân."""
+    visit = queue_service.call_next(db, actor)
+    db.commit()
+    return visit
+
+
+@router.post("/visits/{visit_id}/call", response_model=VisitOut)
+def call(visit_id: uuid.UUID, actor: User = Depends(_physician_visit), db: Session = Depends(get_db)):
+    visit = queue_service.call(db, visit_id, actor)
+    db.commit()
+    return visit
+
+
+@router.delete("/visits/{visit_id}/call", response_model=VisitOut)
+def cancel_call(visit_id: uuid.UUID, actor: User = Depends(_clinical_visit), db: Session = Depends(get_db)):
+    visit = queue_service.cancel_call(db, visit_id, actor)
     db.commit()
     return visit
