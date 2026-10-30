@@ -16,6 +16,11 @@ export const dmyDob = (iso) => {
   const m = String(iso ?? '').match(/^(\d{4})-(\d{2})-(\d{2})/)
   return m ? `${m[3]}/${m[2]}/${m[1]}` : ''
 }
+// Ô ngày sinh: gõ số liền nhau → tự chèn dấu "/" thành dd/mm/yyyy.
+export const maskDob = (s) => {
+  const d = s.replace(/\D/g, '').slice(0, 8)
+  return [d.slice(0, 2), d.slice(2, 4), d.slice(4)].filter(Boolean).join('/')
+}
 // Mang thai: 'yes' | 'no' | '' (chưa hỏi) ↔ medical_history.is_pregnant true | false | (không có khoá).
 const pregnancyOf = (mh) => (mh?.is_pregnant === true ? 'yes' : mh?.is_pregnant === false ? 'no' : '')
 
