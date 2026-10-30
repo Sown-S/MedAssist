@@ -12,13 +12,7 @@ description: 'Viêm họng mạn tính là tình trạng viêm họng kéo dài,
 relations:
 - symptom_code: tonsillitis_adenoid_pharyngitis
   polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
-  source_key: moh_qd_5643_2015
-  source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: pruritus_intense_skin_itch
-  polarity: SUPPORTS
-  weight: 0.86
+  weight: 0.94
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT

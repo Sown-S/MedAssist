@@ -10,7 +10,7 @@ description: 'Viêm thanh quản cấp tính (VTQ cấp) là tình trạng viêm
   cũng rất khác nhau, tùy theo nguyên nhân, và lứa tuổi bệnh được phân loại: VTQ cấp
   ở trẻ em,.'
 relations:
-- symptom_code: trismus_tetanic_spasm
+- symptom_code: hoarseness_dysphonia_stridor
   polarity: SUPPORTS
   weight: 0.98
   is_key: true
@@ -18,19 +18,7 @@ relations:
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: tonsillitis_adenoid_pharyngitis
   polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
-  source_key: moh_qd_5643_2015
-  source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: hoarseness_dysphonia_stridor
-  polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
-  source_key: moh_qd_5643_2015
-  source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: nocturnal_asthma_dyspnea
-  polarity: SUPPORTS
-  weight: 0.95
+  weight: 0.92
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
@@ -55,6 +43,12 @@ relations:
 - symptom_code: sore_throat_dysphagia
   polarity: SUPPORTS
   weight: 0.77
+  is_key: false
+  source_key: moh_qd_5643_2015
+  source_edition: Quyết định số 5643/QĐ-BYT
+- symptom_code: fatigue_malaise
+  polarity: SUPPORTS
+  weight: 0.7
   is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT

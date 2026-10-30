@@ -9,27 +9,15 @@ description: V.A (Végétations Adénoides) là một tổ chức lympho nằm �
   một phần thuộc vòng bạch huyết Waldeyer, còn gọi là amiđan Luschka. V.A phát triển
   mạnh ở lứa tuổi nhỏ và bắt đầu thoái triển từ 5-6 tuổi trở đi.
 relations:
-- symptom_code: trismus_tetanic_spasm
-  polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
-  source_key: moh_qd_5643_2015
-  source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: nasal_obstruction_stuffiness
   polarity: SUPPORTS
   weight: 0.98
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: startle_myoclonus_ataxia
-  polarity: SUPPORTS
-  weight: 0.97
-  is_key: true
-  source_key: moh_qd_5643_2015
-  source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: tonsillitis_adenoid_pharyngitis
   polarity: SUPPORTS
-  weight: 0.96
+  weight: 0.94
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
@@ -54,6 +42,18 @@ relations:
 - symptom_code: otalgia_ear_pain
   polarity: SUPPORTS
   weight: 0.88
+  is_key: true
+  source_key: moh_qd_5643_2015
+  source_edition: Quyết định số 5643/QĐ-BYT
+- symptom_code: rhinorrhea_nasal_congestion
+  polarity: SUPPORTS
+  weight: 0.88
+  is_key: true
+  source_key: moh_qd_5643_2015
+  source_edition: Quyết định số 5643/QĐ-BYT
+- symptom_code: cough_dry
+  polarity: SUPPORTS
+  weight: 0.85
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT

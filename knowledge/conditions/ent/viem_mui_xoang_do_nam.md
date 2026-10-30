@@ -9,37 +9,13 @@ description: 'Là tình trạng viêm mũi xoang kéo dài với sự hiện di�
   thương niêm mạc và tổ chức xung quanh. Nấm mũi xoang có bốn thể: thể không xâm nhập
   còn gọi là u nấm, thể xâm nhập.'
 relations:
-- symptom_code: myasthenic_ptosis_diplopia_fatigue
-  polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
-  source_key: moh_qd_5643_2015
-  source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: diplopia_strabismus_proptosis
-  polarity: SUPPORTS
-  weight: 0.97
-  is_key: true
-  source_key: moh_qd_5643_2015
-  source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: nasal_polyp_sinonasal_mass
   polarity: SUPPORTS
   weight: 0.95
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: fungal_ringworm_nail_hair_lesion
-  polarity: SUPPORTS
-  weight: 0.94
-  is_key: true
-  source_key: moh_qd_5643_2015
-  source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: skin_cellulitis_pus_abscess
-  polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
-  source_key: moh_qd_5643_2015
-  source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: bone_pain_fracture_lesion
   polarity: SUPPORTS
   weight: 0.92
   is_key: true
@@ -55,6 +31,18 @@ relations:
   polarity: SUPPORTS
   weight: 0.88
   is_key: true
+  source_key: moh_qd_5643_2015
+  source_edition: Quyết định số 5643/QĐ-BYT
+- symptom_code: rhinorrhea_nasal_congestion
+  polarity: SUPPORTS
+  weight: 0.86
+  is_key: true
+  source_key: moh_qd_5643_2015
+  source_edition: Quyết định số 5643/QĐ-BYT
+- symptom_code: headache_dull
+  polarity: SUPPORTS
+  weight: 0.75
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 excerpts:

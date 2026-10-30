@@ -22,12 +22,6 @@ relations:
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: genital_ulcer_chancre_discharge
-  polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
-  source_key: moh_qd_5643_2015
-  source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: otalgia_ear_pain
   polarity: SUPPORTS
   weight: 0.94
@@ -35,12 +29,6 @@ relations:
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: external_ear_swelling_fistula
-  polarity: SUPPORTS
-  weight: 0.94
-  is_key: true
-  source_key: moh_qd_5643_2015
-  source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: pustular_furuncle_folliculitis
   polarity: SUPPORTS
   weight: 0.94
   is_key: true
@@ -55,6 +43,18 @@ relations:
 - symptom_code: fever_high
   polarity: SUPPORTS
   weight: 0.9
+  is_key: true
+  source_key: moh_qd_5643_2015
+  source_edition: Quyết định số 5643/QĐ-BYT
+- symptom_code: skin_cellulitis_pus_abscess
+  polarity: SUPPORTS
+  weight: 0.9
+  is_key: true
+  source_key: moh_qd_5643_2015
+  source_edition: Quyết định số 5643/QĐ-BYT
+- symptom_code: dizziness_vertigo
+  polarity: SUPPORTS
+  weight: 0.88
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT

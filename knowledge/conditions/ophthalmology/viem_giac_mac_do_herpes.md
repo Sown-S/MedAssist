@@ -6,24 +6,30 @@ name_en: Viêm giác mạc do herpes
 icd10_code: B00.5
 disease_group: ophthalmology
 description: Viêm giác mạc do herpes là hiện tƣợng thâm nhiễm tế bào viêm và hoại
-  tử gây tổn thƣơng mất tổ chức giác mạc do herpes.
+  tử gây tổn thương mất tổ chức giác mạc do herpes.
 relations:
+- symptom_code: ocular_pain_photophobia_tearing
+  polarity: SUPPORTS
+  weight: 0.98
+  is_key: true
+  source_key: moh_qd_40_2015
+  source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: corneal_ulcer_hypopyon_keratitis
   polarity: SUPPORTS
   weight: 0.98
   is_key: true
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
-- symptom_code: ocular_pain_photophobia_tearing
+- symptom_code: vesicular_blister_rash
   polarity: SUPPORTS
-  weight: 0.96
+  weight: 0.95
   is_key: true
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
-- symptom_code: verrucous_papule_nodule_ulcer
+- symptom_code: lymphadenopathy_splenomegaly
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.82
+  is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: conjunctivitis_uveitis_red_eye
@@ -43,9 +49,9 @@ excerpts:
 ## excerpt: viem_giac_mac_do_herpes_chan_doan
 - Triệu chứng cơ năng
 - Đau nhức mắt.
-- Kích thích: cộm chói, chảy nƣớc mắt, sợ ánh sáng.
-- Thị lực: giảm nhiều hay ít tùy mức độ tổn thƣơng.
+- Kích thích: cộm chói, chảy nước mắt, sợ ánh sáng.
+- Thị lực: giảm nhiều hay ít tùy mức độ tổn thương.
 - Triệu chứng thực thể
-- Tổn thƣơng của giác mạc do herpes có đặc điểm: đa dạng, hay tái phát, gây
+- Tổn thương của giác mạc do herpes có đặc điểm: đa dạng, hay tái phát, gây
 - giảm hoặc mất cảm giác giác mạc.
 - Loét giác mạc hình cành cây: là triệu chứng đặc trƣng và điển hình.

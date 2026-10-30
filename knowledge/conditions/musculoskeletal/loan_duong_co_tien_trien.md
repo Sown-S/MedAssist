@@ -15,12 +15,6 @@ relations:
   is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: facial_nerve_palsy_bell
-  polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
-  source_key: moh_qd_361_2014
-  source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: myalgia_arthralgia
   polarity: SUPPORTS
   weight: 0.8
@@ -30,6 +24,12 @@ relations:
 - symptom_code: fatigue_malaise
   polarity: SUPPORTS
   weight: 0.7
+  is_key: false
+  source_key: moh_qd_361_2014
+  source_edition: Quyết định số 361/QĐ-BYT
+- symptom_code: fever_low_grade
+  polarity: SUPPORTS
+  weight: 0.65
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT

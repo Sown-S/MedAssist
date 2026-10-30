@@ -28,12 +28,6 @@ relations:
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: allergic_sneezing_nasal_itch
-  polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
-  source_key: moh_qd_5643_2015
-  source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: facial_sinus_pain_anosmia
   polarity: SUPPORTS
   weight: 0.9

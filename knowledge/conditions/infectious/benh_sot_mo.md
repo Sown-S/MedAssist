@@ -16,12 +16,6 @@ relations:
   is_key: true
   source_key: moh_qd_5642_2015
   source_edition: Quyết định số 5642/QĐ-BYT
-- symptom_code: meningeal_neck_stiffness_kernig
-  polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
-  source_key: moh_qd_5642_2015
-  source_edition: Quyết định số 5642/QĐ-BYT
 - symptom_code: maculopapular_rash
   polarity: SUPPORTS
   weight: 0.92
@@ -55,6 +49,12 @@ relations:
 - symptom_code: serositis_pleural_pericardial
   polarity: SUPPORTS
   weight: 0.85
+  is_key: false
+  source_key: moh_qd_5642_2015
+  source_edition: Quyết định số 5642/QĐ-BYT
+- symptom_code: anemia_pallor_jaundice
+  polarity: SUPPORTS
+  weight: 0.82
   is_key: false
   source_key: moh_qd_5642_2015
   source_edition: Quyết định số 5642/QĐ-BYT

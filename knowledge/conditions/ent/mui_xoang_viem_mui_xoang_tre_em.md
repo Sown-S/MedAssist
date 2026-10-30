@@ -22,12 +22,6 @@ relations:
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: history_smoking_dust_exposure
-  polarity: SUPPORTS
-  weight: 0.94
-  is_key: true
-  source_key: moh_qd_5643_2015
-  source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: nasal_obstruction_stuffiness
   polarity: SUPPORTS
   weight: 0.92
@@ -40,12 +34,6 @@ relations:
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: pruritus_intense_skin_itch
-  polarity: SUPPORTS
-  weight: 0.86
-  is_key: true
-  source_key: moh_qd_5643_2015
-  source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: nausea_vomiting_diarrhea
   polarity: SUPPORTS
   weight: 0.8
@@ -53,6 +41,18 @@ relations:
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: fever_low_grade
+  polarity: SUPPORTS
+  weight: 0.75
+  is_key: false
+  source_key: moh_qd_5643_2015
+  source_edition: Quyết định số 5643/QĐ-BYT
+- symptom_code: headache_dull
+  polarity: SUPPORTS
+  weight: 0.75
+  is_key: false
+  source_key: moh_qd_5643_2015
+  source_edition: Quyết định số 5643/QĐ-BYT
+- symptom_code: sore_throat_dysphagia
   polarity: SUPPORTS
   weight: 0.75
   is_key: false

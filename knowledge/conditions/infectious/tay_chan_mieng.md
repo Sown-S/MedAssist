@@ -7,27 +7,33 @@ icd10_code: B08.4
 disease_group: infectious
 description: 1.1. Triệu chứng lâm sàng.
 relations:
-- symptom_code: maculopapular_rash
+- symptom_code: vesicular_blister_rash
   polarity: SUPPORTS
-  weight: 0.9
+  weight: 0.98
   is_key: true
   source_key: moh_qd_292_2024
   source_edition: Quyết định số 292/QĐ-BYT
 - symptom_code: oral_mucosal_ulcers
   polarity: SUPPORTS
-  weight: 0.9
+  weight: 0.96
   is_key: true
   source_key: moh_qd_292_2024
   source_edition: Quyết định số 292/QĐ-BYT
-- symptom_code: fever_high
+- symptom_code: startle_myoclonus_ataxia
   polarity: SUPPORTS
-  weight: 0.85
+  weight: 0.95
   is_key: true
   source_key: moh_qd_292_2024
   source_edition: Quyết định số 292/QĐ-BYT
-- symptom_code: fatigue_malaise
+- symptom_code: fever_low_grade
   polarity: SUPPORTS
-  weight: 0.75
+  weight: 0.82
+  is_key: false
+  source_key: moh_qd_292_2024
+  source_edition: Quyết định số 292/QĐ-BYT
+- symptom_code: weight_loss_anorexia
+  polarity: SUPPORTS
+  weight: 0.78
   is_key: false
   source_key: moh_qd_292_2024
   source_edition: Quyết định số 292/QĐ-BYT

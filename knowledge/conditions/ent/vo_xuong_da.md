@@ -10,12 +10,6 @@ description: Vỡ xương đá là một bệnh thường gặp liên quan đế
   gồm các biến chứng tai và nguy cơ viêm màng não nặng do thông thương khoang dưới
   nhện với.
 relations:
-- symptom_code: meningeal_neck_stiffness_kernig
-  polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
-  source_key: moh_qd_5643_2015
-  source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: hearing_loss_deafness
   polarity: SUPPORTS
   weight: 0.96
@@ -28,19 +22,7 @@ relations:
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: facial_nerve_palsy_bell
-  polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
-  source_key: moh_qd_5643_2015
-  source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: tympanic_membrane_lesion
-  polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
-  source_key: moh_qd_5643_2015
-  source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: malar_butterfly_photosensitivity
   polarity: SUPPORTS
   weight: 0.95
   is_key: true
@@ -55,6 +37,18 @@ relations:
 - symptom_code: external_ear_swelling_fistula
   polarity: SUPPORTS
   weight: 0.92
+  is_key: true
+  source_key: moh_qd_5643_2015
+  source_edition: Quyết định số 5643/QĐ-BYT
+- symptom_code: otalgia_ear_pain
+  polarity: SUPPORTS
+  weight: 0.9
+  is_key: true
+  source_key: moh_qd_5643_2015
+  source_edition: Quyết định số 5643/QĐ-BYT
+- symptom_code: tinnitus_ear_fullness
+  polarity: SUPPORTS
+  weight: 0.88
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT

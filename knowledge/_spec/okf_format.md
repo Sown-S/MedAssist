@@ -1,6 +1,6 @@
 ---
 schema: okf_spec_v1
-label: KB-2026.01
+label: KB-2026.03
 description: Đặc tả định dạng OKF, quy ước mã slug, 8 khóa sinh hiệu và cấu trúc condition_logic
   của MedAssist.
 ---

@@ -15,12 +15,6 @@ relations:
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: pruritus_intense_skin_itch
-  polarity: SUPPORTS
-  weight: 0.86
-  is_key: true
-  source_key: moh_qd_5643_2015
-  source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: cough_dry
   polarity: SUPPORTS
   weight: 0.85
@@ -31,6 +25,12 @@ relations:
   polarity: SUPPORTS
   weight: 0.78
   is_key: true
+  source_key: moh_qd_5643_2015
+  source_edition: Quyết định số 5643/QĐ-BYT
+- symptom_code: nasal_obstruction_stuffiness
+  polarity: SUPPORTS
+  weight: 0.75
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 excerpts:

@@ -7,17 +7,17 @@ icd10_code: H34.8
 disease_group: ophthalmology
 description: Tắc tĩnh mạch võng mạc là bệnh lý mạch máu võng mạc biểu hiện sự ngừng
   trệ tuần hoàn trở về ở võng mạc, xảy ra ở thân tĩnh mạch trung tâm võng mạc ngay
-  đĩa thị, sau lá sàng đƣợc gọi là tắc tĩnh mạch trung tâm võng mạc hoặc tắc ở thân.
+  đĩa thị, sau lá sàng được gọi là tắc tĩnh mạch trung tâm võng mạc hoặc tắc ở thân.
 relations:
-- symptom_code: retinal_vitreous_optic_disc_lesion
+- symptom_code: visual_acuity_decreased_blur
   polarity: SUPPORTS
   weight: 0.98
   is_key: true
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
-- symptom_code: visual_acuity_decreased_blur
+- symptom_code: retinal_vitreous_optic_disc_lesion
   polarity: SUPPORTS
-  weight: 0.96
+  weight: 0.98
   is_key: true
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
@@ -42,8 +42,8 @@ excerpts:
 ---
 
 ## excerpt: benh_tac_tinh_mach_vong_mac_chan_doan
-- Bệnh thƣờng xảy ra ở một mắt, giảm thị lực từ ít đến nhiều, có thể chỉ
-- còn đếm ngón tay nhƣng không hoàn toàn mất thị lực
+- Bệnh thường xảy ra ở một mắt, giảm thị lực từ ít đến nhiều, có thể chỉ
+- còn đếm ngón tay nhưng không hoàn toàn mất thị lực
 - Mắt bị bệnh không đau nhức, không đỏ mắt.
 - Khám đáy mắt: Tắc tĩnh mạch trung tâm võng mạc có 4 dấu hiệu chính:
 - Tĩnh mạch giãn to, ngoằn nghèo.

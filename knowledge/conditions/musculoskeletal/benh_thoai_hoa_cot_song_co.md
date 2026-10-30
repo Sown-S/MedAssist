@@ -16,24 +16,6 @@ relations:
   is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: nocturnal_asthma_dyspnea
-  polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
-  source_key: moh_qd_361_2014
-  source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: allergic_sneezing_nasal_itch
-  polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
-  source_key: moh_qd_361_2014
-  source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: tonsillitis_adenoid_pharyngitis
-  polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
-  source_key: moh_qd_361_2014
-  source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: mechanical_spinal_pain_stiffness
   polarity: SUPPORTS
   weight: 0.92
@@ -52,10 +34,16 @@ relations:
   is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: tinnitus_ear_fullness
+- symptom_code: headache_dull
   polarity: SUPPORTS
-  weight: 0.88
-  is_key: true
+  weight: 0.75
+  is_key: false
+  source_key: moh_qd_361_2014
+  source_edition: Quyết định số 361/QĐ-BYT
+- symptom_code: fatigue_malaise
+  polarity: SUPPORTS
+  weight: 0.7
+  is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 excerpts:
