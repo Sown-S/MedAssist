@@ -16,46 +16,34 @@ relations:
   is_key: true
   source_key: moh_qd_1327_2014
   source_edition: Quyết định số 1327/QĐ-BYT
-- symptom_code: corneal_ulcer_hypopyon_keratitis
-  polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
-  source_key: moh_qd_1327_2014
-  source_edition: Quyết định số 1327/QĐ-BYT
 - symptom_code: maculopapular_rash
   polarity: SUPPORTS
-  weight: 0.94
-  is_key: true
-  source_key: moh_qd_1327_2014
-  source_edition: Quyết định số 1327/QĐ-BYT
-- symptom_code: scaly_plaque_hyperkeratosis
-  polarity: SUPPORTS
-  weight: 0.94
+  weight: 0.95
   is_key: true
   source_key: moh_qd_1327_2014
   source_edition: Quyết định số 1327/QĐ-BYT
 - symptom_code: fever_high
   polarity: SUPPORTS
-  weight: 0.9
+  weight: 0.92
+  is_key: true
+  source_key: moh_qd_1327_2014
+  source_edition: Quyết định số 1327/QĐ-BYT
+- symptom_code: conjunctivitis_uveitis_red_eye
+  polarity: SUPPORTS
+  weight: 0.88
   is_key: true
   source_key: moh_qd_1327_2014
   source_edition: Quyết định số 1327/QĐ-BYT
 - symptom_code: rhinorrhea_nasal_congestion
   polarity: SUPPORTS
-  weight: 0.86
-  is_key: true
-  source_key: moh_qd_1327_2014
-  source_edition: Quyết định số 1327/QĐ-BYT
-- symptom_code: pruritus_intense_skin_itch
-  polarity: SUPPORTS
-  weight: 0.86
-  is_key: true
+  weight: 0.82
+  is_key: false
   source_key: moh_qd_1327_2014
   source_edition: Quyết định số 1327/QĐ-BYT
 - symptom_code: cough_dry
   polarity: SUPPORTS
-  weight: 0.85
-  is_key: true
+  weight: 0.8
+  is_key: false
   source_key: moh_qd_1327_2014
   source_edition: Quyết định số 1327/QĐ-BYT
 excerpts:

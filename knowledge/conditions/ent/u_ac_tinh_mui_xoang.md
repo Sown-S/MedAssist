@@ -8,30 +8,6 @@ disease_group: ent
 description: U ác tính mũi xoang chiếm khoảng 1% u ác tính toàn thân, và khoảng 3%
   đường hô hấp trên. Tỷ lệ nam cao gấp hai lần nữ. U thường gặp ở lứa tuổi 50-70.
 relations:
-- symptom_code: trismus_tetanic_spasm
-  polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
-  source_key: moh_qd_5643_2015
-  source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: diplopia_strabismus_proptosis
-  polarity: SUPPORTS
-  weight: 0.97
-  is_key: true
-  source_key: moh_qd_5643_2015
-  source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: visual_acuity_decreased_blur
-  polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
-  source_key: moh_qd_5643_2015
-  source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: ocular_pain_photophobia_tearing
-  polarity: SUPPORTS
-  weight: 0.9
-  is_key: true
-  source_key: moh_qd_5643_2015
-  source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: nasal_obstruction_stuffiness
   polarity: SUPPORTS
   weight: 0.9
@@ -54,6 +30,12 @@ relations:
   polarity: SUPPORTS
   weight: 0.86
   is_key: true
+  source_key: moh_qd_5643_2015
+  source_edition: Quyết định số 5643/QĐ-BYT
+- symptom_code: lymphadenopathy_splenomegaly
+  polarity: SUPPORTS
+  weight: 0.82
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 excerpts:

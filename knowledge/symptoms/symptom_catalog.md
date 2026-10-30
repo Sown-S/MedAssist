@@ -296,10 +296,6 @@ symptoms:
   symptom_name: Yếu cơ vùng gốc chi đối xứng hai bên, teo cơ tiến triển hoặc giả phì
     đại bắp chân
   category: musculoskeletal
-- symptom_code: myasthenic_ptosis_diplopia_fatigue
-  symptom_name: Sụp mi mắt, nhìn đôi, mỏi cơ nhai/nuốt tăng khi vận động và phục hồi
-    khi nghỉ
-  category: neurological
 - symptom_code: bone_pain_fracture_lesion
   symptom_name: Đau nhức xương sâu (tăng về đêm), biến dạng xương, lún xẹp đốt sống
     hoặc gãy xương bệnh lý

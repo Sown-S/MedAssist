@@ -7,7 +7,7 @@ icd10_code: H44.0
 disease_group: ophthalmology
 description: Viêm mủ nội nhãn (VMNN) nội sinh là tình trạng viêm các tổ chức trong
   nhãn cầu, đặc trƣng bởi sự xâm nhập của bạch cầu đa nhân gây hoại tử mủ do các tác
-  nhân gây bệnh đi đến mắt qua đƣờng máu, dẫn đến hình thành mủ trong tiền.
+  nhân gây bệnh đi đến mắt qua đường máu, dẫn đến hình thành mủ trong tiền.
 relations:
 - symptom_code: corneal_ulcer_hypopyon_keratitis
   polarity: SUPPORTS
@@ -18,6 +18,12 @@ relations:
 - symptom_code: retinal_vitreous_optic_disc_lesion
   polarity: SUPPORTS
   weight: 0.97
+  is_key: true
+  source_key: moh_qd_40_2015
+  source_edition: Quyết định số 40/QĐ-BYT
+- symptom_code: conjunctival_ciliary_injection_discharge
+  polarity: SUPPORTS
+  weight: 0.94
   is_key: true
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
@@ -56,9 +62,9 @@ excerpts:
 ## excerpt: viem_mu_noi_nhan_noi_sinh_chan_doan
 - Triệu chứng cơ năng
 - Đau nhức mắt, đỏ mắt
-- Nhìn mờ tùy mức độ, nhƣng thƣờng nhanh và nhiều
+- Nhìn mờ tùy mức độ, nhưng thường nhanh và nhiều
 - Triệu chứng thức thể
 - Phù mi, cảm giác thể mi (+)
-- Mắt kích thích, kèm cƣơng tụ kết mạc, cƣơng tụ rìa
+- Mắt kích thích, kèm cương tụ kết mạc, cương tụ rìa
 - Phù giác mạc, có thể có tủa sau giác mạc
 - Xuất tiết ở diện đồng tử, dính bờ đồng tử

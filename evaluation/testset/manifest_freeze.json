@@ -1,39 +1,38 @@
 {
-  "freeze_version": "testset-v1.1-frozen",
-  "frozen_at": "2026-10-30T16:44:51",
-  "git_tag_recommended": "testset-v1.1-frozen",
+  "freeze_version": "testset-v1.2-frozen",
+  "frozen_at": "2026-10-30T22:20:34",
+  "git_tag_recommended": "testset-v1.2-frozen",
   "knowledge_snapshot": {
-    "total_conditions": 124,
+    "total_conditions": 199,
     "groups": {
-      "dermatology": 3,
-      "ent": 38,
-      "gastrointestinal": 1,
-      "infectious": 14,
-      "musculoskeletal": 55,
-      "ophthalmology": 11,
+      "dermatology": 63,
+      "ent": 56,
+      "infectious": 17,
+      "musculoskeletal": 32,
+      "ophthalmology": 29,
       "respiratory": 2
     },
-    "total_symptoms": 99,
+    "total_symptoms": 98,
     "total_triage_rules": 11,
     "total_sources": 11
   },
-  "combined_sha256": "325af92284417727f9a471c90e98ad3e4fb89dcdcf9356977d4fd2f69543404c",
+  "combined_sha256": "b75141885fe33216de882110a2126ca060cd54c9467556275531a78efb8078c5",
   "files": [
     {
       "path": "evaluation/testset/symptom_extraction_testset.jsonl",
-      "num_cases": 30,
-      "sha256": "02851c6e12b49ac6244074a84ced23af37c4960b3ac28709d5b9ceda244f3363"
+      "num_cases": 29,
+      "sha256": "21c778cd09a9e11091428ac7cdffb1d7ff42f960648a8106abac20f6901de2a7"
     },
     {
       "path": "evaluation/testset/clinical_cases_labeled.jsonl",
-      "num_cases": 19,
-      "sha256": "f209b7cdf5730e3ba080245590c2e9f5f50aba935a2a6151e2e6611881bff36a"
+      "num_cases": 20,
+      "sha256": "624fe91ea1edaf51eab6619cd9d0ef17b523cf497f0eeb9f7a135b0186c66134"
     }
   ],
   "retired_cases": {
+    "EXT-015": "Thiếu mã triệu chứng trong catalog hiện hành: myasthenic_ptosis_diplopia_fatigue",
     "CLIN-012": "condition_code chưa có: thoai_hoa_khop_goi, u_sun_mang_hoat_dich",
-    "CLIN-016": "condition_code chưa có: nhuoc_co",
-    "CLIN-021": "condition_code chưa có: glocom_goc_dong_nguyen_phat, glocom_goc_mo_nguyen_phat"
+    "CLIN-016": "symptom_code chưa có: myasthenic_ptosis_diplopia_fatigue; condition_code chưa có: nhuoc_co"
   },
   "policy_note": "Đóng băng bộ test theo Nguyên tắc vàng #6 (Quy định v5): Không chỉnh rule hay prompt dựa trên bộ test này."
 }

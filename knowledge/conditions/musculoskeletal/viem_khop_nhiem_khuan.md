@@ -9,18 +9,6 @@ description: Viêm khớp nhiễm khuẩn hay viêm khớp sinh mủ (pyogenic/ 
   là viêm khớp do vi khuẩn sinh mủ không đặc hiệu (không phải do lao, phong, nấm,
   ký sinh trùng hay virus) gây nên.
 relations:
-- symptom_code: genital_ulcer_chancre_discharge
-  polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
-  source_key: moh_qd_361_2014
-  source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: pustular_furuncle_folliculitis
-  polarity: SUPPORTS
-  weight: 0.94
-  is_key: true
-  source_key: moh_qd_361_2014
-  source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: myalgia_arthralgia
   polarity: SUPPORTS
   weight: 0.8
@@ -30,6 +18,18 @@ relations:
 - symptom_code: chills_rigors
   polarity: SUPPORTS
   weight: 0.8
+  is_key: false
+  source_key: moh_qd_361_2014
+  source_edition: Quyết định số 361/QĐ-BYT
+- symptom_code: fatigue_malaise
+  polarity: SUPPORTS
+  weight: 0.7
+  is_key: false
+  source_key: moh_qd_361_2014
+  source_edition: Quyết định số 361/QĐ-BYT
+- symptom_code: fever_low_grade
+  polarity: SUPPORTS
+  weight: 0.65
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT

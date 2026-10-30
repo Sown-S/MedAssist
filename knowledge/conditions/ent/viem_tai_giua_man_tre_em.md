@@ -33,12 +33,6 @@ relations:
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: nocturnal_asthma_dyspnea
-  polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
-  source_key: moh_qd_5643_2015
-  source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: external_ear_swelling_fistula
   polarity: SUPPORTS
   weight: 0.92
@@ -51,9 +45,15 @@ relations:
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: bone_pain_fracture_lesion
+- symptom_code: dizziness_vertigo
   polarity: SUPPORTS
-  weight: 0.92
+  weight: 0.9
+  is_key: true
+  source_key: moh_qd_5643_2015
+  source_edition: Quyết định số 5643/QĐ-BYT
+- symptom_code: otalgia_ear_pain
+  polarity: SUPPORTS
+  weight: 0.9
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
@@ -66,11 +66,11 @@ excerpts:
 ---
 
 ## excerpt: viem_tai_giua_man_tre_em_chan_doan
+- Viêm tai giữa (VTG) mạn tính là tình trạng viêm nhiễm mạn tính không chỉ trong
+- khoang tai giữa mà còn lan đến sào bào, thượng nhĩ và xương chũm, thời gian chảy mủ
+- Viêm tai giữa mạn tính ở trẻ em thường có hai loại chính là viêm tai giữa tiết nhầy
+- mủ và viêm tai giữa mủ. Trong viêm tai giữa tiết nhầy mủ, bệnh tích khu trú ở niêm
+- mạc, còn trong viêm tai giữa mủ bệnh tích vượt khỏi niêm mạc và làm thương tổn đến
+- Nguyên nhân của viêm tai giữa tiết nhầy mủ là do mũi, do xoang, do vòm mũi
 - Các triệu chứng chức năng rất nghèo nàn: bệnh nhân không đau tai, không ù tai,
 - khá nhiều, và tăng lên mỗi khi bệnh nhân bị viêm mũi, sổ mũi. Chất dịch chảy ra màu
-- Lỗ thủng ở góc tư dưới trước của màng nhĩ, hình quả trứng, có khi lên đến rốn cán
-- cũng dừng lại cách khung nhĩ độ 1mm. Phần còn lại của màng nhĩ màu xám nhạt, mỏng,
-- không bị viêm.
-- Đo thính lực cho thấy tai bị điếc nhẹ theo kiểu dẫn truyền. Mức độ điếc thay đổi
-- tùy theo tình trạng của vòi Eustache; khi nào vòi không viêm thì bệnh nhân nghe rõ, khi
-- nào vòi xuất tiết và tắc thì bệnh nhân nghe kém. X quang cho thấy xương chũm kém

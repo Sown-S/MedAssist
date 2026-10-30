@@ -16,12 +16,6 @@ relations:
   is_key: true
   source_key: moh_qd_5642_2015
   source_edition: Quyết định số 5642/QĐ-BYT
-- symptom_code: tonsillitis_adenoid_pharyngitis
-  polarity: SUPPORTS
-  weight: 0.94
-  is_key: true
-  source_key: moh_qd_5642_2015
-  source_edition: Quyết định số 5642/QĐ-BYT
 - symptom_code: fever_high
   polarity: SUPPORTS
   weight: 0.9
@@ -53,6 +47,12 @@ relations:
   source_key: moh_qd_5642_2015
   source_edition: Quyết định số 5642/QĐ-BYT
 - symptom_code: weight_loss_anorexia
+  polarity: SUPPORTS
+  weight: 0.75
+  is_key: false
+  source_key: moh_qd_5642_2015
+  source_edition: Quyết định số 5642/QĐ-BYT
+- symptom_code: sore_throat_dysphagia
   polarity: SUPPORTS
   weight: 0.75
   is_key: false

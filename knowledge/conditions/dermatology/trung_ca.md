@@ -5,9 +5,9 @@ name_vi: Trứng cá
 name_en: Acne
 icd10_code: L70.0
 disease_group: dermatology
-description: Trứng cá (acne) là bệnh da thông thƣờng gây nên do tăng tiết chất bã
-  và viêm của hệ thống nang lông tuyến bã. Bệnh biểu hiện bằng nhiều loại tổn thƣơng
-  khác nhau nhƣ mụn cám, sẩn, sẩn.
+description: Trứng cá (acne) là bệnh da thông thường gây nên do tăng tiết chất bã
+  và viêm của hệ thống nang lông tuyến bã. Bệnh biểu hiện bằng nhiều loại tổn thương
+  khác nhau như mụn cám, sẩn, sẩn.
 relations:
 - symptom_code: pustular_furuncle_folliculitis
   polarity: SUPPORTS
@@ -54,11 +54,11 @@ excerpts:
 ---
 
 ## excerpt: trung_ca_chan_doan
-- Bắt đầu từ tuổi dậy thì, trên nền da nhờn xuất hiện các tổn thƣơng nhân
-- lại. Sau đó, tùy mức độ viêm nhiều hay ít, nông hoặc sâu mà có các tổn thƣơng nhƣ
-- Vị trí thƣờng gặp là ở mặt, trán, cằm, má, phần trên lƣng, trƣớc ngực; ít khi
-- Trứng cá dạng cục, dạng kén: hay gặp ở nam. Tổn thƣơng sâu hơn trứng cá
+- Bắt đầu từ tuổi dậy thì, trên nền da nhờn xuất hiện các tổn thương nhân
+- lại. Sau đó, tùy mức độ viêm nhiều hay ít, nông hoặc sâu mà có các tổn thương như
+- Vị trí thường gặp là ở mặt, trán, cằm, má, phần trên lƣng, trước ngực; ít khi
+- Trứng cá dạng cục, dạng kén: hay gặp ở nam. Tổn thương sâu hơn trứng cá
 - Trứng cá bọc (acne conglobata): là loại trứng cá mủ mạn tính, dai dẳng.
 - Trứng cá tối cấp (còn gọi là trứng cá bọc cấp tính, trứng cá có sốt và loét):
 - bệnh xảy ra đột ngột với sốt, mệt mỏi, tăng bạch cầu đa nhân, hồng ban nút và các
-- Trứng cá trẻ sơ sinh: xảy ra trong tháng đầu của trẻ sơ sinh. Tổn thƣơng sẩn
+- Trứng cá trẻ sơ sinh: xảy ra trong tháng đầu của trẻ sơ sinh. Tổn thương sẩn

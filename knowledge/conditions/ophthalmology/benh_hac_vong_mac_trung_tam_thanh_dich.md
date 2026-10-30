@@ -43,10 +43,10 @@ excerpts:
 
 ## excerpt: benh_hac_vong_mac_trung_tam_thanh_dich_chan_doan
 - Cơ năng: Bệnh nhân bị giảm nhanh thị lực trung tâm kèm theo các triệu
-- chứng: nhìn vật nhỏ đi, rối loạn thị lực màu, ám điểm dƣơng tính trung tâm….
+- chứng: nhìn vật nhỏ đi, rối loạn thị lực màu, ám điểm dương tính trung tâm….
 - Bệnh nhân có thể đau nhức nhẹ hố mắt, căng thẳng, mất ngủ.
 - Soi đáy mắt:
 - Thấy vùng bong võng mạc do thanh dịch (không có dịch xuất huyết phía
-- Có thể thấy các tổn thƣơng khác kèm theo nhƣ: bong biểu mô sắc tố võng
-- mạc, thoái hoá sắc tố võng mạc, các sợi tơ huyết hoặc các cặn lipid dƣới võng
+- Có thể thấy các tổn thương khác kèm theo như: bong biểu mô sắc tố võng
+- mạc, thoái hoá sắc tố võng mạc, các sợi tơ huyết hoặc các cặn lipid dưới võng
 - Chụp mạch huỳnh quang: Cho thấy hình ảnh các điểm dò riêng rẽ của

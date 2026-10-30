@@ -53,5 +53,5 @@ excerpts:
 - Nhiễm virus ở trẻ em ( sởi, quai bị, thủy đậu…)
 - Các nhiễm trùng virus khác ( viêm não, herpes..)
 - Lao, giang mai, bệnh Sarcoid, bệnh xơ cứng mảng...
-- Lứa tuổi thƣờng gặp: 18 – 45 tuổi.
+- Lứa tuổi thường gặp: 18 – 45 tuổi.
 - Giảm thị lực một hoặc hai mắt ở các mức độ khác nhau, bệnh có thể từ
