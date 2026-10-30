@@ -28,6 +28,11 @@ class Visit(Base):
         CheckConstraint("triage_priority::text = ANY (ARRAY['Emergency'::character varying, 'HighPriority'::character varying, 'Routine'::character varying]::text[])", name='visit_triage_priority_check'),
         CheckConstraint("triage_priority_rule::text = ANY (ARRAY['Emergency'::character varying, 'HighPriority'::character varying, 'Routine'::character varying]::text[])", name='visit_triage_priority_rule_check'),
         CheckConstraint('vital_signs IS NULL OR jsonb_typeof(vital_signs) = \'object\'::text AND (vital_signs - fn_vital_sign_keys()) = \'{}\'::jsonb AND NOT jsonb_path_exists(vital_signs, \'$.*?(@.type() != "number")\'::jsonpath)', name='chk_visit_vital_signs_keys'),
+        CheckConstraint("outcome IN ('Referred')", name='chk_visit_outcome'),
+        CheckConstraint("(outcome IS NULL) = (referral IS NULL) AND (outcome IS NULL OR status = 'Finished') AND (referral IS NULL OR jsonb_typeof(referral) = 'object')", name='chk_visit_referral'),
+        CheckConstraint("lab_out_at IS NULL OR status = 'Examining'", name='chk_visit_lab_out'),
+        CheckConstraint('(called_at IS NULL) = (called_by IS NULL)', name='chk_visit_called'),
+        ForeignKeyConstraint(['called_by'], ['users.user_id'], name='fk_visit_called_by'),
         ForeignKeyConstraint(['nurse_id'], ['users.user_id'], name='visit_nurse_id_fkey'),
         ForeignKeyConstraint(['patient_id'], ['patient.patient_id'], name='visit_patient_id_fkey'),
         ForeignKeyConstraint(['physician_id'], ['users.user_id'], name='visit_physician_id_fkey'),
@@ -61,5 +66,10 @@ class Visit(Base):
     red_flag_rule_type: Mapped[str | None] = mapped_column(String(20), Computed("\nCASE\n    WHEN (red_flag_rule_id IS NULL) THEN NULL::text\n    ELSE 'RED_FLAG'::text\nEND", persisted=True))
     exam_started_at: Mapped[datetime.datetime | None] = mapped_column(DateTime(True))
     finished_at: Mapped[datetime.datetime | None] = mapped_column(DateTime(True))
+    outcome: Mapped[str | None] = mapped_column(String(20))
+    referral: Mapped[Any | None] = mapped_column(JSONB(none_as_null=True))
+    lab_out_at: Mapped[datetime.datetime | None] = mapped_column(DateTime(True))
+    called_at: Mapped[datetime.datetime | None] = mapped_column(DateTime(True))
+    called_by: Mapped[uuid.UUID | None] = mapped_column(Uuid)
     created_at: Mapped[datetime.datetime] = mapped_column(DateTime(True), nullable=False, server_default=text('now()'))
     updated_at: Mapped[datetime.datetime] = mapped_column(DateTime(True), nullable=False, server_default=text('now()'))

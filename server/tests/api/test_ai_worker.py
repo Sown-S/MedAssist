@@ -489,3 +489,28 @@ def test_extraction_failure_keeps_visit_ai_status(client, nurse, text_visit, mon
     assert _visit(vid).ai_status == ai_status_before
     body = client.get(f"/api/v1/visits/{vid}/symptom-extraction", headers=nurse).json()
     assert body["status"] == "Failed" and body["suggestions"] == []
+
+
+def test_extraction_vital_proposals_follow_the_run_text(client, nurse, text_visit):
+    vid = text_visit("Sốt 39 độ, huyết áp 150/90 từ tối qua")
+    assert client.patch(f"/api/v1/visits/{vid}", headers=nurse, json={"vital_signs": {"temperature_c": 38}}).status_code == 200
+    r = client.post(f"/api/v1/visits/{vid}/symptom-extraction", headers=nurse)
+    body = r.json()
+    props = {p["key"]: p for p in body["vital_proposals"]}
+    assert props["temperature_c"]["value"] == 39 and props["temperature_c"]["current"] == 38
+    assert props["temperature_c"]["requires_confirmation"] and props["temperature_c"]["group"] is None
+    assert props["systolic_bp_mmhg"]["value"] == 150 and props["diastolic_bp_mmhg"]["current"] is None
+    assert props["systolic_bp_mmhg"]["group"] == props["diastolic_bp_mmhg"]["group"] == "blood_pressure"
+    assert body["status"] == "Queued" and body["text_changed"] is False
+
+    # Sửa lời kể sau khi chạy: vẫn trả đề xuất của lần chạy, báo text_changed
+    client.patch(f"/api/v1/visits/{vid}", headers=nurse, json={"free_text_description": "Ho khan 3 ngày"})
+    body = client.get(f"/api/v1/visits/{vid}/symptom-extraction", headers=nurse).json()
+    assert body["text_changed"] is True and "temperature_c" in {p["key"] for p in body["vital_proposals"]}
+
+    run = _extractions(vid)[-1]
+    with SessionLocal() as db:
+        db.get(AiAssessmentLog, run.assessment_id).input_features = None
+        db.commit()
+    body = client.get(f"/api/v1/visits/{vid}/symptom-extraction", headers=nurse).json()
+    assert body["text_changed"] is True and body["vital_proposals"] == []

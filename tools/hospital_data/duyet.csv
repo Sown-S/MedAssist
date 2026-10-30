@@ -1,0 +1,137 @@
+tinh,ten,hanh_dong,ten_moi,dia_chi,so_huu,ly_do
+Gia Lai,Bệnh viện Phong - Da Liễu Trung ương Quy Hòa,bo,,,,trùng BV Phong và Da liễu TW Quy Hòa (tên theo Bộ Y tế)
+Gia Lai,Bệnh viện Phong và Da liễu Trung ương Quy Hòa,giu,,,,
+Huế,Bệnh viện Đa khoa Trung ương Huế cơ sở 2,bo,,,,trùng BV Trung ương Huế cơ sở 2
+Huế,Bệnh viện Trung ương Huế Cơ sở 2,giu,Bệnh viện Trung ương Huế cơ sở 2,"TDP Thượng An 2, phường Phong Thái, thành phố Huế",,địa chỉ theo danh sách Sở Y tế Huế
+Huế,Bệnh viện Phục hồi chức năng thành phố Huế (Cơ sở 1),giu,,,,
+Huế,Bệnh viện Phục hồi chức năng thành phố Huế (Cơ sở 2),giu,,,,
+Huế,Bệnh viện Phục hồi chức năng tỉnh Thừa Thiên Huế,bo,,,,tên cũ của BV PHCN thành phố Huế cơ sở 1
+Huế,Bệnh viện Răng hàm mặt,bo,,,,trùng BV Răng Hàm Mặt Huế
+Huế,Bệnh viện Răng Hàm Mặt Huế,giu,,"83 Nguyễn Huệ, phường Thuận Hóa, thành phố Huế",Public,
+Huế,Bệnh viện Tâm thần,bo,,,,trùng BV Tâm thần Huế
+Huế,Bệnh viện Tâm Thần Huế,giu,Bệnh viện Tâm thần Huế,"39 Phạm Thị Liên, phường Kim Long, thành phố Huế",Public,
+Hà Nội,Bệnh viện đa khoa Bảo Sơn 2,giu,,,,
+Hà Nội,Bệnh viện đa khoa Chữ Thập Xanh,giu,,,,
+Hà Nội,Bệnh viện đa khoa Đồng Tâm,giu,,,,
+Hà Nội,Bệnh viện đa khoa Phạm Ngọc Thạch,giu,,,,
+Hà Nội,Bệnh viện đa khoa Quốc tế Vinmec Smart City,giu,,,,
+Hà Nội,Bệnh viện đại học PHENIKAA,giu,Bệnh viện Đại học Phenikaa,,,
+Hà Nội,Bệnh viện Đại học Quốc gia Hà Nội,giu,,,,
+Hà Nội,Bệnh viện Đông Đô,giu,,,,
+Hà Nội,Bệnh viện Mặt trời,giu,,,,
+Hà Nội,Bệnh viện Quốc tế Thăng Long Lạc Việt,giu,,,,
+Hà Nội,Bệnh viện Tuệ Tĩnh,giu,,,,
+Hà Nội,Bệnh viện Đại học Y Dược,giu,"Bệnh viện Đại học Y Dược, Đại học Quốc gia Hà Nội",,,bỏ phần 'thuộc' làm tên dễ nhầm
+Hà Nội,"Bệnh viện đa khoa Hồng Ngọc – Phúc Trường Minh, số 8 đường Châu Văn Liêm, phường Phú Đô, quận Nam Từ Liêm",bo,,,,tên lẫn địa chỉ; trùng BV đa khoa Hồng Ngọc - Phúc Trường Minh
+Hà Nội,Bệnh viện đa khoa Hồng Ngọc-Phúc Trường Minh,giu,Bệnh viện đa khoa Hồng Ngọc – Phúc Trường Minh,"Số 8 đường Châu Văn Liêm, phường Phú Đô, Nam Từ Liêm",,
+Hà Nội,Bệnh viện đa khoa huyện Phú Xuyên,bo,,,,trùng BV đa khoa Phú Xuyên (cấp huyện đã bỏ)
+Hà Nội,Bệnh viện đa khoa Phú Xuyên,giu,,,,
+Hà Nội,Bệnh viện Medlatec,bo,,,,trùng BV đa khoa Medlatec (cùng địa chỉ)
+Hà Nội,Bệnh viện đa khoa Medlatec,giu,,,,
+Hà Nội,Bệnh viện Quốc tế Dolife,bo,,,,trùng BV Đa khoa Quốc tế Dolife (cùng địa chỉ)
+Hà Nội,Bệnh viện đa khoa quốc tế DOLIFE,giu,Bệnh viện Đa khoa Quốc tế Dolife,,,
+Hồ Chí Minh,Bệnh viện Chỉnh hình và Phục hồi chức năng Thành phố Hồ Chí Minh,giu,,,,
+Hồ Chí Minh,Bệnh viện đa khoa Củ Chi,giu,,,,khác BVĐK khu vực Củ Chi (địa chỉ khác)
+Hồ Chí Minh,Bệnh viện đa khoa khu vực Củ Chi,giu,,,,bệnh viện mới 1.000 giường
+Hồ Chí Minh,Bệnh viện đa khoa Thủ Đức,giu,,,,khác BVĐK khu vực Thủ Đức (địa chỉ khác)
+Hồ Chí Minh,Bệnh viện đa khoa khu vực Thủ Đức,giu,,,,bệnh viện mới khánh thành
+Quảng Ngãi,Bệnh viện Đa khoa Đặng Thuỳ Trâm,bo,,,,trùng BVĐK khu vực Đặng Thùy Trâm
+Quảng Ngãi,Bệnh viện đa khoa Khu vực Đặng Thùy Trâm,giu,Bệnh viện Đa khoa khu vực Đặng Thùy Trâm,,,UBND tỉnh còn làm việc với bệnh viện (8/2025)
+Quảng Ngãi,Bệnh viện Đa khoa Dung Quất,bo,,,,không xác nhận được còn hoạt động (chỉ có trong cấp phép 2022)
+Quảng Ngãi,Bệnh viện Đa khoa Mộ Đức,bo,,,,tên trước khi thành Trung tâm Y tế Mộ Đức
+Quảng Ngãi,Trung tâm Y tế huyện Mộ Đức,giu,Trung tâm Y tế Mộ Đức,,,cấp huyện đã bỏ từ 7/2025
+Quảng Ngãi,Bệnh viện đa khoa tỉnh Quảng Ngãi,giu,,-,,địa chỉ trong cấp phép 2022 chưa chắc còn đúng
+Quảng Ngãi,Bệnh viện Đa khoa TP Quảng Ngãi,bo,,,,không xác nhận được còn hoạt động (chỉ có trong cấp phép 2022)
+Quảng Ngãi,Bệnh viện Tâm thần tỉnh Quảng Ngãi,bo,,,,không có trong danh sách năm 2025 (chỉ có trong cấp phép 2022)
+Quảng Ngãi,Trung tâm Y tế huyện Ba Tơ,giu,Trung tâm Y tế Ba Tơ,,,cấp huyện đã bỏ từ 7/2025
+Quảng Ngãi,Trung tâm Y tế huyện Tây Trà,bo,,,,huyện Tây Trà đã nhập vào Trà Bồng (2019)
+Quảng Ngãi,Trung tâm Y tế Quân Dân Y Kết Hợp Huyện Lý Sơn,bo,,,,tên cũ của TTYT Quân dân y đặc khu Lý Sơn
+Quảng Ngãi,Trung tâm Y tế Quân Dân Y kết hợp Lý Sơn,bo,,,,tên cũ của TTYT Quân dân y đặc khu Lý Sơn
+Đà Nẵng,Bệnh viện Đa khoa Quảng Nam,giu,,,,khác BVĐK khu vực Quảng Nam (Tam Kỳ / Điện Bàn)
+Đà Nẵng,Bệnh viện Đa khoa khu vực Quảng Nam,giu,,,,
+Đà Nẵng,Bệnh viện Đa khoa Vĩnh Đức,giu,,,,
+Đà Nẵng,Bệnh viện đại học y khoa Phan Châu Trinh,giu,Bệnh viện Đại học Y khoa Phan Châu Trinh,,,
+Hà Nội,Bệnh viện đa khoa Gia Lâm,bo,,,,"trùng BV đa khoa huyện Gia Lâm (tên theo DS KSK 07/10/2026, có địa chỉ)"
+Hà Nội,Bệnh viện đa khoa huyện Gia Lâm,giu,,,,
+Hà Nội,Bệnh viện đa khoa Sóc Sơn,bo,,,,"trùng BV đa khoa huyện Sóc Sơn (tên theo DS KSK 07/10/2026, có địa chỉ)"
+Hà Nội,Bệnh viện đa khoa huyện Sóc Sơn,giu,,,,
+Hồ Chí Minh,Bệnh viện Quận 1,bo,,,,tên trước khi đổi (08/2025); tên mới Bệnh viện đa khoa Tân Định có ở DS KSK 18/5/2026
+Hồ Chí Minh,Bệnh viện Quận 4,bo,,,,tên trước khi đổi (08/2025); tên mới Bệnh viện đa khoa Khánh Hội có ở DS KSK 18/5/2026
+Hồ Chí Minh,Bệnh viện Quận 6,bo,,,,tên trước khi đổi (08/2025); tên mới Bệnh viện đa khoa Bình Phú có ở DS KSK 18/5/2026
+Hồ Chí Minh,Bệnh viện Quận 7,bo,,,,tên trước khi đổi (08/2025); tên mới Bệnh viện đa khoa Nguyễn Thị Thập có ở DS KSK 18/5/2026
+Hồ Chí Minh,Bệnh viện Quận 8,bo,,,,tên trước khi đổi (08/2025); tên mới Bệnh viện đa khoa Chánh Hưng có ở DS KSK 18/5/2026
+Hồ Chí Minh,Bệnh viện Quận 11,bo,,,,tên trước khi đổi (08/2025); tên mới Bệnh viện đa khoa Lãnh Binh Thăng có ở DS KSK 18/5/2026
+Hồ Chí Minh,Bệnh viện Quận 12,bo,,,,tên trước khi đổi (08/2025); tên mới Bệnh viện đa khoa Trung Mỹ Tây có ở DS KSK 18/5/2026
+Hồ Chí Minh,Bệnh viện thành phố Thủ Đức,bo,,,,tên trước khi đổi (08/2025); tên mới Bệnh viện đa khoa Thủ Đức có ở DS KSK 18/5/2026
+Hồ Chí Minh,Bệnh viện quận Tân Phú,bo,,,,tên trước khi đổi (08/2025); tên mới Bệnh viện đa khoa Tân Phú có ở DS KSK 18/5/2026
+Hồ Chí Minh,Bệnh viện đa khoa Tân Phú,giu,,,,
+Hồ Chí Minh,Bệnh viện quận Tân Bình,bo,,,,tên trước khi đổi (08/2025); tên mới Bệnh viện đa khoa Tân Bình có ở DS KSK 18/5/2026
+Hồ Chí Minh,Bệnh viện đa khoa Tân Bình,giu,,,,
+Hồ Chí Minh,Bệnh viện quận Phú Nhuận,bo,,,,tên trước khi đổi (08/2025); tên mới Bệnh viện đa khoa Phú Nhuận có ở DS KSK 18/5/2026
+Hồ Chí Minh,Bệnh viện đa khoa Phú Nhuận,giu,,,,
+Hồ Chí Minh,Bệnh viện quận Gò Vấp,bo,,,,tên trước khi đổi (08/2025); tên mới Bệnh viện đa khoa Gò Vấp có ở DS KSK 18/5/2026
+Hồ Chí Minh,Bệnh viện đa khoa Gò Vấp,giu,,,,
+Hồ Chí Minh,Bệnh viện quận Bình Thạnh,bo,,,,tên trước khi đổi (08/2025); tên mới Bệnh viện đa khoa Bình Thạnh có ở DS KSK 18/5/2026
+Hồ Chí Minh,Bệnh viện đa khoa Bình Thạnh,giu,,,,
+Hồ Chí Minh,Bệnh viện quận Bình Tân,bo,,,,tên trước khi đổi (08/2025); tên mới Bệnh viện đa khoa Bình Tân có ở DS KSK 18/5/2026
+Hồ Chí Minh,Bệnh viện đa khoa Bình Tân,giu,,,,
+Hồ Chí Minh,Bệnh viện huyện Nhà Bè,bo,,,,tên trước khi đổi (08/2025); tên mới Bệnh viện đa khoa Nhà Bè có ở DS KSK 18/5/2026
+Hồ Chí Minh,Bệnh viện đa khoa Nhà Bè,giu,,,,
+Hồ Chí Minh,Bệnh viện huyện Củ Chi,bo,,,,tên trước khi đổi (08/2025); tên mới Bệnh viện đa khoa Củ Chi có ở DS KSK 18/5/2026
+Hồ Chí Minh,Bệnh viện huyện Bình Chánh,bo,,,,tên trước khi đổi (08/2025); tên mới Bệnh viện đa khoa Bình Chánh có ở DS KSK 18/5/2026
+Hồ Chí Minh,Bệnh viện đa khoa Bình Chánh,giu,,,,
+Hồ Chí Minh,Bệnh viện Đa khoa tỉnh Bình Dương,bo,,,,tên trước khi đổi (08/2025); tên mới Bệnh viện đa khoa Bình Dương có ở DS KSK 18/5/2026
+Hồ Chí Minh,Bệnh viện đa khoa Bình Dương,giu,,,,
+Hồ Chí Minh,Bệnh viện Vũng Tàu,bo,,,,tên trước khi đổi (08/2025); tên mới Bệnh viện đa khoa Vũng Tàu có ở DS KSK 18/5/2026
+Hồ Chí Minh,Bệnh viện đa khoa Vũng Tàu,giu,,,,
+Hồ Chí Minh,Bệnh viện Bà Rịa,bo,,,,tên trước khi đổi (08/2025); tên mới Bệnh viện đa khoa Bà Rịa có ở DS KSK 18/5/2026
+Hồ Chí Minh,Bệnh viện đa khoa Bà Rịa,giu,,,,
+Hồ Chí Minh,Bệnh viện Phục hồi chức năng tỉnh Bình Dương,bo,,,,tên trước khi đổi (08/2025); tên mới có ở DS KSK 18/5/2026
+Hồ Chí Minh,Bệnh viện Phục hồi chức năng Bình Dương,giu,,,,
+Hồ Chí Minh,Bệnh viện Y học cổ truyền tỉnh Bình Dương,giu,Bệnh viện Y học cổ truyền Bình Dương,,,UBND TP.HCM đổi tên 26 bệnh viện 08/2025 (báo chí đưa tin; văn bản gốc chưa lưu)
+Hồ Chí Minh,Bệnh viện Y học cổ truyền tỉnh Bà Rịa - Vũng Tàu,giu,Bệnh viện Y học cổ truyền Bà Rịa - Vũng Tàu,,,UBND TP.HCM đổi tên 26 bệnh viện 08/2025 (báo chí đưa tin; văn bản gốc chưa lưu)
+Hồ Chí Minh,Bệnh viện Tâm thần tỉnh Bà Rịa - Vũng Tàu,giu,Bệnh viện Sức khỏe Tâm thần Bà Rịa - Vũng Tàu,,,UBND TP.HCM đổi tên 26 bệnh viện 08/2025 (báo chí đưa tin; văn bản gốc chưa lưu)
+Hồ Chí Minh,Bệnh viện Phổi Phạm Hữu Chí tỉnh Bà Rịa - Vũng Tàu,giu,Bệnh viện Phổi Phạm Hữu Chí,,,UBND TP.HCM đổi tên 26 bệnh viện 08/2025 (báo chí đưa tin; văn bản gốc chưa lưu)
+Hồ Chí Minh,Bệnh viện Mắt tỉnh Bà Rịa - Vũng Tàu,giu,Bệnh viện Mắt Bà Rịa - Vũng Tàu,,,UBND TP.HCM đổi tên 26 bệnh viện 08/2025 (báo chí đưa tin; văn bản gốc chưa lưu)
+Hồ Chí Minh,Viện Tim (là đơn vị sự nghiệp y tế hợp tác giữa Sở Y tế và Hiệp hội Alain Carpentier (Pháp)),giu,Viện Tim,,,bỏ phần chú thích trong ngoặc
+Đà Nẵng,Bệnh viện Phụ sản - Nhi thành phố Đà Nẵng,bo,,,,trùng BV Phụ sản - Nhi Đà Nẵng (tên theo trang đơn vị trực thuộc Sở)
+Đà Nẵng,Bệnh viện Phụ sản - Nhi Đà Nẵng,giu,,"số 402 Lê Văn Hiến, phường Ngũ Hành Sơn, thành phố Đà Nẵng",,địa chỉ theo TB 6539
+Đà Nẵng,Trung tâm Y tế huyện Bắc Trà My,bo,,,,tên trước sắp xếp; Sở Y tế Đà Nẵng nay ghi Trung tâm Y tế khu vực Bắc Trà My
+Đà Nẵng,Trung tâm Y tế khu vực Bắc Trà My,giu,,,,
+Đà Nẵng,Trung tâm Y tế huyện Đông Giang,bo,,,,tên trước sắp xếp; Sở Y tế Đà Nẵng nay ghi Trung tâm Y tế khu vực Đông Giang
+Đà Nẵng,Trung tâm Y tế khu vực Đông Giang,giu,,,,
+Đà Nẵng,Trung tâm Y tế huyện Duy Xuyên,bo,,,,tên trước sắp xếp; Sở Y tế Đà Nẵng nay ghi Trung tâm Y tế khu vực Duy Xuyên
+Đà Nẵng,Trung tâm Y tế khu vực Duy Xuyên,giu,,"Số 518, Hùng Vương, xã Nam Phước, Thành phố Đà Nẵng",,địa chỉ theo TB 6539
+Đà Nẵng,Trung tâm Y tế huyện Hiệp Đức,bo,,,,tên trước sắp xếp; Sở Y tế Đà Nẵng nay ghi Trung tâm Y tế khu vực Hiệp Đức
+Đà Nẵng,Trung tâm Y tế khu vực Hiệp Đức,giu,,,,
+Đà Nẵng,Trung tâm Y tế huyện Hoà Vang,bo,,,,tên trước sắp xếp; Sở Y tế Đà Nẵng nay ghi Trung tâm Y tế khu vực Hòa Vang
+Đà Nẵng,Trung tâm Y tế khu vực Hòa Vang,giu,,,,
+Đà Nẵng,Trung tâm Y tế huyện Nam Giang,bo,,,,tên trước sắp xếp; Sở Y tế Đà Nẵng nay ghi Trung tâm Y tế khu vực Nam Giang
+Đà Nẵng,Trung tâm Y tế khu vực Nam Giang,giu,,,,
+Đà Nẵng,Trung tâm Y tế huyện Nam Trà My,bo,,,,tên trước sắp xếp; Sở Y tế Đà Nẵng nay ghi Trung tâm Y tế khu vực Nam Trà My
+Đà Nẵng,Trung tâm Y tế khu vực Nam Trà My,giu,,,,
+Đà Nẵng,Trung tâm Y tế huyện Núi Thành,bo,,,,tên trước sắp xếp; Sở Y tế Đà Nẵng nay ghi Trung tâm Y tế khu vực Núi Thành
+Đà Nẵng,Trung tâm Y tế khu vực Núi Thành,giu,,,,
+Đà Nẵng,Trung tâm Y tế huyện Phú Ninh,bo,,,,tên trước sắp xếp; Sở Y tế Đà Nẵng nay ghi Trung tâm Y tế khu vực Phú Ninh
+Đà Nẵng,Trung tâm Y tế khu vực Phú Ninh,giu,,,,
+Đà Nẵng,Trung tâm Y tế huyện Quế Sơn,bo,,,,tên trước sắp xếp; Sở Y tế Đà Nẵng nay ghi Trung tâm Y tế khu vực Quế Sơn
+Đà Nẵng,Trung tâm Y tế khu vực Quế Sơn,giu,,,,
+Đà Nẵng,Trung tâm Y tế huyện Tây Giang,bo,,,,tên trước sắp xếp; Sở Y tế Đà Nẵng nay ghi Trung tâm Y tế khu vực Tây Giang
+Đà Nẵng,Trung tâm Y tế khu vực Tây Giang,giu,,,,
+Đà Nẵng,Trung tâm Y tế huyện Thăng Bình,bo,,,,tên trước sắp xếp; Sở Y tế Đà Nẵng nay ghi Trung tâm Y tế khu vực Thăng Bình
+Đà Nẵng,Trung tâm Y tế khu vực Thăng Bình,giu,,,,
+Đà Nẵng,Trung tâm Y tế huyện Tiên Phước,bo,,,,tên trước sắp xếp; Sở Y tế Đà Nẵng nay ghi Trung tâm Y tế khu vực Tiên Phước
+Đà Nẵng,Trung tâm Y tế khu vực Tiên Phước,giu,,,,
+Đà Nẵng,Trung tâm Y tế quận Cẩm Lệ,bo,,,,tên trước sắp xếp; Sở Y tế Đà Nẵng nay ghi Trung tâm Y tế khu vực Cẩm Lệ
+Đà Nẵng,Trung tâm Y tế khu vực Cẩm Lệ,giu,,"105 Nguyễn Nhàn, phường Hòa Thọ Đông, quận Cẩm Lệ, thành phố Đà Nẵng",,địa chỉ theo TB 6539
+Đà Nẵng,Trung tâm Y tế quận Liên Chiểu,bo,,,,tên trước sắp xếp; Sở Y tế Đà Nẵng nay ghi Trung tâm Y tế khu vực Liên Chiểu
+Đà Nẵng,Trung tâm Y tế khu vực Liên Chiểu,giu,,,,
+Đà Nẵng,Trung tâm Y tế quận Ngũ Hành Sơn,bo,,,,tên trước sắp xếp; Sở Y tế Đà Nẵng nay ghi Trung tâm Y tế khu vực Ngũ Hành Sơn
+Đà Nẵng,Trung tâm Y tế khu vực Ngũ Hành Sơn,giu,,"582 Lê Văn Hiến, phường Hòa Hải, quận Ngũ Hành Sơn, thành phố Đà Nẵng",,địa chỉ theo TB 6539
+Đà Nẵng,Trung tâm Y tế quận Sơn Trà,bo,,,,tên trước sắp xếp; Sở Y tế Đà Nẵng nay ghi Trung tâm Y tế khu vực Sơn Trà
+Đà Nẵng,Trung tâm Y tế khu vực Sơn Trà,giu,,,,
+Đà Nẵng,Trung tâm Y tế quận Thanh Khê,bo,,,,tên trước sắp xếp; Sở Y tế Đà Nẵng nay ghi Trung tâm Y tế khu vực Thanh Khê
+Đà Nẵng,Trung tâm Y tế khu vực Thanh Khê,giu,,,,
+Đà Nẵng,Trung tâm Y tế thị xã Điện Bàn,bo,,,,tên trước sắp xếp; Sở Y tế Đà Nẵng nay ghi Trung tâm Y tế khu vực Điện Bàn
+Đà Nẵng,Trung tâm Y tế khu vực Điện Bàn,giu,,,,
+Đà Nẵng,Bệnh viện Phục hồi chức năng thành phố Đà Nẵng (Cơ sở 1),giu,Bệnh viện Phục hồi chức năng thành phố Đà Nẵng,,,"bỏ ""(Cơ sở 1)"""

@@ -31,7 +31,9 @@ def _visits(db: Session, d1: datetime.date, d2: datetime.date) -> dict:
     by_status = dict.fromkeys(VISIT_STATUSES, 0)
     by_status.update(db.execute(select(Visit.status, func.count()).where(in_range).group_by(Visit.status)).all())
     red = db.scalar(select(func.count()).select_from(Visit).where(in_range, Visit.is_red_flag))
-    return {"total": sum(by_status.values()), "by_status": by_status, "red_flags": red or 0}
+    referred = db.scalar(select(func.count()).select_from(Visit).where(in_range, Visit.outcome == "Referred"))
+    return {"total": sum(by_status.values()), "by_status": by_status, "red_flags": red or 0,
+            "referred": referred or 0}
 
 
 def _revenue(db: Session, d1: datetime.date, d2: datetime.date) -> dict:
