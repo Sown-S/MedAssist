@@ -21,11 +21,11 @@ import {
 } from '../../api/accountStore'
 import { DEMO_MODE } from '../../api/client'
 import { logEvent } from '../../api/activityStore'
-import { useCatalogs, getCatalogs, upsertRow } from '../../api/catalogStore'
+import { listRooms, examRooms } from '../../api/roomStore'
 import { fmtDate, fmtDateTime } from './inventory/shared'
 import { translate } from '../../i18n'
 
-const EMPTY = { fullName: '', username: '', roleKey: 'doctor', phone: '', staffCode: '', departmentCode: '', licenseNo: '' }
+const EMPTY = { fullName: '', username: '', roleKey: 'doctor', phone: '', staffCode: '', roomId: null, licenseNo: '' }
 // Không đăng nhập quá bấy nhiêu ngày → coi là tài khoản bỏ không, nên xem xét vô hiệu hoá.
 const IDLE_DAYS = 30
 
@@ -50,25 +50,13 @@ function matchStatus(a, f) {
 }
 
 // Trường thay đổi khi sửa — nhãn tiếng Anh, được dịch khi hiển thị nhật ký.
-const FIELD_LABELS = { fullName: 'Full name', staffCode: 'Staff code', phone: 'Phone', departmentCode: 'Department', licenseNo: 'Practising licence no.' }
-
-// Khoa phòng giữ danh sách tên bác sĩ (Quản lý danh mục › Khoa phòng) — đồng bộ khi gán / đổi khoa / đổi tên.
-function syncDepartment(oldName, account, user) {
-  const name = account.roleKey === 'doctor' ? account.fullName : null
-  for (const d of getCatalogs().departments) {
-    const has = d.doctors?.includes(oldName) || (name && d.doctors?.includes(name))
-    const want = !!name && d.code === account.departmentCode
-    const next = [...new Set((d.doctors ?? []).filter((n) => n !== oldName && n !== name).concat(want ? [name] : []))]
-    if (has !== want || (want && oldName !== name)) upsertRow('departments', { ...d, doctors: next }, user, 'Departments')
-  }
-}
+const FIELD_LABELS = { fullName: 'Full name', staffCode: 'Staff code', phone: 'Phone', roomId: 'Consultation room', licenseNo: 'Practising licence no.' }
 
 export default function StaffPage() {
   const { showToast } = useToast()
   const { user: me, refreshUser } = useAuth()
-  const cats = useCatalogs()
-  const departments = cats.departments.filter((d) => d.active)
-  const deptName = (code) => cats.departments.find((d) => d.code === code)?.name ?? ''
+  // Phòng khám để gán cho bác sĩ (GET /rooms): mỗi phòng khám chỉ một bác sĩ đang hoạt động.
+  const [rooms, setRooms] = useState([])
 
   const [accounts, setAccounts] = useState(null)
   const [error, setError] = useState('')
@@ -85,7 +73,9 @@ export default function StaffPage() {
 
   async function refresh() {
     try {
-      setAccounts(await listAccounts())
+      const list = await listAccounts()
+      setAccounts(list)
+      setRooms(examRooms(await listRooms({ accounts: list })))
     } catch (e) {
       setError(e.message)
     }
@@ -136,7 +126,6 @@ export default function StaffPage() {
     if (!res.ok) return setFormErr(res.error)
     const a = res.account
     logEvent(me, 'account.create', { ...target(a), params: { account: a.username, role: a.roleKey } })
-    if (a.roleKey === 'doctor' && a.departmentCode) syncDepartment(null, a, me)
     showToast(`Account ${a.username} created`)
     setForm(null)
     setSecret({ account: a, password: res.password })
@@ -156,7 +145,6 @@ export default function StaffPage() {
         after: fields.includes('fullName') ? a.fullName : null
       })
     if (before.roleKey !== a.roleKey) logEvent(me, 'account.role_change', { ...target(a), params: { account: a.username, from: before.roleKey, to: a.roleKey } })
-    if (before.roleKey === 'doctor' || a.roleKey === 'doctor') syncDepartment(before.fullName, a, me)
     if (a.id === me.id) refreshUser(a)
     showToast(fields.length || before.roleKey !== a.roleKey ? 'Account updated' : 'No changes')
     setForm(null)
@@ -382,7 +370,7 @@ export default function StaffPage() {
                             )}
                             {a.roleKey === 'doctor' && (
                               <div className="ai-small ai-soft">
-                                {a.departmentCode ? <span>{deptName(a.departmentCode)}</span> : <span className="sp-warn">No department</span>}
+                                {a.roomName ? <span>{a.roomName}</span> : <span className="sp-warn">No room</span>}
                                 {' · '}
                                 {a.licenseNo ? (
                                   <>
@@ -505,14 +493,19 @@ export default function StaffPage() {
                 {form.roleKey === 'doctor' && (
                   <>
                     <div className="field">
-                      <label>Department</label>
-                      <select value={form.departmentCode} onChange={(e) => setForm({ ...form, departmentCode: e.target.value })}>
+                      <label>Consultation room</label>
+                      <select value={form.roomId ?? ''} onChange={(e) => setForm({ ...form, roomId: e.target.value || null })}>
                         <option value="">— Not assigned —</option>
-                        {departments.map((d) => (
-                          <option key={d.code} value={d.code}>
-                            {d.name}
-                          </option>
-                        ))}
+                        {rooms.map((r) => {
+                          // Phòng đã có bác sĩ khác: không chọn được (server trả 409 ROOM_TAKEN)
+                          const taken = r.physician && r.physician.id !== form.id
+                          return (
+                            <option key={r.id} value={r.id} disabled={!!taken}>
+                              {r.name}
+                              {taken ? ' — ' + r.physician.name : ''}
+                            </option>
+                          )
+                        })}
                       </select>
                     </div>
                     <div className="field">

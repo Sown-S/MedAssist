@@ -6,7 +6,7 @@
 .cash-summary .stat-card .val.out{color:#FCA5A5;}
 @media (max-width:1100px){.cash-summary{grid-template-columns:repeat(2,minmax(0,1fr));}}
 .cash-filters{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:14px;}
-.cash-filters select,.cash-filters input{padding:8px 10px;border:1px solid var(--border);border-radius:9px;font-size:13.5px;background:var(--field-bg);color:var(--ink);font-family:'Plus Jakarta Sans Variable';}
+.cash-filters select,.cash-filters input{padding:8px 10px;border:1px solid var(--border);border-radius:9px;font-size:13.5px;background:var(--field-bg);color:var(--ink);font-family:'Plus Jakarta Sans Variable',sans-serif;}
 .cash-filters select option{background:var(--solid);}
 .cash-filters .grow{flex:1;min-width:180px;}
 .cash-filters .sep{color:var(--ink-soft);font-size:13px;}
@@ -22,9 +22,9 @@
 .cash-attach svg{width:14px;height:14px;}
 .cash-detail-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px;}
 .cash-detail-actions .btn{display:inline-flex;align-items:center;gap:6px;}
-.shift-table td.num,.shift-table th.num{text-align:right;font-family:'IBM Plex Mono';}
+.shift-table td.num,.shift-table th.num{text-align:right;font-family:'IBM Plex Mono',monospace;}
 .shift-table tr.total td{font-weight:700;border-top:1px solid var(--border);}
-.shift-diff{font-family:'IBM Plex Mono';font-weight:700;}
+.shift-diff{font-family:'IBM Plex Mono',monospace;font-weight:700;}
 .shift-diff.ok{color:#4ADE80;}
 .shift-diff.bad{color:#FCA5A5;}
 .void-restock{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:1px solid var(--border);border-radius:10px;background:var(--surface-alt);margin:4px 0 10px;cursor:pointer;}

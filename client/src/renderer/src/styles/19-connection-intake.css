@@ -42,3 +42,12 @@
 .triage-strip.high{border-color:rgba(252,211,77,.45);}
 .triage-strip.emergency{background:rgba(239,68,68,.12);border-color:rgba(239,68,68,.6);}
 .call-chip.emerg{background:rgba(239,68,68,.25);color:#FCA5A5;}
+
+/* ===== Ô ngày sinh dd/mm/yyyy + nút lịch (IntakeModal) ===== */
+.dob-input{position:relative;display:flex;}
+.dob-input input[type=text]{flex:1;min-width:0;padding-right:38px;}
+.dob-input .dob-cal{position:absolute;right:4px;top:50%;transform:translateY(-50%);display:flex;padding:6px;border:none;border-radius:7px;background:none;color:var(--ink-soft);cursor:pointer;}
+.dob-cal:hover{background:var(--surface-hover);color:var(--ink);}
+.dob-cal svg{width:17px;height:17px;}
+/* Ô date gốc chỉ để mở bảng lịch: ẩn nhưng nằm dưới nút để bảng lịch bật ra đúng chỗ. */
+.dob-input .dob-native{position:absolute;right:0;bottom:0;width:38px;height:100%;opacity:0;pointer-events:none;}

@@ -70,6 +70,9 @@ function createWindow() {
   const mainWindow = new BrowserWindow({
     width: 1360,
     height: 860,
+    // Giao diện thiết kế cho màn từ 1024px; hẹp hơn thì thẻ, bảng và thanh bên Admin bị chèn ép.
+    minWidth: 1024,
+    minHeight: 640,
     show: false,
     autoHideMenuBar: true,
     webPreferences: {

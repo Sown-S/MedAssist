@@ -56,7 +56,7 @@ export default function Schedule() {
             <span
               className="cnt"
               style={{
-                fontFamily: "'IBM Plex Mono'",
+                fontFamily: "'IBM Plex Mono',monospace",
                 fontSize: 12,
                 color: 'var(--ink-soft)',
                 background: 'var(--surface-alt)',

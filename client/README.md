@@ -44,6 +44,7 @@ npm run dev        # chế độ phát triển, có hot reload
 | `npm run dev`                           | Chạy dev: Vite dev server + cửa sổ Electron, sửa code thấy ngay                    |
 | `npm run build`                         | Build ra `out/` (main, preload, renderer)                                          |
 | `npm start`                             | Chạy thử bản đã build trong `out/`                                                 |
+| `npm test`                              | Chạy bộ test nghiệp vụ trong `tests/` (Vitest, chế độ giả lập, không cần server). `npm run test:watch` chạy lại khi sửa code |
 | `npm run build:win` / `:mac` / `:linux` | Build + đóng gói bằng electron-builder (`appId`, `productName` ở mục `build` của `package.json`; chép `certs/*.crt` vào bản cài; còn thiếu `icon`) |
 
 **Tài khoản mặc định:** `admin` / `Admin@123` (Quản trị viên). Lần đăng nhập đầu **bắt buộc đổi mật khẩu**. Tài khoản Bác sĩ và Lễ tân do Quản trị viên tạo ở **Quản trị › Tài khoản nhân viên**; tài khoản mới cũng phải tự đặt mật khẩu ở lần đăng nhập đầu. Ngôn ngữ (English / Tiếng Việt) đổi được ở màn đăng nhập và trên thanh trên cùng.
@@ -472,7 +473,7 @@ Mã triệu chứng, sinh hiệu (khoá ngắn của bộ luật), ICD-10 dùng 
 8b. **Kho trừ một lần, lúc bác sĩ chốt đơn.** "Đã cấp" ở quầy không trừ lần nữa; mọi lần hoàn kho (bỏ qua, mở lại đơn, huỷ lượt, trả thuốc) về **đúng lô đã trừ** (`rx[i].alloc`). Dữ liệu mẫu của hai lượt "chờ thanh toán" không trừ kho (để kho mẫu không bị trừ mỗi ngày).
 9. **Bảo mật bản demo**: mật khẩu SHA-256 trong `localStorage`, quyền và khoá tài khoản chỉ được ép ở client. **Không dùng bản này với dữ liệu bệnh nhân thật.**
 9b. **Chứng chỉ máy chủ** (TC03): đặt chứng chỉ gốc **công khai** của CA dự án vào `certs/` (Sơn mở PR). Với máy chủ đã cấu hình, app chỉ nhận chứng chỉ có **chuỗi đi đúng** tới CA đó, khớp tên máy / IP, còn hạn (`src/main/certPin.js`). Bản đóng gói thiếu file CA → từ chối kết nối; máy dev chưa có CA → kiểm tra mặc định của Chromium. Không bao giờ tắt kiểm tra chứng chỉ; `.gitignore` chặn `*.key`.
-10. **Không có ESLint config** trong dự án. Build (`npm run build`) là bước kiểm tra cú pháp tối thiểu trước khi commit.
+10. **Không có ESLint config** trong dự án. Trước khi commit chạy `npm test` (bộ test nghiệp vụ: hàng chờ, đi xét nghiệm — cả khi nối server thật —, kê đơn, kho, thu tiền, tài khoản & phòng khám, cờ đỏ, phân quyền) và `npm run build` (kiểm tra cú pháp). Store giả lập giữ dữ liệu trong module + `localStorage`: mỗi test gọi `fresh()` trong `tests/helpers.js` để bắt đầu từ dữ liệu mẫu sạch.
 11. Chỉnh `global.css` theo khối `/* ===== Tên khu vực ===== */`. Style mới cho khu vực nào thì thêm vào cuối khối của khu vực đó.
 
 ---

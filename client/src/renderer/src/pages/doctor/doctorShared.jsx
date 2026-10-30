@@ -7,8 +7,6 @@ import { useToast } from '../../context/ToastContext'
 import { translate } from '../../i18n'
 import { takePatient, takeNext, minutesSince, labRows, releaseVisit, leaveVisit, LEFT_REASONS, ST } from '../../api/queueStore'
 import { getDraft, deleteDraft } from '../../api/draftStore'
-import { useDuty } from '../../api/dutyStore'
-import { RoomPicker } from './DutyBar'
 import { findPatient } from '../../api/patientStore'
 import { dmy, hhmm } from '../reception/shared'
 import { vitalsText } from '../../api/vitals'
@@ -24,12 +22,9 @@ export function useTakePatient(open) {
   const { user } = useAuth()
   const { showToast } = useToast()
   const [busy, setBusy] = useState(null)
-  const [needRoom, setNeedRoom] = useState(null) // lệnh mời đang chờ bác sĩ chọn phòng (chưa bắt đầu ca)
-  const duty = useDuty()
 
   async function run(target, force = false) {
     const r = await (target ? takePatient(target.id, user, { force }) : takeNext(user, { force }))
-    if (r.needDuty) return setNeedRoom({ target, force })
     if (r.ok) {
       setBusy(null)
       showToast(translate('Now seeing') + ' ' + no(r.visit.ticket) + ' — ' + r.visit.name)
@@ -39,18 +34,7 @@ export function useTakePatient(open) {
     showToast(translate(r.error))
   }
 
-  const roomDialog = needRoom && (
-    <RoomPicker
-      list={duty}
-      onClose={() => setNeedRoom(null)}
-      onStarted={() => {
-        const p = needRoom
-        setNeedRoom(null)
-        run(p.target, p.force)
-      }}
-    />
-  )
-  const busyDialog = busy && (
+  const dialog = busy && (
     <Modal open onClose={() => setBusy(null)}>
       <ModalHeader title={translate('A patient is still in your room')} onClose={() => setBusy(null)} />
       <div className="modal-body">
@@ -98,12 +82,6 @@ export function useTakePatient(open) {
         </button>
       </div>
     </Modal>
-  )
-  const dialog = (
-    <>
-      {busyDialog}
-      {roomDialog}
-    </>
   )
   return { take: (v) => run(v), next: () => run(null), dialog }
 }
