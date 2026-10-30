@@ -12,6 +12,8 @@
 | `feature/knowledge-okf` | Tuấn | |
 
 Luồng: nhánh tính năng → PR vào `develop` → cuối sprint PR `develop` → `main` và gắn tag.
+Không push thẳng `develop` hay `main`. Mỗi người chỉ sửa thư mục được phân công (bảng thư mục trong `README.md`);
+cần sửa thư mục của người khác thì báo trước và nhờ người đó duyệt PR.
 
 Sau khi PR của mình được squash merge vào `develop`, đồng bộ nhánh tính năng ngay, trước khi code tiếp.
 Squash tạo commit mới trên `develop` nên nếu tiếp tục code trên lịch sử cũ, lần merge sau dễ bị conflict giả:
@@ -54,13 +56,18 @@ Commit lẻ trong nhánh của mình nên theo quy ước nhưng không bắt bu
 
 ## 3. Trước khi mở PR
 
-```powershell
-cd server
-python -m pytest            # phải pass hết
-python -m alembic check     # nếu có đổi model / migration
-```
+Chạy kiểm tra của phần mình đã sửa:
 
-CI (`.github/workflows/ci.yml`) chạy lại các bước trên trên máy GitHub; PR chỉ merge khi CI xanh.
+| Sửa ở | Lệnh | CI có chạy lại không |
+|---|---|---|
+| `server/` | `cd server; python -m pytest` (cần PostgreSQL trong Docker, xem `server/README.md` mục 5) | Có, kèm độ phủ ≥ 90% |
+| Model hoặc migration | `python -m alembic upgrade head; python -m alembic check` | Có |
+| `client/` | `cd client; npm test; npm run build` | Không, phải tự chạy |
+| `tools/` | `cd tools; python -m pytest` | Có |
+| `knowledge/` | `cd server; python -m scripts.import_okf --dry-run` (kiểm tra toàn bộ thư mục, không ghi) | Gián tiếp qua test của server |
+
+CI (`.github/workflows/ci.yml`) chạy khi mở hoặc cập nhật PR vào `develop`, `main` và khi push lên `develop`;
+PR chỉ merge khi CI xanh. Không đổi migration đã merge: thay đổi CSDL luôn đi bằng revision mới.
 
 ## 4. Cuối sprint: phát hành lên `main`
 

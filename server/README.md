@@ -1,11 +1,15 @@
 # MedAssist — Backend (FastAPI + PostgreSQL)
 
-Hướng dẫn chạy backend **trên máy dev** (Windows, PowerShell). Cập nhật: 18/10/2026 — Sprint 2.
+Hướng dẫn chạy backend **trên máy dev** (Windows, PowerShell). Cập nhật: 30/10/2026, cuối Sprint 3.
+Cài máy admin (toàn bộ hệ thống trong Docker): xem [`deploy/README.md`](../deploy/README.md).
 
 - **Stack:** Python 3.14, FastAPI, SQLAlchemy 2, Alembic, PostgreSQL 16 (Docker), JWT, Argon2id.
 - **Cách chạy trên máy dev:** CSDL chạy trong **Docker**; API chạy **trực tiếp bằng Python** (`uvicorn --reload`) để sửa code là thấy ngay.
-- **Đã có:** đăng nhập/phân quyền, nhật ký (audit-log), tài khoản, bệnh nhân, lượt khám và hàng đợi, kho thuốc, chẩn đoán, kê đơn (trừ kho FEFO), cấp phát, hóa đơn, thu tiền. **Chưa có:** module AI, tri thức OKF (Sprint 3), Docker cho máy admin (giai đoạn đóng gói).
-- Phân quyền thư mục, quy ước nhánh: xem *Quy định v5*, *Cấu trúc v5* (thư mục tài liệu của nhóm).
+- **Chức năng:** đăng nhập, phân quyền theo 3 vai trò, bắt đổi mật khẩu, khóa khi sai nhiều lần; nhật ký (audit-log) chỉ ghi thêm;
+  tài khoản, phòng khám; bệnh nhân, hồ sơ khám (EMR); lượt khám, hàng đợi theo mức ưu tiên; triệu chứng đã xác nhận (HITL);
+  kho thuốc theo lô; chẩn đoán, kê đơn (trừ kho FEFO), cấp phát, hóa đơn, thu tiền; báo cáo; quản trị tri thức (soạn, duyệt, tắt khẩn cấp).
+- **AI:** luật cờ đỏ chạy ngay khi xếp hàng; `worker` chạy Node 2–4 (chấm điểm tất định, LLM qua Ollama, kiểm tra đầu ra) và trích xuất triệu chứng từ lời kể.
+- Quy ước nhánh, commit, PR: [`CONTRIBUTING.md`](../CONTRIBUTING.md). Phân chia thư mục: *Quy định thư mục v6* (tài liệu của nhóm).
 
 > Các lệnh dưới đây chạy trong **PowerShell**. Đường dẫn ví dụ: repo ở `D:\Projects\Github Repo\CDSS` — thay bằng đường dẫn trên máy bạn.
 
@@ -47,8 +51,8 @@ Cổng dùng trên máy: **5432** (PostgreSQL, chỉ mở cho `127.0.0.1`), **80
 ```powershell
 cd "D:\Projects\Github Repo\CDSS"
 git fetch origin
-git checkout <nhánh của bạn>          # vd feature/backend-core, feature/ai-module
-git merge origin/develop
+git switch <nhánh của bạn>            # vd feature/backend-core, feature/ai-module
+git reset --hard origin/develop       # nhánh chưa có commit riêng; xem CONTRIBUTING.md mục 1
 ```
 
 ### 2.2. Tạo 2 file `.env` (mật khẩu ngẫu nhiên)
@@ -96,8 +100,9 @@ pip install -r requirements.txt
 ### 2.5. Tạo bảng (Alembic)
 
 ```powershell
-alembic upgrade head        # 0001 lược đồ v1.8 (25 bảng) -> 0002 tài khoản system -> 0003 chỉ mục -> 0004–0006 (ERD v1.9)
-alembic current             # phải in: 0003 (head)
+alembic upgrade head        # 0001 lược đồ v1.8 -> 0002 tài khoản system -> 0003 chỉ mục đăng nhập
+                            # -> 0004 bắt đổi mật khẩu -> 0005, 0006 phòng khám (ERD v1.9)
+alembic current             # phải in: 0006 (head)
 ```
 
 ### 2.6. Tạo 3 tài khoản dev
@@ -116,7 +121,10 @@ python -m scripts.create_user --username yta01 --full-name "Y tá Thử"      --
 | `bs01` | Physician | Nhận khám, chẩn đoán, kê đơn, mở lại đơn. |
 | `yta01` | Nurse | Bệnh nhân, lượt khám, hàng đợi, kho, cấp phát, thu tiền. |
 
-Tài khoản thêm sau: đăng nhập `admin` rồi dùng `POST /api/v1/admin/users`.
+- Tài khoản tạo bằng `create_user` **không** bị bắt đổi mật khẩu. Tài khoản Admin tạo qua giao diện hoặc
+  `POST /api/v1/admin/users` phải đổi mật khẩu ở lần đăng nhập đầu (`403 PASSWORD_CHANGE_REQUIRED` cho tới khi đổi).
+- Bác sĩ gắn với một phòng khám cố định qua `room_id` của tài khoản (Quản trị › Tài khoản nhân viên). API không bắt buộc,
+  nhưng chưa gắn phòng thì client cảnh báo và bảng gọi không chỉ được bệnh nhân vào phòng nào.
 
 ### 2.7. Nạp danh mục thuốc
 
@@ -129,13 +137,15 @@ Kết quả: `Thuốc mới: 386, ... lô mới: 386 ...`. Xem [mục 6](#6-nạ
 
 ```powershell
 python -m scripts.import_okf --dry-run          # kiểm tra + xem thay đổi, không ghi
-python -m scripts.import_okf --approve-as bs    # máy dev: tạo bản phát hành và kích hoạt ngay
+python -m scripts.import_okf --approve-as bs01  # máy dev: tạo bản phát hành và kích hoạt ngay
 ```
 
 - Script kiểm toàn bộ thư mục trước (mã, độ dài, nguồn, `condition_logic`, chạy thử bằng bộ đánh giá luật của
   pipeline); có lỗi thì in danh sách và **không ghi gì**.
 - Chỉ mục mới hoặc có nội dung khác mới tạo phiên bản mới; chạy lại khi không có gì đổi thì báo "Không có thay đổi".
-- Bản sửa sau: đổi `label` trong `knowledge/_release.md` (vd `KB-2026.02`) rồi chạy lại.
+- Bản sửa sau: đổi `label` trong `knowledge/_release.md` (vd `KB-2026.02`) rồi chạy lại. Nên đổi nhãn mỗi lần nạp nội dung mới,
+  nếu không sẽ khó biết máy đang chạy bản nào.
+- Kho hiện tại: 124 bệnh, 99 triệu chứng, 11 luật (9 cờ đỏ, 2 sàn ưu tiên), 11 nguồn Bộ Y tế.
 - Không có `--approve-as`: tạo bản **Draft** (thêm `--submit` để gửi duyệt) chờ bác sĩ duyệt qua API quản trị tri thức.
 - Người duyệt phải là Physician khác người soạn (mặc định người soạn là tài khoản `system`, đổi bằng `--as <admin>`).
 - `--retire-missing`: mục đang Active mà đã bị xóa khỏi thư mục sẽ bị tắt khi kích hoạt.
@@ -143,7 +153,7 @@ python -m scripts.import_okf --approve-as bs    # máy dev: tạo bản phát h�
 ### 2.8. Chạy test (nên làm lần đầu để chắc môi trường đúng)
 
 ```powershell
-pytest            # ~2 phút, phải ra: 999 passed
+pytest            # ~3 phút, phải ra: 1052 passed (develop ngày 30/10/2026)
 ```
 
 ### 2.9. Chạy API
@@ -184,8 +194,7 @@ Dừng worker: `Ctrl + C`. Việc đang chạy dở sẽ được sweeper xếp 
 cd "D:\Projects\Github Repo\CDSS"
 docker compose -f deploy/docker-compose.dev.yml --env-file deploy/.env up -d     # nếu Docker chưa chạy db
 .\venv\Scripts\activate
-git fetch origin
-git merge origin/develop
+git fetch origin                    # đồng bộ nhánh theo CONTRIBUTING.md mục 1
 cd server
 pip install -r requirements.txt     # chỉ cần khi requirements.txt đổi (vô hại nếu chạy thừa)
 alembic upgrade head                # chỉ cần khi có migration mới (vô hại nếu chạy thừa)
@@ -211,7 +220,8 @@ Tắt CSDL khi không dùng (dữ liệu **vẫn giữ**): `docker compose -f de
 
 | Bước | Tài khoản | API |
 |---|---|---|
-| 1 | yta01 | `POST /patients` → `POST /visits` (`patient_id`, `chief_complaint`) → `PATCH /visits/{id}/check-in` |
+| 1 | yta01 | `POST /patients` → `POST /visits` (`patient_id`, `chief_complaint`, `vital_signs`) → `PUT /visits/{id}/symptoms` → `POST /visits/{id}/assessment` → `PATCH /visits/{id}/check-in` |
+| 1b | bs01 | `GET /queue` (cờ đỏ, mức ưu tiên) → `GET /visits/{id}/assessment` (gợi ý AI khi worker chạy xong) |
 | 2 | bs01 | `PATCH /visits/{id}/start-exam` → `POST /visits/{id}/diagnoses` `{"diagnosis_name": "Viêm họng cấp", "icd10_code": "J02.9"}` |
 | 3 | bs01 | `GET /drugs?q=amoxicilin` lấy `drug_id` → `PUT /visits/{id}/prescription` → `POST /visits/{id}/prescription/confirm` (trả hóa đơn Pending) |
 | 4 | yta01 | `GET /billing/awaiting` → `POST /visits/{id}/dispense-all` → `POST /visits/{id}/invoice/pay` `{"payment_method": "Cash"}` → lượt khám **Finished** |
@@ -230,7 +240,7 @@ Tắt CSDL khi không dùng (dữ liệu **vẫn giữ**): `docker compose -f de
 
 ```powershell
 cd server
-pytest                                  # toàn bộ (~1 phút)
+pytest                                  # toàn bộ (~3 phút)
 pytest tests/api/test_billing.py        # một file
 pytest -k "reopen"                      # theo tên test
 pytest -x                               # dừng ở lỗi đầu tiên
@@ -239,7 +249,8 @@ pytest -x                               # dừng ở lỗi đầu tiên
 - Test chạy trên database **`medassist_test`** (tự suy ra từ `server/.env`, đổi tên database), **dựng lại từ
   Alembic mỗi lần chạy**. Dữ liệu dev trong `medassist` **không bị ảnh hưởng**. Test từ chối chạy nếu trỏ nhầm DB khác.
 - `tests/api/` gọi API qua HTTP; `tests/unit/` kiểm tra hàm, CSDL (trigger, quyền), dữ liệu.
-- **Chạy `pytest` trước khi mở PR** (Quy định v5, nguyên tắc vàng #15). Chưa có CI.
+- **Chạy `pytest` trước khi mở PR.** CI trên GitHub chạy lại toàn bộ và yêu cầu độ phủ `app` + `scripts` ≥ 90%.
+- Máy chưa bật Docker: chỉ kiểm tra được import, `python -c "import app.main"`.
 - Test của công cụ dữ liệu thuốc chạy riêng trong `tools/` (không cần DB): xem `tools/drug_data/README.md`.
 
 ---
@@ -321,10 +332,13 @@ Tiền tố `/api/v1`. Chi tiết tham số và schema: **Swagger `/docs`** (lu�
 | Nhật ký | `GET admin/audit-logs`; `GET admin/audit-logs/export` (xlsx mặc định, csv) | Admin |
 | Báo cáo, nhật ký AI | `GET reports/summary` (`date_from`, `date_to`, mặc định hôm nay); `GET admin/ai-logs` (lọc ngày, `run_type`, `status`, `mode`; chỉ metadata) | Admin |
 | Tham số | `GET admin/settings`; `PUT admin/settings/{key}` | Admin |
-| Bệnh nhân | `GET/POST patients`; `GET/PATCH patients/{id}`; `GET patients/{id}/visits` | Nurse tạo/sửa; Physician, Nurse xem |
+| Bệnh nhân | `GET/POST patients`; `GET patients/lookup` (mã, SĐT, CCCD, năm sinh); `GET/PATCH patients/{id}`; `GET patients/{id}/visits` | Nurse tạo/sửa; Physician, Nurse xem |
+| Hồ sơ khám (EMR) | `GET patients/{id}/history`; `GET visits/{id}/record` | Physician, Nurse |
 | Lượt khám | `POST visits`; `GET/PATCH visits/{id}`; `PATCH visits/{id}/check-in`, `/start-exam`, `/release`, `/cancel`; `GET queue`; `GET visits/stale`; `POST visits/stale/cancel` | Nurse; Physician (nhận khám, trả lại, hủy lượt của mình) |
 | Thuốc, kho | `GET/POST drugs`; `GET/PATCH drugs/{id}`; `GET inventory/stock`, `/alerts`, `/reconciliation`; `GET/POST inventory/batches`; `GET inventory/batches/{id}`; `POST …/top-up`, `…/adjustments`; `GET …/movements` | Admin, Nurse; Physician xem |
-| Triệu chứng (HITL) | `GET/PUT visits/{id}/symptoms` | Nurse, Physician (lượt khám còn mở) |
+| Triệu chứng (HITL) | `GET symptoms` (danh mục Active); `GET/PUT visits/{id}/symptoms` | Nurse, Physician (lượt khám còn mở) |
+| Đánh giá AI | `POST visits/{id}/assessment` (chạy luật ngay, xếp việc cho worker); `GET visits/{id}/assessment` (polling) | Nurse chạy; Physician, Nurse xem |
+| Trích xuất triệu chứng | `POST visits/{id}/symptom-extraction`; `GET …/symptom-extraction` (gợi ý, phải xác nhận qua `PUT …/symptoms`) | Nurse chạy; Physician, Nurse xem |
 | Chẩn đoán | `GET/POST visits/{id}/diagnoses`; `PATCH diagnoses/{id}`; `POST diagnoses/{id}/retract` | Physician đang khám; Nurse xem |
 | Đơn thuốc | `GET/PUT/DELETE visits/{id}/prescription`; `POST …/prescription/confirm`, `…/prescription/reopen`; `POST visits/{id}/complete-exam` | Physician đang khám; Nurse xem |
 | Cấp phát, thu tiền | `GET billing/awaiting`; `GET billing/invoices` (`date`, `include_cancelled`); `GET/PATCH visits/{id}/invoice`; `GET …/invoice/print`; `POST …/invoice/pay`; `PATCH prescription-items/{id}/dispense`; `POST visits/{id}/dispense-all` | Nurse; Physician xem hóa đơn |
@@ -358,7 +372,11 @@ Quy ước chung: tiền trả về **dạng số** (VNĐ); mọi GET dữ liệ
 | API trả `401` sau một lúc | Access token hết hạn (15 phút) | Đăng nhập lại / `auth/refresh` |
 | API trả `403` | Sai vai trò (vd Admin xem bệnh nhân) | Đúng thiết kế — dùng tài khoản đúng vai trò |
 | `[Errno 10048]` khi chạy uvicorn | Cổng 8000 đang bị dùng (uvicorn cũ còn chạy) | Đóng terminal cũ, hoặc `uvicorn app.main:app --reload --port 8001` |
-| Client (Electron/Vite) báo lỗi CORS | Nguồn giao diện chưa có trong `CORS_ORIGINS` | Thêm vào `server/.env`, vd `CORS_ORIGINS=["http://localhost:5173"]`, khởi động lại uvicorn |
+| Client (Electron/Vite) báo lỗi CORS | Nguồn giao diện chưa có trong `CORS_ORIGINS` | Thêm vào `server/.env`, vd `CORS_ORIGINS=["http://localhost:5173"]` (bản đóng gói: `app://medassist`), khởi động lại uvicorn |
+| Gợi ý AI đứng ở `Pending` | Worker chưa chạy, hoặc Ollama tắt | Chạy `python -m app.worker` ([mục 2.10](#210-chạy-worker-ai-terminal-thứ-hai)); máy không có Ollama đặt `LLM_PROVIDER=fake` |
+| `/health` có `ai.ok = false` | Ollama không trả lời hoặc thiếu model | Kiểm tra `OLLAMA_BASE_URL`, `ollama list`; luật cờ đỏ vẫn chạy |
+| `import_okf` báo người duyệt không hợp lệ | `--approve-as` không phải Physician, hoặc trùng người soạn | Dùng tài khoản Physician khác người soạn (mặc định người soạn là `system`) |
+| `POST …/assessment` trả `503 KNOWLEDGE_UNAVAILABLE` | Chưa có bản tri thức Active | [Mục 2.7b](#27b-nạp-tri-thức-lâm-sàng-okf-của-tuấn-thư-mục-knowledge) |
 
 ---
 
@@ -367,23 +385,27 @@ Quy ước chung: tiền trả về **dạng số** (VNĐ); mọi GET dữ liệ
 ```
 server/
 ├── app/
+│   ├── ai/            # module AI: rules/ (luật, chấm điểm), pipeline/ (Node 1–4), llm/ (Ollama, fake), extraction/
 │   ├── core/          # cấu hình, DB, bảo mật (JWT, Argon2id), phân quyền, nhật ký VIEW, request-id
 │   ├── models/        # 26 model ORM theo ERD v1.9
 │   ├── routers/       # auth, admin, clinic, room, inventory, prescription, billing, knowledge, assessment, report
 │   ├── schemas/       # Pydantic vào/ra
-│   ├── services/      # nghiệp vụ (audit, user, emr, queue, inventory, prescription, invoice, billing, settings)
+│   ├── services/      # nghiệp vụ: user, emr, queue, symptom, inventory, prescription, invoice, billing, knowledge,
+│   │                  # ai_queue (hàng đợi AI), knowledge_reader, report, room, settings, audit, health
 │   ├── validation/    # kiểm tra dùng chung: sinh hiệu (JSON Schema), mã OKF, tham số
+│   ├── worker/        # python -m app.worker: lấy việc AI từ PostgreSQL, gọi pipeline, ghi kết quả
 │   ├── exceptions.py  # định dạng lỗi thống nhất
 │   └── main.py
 ├── alembic/           # migration 0001–0006 (alembic.ini ở server/)
-├── db/                # initdb (vai trò, múi giờ), lược đồ v1.8, tài khoản system
+├── db/                # initdb (vai trò, múi giờ, medassist_test), lược đồ v1.8, tài khoản system
 ├── data/              # drugs.csv + README (nguồn danh mục thuốc)
-├── scripts/           # create_user, seed_drugs (dùng code của app)
-├── tests/             # api/, unit/ — chạy trên medassist_test
+├── scripts/           # create_user, seed_drugs, import_okf (dùng code của app)
+├── tests/             # api/, unit/ (kể cả unit/ai/) — chạy trên medassist_test
+├── Dockerfile         # image dùng chung cho api, worker, migrate trên máy admin
 ├── .env.example
 ├── pytest.ini
 └── requirements.txt
 ```
 
-Tài liệu liên quan: ERD v1.9, Architecture v1.7, *Quy định v5*, *Cấu trúc v5*; `server/data/README.md`;
-`tools/drug_data/README.md`.
+Tài liệu liên quan: ERD v1.9, Architecture v1.7, *Quy định thư mục v6*, *Cấu trúc dự kiến v6*; `server/data/README.md`;
+`tools/drug_data/README.md`; `knowledge/_spec/okf_format.md`.
