@@ -10,35 +10,37 @@ import { useToast } from '../../context/ToastContext'
 import { useAuth } from '../../context/AuthContext'
 import { logEvent } from '../../api/activityStore'
 import { translate } from '../../i18n'
-import { VI } from '../../i18n/vi'
-import { useQueue, waitingOrder, readyOrder, ST, inRoom, atLabs, minutesSince, finalizeVisit, labOrderSummary, labRows, updateVisitClinical, isMine, leftReasonLabel, recallPatient, confirmEntered, markNotPresent, syncQueue } from '../../api/queueStore'
+import { useQueue, waitingOrder, readyOrder, ST, inRoom, atLabs, minutesSince, finalizeVisit, labOrderSummary, labRows, isMine, recallPatient, confirmEntered, markNotPresent, syncQueue } from '../../api/queueStore'
 import { useRxHistory, RX } from '../../api/rxHistory'
 import { useVisitArchive } from '../../api/visitArchive'
 import { useRxReviews, openReviewsFor, resolveReview, verdictOf } from '../../api/rxReviewStore'
-import { useInventory, findDrugByName, stockOf, eligibleFor, daysLeft } from '../../api/inventoryStore'
-import { controlledKind, CONTROLLED_LABEL, soldOutside } from '../../api/rxSafety'
-import { ICD10 } from '../admin/ai/catalog'
+import { useInventory, findDrugByName } from '../../api/inventoryStore'
+import { controlledKind, CONTROLLED_LABEL } from '../../api/rxSafety'
 import { unitLabel } from '../admin/inventory/shared'
 import { useNow, dmy, hhmm } from '../reception/shared'
 import LabOrderModal, { printLabOrder } from './LabOrderModal'
 import AssessmentCard, { useAssessment } from './AssessmentCard'
 import { DEMO_MODE } from '../../api/client'
-import { getVisitDetail } from '../../api/clinicApi'
 import { putServiceResults } from '../../api/serviceApi'
 import { useServiceOrders, toLabOrder, apiMessage } from '../../api/serviceStore'
 import CancelOrderItemModal from '../../components/CancelOrderItemModal'
-import { useServerDrugs, findServerDrug, reloadServerDrugs } from '../../api/serverDrugs'
+import { useServerDrugs, reloadServerDrugs } from '../../api/serverDrugs'
 import { syncDiagnoses, savePrescription, confirmPrescription, completeExam, shortageOf } from '../../api/examApi'
 import { isServerOnline } from '../../api/connectivity'
 import ServerHistory from './ServerHistory'
 import { printPrescription } from './printRx'
-import { getDraft, saveDraft, deleteDraft } from '../../api/draftStore'
+import { saveDraft, deleteDraft } from '../../api/draftStore'
 import DocumentModal from './DocumentModal'
 import VitalsFields from '../../components/VitalsFields'
-import { normalizeVitals, vitalsToForm, vitalsFromForm, vitalsText, checkVitals } from '../../api/vitals'
-import { useTakePatient, pastVisitsOf, LabOrderResults, ReleaseModal, LeaveVisitModal, InviteBar } from './doctorShared'
-import { SOURCES } from '../../api/symptoms'
-import { symptomName } from '../../api/symptoms'
+import { vitalsFromForm, vitalsText, checkVitals } from '../../api/vitals'
+import { useTakePatient, pastVisitsOf, ReleaseModal, LeaveVisitModal, InviteBar } from './doctorShared'
+import { VisitCard } from './consult/VisitCard'
+import { ClinicalInfoEditor } from './consult/ClinicalInfoEditor'
+import { SecondaryDx } from './consult/SecondaryDx'
+import { ConfirmedSymptoms } from './consult/ConfirmedSymptoms'
+import { ReminderPanel } from './consult/ReminderPanel'
+import { ServerVisit } from './consult/ServerVisit'
+import { SLOTS, MEALS, blankDose, num, perDay, unitVi, usageOf, stockIssue, serverStockIssue, nextLineId, lineOf, serverItem, draftOf } from './consult/rxDraft'
 
 // Đơn mẫu: bấm 1 lần thêm cả nhóm thuốc (bác sĩ vẫn sửa số lượng / cách dùng sau).
 const TEMPLATES = [
@@ -52,29 +54,6 @@ const TEMPLATES = [
 const USAGES = ['Uống khi sốt trên 38,5°C, cách nhau ít nhất 4–6 giờ', 'Uống khi đau, sau ăn, tối đa 3 lần/ngày', 'Uống trước ăn sáng 30 phút', 'Bôi ngày 2 lần lên vùng da tổn thương']
 const STATUS_CHIP = { waiting: 'WAITING', in_exam: 'IN CONSULTATION', labs: 'WAITING FOR LABS' }
 
-// ---------- Liều có cấu trúc: Sáng / Trưa / Chiều / Tối × số ngày → tự tính số lượng + câu cách dùng ----------
-const SLOTS = [
-  ['m', 'Morning', 'Sáng'],
-  ['n', 'Noon', 'Trưa'],
-  ['a', 'Afternoon', 'Chiều'],
-  ['e', 'Evening', 'Tối']
-]
-const MEALS = [
-  { key: 'after', label: 'After meals', vi: 'sau ăn' },
-  { key: 'before', label: 'Before meals', vi: 'trước ăn' },
-  { key: '', label: 'Any time', vi: '' }
-]
-const blankDose = () => ({ m: '', n: '', a: '', e: '', days: '', meal: 'after' })
-const num = (x) => parseFloat(String(x ?? '').replace(',', '.')) || 0
-const perDay = (dose) => SLOTS.reduce((s, [k]) => s + num(dose?.[k]), 0)
-const unitVi = (unit) => (VI[unitLabel(unit)] ?? unitLabel(unit)).toLowerCase()
-function usageOf(dose, unit) {
-  const parts = SLOTS.filter(([k]) => num(dose[k]) > 0).map(([k, , vi]) => `${vi} ${dose[k]} ${unitVi(unit)}`)
-  if (!parts.length) return ''
-  const meal = MEALS.find((m) => m.key === dose.meal)?.vi
-  return parts.join(', ') + (meal ? ` — uống ${meal}` : '') + (num(dose.days) ? ` — ${num(dose.days)} ngày` : '')
-}
-
 // Tình trạng kho của 1 dòng thuốc trong đơn — chỉ tính lô CÒN HẠN.
 // Lý do bị chặn khi trừ kho lúc chốt đơn (queueStore.finalizeVisit → INSUFFICIENT_STOCK).
 const SHORT_REASON = {
@@ -82,98 +61,10 @@ const SHORT_REASON = {
   expiring: 'In stock, but the batches expire before the course ends',
   inactive: 'Discontinued in the drug catalog'
 }
-function stockIssue(item, inv) {
-  const d = findDrugByName(item.name, inv.drugs)
-  if (!d) return null
-  // Thuốc N/H nhà thuốc phòng khám không bán → bệnh nhân mua ngoài, không cần tồn kho ở đây.
-  if (soldOutside(d)) return { level: 'info', text: 'Bought at an outside pharmacy — not dispensed here' }
-  const need = parseInt(item.qty, 10) || 0
-  const s = stockOf(d, inv.batches)
-  if (!d.active) return { level: 'danger', text: 'Discontinued in the drug catalog' }
-  if (s.usable === 0 && s.expired > 0) return { level: 'danger', text: 'Only expired batches left — cannot be dispensed' }
-  if (s.usable === 0) return { level: 'danger', text: 'Out of stock' }
-  // Giống lúc trừ kho thật khi chốt đơn: chỉ tính lô còn hạn qua hết đợt dùng thuốc (số ngày ở cách dùng).
-  const days = Number(item.dose?.days) || 0
-  const ok = inv.batches.filter((b) => b.drugId === d.id && b.qty > 0 && daysLeft(b.expiry) >= 0 && eligibleFor(b, days)).reduce((n, b) => n + b.qty, 0)
-  if (need && ok < need && s.usable >= need) return { level: 'caution', text: 'Some batches expire before the course ends — not enough stock that stays valid', usable: ok, unit: d.unit }
-  if (s.usable < need) return { level: 'caution', text: 'Not enough stock', usable: s.usable, unit: d.unit }
-  return null
-}
-// Backend thật: tồn lấy từ v_drug_stock của server (còn hạn). Lô đủ hạn cho cả liệu trình do server kiểm khi xác nhận đơn.
-function serverStockIssue(item, drugs) {
-  const d = (item.drugId && drugs.find((x) => x.id === item.drugId)) || findServerDrug(item.name, drugs)
-  if (!d) return drugs.length ? { level: 'danger', text: 'Not in the drug catalog on the server' } : null
-  const need = parseInt(item.qty, 10) || 0
-  if (!d.active) return { level: 'danger', text: 'Discontinued in the drug catalog' }
-  if (d.stock.usable === 0 && d.stock.expired > 0) return { level: 'danger', text: 'Only expired batches left — cannot be dispensed' }
-  if (d.stock.usable === 0) return { level: 'danger', text: 'Out of stock' }
-  if (d.stock.usable < need) return { level: 'caution', text: 'Not enough stock', usable: d.stock.usable, unit: d.unit }
-  return null
-}
 
-// Bản nháp phiếu khám theo từng lượt khám — giữ lại khi bác sĩ chuyển qua lại giữa các bệnh nhân / các màn,
-// và lưu xuống máy (draftStore) để tắt app không mất phiếu đang viết dở.
-let seq = 0
-// drugId: id thuốc trên server (backend thật) — dòng chép từ đơn cũ / đơn mẫu không có thì tra theo tên lúc chốt.
-const lineOf = (d) => ({ id: 'r' + Date.now() + '-' + ++seq, drugId: DEMO_MODE ? undefined : d.id, name: d.name, qty: '', unit: d.unit, usage: '', essential: !!d.essential, dose: blankDose() })
-
-// Dòng thuốc trên phiếu → PrescriptionItemIn của server. Liều có cấu trúc: liều từng cữ + số lần/ngày + số ngày;
-// thuốc dùng khi cần: cách dùng ghi tay, số ngày tính từ số lượng nếu có thể. Trả { item } hoặc { error }.
-function serverItem(l, drugs) {
-  const drug = (l.drugId && drugs.find((x) => x.id === l.drugId)) || findServerDrug(l.name, drugs)
-  if (!drug) return { error: translate('Not in the drug catalog on the server') + ': ' + l.name }
-  const qty = parseInt(l.qty, 10)
-  const daily = perDay(l.dose)
-  const days = num(l.dose?.days) > 0 ? Math.round(num(l.dose.days)) : daily > 0 && qty > 0 ? Math.ceil(qty / daily) : 0
-  if (!(days > 0)) return { error: translate('Enter the number of days for') + ' ' + l.name }
-  const slots = SLOTS.filter(([k]) => num(l.dose?.[k]) > 0)
-  const unit = unitVi(l.unit)
-  const dosage = slots.length ? slots.map(([k, , vi]) => `${vi} ${l.dose[k]} ${unit}`).join(', ') : l.usage.trim()
-  const meal = MEALS.find((m) => m.key === l.dose?.meal)?.vi
-  const frequency = slots.length ? `${slots.length} lần/ngày` + (meal ? `, ${meal}` : '') : 'Theo hướng dẫn'
-  return {
-    item: {
-      drug_id: drug.id,
-      dosage: dosage.slice(0, 100),
-      frequency: frequency.slice(0, 100),
-      duration_days: days,
-      quantity: qty,
-      instruction: l.usage.trim().slice(0, 1000) || null
-    },
-    line: { ...l, drugId: drug.id }
-  }
-}
-function initDraft(v) {
-  return {
-    exam: v.exam ?? '',
-    plan: v.plan ?? '',
-    diagnosis: v.diagnosis ?? '',
-    diagnosesExtra: v.diagnosesExtra ?? [],
-    hpi: v.hpi ?? '',
-    followUp: v.followUp ?? '',
-    rx: (v.rx ?? []).map((l, i) => ({ id: 'r' + i, name: l.name, qty: String(l.qty ?? ''), unit: l.unit, usage: l.usage ?? '', essential: !!l.essential, dose: { ...blankDose(), ...l.dose } })),
-    // Sinh hiệu dạng 8 khoá chuẩn (chuỗi đang gõ) — đo lúc tiếp đón, bác sĩ đo lại được.
-    vitals: vitalsToForm(normalizeVitals(v.vitals)),
-    labResult: v.labResult ?? '',
-    // Backend thật: kết luận theo từng phiếu chỉ định { "<order_id>": kết luận } — chỉ giữ chỗ bác sĩ đang sửa.
-    labConclusions: {},
-    // Kết quả theo từng xét nghiệm của các phiếu chỉ định: { "<mã phiếu>:<mã xét nghiệm>": kết quả }
-    labResults: Object.fromEntries((v.labOrders ?? []).flatMap(labRows).map((r) => [r.key, r.result]))
-  }
-}
-// Thứ tự ưu tiên: dữ liệu lượt khám → phiếu dở được bàn giao kèm theo → phiếu dở trên máy này.
-function draftOf(v) {
-  const d = { ...initDraft(v), ...(v.released?.draft ?? {}), ...getDraft(v.id) }
-  // Phiếu nháp lưu từ bản cũ (pulse / bp / temp…) → đổi sang 8 khoá chuẩn.
-  return { ...d, vitals: vitalsToForm(normalizeVitals(d.vitals)) }
-}
 // Từ Tủ thuốc: thêm thuốc vào đơn đang kê của bệnh nhân.
 const DRUG_SEARCH_ID = 'consult-drug-search'
 
-export function addDrugToDraft(visit, d) {
-  const dr = draftOf(visit)
-  if (!dr.rx.some((x) => x.name === d.name)) saveDraft(visit.id, { ...dr, rx: [...dr.rx, lineOf(d)] })
-}
 // Trẻ dưới 12 tuổi: liều thuốc tính theo cân nặng → bắt buộc có cân nặng mới chốt đơn.
 const isChild = (v) => v.age !== '' && v.age != null && Number(v.age) < 12
 
@@ -391,21 +282,6 @@ export default function ConsultView({ visitId, onSelect, onRx }) {
   )
 }
 
-// Backend thật: hàng đợi chỉ có thông tin tóm tắt → tải sinh hiệu, triệu chứng đã xác nhận, hồ sơ (dị ứng, bệnh nền,
-// mang thai) trước khi mở phiếu khám, để phiếu khởi tạo đúng dữ liệu. Giả lập: dùng thẳng lượt khám trong store.
-function ServerVisit({ visit, children }) {
-  const [detail, setDetail] = useState(null)
-  const [error, setError] = useState('')
-  useEffect(() => {
-    if (DEMO_MODE) return
-    getVisitDetail(visit.id, visit.patientId).then(setDetail, (e) => setError(e.message))
-  }, [visit.id, visit.patientId])
-  if (DEMO_MODE) return children(visit)
-  if (error) return <p className="ai-soft">{translate(error)}</p>
-  if (!detail) return <p className="ai-soft">{translate('Loading the visit…')}</p>
-  return children({ ...visit, ...detail })
-}
-
 function ConsultForm({ visit, user, onDone, onNext }) {
   const { showToast } = useToast()
   const inv = useInventory()
@@ -495,7 +371,7 @@ function ConsultForm({ visit, user, onDone, onNext }) {
     const add = lines
       .filter((l) => !have.has(l.name))
       .map((l) => ({
-        id: 'r' + Date.now() + '-' + ++seq,
+        id: nextLineId(),
         name: l.name,
         qty: String(l.qty),
         unit: l.unit,
@@ -1226,189 +1102,3 @@ function ConsultForm({ visit, user, onDone, onNext }) {
   )
 }
 
-// Triệu chứng lễ tân đã xác nhận lúc tiếp đón (PRESENT / ABSENT), kèm nguồn nếu không phải nhập tay.
-function ConfirmedSymptoms({ list }) {
-  if (!list?.length) return null
-  const yes = list.filter((x) => x.state === 'PRESENT')
-  const no = list.filter((x) => x.state === 'ABSENT')
-  const tag = (x) => (
-    <span key={x.symptom_code} className={'sym-chip ' + x.state.toLowerCase()} title={translate(SOURCES[x.source] ?? '')}>
-      <span className="sym-chip-state">{translate(x.state === 'PRESENT' ? 'Yes' : 'No')}</span>
-      <span style={{ paddingRight: 6 }}>{translate(symptomName(x.symptom_code))}</span>
-    </span>
-  )
-  return (
-    <div className="sym-chips" style={{ marginTop: 6 }}>
-      {yes.map(tag)}
-      {no.map(tag)}
-    </div>
-  )
-}
-
-// Một lần khám trước trong dòng thời gian: chẩn đoán, khám thực thể, hướng điều trị, sinh hiệu, cận lâm sàng, đơn thuốc.
-export function VisitCard({ v, onReuse }) {
-  const left = v.outcome === 'left' || v.status === ST.CANCELLED || v.status === 'left'
-  const notes = v.draftNotes
-  return (
-    <div className="tl-item">
-      <div className="tl-head">
-        <b className="mono">{dmy(v.rxAt ?? v.statusAt ?? v.arrivedAt)}</b>
-        <span>· {v.doctor || '—'}</span>
-        {left && <span className="badge muted">{translate('Unfinished visit')}</span>}
-        <span className="tl-dx">
-          {v.diagnosis || translate(v.reason ?? '') || '—'}
-          {v.diagnosesExtra?.length > 0 && <span className="ai-soft"> · {v.diagnosesExtra.join('; ')}</span>}
-        </span>
-      </div>
-      {left && v.left && (
-        <div className="tl-row ai-soft">
-          {translate(leftReasonLabel(v.left.reason))}
-          {v.left.note ? ' — ' + v.left.note : ''}
-        </div>
-      )}
-      {(v.hpi || notes?.hpi) && (
-        <div className="tl-row">
-          <small>{translate('History')}</small> {v.hpi || notes.hpi}
-        </div>
-      )}
-      {v.vitals && (
-        <div className="tl-row ai-soft mono">
-          {vitalsText(v.vitals)}
-        </div>
-      )}
-      {v.exam && (
-        <div className="tl-row">
-          <small>{translate('Examination')}</small> {v.exam}
-        </div>
-      )}
-      {v.plan && (
-        <div className="tl-row">
-          <small>{translate('Plan')}</small> {v.plan}
-        </div>
-      )}
-      {left && notes?.exam && (
-        <div className="tl-row">
-          <small>{translate('Unsaved notes')}</small> {notes.exam}
-        </div>
-      )}
-      {v.labOrders?.map((o, i) => (
-        <LabOrderResults key={o.id} order={o} summary={i === v.labOrders.length - 1 ? v.labResult : ''} />
-      ))}
-      {v.rx?.length > 0 && (
-        <div className="tl-rx">
-          <span className="ai-soft">{v.rx.map((x) => `${x.name} × ${x.qty}`).join(', ')}</span>
-          {onReuse && (
-            <button className="btn btn-ghost btn-sm" onClick={() => onReuse(v.rx)}>
-              <Icon name="repeat" /> Reuse
-            </button>
-          )}
-        </div>
-      )}
-      {v.followUp && (
-        <div className="tl-row ai-soft">
-          <Icon name="calendar" /> {translate('Follow-up visit')}: {dmy(v.followUp + 'T12:00:00')}
-        </div>
-      )}
-    </div>
-  )
-}
-
-// Bác sĩ xác nhận / sửa dị ứng thuốc và bệnh nền (lễ tân chỉ ghi lời khai lúc tiếp đón).
-// Lưu vào hồ sơ bệnh nhân → kiểm tra tương tác của đơn đang kê và các lần khám sau đều dùng thông tin mới.
-function ClinicalInfoEditor({ visit, user }) {
-  const { showToast } = useToast()
-  const [open, setOpen] = useState(false)
-  const [f, setF] = useState({ allergies: '', history: '' })
-  function start() {
-    setF({ allergies: visit.allergies ?? '', history: visit.history ?? '' })
-    setOpen(true)
-  }
-  function save() {
-    const r = updateVisitClinical(visit.id, f, user)
-    if (!r.ok) return showToast(translate(r.error))
-    setOpen(false)
-    showToast('Patient record updated — prescription checks now use the new information')
-  }
-  if (!open)
-    return (
-      <button className="btn btn-ghost btn-sm clin-edit-btn" onClick={start}>
-        <Icon name="pencil" /> Update allergies / chronic conditions
-      </button>
-    )
-  return (
-    <div className="clin-edit">
-      <div className="form-grid cols-2">
-        <div className="field">
-          <label>Drug allergies</label>
-          <input type="text" autoFocus value={f.allergies} onChange={(e) => setF({ ...f, allergies: e.target.value })} placeholder="Penicillin…" />
-        </div>
-        <div className="field">
-          <label>Medical history (chronic conditions)</label>
-          <input type="text" value={f.history} onChange={(e) => setF({ ...f, history: e.target.value })} placeholder="Hypertension, diabetes…" />
-        </div>
-      </div>
-      <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
-        <button className="btn btn-ghost btn-sm" onClick={() => setOpen(false)}>
-          Cancel
-        </button>
-        <button className="btn btn-primary btn-sm" onClick={save}>
-          <Icon name="check" /> Save to patient record
-        </button>
-      </div>
-    </div>
-  )
-}
-
-// Chẩn đoán phụ / bệnh kèm: chọn từ ICD-10 (chọn xong tự thêm vào danh sách) hoặc gõ rồi bấm Thêm.
-function SecondaryDx({ list, onChange }) {
-  const [text, setText] = useState('')
-  const add = (v) => {
-    const x = v.trim()
-    if (x && !list.includes(x)) onChange([...list, x])
-    setText('')
-  }
-  return (
-    <div className="dx2">
-      <div className="section-label">Secondary diagnoses / comorbidities</div>
-      {list.length > 0 && (
-        <div className="dx2-list">
-          {list.map((x) => (
-            <span key={x} className="dx2-chip">
-              {x}
-              <button title={translate('Remove')} onClick={() => onChange(list.filter((y) => y !== x))}>
-                <Icon name="x" />
-              </button>
-            </span>
-          ))}
-        </div>
-      )}
-      <div className="dx2-add">
-        <div style={{ flex: 1 }}>
-          <ICDPicker value={text} onChange={(v) => (ICD10.some((o) => v.startsWith(o.code + ' — ')) ? add(v) : setText(v))} />
-        </div>
-        <button className="btn btn-ghost btn-sm" disabled={!text.trim()} onClick={() => add(text)}>
-          + Add
-        </button>
-      </div>
-    </div>
-  )
-}
-
-// Khung nhắc CHỈ ĐỌC khi kê đơn (Proposal FR03, Architecture 5.1.6): dị ứng + bệnh nền + tình trạng mang thai,
-// ghi rõ hệ thống không kiểm tra tương tác thuốc — bác sĩ tự đánh giá.
-function ReminderPanel({ visit }) {
-  return (
-    <div className="rx-reminder">
-      <Icon name="alert" />
-      <div>
-        <b>Reminder (read-only)</b>
-        <span>
-          {translate('Drug allergies')}: {visit.allergies ? <b>{translate(visit.allergies)}</b> : translate('none recorded')} · {translate('Chronic conditions')}:{' '}
-          {visit.history ? translate(visit.history) : translate('none recorded')}
-          {visit.pregnancy === 'yes' ? ' · ' + translate('Pregnant') : ''}
-        </span>
-        <small>The system does not check drug interactions, doses or duplicate prescriptions — the doctor is responsible for reviewing the prescription.</small>
-      </div>
-    </div>
-  )
-}
