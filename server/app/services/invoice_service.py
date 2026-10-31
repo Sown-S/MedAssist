@@ -109,7 +109,9 @@ def to_out(db: Session, invoice: Invoice) -> dict:
     return {**{c: getattr(invoice, c) for c in (
         "invoice_id", "visit_id", "invoice_code", "consultation_fee", "paraclinical_fee", "drug_fee",
         "total_amount", "payment_method", "payment_status", "paid_at", "cancelled_at", "cancel_reason",
-        "created_at")}, "items": items, "unbilled_items": service_order_service.unbilled(db, invoice.visit_id)}
+        "created_at")}, "items": items, "unbilled_items": service_order_service.unbilled(
+            db, invoice.visit_id,
+            [i.item_name for i in items if i.item_type == "Paraclinical" and i.service_order_id is None])}
 
 
 def current_for_visit(db: Session, visit_id: uuid.UUID) -> Invoice:
