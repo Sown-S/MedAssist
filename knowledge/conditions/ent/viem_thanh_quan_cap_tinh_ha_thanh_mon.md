@@ -16,21 +16,33 @@ relations:
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: nausea_vomiting_diarrhea
+- symptom_code: wheezing_bronchospasm
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.95
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: weight_loss_anorexia
+- symptom_code: head_neck_mass_fistula_trauma
   polarity: SUPPORTS
-  weight: 0.75
-  is_key: false
+  weight: 0.94
+  is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: sore_throat_dysphagia
+- symptom_code: dyspnea_chronic_exertional
   polarity: SUPPORTS
-  weight: 0.78
+  weight: 0.94
+  is_key: true
+  source_key: moh_qd_5643_2015
+  source_edition: Quyết định số 5643/QĐ-BYT
+- symptom_code: nasal_obstruction_stuffiness
+  polarity: SUPPORTS
+  weight: 0.9
+  is_key: true
+  source_key: moh_qd_5643_2015
+  source_edition: Quyết định số 5643/QĐ-BYT
+- symptom_code: rhinorrhea_nasal_congestion
+  polarity: SUPPORTS
+  weight: 0.86
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
@@ -43,11 +55,11 @@ excerpts:
 ---
 
 ## excerpt: viem_thanh_quan_cap_tinh_ha_thanh_mon_chan_doan
-- 2.1.1. Các triệu chứng thường gặp
-- Khởi phát trong vòng 2 tuần sau sinh.
-- Thông thường, tiếng rít (thanh quản) và tình trạng tắc nghẽn đường dẫn khí
-- Tiếng rít thanh quản:
-- Xảy ra từng cơn.
-- Tăng lên khi bé khóc, khi hoạt động, nằm ngửa, hoặc bú (ăn).
-- Tiếng rít trở nên rõ trong vòng 2 tuần sau sinh, có thể tăng (cường độ) trong
-- Đối với những trường hợp giảm trương lực thanh quản (ví dụ. bại não):
+- 3.1.1. Triệu chứng cơ năng
+- Ở trẻ em có triệu chứng khởi phát là sốt nhẹ, ho, chảy mũi. Sau 1-3 ngày, đột ngột
+- xuất hiện khàn tiếng, khó thở thanh quản. Cần hỏi bệnh sử kỹ để loại trừ hội chứng xâm
+- Ở người lớn: bệnh nhân cũng có thể có các triệu chứng như nổi hạch cổ, nuốt đau,
+- mệt mỏi, đau nhức, nghẹt mũi, chảy mũi. Bệnh xuất hiện một cách đột ngột, nặng hơn
+- 3.1.2. Triệu chứng thực thể
+- quản vào lúc này vì có thể làm trẻ kích thích gây co thắt thanh quản, khó thở sẽ nặng thêm.
+- Các triệu chứng thường gặp:

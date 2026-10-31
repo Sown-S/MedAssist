@@ -13,7 +13,7 @@ description: 'Viêm khớp thiếu niên tự phát theo ILAR là nhóm bệnh v
 relations:
 - symptom_code: symmetric_polyarthritis_hands
   polarity: SUPPORTS
-  weight: 0.97
+  weight: 0.98
   is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
@@ -44,12 +44,6 @@ relations:
 - symptom_code: conjunctivitis_uveitis_red_eye
   polarity: SUPPORTS
   weight: 0.8
-  is_key: false
-  source_key: moh_qd_361_2014
-  source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: fever_low_grade
-  polarity: SUPPORTS
-  weight: 0.75
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT

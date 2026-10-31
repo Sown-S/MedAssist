@@ -6,8 +6,8 @@ name_en: Lao thanh quản
 icd10_code: A15.5
 disease_group: ent
 description: Lao thanh quản là bệnh viêm thanh quản đặc hiệu do vi trùng lao (Mycobacterium
-  tuberculosis) gây ra. Lao thanh quản (LTQ) là một thể lao ngoài phổi thứ phát sau
-  lao sơ nhiễm, bệnh.
+  Lao thanh quản (LTQ) là một thể lao ngoài phổi thứ phát sau lao sơ nhiễm, bệnh tích
+  khu trú ở thanh quản. Tỷ lệ mắc LTQ đứng hàng thứ 4-5 trong nhóm bệnh lý lao.
 relations:
 - symptom_code: hoarseness_dysphonia_stridor
   polarity: SUPPORTS

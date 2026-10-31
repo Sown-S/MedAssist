@@ -21,13 +21,13 @@ relations:
   is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: maculopapular_rash
+- symptom_code: nausea_vomiting_diarrhea
   polarity: SUPPORTS
-  weight: 0.9
+  weight: 0.82
   is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: nausea_vomiting_diarrhea
+- symptom_code: maculopapular_rash
   polarity: SUPPORTS
   weight: 0.82
   is_key: true

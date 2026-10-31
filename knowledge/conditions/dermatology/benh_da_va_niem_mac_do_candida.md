@@ -9,21 +9,15 @@ description: Từ thời Hippocrates, tác giả đã mô tả hình ảnh nhi�
   Năm 1847, nhà nấm học người Pháp, Charles Philippe Robin phân loại các loại nấm
   Oidium albicans và sử dụng từ albicans nghĩa là "trắng" để đặt tên cho loại.
 relations:
-- symptom_code: pustular_furuncle_folliculitis
-  polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
-  source_key: moh_qd_75_2015
-  source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: fungal_ringworm_nail_hair_lesion
   polarity: SUPPORTS
   weight: 0.96
   is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: psoriatic_plaque_nail_pitting
+- symptom_code: pustular_furuncle_folliculitis
   polarity: SUPPORTS
-  weight: 0.95
+  weight: 0.94
   is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT

@@ -16,36 +16,6 @@ relations:
   is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: urticarial_wheal_angioedema
-  polarity: SUPPORTS
-  weight: 0.97
-  is_key: true
-  source_key: moh_qd_75_2015
-  source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: herpetic_dermatomal_pain_blister
-  polarity: SUPPORTS
-  weight: 0.97
-  is_key: true
-  source_key: moh_qd_75_2015
-  source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: scaly_plaque_hyperkeratosis
-  polarity: SUPPORTS
-  weight: 0.94
-  is_key: true
-  source_key: moh_qd_75_2015
-  source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: fungal_ringworm_nail_hair_lesion
-  polarity: SUPPORTS
-  weight: 0.94
-  is_key: true
-  source_key: moh_qd_75_2015
-  source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: verrucous_papule_nodule_ulcer
-  polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
-  source_key: moh_qd_75_2015
-  source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: pigmentary_macule_patch
   polarity: SUPPORTS
   weight: 0.92
@@ -53,6 +23,12 @@ relations:
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: pruritus_intense_skin_itch
+  polarity: SUPPORTS
+  weight: 0.9
+  is_key: true
+  source_key: moh_qd_75_2015
+  source_edition: Quyết định số 75/QĐ-BYT
+- symptom_code: maculopapular_rash
   polarity: SUPPORTS
   weight: 0.9
   is_key: true

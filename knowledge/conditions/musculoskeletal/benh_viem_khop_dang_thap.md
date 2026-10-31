@@ -10,21 +10,15 @@ description: Viêm khớp dạng thấp (VKDT) là một bệnh lý tự miễn 
   nhau. Bệnh diễn biến phức tạp, gây hậu quả nặng nề do đó cần được điều trị tích
   cực ngay từ.
 relations:
-- symptom_code: symmetric_polyarthritis_hands
+- symptom_code: morning_stiffness_over_1h
   polarity: SUPPORTS
   weight: 0.98
   is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: morning_stiffness_over_1h
+- symptom_code: symmetric_polyarthritis_hands
   polarity: SUPPORTS
-  weight: 0.97
-  is_key: true
-  source_key: moh_qd_361_2014
-  source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: psoriatic_plaque_nail_pitting
-  polarity: SUPPORTS
-  weight: 0.95
+  weight: 0.98
   is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT

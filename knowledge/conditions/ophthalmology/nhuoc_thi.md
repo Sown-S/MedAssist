@@ -23,8 +23,8 @@ relations:
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: ocular_pain_photophobia_tearing
   polarity: SUPPORTS
-  weight: 0.9
-  is_key: true
+  weight: 0.8
+  is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: conjunctival_ciliary_injection_discharge

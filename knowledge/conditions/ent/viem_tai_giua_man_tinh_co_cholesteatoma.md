@@ -11,32 +11,38 @@ description: Viêm tai giữa (VTG) mạn tính có cholesteatoma là VTG mạn 
 relations:
 - symptom_code: otorrhea_ear_discharge
   polarity: SUPPORTS
-  weight: 0.96
+  weight: 0.98
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: tympanic_membrane_lesion
   polarity: SUPPORTS
-  weight: 0.98
+  weight: 0.97
+  is_key: true
+  source_key: moh_qd_5643_2015
+  source_edition: Quyết định số 5643/QĐ-BYT
+- symptom_code: dizziness_vertigo
+  polarity: SUPPORTS
+  weight: 0.92
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: hearing_loss_deafness
   polarity: SUPPORTS
-  weight: 0.94
+  weight: 0.92
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: tinnitus_ear_fullness
+- symptom_code: external_ear_swelling_fistula
+  polarity: SUPPORTS
+  weight: 0.92
+  is_key: true
+  source_key: moh_qd_5643_2015
+  source_edition: Quyết định số 5643/QĐ-BYT
+- symptom_code: fever_high
   polarity: SUPPORTS
   weight: 0.9
   is_key: true
-  source_key: moh_qd_5643_2015
-  source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: headache_dull
-  polarity: SUPPORTS
-  weight: 0.75
-  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 excerpts:

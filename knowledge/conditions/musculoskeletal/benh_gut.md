@@ -22,12 +22,6 @@ relations:
   is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: skin_cellulitis_pus_abscess
-  polarity: SUPPORTS
-  weight: 0.9
-  is_key: true
-  source_key: moh_qd_361_2014
-  source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: asymmetric_oligoarthritis_lower
   polarity: SUPPORTS
   weight: 0.9

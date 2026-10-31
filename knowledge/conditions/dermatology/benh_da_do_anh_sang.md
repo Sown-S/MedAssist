@@ -45,18 +45,6 @@ relations:
   is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: pruritus_intense_skin_itch
-  polarity: SUPPORTS
-  weight: 0.9
-  is_key: true
-  source_key: moh_qd_75_2015
-  source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: nausea_vomiting_diarrhea
-  polarity: SUPPORTS
-  weight: 0.8
-  is_key: true
-  source_key: moh_qd_75_2015
-  source_edition: Quyết định số 75/QĐ-BYT
 excerpts:
 - excerpt_key: benh_da_do_anh_sang_chan_doan
   title: Tiêu chuẩn chẩn đoán lâm sàng Bệnh da do ánh sáng

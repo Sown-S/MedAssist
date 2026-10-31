@@ -9,12 +9,6 @@ description: Bệnh phong là bệnh nhiễm trùng kinh diễn do trực khuẩ
   leprae (M. leprae) gây nên. Bệnh có thể gây các tàn tật nếu không được phát hiện
   và điều trị kịp thời.
 relations:
-- symptom_code: pigmentary_macule_patch
-  polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
-  source_key: moh_qd_75_2015
-  source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: maculopapular_rash
   polarity: SUPPORTS
   weight: 0.82
@@ -30,6 +24,12 @@ relations:
 - symptom_code: scaly_plaque_hyperkeratosis
   polarity: SUPPORTS
   weight: 0.75
+  is_key: false
+  source_key: moh_qd_75_2015
+  source_edition: Quyết định số 75/QĐ-BYT
+- symptom_code: fatigue_malaise
+  polarity: SUPPORTS
+  weight: 0.65
   is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT

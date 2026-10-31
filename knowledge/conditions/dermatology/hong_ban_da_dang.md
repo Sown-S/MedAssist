@@ -17,7 +17,7 @@ relations:
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: urticarial_wheal_angioedema
   polarity: SUPPORTS
-  weight: 0.97
+  weight: 0.95
   is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT

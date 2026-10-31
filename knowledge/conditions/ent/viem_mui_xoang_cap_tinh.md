@@ -17,25 +17,19 @@ relations:
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: facial_sinus_pain_anosmia
   polarity: SUPPORTS
-  weight: 0.94
+  weight: 0.92
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: nasal_obstruction_stuffiness
   polarity: SUPPORTS
-  weight: 0.92
+  weight: 0.9
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: rhinorrhea_nasal_congestion
   polarity: SUPPORTS
-  weight: 0.9
-  is_key: true
-  source_key: moh_qd_5643_2015
-  source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: epistaxis_nasal_bleeding
-  polarity: SUPPORTS
-  weight: 0.88
+  weight: 0.86
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
@@ -48,12 +42,6 @@ relations:
 - symptom_code: headache_dull
   polarity: SUPPORTS
   weight: 0.75
-  is_key: false
-  source_key: moh_qd_5643_2015
-  source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: fatigue_malaise
-  polarity: SUPPORTS
-  weight: 0.7
   is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT

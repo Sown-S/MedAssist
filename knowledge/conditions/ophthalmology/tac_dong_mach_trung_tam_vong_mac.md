@@ -11,7 +11,7 @@ description: Tắc động mạch võng mạc là hiện tƣợng tắc nghẽn 
 relations:
 - symptom_code: retinal_vitreous_optic_disc_lesion
   polarity: SUPPORTS
-  weight: 0.97
+  weight: 0.95
   is_key: true
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT

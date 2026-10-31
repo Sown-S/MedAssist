@@ -6,7 +6,7 @@ name_en: Viêm cơ, áp xe cơ nhiễm khuẩn
 icd10_code: M60.0
 disease_group: musculoskeletal
 description: Viêm cơ nhiễm khuẩn (infectiuos myositis) là tổn thương viêm hoặc áp
-  xe tại cơ vân do vi khuẩn gây nên.
+  xe tại cơ.
 relations:
 - symptom_code: fever_high
   polarity: SUPPORTS

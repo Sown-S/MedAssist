@@ -10,12 +10,6 @@ description: Viêm khớp phản ứng được đặc trưng bởi tình trạn
   hoặc đường tiêu hoá. Biểu hiện viêm có thể từ một đến vài khớp, thường gặp các khớp
   lớn ở.
 relations:
-- symptom_code: psoriatic_plaque_nail_pitting
-  polarity: SUPPORTS
-  weight: 0.97
-  is_key: true
-  source_key: moh_qd_361_2014
-  source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: asymmetric_oligoarthritis_lower
   polarity: SUPPORTS
   weight: 0.96
@@ -49,12 +43,6 @@ relations:
 - symptom_code: anemia_pallor_jaundice
   polarity: SUPPORTS
   weight: 0.82
-  is_key: false
-  source_key: moh_qd_361_2014
-  source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: weight_loss_anorexia
-  polarity: SUPPORTS
-  weight: 0.77
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT

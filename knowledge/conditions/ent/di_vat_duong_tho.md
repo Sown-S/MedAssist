@@ -45,18 +45,6 @@ relations:
   is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: fever_low_grade
-  polarity: SUPPORTS
-  weight: 0.75
-  is_key: false
-  source_key: moh_qd_5643_2015
-  source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: sweating_profuse
-  polarity: SUPPORTS
-  weight: 0.75
-  is_key: false
-  source_key: moh_qd_5643_2015
-  source_edition: Quyết định số 5643/QĐ-BYT
 excerpts:
 - excerpt_key: di_vat_duong_tho_chan_doan
   title: Tiêu chuẩn chẩn đoán lâm sàng Dị vật đường thở

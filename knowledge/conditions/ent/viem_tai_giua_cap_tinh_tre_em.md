@@ -10,27 +10,9 @@ description: Viêm tai giữa (VTG) cấp tính là tình trạng viêm nhiễm 
   tùy theo vi trùng gây bệnh, tùy theo thể địa... thời gian kéo dài dưới 3 tháng.
   Tình trạng viêm.
 relations:
-- symptom_code: otorrhea_ear_discharge
-  polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
-  source_key: moh_qd_5643_2015
-  source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: tympanic_membrane_lesion
   polarity: SUPPORTS
   weight: 0.97
-  is_key: true
-  source_key: moh_qd_5643_2015
-  source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: external_ear_swelling_fistula
-  polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
-  source_key: moh_qd_5643_2015
-  source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: vesicular_blister_rash
-  polarity: SUPPORTS
-  weight: 0.95
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
@@ -40,7 +22,7 @@ relations:
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: otalgia_ear_pain
+- symptom_code: external_ear_swelling_fistula
   polarity: SUPPORTS
   weight: 0.92
   is_key: true
@@ -53,6 +35,12 @@ relations:
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: tinnitus_ear_fullness
+  polarity: SUPPORTS
+  weight: 0.9
+  is_key: true
+  source_key: moh_qd_5643_2015
+  source_edition: Quyết định số 5643/QĐ-BYT
+- symptom_code: otalgia_ear_pain
   polarity: SUPPORTS
   weight: 0.9
   is_key: true

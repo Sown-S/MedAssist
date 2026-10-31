@@ -17,7 +17,7 @@ relations:
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: retinal_vitreous_optic_disc_lesion
   polarity: SUPPORTS
-  weight: 0.97
+  weight: 0.95
   is_key: true
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
@@ -37,12 +37,6 @@ relations:
   polarity: SUPPORTS
   weight: 0.92
   is_key: true
-  source_key: moh_qd_40_2015
-  source_edition: Quyết định số 40/QĐ-BYT
-- symptom_code: conjunctivitis_uveitis_red_eye
-  polarity: SUPPORTS
-  weight: 0.82
-  is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: fever_low_grade

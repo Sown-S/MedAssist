@@ -11,29 +11,17 @@ description: Viêm xương chũm cấp tính là tình trạng viêm các thông
 relations:
 - symptom_code: otorrhea_ear_discharge
   polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
-  source_key: moh_qd_5643_2015
-  source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: tympanic_membrane_lesion
-  polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
-  source_key: moh_qd_5643_2015
-  source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: otalgia_ear_pain
-  polarity: SUPPORTS
-  weight: 0.94
-  is_key: true
-  source_key: moh_qd_5643_2015
-  source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: external_ear_swelling_fistula
-  polarity: SUPPORTS
-  weight: 0.94
+  weight: 0.96
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: hearing_loss_deafness
+  polarity: SUPPORTS
+  weight: 0.92
+  is_key: true
+  source_key: moh_qd_5643_2015
+  source_edition: Quyết định số 5643/QĐ-BYT
+- symptom_code: external_ear_swelling_fistula
   polarity: SUPPORTS
   weight: 0.92
   is_key: true
@@ -45,16 +33,16 @@ relations:
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: skin_cellulitis_pus_abscess
+- symptom_code: otalgia_ear_pain
   polarity: SUPPORTS
   weight: 0.9
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: fatigue_malaise
+- symptom_code: skin_cellulitis_pus_abscess
   polarity: SUPPORTS
-  weight: 0.7
-  is_key: false
+  weight: 0.9
+  is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 excerpts:

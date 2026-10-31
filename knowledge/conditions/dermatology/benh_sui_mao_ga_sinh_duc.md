@@ -6,8 +6,7 @@ name_en: Genital wart
 icd10_code: A63.0
 disease_group: dermatology
 description: Sùi mào gà sinh dục là một bệnh LTQĐTD hay gặp, do Human papilloma Hầu
-  hết người nhiễm HPV không có biểu hiện lâm sàng, tỷ lệ có triệu chứng chỉ khoảng
-  1-2%.
+  hết người nhiễm HPV không có biểu hiện lâm sàng, tỷ lệ có triệu.
 relations:
 - symptom_code: genital_ulcer_chancre_discharge
   polarity: SUPPORTS
@@ -15,34 +14,22 @@ relations:
   is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: psoriatic_plaque_nail_pitting
+- symptom_code: pruritus_intense_skin_itch
   polarity: SUPPORTS
-  weight: 0.95
+  weight: 0.88
   is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: pustular_furuncle_folliculitis
+- symptom_code: maculopapular_rash
   polarity: SUPPORTS
-  weight: 0.94
+  weight: 0.82
   is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: scaly_plaque_hyperkeratosis
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
-  source_key: moh_qd_75_2015
-  source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: verrucous_papule_nodule_ulcer
-  polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
-  source_key: moh_qd_75_2015
-  source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: pruritus_intense_skin_itch
-  polarity: SUPPORTS
-  weight: 0.88
-  is_key: true
+  weight: 0.75
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 excerpts:

@@ -5,36 +5,44 @@ name_vi: Phổi tắc nghẽn mạn tính
 name_en: BPTNMT
 icd10_code: J98.9
 disease_group: respiratory
-description: Phổi tắc nghẽn mạn tính là bệnh lý lâm sàng được chẩn đoán và điều trị
-  theo hướng dẫn chuyên môn của Bộ Y tế.
+description: Bệnh phổi tắc nghẽn mạn tính (BPTNMT) là bệnh hô hấp phổ biến có thể
+  phòng và điều trị được. Bệnh đặc trưng bởi các triệu chứng hô hấp dai dẳng và giới
+  hạn luồng khí, là hậu quả của những bất thường của đường thở và/hoặc phế nang thường
+  do phơi.
 relations:
-- symptom_code: history_smoking_dust_exposure
-  polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
-  source_key: moh_qd_4562_2018
-  source_edition: Quyết định số 4562/QĐ-BYT
 - symptom_code: cough_productive_sputum
   polarity: SUPPORTS
-  weight: 0.95
+  weight: 0.98
   is_key: true
   source_key: moh_qd_4562_2018
   source_edition: Quyết định số 4562/QĐ-BYT
 - symptom_code: dyspnea_chronic_exertional
   polarity: SUPPORTS
-  weight: 0.94
+  weight: 0.98
   is_key: true
   source_key: moh_qd_4562_2018
   source_edition: Quyết định số 4562/QĐ-BYT
 - symptom_code: wheezing_bronchospasm
   polarity: SUPPORTS
-  weight: 0.85
-  is_key: false
+  weight: 0.98
+  is_key: true
   source_key: moh_qd_4562_2018
   source_edition: Quyết định số 4562/QĐ-BYT
-- symptom_code: fatigue_malaise
+- symptom_code: history_smoking_dust_exposure
   polarity: SUPPORTS
-  weight: 0.72
+  weight: 0.98
+  is_key: true
+  source_key: moh_qd_4562_2018
+  source_edition: Quyết định số 4562/QĐ-BYT
+- symptom_code: cough_dry
+  polarity: SUPPORTS
+  weight: 0.89
+  is_key: true
+  source_key: moh_qd_4562_2018
+  source_edition: Quyết định số 4562/QĐ-BYT
+- symptom_code: lymphadenopathy_splenomegaly
+  polarity: SUPPORTS
+  weight: 0.82
   is_key: false
   source_key: moh_qd_4562_2018
   source_edition: Quyết định số 4562/QĐ-BYT
@@ -47,11 +55,11 @@ excerpts:
 ---
 
 ## excerpt: phoi_tac_nghen_man_tinh_chan_doan
-- 1.2.2. Chẩn đoán xác định áp dụng cho cơ sở y tế đã được trang bị
-- 1.3.2. Đánh giá triệu chứng và ảnh hưởng của bệnh
-- 3.3.2. Các thăm dò chẩn đoán cho đợt cấp BPTNMT tại bệnh viện
-- 5.4.3. Điều trị giảm nhẹ khó thở
-- Bảng 5.3. Phác đồ điều trị khó thở bằng Morphin ở bệnh nhân BPTNMT
-- Biểu đồ 3.1. Hướng dẫn xử trí ban đầu đợt cấp BPTNMT&HPQ………………..…… 34
-- Biểu đồ 3.2. Hướng dẫn dùng kháng sinh cho đợt cấp BPTNMT mức độ trung bình ... 36
-- Biểu đồ 3.3. Điều trị kháng sinh cho bệnh nhân đợt cấp BPTNMT nhập viện .............. 38
+- Bệnh hay gặp ở nam giới trên 40 tuổi.
+- Tiền sử: hút thuốc lá, thuốc lào (bao gồm cả hút thuốc chủ động và thụ động).
+- ứng đường thở (hen phế quản hoặc viêm phế quản co thắt).
+- Ho, khạc đờm kéo dài không do các bệnh phổi khác như lao phổi, giãn phế
+- quản...: là triệu chứng thường gặp. Lúc đầu có thể chỉ có ho ngắt quãng, sau đó ho dai
+- dẳng hoặc ho hàng ngày (ho kéo dài ít nhất 3 tháng trong 1 năm và trong 2 năm liên
+- tiếp), ho khan hoặc ho có đờm, thường khạc đờm về buổi sáng. Ho đờm mủ là một
+- Khó thở: tiến triển nặng dần theo thời gian, lúc đầu chỉ có khó thở khi gắng sức,
