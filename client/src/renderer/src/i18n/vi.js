@@ -2189,6 +2189,10 @@ export const VI = {
     'Các phòng khám và phòng xét nghiệm. Mỗi phòng khám có một bác sĩ, gán ở Tài khoản nhân viên.',
   '+ Add room': '+ Thêm phòng',
   'Add room': 'Thêm phòng',
+  // Lưới bắt lỗi giao diện (ErrorBoundary)
+  'Something went wrong on this screen': 'Màn hình này vừa gặp lỗi',
+  'Data already saved is not affected. Try again, or reload the app if it keeps happening.': 'Dữ liệu đã lưu không bị ảnh hưởng. Bấm Thử lại, hoặc tải lại ứng dụng nếu lỗi vẫn lặp lại.',
+  'Reload the app': 'Tải lại ứng dụng',
   // Chuỗi còn thiếu (phát hiện bởi tests/i18n.test.js)
   'Inventory /': 'Kho /',
   '+ Age': '+ Tuổi',

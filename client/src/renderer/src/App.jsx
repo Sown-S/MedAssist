@@ -1,5 +1,5 @@
 import { useState, useSyncExternalStore } from 'react'
-import { NavLink, Routes, Route, Navigate, useNavigate } from 'react-router-dom'
+import { NavLink, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom'
 import { getRenderKey, subscribe } from './i18n'
 import { ToastProvider } from './context/ToastContext'
 import { AuthProvider, useAuth } from './context/AuthContext'
@@ -12,6 +12,7 @@ import Doctor from './pages/Doctor'
 import Admin from './pages/Admin'
 import Reports from './pages/Reports'
 import Modal, { ModalHeader } from './components/Modal'
+import ErrorBoundary from './components/ErrorBoundary'
 import { useQueue, isMine, inRoom, atLabs } from './api/queueStore'
 import { translate } from './i18n'
 import { useServerOnline } from './api/connectivity'
@@ -31,6 +32,7 @@ const TABS = [
 function Shell() {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
+  const location = useLocation()
   // Bác sĩ bấm Đăng xuất mà còn bệnh nhân trong phòng / đang đi xét nghiệm → nhắc trước (không có ca trực để kết thúc).
   const [leaving, setLeaving] = useState(false)
   const serverOnline = useServerOnline()
@@ -85,42 +87,45 @@ function Shell() {
         </div>
       )}
 
-      <Routes>
-        <Route path="/" element={<Navigate to={user.home} replace />} />
-        <Route path="/login" element={<Navigate to={user.home} replace />} />
-        <Route
-          path="/reception"
-          element={
-            <RequireRole allow={['reception']}>
-              <Reception />
-            </RequireRole>
-          }
-        />
-        <Route
-          path="/doctor"
-          element={
-            <RequireRole allow={['doctor']}>
-              <Doctor />
-            </RequireRole>
-          }
-        />
-        <Route
-          path="/reports"
-          element={
-            <RequireRole allow={['admin']}>
-              <Reports />
-            </RequireRole>
-          }
-        />
-        <Route
-          path="/admin"
-          element={
-            <RequireRole allow={['admin', 'doctor']}>
-              <Admin />
-            </RequireRole>
-          }
-        />
-      </Routes>
+      {/* Lỗi trong một trang chỉ thay trang đó bằng thông báo — thanh trên vẫn đổi tab / đăng xuất được; đổi trang là dựng lại. */}
+      <ErrorBoundary resetKey={location.pathname + location.search}>
+        <Routes>
+          <Route path="/" element={<Navigate to={user.home} replace />} />
+          <Route path="/login" element={<Navigate to={user.home} replace />} />
+          <Route
+            path="/reception"
+            element={
+              <RequireRole allow={['reception']}>
+                <Reception />
+              </RequireRole>
+            }
+          />
+          <Route
+            path="/doctor"
+            element={
+              <RequireRole allow={['doctor']}>
+                <Doctor />
+              </RequireRole>
+            }
+          />
+          <Route
+            path="/reports"
+            element={
+              <RequireRole allow={['admin']}>
+                <Reports />
+              </RequireRole>
+            }
+          />
+          <Route
+            path="/admin"
+            element={
+              <RequireRole allow={['admin', 'doctor']}>
+                <Admin />
+              </RequireRole>
+            }
+          />
+        </Routes>
+      </ErrorBoundary>
       <Modal open={leaving} onClose={() => setLeaving(false)}>
         <ModalHeader title={translate('Patients still with you')} onClose={() => setLeaving(false)} />
         <div className="modal-body">
@@ -170,7 +175,9 @@ export default function App() {
   return (
     <AuthProvider>
       <ToastProvider>
-        <Shell key={lang} />
+        <ErrorBoundary>
+          <Shell key={lang} />
+        </ErrorBoundary>
       </ToastProvider>
     </AuthProvider>
   )
