@@ -10,7 +10,7 @@ def admin(login):
 def test_list_shows_defaults(client, users, admin):
     rows = {s["setting_key"]: s for s in client.get("/api/v1/admin/settings", headers=admin).json()}
     assert set(rows) == {"inventory.near_expiry_days", "inventory.min_remaining_shelf_days",
-                         "clinic.profile", "billing.default_consultation_fee"}
+                         "clinic.profile", "billing.default_consultation_fee", "billing.consultation_service_code"}
     assert all("description" in r for r in rows.values())
 
 

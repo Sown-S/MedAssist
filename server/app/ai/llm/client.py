@@ -21,6 +21,7 @@ from app.ai.llm.errors import (
     LLMTimeoutError,
 )
 from app.ai.llm.ollama_client import OllamaClient
+from app.ai.test_mode import unlimited_assessment
 
 __all__ = [
     "LLMClient", "LLMError", "LLMConfigurationError", "LLMTimeoutError",
@@ -98,9 +99,10 @@ class LLMClient:
         if request_schema.get("type") != "object":
             raise LLMConfigurationError("LLM schema must describe a JSON object.")
         try:
-            async with asyncio.timeout(timeout_seconds):
+            request_timeout = None if unlimited_assessment.get() else timeout_seconds
+            async with asyncio.timeout(request_timeout):
                 raw = await self._ollama.generate(
-                    prompt=prompt, schema=request_schema, timeout_seconds=timeout_seconds
+                    prompt=prompt, schema=request_schema, timeout_seconds=request_timeout
                 )
         except TimeoutError:
             raise LLMTimeoutError("Local LLM request timed out.") from None

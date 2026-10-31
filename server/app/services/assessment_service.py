@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+import re
 from typing import Any, Mapping
 from uuid import UUID
 
@@ -17,6 +18,29 @@ from app.exceptions import NotFoundError
 from app.models.ai_assessment_log import AiAssessmentLog
 from app.models.knowledge_release import KnowledgeRelease
 from app.models.visit import Visit
+
+_LEADING_SYMPTOM_TAG_RE = re.compile(r"^\s*\[([a-z0-9]+(?:_[a-z0-9]+)*)\]\s*")
+_INLINE_SYMPTOM_TAG_RE = re.compile(r"\[([a-z0-9]+(?:_[a-z0-9]+)*)\]")
+
+
+def _clean_explanation(
+    raw: Any, symptom_map: Mapping[str, str] | None = None
+) -> str | None:
+    """Loại bỏ thẻ [symptom_code] kỹ thuật ở đầu câu giải thích và đổi thẻ nội tuyến sang tên tiếng Việt."""
+    if not isinstance(raw, str):
+        return None
+    text = raw.strip()
+    if not text:
+        return text
+    names = symptom_map or {}
+    stripped = _LEADING_SYMPTOM_TAG_RE.sub("", text, count=1).strip()
+    if stripped:
+        text = stripped
+    if names:
+        text = _INLINE_SYMPTOM_TAG_RE.sub(
+            lambda m: names.get(m.group(1), m.group(1)), text
+        )
+    return text
 
 
 def _candidate(
@@ -57,7 +81,9 @@ def _candidate(
         "supporting": evidence(supporting),
         "contradicting": evidence(contradicting),
         "missing": missing_items(missing if isinstance(missing, list) else [missing]),
-        "explanation": candidate.get("explanation", candidate.get("reason")),
+        "explanation": _clean_explanation(
+            candidate.get("explanation", candidate.get("reason")), names
+        ),
         "label": "Reference Suggestion",
     }
 
@@ -135,14 +161,25 @@ def get_latest_assessment(
         })
 
     candidates = log.candidates if isinstance(log.candidates, list) else []
+    symptom_map = _symptom_map(knowledge_reader) if knowledge_reader is not None else {}
     if any(
         not isinstance(candidate, Mapping)
         or "rank" not in candidate
         or "supporting" not in candidate
         for candidate in candidates
     ):
-        symptom_map = _symptom_map(knowledge_reader) if knowledge_reader is not None else {}
         candidates = _candidates({"candidates": candidates}, symptom_map)
+    else:
+        candidates = [
+            {
+                **candidate,
+                "explanation": _clean_explanation(
+                    candidate.get("explanation", candidate.get("reason")),
+                    symptom_map,
+                ),
+            }
+            for candidate in candidates
+        ]
     return {
         "assessment_id": log.assessment_id,
         "ai_status": visit.ai_status,
@@ -172,10 +209,6 @@ def evaluate_case_offline(
         raise ValueError("mode phải là RuleOnly hoặc Full")
     if mode == "Full" and llm_client is None:
         raise ValueError("Full cần llm_client")
-    if db is None:
-        class _DB:
-            pass
-        db = _DB()  # type: ignore[assignment]
     state = {"input_features": dict(case.get("input_features", case))}
     if mode == "RuleOnly":
         result = run_node1(state, knowledge_reader)
@@ -186,4 +219,30 @@ def evaluate_case_offline(
         result["candidates"] = result.get("candidates", [])[:3]
         result.update(ai_status="Degraded", mode="RuleOnly")
         return result
-    return asyncio.run(run_pipeline(state, knowledge_reader, llm_client, db, timeout_seconds=ASSESSMENT_TIMEOUT_SECONDS))  # type: ignore[arg-type]
+    if db is not None:
+        return asyncio.run(
+            run_pipeline(
+                state,
+                knowledge_reader,
+                llm_client,
+                db,
+                timeout_seconds=ASSESSMENT_TIMEOUT_SECONDS,
+            )
+        )
+    from app.core.database import SessionLocal
+
+    bind = getattr(knowledge_reader, "_bind", None)
+    session_ctx = Session(bind) if bind is not None else SessionLocal()
+    with session_ctx as real_db:
+        try:
+            return asyncio.run(
+                run_pipeline(
+                    state,
+                    knowledge_reader,
+                    llm_client,
+                    real_db,
+                    timeout_seconds=ASSESSMENT_TIMEOUT_SECONDS,
+                )
+            )
+        finally:
+            real_db.rollback()

@@ -133,6 +133,12 @@ python -m scripts.seed_drugs
 ```
 Kết quả: `Thuốc mới: 386, ... lô mới: 386 ...`. Xem [mục 6](#6-nạp--cập-nhật-danh-mục-thuốc).
 
+Danh mục dịch vụ, xét nghiệm, gói khám (giá mẫu, Admin sửa giá thật trên giao diện; xem `server/data/README.md`):
+
+```powershell
+python -m scripts.seed_services
+```
+
 ### 2.7b. Nạp tri thức lâm sàng (OKF của Tuấn, thư mục `knowledge/`)
 
 ```powershell
@@ -287,6 +293,7 @@ cd server
 alembic upgrade head
 # tạo lại 3 tài khoản (mục 2.6), rồi:
 python -m scripts.seed_drugs
+python -m scripts.seed_services
 ```
 
 > Không dùng `alembic downgrade base` trên DB dev để "làm sạch": lệnh này bị chặn (cần
@@ -399,7 +406,7 @@ server/
 ├── alembic/           # migration 0001–0006 (alembic.ini ở server/)
 ├── db/                # initdb (vai trò, múi giờ, medassist_test), lược đồ v1.8, tài khoản system
 ├── data/              # drugs.csv + README (nguồn danh mục thuốc)
-├── scripts/           # create_user, seed_drugs, import_okf (dùng code của app)
+├── scripts/           # create_user, seed_drugs, seed_services, import_okf (dùng code của app)
 ├── tests/             # api/, unit/ (kể cả unit/ai/) — chạy trên medassist_test
 ├── Dockerfile         # image dùng chung cho api, worker, migrate trên máy admin
 ├── .env.example

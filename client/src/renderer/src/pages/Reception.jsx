@@ -7,7 +7,7 @@ import SearchModal from '../components/SearchModal'
 import StaleVisitsModal from '../components/StaleVisitsModal'
 import Icon from '../components/Icon'
 import { useAuth } from '../context/AuthContext'
-import { useQueue, useQueueSync, acknowledgeRedFlag } from '../api/queueStore'
+import { useQueue, useQueueSync, syncStale, acknowledgeRedFlag } from '../api/queueStore'
 import { usePermissions, can } from '../api/permissionStore'
 import { translate } from '../i18n'
 import Dashboard from './reception/Dashboard'
@@ -50,6 +50,7 @@ export default function Reception() {
   const { user } = useAuth()
   usePermissions()
   useQueueSync() // backend thật: hỏi lại hàng đợi vài giây một lần
+  useEffect(() => void syncStale(), [])
   const { redFlags, stale = [] } = useQueue()
   const [staleOpen, setStaleOpen] = useState(false)
   // Báo ở quầy: tiếng "ding" mỗi khi bác sĩ sẵn sàng nhận người tiếp — lễ tân gọi miệng bệnh nhân vào phòng.

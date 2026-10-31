@@ -165,3 +165,54 @@ def test_latest_assessment_normalizes_queue_service_shapes():
 def test_invalid_offline_mode_is_rejected():
     with pytest.raises(ValueError, match="RuleOnly hoặc Full"):
         assessment_service.evaluate_case_offline({}, FakeKnowledgeReader(), mode="Other")
+
+
+def test_candidates_strip_leading_symptom_code_tag_in_explanation():
+    state = {
+        "candidates": [
+            candidate(
+                reason="[cough] Ho khan được ghi nhận hỗ trợ gợi ý này; cần đối chiếu [fever]."
+            )
+        ]
+    }
+    names = {"cough": "Ho", "fever": "Sốt"}
+    projected = assessment_service._candidates(state, names)[0]
+    assert (
+        projected["explanation"]
+        == "Ho khan được ghi nhận hỗ trợ gợi ý này; cần đối chiếu Sốt."
+    )
+
+
+def test_offline_full_mode_uses_session_local_when_db_not_passed(monkeypatch):
+    captured = {}
+
+    class DummySession:
+        def __enter__(self):
+            captured["entered"] = True
+            return self
+
+        def __exit__(self, exc_type, exc, tb):
+            captured["exited"] = True
+
+        def rollback(self):
+            captured["rolled_back"] = True
+
+    async def fake_run_pipeline(state, reader, llm, db, *, timeout_seconds):
+        captured["db"] = db
+        return {"ai_status": "Completed", "mode": "Full", "candidates": []}
+
+    import app.core.database as db_module
+
+    monkeypatch.setattr(db_module, "SessionLocal", lambda: DummySession())
+    monkeypatch.setattr(assessment_service, "run_pipeline", fake_run_pipeline)
+
+    out = assessment_service.evaluate_case_offline(
+        {"symptoms": {"cough": "PRESENT"}},
+        FakeKnowledgeReader(),
+        mode="Full",
+        llm_client=SimpleNamespace(),
+    )
+    assert out["mode"] == "Full"
+    assert captured.get("entered") is True
+    assert captured.get("rolled_back") is True
+    assert isinstance(captured.get("db"), DummySession)

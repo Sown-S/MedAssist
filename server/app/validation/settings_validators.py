@@ -33,6 +33,10 @@ class _ConsultationFee(BaseModel):
     value: int = Field(ge=0, le=100_000_000, strict=True)     # VNĐ, số nguyên
 
 
+class _ConsultationServiceCode(BaseModel):
+    value: str = Field(max_length=20, pattern=r"^[A-Za-z0-9_-]*$")      # rỗng = dùng phí khám mặc định
+
+
 SETTINGS: dict[str, tuple[type[BaseModel], Any, str]] = {
     "inventory.near_expiry_days": (_NearExpiryDays, 90,
                                    "Lô còn hạn nhưng hết hạn trong N ngày thì cảnh báo NearExpiry"),
@@ -41,6 +45,9 @@ SETTINGS: dict[str, tuple[type[BaseModel], Any, str]] = {
     "clinic.profile": (_ClinicProfile, {"name": "Phòng khám", "address": "", "phone": ""},
                        "Thông tin in trên hóa đơn/phiếu khám"),
     "billing.default_consultation_fee": (_ConsultationFee, 0, "Phí khám mặc định (VNĐ)"),
+    "billing.consultation_service_code": (_ConsultationServiceCode, "DV01",
+                                          "Mã dịch vụ khám trong danh mục làm dòng phí khám; rỗng hoặc ngừng dùng "
+                                          "thì dùng phí khám mặc định"),
 }
 
 

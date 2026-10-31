@@ -83,7 +83,7 @@ class OllamaClient:
         *,
         prompt: str,
         schema: Mapping[str, Any],
-        timeout_seconds: float,
+        timeout_seconds: float | None,
     ) -> bytes:
         """Gửi request cấu trúc không streaming và trả envelope thô."""
         try:

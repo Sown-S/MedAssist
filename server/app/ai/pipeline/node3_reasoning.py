@@ -49,7 +49,7 @@ async def run_node3(
     prompt = _reasoning_prompt(state, candidates)
     result["llm_output"] = await llm_client.generate_json(
         prompt=prompt,
-        schema=reasoning_json_schema(),
+        schema=reasoning_json_schema([c["condition_code"] for c in candidates]),
         timeout_seconds=timeout_seconds,
     )
     return result

@@ -22,6 +22,7 @@ rule_hits luôn có dạng {"hits": [...], "complete_now": [{symptom_code, sympt
 hàng và lúc worker ghi kết quả, để polling không mất danh sách "cần bổ sung ngay".
 """
 import datetime
+import hashlib
 import json
 import uuid
 from typing import Any
@@ -29,6 +30,7 @@ from typing import Any
 from sqlalchemy import case, func, select, text, update
 from sqlalchemy.orm import Session
 
+from app.ai.extraction.vital_extractor import extract_vitals
 from app.ai.interfaces import KnowledgeReader
 from app.ai.pipeline.node1_red_flag_gate import run_node1
 from app.core.config import settings
@@ -145,6 +147,10 @@ def enqueue_assessment(db: Session, visit_id: uuid.UUID, actor: User,
     return run
 
 
+def _text_hash(text: str | None) -> str:
+    return hashlib.sha256((text or "").encode("utf-8")).hexdigest()
+
+
 def enqueue_extraction(db: Session, visit_id: uuid.UUID, actor: User) -> AiAssessmentLog:
     """Xếp hàng trích xuất triệu chứng từ visit.free_text_description. Bên gọi commit."""
     visit = db.scalar(select(Visit).where(Visit.visit_id == visit_id).with_for_update())
@@ -161,8 +167,11 @@ def enqueue_extraction(db: Session, visit_id: uuid.UUID, actor: User) -> AiAsses
                .where(AiAssessmentLog.visit_id == visit_id, AiAssessmentLog.run_type == "Extraction",
                       AiAssessmentLog.status == "Queued")
                .values(status="Skipped", error_detail="SUPERSEDED", completed_at=func.now()))
+    # Đề xuất sinh hiệu chụp cùng lời kể của lần chạy này; chỉ lưu hash, không lưu lời kể (định danh)
     run = AiAssessmentLog(visit_id=visit_id, run_type="Extraction", triggered_by=actor.user_id,
-                          status="Queued", candidates=[])
+                          status="Queued", candidates=[],
+                          input_features={"text_sha256": _text_hash(visit.free_text_description),
+                                          "vital_proposals": extract_vitals(visit.free_text_description)})
     db.add(run)
     db.flush()
     audit.record(db, action="AI_ASSESSMENT", entity="visit", entity_id=visit_id, actor_id=actor.user_id,
@@ -319,5 +328,12 @@ def get_latest_extraction(db: Session, visit_id: uuid.UUID, reader: KnowledgeRea
              for row in reader.active_symptoms()}
     suggestions = [{**row, "symptom_name": names.get(row["symptom_code"], row["symptom_code"])}
                    for row in (run.candidates or [])] if run.status == "Completed" else []
+    snapshot = run.input_features or {}
+    visit = db.get(Visit, visit_id)
+    current = visit.vital_signs or {}
+    vitals = [{**p, "current": current.get(p["key"]), "requires_confirmation": True}
+              for p in snapshot.get("vital_proposals", [])]
+    # Lần chạy cũ không có hash: coi như đã đổi để giao diện yêu cầu trích xuất lại
+    changed = snapshot.get("text_sha256") != _text_hash(visit.free_text_description)
     return {"extraction_id": run.assessment_id, "status": run.status, "suggestions": suggestions,
-            "completed_at": run.completed_at}
+            "vital_proposals": vitals, "text_changed": changed, "completed_at": run.completed_at}

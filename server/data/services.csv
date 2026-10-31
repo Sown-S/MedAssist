@@ -1,0 +1,29 @@
+code,name,kind,group_key,unit,price,ref_low,ref_high,ref_text,sample
+DV01,Khám bệnh,Service,consult,lần,80000,,,,
+DV02,Khám chuyên khoa Nhi,Service,consult,lần,100000,,,,
+DV03,Thay băng vết thương,Service,procedure,lần,50000,,,,
+DV04,Cắt chỉ,Service,procedure,lần,40000,,,,
+DV05,Rửa vết thương,Service,procedure,lần,60000,,,,
+DV06,Chích rạch áp xe,Service,procedure,lần,200000,,,,
+DV07,Khâu vết thương nhỏ,Service,procedure,lần,150000,,,,
+DV08,Tiêm bắp,Service,injection,lần,20000,,,,
+DV09,Tiêm tĩnh mạch,Service,injection,lần,30000,,,,
+DV10,Truyền dịch,Service,injection,lần,100000,,,,
+DV11,Khí dung,Service,procedure,lần,50000,,,,
+DV12,Đo điện tim (ECG),Service,diagnostic,lần,80000,,,,
+DV13,Siêu âm ổ bụng,Service,diagnostic,lần,150000,,,,
+DV14,Đo đường huyết mao mạch,Service,diagnostic,lần,30000,,,,
+XN01,Công thức máu (CBC) — Bạch cầu (WBC),Lab,hematology,G/L,90000,4,10,,blood
+XN02,Hồng cầu (RBC),Lab,hematology,T/L,0,3.8,5.5,,blood
+XN03,Huyết sắc tố (HGB),Lab,hematology,g/L,0,120,170,"Nữ 120–155, nam 130–170",blood
+XN04,Tiểu cầu (PLT),Lab,hematology,G/L,0,150,400,,blood
+XN05,Glucose máu lúc đói,Lab,biochemistry,mmol/L,30000,3.9,6.4,,blood
+XN06,Ure,Lab,biochemistry,mmol/L,30000,2.5,7.5,,blood
+XN07,Creatinin,Lab,biochemistry,µmol/L,30000,62,120,"Nữ 53–100, nam 62–120",blood
+XN08,AST (GOT),Lab,biochemistry,U/L,30000,,40,≤ 40,blood
+XN09,ALT (GPT),Lab,biochemistry,U/L,30000,,40,≤ 40,blood
+XN10,CRP,Lab,immunology,mg/L,80000,,5,< 5,blood
+XN11,HbA1c,Lab,biochemistry,%,120000,4,6,,blood
+XN12,Cholesterol toàn phần,Lab,biochemistry,mmol/L,40000,,5.2,< 5.2,blood
+XN13,Tổng phân tích nước tiểu,Lab,urine,,50000,,,Âm tính,urine
+XN14,X-quang ngực thẳng,Lab,imaging,,120000,,,Mô tả,none

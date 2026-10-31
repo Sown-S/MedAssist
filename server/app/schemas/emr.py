@@ -11,6 +11,7 @@ from pydantic import BaseModel, ConfigDict, computed_field
 
 from app.schemas.inventory import MoneyOut
 from app.schemas.patient import patient_code
+from app.schemas.service import ServiceOrderOut
 from app.schemas.visit import VisitOut
 
 __all__ = ["patient_code"]
@@ -151,3 +152,4 @@ class VisitRecord(BaseModel):
     diagnoses: list[RecordDiagnosis]
     prescription: RecordPrescription | None
     invoice: RecordInvoice | None
+    service_orders: list[ServiceOrderOut] = []
