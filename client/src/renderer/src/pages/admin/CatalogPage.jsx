@@ -3,6 +3,8 @@ import Icon from '../../components/Icon'
 import { translate } from '../../i18n'
 import { useAuth } from '../../context/AuthContext'
 import { useCatalogs } from '../../api/catalogStore'
+import { useLiveCatalog, isLiveCatalog } from '../../api/serviceCatalogLive'
+import { DEMO_MODE } from '../../api/client'
 import { useInventory, todayISO } from '../../api/inventoryStore'
 import { exportCsv, fmtDateTime, unitLabel } from './inventory/shared'
 import { SCHEMAS } from './catalogs/schemas'
@@ -43,7 +45,10 @@ function refActive(ref, cats) {
 }
 
 export default function CatalogPage({ onNavigate }) {
-  const cats = useCatalogs()
+  // Backend thật: Dịch vụ, Xét nghiệm, Gói khám lấy từ server (ERD v2.1).
+  const local = useCatalogs()
+  const lc = useLiveCatalog(!DEMO_MODE)
+  const cats = DEMO_MODE ? local : { ...local, services: lc.services, labs: lc.labs, packages: lc.packages }
   const inv = useInventory()
   const { user } = useAuth()
   const [q, setQ] = useState('')
@@ -163,8 +168,8 @@ export default function CatalogPage({ onNavigate }) {
                     <td className="ai-actions" onClick={(e) => e.stopPropagation()}>
                       <button
                         className="btn btn-ghost btn-sm"
-                        title={key.startsWith('@') ? 'Add or edit on the catalog page' : 'Import from Excel (CSV)'}
-                        disabled={key.startsWith('@')}
+                        title={key.startsWith('@') || isLiveCatalog(key) ? 'Add or edit on the catalog page' : 'Import from Excel (CSV)'}
+                        disabled={key.startsWith('@') || isLiveCatalog(key)}
                         onClick={() => {
                           importKey.current = key
                           fileRef.current?.click()

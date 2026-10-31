@@ -5,7 +5,9 @@ import Button from './Button'
 import { useToast } from '../context/ToastContext'
 import { useAuth } from '../context/AuthContext'
 import { useAsyncAction } from '../hooks/useAsyncAction'
-import { useCatalogs } from '../api/catalogStore'
+import { useServiceCatalog } from '../api/serviceStore'
+import { fetchServiceOrders } from '../api/serviceApi'
+import CancelOrderItemModal from './CancelOrderItemModal'
 import { getSettings, PAYMENT_METHODS } from '../api/settingsStore'
 import { getPrescription } from '../api/examApi'
 import { cancelVisit } from '../api/clinicApi'
@@ -17,6 +19,8 @@ import { translate } from '../i18n'
 
 // CẤP PHÁT & THU TIỀN với backend thật (billing_router): đọc đơn + hóa đơn của lượt khám từ server, mọi thao tác gọi API
 // rồi tải lại — server là nguồn sự thật (kho, hóa đơn, trạng thái lượt khám). Bản giả lập: PaymentModal.jsx.
+// ERD v2.1: hoá đơn tự có dòng cận lâm sàng từ phiếu chỉ định (service_order_id) — quầy không sửa được, chỉ huỷ chỉ định
+// (hoá đơn tự lập lại); dòng nhập tay sửa như cũ. Chỉ định ngoài danh mục chưa có giá nằm ở unbilled_items để quầy thêm tay.
 const fmt = (n) => Math.max(Number(n) || 0, 0).toLocaleString('vi-VN') + 'đ'
 const DS = {
   Pending: { label: 'Waiting to dispense', cls: 'warn' },
@@ -27,7 +31,9 @@ const DS = {
 export default function PaymentModalLive({ open, onClose, patient, initialTab = 'dispense' }) {
   const { showToast } = useToast()
   const { user } = useAuth()
-  const cats = useCatalogs()
+  const cat = useServiceCatalog()
+  const [orders, setOrders] = useState([])
+  const [cancelLine, setCancelLine] = useState(null) // dòng chỉ định đang huỷ
   const [rx, setRx] = useState(null)
   const [inv, setInv] = useState(undefined) // undefined = đang tải, null = không có hóa đơn
   const [err, setErr] = useState('')
@@ -45,9 +51,10 @@ export default function PaymentModalLive({ open, onClose, patient, initialTab = 
 
   const load = useCallback(async () => {
     try {
-      const [p, i] = await Promise.all([getPrescription(visitId), getInvoice(visitId)])
+      const [p, i, o] = await Promise.all([getPrescription(visitId), getInvoice(visitId), fetchServiceOrders(visitId)])
       setRx(p)
       setInv(i)
+      setOrders(o)
       setFee(i ? String(Number(i.consultation_fee)) : '')
       setErr('')
     } catch (e) {
@@ -78,7 +85,19 @@ export default function PaymentModalLive({ open, onClose, patient, initialTab = 
   const waiting = items.filter((l) => l.dispense_status === 'Pending')
   const paid = inv?.payment_status === 'Paid'
   const editable = inv?.payment_status === 'Pending'
-  const services = (inv?.items ?? []).filter((x) => x.item_type === 'Paraclinical')
+  const paraclinical = (inv?.items ?? []).filter((x) => x.item_type === 'Paraclinical')
+  // Dòng nhập tay (quầy sửa được) và dòng sinh từ phiếu chỉ định (chỉ huỷ được chỉ định).
+  const services = paraclinical.filter((x) => !x.service_order_id)
+  const ordered = paraclinical.filter((x) => x.service_order_id)
+  const consultLine = (inv?.items ?? []).find((x) => x.item_type === 'Consultation')
+  // Chỉ định ngoài danh mục chưa có giá; server vẫn liệt kê sau khi quầy đã thêm tay → ẩn dòng đã có tên trên hoá đơn.
+  const unbilled = (inv?.unbilled_items ?? []).filter((u) => !services.some((x) => x.item_name === u.item_name))
+  const consultServices = cat.services.filter((s) => s.kind === 'Service' && s.group_key === 'consult' && s.is_active !== false)
+  // Dòng hoá đơn từ chỉ định → dòng chỉ định tương ứng (để huỷ). Dòng gói ("Gói: …") không huỷ riêng ở quầy.
+  const orderItemOf = (x) =>
+    orders
+      .find((o) => o.order_id === x.service_order_id)
+      ?.items.find((it) => it.status === 'Ordered' && !it.in_package && it.item_name === x.item_name)
   const drugItems = (inv?.items ?? []).filter((x) => x.item_type === 'Drug')
   const ticket = patient.ticket ? String(patient.ticket).padStart(3, '0') : ''
 
@@ -93,16 +112,16 @@ export default function PaymentModalLive({ open, onClose, patient, initialTab = 
   }
   const all = () => act(() => dispenseAll(visitId), 'All drugs recorded as dispensed')
 
-  // ---------- Dòng cận lâm sàng (thay toàn bộ danh sách nhập tay) ----------
+  // ---------- Dòng cận lâm sàng (thay toàn bộ danh sách NHẬP TAY; dòng từ chỉ định server tự giữ) ----------
   const asLine = (x) => ({ item_name: x.item_name, quantity: x.quantity, unit_price: Number(x.unit_price) })
   const saveServices = (next) => act(() => editInvoice(visitId, { paraclinical_items: next }), 'Invoice updated')
-  function addFromCatalog(key) {
+  function addFromCatalog(id) {
     setAdding('')
-    if (!key) return
-    const [kind, code] = key.split(':')
-    const row = (kind === 'svc' ? cats.services : cats.labs).find((x) => x.code === code)
-    if (row) saveServices([...services.map(asLine), { item_name: row.name, quantity: 1, unit_price: row.price ?? 0 }])
+    const row = cat.services.find((x) => x.service_id === id)
+    if (row) saveServices([...services.map(asLine), { item_name: row.name, quantity: 1, unit_price: Number(row.price) || 0 }])
   }
+  // Đổi dịch vụ khám (vd Khám chuyên khoa Nhi): tên và giá theo danh mục.
+  const changeConsult = (id) => id && act(() => editInvoice(visitId, { consultation_service_id: id }), 'Invoice updated')
   function addCustom() {
     if (!custom.name.trim() || custom.amount === '' || !(Number(custom.amount) >= 0)) return showToast(translate('Each service line needs a name and an amount.'))
     saveServices([...services.map(asLine), { item_name: custom.name.trim(), quantity: 1, unit_price: Number(custom.amount) }])
@@ -253,7 +272,19 @@ export default function PaymentModalLive({ open, onClose, patient, initialTab = 
                   <div className="section-label">Services</div>
                   <div className="invoice-row">
                     <span className="badge info">{translate('Consultation')}</span>
-                    <div className="inv-name">{translate('Consultation fee')}</div>
+                    <div className="inv-name">
+                      {consultLine?.item_name ?? translate('Consultation fee')}
+                      {editable && consultServices.length > 1 && (
+                        <select className="ai-select" value="" onChange={(e) => changeConsult(e.target.value)} style={{ marginTop: 4 }}>
+                          <option value="">{translate('Change consultation service…')}</option>
+                          {consultServices.map((s) => (
+                            <option key={s.service_id} value={s.service_id}>
+                              {s.name} — {fmt(s.price)}
+                            </option>
+                          ))}
+                        </select>
+                      )}
+                    </div>
                     {editable ? (
                       <span className="svc-fee">
                         <input type="number" min="0" step="1000" value={fee} onChange={(e) => setFee(e.target.value)} />
@@ -267,6 +298,36 @@ export default function PaymentModalLive({ open, onClose, patient, initialTab = 
                       <div className="inv-price">{fmt(inv.consultation_fee)}</div>
                     )}
                   </div>
+                  {ordered.map((x) => {
+                    const it = orderItemOf(x)
+                    return (
+                      <div className="invoice-row" key={x.invoice_item_id}>
+                        <span className="badge info">{translate('Ordered by the doctor')}</span>
+                        <div className="inv-name">
+                          {x.item_name}
+                          {x.quantity > 1 && <div className="inv-sub">× {x.quantity}</div>}
+                          {editable && it && !it.result && (
+                            <div>
+                              <button className="btn btn-ghost btn-sm inv-cancel" title={translate('The patient did not have this done — remove it from the invoice')} onClick={() => setCancelLine({ itemId: it.item_id, name: it.item_name })}>
+                                Cancel order
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                        <div className="inv-price">{fmt(x.subtotal)}</div>
+                      </div>
+                    )
+                  })}
+                  {unbilled.length > 0 && (
+                    <div className="warn-banner show" style={{ margin: '6px 0' }}>
+                      <b>{translate('Ordered outside the catalog — no price yet')}:</b>{' '}
+                      {unbilled.map((u) => (
+                        <button key={u.item_id} className="btn btn-ghost btn-sm" disabled={!editable} onClick={() => setCustom({ name: u.item_name, amount: '' })} title={translate('Add it below with its price')}>
+                          + {u.item_name}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                   {services.map((x, idx) => (
                     <div className="invoice-row" key={x.invoice_item_id}>
                       <span className="badge muted">{translate('Paraclinical')}</span>
@@ -287,19 +348,19 @@ export default function PaymentModalLive({ open, onClose, patient, initialTab = 
                       <select className="ai-select" value={adding} onChange={(e) => addFromCatalog(e.target.value)}>
                         <option value="">{translate('+ Add a service from the catalog…')}</option>
                         <optgroup label={translate('Services')}>
-                          {cats.services
-                            .filter((x) => x.active !== false && x.group !== 'consult')
+                          {cat.services
+                            .filter((x) => x.kind === 'Service' && x.is_active !== false && x.group_key !== 'consult')
                             .map((x) => (
-                              <option key={x.code} value={'svc:' + x.code}>
-                                {x.name} — {fmt(x.price ?? 0)}
+                              <option key={x.service_id} value={x.service_id}>
+                                {x.name} — {fmt(x.price)}
                               </option>
                             ))}
                         </optgroup>
                         <optgroup label={translate('Lab tests')}>
-                          {cats.labs
-                            .filter((x) => x.active !== false && x.price > 0)
+                          {cat.services
+                            .filter((x) => x.kind === 'Lab' && x.is_active !== false && Number(x.price) > 0)
                             .map((x) => (
-                              <option key={x.code} value={'lab:' + x.code}>
+                              <option key={x.service_id} value={x.service_id}>
                                 {x.name} — {fmt(x.price)}
                               </option>
                             ))}
@@ -404,6 +465,18 @@ export default function PaymentModalLive({ open, onClose, patient, initialTab = 
             </div>
           )}
         </>
+      )}
+      {cancelLine && (
+        <CancelOrderItemModal
+          item={cancelLine}
+          onClose={() => setCancelLine(null)}
+          onDone={async () => {
+            setCancelLine(null)
+            await load()
+            syncQueue()
+            showToast(translate('Order cancelled — the invoice was re-issued'))
+          }}
+        />
       )}
     </Modal>
   )

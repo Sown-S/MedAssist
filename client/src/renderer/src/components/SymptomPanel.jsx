@@ -9,8 +9,9 @@ import { STATES, SOURCES, useSymptomCatalog, groupSymptoms, symptomName, request
 //  - ask: mã triệu chứng luật cờ đỏ đang thiếu (Adaptive Lite) → hiện "Hỏi ngay" để lễ tân hỏi và chọn.
 //  - textLocked: lời kể chỉ đọc (lượt đã check-in) — vẫn chọn triệu chứng được.
 //  - onExtract(text, { signal }): trích xuất ở server (POST/GET /visits/{id}/symptom-extraction); không có thì dùng bản giả lập.
+//  - onVitals(list): sinh hiệu server đọc được trong lời kể (vital_proposals) — form cha hiện để y tá xác nhận.
 // Đề xuất của mô hình chỉ là CHIP CHỜ XÁC NHẬN; bấm xác nhận thì mới vào value (nguồn Extracted). Chưa xác nhận = không dùng.
-export default function SymptomPanel({ value, onChange, text, onText, ask = [], disabled = false, textLocked = false, onExtract = requestExtraction }) {
+export default function SymptomPanel({ value, onChange, text, onText, ask = [], disabled = false, textLocked = false, onExtract = requestExtraction, onVitals }) {
   const [job, setJob] = useState({ status: 'idle' }) // idle | running | done | failed
   const [proposals, setProposals] = useState([])
   const ctrl = useRef(null)
@@ -37,7 +38,9 @@ export default function SymptomPanel({ value, onChange, text, onText, ask = [], 
       const r = await onExtract(text, { signal: c.signal })
       // Mã đã được lễ tân chọn thì không đề xuất lại.
       setProposals(r.proposals.filter((p) => !value[p.symptom_code]))
-      setJob({ status: 'done', count: r.proposals.length })
+      onVitals?.(r.vitalProposals ?? [])
+      // Ghi lại lời kể đã đọc: sửa lời kể sau đó (hoặc server báo text_changed) → nhắc trích xuất lại.
+      setJob({ status: 'done', count: r.proposals.length, text, textChanged: !!r.textChanged })
     } catch (e) {
       if (c.signal.aborted && e.code === 'ABORTED' && ctrl.current !== c) return
       // Thiếu thông tin bệnh nhân / hồ sơ có thể trùng: form đã báo lỗi, không phải lỗi AI.
@@ -78,6 +81,11 @@ export default function SymptomPanel({ value, onChange, text, onText, ask = [], 
         {job.status === 'failed' && (
           <span className="sym-warn">
             <Icon name="alert" /> {translate(job.timeout ? 'Extraction timed out' : 'Extraction unavailable')} — {translate('continue with the checklist below.')}
+          </span>
+        )}
+        {job.status === 'done' && (job.textChanged || job.text !== text) && (
+          <span className="sym-warn">
+            <Icon name="alert" /> {translate('The description changed after the last suggestion — run it again.')}
           </span>
         )}
         {job.status === 'done' && !proposals.length && job.count === 0 && <span className="ai-soft">{translate('No catalog symptoms found — use the checklist below.')}</span>}

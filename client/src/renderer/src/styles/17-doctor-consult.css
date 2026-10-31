@@ -117,7 +117,10 @@ table.dt.lab-res-table td:first-child{width:52%;color:var(--ink-soft);}
 .lab-res-sum{font-size:13px;color:var(--ink);margin:6px 0 0;}
 .lab-entry{display:flex;flex-direction:column;gap:6px;margin-bottom:8px;}
 .lab-entry .lab-ordered{margin-bottom:2px;}
-.lab-entry-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px;align-items:center;font-size:13px;color:var(--ink-soft);}
+.lab-entry-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) 34px;gap:8px;align-items:center;font-size:13px;color:var(--ink-soft);}
+/* Cột cuối: nút huỷ dòng chỉ định (bệnh nhân không làm) — để trống khi không có nút. */
+.lab-entry-row>.btn{grid-column:3;padding:4px;justify-content:center;}
+.lab-entry-row>.btn svg{width:14px;height:14px;}
 .lab-entry-row input{padding:6px 9px;border:1px solid var(--border);border-radius:8px;background:var(--field-bg);color:var(--ink);font-size:13px;font-family:inherit;}
 .lab-entry-row input:focus{outline:none;border-color:var(--accent);}
 

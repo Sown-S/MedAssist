@@ -1,5 +1,6 @@
-import { useEffect, useRef } from 'react'
-import { useQueue } from '../api/queueStore'
+import { useEffect, useMemo, useRef } from 'react'
+import { useQueue, invitesOf } from '../api/queueStore'
+import { DEMO_MODE } from '../api/client'
 
 // Báo ở quầy Lễ tân: mỗi khi bác sĩ báo sẵn sàng nhận người tiếp (queueStore.calls), máy quầy phát tiếng "ding"
 // để lễ tân nhìn màn hình và GỌI MIỆNG bệnh nhân vào đúng phòng. Không còn loa đọc số tự động.
@@ -27,8 +28,12 @@ function ding() {
   }
 }
 
+// Backend thật: lời mời nằm ở GET /queue (called_at) — mỗi called_at mới (mời / gọi lại) giữa hai lần tải là một lần báo.
+const liveCalls = (visits) => invitesOf(visits).map((v) => ({ id: v.id + '@' + v.calledAt }))
+
 export default function useCallAnnouncer() {
-  const { calls = [] } = useQueue()
+  const { calls: localCalls = [], visits } = useQueue()
+  const calls = useMemo(() => (DEMO_MODE ? localCalls : liveCalls(visits)), [localCalls, visits])
   const seen = useRef(null)
   useEffect(() => {
     // Lần đầu: ghi nhận các lần gọi đã có, không báo lại.

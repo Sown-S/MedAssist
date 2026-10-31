@@ -9,7 +9,7 @@ export const VITAL_KEYS = [
   { key: 'systolic_bp_mmhg', label: 'Systolic BP', short: 'SBP', unit: 'mmHg', decimals: 0, hard: [50, 260], soft: [70, 220], placeholder: '120' },
   { key: 'diastolic_bp_mmhg', label: 'Diastolic BP', short: 'DBP', unit: 'mmHg', decimals: 0, hard: [20, 160], soft: [0, 130], placeholder: '80' },
   { key: 'spo2_pct', label: 'SpO2', short: 'SpO2', unit: '%', decimals: 0, hard: [50, 100], soft: [70, 100], placeholder: '98' },
-  { key: 'weight_kg', label: 'Weight', short: 'Wt', unit: 'kg', decimals: 1, hard: [0.5, 300], placeholder: '60' },
+  { key: 'weight_kg', label: 'Body weight', short: 'Wt', unit: 'kg', decimals: 1, hard: [0.5, 300], placeholder: '60' },
   { key: 'height_cm', label: 'Height', short: 'Ht', unit: 'cm', decimals: 1, hard: [30, 250], placeholder: '165' }
 ]
 export const vitalDef = (k) => VITAL_KEYS.find((x) => x.key === k)
@@ -96,3 +96,27 @@ export function ruleVitals(raw) {
 
 // Khoá ngắn của bộ luật → khoá chuẩn (để tô vàng ô cần đo ngay khi luật cờ đỏ còn thiếu dữ liệu).
 export const RULE_KEY_TO_VITAL = { temp: 'temperature_c', hr: 'heart_rate_bpm', rr: 'respiratory_rate_bpm', spo2: 'spo2_pct', sbp: 'systolic_bp_mmhg' }
+
+// Đề xuất sinh hiệu từ lời kể (vital_proposals, ERD v2.0) — y tá xác nhận mới điền, không ghi đè số đã nhập.
+const filled = (form, k) => String(form[k] ?? '').trim() !== ''
+
+// Gộp tâm thu + tâm trương thành một mục; các khoá khác mỗi khoá một mục.
+export function groupProposals(list) {
+  const out = []
+  const bp = list.filter((p) => p.group === 'blood_pressure')
+  for (const p of list) {
+    if (p.group === 'blood_pressure') continue
+    out.push({ id: p.key, keys: [p.key], values: { [p.key]: p.value }, evidence: p.evidence })
+  }
+  if (bp.length) {
+    const values = Object.fromEntries(bp.map((p) => [p.key, p.value]))
+    out.push({ id: 'blood_pressure', keys: bp.map((p) => p.key), values, evidence: bp[0].evidence, bp: true })
+  }
+  return out
+}
+
+// Phần điền được của một mục: chỉ các ô còn trống (huyết áp: cả cặp phải trống).
+export function applicable(item, form) {
+  if (item.keys.some((k) => filled(form, k))) return {}
+  return Object.fromEntries(item.keys.map((k) => [k, String(item.values[k])]))
+}

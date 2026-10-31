@@ -11,6 +11,7 @@ import { useAIConfig } from '../api/aiConfigStore'
 import { VITAL_KEYS, checkVitals, vitalsFromForm, RULE_KEY_TO_VITAL } from '../api/vitals'
 import { toPayload } from '../api/symptoms'
 import VitalsFields from './VitalsFields'
+import VitalProposals from './VitalProposals'
 import SymptomPanel from './SymptomPanel'
 import { registerPatient, findDuplicates, ageOf, updatePatientAdmin, idNumberOwner, setPregnancy } from '../api/patientStore'
 import { todayISO } from '../api/inventoryStore'
@@ -67,6 +68,8 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
   const [visit, setVisit] = useState(null) // { visit_id, queue_number, ... } của lượt vừa tạo
   const [idTaken, setIdTaken] = useState(false) // CCCD đã thuộc hồ sơ khác → chỉ được dùng hồ sơ đó
   const visitRef = useRef(null)
+  // Sinh hiệu đọc được trong lời kể (backend thật) — chờ y tá xác nhận, không tự điền.
+  const [vitalProps, setVitalProps] = useState([])
   const saved = useRef(false)
 
   // Mỗi lần mở: form trống (hoặc hồ sơ được chọn từ Tra cứu).
@@ -80,6 +83,7 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
     setExisting(patient)
     setVisit(null)
     setIdTaken(false)
+    setVitalProps([])
     visitRef.current = null
     saved.current = false
   }, [open, patient])
@@ -169,6 +173,31 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
     syncQueue()
     return v
   }
+  // Cấp cứu ở quầy (backend thật): chuyển tuyến cần hồ sơ bệnh nhân — bệnh nhân mới thì tạo hồ sơ trước.
+  async function ensurePatientId() {
+    if (existing) return existing.id
+    setTouched(true)
+    if (invalid) {
+      showToast(translate('Fill in the patient’s name, date of birth and phone first.'))
+      return null
+    }
+    const r = await clinic.createPatient({ ...form, pregnancy: pregnancyAsked ? form.pregnancy : '' }, { confirmDuplicate: false })
+    if (!r.ok) {
+      setDupes(r.duplicates)
+      setIdTaken(!!r.idTaken)
+      showToast(translate('This patient may already have a record — choose it in the form, then refer again.'))
+      return null
+    }
+    setExisting(r.patient)
+    return r.patient.id
+  }
+  // Thông tin gửi sang cảnh báo cờ đỏ: bản demo ghi nhận tại máy; backend thật cần lượt / hồ sơ để chuyển tuyến.
+  const redFlagInfo = () => ({
+    ...draft(),
+    id: existing?.id,
+    signs: redSigns(),
+    ...(DEMO_MODE ? {} : { visitId: visitRef.current?.visit_id, chief: form.reason, vitals, ensurePatient: ensurePatientId })
+  })
   function checkForm() {
     setTouched(true)
     if (vit.errors.length) {
@@ -343,9 +372,16 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
         onText={(t) => setForm((f) => ({ ...f, reason: t }))}
         ask={DEMO_MODE ? askSymptoms : []}
         onExtract={DEMO_MODE ? undefined : extract}
+        onVitals={setVitalProps}
       />
 
       <div className="section-label">Vital signs</div>
+      <VitalProposals
+        list={vitalProps}
+        form={form}
+        onApply={(fill) => setForm((f) => ({ ...f, ...fill }))}
+        onDrop={(keys) => setVitalProps((l) => l.filter((p) => !keys.includes(p.key)))}
+      />
       <VitalsFields value={form} onChange={(k, v) => setForm((f) => ({ ...f, [k]: v }))} errorKeys={touched ? vit.errorKeys : new Set()} requireWeight={child} highlight={askVitals} />
       <div className="form-grid intake-extra" style={{ marginTop: 10 }}>
         {/* Backend thật: không có trường riêng — lễ tân ghi thẳng vào lời kể, vd "Sốt 3 ngày". */}
@@ -390,10 +426,10 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
         </p>
       )}
       {/* Backend thật: luật cờ đỏ / ưu tiên chạy ở server khi lưu (POST /assessment). */}
-      {DEMO_MODE && <TriageStrip tri={tri} onTransfer={() => onRedFlag({ ...draft(), id: existing?.id, signs: redSigns() })} />}
+      {DEMO_MODE && <TriageStrip tri={tri} onTransfer={() => onRedFlag(redFlagInfo())} />}
 
       <div className="form-actions">
-        <button className="btn btn-ghost" style={{ color: 'var(--warn)', borderColor: '#F3C9C9' }} onClick={() => onRedFlag({ ...draft(), id: existing?.id, signs: redSigns() })}>
+        <button className="btn btn-ghost" style={{ color: 'var(--warn)', borderColor: '#F3C9C9' }} onClick={() => onRedFlag(redFlagInfo())}>
           <Icon name="ban" /> Emergency warning signs
         </button>
         <button className="btn btn-ghost" onClick={close}>

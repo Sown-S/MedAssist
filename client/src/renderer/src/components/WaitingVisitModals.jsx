@@ -11,11 +11,13 @@ import * as clinic from '../api/clinicApi'
 import { ticketNo } from './queuePrint'
 import { vitalCheck } from './IntakeModal'
 import VitalsFields from './VitalsFields'
+import VitalProposals from './VitalProposals'
 import SymptomPanel from './SymptomPanel'
 import { normalizeVitals, vitalsToForm, vitalsFromForm, RULE_KEY_TO_VITAL } from '../api/vitals'
 import { toPayload } from '../api/symptoms'
 import { triage, TRIAGE_LEVELS, missingLabel } from '../api/triage'
 import { useAIConfig } from '../api/aiConfigStore'
+import DocumentModal from '../pages/doctor/DocumentModal'
 
 // Quầy xử lý lượt ĐANG CHỜ khám (sau khi đã tiếp đón):
 //  - Sửa lượt: bệnh nhân chuyển nặng → đo lại sinh hiệu, cập nhật triệu chứng, bật ưu tiên; luật chạy lại và chỉ NÂNG mức;
@@ -38,6 +40,10 @@ export function EditWaitingModal({ visit, onClose }) {
   // Sau check-in server chỉ cho sửa sinh hiệu (lời kể khoá); triệu chứng vẫn sửa được.
   const [loaded, setLoaded] = useState(DEMO_MODE)
   const [busy, setBusy] = useState(false)
+  // Backend thật: chuyển nặng lúc chờ → lễ tân chuyển tuyến lượt này (PATCH /visits/{id}/refer, ERD v2.0).
+  const [referring, setReferring] = useState(false)
+  // Sinh hiệu đọc được trong lời kể — chờ y tá xác nhận, không ghi đè số đã nhập.
+  const [vitalProps, setVitalProps] = useState([])
   const textLocked = !DEMO_MODE && visit.status !== ST.WAITING
   useEffect(() => {
     if (DEMO_MODE) return
@@ -118,6 +124,17 @@ export function EditWaitingModal({ visit, onClose }) {
   }
   const lv = TRIAGE_LEVELS[tri.level]
 
+  if (referring)
+    return (
+      <DocumentModal
+        subject={{ ...visit, signs: [f.reason.trim()].filter(Boolean).join(' — ') }}
+        mode="desk"
+        target={{ visitId: visit.id }}
+        onDone={onClose}
+        onClose={() => setReferring(false)}
+      />
+    )
+
   return (
     <Modal open onClose={onClose} wide>
       <ModalHeader title={translate('Edit waiting visit') + ' — ' + ticketNo(visit.ticket) + ' ' + visit.name} onClose={onClose} />
@@ -132,8 +149,15 @@ export function EditWaitingModal({ visit, onClose }) {
           ask={DEMO_MODE ? askSymptoms : []}
           textLocked={textLocked}
           onExtract={DEMO_MODE ? undefined : extract}
+          onVitals={setVitalProps}
         />
         <div className="section-label">Vital signs</div>
+        <VitalProposals
+          list={vitalProps}
+          form={f}
+          onApply={(fill) => setF((x) => ({ ...x, ...fill }))}
+          onDrop={(keys) => setVitalProps((l) => l.filter((p) => !keys.includes(p.key)))}
+        />
         <VitalsFields value={f} onChange={(k, v) => setF((x) => ({ ...x, [k]: v }))} errorKeys={tried ? vit.errorKeys : new Set()} highlight={askVitals} />
         {DEMO_MODE && (
         <div className={'triage-strip ' + tri.level}>
@@ -168,12 +192,15 @@ export function EditWaitingModal({ visit, onClose }) {
         )}
       </div>
       <div className="modal-foot">
-        {DEMO_MODE && (
-        <button className="btn" style={{ background: 'var(--warn)', color: '#fff', marginRight: 'auto' }} onClick={() => redFlag('referred')} title={translate('Accident, critical condition, severe breathing difficulty… — beyond the clinic: transfer now')}>
+        <button
+          className="btn"
+          style={{ background: 'var(--warn)', color: '#fff', marginRight: 'auto' }}
+          onClick={() => (DEMO_MODE ? redFlag('referred') : setReferring(true))}
+          title={translate('Accident, critical condition, severe breathing difficulty… — beyond the clinic: transfer now')}
+        >
           <Icon name="ban" /> Emergency — transfer now
         </button>
-        )}
-        <button className="btn btn-ghost" style={DEMO_MODE ? undefined : { marginLeft: 'auto' }} onClick={onClose}>
+        <button className="btn btn-ghost" onClick={onClose}>
           Cancel
         </button>
         <button className="btn btn-primary" disabled={!loaded || busy} onClick={save}>
