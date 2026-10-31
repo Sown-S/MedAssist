@@ -9,6 +9,7 @@ import { usePatients } from '../../api/patientStore'
 import { useAIConfig } from '../../api/aiConfigStore'
 import { useRxReviews, addReview, reviewsOf, VERDICTS, verdictOf } from '../../api/rxReviewStore'
 import { dmy, hhmm } from '../reception/shared'
+import { DEMO_MODE } from '../../api/client'
 
 // Bác sĩ xem lại một đơn ĐÃ CHỐT: kiểm tra lại với hồ sơ hiện tại (dị ứng / bệnh nền có thể đã đổi),
 // ghi đánh giá (phù hợp / cần điều chỉnh / lo ngại an toàn). Đơn đã chốt không sửa tại chỗ:
@@ -62,6 +63,17 @@ export default function RxReviewPanel({ visit, onRecalled }) {
         <span>The system does not check drug interactions, doses or duplicate prescriptions — the doctor is responsible for reviewing the prescription.</span>
       </p>
 
+      {/* Chạy thật: chưa có trong FR / ERD nên không có API đánh giá đơn → chỉ còn thu hồi đơn (PATCH …/prescription/reopen). */}
+      {!DEMO_MODE && user.roleKey === 'doctor' && recallable && (
+        <div className="rx-review-actions">
+          <button className="btn btn-ghost btn-sm" onClick={recall} title={translate('Reception has not invoiced this visit yet')}>
+            <Icon name="repeat" /> Recall to edit (not yet paid)
+          </button>
+        </div>
+      )}
+
+      {DEMO_MODE && (
+      <>
       <div className="section-label">
         Reviews <span className="itab-cnt">{reviews.length}</span>
       </div>
@@ -109,6 +121,8 @@ export default function RxReviewPanel({ visit, onRecalled }) {
             </button>
           </div>
         </div>
+      )}
+      </>
       )}
     </div>
   )

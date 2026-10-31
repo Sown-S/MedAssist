@@ -135,7 +135,7 @@ export default function Doctor() {
 
       {view === 'home' && <DoctorHome go={go} onRx={setRxOf} />}
       {view === 'consult' && <ConsultView visitId={visitId} onSelect={(id) => go('consult', id)} onRx={setRxOf} />}
-      {view === 'prescriptions' && <PrescriptionsView readOnly showReviews onRx={setRxOf} initialDoctor={user.name} />}
+      {view === 'prescriptions' && <PrescriptionsView readOnly showReviews={DEMO_MODE} onRx={setRxOf} initialDoctor={user.name} />}
       {view === 'drugs' && <DrugCabinetView go={go} />}
       {view === 'patients' && <PatientLookup />}
       {referral && <DocumentModal subject={referral} onClose={() => setReferral(null)} />}

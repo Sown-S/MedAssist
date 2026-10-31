@@ -1,6 +1,9 @@
 import { useMemo, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import Modal, { ModalHeader } from '../../components/Modal'
 import Icon from '../../components/Icon'
+import { ServerPending } from '../../components/DataState'
+import { DEMO_MODE } from '../../api/client'
 import { useAuth } from '../../context/AuthContext'
 import { translate } from '../../i18n'
 import { logEvent } from '../../api/activityStore'
@@ -43,7 +46,37 @@ function useVisitsByPatient() {
   }, [day, visits, archive, rx])
 }
 
+// Backend thật: chưa có endpoint ẩn danh cho Admin → báo rõ, không hiện danh bạ mẫu lưu trên máy.
 export default function PatientsPage() {
+  return DEMO_MODE ? <PatientsDemo /> : <PatientsPendingLive />
+}
+
+function PatientsPendingLive() {
+  const navigate = useNavigate()
+  return (
+    <div>
+      <div className="page-head">
+        <div>
+          <h1>Patients</h1>
+          <p>Anonymized records — patient ID, diagnoses, prescriptions and payments only</p>
+        </div>
+      </div>
+      <ServerPending
+        title="Anonymized patient statistics are not available yet"
+        action={
+          <button className="btn btn-primary btn-sm" onClick={() => navigate('/reports')}>
+            <Icon name="chart" /> View reports
+          </button>
+        }
+      >
+        Admin accounts cannot read patient records (personal data protection). This page needs a statistics endpoint on the server that returns no personal
+        details.
+      </ServerPending>
+    </div>
+  )
+}
+
+function PatientsDemo() {
   const { user } = useAuth()
   const patients = usePatients()
   const byPatient = useVisitsByPatient()

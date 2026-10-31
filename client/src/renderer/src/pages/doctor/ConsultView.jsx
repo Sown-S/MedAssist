@@ -416,7 +416,8 @@ function ConsultForm({ visit, user, onDone, onNext }) {
   const archive = useVisitArchive()
   const past = pastVisitsOf(visit.patientId, { visits, archive, history: allHistory, exclude: visit.id })
   const reviews = useRxReviews()
-  const openReviews = openReviewsFor(visit.patientId, reviews)
+  // Đánh giá lại đơn chỉ có ở bản demo (không có API) → chạy thật không nhắc đánh giá cũ lưu trên máy.
+  const openReviews = DEMO_MODE ? openReviewsFor(visit.patientId, reviews) : []
   const [d, setD] = useState(() => draftOf(visit))
   const [tab, setTab] = useState('clin')
   const [aiDecision, setAiDecision] = useState({})
