@@ -3645,6 +3645,13 @@ export const VI = {
   'Fill empty fields': 'Điền vào ô còn trống',
   'already entered — kept': 'đã nhập — giữ nguyên',
   'The description changed after the last suggestion — run it again.': 'Lời kể đã sửa sau lần gợi ý trước — hãy chạy lại.',
+  // Quản trị — màn chưa có dữ liệu server
+  'No activity recorded yet.': 'Chưa có hoạt động nào.',
+  'Automatic daily backup on the clinic server; restoring is done by the system administrator.': 'Sao lưu tự động hằng ngày trên máy chủ; khôi phục do quản trị viên thực hiện.',
+  'The invoice list is not open to admin accounts yet': 'Tài khoản quản trị chưa được xem danh sách hoá đơn',
+  'The server only lets the reception desk read invoices. Until admin access is added, see revenue in Reports.': 'Server hiện chỉ cho quầy Lễ tân đọc hoá đơn. Trong lúc chờ mở quyền cho quản trị, xem doanh thu ở mục Báo cáo.',
+  'Anonymized patient statistics are not available yet': 'Chưa có thống kê bệnh nhân ẩn danh',
+  'Admin accounts cannot read patient records (personal data protection). This page needs a statistics endpoint on the server that returns no personal details.': 'Tài khoản quản trị không được đọc hồ sơ bệnh nhân (bảo vệ dữ liệu cá nhân). Màn này cần server có API thống kê riêng, không trả thông tin định danh.',
 }
 
 export const PATTERNS = [
@@ -3744,6 +3751,7 @@ export const PATTERNS = [
   [/^Expiry (\S+) · (\d+) in stock$/, 'Hạn dùng $1 · còn $2'],
   [/^(\d+) left · threshold (\d+)$/, 'Còn $1 · ngưỡng $2'],
   [/^(\d+) accounts? ha(?:s|ve) not changed the temporary password$/, '$1 tài khoản chưa đổi mật khẩu tạm'],
+  [/^(\d+) failed sign-ins? in the last 24 hours$/, '$1 lần đăng nhập sai trong 24 giờ qua'],
   [/^Unknown type: (.+)$/, 'Loại tương tác không hợp lệ: $1'],
   [/^Unknown severity: (.+)$/, 'Mức độ không hợp lệ: $1'],
   [/^API error (\d+): (.+)$/, 'API lỗi $1: $2'],

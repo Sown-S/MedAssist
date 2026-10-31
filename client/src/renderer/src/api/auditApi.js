@@ -5,6 +5,22 @@ import { getBaseUrl, tokenStore } from './serverConfig'
 
 const BASE = '/api/v1/admin/audit-logs'
 export const ACTION_TYPES = ['LOGIN', 'LOGIN_FAILED', 'LOGOUT', 'VIEW', 'CREATE', 'UPDATE', 'DELETE', 'EXPORT', 'APPROVE', 'REJECT', 'RETIRE', 'AI_ASSESSMENT']
+// Nhãn và màu của từng loại hành động — dùng chung cho trang Lịch sử hoạt động và trang chủ Quản trị.
+export const ACTION_LABEL = {
+  LOGIN: 'Sign-in',
+  LOGIN_FAILED: 'Failed sign-in',
+  LOGOUT: 'Sign-out',
+  VIEW: 'Viewed',
+  CREATE: 'Created',
+  UPDATE: 'Updated',
+  DELETE: 'Deleted',
+  EXPORT: 'Exported',
+  APPROVE: 'Approved',
+  REJECT: 'Rejected',
+  RETIRE: 'Turned off',
+  AI_ASSESSMENT: 'AI assessment'
+}
+export const ACTION_TONE = { LOGIN_FAILED: 'low', DELETE: 'low', RETIRE: 'warn', REJECT: 'warn', APPROVE: 'ok', EXPORT: 'info', AI_ASSESSMENT: 'info' }
 
 // filters: { username, action_type, target_entity, from, to } — from / to là ngày yyyy-mm-dd (giờ Việt Nam).
 function query(filters, extra = {}) {

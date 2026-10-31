@@ -2,26 +2,11 @@ import { useEffect, useState } from 'react'
 import Icon from '../../components/Icon'
 import { useToast } from '../../context/ToastContext'
 import { translate } from '../../i18n'
-import { ACTION_TYPES, listAuditLogs, exportAuditLogs } from '../../api/auditApi'
+import { ACTION_TYPES, ACTION_LABEL, ACTION_TONE as TONE, listAuditLogs, exportAuditLogs } from '../../api/auditApi'
 
 // Nhật ký hoạt động với backend thật (US09, FR09): mọi lượt xem hồ sơ, đăng nhập, thay đổi dữ liệu, duyệt tri thức,
 // đánh giá AI. Bệnh nhân / lượt khám chỉ ghi tên trường thay đổi, không ghi giá trị (Quy định v5 mục 7).
 const PAGE = 50
-const ACTION_LABEL = {
-  LOGIN: 'Sign-in',
-  LOGIN_FAILED: 'Failed sign-in',
-  LOGOUT: 'Sign-out',
-  VIEW: 'Viewed',
-  CREATE: 'Created',
-  UPDATE: 'Updated',
-  DELETE: 'Deleted',
-  EXPORT: 'Exported',
-  APPROVE: 'Approved',
-  REJECT: 'Rejected',
-  RETIRE: 'Turned off',
-  AI_ASSESSMENT: 'AI assessment'
-}
-const TONE = { LOGIN_FAILED: 'low', DELETE: 'low', RETIRE: 'warn', REJECT: 'warn', APPROVE: 'ok', EXPORT: 'info', AI_ASSESSMENT: 'info' }
 const EMPTY = { username: '', action_type: '', target_entity: '', from: '', to: '' }
 const when = (iso) => new Date(iso).toLocaleString('vi-VN', { dateStyle: 'short', timeStyle: 'medium' })
 const changes = (x) => {

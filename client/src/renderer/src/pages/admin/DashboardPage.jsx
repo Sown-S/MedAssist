@@ -6,7 +6,8 @@ import { LoadingBlock, ErrorBlock } from '../../components/DataState'
 import { useApiData } from '../../hooks/useApiData'
 import { listAccounts } from '../../api/accountStore'
 import { useInventory, stockOf } from '../../api/inventoryStore'
-import { checkHealth } from '../../api/client'
+import { checkHealth, DEMO_MODE } from '../../api/client'
+import { listAuditLogs, ACTION_LABEL, ACTION_TONE } from '../../api/auditApi'
 import { getSettings } from '../../api/settingsStore'
 import { useBackupLog } from '../../api/backupStore'
 import { useActivity } from '../../api/activityStore'
@@ -16,7 +17,8 @@ import { describe, roleLabel, LEVELS } from '../../api/activityMessages'
 import { fmtDateTime } from './inventory/shared'
 
 // Cảnh báo kho tính THEO LÔ từ inventoryStore: lô đã hết hạn tách riêng với lô sắp hết hạn.
-function buildAlerts(inv, accounts, log) {
+// failed: đăng nhập thất bại 24 giờ qua trên server (chạy thật) — gộp thành một cảnh báo.
+function buildAlerts(inv, accounts, log, failed = []) {
   const { drugs, batches } = inv
   const alerts = []
   drugs
@@ -48,7 +50,71 @@ function buildAlerts(inv, accounts, log) {
     .forEach((l) =>
       alerts.push({ level: 'warning', tag: 'Sensitive', title: describe(l), note: `${fmtDateTime(l.at)} · ${l.actor.name} (${roleLabel(l.actor.role)})`, to: 'history' })
     )
+  if (failed.length)
+    alerts.push({
+      level: 'warning',
+      tag: 'Sensitive',
+      title: `${failed.length} failed sign-in${failed.length > 1 ? 's' : ''} in the last 24 hours`,
+      note: [...new Set(failed.map((x) => x.attempted_username ?? x.username ?? '—'))].join(', '),
+      to: 'history'
+    })
   return alerts.sort((a, b) => (a.level === b.level ? 0 : a.level === 'critical' ? -1 : 1))
+}
+
+// Chạy thật: hoạt động gần đây và đăng nhập thất bại lấy từ nhật ký server (GET /admin/audit-logs);
+// nhật ký trên máy chỉ có ở bản demo. Lỗi tải → bảng trống, phần còn lại của trang vẫn dùng được.
+const SELF_VIEWS = ['audit_log', 'report']
+function useServerLog() {
+  const [recent, setRecent] = useState(null)
+  const [failed, setFailed] = useState([])
+  useEffect(() => {
+    if (DEMO_MODE) return
+    // Bỏ lượt xem nhật ký / báo cáo — chính trang này và trang Báo cáo tự sinh ra, che mất hoạt động thật.
+    listAuditLogs({}, 50, 0).then(
+      (d) => setRecent(d.items.filter((x) => !(x.action_type === 'VIEW' && SELF_VIEWS.includes(x.target_entity))).slice(0, 6)),
+      () => setRecent([])
+    )
+    const since = Date.now() - 86400000
+    const from = new Date(since).toLocaleDateString('sv-SE') // yyyy-mm-dd theo giờ máy
+    listAuditLogs({ action_type: 'LOGIN_FAILED', from }, 200, 0).then(
+      (d) => setFailed(d.items.filter((x) => new Date(x.created_at).getTime() >= since)),
+      () => {}
+    )
+  }, [])
+  return { recent, failed }
+}
+
+// Bảng "Hoạt động gần đây" khi chạy thật — cùng nhãn hành động với trang Lịch sử hoạt động.
+function ServerActivity({ items, onOpen }) {
+  return (
+    <table className="dt">
+      <tbody>
+        <tr>
+          <th>Time</th>
+          <th>Account</th>
+          <th>Action</th>
+          <th>Object</th>
+        </tr>
+        {(items ?? []).map((x) => (
+          <tr className="row-click" key={x.log_id} onClick={onOpen}>
+            <td className="mono">{fmtDateTime(x.created_at)}</td>
+            <td>{x.username ?? x.attempted_username ?? '—'}</td>
+            <td>
+              <span className={'badge ' + (ACTION_TONE[x.action_type] ?? '')}>{translate(ACTION_LABEL[x.action_type] ?? x.action_type)}</span>
+            </td>
+            <td className="mono ai-small">{x.target_entity ?? '—'}</td>
+          </tr>
+        ))}
+        {items && !items.length && (
+          <tr>
+            <td colSpan="4" className="ai-soft">
+              No activity recorded yet.
+            </td>
+          </tr>
+        )}
+      </tbody>
+    </table>
+  )
 }
 
 const fmtVnd = (n) => n.toLocaleString('vi-VN') + 'đ'
@@ -103,7 +169,8 @@ export default function DashboardPage({ onNavigate }) {
 
   const ready = !!accounts
 
-  const alerts = ready ? buildAlerts(inv, accounts, log) : []
+  const server = useServerLog()
+  const alerts = ready ? buildAlerts(inv, accounts, DEMO_MODE ? log : [], server.failed) : []
   const recent = ready ? log.slice(0, 6) : []
 
   return (
@@ -166,14 +233,17 @@ export default function DashboardPage({ onNavigate }) {
                   <span className={'badge ' + (s.ok ? 'ok' : s.ok === null ? 'muted' : 'low')}>{s.state}</span>
                 </div>
               ))}
-              {/* Sao lưu: lấy từ lịch sử sao lưu thật (Cài đặt › Sao lưu), quá 2 ngày chưa sao lưu thì cảnh báo. */}
-              <div className="status-row">
-                <span className="alert-txt">
-                  <b>Last backup</b>
-                  <span>{backup ? `${fmtDateTime(backup.at)} · ${backup.by}` : 'No backup on record'}</span>
-                </span>
-                <span className={'badge ' + (backupFresh ? 'ok' : 'warn')}>{backup ? (backupFresh ? 'Completed' : 'Overdue') : 'None'}</span>
-              </div>
+              {/* Sao lưu: lấy từ lịch sử sao lưu (Cài đặt › Sao lưu), quá 2 ngày chưa sao lưu thì cảnh báo.
+                  Chạy thật: server chưa có API sao lưu → ẩn dòng này thay vì hiện lịch sử lưu trên máy. */}
+              {DEMO_MODE && (
+                <div className="status-row">
+                  <span className="alert-txt">
+                    <b>Last backup</b>
+                    <span>{backup ? `${fmtDateTime(backup.at)} · ${backup.by}` : 'No backup on record'}</span>
+                  </span>
+                  <span className={'badge ' + (backupFresh ? 'ok' : 'warn')}>{backup ? (backupFresh ? 'Completed' : 'Overdue') : 'None'}</span>
+                </div>
+              )}
             </div>
           </div>
 
@@ -236,6 +306,9 @@ export default function DashboardPage({ onNavigate }) {
 
           <div className="card">
             <div className="card-title">Recent activity</div>
+            {!DEMO_MODE ? (
+              <ServerActivity items={server.recent} onOpen={() => onNavigate('history')} />
+            ) : (
             <table className="dt">
               <tbody>
                 <tr>
@@ -256,6 +329,7 @@ export default function DashboardPage({ onNavigate }) {
                 ))}
               </tbody>
             </table>
+            )}
             <div style={{ textAlign: 'right', marginTop: 10 }}>
               <button className="btn btn-ghost btn-sm" onClick={() => onNavigate('history')}>
                 View full history →

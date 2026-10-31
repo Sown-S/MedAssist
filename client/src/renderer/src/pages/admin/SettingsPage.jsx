@@ -639,6 +639,20 @@ function BackupTab({ user, fp, val, set, text, num, onNavigate, showToast }) {
 
   return (
     <>
+      {/* Chạy thật: máy chủ tự sao lưu hằng ngày (deploy/scripts/backup.ps1); khôi phục = dựng CSDL mới rồi hoán đổi
+          (restore.ps1), không làm qua API → chỉ hiện hướng dẫn, không có nút sao lưu / khôi phục. */}
+      {!DEMO_MODE ? (
+        <div className="card">
+          <div className="card-title">Backups</div>
+          <div className="symptom-box" style={{ padding: '8px 11px', fontSize: 13.5 }}>
+            Automatic daily backup on the clinic server; restoring is done by the system administrator.
+          </div>
+          <p className="ai-foot-note">
+            <Icon name="alert" />{' '}
+            <span>{translate('Daily database backup (pg_dump) to a second drive and another machine; restore follows the documented, tested procedure.')}</span>
+          </p>
+        </div>
+      ) : (
       <div className="card">
         <div className="set-backup-head">
           <div>
@@ -719,7 +733,9 @@ function BackupTab({ user, fp, val, set, text, num, onNavigate, showToast }) {
           </span>
         </p>
       </div>
+      )}
 
+      {DEMO_MODE && (
       <div className="card" style={{ marginTop: 14 }}>
         <div className="card-title">Automatic backup (on the clinic server)</div>
         <div className="set-grid">
@@ -730,6 +746,7 @@ function BackupTab({ user, fp, val, set, text, num, onNavigate, showToast }) {
           </Field>
         </div>
       </div>
+      )}
 
       <div className="card" style={{ marginTop: 14 }}>
         <div className="card-title">Data retention</div>
