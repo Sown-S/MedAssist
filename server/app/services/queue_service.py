@@ -278,7 +278,7 @@ def search_facilities(db: Session, q: str, limit: int) -> list[ReferralFacility]
 
 
 # ---------------------------------------------------------------------------- xét nghiệm, mời vào phòng
-def _own_examining(db: Session, visit_id: uuid.UUID, actor: User) -> Visit:
+def own_examining(db: Session, visit_id: uuid.UUID, actor: User) -> Visit:
     visit = db.scalar(select(Visit).where(Visit.visit_id == visit_id).with_for_update())
     if visit is None:
         raise NotFoundError("Không tìm thấy lượt khám")
@@ -290,7 +290,7 @@ def _own_examining(db: Session, visit_id: uuid.UUID, actor: User) -> Visit:
 
 def set_lab_out(db: Session, visit_id: uuid.UUID, out: bool, actor: User) -> Visit:
     """Bệnh nhân đi xét nghiệm (lượt vẫn Examining của bác sĩ) hoặc đã quay lại phòng."""
-    visit = _own_examining(db, visit_id, actor)
+    visit = own_examining(db, visit_id, actor)
     if (visit.lab_out_at is not None) == out:
         return visit
     visit.lab_out_at = func.now() if out else None
