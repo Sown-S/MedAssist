@@ -54,6 +54,21 @@ describe('Các màn chính dựng được', () => {
       await rendered()
     }
   })
+
+  // Mỗi tab là một file riêng (settings/, inventory/) — bấm qua hết để chắc tab nào cũng dựng được.
+  it.each([
+    ['Settings', ['Printing & numbering', 'Security', 'Backup & retention', 'Connection & AI', 'This computer', 'Operations', 'Clinic']],
+    ['Stock & expiry', ['Stock movements', 'Controlled drugs ledger', 'Stock by batch']]
+  ])('Quản trị › %s › từng tab', async (page, tabs) => {
+    renderPage(<Admin onNavigate={() => {}} />, { user: ADMIN, path: '/admin' })
+    await rendered()
+    fireEvent.click(screen.getByText(page, { selector: '.side-item .lb' }))
+    await rendered()
+    for (const tab of tabs) {
+      fireEvent.click(screen.getByText(tab, { selector: 'button, button *' }))
+      await rendered()
+    }
+  })
 })
 
 describe('Luồng chính trên giao diện', () => {

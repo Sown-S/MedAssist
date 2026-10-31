@@ -8,7 +8,7 @@ import { useInventory, stockOf, nearDays } from '../../api/inventoryStore'
 import { useAIConfig } from '../../api/aiConfigStore'
 import { fold } from '../../api/patientStore'
 import { unitLabel, fmtMoney, fmtDate, STATUS, Pager, paginate } from '../admin/inventory/shared'
-import { addDrugToDraft } from './ConsultView'
+import { addDrugToDraft } from './consult/rxDraft'
 
 const STOCK_FILTERS = [
   { key: '', label: 'All stock levels' },

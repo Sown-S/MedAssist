@@ -8,7 +8,7 @@ import { DEMO_MODE } from '../../api/client'
 import { useInventory, todayISO } from '../../api/inventoryStore'
 import { exportCsv, fmtDateTime, unitLabel } from './inventory/shared'
 import { SCHEMAS } from './catalogs/schemas'
-import { exportCatalog, readCatalogFile, ImportModal } from './catalogs/CatalogDetailPage'
+import { exportCatalog, readCatalogFile, ImportModal } from './catalogs/catalogCsv'
 
 // Trang trung tâm của Quản lý danh mục: mỗi dòng là 1 danh mục, bấm để mở trang chi tiết.
 // Thuốc & vật tư có trang riêng (dùng chung dữ liệu với Kho).

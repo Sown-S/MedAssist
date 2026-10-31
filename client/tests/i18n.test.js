@@ -75,7 +75,7 @@ function displayStrings(file) {
   walk(parse(file), (n) => {
     if (n.type === 'JSXText') out.push({ text: n.value, line: n.loc.start.line })
     else if (n.type === 'JSXAttribute' && TEXT_PROPS.has(n.name.name) && isString(n.value)) out.push({ text: n.value.value, line: n.loc.start.line })
-    else if (n.type === 'CallExpression' && n.callee.name === 'translate' && isString(n.arguments[0])) out.push({ text: n.arguments[0].value, line: n.loc.start.line })
+    else if (n.type === 'CallExpression' && ['translate', 't'].includes(n.callee.name) && isString(n.arguments[0])) out.push({ text: n.arguments[0].value, line: n.loc.start.line })
   })
   // Runtime dịch bỏ khoảng trắng đầu / cuối; JSX gộp xuống dòng thành một dấu cách.
   return out.map((x) => ({ ...x, text: x.text.replace(/\s+/g, ' ').trim() }))
@@ -105,5 +105,21 @@ describe('Bản dịch tiếng Việt (vi.js)', () => {
       }
     })
     expect(dup).toEqual([])
+  })
+
+  // Khoá là câu tiếng Anh nên một từ chỉ có MỘT bản dịch. Từ nhiều nghĩa chỉ được dùng ở đúng khu vực của nghĩa đó;
+  // nơi khác dùng cụm rõ nghĩa hơn (VD cân nặng là "Body weight", dòng hoá đơn là "Line item").
+  it('từ nhiều nghĩa chỉ dùng đúng khu vực', () => {
+    const ONLY_IN = {
+      Weight: ['pages/admin/ai/', 'pages/admin/knowledge/'], // "Trọng số" của luật AI
+      Item: ['pages/admin/ai/'] // "Đối tượng" được đánh giá
+    }
+    const wrong = []
+    for (const file of sourceFiles(SRC)) {
+      const rel = relative(SRC, file).replace(/\\/g, '/')
+      for (const { text, line } of displayStrings(file))
+        if (ONLY_IN[text] && !ONLY_IN[text].some((dir) => rel.startsWith(dir))) wrong.push(`${rel}:${line}  "${text}" → "${VI[text]}"`)
+    }
+    expect(wrong, 'Dùng cụm tiếng Anh rõ nghĩa hơn cho ngữ cảnh này').toEqual([])
   })
 })
