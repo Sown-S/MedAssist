@@ -47,7 +47,7 @@ export function exportCatalog(key, rows) {
 // Đọc file: dòng đầu là tên cột (khoá trường, VD code,name,...). Trả về dòng hợp lệ + lỗi theo số dòng.
 export function parseCatalogCsv(key, text) {
   const s = SCHEMAS[key]
-  const lines = text.replace(/^﻿/, '').split(/\r?\n/).filter((l) => l.trim())
+  const lines = text.replace(/^\uFEFF/, '').split(/\r?\n/).filter((l) => l.trim())
   if (!lines.length) return { rows: [], errors: [{ n: 0, msg: 'The file is empty.' }] }
   const head = splitCsv(lines[0]).map((h) => h.trim())
   const known = s.csv.filter((k) => head.includes(k))

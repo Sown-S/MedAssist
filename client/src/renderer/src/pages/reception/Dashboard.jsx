@@ -1,9 +1,8 @@
 import Icon from '../../components/Icon'
 import { translate } from '../../i18n'
-import { useQueue, payStatusOf, isQueued, ST } from '../../api/queueStore'
+import { useQueue, isQueued, ST } from '../../api/queueStore'
 import { useInvoices, dayOf } from '../../api/invoiceStore'
 import { estimateTotal } from '../../api/billing'
-import { useToast } from '../../context/ToastContext'
 import { ticketNo } from '../../components/queuePrint'
 import CallPanel from './CallPanel'
 import { fmt, dmy } from './shared'
@@ -14,7 +13,6 @@ import { useAwaiting, fromAwaiting } from '../../api/billingApi'
 
 // Trang chủ Lễ tân: các ô tổng quan bấm vào được + thao tác nhanh + gọi số + danh sách cần thu tiền.
 export default function Dashboard({ go, readOnly, onRegister, onSearch, onPay }) {
-  const { showToast } = useToast()
   const { visits, redFlags, calling } = useQueue()
   const invoices = useInvoices()
   const awaiting = useAwaiting({ enabled: !DEMO_MODE })

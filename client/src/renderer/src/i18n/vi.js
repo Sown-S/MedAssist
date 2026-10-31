@@ -2116,7 +2116,6 @@ export const VI = {
   'Explain the difference (required)': 'Giải thích chênh lệch (bắt buộc)',
   'Close shift & print': 'Chốt ca & in báo cáo',
   'Shift close-out report': 'Báo cáo chốt ca',
-  'Handed over by': 'Người bàn giao',
   'Shift closed — report sent to the printer': 'Đã chốt ca — đã gửi báo cáo tới máy in',
   'Choose a category.': 'Chọn khoản mục.',
   'This voucher is not awaiting approval.': 'Phiếu này không ở trạng thái chờ duyệt.',
@@ -2190,6 +2189,13 @@ export const VI = {
     'Các phòng khám và phòng xét nghiệm. Mỗi phòng khám có một bác sĩ, gán ở Tài khoản nhân viên.',
   '+ Add room': '+ Thêm phòng',
   'Add room': 'Thêm phòng',
+  // Chuỗi còn thiếu (phát hiện bởi tests/i18n.test.js)
+  'Inventory /': 'Kho /',
+  '+ Age': '+ Tuổi',
+  '+ Group': '+ Nhóm',
+  'Rename room': 'Đổi tên phòng',
+  'Printed on prescriptions, invoices and reports.': 'In trên đơn thuốc, hoá đơn và báo cáo.',
+  'Check that the transfer has arrived in the clinic’s bank account before confirming. If it has not arrived yet, save it as “waiting for transfer” and confirm it later in Invoices.': 'Kiểm tra tiền đã về tài khoản ngân hàng của phòng khám rồi mới xác nhận. Nếu chưa về, lưu ở trạng thái “chờ chuyển khoản” và xác nhận sau trong mục Hoá đơn.',
   'Code *': 'Mã *',
   'Name *': 'Tên *',
   'The code and type of a room cannot be changed.': 'Không đổi được mã và loại phòng.',
@@ -2601,7 +2607,6 @@ export const VI = {
   // Tủ thuốc: lọc hạn dùng, nhóm ATC, sắp xếp
   'All expiry dates': 'Mọi hạn dùng',
   'Expiring within 30 days': 'Hết hạn trong 30 ngày',
-  'Expiring within': 'Hết hạn trong',
   'Therapeutic class (ATC)': 'Nhóm điều trị (ATC)',
   'All drug classes (ATC)': 'Mọi nhóm thuốc (ATC)',
   'No ATC code': 'Chưa có mã ATC',
@@ -2648,7 +2653,6 @@ export const VI = {
   Sent: 'Đi lúc',
   'Shift ended': 'Đã kết thúc ca',
   'Follow-up visit': 'Hẹn tái khám',
-  'Body weight': 'Cân nặng',
   'Show the queue': 'Hiện hàng chờ',
   'Collapse the queue': 'Thu gọn hàng chờ',
   'Handed over to you': 'Bàn giao cho bạn',
@@ -2691,7 +2695,6 @@ export const VI = {
   'Choose another doctor.': 'Chọn một bác sĩ khác.',
   'Visits completed': 'Lượt khám xong',
   'Lab orders': 'Phiếu xét nghiệm',
-  'Red-flag referrals': 'Ca cờ đỏ chuyển tuyến',
   'Prescribed despite severe warning': 'Kê dù có cảnh báo nặng',
   Handovers: 'Lượt bàn giao',
   'Shift summary': 'Tổng kết ca khám',
@@ -2712,7 +2715,6 @@ export const VI = {
   'Finish or hand over every patient in your room or out for lab tests first.': 'Hãy khám xong hoặc bàn giao mọi bệnh nhân trong phòng / đang đi xét nghiệm trước.',
   'A red-flag case is still waiting for a doctor’s decision.': 'Vẫn còn ca cờ đỏ đang chờ bác sĩ quyết định.',
   // ===== Bác sĩ đợt 1: bỏ về, bệnh sử, chẩn đoán phụ, thông báo =====
-  'Left without finishing': 'Bỏ về',
   'Left during the consultation': 'Bỏ về khi đang khám',
   'Did not come back from lab tests': 'Không quay lại sau xét nghiệm',
   'Refused examination / treatment': 'Từ chối khám / điều trị',
@@ -3591,7 +3593,6 @@ export const VI = {
   'Enter a reason (at least 3 characters).': 'Nhập lý do (ít nhất 3 ký tự).',
   'Cancel order line': 'Huỷ dòng chỉ định',
   'The patient did not have this test or service done. It is removed from the invoice; the order keeps the line as cancelled.': 'Bệnh nhân không làm xét nghiệm / dịch vụ này. Dòng được bỏ khỏi hoá đơn; phiếu chỉ định vẫn giữ dòng ở trạng thái đã huỷ.',
-  'Reason': 'Lý do',
   'Reason *': 'Lý do *',
   'e.g. Patient declined the ultrasound': 'VD: bệnh nhân không đồng ý siêu âm',
   'Keep it': 'Giữ lại',
@@ -3655,6 +3656,7 @@ export const VI = {
 }
 
 export const PATTERNS = [
+  [/^e\.g\. (.+)$/, 'VD: $1'],
   [/^Too many failed sign-ins\. Try again in (\d+) minutes\.$/, 'Đăng nhập sai quá nhiều lần. Thử lại sau $1 phút.'],
   [/^At least (\d+) characters$/, 'Tối thiểu $1 ký tự'],
   [/^(\d+) wrong passwords within (\d+) minutes → the account is locked for (\d+) minutes\.$/, 'Sai mật khẩu $1 lần trong $2 phút → khóa tài khoản $3 phút.'],
