@@ -6,7 +6,7 @@
 // gọi API thật; không tạo dữ liệu mẫu, không lưu localStorage. Các phần chưa có API vẫn chạy cục bộ.
 import { useEffect, useSyncExternalStore } from 'react'
 import { DEMO_MODE } from './client'
-import { fetchQueue, fetchStale, cancelStale as apiCancelStale, labOut as apiLabOut, labReturn as apiLabReturn, checkIn as apiCheckIn, cancelVisit as apiCancelVisit, startExam as apiStartExam, releaseVisit as apiRelease } from './clinicApi'
+import { fetchQueue, fetchStale, cancelStale as apiCancelStale, labOut as apiLabOut, labReturn as apiLabReturn, checkIn as apiCheckIn, cancelVisit as apiCancelVisit, startExam as apiStartExam, releaseVisit as apiRelease, callNext as apiCallNext, callVisit as apiCallVisit, cancelCall as apiCancelCall } from './clinicApi'
 import { reopenPrescription as apiReopen } from './examApi'
 import { VI } from '../i18n/vi'
 import { getSettings } from './settingsStore'
@@ -193,43 +193,15 @@ function read() {
 }
 let state = DEMO_MODE ? read() ?? seed() : { day: today(), visits: [], redFlags: [], calling: null, calls: [], stale: [] }
 
-// Backend thật: server chưa lưu việc đi xét nghiệm (phiếu chỉ định giấy, lượt vẫn Examining) — giữ các trường này ở máy
-// bác sĩ (localStorage, trong ngày) để tải lại / mở lại app không mất bệnh nhân đang đi xét nghiệm và phiếu chỉ định.
-const LAB_KEY = 'medassist_lab_local_v1'
-const LAB_FIELDS = ['labOut', 'labOrders', 'labReturnedAt', 'resumedFromLabs']
-function readLabLocal() {
-  try {
-    const s = JSON.parse(localStorage.getItem(LAB_KEY))
-    return s?.day === today() ? s.byId : {}
-  } catch {
-    return {}
-  }
-}
-let labLocal = DEMO_MODE ? {} : readLabLocal()
-function saveLabLocal(visits) {
-  const byId = { ...labLocal }
-  for (const v of visits) {
-    const f = Object.fromEntries(LAB_FIELDS.filter((k) => v[k] && !(Array.isArray(v[k]) && !v[k].length)).map((k) => [k, v[k]]))
-    if (Object.keys(f).length) byId[v.id] = { ...f, doctorId: v.doctorId }
-    else delete byId[v.id]
-  }
-  labLocal = byId
-  try {
-    localStorage.setItem(LAB_KEY, JSON.stringify({ day: today(), byId }))
-  } catch {
-    /* chỉ giữ trong phiên */
-  }
-}
-
 const listeners = new Set()
 function commit(next) {
   state = next
-  try {
-    if (DEMO_MODE) localStorage.setItem(KEY, JSON.stringify(state))
-    else saveLabLocal(state.visits)
-  } catch {
-    /* chỉ giữ trong phiên */
-  }
+  if (DEMO_MODE)
+    try {
+      localStorage.setItem(KEY, JSON.stringify(state))
+    } catch {
+      /* chỉ giữ trong phiên */
+    }
   listeners.forEach((fn) => fn())
 }
 commit(state)
@@ -248,19 +220,12 @@ const patch = (id, fields) => commit({ ...state, visits: state.visits.map((v) =>
 let syncing = null
 export function syncQueue() {
   if (DEMO_MODE) return Promise.resolve(true)
-  // Giữ các trường chỉ có ở máy này (giờ mời, đang đi xét nghiệm...) — server ghi đè phần còn lại (cả phòng khám).
+  // Server ghi đè mọi trường nó có (phòng, đi xét nghiệm, lời mời — ERD v2.0); chỉ giữ trường chỉ có ở máy này.
   syncing ??= fetchQueue()
     .then((list) => {
       const prev = new Map(state.visits.map((v) => [v.id, v]))
-      const visits = list.map((v) => {
-        const local = prev.get(v.id) ?? labLocal[v.id]
-        const m = { ...labLocal[v.id], ...prev.get(v.id), ...v }
-        // Cờ đi xét nghiệm chỉ còn đúng khi lượt vẫn Examining với CÙNG bác sĩ. Đã trả về hàng chờ, chốt đơn, huỷ,
-        // hay bác sĩ khác nhận (máy khác) → bỏ cờ cũ, nếu không bệnh nhân bị kẹt ở nhóm "Đang đi xét nghiệm".
-        const sameExam = v.status === ST.EXAMINING && (!local?.doctorId || local.doctorId === v.doctorId)
-        return sameExam ? m : { ...m, labOut: false, resumedFromLabs: false, labReturnedAt: null }
-      })
-      commit({ ...state, visits })
+      const visits = list.map((v) => ({ ...prev.get(v.id), ...v }))
+      commit({ ...state, visits, redFlags: liveRedFlags(visits, state.redFlags) })
       return true
     })
     .catch(() => false)
@@ -283,6 +248,31 @@ export function useQueueSync(ms = 3000) {
     return () => clearInterval(t)
   }, [ms])
 }
+// Backend thật: ca cờ đỏ KHÔNG lưu ở máy — lấy từ hàng chờ (lượt cấp cứu đang chờ, is_red_flag). Ca chuyển tuyến ngay
+// đã đóng lượt ở server, xem ở hồ sơ bệnh án. Chỉ giữ ở máy dấu "đã xem" / "đã hướng dẫn" của phiên này.
+function liveRedFlags(visits, prev = []) {
+  const old = new Map(prev.map((r) => [r.id, r]))
+  return visits
+    .filter((v) => isQueued(v) && v.triage === 'emergency')
+    .map((v) => {
+      const id = 'rf-' + v.id
+      return {
+        id,
+        visitId: v.id,
+        patientId: v.patientId,
+        name: v.name,
+        gender: v.gender,
+        age: v.age,
+        signs: v.redFlagReason || v.reason || '',
+        at: v.arrivedAt,
+        by: '',
+        outcome: 'queued',
+        ack: old.get(id)?.ack ?? false,
+        doctorReview: old.get(id)?.doctorReview ?? null
+      }
+    })
+}
+
 // Lỗi API → { ok: false, error } như các hàm giả lập (câu tiếng Việt của server).
 const viaApi = (call) =>
   call.then(
@@ -479,13 +469,17 @@ export function takePatient(id, user, { force = false } = {}) {
   // phòng lấy từ GET /queue (phòng cố định của bác sĩ đang khám).
   if (!DEMO_MODE) {
     if (reopen) return { ok: true, visit: v }
-    if (resume) {
-      // Đi xét nghiệm chỉ là cờ ở máy này, server vẫn Examining: không gọi start-exam (server trả 409 INVALID_TRANSITION).
-      // Máy quầy chưa nhận được lệnh gọi qua server → không hiện thanh "quầy đang gọi" (entered: true).
-      patch(id, { labOut: false, resumedFromLabs: true, calledAt: new Date().toISOString(), entered: true })
-      apiLabReturn(id).finally(syncQueue)
-      return { ok: true, visit: state.visits.find((x) => x.id === id) }
-    }
+    if (resume)
+      // Lượt vẫn Examining của bác sĩ này: báo server bệnh nhân đã về (lab-return), không gọi start-exam (409 INVALID_TRANSITION).
+      // Chờ server trả lời rồi mới báo thành công — server từ chối thì bác sĩ thấy lỗi, bệnh nhân vẫn ở nhóm đi xét nghiệm.
+      return apiLabReturn(id).then(
+        async () => {
+          await syncQueue()
+          patch(id, { resumedFromLabs: true, entered: true })
+          return { ok: true, visit: state.visits.find((x) => x.id === id) }
+        },
+        (e) => (syncQueue(), { ok: false, error: e.message })
+      )
     return apiStartExam(id).then(
       async () => {
         await syncQueue()
@@ -525,8 +519,51 @@ export function takePatient(id, user, { force = false } = {}) {
     })
   return { ok: true, visit: state.visits.find((x) => x.id === id) }
 }
+// ---------- Mời vào phòng qua server (ERD v2.0, chỉ backend thật) ----------
+// Bác sĩ bấm "Mời bệnh nhân tiếp theo" → server chọn người kế (POST /queue/call-next) và đóng dấu called_at;
+// máy quầy thấy lời mời qua GET /queue, gọi bệnh nhân vào. Bệnh nhân vào phòng → bác sĩ "Bắt đầu khám" (start-exam).
+// Mỗi bác sĩ chỉ mời một người tại một thời điểm (409 ACTIVE_CALL).
+const CALL_ERRORS = {
+  ACTIVE_CALL: 'You are already calling a patient who has not come in yet — start the exam or mark them not here first.',
+  QUEUE_EMPTY: 'No one is waiting.',
+  CALLED_BY_OTHER: 'Another doctor is calling this patient.',
+  NOT_CALLED: 'This patient is not being called.'
+}
+const callError = (e) => CALL_ERRORS[e?.code] ?? e?.message ?? 'Could not call the patient.'
+// Lượt đang được mời (chưa vào phòng): còn trong hàng chờ, chưa bác sĩ nào nhận, có called_at.
+export const isInvited = (v) => isQueued(v) && !!v.calledAt && !v.doctorId
+export const myInvite = (user, visits = state.visits) => visits.find((v) => isInvited(v) && v.calledById === user.id) ?? null
+export const invitesOf = (visits = state.visits) => visits.filter(isInvited).sort((a, b) => new Date(a.calledAt) - new Date(b.calledAt))
+const viaCall = (call) =>
+  call.then(
+    async (r) => {
+      await syncQueue()
+      return { ok: true, invited: state.visits.find((x) => x.id === r?.visit_id) ?? null }
+    },
+    (e) => (syncQueue(), { ok: false, code: e?.code, error: callError(e) })
+  )
+export function inviteNext() {
+  return viaCall(apiCallNext())
+}
+// Gọi lại người đang mời (chưa nghe rõ / chưa thấy vào).
+export function inviteAgain(id) {
+  return viaCall(apiCallVisit(id))
+}
+// Bệnh nhân không có mặt: bỏ lời mời, lượt về lại hàng chờ như cũ (bác sĩ hoặc quầy).
+export function dropInvite(id, user) {
+  const v = state.visits.find((x) => x.id === id)
+  if (v) logEvent(user, 'queue.not_present', { target: { kind: 'patient', id: v.patientId, label: v.name }, params: { patient: v.name, ticket: v.ticket } })
+  return viaCall(apiCancelCall(id))
+}
+
 // Mời bệnh nhân kế tiếp ĐÃ CHECK-IN (cấp cứu → ưu tiên → theo số) vào phòng khám.
+// Backend thật: chỉ MỜI (server chọn người kế), bác sĩ bắt đầu khám khi bệnh nhân vào phòng.
 export function takeNext(user, opts) {
+  if (!DEMO_MODE) {
+    const busy = inRoomOf(user)
+    if (busy.length) return { ok: false, busy: busy[0], target: { ...busy[0], priority: false }, error: 'Finish the patient in your room first — finalize the visit or send them for lab tests.' }
+    return inviteNext()
+  }
   const list = readyOrder()
   const next = list.find((v) => !v.absent) ?? list[0]
   if (!next) return { ok: false, error: waitingOrder().length ? 'Nobody is checked in yet — reception checks patients in when it is their turn.' : 'No one is waiting.' }
@@ -581,10 +618,11 @@ export function sendToLabs(id, { tests, other = '', diagnosis = '', note = '' },
   return { ok: true, order }
 }
 // Tên các xét nghiệm của một phiếu chỉ định (hiển thị gọn trên 1 dòng).
-export const labOrderSummary = (o) => [...o.tests.map((x) => x.name), ...(o.other ? [o.other] : [])].join(', ')
+export const labOrderSummary = (o) => [...(o.packageName ? [o.packageName] : []), ...o.tests.filter((x) => !x.cancelled && !x.inPackage).map((x) => x.name), ...(o.other ? [o.other] : [])].join(', ')
 // Từng dòng xét nghiệm của một phiếu kèm kết quả đã ghi: key = "<mã phiếu>:<mã xét nghiệm>" ("other" = xét nghiệm ngoài danh mục).
+// Phiếu từ server (serviceStore.toLabOrder): mã xét nghiệm là item_id; dòng đã huỷ có cancelled, ref = khoảng tham chiếu.
 export const labRows = (o) => [
-  ...o.tests.map((x) => ({ key: o.id + ':' + x.code, name: x.name, result: x.result ?? '' })),
+  ...o.tests.map((x) => ({ key: o.id + ':' + x.code, name: x.name, result: x.result ?? '', itemId: x.itemId, cancelled: !!x.cancelled, ref: x.ref ?? '' })),
   ...(o.other ? [{ key: o.id + ':other', name: o.other, result: o.otherResult ?? '' }] : [])
 ]
 // Ghi kết quả { "<mã phiếu>:<mã xét nghiệm>": kết quả } vào đúng dòng của các phiếu chỉ định.
@@ -967,6 +1005,11 @@ export function reviewRedFlag(id, decision, user) {
   const rf = state.redFlags.find((r) => r.id === id)
   if (!rf) return { ok: false, error: 'Case not found.' }
   const doctorReview = { by: user.name, byId: user.id, at: new Date().toISOString(), decision }
+  // Backend thật: chỉ ghi "đã xem" ở máy này; chuyển tuyến do giấy chuyển tuyến gửi server.
+  if (!DEMO_MODE) {
+    commit({ ...state, redFlags: state.redFlags.map((r) => (r.id === id ? { ...r, doctorReview } : r)) })
+    return { ok: true }
+  }
   // Bác sĩ đổi quyết định → lễ tân phải xem lại thông báo.
   const at = doctorReview.at
   const close = (x) =>

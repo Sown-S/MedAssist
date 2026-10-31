@@ -3,7 +3,7 @@ import PatientQueueCard from '../../components/PatientQueueCard'
 import PatientAlerts from '../../components/PatientAlerts'
 import Icon from '../../components/Icon'
 import { translate } from '../../i18n'
-import { useQueue, STATUSES, ST, leftReasonLabel, minutesSince, waitingOrder, readyOrder, payStatusOf, markLabReturned, checkInVisit, atLabs } from '../../api/queueStore'
+import { useQueue, STATUSES, ST, leftReasonLabel, minutesSince, waitingOrder, readyOrder, payStatusOf, markLabReturned, checkInVisit, atLabs, isInvited } from '../../api/queueStore'
 import { useAuth } from '../../context/AuthContext'
 import { useToast } from '../../context/ToastContext'
 import { useInvoices, invoiceById } from '../../api/invoiceStore'
@@ -46,8 +46,13 @@ export default function QueueView({ readOnly, onPay, onRx }) {
     if (v.status === ST.FINISHED) return { label: translate('Done') + ' ' + hhmm(v.statusAt), level: 'ok' }
     if (v.status === ST.CANCELLED) return { label: translate('Left') + ' ' + hhmm(v.statusAt), level: 'long' }
     if (atLabs(v) && v.labReturnedAt) return { label: translate('Back from lab') + ' ' + hhmm(v.labReturnedAt), level: 'warn' }
-    if (atLabs(v)) return { label: translate('Out for lab tests') + ' ' + minutesSince(v.statusAt, now) + ' ' + translate('min'), level: minutesSince(v.statusAt, now) >= 60 ? 'long' : 'ok' }
+    // Backend thật: server giữ giờ đi xét nghiệm (lab_out_at) — máy quầy thấy "Đang xét nghiệm" thay vì "Đang khám".
+    if (atLabs(v)) {
+      const n = minutesSince(v.labOutAt ?? v.statusAt, now)
+      return { label: translate('Out for lab tests') + ' ' + n + ' ' + translate('min'), level: n >= 60 ? 'long' : 'ok' }
+    }
     if (v.status === ST.EXAMINING && v.entered === false) return { label: translate('Being called') + (v.room ? ' → ' + v.room : ''), level: 'warn' }
+    if (isInvited(v)) return { label: translate('Being called') + (v.calledRoom ? ' → ' + v.calledRoom : ''), level: 'warn' }
     if (v.absent) return { label: translate('Not here'), level: 'long' }
     const n = minutesSince(v.statusAt, now)
     const [warn, long] = WAIT_LIMITS[v.status] ?? [30, 60]
@@ -108,9 +113,10 @@ export default function QueueView({ readOnly, onPay, onRx }) {
           </button>
         </>
       )
-    // Bệnh nhân cầm kết quả xét nghiệm quay lại → báo bác sĩ phụ trách.
+    // Bệnh nhân cầm kết quả xét nghiệm quay lại → báo bác sĩ phụ trách (bản demo). Backend thật: bác sĩ tự bấm
+    // "Khám tiếp" khi bệnh nhân vào phòng (server chỉ cho bác sĩ của lượt báo đã về).
     if (atLabs(v))
-      return v.labReturnedAt ? null : (
+      return !DEMO_MODE || v.labReturnedAt ? null : (
         <button className="btn btn-primary btn-sm" disabled={readOnly} onClick={() => markLabReturned(v.id)}>
           <Icon name="flask" /> Back from lab — notify doctor
         </button>

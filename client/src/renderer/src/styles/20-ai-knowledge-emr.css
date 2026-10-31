@@ -77,6 +77,25 @@
 .kb-release-empty{padding:10px 0 4px;}
 .svc-fee{display:flex;align-items:center;gap:6px;}
 .svc-fee input{width:120px;padding:6px 9px;border:1px solid var(--border);border-radius:8px;background:var(--field-bg);color:var(--ink);font-family:'IBM Plex Mono',monospace;text-align:right;}
+/* Cấp phát & thu tiền (PaymentModalLive): nhãn, tên, giá, nút thẳng cột; vùng thêm dịch vụ cùng kiểu ô nhập. */
+.pay-status-line{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;}
+.pay-cols .invoice-row>.badge{flex:0 0 104px;justify-content:center;text-align:center;white-space:normal;}
+.pay-cols .invoice-row .inv-name{min-width:0;}
+.pay-cols .invoice-row .inv-name .ai-select{display:block;width:100%;margin-top:6px;}
+.pay-cols .invoice-row .inv-price{flex:0 0 100px;text-align:right;}
+/* Cột cuối 36px dành cho nút xoá ở MỌI dòng → cột giá luôn thẳng hàng dù dòng có nút hay không. */
+.pay-cols .invoice-row{position:relative;padding-right:36px;}
+.pay-cols .invoice-row>.icon-btn{position:absolute;right:0;top:50%;transform:translateY(-50%);width:28px;height:28px;}
+.pay-cols .svc-fee{flex:0 0 auto;}
+.pay-cols .svc-fee input{width:100px;}
+.pay-cols .inv-name .inv-cancel{margin-top:4px;padding:2px 8px;font-size:12px;}
+.svc-add{display:flex;flex-direction:column;gap:8px;padding:12px 0;border-bottom:1px solid var(--border);}
+.svc-add>.ai-select{width:100%;}
+.svc-custom{display:grid;grid-template-columns:minmax(0,1fr) 130px auto;gap:8px;align-items:center;}
+.svc-custom input{min-width:0;padding:8px 10px;border:1px solid var(--border);border-radius:8px;background:var(--field-bg);color:var(--ink);font-size:13.5px;font-family:inherit;}
+.svc-custom input[type=number]{font-family:'IBM Plex Mono',monospace;text-align:right;}
+.svc-custom input:focus{outline:none;border-color:var(--accent);}
+.svc-custom .btn{white-space:nowrap;}
 .kb-json{margin:6px 0 0;padding:8px 10px;max-width:520px;white-space:pre-wrap;word-break:break-word;font:12px 'IBM Plex Mono';background:var(--field-bg);border:1px solid var(--border);border-radius:8px;color:var(--ink-soft);}
 
 /* ===== Lịch sử khám từ server (pages/doctor/ServerHistory.jsx) ===== */
@@ -92,3 +111,28 @@
 .emr-dx-row{margin:4px 0;}
 .emr-dx-row.retracted{text-decoration:line-through;opacity:.6;}
 .emr-notes{white-space:pre-wrap;font-size:13px;color:var(--ink-soft);margin:3px 0 0 4px;}
+
+/* ---- Chuyển tuyến, lời mời vào phòng, đề xuất sinh hiệu (ERD v2.0) ---- */
+.fac-input{position:relative;}
+.fac-list{position:absolute;z-index:30;left:0;right:0;top:calc(100% + 4px);max-height:260px;overflow:auto;background:var(--solid);border:1px solid var(--border);border-radius:11px;box-shadow:0 12px 30px rgba(0,0,0,.35);padding:4px;}
+.fac-list button{display:flex;flex-direction:column;align-items:flex-start;gap:1px;width:100%;text-align:left;border:none;background:transparent;color:var(--ink);padding:7px 9px;border-radius:8px;cursor:pointer;font:inherit;}
+.fac-list button:hover{background:var(--surface-hover);}
+.fac-list small{color:var(--ink-soft);font-size:12px;}
+fieldset.doc-fields{border:none;padding:0;margin:0;min-width:0;}
+.invite-bar{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin:10px 0 4px;padding:9px 11px;border-radius:11px;border:1px solid rgba(245,158,11,.45);background:var(--priority-soft);}
+.invite-who{display:flex;align-items:center;gap:9px;flex:1;min-width:180px;}
+.invite-who svg{width:18px;height:18px;color:var(--priority);flex-shrink:0;}
+.invite-who span{display:flex;flex-direction:column;min-width:0;}
+.invite-who small{color:var(--ink-soft);font-size:12px;}
+.invite-acts{display:flex;flex-wrap:wrap;gap:6px;}
+.invite-bar.compact{flex-direction:column;align-items:stretch;}
+.invite-bar.compact .invite-acts .btn{flex:1;justify-content:center;white-space:nowrap;}
+.invite-bar.compact .invite-acts .btn-primary{flex-basis:100%;}
+.emr-referral{margin:10px 0;padding:9px 12px;border-radius:11px;border:1px solid rgba(239,68,68,.4);background:var(--warn-soft);display:flex;flex-direction:column;gap:4px;}
+.emr-referral-head{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;}
+.emr-referral-head .btn{margin-left:auto;}
+.emr-referral-head .badge svg{width:12px;height:12px;vertical-align:-1px;}
+.vital-proposals{margin-bottom:10px;}
+.vital-proposals .sym-chip{padding-left:11px;}
+.vital-proposals .sym-chip.kept{opacity:.65;}
+.vp-ev{color:var(--ink-soft);font-size:12px;}

@@ -3,7 +3,8 @@ import Icon from '../../components/Icon'
 import { useToast } from '../../context/ToastContext'
 import { useAuth } from '../../context/AuthContext'
 import { translate } from '../../i18n'
-import { useQueue, waitingOrder, confirmEntered, markNotPresent, minutesSince, ST, checkInVisit } from '../../api/queueStore'
+import { useQueue, waitingOrder, confirmEntered, markNotPresent, minutesSince, ST, checkInVisit, invitesOf, dropInvite } from '../../api/queueStore'
+import { DEMO_MODE } from '../../api/client'
 import { ticketNo } from '../../components/queuePrint'
 import { callText } from '../../components/useCallAnnouncer'
 import { useDevice } from '../../api/deviceSettings'
@@ -12,6 +13,8 @@ import { useDevice } from '../../api/deviceSettings'
 //  1. Tới lượt, bệnh nhân có mặt → lễ tân bấm số ở dải "Tiếp theo" để CHECK-IN (Waiting → CheckedIn);
 //  2. Bác sĩ "Mời bệnh nhân tiếp theo" = start-exam người đã check-in đứng đầu (CheckedIn → Examining) → hiện ở đây kèm phòng;
 //  3. Lễ tân GỌI MIỆNG ("Mời số X vào phòng Y") rồi bấm "Đã vào phòng"; không thấy bệnh nhân → "Không có mặt" (release, xuống cuối).
+// Backend thật (ERD v2.0): bác sĩ chỉ MỜI (call-next, lượt vẫn ở hàng chờ) — quầy thấy lời mời kèm tên bác sĩ, phòng; bệnh nhân
+// chưa check-in thì check-in rồi mời vào; không có mặt → bỏ lời mời (DELETE /visits/{id}/call), bệnh nhân giữ chỗ.
 export default function CallPanel({ readOnly }) {
   const { showToast } = useToast()
   const { user } = useAuth()
@@ -23,7 +26,9 @@ export default function CallPanel({ readOnly }) {
     return () => clearInterval(t)
   }, [])
   // Bệnh nhân bác sĩ đã nhận nhưng chưa vào phòng = lễ tân cần gọi.
-  const toCall = visits.filter((v) => v.status === ST.EXAMINING && v.entered === false).sort((a, b) => (a.calledAt ?? '').localeCompare(b.calledAt ?? ''))
+  const toCall = DEMO_MODE
+    ? visits.filter((v) => v.status === ST.EXAMINING && v.entered === false).sort((a, b) => (a.calledAt ?? '').localeCompare(b.calledAt ?? ''))
+    : invitesOf(visits).map((v) => ({ ...v, room: v.calledRoom, doctor: v.calledByName }))
   const next = waitingOrder(visits)
 
   function cameIn(v) {
@@ -34,7 +39,11 @@ export default function CallPanel({ readOnly }) {
     const r = await checkInVisit(v.id, user)
     showToast(r.ok ? ticketNo(v.ticket) + ' — ' + translate('checked in') : translate(r.error))
   }
-  function notHere(v) {
+  async function notHere(v) {
+    if (!DEMO_MODE) {
+      const r = await dropInvite(v.id, user)
+      return showToast(r.ok ? translate('Invitation cancelled — the patient keeps their place in the queue') + ' — ' + ticketNo(v.ticket) : translate(r.error))
+    }
     const r = markNotPresent(v.id, user)
     if (!r.ok) return showToast(translate(r.error))
     showToast(translate('Moved to the end of the queue') + ' — ' + ticketNo(v.ticket))
@@ -58,10 +67,23 @@ export default function CallPanel({ readOnly }) {
                 {v.doctor} · {translate('ready')} {minutesSince(v.calledAt ?? v.statusAt)} {translate('min ago')} · <i>“{callText(v)}”</i>
               </span>
             </span>
-            <button className="btn btn-primary btn-sm" disabled={readOnly} onClick={() => cameIn(v)}>
-              <Icon name="check" /> In the room
-            </button>
-            <button className="btn btn-ghost btn-sm" disabled={readOnly} onClick={() => notHere(v)} title={translate('Moves this patient to the end of the queue')}>
+            {DEMO_MODE ? (
+              <button className="btn btn-primary btn-sm" disabled={readOnly} onClick={() => cameIn(v)}>
+                <Icon name="check" /> In the room
+              </button>
+            ) : (
+              v.status === ST.WAITING && (
+                <button className="btn btn-primary btn-sm" disabled={readOnly} onClick={() => checkIn(v)} title={translate('The patient is at the desk and it is nearly their turn')}>
+                  <Icon name="check" /> {translate('Mark present')}
+                </button>
+              )
+            )}
+            <button
+              className="btn btn-ghost btn-sm"
+              disabled={readOnly}
+              onClick={() => notHere(v)}
+              title={translate(DEMO_MODE ? 'Moves this patient to the end of the queue' : 'Cancels the invitation — the patient keeps their place in the queue')}
+            >
               <Icon name="x" /> Not here
             </button>
           </div>

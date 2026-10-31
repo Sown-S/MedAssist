@@ -174,13 +174,16 @@ export async function extractSymptoms(visitId, { signal, timeoutMs = 30000 } = {
   if (r.status !== 'Completed') throw Object.assign(new Error('Extraction unavailable'), { code: 'AI_UNAVAILABLE' })
   return {
     status: 'Completed',
-    proposals: r.suggestions.filter((s) => s.status !== 'UNKNOWN').map((s) => ({ symptom_code: s.symptom_code, state: s.status, phrase: '' }))
+    proposals: r.suggestions.filter((s) => s.status !== 'UNKNOWN').map((s) => ({ symptom_code: s.symptom_code, state: s.status, phrase: '' })),
+    // ERD v2.0: sinh hiệu đọc được trong lời kể — y tá xác nhận mới điền; lời kể đã sửa sau lần trích xuất → nhắc chạy lại.
+    vitalProposals: (r.vital_proposals ?? []).map((p) => ({ key: p.key, value: p.value, evidence: p.evidence ?? '', group: p.group ?? null })),
+    textChanged: !!r.text_changed
   }
 }
 
 // ---------- Hàng đợi ----------
 // Một dòng GET /queue → hình dạng lượt khám của queueStore (thẻ hàng chờ, gọi số, đếm số liệu).
-const ageFrom = (iso) => {
+export const ageFrom = (iso) => {
   const d = new Date(iso)
   if (Number.isNaN(+d)) return ''
   const now = new Date()
