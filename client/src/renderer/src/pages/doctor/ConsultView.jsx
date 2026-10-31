@@ -36,7 +36,7 @@ import { getDraft, saveDraft, deleteDraft } from '../../api/draftStore'
 import DocumentModal from './DocumentModal'
 import VitalsFields from '../../components/VitalsFields'
 import { normalizeVitals, vitalsToForm, vitalsFromForm, vitalsText, checkVitals } from '../../api/vitals'
-import { useTakePatient, pastVisitsOf, LabOrderResults, ReleaseModal, LeaveVisitModal } from './doctorShared'
+import { useTakePatient, pastVisitsOf, LabOrderResults, ReleaseModal, LeaveVisitModal, InviteBar } from './doctorShared'
 import { SOURCES } from '../../api/symptoms'
 import { symptomName } from '../../api/symptoms'
 
@@ -271,8 +271,9 @@ export default function ConsultView({ visitId, onSelect, onRx }) {
               <Icon name="chevronsLeft" />
             </button>
           </div>
+          <InviteBar compact onStart={take} />
           {mine.length > 0 && <p className="dq-note">Finish or send the current patient for lab tests before calling the next one.</p>}
-          {!mine.length && !ready && waitingOrder(visits).length > 0 && <p className="dq-note">Nobody is checked in yet — reception checks patients in when they are at the desk.</p>}
+          {DEMO_MODE && !mine.length && !ready && waitingOrder(visits).length > 0 && <p className="dq-note">Nobody is checked in yet — reception checks patients in when they are at the desk.</p>}
           {groups.map((g) => {
             const on = openGroups[g.key]
             return (
@@ -1133,8 +1134,9 @@ function ConsultForm({ visit, user, onDone, onNext }) {
           <button className="btn btn-ghost btn-sm" onClick={() => setHanding(true)} title={translate('Leaving the room? Send this patient back to the waiting queue')}>
             <Icon name="repeat" /> Return to queue
           </button>
-          <button className="btn btn-ghost btn-sm" onClick={() => setDocs(true)} title={translate('Referral letter')}>
-            <Icon name="printer" /> Referral letter
+          {/* Backend thật: chuyển tuyến là một cách KẾT THÚC lượt khám (ERD v2.0) — in giấy và đóng lượt, không hoá đơn. */}
+          <button className="btn btn-ghost btn-sm" onClick={() => setDocs(true)} title={translate(DEMO_MODE ? 'Referral letter' : 'Refer & end the visit')}>
+            <Icon name="printer" /> {DEMO_MODE ? 'Referral letter' : 'Refer to hospital'}
           </button>
           <button className="btn btn-ghost btn-sm" onClick={() => setLabOpen(true)} title="Alt+L">
             <Icon name="flask" /> Order lab tests
@@ -1164,7 +1166,18 @@ function ConsultForm({ visit, user, onDone, onNext }) {
           }}
         />
       )}
-      {docs && <DocumentModal subject={{ ...visit, ...d, rx: d.rx, labOrders }} onClose={() => setDocs(false)} />}
+      {docs && (
+        <DocumentModal
+          subject={{ ...visit, ...d, rx: d.rx, labOrders }}
+          mode={DEMO_MODE ? 'print' : 'doctor'}
+          target={{ visitId: visit.id }}
+          onDone={() => {
+            deleteDraft(visit.id)
+            onDone()
+          }}
+          onClose={() => setDocs(false)}
+        />
+      )}
       {cancelRow && (
         <CancelOrderItemModal
           item={cancelRow}

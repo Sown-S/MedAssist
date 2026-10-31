@@ -9,8 +9,9 @@ import { useVisitArchive } from '../../api/visitArchive'
 import { useInventory, stockOf } from '../../api/inventoryStore'
 import { soldOutside } from '../../api/rxSafety'
 import { fold } from '../../api/patientStore'
+import { DEMO_MODE } from '../../api/client'
 import { useNow, ymd, periodRange, inRange, dmy, hhmm } from '../reception/shared'
-import { useTakePatient, pastVisitsOf, PatientBrief, LabOrderResults } from './doctorShared'
+import { useTakePatient, pastVisitsOf, PatientBrief, LabOrderResults, InviteBar } from './doctorShared'
 
 const no = (t) => String(t).padStart(3, '0')
 const waitTone = (n) => (n >= 45 ? 'long' : n >= 25 ? 'warn' : 'ok')
@@ -151,7 +152,9 @@ export default function DoctorHome({ go, onRx }) {
             )
           })}
           {!waiting.length && <p className="ai-soft" style={{ fontSize: 14 }}>No one is waiting.</p>}
-          <button className="btn btn-primary btn-sm" style={{ marginTop: 10 }} onClick={next} disabled={!ready.length}>
+          <InviteBar onStart={take} />
+          {/* Backend thật: server mời cả người chưa check-in (lễ tân check-in khi họ đến quầy). */}
+          <button className="btn btn-primary btn-sm" style={{ marginTop: 10 }} onClick={next} disabled={DEMO_MODE ? !ready.length : !waiting.length}>
             <Icon name="megaphone" /> Call next patient
           </button>
         </div>

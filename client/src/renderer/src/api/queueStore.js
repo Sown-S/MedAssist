@@ -6,7 +6,7 @@
 // gọi API thật; không tạo dữ liệu mẫu, không lưu localStorage. Các phần chưa có API vẫn chạy cục bộ.
 import { useEffect, useSyncExternalStore } from 'react'
 import { DEMO_MODE } from './client'
-import { fetchQueue, fetchStale, cancelStale as apiCancelStale, labOut as apiLabOut, labReturn as apiLabReturn, checkIn as apiCheckIn, cancelVisit as apiCancelVisit, startExam as apiStartExam, releaseVisit as apiRelease } from './clinicApi'
+import { fetchQueue, fetchStale, cancelStale as apiCancelStale, labOut as apiLabOut, labReturn as apiLabReturn, checkIn as apiCheckIn, cancelVisit as apiCancelVisit, startExam as apiStartExam, releaseVisit as apiRelease, callNext as apiCallNext, callVisit as apiCallVisit, cancelCall as apiCancelCall } from './clinicApi'
 import { reopenPrescription as apiReopen } from './examApi'
 import { VI } from '../i18n/vi'
 import { getSettings } from './settingsStore'
@@ -224,7 +224,8 @@ export function syncQueue() {
   syncing ??= fetchQueue()
     .then((list) => {
       const prev = new Map(state.visits.map((v) => [v.id, v]))
-      commit({ ...state, visits: list.map((v) => ({ ...prev.get(v.id), ...v })) })
+      const visits = list.map((v) => ({ ...prev.get(v.id), ...v }))
+      commit({ ...state, visits, redFlags: liveRedFlags(visits, state.redFlags) })
       return true
     })
     .catch(() => false)
@@ -247,6 +248,31 @@ export function useQueueSync(ms = 3000) {
     return () => clearInterval(t)
   }, [ms])
 }
+// Backend thật: ca cờ đỏ KHÔNG lưu ở máy — lấy từ hàng chờ (lượt cấp cứu đang chờ, is_red_flag). Ca chuyển tuyến ngay
+// đã đóng lượt ở server, xem ở hồ sơ bệnh án. Chỉ giữ ở máy dấu "đã xem" / "đã hướng dẫn" của phiên này.
+function liveRedFlags(visits, prev = []) {
+  const old = new Map(prev.map((r) => [r.id, r]))
+  return visits
+    .filter((v) => isQueued(v) && v.triage === 'emergency')
+    .map((v) => {
+      const id = 'rf-' + v.id
+      return {
+        id,
+        visitId: v.id,
+        patientId: v.patientId,
+        name: v.name,
+        gender: v.gender,
+        age: v.age,
+        signs: v.redFlagReason || v.reason || '',
+        at: v.arrivedAt,
+        by: '',
+        outcome: 'queued',
+        ack: old.get(id)?.ack ?? false,
+        doctorReview: old.get(id)?.doctorReview ?? null
+      }
+    })
+}
+
 // Lỗi API → { ok: false, error } như các hàm giả lập (câu tiếng Việt của server).
 const viaApi = (call) =>
   call.then(
@@ -493,8 +519,51 @@ export function takePatient(id, user, { force = false } = {}) {
     })
   return { ok: true, visit: state.visits.find((x) => x.id === id) }
 }
+// ---------- Mời vào phòng qua server (ERD v2.0, chỉ backend thật) ----------
+// Bác sĩ bấm "Mời bệnh nhân tiếp theo" → server chọn người kế (POST /queue/call-next) và đóng dấu called_at;
+// máy quầy thấy lời mời qua GET /queue, gọi bệnh nhân vào. Bệnh nhân vào phòng → bác sĩ "Bắt đầu khám" (start-exam).
+// Mỗi bác sĩ chỉ mời một người tại một thời điểm (409 ACTIVE_CALL).
+const CALL_ERRORS = {
+  ACTIVE_CALL: 'You are already calling a patient who has not come in yet — start the exam or mark them not here first.',
+  QUEUE_EMPTY: 'No one is waiting.',
+  CALLED_BY_OTHER: 'Another doctor is calling this patient.',
+  NOT_CALLED: 'This patient is not being called.'
+}
+const callError = (e) => CALL_ERRORS[e?.code] ?? e?.message ?? 'Could not call the patient.'
+// Lượt đang được mời (chưa vào phòng): còn trong hàng chờ, chưa bác sĩ nào nhận, có called_at.
+export const isInvited = (v) => isQueued(v) && !!v.calledAt && !v.doctorId
+export const myInvite = (user, visits = state.visits) => visits.find((v) => isInvited(v) && v.calledById === user.id) ?? null
+export const invitesOf = (visits = state.visits) => visits.filter(isInvited).sort((a, b) => new Date(a.calledAt) - new Date(b.calledAt))
+const viaCall = (call) =>
+  call.then(
+    async (r) => {
+      await syncQueue()
+      return { ok: true, invited: state.visits.find((x) => x.id === r?.visit_id) ?? null }
+    },
+    (e) => (syncQueue(), { ok: false, code: e?.code, error: callError(e) })
+  )
+export function inviteNext() {
+  return viaCall(apiCallNext())
+}
+// Gọi lại người đang mời (chưa nghe rõ / chưa thấy vào).
+export function inviteAgain(id) {
+  return viaCall(apiCallVisit(id))
+}
+// Bệnh nhân không có mặt: bỏ lời mời, lượt về lại hàng chờ như cũ (bác sĩ hoặc quầy).
+export function dropInvite(id, user) {
+  const v = state.visits.find((x) => x.id === id)
+  if (v) logEvent(user, 'queue.not_present', { target: { kind: 'patient', id: v.patientId, label: v.name }, params: { patient: v.name, ticket: v.ticket } })
+  return viaCall(apiCancelCall(id))
+}
+
 // Mời bệnh nhân kế tiếp ĐÃ CHECK-IN (cấp cứu → ưu tiên → theo số) vào phòng khám.
+// Backend thật: chỉ MỜI (server chọn người kế), bác sĩ bắt đầu khám khi bệnh nhân vào phòng.
 export function takeNext(user, opts) {
+  if (!DEMO_MODE) {
+    const busy = inRoomOf(user)
+    if (busy.length) return { ok: false, busy: busy[0], target: { ...busy[0], priority: false }, error: 'Finish the patient in your room first — finalize the visit or send them for lab tests.' }
+    return inviteNext()
+  }
   const list = readyOrder()
   const next = list.find((v) => !v.absent) ?? list[0]
   if (!next) return { ok: false, error: waitingOrder().length ? 'Nobody is checked in yet — reception checks patients in when it is their turn.' : 'No one is waiting.' }
@@ -936,6 +1005,11 @@ export function reviewRedFlag(id, decision, user) {
   const rf = state.redFlags.find((r) => r.id === id)
   if (!rf) return { ok: false, error: 'Case not found.' }
   const doctorReview = { by: user.name, byId: user.id, at: new Date().toISOString(), decision }
+  // Backend thật: chỉ ghi "đã xem" ở máy này; chuyển tuyến do giấy chuyển tuyến gửi server.
+  if (!DEMO_MODE) {
+    commit({ ...state, redFlags: state.redFlags.map((r) => (r.id === id ? { ...r, doctorReview } : r)) })
+    return { ok: true }
+  }
   // Bác sĩ đổi quyết định → lễ tân phải xem lại thông báo.
   const at = doctorReview.at
   const close = (x) =>

@@ -3,7 +3,7 @@ import PatientQueueCard from '../../components/PatientQueueCard'
 import PatientAlerts from '../../components/PatientAlerts'
 import Icon from '../../components/Icon'
 import { translate } from '../../i18n'
-import { useQueue, STATUSES, ST, leftReasonLabel, minutesSince, waitingOrder, readyOrder, payStatusOf, markLabReturned, checkInVisit, atLabs } from '../../api/queueStore'
+import { useQueue, STATUSES, ST, leftReasonLabel, minutesSince, waitingOrder, readyOrder, payStatusOf, markLabReturned, checkInVisit, atLabs, isInvited } from '../../api/queueStore'
 import { useAuth } from '../../context/AuthContext'
 import { useToast } from '../../context/ToastContext'
 import { useInvoices, invoiceById } from '../../api/invoiceStore'
@@ -52,6 +52,7 @@ export default function QueueView({ readOnly, onPay, onRx }) {
       return { label: translate('Out for lab tests') + ' ' + n + ' ' + translate('min'), level: n >= 60 ? 'long' : 'ok' }
     }
     if (v.status === ST.EXAMINING && v.entered === false) return { label: translate('Being called') + (v.room ? ' → ' + v.room : ''), level: 'warn' }
+    if (isInvited(v)) return { label: translate('Being called') + (v.calledRoom ? ' → ' + v.calledRoom : ''), level: 'warn' }
     if (v.absent) return { label: translate('Not here'), level: 'long' }
     const n = minutesSince(v.statusAt, now)
     const [warn, long] = WAIT_LIMITS[v.status] ?? [30, 60]

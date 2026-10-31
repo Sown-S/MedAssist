@@ -5,7 +5,8 @@ import Icon from '../../components/Icon'
 import { useAuth } from '../../context/AuthContext'
 import { useToast } from '../../context/ToastContext'
 import { translate } from '../../i18n'
-import { takePatient, takeNext, minutesSince, labRows, releaseVisit, leaveVisit, LEFT_REASONS, ST } from '../../api/queueStore'
+import { takePatient, takeNext, minutesSince, labRows, releaseVisit, leaveVisit, LEFT_REASONS, ST, useQueue, myInvite, inviteAgain, dropInvite } from '../../api/queueStore'
+import { DEMO_MODE } from '../../api/client'
 import { getDraft, deleteDraft } from '../../api/draftStore'
 import { findPatient } from '../../api/patientStore'
 import { dmy, hhmm } from '../reception/shared'
@@ -25,6 +26,11 @@ export function useTakePatient(open) {
 
   async function run(target, force = false) {
     const r = await (target ? takePatient(target.id, user, { force }) : takeNext(user, { force }))
+    // Backend thật: "Mời tiếp" chỉ gửi lời mời — quầy gọi bệnh nhân vào, bác sĩ bắt đầu khám ở thanh lời mời.
+    if (r.ok && 'invited' in r) {
+      const v = r.invited
+      return showToast(v ? translate('Invited') + ' ' + no(v.ticket) + ' — ' + v.name + '. ' + translate('Reception will send the patient in.') : translate('Invited'))
+    }
     if (r.ok) {
       setBusy(null)
       showToast(translate('Now seeing') + ' ' + no(r.visit.ticket) + ' — ' + r.visit.name)
@@ -84,6 +90,47 @@ export function useTakePatient(open) {
     </Modal>
   )
   return { take: (v) => run(v), next: () => run(null), dialog }
+}
+
+// Lời mời đang chờ của bác sĩ (backend thật): bệnh nhân vào phòng → bắt đầu khám (cần lễ tân check-in trước);
+// gọi lại; hoặc báo không có mặt (bỏ lời mời, bệnh nhân giữ chỗ trong hàng chờ). onStart(v): nhận khám lượt đó.
+export function InviteBar({ onStart, compact = false }) {
+  const { user } = useAuth()
+  const { showToast } = useToast()
+  const { visits } = useQueue()
+  const v = DEMO_MODE ? null : myInvite(user, visits)
+  if (!v) return null
+  const run = async (p, done) => {
+    const r = await p
+    showToast(translate(r.ok ? done : r.error))
+  }
+  const waiting = v.status === ST.WAITING
+  return (
+    <div className={'invite-bar' + (compact ? ' compact' : '')}>
+      <div className="invite-who">
+        <Icon name="megaphone" />
+        <span>
+          <b>
+            {no(v.ticket)} — {v.name}
+          </b>
+          <small>
+            {translate(waiting ? 'Invited — waiting for reception to check the patient in' : 'Invited — waiting for the patient to come in')} · {hhmm(v.calledAt)}
+          </small>
+        </span>
+      </div>
+      <div className="invite-acts">
+        <button className="btn btn-primary btn-sm" disabled={waiting} onClick={() => onStart(v)} title={waiting ? translate('Reception has to check the patient in first.') : undefined}>
+          <Icon name="stethoscope" /> Start the exam
+        </button>
+        <button className="btn btn-ghost btn-sm" onClick={() => run(inviteAgain(v.id), 'Called again')}>
+          <Icon name="megaphone" /> Call again
+        </button>
+        <button className="btn btn-ghost btn-sm" onClick={() => run(dropInvite(v.id, user), 'Invitation cancelled — the patient keeps their place in the queue')}>
+          Not here
+        </button>
+      </div>
+    </div>
+  )
 }
 
 // Các lượt khám TRƯỚC của một bệnh nhân (hôm nay đã xong + các ngày trước), mới nhất trước.

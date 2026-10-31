@@ -5,6 +5,9 @@ import { getHistory, getVisitRecord, VISIT_STATUS_LABEL, PRIORITY_LABEL } from '
 import { vitalsText } from '../../api/vitals'
 import { toLabOrder } from '../../api/serviceStore'
 import { LabOrderResults } from './doctorShared'
+import DocumentModal from './DocumentModal'
+import { useAuth } from '../../context/AuthContext'
+import { ageFrom } from '../../api/clinicApi'
 
 // Lịch sử khám của một bệnh nhân lấy từ server (FR04): mỗi lượt có chẩn đoán đã xác nhận và tóm tắt đơn thuốc;
 // bấm vào một lượt để xem đầy đủ (sinh hiệu, lời kể, ghi chú lâm sàng, liều dùng, hóa đơn). Dùng ở Tra cứu hồ sơ
@@ -98,6 +101,57 @@ export default function ServerHistory({ patientId, excludeVisitId, onLoaded }) {
   )
 }
 
+// Lượt kết thúc bằng chuyển tuyến (ERD v2.0): nhãn "Chuyển tuyến", tóm tắt giấy, in lại; bác sĩ bổ sung giấy.
+const TRANSPORT_LABEL = { Ambulance: 'Ambulance', Family: 'Family vehicle', Self: 'On their own', Other: 'Other' }
+function ReferralBox({ record, onSaved }) {
+  const { user } = useAuth()
+  const [open, setOpen] = useState(false)
+  const v = record.visit
+  const f = v.referral
+  const p = record.patient ?? {}
+  const doctor = user?.roleKey === 'doctor'
+  const subject = {
+    name: p.full_name ?? '',
+    gender: p.gender,
+    age: p.date_of_birth ? ageFrom(p.date_of_birth) : '',
+    patientId: p.patient_code,
+    allergies: p.allergy_notes,
+    referral: f
+  }
+  return (
+    <div className="emr-referral">
+      <div className="emr-referral-head">
+        <span className="badge low">
+          <Icon name="ban" /> {translate('Referred')}
+        </span>
+        <b>{f.facility_name}</b>
+        <span className="ai-small ai-soft">
+          {f.reason}
+          {f.transport ? ' · ' + translate(TRANSPORT_LABEL[f.transport] ?? f.transport) : ''}
+        </span>
+        <button className="btn btn-ghost btn-sm" onClick={() => setOpen(true)}>
+          <Icon name="printer" /> {translate(doctor ? 'Amend / reprint' : 'Reprint')}
+        </button>
+      </div>
+      {f.diagnosis && (
+        <div className="ai-small">
+          <span>Diagnosis</span>: {f.diagnosis}
+        </div>
+      )}
+      {f.signs && (
+        <div className="ai-small">
+          <span>Warning signs</span>: {f.signs}
+        </div>
+      )}
+      <div className="ai-small ai-soft">
+        {translate(f.referred_by_role === 'Nurse' ? 'Recorded by' : 'Doctor')} {f.referred_by_name} · {fmt(f.referred_at)}
+        {f.amended_by_name ? ' · ' + translate('amended by') + ' ' + f.amended_by_name + ' ' + fmt(f.amended_at) : ''}
+      </div>
+      {open && <DocumentModal subject={subject} mode={doctor ? 'amend' : 'reprint'} target={{ visitId: v.visit_id }} onDone={onSaved} onClose={() => setOpen(false)} />}
+    </div>
+  )
+}
+
 function VisitDetail({ visitId }) {
   const [r, setR] = useState(null)
   const [err, setErr] = useState('')
@@ -132,6 +186,7 @@ function VisitDetail({ visitId }) {
           <b>Red flag:</b> {v.red_flag_reason}
         </div>
       )}
+      {v.outcome === 'Referred' && v.referral && <ReferralBox record={r} onSaved={() => getVisitRecord(visitId).then(setR, () => {})} />}
 
       <div className="section-label">Diagnoses</div>
       {r.diagnoses.length ? (

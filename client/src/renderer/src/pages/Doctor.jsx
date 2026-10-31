@@ -2,7 +2,10 @@ import { useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import Icon from '../components/Icon'
 import { useAuth } from '../context/AuthContext'
-import { useQueue, useQueueSync, isMine, reviewRedFlag, inRoom } from '../api/queueStore'
+import { useQueue, useQueueSync, isMine, reviewRedFlag, inRoom, inviteAgain, ST } from '../api/queueStore'
+import { DEMO_MODE } from '../api/client'
+import { useToast } from '../context/ToastContext'
+import { useTakePatient } from './doctor/doctorShared'
 import { translate } from '../i18n'
 import { hhmm } from './reception/shared'
 import DoctorHome from './doctor/DoctorHome'
@@ -36,6 +39,16 @@ export default function Doctor() {
   // Ca cờ đỏ bác sĩ vừa quyết định chuyển tuyến → mở luôn giấy chuyển tuyến để in.
   const [referral, setReferral] = useState(null)
   const inRoomCount = visits.filter((v) => inRoom(v) && isMine(v, user)).length
+  const { showToast } = useToast()
+  const { take, dialog } = useTakePatient((id) => go('consult', id))
+  // Backend thật: ca cờ đỏ là lượt Cấp cứu đang chờ ở server — bác sĩ mời vào khám ngay (chuyển tuyến làm trong phòng khám).
+  async function seeNow(r) {
+    const v = visits.find((x) => x.id === r.visitId)
+    if (!v) return
+    if (v.status === ST.CHECKED_IN) return take(v)
+    const res = await inviteAgain(v.id)
+    showToast(res.ok ? translate('Invited') + ' — ' + v.name + '. ' + translate('Reception will send the patient in.') : translate(res.error))
+  }
 
   return (
     <div className="page">
@@ -63,11 +76,22 @@ export default function Doctor() {
             </b>
             <span>{translate(r.signs) || '—'}</span>
             <span className="hint">
-              {r.outcome === 'referred' && translate('Being transferred to hospital now — come out for first aid if needed, then sign the referral letter.') + ' '}
-              {translate('Recorded by')} {r.by}
+              {!DEMO_MODE && translate('Emergency — top of the queue. Call the patient in now; refer to hospital from the consultation if needed.')}
+              {DEMO_MODE && r.outcome === 'referred' && translate('Being transferred to hospital now — come out for first aid if needed, then sign the referral letter.') + ' '}
+              {r.by && translate('Recorded by') + ' ' + r.by}
               {r.allergies ? ' · ' + translate('Drug allergy') + ': ' + translate(r.allergies) : ''}
             </span>
           </div>
+          {!DEMO_MODE ? (
+            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+              <button className="btn btn-sm" onClick={() => seeNow(r)}>
+                <Icon name="stethoscope" /> See the patient now
+              </button>
+              <button className="btn btn-ghost btn-sm" onClick={() => reviewRedFlag(r.id, 'seen', user)}>
+                Dismiss
+              </button>
+            </div>
+          ) : (
           <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
             <button
               className="btn btn-sm"
@@ -82,6 +106,7 @@ export default function Doctor() {
               See at the clinic
             </button>
           </div>
+          )}
         </div>
       ))}
 
@@ -113,7 +138,8 @@ export default function Doctor() {
       {view === 'prescriptions' && <PrescriptionsView readOnly showReviews onRx={setRxOf} initialDoctor={user.name} />}
       {view === 'drugs' && <DrugCabinetView go={go} />}
       {view === 'patients' && <PatientLookup />}
-      {referral && <DocumentModal subject={referral} initial="referral" onClose={() => setReferral(null)} />}
+      {referral && <DocumentModal subject={referral} onClose={() => setReferral(null)} />}
+      {dialog}
 
       {rxOf && (
         <RxDetail visit={rxOf} readOnly onClose={() => setRxOf(null)}>
