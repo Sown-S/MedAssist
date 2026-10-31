@@ -217,7 +217,6 @@ export default function PrescriptionsView({ readOnly, onPay, onRx, initialDoctor
 // children: phần riêng của từng vai trò hiện dưới bảng thuốc (VD bác sĩ đánh giá lại đơn — RxReviewPanel).
 export function RxDetail({ visit, readOnly, onClose, onPay, children }) {
   const items = buildItems(visit)
-  const ps = payStatusOf(visit)
   return (
     <Modal open onClose={onClose} wide>
       <ModalHeader title={translate('Prescription details') + ' — ' + visit.name} onClose={onClose} />

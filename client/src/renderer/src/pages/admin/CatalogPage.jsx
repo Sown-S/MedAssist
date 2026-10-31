@@ -48,7 +48,10 @@ export default function CatalogPage({ onNavigate }) {
   // Backend thật: Dịch vụ, Xét nghiệm, Gói khám lấy từ server (ERD v2.1).
   const local = useCatalogs()
   const lc = useLiveCatalog(!DEMO_MODE)
-  const cats = DEMO_MODE ? local : { ...local, services: lc.services, labs: lc.labs, packages: lc.packages }
+  const cats = useMemo(
+    () => (DEMO_MODE ? local : { ...local, services: lc.services, labs: lc.labs, packages: lc.packages }),
+    [local, lc.services, lc.labs, lc.packages]
+  )
   const inv = useInventory()
   const { user } = useAuth()
   const [q, setQ] = useState('')

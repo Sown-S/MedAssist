@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import Modal, { ModalHeader } from '../../components/Modal'
 import PatientAlerts from '../../components/PatientAlerts'
 import Icon from '../../components/Icon'

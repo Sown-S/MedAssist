@@ -20,7 +20,7 @@ const WAIT_LIMITS = { Waiting: [30, 60], CheckedIn: [15, 30], Examining: [30, 45
 
 // Hàng chờ đầy đủ theo máy trạng thái của backend: Chờ → Đã check-in → Đang khám → Chờ thanh toán → Hoàn tất / Huỷ.
 export default function QueueView({ readOnly, onPay, onRx }) {
-  const { visits, redFlags, calling } = useQueue()
+  const { visits, redFlags } = useQueue()
   useInvoices()
   const now = useNow()
   const { user } = useAuth()

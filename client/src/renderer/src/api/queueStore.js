@@ -16,7 +16,7 @@ import { RX, archiveVisits } from './rxHistory'
 import { archiveDay } from './visitArchive'
 import { staleDraft } from './draftStore'
 import { normalizeVitals } from './vitals'
-import { getInvoices, issueInvoice, payInvoice, setInvoiceMethod, replaceInvoiceItems, cancelInvoice, sampleItems, invoiceById, activeInvoiceOf, itemType, dayOf } from './invoiceStore'
+import { issueInvoice, payInvoice, setInvoiceMethod, replaceInvoiceItems, cancelInvoice, sampleItems, invoiceById, activeInvoiceOf, itemType, dayOf } from './invoiceStore'
 import { getInventory, findDrugByName, deductForCourse, restoreAllocations } from './inventoryStore'
 import { soldOutside } from './rxSafety'
 
