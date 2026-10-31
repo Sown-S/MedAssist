@@ -15,15 +15,15 @@ relations:
   is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: bone_pain_fracture_lesion
+- symptom_code: mechanical_spinal_pain_stiffness
   polarity: SUPPORTS
   weight: 0.94
   is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: mechanical_spinal_pain_stiffness
+- symptom_code: bone_pain_fracture_lesion
   polarity: SUPPORTS
-  weight: 0.92
+  weight: 0.94
   is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
@@ -42,18 +42,6 @@ relations:
 - symptom_code: sweating_profuse
   polarity: SUPPORTS
   weight: 0.77
-  is_key: false
-  source_key: moh_qd_361_2014
-  source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: weight_loss_anorexia
-  polarity: SUPPORTS
-  weight: 0.75
-  is_key: false
-  source_key: moh_qd_361_2014
-  source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: headache_dull
-  polarity: SUPPORTS
-  weight: 0.75
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT

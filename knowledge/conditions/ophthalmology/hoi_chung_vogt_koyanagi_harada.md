@@ -45,18 +45,6 @@ relations:
   is_key: true
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
-- symptom_code: petechiae_mucosal_bleeding
-  polarity: SUPPORTS
-  weight: 0.88
-  is_key: true
-  source_key: moh_qd_40_2015
-  source_edition: Quyết định số 40/QĐ-BYT
-- symptom_code: conjunctivitis_uveitis_red_eye
-  polarity: SUPPORTS
-  weight: 0.8
-  is_key: false
-  source_key: moh_qd_40_2015
-  source_edition: Quyết định số 40/QĐ-BYT
 excerpts:
 - excerpt_key: hoi_chung_vogt_koyanagi_harada_chan_doan
   title: Tiêu chuẩn chẩn đoán lâm sàng Hội chứng vogt-koyanagi-harada

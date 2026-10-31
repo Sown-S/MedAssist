@@ -10,7 +10,8 @@ from app.core.logging import get_logger, setup_logging
 from app.core.middleware import RequestContextMiddleware
 from app.exceptions import register_exception_handlers
 from app.routers import (admin_router, auth_router, billing_router, clinic_router, inventory_router, knowledge_router,
-                         prescription_router, assessment_router, report_router, room_router)
+                         prescription_router, assessment_router, report_router, room_router,
+                         service_router)
 from app.services import health_service
 
 setup_logging(settings.LOG_LEVEL)
@@ -53,6 +54,7 @@ app.include_router(knowledge_router.router, prefix="/api/v1")
 app.include_router(assessment_router.router, prefix="/api/v1")
 app.include_router(report_router.router, prefix="/api/v1")
 app.include_router(room_router.router, prefix="/api/v1")
+app.include_router(service_router.router, prefix="/api/v1")
 
 # 5. Route trang chủ
 @app.get("/")

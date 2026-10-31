@@ -7,7 +7,8 @@ icd10_code: A04.9
 disease_group: infectious
 description: 'Tiêu chảy do vi khuẩn là bệnh thường gặp ở mọi lứa tuổi, liên quan mật
   thiết đến vệ sinh an toàn thực phẩm. Biểu hiện lâm sàng chung thường thấy là: sốt,
-  nôn, đau bụng, và tiêu chảy nhiều lần.'
+  nôn, đau bụng, Tiêu chảy do vi khuẩn là bệnh phổ biến khắp thế giới, đặc biệt ở
+  những nước đang.'
 relations:
 - symptom_code: dysentery_tenesmus_bloody_stool
   polarity: SUPPORTS

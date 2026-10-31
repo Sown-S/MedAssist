@@ -11,7 +11,7 @@ description: Là u lành rất thường gặp, có thể đơn thuần ở hố
 relations:
 - symptom_code: nasal_polyp_sinonasal_mass
   polarity: SUPPORTS
-  weight: 0.98
+  weight: 0.97
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
@@ -21,21 +21,15 @@ relations:
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: rhinorrhea_nasal_congestion
-  polarity: SUPPORTS
-  weight: 0.9
-  is_key: true
-  source_key: moh_qd_5643_2015
-  source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: facial_sinus_pain_anosmia
   polarity: SUPPORTS
   weight: 0.9
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: skin_cellulitis_pus_abscess
+- symptom_code: rhinorrhea_nasal_congestion
   polarity: SUPPORTS
-  weight: 0.9
+  weight: 0.88
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT

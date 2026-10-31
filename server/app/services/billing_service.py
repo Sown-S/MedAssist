@@ -15,7 +15,7 @@ from sqlalchemy import Date, cast, func, select
 from sqlalchemy.orm import Session
 
 from app.exceptions import AppError, NotFoundError
-from app.models import Invoice, Patient, Prescription, PrescriptionItem, User, Visit
+from app.models import Invoice, Patient, Prescription, PrescriptionItem, Service, User, Visit
 from app.schemas.patient import patient_code
 from app.services import audit_service as audit
 from app.services import inventory_service, invoice_service, queue_service
@@ -109,8 +109,17 @@ def dispense_all(db: Session, visit_id: uuid.UUID, actor: User) -> bool:
 
 # ---------------------------------------------------------------------------- hóa đơn
 def edit_invoice(db: Session, visit_id: uuid.UUID, consultation_fee: Decimal | None,
-                 paraclinical: list[dict] | None, actor: User) -> Invoice:
+                 paraclinical: list[dict] | None, actor: User,
+                 consultation_service_id: uuid.UUID | None = None) -> Invoice:
     visit = _prescribed_visit(db, visit_id)
+    consultation_name = None
+    if consultation_service_id is not None:
+        service = db.scalar(select(Service).where(Service.service_id == consultation_service_id,
+                                                  Service.kind == "Service", Service.is_active.is_(True)))
+        if service is None:
+            raise AppError(422, "INVALID_SERVICE", "Dịch vụ khám không tồn tại hoặc đã ngừng dùng")
+        consultation_name = service.name
+        consultation_fee = service.price if consultation_fee is None else consultation_fee
     invoice = invoice_service.active_invoice(db, visit_id, for_update=True)
     if invoice is None:
         raise NotFoundError("Lượt khám chưa có hóa đơn")
@@ -119,8 +128,8 @@ def edit_invoice(db: Session, visit_id: uuid.UUID, consultation_fee: Decimal | N
     lines = None if paraclinical is None else [
         dict(item_type="Paraclinical", item_name=p["item_name"], quantity=p["quantity"],
              unit_price=p["unit_price"], prescription_item_id=None) for p in paraclinical]
-    return invoice_service.reissue(db, visit, invoice, "Sửa hóa đơn", actor,
-                                   consultation_fee=consultation_fee, paraclinical=lines)
+    return invoice_service.reissue(db, visit, invoice, "Sửa hóa đơn", actor, consultation_fee=consultation_fee,
+                                   consultation_name=consultation_name, paraclinical=lines)
 
 
 def pay(db: Session, visit_id: uuid.UUID, method: str, actor: User) -> tuple[Invoice, bool]:

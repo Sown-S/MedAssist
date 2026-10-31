@@ -58,9 +58,11 @@ def print_invoice(visit_id: uuid.UUID,
 @router.patch("/visits/{visit_id}/invoice", response_model=InvoiceOut)
 def edit_invoice(visit_id: uuid.UUID, body: InvoiceEdit, actor: User = Depends(_nurse_invoice),
                  db: Session = Depends(get_db)):
-    """Sửa hóa đơn Pending: hủy hóa đơn cũ, lập hóa đơn mới (mã mới). Dòng thuốc luôn lấy theo đơn."""
+    """Sửa hóa đơn Pending: hủy hóa đơn cũ, lập hóa đơn mới (mã mới). Dòng thuốc luôn lấy theo đơn,
+    dòng cận lâm sàng từ phiếu chỉ định luôn lấy theo chỉ định còn hiệu lực."""
     paraclinical = None if body.paraclinical_items is None else [p.model_dump() for p in body.paraclinical_items]
-    invoice = billing_service.edit_invoice(db, visit_id, body.consultation_fee, paraclinical, actor)
+    invoice = billing_service.edit_invoice(db, visit_id, body.consultation_fee, paraclinical, actor,
+                                           body.consultation_service_id)
     db.commit()
     return invoice_service.to_out(db, invoice)
 

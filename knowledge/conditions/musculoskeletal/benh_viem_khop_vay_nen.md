@@ -5,9 +5,10 @@ name_vi: Bệnh viêm khớp vẩy nến
 name_en: Psoriatic arthritis
 icd10_code: M89.9
 disease_group: musculoskeletal
-description: '(Psoriatic arthritis) Viêm khớp vảy nến là tình trạng viêm khớp có liên
-  quan với bệnh vảy nến. Tỷ lệ viêm khớp vảy nến chiếm 10-30% bệnh nhân bị vảy nến:
-  80% trường hợp có viêm khớp.'
+description: 'Viêm khớp vảy nến là tình trạng viêm khớp có liên quan với bệnh vảy
+  nến. Tỷ lệ viêm khớp vảy nến chiếm 10-30% bệnh nhân bị vảy nến: 80% trường hợp có
+  viêm khớp xuất hiện sau tổn thương vảy nến; 15% xuất hiện đồng thời và 10% trường
+  hợp viêm.'
 relations:
 - symptom_code: psoriatic_plaque_nail_pitting
   polarity: SUPPORTS

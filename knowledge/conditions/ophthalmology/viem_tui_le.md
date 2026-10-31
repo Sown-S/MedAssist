@@ -7,7 +7,7 @@ icd10_code: H04.3
 disease_group: ophthalmology
 description: Viêm túi lệ là một bệnh lý thường gặp trong nhãn khoa, là tình trạng
   viêm mạn tính hoặc cấp tính tại túi lệ. Bệnh thường xảy ra thứ phát sau tắc ống
-  lệ mũi bẩm sinh hoặc mắc phải.
+  lệ mũi.
 relations:
 - symptom_code: conjunctival_ciliary_injection_discharge
   polarity: SUPPORTS
@@ -27,12 +27,6 @@ relations:
   is_key: true
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
-- symptom_code: nausea_vomiting_diarrhea
-  polarity: SUPPORTS
-  weight: 0.8
-  is_key: true
-  source_key: moh_qd_40_2015
-  source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: lymphadenopathy_splenomegaly
   polarity: SUPPORTS
   weight: 0.82
@@ -41,7 +35,7 @@ relations:
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: conjunctivitis_uveitis_red_eye
   polarity: SUPPORTS
-  weight: 0.82
+  weight: 0.8
   is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT

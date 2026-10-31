@@ -21,13 +21,13 @@ relations:
   is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: verrucous_papule_nodule_ulcer
+- symptom_code: scaly_plaque_hyperkeratosis
   polarity: SUPPORTS
-  weight: 0.94
+  weight: 0.92
   is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: scaly_plaque_hyperkeratosis
+- symptom_code: verrucous_papule_nodule_ulcer
   polarity: SUPPORTS
   weight: 0.92
   is_key: true
@@ -43,18 +43,6 @@ relations:
   polarity: SUPPORTS
   weight: 0.8
   is_key: true
-  source_key: moh_qd_75_2015
-  source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: lymphadenopathy_splenomegaly
-  polarity: SUPPORTS
-  weight: 0.82
-  is_key: false
-  source_key: moh_qd_75_2015
-  source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: anemia_pallor_jaundice
-  polarity: SUPPORTS
-  weight: 0.82
-  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 excerpts:

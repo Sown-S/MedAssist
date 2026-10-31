@@ -1,14 +1,14 @@
 ---
 schema: okf_triage_rule_v1
 rule_key: pf_severe_dehydration_high_fever
-rule_name: 'Sàn ưu tiên cao: Sốt cao >= 39°C kèm dấu hiệu mất nước hoặc xuất huyết
+rule_name: 'Sàn ưu tiên cao: Sốt rất cao >= 39°C kèm dấu hiệu mất nước hoặc xuất huyết
   niêm mạc'
 rule_type: PRIORITY_FLOOR
 resulting_priority: HighPriority
 source_key: moh_qd_1327_2014
 source_edition: Quyết định số 1327/QĐ-BYT
-reason_text: 'ƯU TIÊN CAO: Bệnh nhân sốt cao >= 39°C hoặc có dấu hiệu mất nước, nôn
-  nhiều, chấm xuất huyết, cần ưu tiên khám sớm.'
+reason_text: 'ƯU TIÊN CAO: Bệnh nhân sốt cao >= 39°C (ngưỡng cảnh báo theo QĐ 292/QĐ-BYT)
+  hoặc có dấu hiệu mất nước, nôn nhiều, chấm xuất huyết, cần ưu tiên khám sớm.'
 condition_logic:
   op: OR
   args:
@@ -29,5 +29,5 @@ condition_logic:
       state: PRESENT
 ---
 
-# Sàn ưu tiên cao: Sốt cao >= 39°C kèm dấu hiệu mất nước hoặc xuất huyết niêm mạc
-ƯU TIÊN CAO: Bệnh nhân sốt cao >= 39°C hoặc có dấu hiệu mất nước, nôn nhiều, chấm xuất huyết, cần ưu tiên khám sớm.
+# Sàn ưu tiên cao: Sốt rất cao >= 39°C kèm dấu hiệu mất nước hoặc xuất huyết niêm mạc
+ƯU TIÊN CAO: Bệnh nhân sốt cao >= 39°C (ngưỡng cảnh báo theo QĐ 292/QĐ-BYT) hoặc có dấu hiệu mất nước, nôn nhiều, chấm xuất huyết, cần ưu tiên khám sớm.

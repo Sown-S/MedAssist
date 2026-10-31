@@ -13,12 +13,6 @@ relations:
   is_key: true
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
-- symptom_code: intraocular_pressure_glaucoma_cupping
-  polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
-  source_key: moh_qd_40_2015
-  source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: retinal_vitreous_optic_disc_lesion
   polarity: SUPPORTS
   weight: 0.97
@@ -46,12 +40,6 @@ relations:
 - symptom_code: headache_dull
   polarity: SUPPORTS
   weight: 0.75
-  is_key: false
-  source_key: moh_qd_40_2015
-  source_edition: Quyết định số 40/QĐ-BYT
-- symptom_code: fatigue_malaise
-  polarity: SUPPORTS
-  weight: 0.7
   is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT

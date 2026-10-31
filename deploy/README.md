@@ -45,9 +45,11 @@ Chạy PowerShell tại thư mục gốc repo.
    iex "$dc exec api python -m scripts.create_user --username admin --full-name 'Quản trị viên' --role Admin"
    iex "$dc exec api python -m scripts.create_user --username bs.duyet --full-name 'Bác sĩ duyệt tri thức' --role Physician"
    iex "$dc exec api python -m scripts.seed_drugs --no-batches"
+   iex "$dc exec api python -m scripts.seed_services"
    iex "$dc exec api python -m scripts.import_okf --submit --approve-as bs.duyet"
    ```
    - `seed_drugs --no-batches`: chỉ nạp danh mục 386 thuốc; nhập lô thật ở màn Kho. Bỏ `--no-batches` nếu cần kho mẫu để demo.
+   - `seed_services`: danh mục dịch vụ, xét nghiệm, gói khám với giá mẫu; Admin sửa giá thật ở **Quản trị › Danh mục** trước khi thu tiền.
    - `import_okf --submit --approve-as <bác sĩ>`: nạp thư mục `knowledge/` (gắn vào container ở `/knowledge`) và kích hoạt ngay.
      Muốn bác sĩ tự duyệt trên giao diện thì bỏ `--approve-as`; bản tri thức nằm ở trạng thái chờ duyệt, bác sĩ vào tab **Duyệt tri thức**.
    - Các tài khoản khác (bác sĩ từng phòng, lễ tân) do Admin tạo ở **Quản trị › Tài khoản nhân viên**; người dùng phải đổi mật khẩu ở lần đăng nhập đầu.

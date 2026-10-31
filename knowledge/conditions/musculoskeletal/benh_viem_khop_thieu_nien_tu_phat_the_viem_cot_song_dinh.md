@@ -10,15 +10,9 @@ description: Viêm khớp thiếu niên tự phát thể viêm cột sống dín
   viêm khớp thiếu niên tự phát, chiếm 4 – 15% nhóm bệnh lý viêm khớp mạn tính thiếu
   niên,.
 relations:
-- symptom_code: psoriatic_plaque_nail_pitting
-  polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
-  source_key: moh_qd_361_2014
-  source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: morning_stiffness_over_1h
   polarity: SUPPORTS
-  weight: 0.95
+  weight: 0.96
   is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
@@ -47,12 +41,6 @@ relations:
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: lymphadenopathy_splenomegaly
-  polarity: SUPPORTS
-  weight: 0.82
-  is_key: false
-  source_key: moh_qd_361_2014
-  source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: conjunctivitis_uveitis_red_eye
   polarity: SUPPORTS
   weight: 0.82
   is_key: false

@@ -10,25 +10,13 @@ description: Viêm khớp thiếu niên tự phát thể hệ thống chiếm 5 
   đặc trưng, kèm các tổn thương lan tỏa ngoài khớp (da, mạch máu, tim, phổi, gan,
   lách, hạch ...).
 relations:
-- symptom_code: salmon_pink_evanescent_rash
-  polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
-  source_key: moh_qd_361_2014
-  source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: psoriatic_plaque_nail_pitting
-  polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
-  source_key: moh_qd_361_2014
-  source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: symmetric_polyarthritis_hands
   polarity: SUPPORTS
-  weight: 0.95
+  weight: 0.96
   is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: inflammatory_sacroiliac_back_pain
+- symptom_code: salmon_pink_evanescent_rash
   polarity: SUPPORTS
   weight: 0.95
   is_key: true
@@ -52,9 +40,9 @@ relations:
   is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: enthesitis_achilles_heel
+- symptom_code: fever_prolonged
   polarity: SUPPORTS
-  weight: 0.9
+  weight: 0.85
   is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT

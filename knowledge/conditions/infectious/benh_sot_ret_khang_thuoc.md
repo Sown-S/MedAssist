@@ -10,25 +10,37 @@ description: Sốt rét kháng thuốc (Resistance malaria - theo định nghĩa
   ký sinh trùng sốt rét vẫn tồn tại và/hoặc nhân lên khi sử dụng thuốc sốt rét đủ
   liều hoặc.
 relations:
-- symptom_code: fever_prolonged
+- symptom_code: fever_high
   polarity: SUPPORTS
-  weight: 0.95
+  weight: 0.92
+  is_key: true
+  source_key: moh_qd_5642_2015
+  source_edition: Quyết định số 5642/QĐ-BYT
+- symptom_code: nausea_vomiting_diarrhea
+  polarity: SUPPORTS
+  weight: 0.82
   is_key: true
   source_key: moh_qd_5642_2015
   source_edition: Quyết định số 5642/QĐ-BYT
 - symptom_code: anemia_pallor_jaundice
   polarity: SUPPORTS
-  weight: 0.9
-  is_key: true
+  weight: 0.88
+  is_key: false
+  source_key: moh_qd_5642_2015
+  source_edition: Quyết định số 5642/QĐ-BYT
+- symptom_code: chills_rigors
+  polarity: SUPPORTS
+  weight: 0.84
+  is_key: false
   source_key: moh_qd_5642_2015
   source_edition: Quyết định số 5642/QĐ-BYT
 - symptom_code: lymphadenopathy_splenomegaly
   polarity: SUPPORTS
-  weight: 0.85
+  weight: 0.84
   is_key: false
   source_key: moh_qd_5642_2015
   source_edition: Quyết định số 5642/QĐ-BYT
-- symptom_code: fatigue_malaise
+- symptom_code: sweating_profuse
   polarity: SUPPORTS
   weight: 0.75
   is_key: false

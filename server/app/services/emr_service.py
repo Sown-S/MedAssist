@@ -16,6 +16,7 @@ from app.exceptions import AppError, NotFoundError
 from app.models import Diagnosis, Drug, Invoice, Patient, Prescription, PrescriptionItem, User, Visit
 from app.schemas.patient import PatientCreate, PatientSummary, PatientUpdate
 from app.services import audit_service as audit
+from app.services import service_order_service
 
 MAX_DUPLICATE_CANDIDATES = 10
 
@@ -287,7 +288,7 @@ def patient_history(db: Session, patient_id: uuid.UUID, *, limit: int, offset: i
 
 def visit_record(db: Session, visit_id: uuid.UUID) -> dict:
     """Toàn bộ một lượt khám để xem lại: lượt khám + sinh hiệu, mọi chẩn đoán (kể cả đã rút lại),
-    đơn thuốc còn hiệu lực (kể cả nháp nếu lượt đang khám), tóm tắt hóa đơn."""
+    đơn thuốc còn hiệu lực (kể cả nháp nếu lượt đang khám), phiếu chỉ định kèm kết quả, tóm tắt hóa đơn."""
     visit = db.get(Visit, visit_id)
     if visit is None:
         raise NotFoundError("Không tìm thấy lượt khám")
@@ -308,4 +309,5 @@ def visit_record(db: Session, visit_id: uuid.UUID) -> dict:
     names = _user_names(db, {visit.nurse_id, visit.physician_id})
     return {"patient": patient, "visit": visit, "nurse_name": names.get(visit.nurse_id),
             "physician_name": names.get(visit.physician_id), "diagnoses": list(diagnoses),
-            "prescription": prescription, "invoice": invoice}
+            "prescription": prescription, "invoice": invoice,
+            "service_orders": service_order_service.orders_for_visits(db, [visit_id]).get(visit_id, [])}

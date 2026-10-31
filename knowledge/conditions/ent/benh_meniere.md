@@ -7,7 +7,7 @@ icd10_code: H81.0
 disease_group: ent
 description: 'Hội chứng Ménière hay bệnh Ménière bao gồm ba triệu chứng chính: chóng
   mặt, điếc và ù tai có nguyên nhân từ sự rối loạn tai trong. Bệnh thường gặp ở người
-  trên 40 tuổi, nữ nhiều hơn nam.'
+  trên 40.'
 relations:
 - symptom_code: hearing_loss_deafness
   polarity: SUPPORTS

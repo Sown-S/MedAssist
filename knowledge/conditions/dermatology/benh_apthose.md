@@ -45,12 +45,6 @@ relations:
   is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: fatigue_malaise
-  polarity: SUPPORTS
-  weight: 0.7
-  is_key: false
-  source_key: moh_qd_75_2015
-  source_edition: Quyết định số 75/QĐ-BYT
 excerpts:
 - excerpt_key: benh_apthose_chan_doan
   title: Tiêu chuẩn chẩn đoán lâm sàng Bệnh apthose
