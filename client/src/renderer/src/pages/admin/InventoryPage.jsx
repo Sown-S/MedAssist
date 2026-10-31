@@ -74,7 +74,7 @@ export default function InventoryPage({ onNavigate }) {
 }
 
 // ======================= Tồn theo lô =======================
-function StockTab({ inv, user, onNavigate }) {
+function StockTab({ inv, user }) {
   const [q, setQ] = useState('')
   const [group, setGroup] = useState('all')
   const [status, setStatus] = useState('all')

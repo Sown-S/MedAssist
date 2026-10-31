@@ -243,7 +243,7 @@ function HistoryDemo({ onNavigate }) {
         </div>
 
         <div className="log-legend">
-          {Object.entries(LEVELS).map(([k, v]) => (
+          {Object.keys(LEVELS).map((k) => (
             <span key={k}>
               <LevelTag level={k} />
             </span>
@@ -323,6 +323,8 @@ function HistoryDemo({ onNavigate }) {
 
 function Detail({ e, onClose, onNavigate }) {
   const dest = targetPage(e.target)
+  // Cặp [nhãn, giá trị] — mỗi giá trị là một phần tử đơn lẻ, không phải danh sách con nên không cần key.
+  /* eslint-disable react/jsx-key */
   const rows = [
     ['No.', <span className="mono">#{e.seq}</span>],
     ['Time', <span className="mono">{fullTime(e.at)}</span>],
@@ -338,6 +340,7 @@ function Detail({ e, onClose, onNavigate }) {
     ['Result', e.result === 'success' ? <span className="badge ok">Success</span> : <span className="badge low">Failure</span>],
     ['Workstation', <span className="mono">{e.ws}</span>]
   ]
+  /* eslint-enable react/jsx-key */
   const params = Object.entries(e.params ?? {}).filter(([, v]) => v !== '' && v != null)
   return (
     <Modal open onClose={onClose} wide>

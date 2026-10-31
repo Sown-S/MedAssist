@@ -68,7 +68,6 @@ export default function DrugCabinetView({ go }) {
   const [expiry, setExpiry] = useState('')
   const [sort, setSort] = useState('name')
   const [page, setPage] = useState(1)
-  const [open, setOpen] = useState(null)
   // Đổi bộ lọc → quay về trang 1.
   const filter = (fn) => (e) => {
     fn(e.target.value)

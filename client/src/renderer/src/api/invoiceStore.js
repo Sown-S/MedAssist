@@ -167,7 +167,7 @@ export function payInvoice(id, { method, ref = '' }, user) {
   return { ok: true, invoice: invoiceById(id) }
 }
 // Ghi nhận hình thức "chuyển khoản — chờ tiền về" trên hoá đơn còn pending (chưa thu).
-export function setInvoiceMethod(id, method, ref, user) {
+export function setInvoiceMethod(id, method, ref, _user) {
   const inv = invoiceById(id)
   if (inv?.status !== 'pending') return { ok: false, error: 'This invoice is not waiting for payment.' }
   commit(invoices.map((x) => (x.id === id ? { ...x, method, ref: ref?.trim() ?? x.ref } : x)))

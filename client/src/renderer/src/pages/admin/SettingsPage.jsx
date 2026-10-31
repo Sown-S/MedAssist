@@ -13,13 +13,10 @@ import {
   loadServerSettings,
   getSettings,
   changedPaths,
-  formatNumber,
   PAPERS,
   PRINT_DOCS,
   NUMBERED_DOCS,
-  DATE_PARTS,
   PAYMENT_METHODS,
-  ROUNDING,
   WEEKDAYS
 } from '../../api/settingsStore'
 import { useBackupLog, createBackup, verifyBackupFile, restoreBackup } from '../../api/backupStore'
@@ -201,6 +198,8 @@ export default function SettingsPage({ params, onNavigate, setLeaveGuard }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  // changedPaths so với bản đã lưu (đọc từ store) — tính lại khi vừa lưu xong.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const changed = useMemo(() => new Set(changedPaths(draft)), [draft, saved])
   const errors = useMemo(() => validate(draft), [draft])
   const dirty = changed.size > 0
@@ -212,7 +211,7 @@ export default function SettingsPage({ params, onNavigate, setLeaveGuard }) {
   useEffect(() => {
     setLeaveGuard?.(() => dirtyRef.current)
     return () => setLeaveGuard?.(null)
-  }, [])
+  }, [setLeaveGuard])
 
   const val = (p) => getAt(draft, p)
   const set = (p, v) => setDraft((d) => setAt(d, p, v))
@@ -616,7 +615,7 @@ function printTest(doc, draft) {
   )
 }
 
-function BackupTab({ user, fp, val, set, text, num, onNavigate, showToast }) {
+function BackupTab({ user, fp, num, onNavigate, showToast }) {
   const log = useBackupLog()
   const [check, setCheck] = useState(null) // kết quả kiểm tra file
   const [mode, setMode] = useState('verify') // 'verify' | 'restore'

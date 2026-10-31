@@ -56,7 +56,10 @@ export const optLabel = (opts, k) => opts.find((o) => o.key === k)?.label ?? k ?
 
 const T = ({ children }) => <span>{children}</span>
 // Cột hiển thị nhãn của 1 trường dạng chọn — trang chi tiết gọi render(row, cats, inv, key).
-const opt = (opts) => (r, cats, inv, k) => <T>{optLabel(opts, r[k])}</T>
+const opt = (opts) =>
+  function renderOpt(r, cats, inv, k) {
+    return <T>{optLabel(opts, r[k])}</T>
+  }
 
 // Tham chiếu dịch vụ / xét nghiệm trong gói khám: "service:DV01" | "lab:XN05".
 export function resolveRef(ref, cats) {
