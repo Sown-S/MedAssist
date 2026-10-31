@@ -17,7 +17,7 @@ relations:
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: cough_productive_sputum
   polarity: SUPPORTS
-  weight: 0.9
+  weight: 0.92
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT

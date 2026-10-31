@@ -10,27 +10,39 @@ description: Bệnh zona hay herpes zoster là bệnh nhiễm trùng da với bi
   bố của thần kinh ngoại biên. Bệnh do sự tái hoạt của virút Varicella zoster (VZV)
   tiềm.
 relations:
+- symptom_code: vesicular_blister_rash
+  polarity: SUPPORTS
+  weight: 0.98
+  is_key: true
+  source_key: moh_qd_75_2015
+  source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: herpetic_dermatomal_pain_blister
   polarity: SUPPORTS
   weight: 0.98
   is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: vesicular_blister_rash
+- symptom_code: verrucous_papule_nodule_ulcer
   polarity: SUPPORTS
-  weight: 0.95
+  weight: 0.92
   is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: maculopapular_rash
+- symptom_code: dizziness_vertigo
   polarity: SUPPORTS
   weight: 0.88
   is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: fatigue_malaise
+- symptom_code: nausea_vomiting_diarrhea
   polarity: SUPPORTS
-  weight: 0.7
+  weight: 0.82
+  is_key: true
+  source_key: moh_qd_75_2015
+  source_edition: Quyết định số 75/QĐ-BYT
+- symptom_code: conjunctivitis_uveitis_red_eye
+  polarity: SUPPORTS
+  weight: 0.8
   is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT

@@ -6,17 +6,17 @@ name_en: Lồi mắt
 icd10_code: H05.2
 disease_group: ophthalmology
 description: Lồi mắt là tình trạng nhãn cầu bình thường bị đẩy ra trước do tăng thể
-  tích tổ chức trong hốc mắt.
+  tích.
 relations:
-- symptom_code: intraocular_pressure_glaucoma_cupping
-  polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
-  source_key: moh_qd_40_2015
-  source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: diplopia_strabismus_proptosis
   polarity: SUPPORTS
   weight: 0.97
+  is_key: true
+  source_key: moh_qd_40_2015
+  source_edition: Quyết định số 40/QĐ-BYT
+- symptom_code: intraocular_pressure_glaucoma_cupping
+  polarity: SUPPORTS
+  weight: 0.96
   is_key: true
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT

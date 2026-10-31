@@ -300,10 +300,6 @@ symptoms:
   symptom_name: Đau nhức xương sâu (tăng về đêm), biến dạng xương, lún xẹp đốt sống
     hoặc gãy xương bệnh lý
   category: musculoskeletal
-- symptom_code: startle_myoclonus_ataxia
-  symptom_name: Giật mình chới với lúc bắt đầu giấc ngủ, ngủ gà, run chi hoặc đi loạng
-    choạng
-  category: neurological
 - symptom_code: sym_respiratory_failure
   symptom_name: Khó thở nặng, thở co kéo, tím tái (dấu hiệu suy hô hấp cấp)
   category: red_flag_sign

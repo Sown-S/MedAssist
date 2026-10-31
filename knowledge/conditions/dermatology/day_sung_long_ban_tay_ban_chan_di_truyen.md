@@ -9,21 +9,15 @@ description: Dày sừng lòng bàn tay chân có thể do di truyền, do mắc
   đa Bệnh thường có tính chất gia đình và phần lớn là do đột biến gen mã hoá cấu trúc
   thành phần của tế bào sừng, có thể là di truyền trội, di truyền lặn hay liên.
 relations:
-- symptom_code: vesicular_blister_rash
-  polarity: SUPPORTS
-  weight: 0.97
-  is_key: true
-  source_key: moh_qd_75_2015
-  source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: psoriatic_plaque_nail_pitting
-  polarity: SUPPORTS
-  weight: 0.97
-  is_key: true
-  source_key: moh_qd_75_2015
-  source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: pustular_furuncle_folliculitis
   polarity: SUPPORTS
   weight: 0.96
+  is_key: true
+  source_key: moh_qd_75_2015
+  source_edition: Quyết định số 75/QĐ-BYT
+- symptom_code: vesicular_blister_rash
+  polarity: SUPPORTS
+  weight: 0.95
   is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
@@ -36,12 +30,6 @@ relations:
 - symptom_code: pigmentary_macule_patch
   polarity: SUPPORTS
   weight: 0.92
-  is_key: true
-  source_key: moh_qd_75_2015
-  source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: maculopapular_rash
-  polarity: SUPPORTS
-  weight: 0.9
   is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT

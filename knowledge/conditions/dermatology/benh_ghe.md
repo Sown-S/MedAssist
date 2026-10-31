@@ -9,9 +9,9 @@ description: Là một bệnh da khá phổ biến, thường xuất hiện ở 
   đúc, nhà ở chật hẹp, thiếu vệ sinh, thiếu nước sinh hoạt. Bệnh lây qua tiếp xúc
   trực tiếp hoặc qua quần áo, chăn màn.
 relations:
-- symptom_code: pruritus_intense_skin_itch
+- symptom_code: genital_ulcer_chancre_discharge
   polarity: SUPPORTS
-  weight: 0.98
+  weight: 0.96
   is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
@@ -23,14 +23,20 @@ relations:
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: pustular_furuncle_folliculitis
   polarity: SUPPORTS
-  weight: 0.75
-  is_key: false
+  weight: 0.94
+  is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: fever_high
-  polarity: CONTRADICTS
-  weight: 0.85
-  is_key: false
+- symptom_code: pruritus_intense_skin_itch
+  polarity: SUPPORTS
+  weight: 0.92
+  is_key: true
+  source_key: moh_qd_75_2015
+  source_edition: Quyết định số 75/QĐ-BYT
+- symptom_code: scaly_plaque_hyperkeratosis
+  polarity: SUPPORTS
+  weight: 0.92
+  is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 excerpts:
@@ -42,11 +48,10 @@ excerpts:
 ---
 
 ## excerpt: benh_ghe_chan_doan
-- Tổn thương là dát hình tròn hay hình bầu dục trên có vảy da mỏng. Có thể
-- Màu tổn thương hay gặp nhất là màu nâu (tăng sắc tố) và nâu vàng (giảm
-- sắc tố); thỉnh thoảng có hiện tƣợng viêm nhẹ (màu hồng).
-- Dưới ánh sáng đen Wood, tổn thương lang ben có màu vàng sáng hoặc vàng
-- Bệnh nhân có thể có ngứa nhẹ nhất là khi thời tiết nóng bức.
-- Soi trực tiếp: hình ảnh bào tử xen kẽ với sợi nấm ngắn từ bệnh phẩm được
-- Nuôi cấy: khi nuôi cấy Malassezia cần phủ trên đó lớp dầu bởi khả năng ƣa
-- Tổn thương da tăng hoặc giảm sắc tố, vảy da mỏng
+- Thời gian ủ bệnh trung bình từ 2-3 ngày đến 2-6 tuần.
+- Thương tổn cơ bản
+- . Mụn nước trên nền da lành, rải rác, riêng rẽ, thường ở vùng da mỏng như ở
+- trong đùi và bộ phận sinh dục. Ở trẻ sơ sinh mụn nước hay gặp ở lòng bàn tay, chân.
+- Triệu chứng cơ năng
+- Ngứa nhiều, nhất là về đêm.
+- Cận lâm sàng: soi tìm ký sinh trùng tại tổn thương.

@@ -39,12 +39,6 @@ relations:
   is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: maculopapular_rash
-  polarity: SUPPORTS
-  weight: 0.9
-  is_key: true
-  source_key: moh_qd_75_2015
-  source_edition: Quyết định số 75/QĐ-BYT
 excerpts:
 - excerpt_key: san_ngua_chan_doan
   title: Tiêu chuẩn chẩn đoán lâm sàng Sẩn ngứa

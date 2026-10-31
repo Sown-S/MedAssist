@@ -43,4 +43,3 @@ excerpts:
 ## excerpt: hoi_chung_dau_nhuc_so_mat_chan_doan
 - Khai thác tiền sử các cơn đau, chú ý đến vị trí, tính chất đau, hoàn cảnh xuất hiện,
 - Các xét nghiệm tìm nguyên nhân gây đau trong tai mũi họng, mắt, răng hàm mặt,
-- Quan trọng là tìm nguyên nhân gây đau từ các bệnh lý thực thể: Tai mũi họng,

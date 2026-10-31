@@ -18,32 +18,32 @@ relations:
   source_edition: Quyết định số 1327/QĐ-BYT
 - symptom_code: maculopapular_rash
   polarity: SUPPORTS
-  weight: 0.95
+  weight: 0.94
   is_key: true
   source_key: moh_qd_1327_2014
   source_edition: Quyết định số 1327/QĐ-BYT
 - symptom_code: fever_high
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
-  source_key: moh_qd_1327_2014
-  source_edition: Quyết định số 1327/QĐ-BYT
-- symptom_code: conjunctivitis_uveitis_red_eye
-  polarity: SUPPORTS
-  weight: 0.88
+  weight: 0.9
   is_key: true
   source_key: moh_qd_1327_2014
   source_edition: Quyết định số 1327/QĐ-BYT
 - symptom_code: rhinorrhea_nasal_congestion
   polarity: SUPPORTS
-  weight: 0.82
-  is_key: false
+  weight: 0.86
+  is_key: true
   source_key: moh_qd_1327_2014
   source_edition: Quyết định số 1327/QĐ-BYT
 - symptom_code: cough_dry
   polarity: SUPPORTS
+  weight: 0.85
+  is_key: true
+  source_key: moh_qd_1327_2014
+  source_edition: Quyết định số 1327/QĐ-BYT
+- symptom_code: nausea_vomiting_diarrhea
+  polarity: SUPPORTS
   weight: 0.8
-  is_key: false
+  is_key: true
   source_key: moh_qd_1327_2014
   source_edition: Quyết định số 1327/QĐ-BYT
 excerpts:

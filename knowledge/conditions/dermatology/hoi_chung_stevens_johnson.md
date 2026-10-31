@@ -23,18 +23,6 @@ relations:
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: maculopapular_rash
   polarity: SUPPORTS
-  weight: 0.94
-  is_key: true
-  source_key: moh_qd_75_2015
-  source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: scaly_plaque_hyperkeratosis
-  polarity: SUPPORTS
-  weight: 0.94
-  is_key: true
-  source_key: moh_qd_75_2015
-  source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: fever_high
-  polarity: SUPPORTS
   weight: 0.9
   is_key: true
   source_key: moh_qd_75_2015

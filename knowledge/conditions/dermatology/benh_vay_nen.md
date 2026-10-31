@@ -11,12 +11,6 @@ description: Vảy nến là bệnh mạn tính, tiến triển từng đợt, d
 relations:
 - symptom_code: scaly_plaque_hyperkeratosis
   polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
-  source_key: moh_qd_75_2015
-  source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: pustular_furuncle_folliculitis
-  polarity: SUPPORTS
   weight: 0.96
   is_key: true
   source_key: moh_qd_75_2015
@@ -27,9 +21,9 @@ relations:
   is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: psoriatic_plaque_nail_pitting
+- symptom_code: pustular_furuncle_folliculitis
   polarity: SUPPORTS
-  weight: 0.95
+  weight: 0.94
   is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
@@ -48,12 +42,6 @@ relations:
 - symptom_code: pruritus_intense_skin_itch
   polarity: SUPPORTS
   weight: 0.88
-  is_key: true
-  source_key: moh_qd_75_2015
-  source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: myalgia_arthralgia
-  polarity: SUPPORTS
-  weight: 0.8
   is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT

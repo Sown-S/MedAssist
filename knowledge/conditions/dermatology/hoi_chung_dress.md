@@ -9,27 +9,27 @@ description: Hội chứng DRESS là một phản ứng hiếm gặp do thuốc 
   bạch cầu ái toan và tổn thương nội tạng. Các biểu hiện bệnh thường khởi đầu chậm
   2-6 tuần sau khi bắt đầu điều trị.
 relations:
-- symptom_code: urticarial_wheal_angioedema
+- symptom_code: lymphadenopathy_splenomegaly
   polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
-  source_key: moh_qd_75_2015
-  source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: pustular_furuncle_folliculitis
-  polarity: SUPPORTS
-  weight: 0.94
-  is_key: true
+  weight: 0.82
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: maculopapular_rash
   polarity: SUPPORTS
-  weight: 0.9
+  weight: 0.82
   is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: lymphadenopathy_splenomegaly
+- symptom_code: pruritus_intense_skin_itch
   polarity: SUPPORTS
-  weight: 0.82
+  weight: 0.78
+  is_key: false
+  source_key: moh_qd_75_2015
+  source_edition: Quyết định số 75/QĐ-BYT
+- symptom_code: scaly_plaque_hyperkeratosis
+  polarity: SUPPORTS
+  weight: 0.75
   is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
@@ -49,4 +49,3 @@ excerpts:
 - Lympho không điển hình
 - Huyết thanh virút viêm gan A, B, C;
 - Tiêu chuẩn chẩn đoán:
-- Hội chứng Stevens-Johnson/Lyell: xảy ra trong khoảng từ 4-28 ngày sau khi

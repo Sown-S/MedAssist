@@ -49,5 +49,3 @@ excerpts:
 - Đau khi đi lại, nhiều trường hợp rất đau và không thể đi lại được.
 - Hạt cơm phẳng (flat warts)
 - Hạt cơm ở niêm mạc (xem bệnh sùi mào gà)
-- Hạt cơm thông thường cần phân biệt với dày sừng da dầu, dày sừng ánh
-- Hạt cơm phẳng cần phân biệt với các sẩn trong bệnh lichen phẳng.

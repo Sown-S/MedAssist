@@ -7,7 +7,7 @@ icd10_code: G47.3
 disease_group: ent
 description: 'Ngủ ngáy và hội chứng tắc nghẽn thở trong khi ngủ (Obstructive Sleep
   Apnea Syndrome: OSAS) là một bệnh lý thường gặp. Nam giới thường mắc hội chứng ngừng
-  thở khi ngủ hơn nữ giới.'
+  Ngáy là tình trạng âm thanh được tạo ra do luồng không khí đi qua một khe hẹp ở.'
 relations:
 - symptom_code: snoring_sleep_apnea
   polarity: SUPPORTS

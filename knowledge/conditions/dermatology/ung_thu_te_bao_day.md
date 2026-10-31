@@ -9,39 +9,27 @@ description: Là loại u ác tính gồm những tế bào giống với tế b
   bì. Nguồn gốc thực sự của ung thƣ tế bào đáy còn chưa rõ ràng. Đây là loại ung thƣ
   da hay gặp nhất, chiếm khoảng 75% các loại ung thƣ da.
 relations:
-- symptom_code: verrucous_papule_nodule_ulcer
-  polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
-  source_key: moh_qd_75_2015
-  source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: vesicular_blister_rash
   polarity: SUPPORTS
   weight: 0.95
   is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: pustular_furuncle_folliculitis
+- symptom_code: scaly_plaque_hyperkeratosis
   polarity: SUPPORTS
-  weight: 0.94
+  weight: 0.92
   is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: scaly_plaque_hyperkeratosis
+- symptom_code: verrucous_papule_nodule_ulcer
   polarity: SUPPORTS
-  weight: 0.94
+  weight: 0.92
   is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: pigmentary_macule_patch
   polarity: SUPPORTS
   weight: 0.92
-  is_key: true
-  source_key: moh_qd_75_2015
-  source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: maculopapular_rash
-  polarity: SUPPORTS
-  weight: 0.9
   is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
@@ -67,4 +55,3 @@ excerpts:
 - Giai đoạn I: T1N0M0
 - Giai đoạn II: T bất kỳ, N1-3, M0
 - Giai đoạn III: T bất kỳ, N bất kỳ, M1
-- Lupus lao: tổn thương cơ bản là các củ lao, màu đỏ nâu ấn kính có màu

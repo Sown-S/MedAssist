@@ -7,7 +7,7 @@ icd10_code: Q80.9
 disease_group: dermatology
 description: Là một nhóm bệnh da di truyền hoặc mắc phải có biểu hiện đặc trƣng là
   nhiều vảy da lan tỏa. Ichthyosis là một thuật ngữ xuất phát từ “ichthy” trong tiếng
-  Hy Lạp nghĩa là “cá”.
+  Bệnh vảy cá di truyền thường xuất hiện ngay từ lúc mới sinh hoặc những.
 relations:
 - symptom_code: scaly_plaque_hyperkeratosis
   polarity: SUPPORTS

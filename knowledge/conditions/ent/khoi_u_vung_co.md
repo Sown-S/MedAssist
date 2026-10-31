@@ -16,33 +16,33 @@ relations:
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: nasal_polyp_sinonasal_mass
-  polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
-  source_key: moh_qd_5643_2015
-  source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: hoarseness_dysphonia_stridor
   polarity: SUPPORTS
   weight: 0.94
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
+- symptom_code: otalgia_ear_pain
+  polarity: SUPPORTS
+  weight: 0.88
+  is_key: true
+  source_key: moh_qd_5643_2015
+  source_edition: Quyết định số 5643/QĐ-BYT
+- symptom_code: epistaxis_nasal_bleeding
+  polarity: SUPPORTS
+  weight: 0.88
+  is_key: true
+  source_key: moh_qd_5643_2015
+  source_edition: Quyết định số 5643/QĐ-BYT
+- symptom_code: rhinorrhea_nasal_congestion
+  polarity: SUPPORTS
+  weight: 0.86
+  is_key: true
+  source_key: moh_qd_5643_2015
+  source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: lymphadenopathy_splenomegaly
   polarity: SUPPORTS
   weight: 0.84
-  is_key: false
-  source_key: moh_qd_5643_2015
-  source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: sore_throat_dysphagia
-  polarity: SUPPORTS
-  weight: 0.75
-  is_key: false
-  source_key: moh_qd_5643_2015
-  source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: fatigue_malaise
-  polarity: SUPPORTS
-  weight: 0.7
   is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
@@ -55,11 +55,11 @@ excerpts:
 ---
 
 ## excerpt: khoi_u_vung_co_chan_doan
-- 1. Triệu chứng cơ năng
-- Rối loạn về nuốt: Nuốt đau xuất hiện trước và tăng dần, lúc đầu là cảm giác
-- vướng họng, sau đó là nuốt đau kèm nuốt khó ngày càng tăng.
-- Khàn tiếng và khó thở: Khi khối u lan rộng vào thanh quản.
-- 2. Triệu chứng thực thể
-- 3. Triệu chứng toàn thân
-- Ung thư thành sau họng.
-- Ung thư mặt sau sụn nhẫn.
+- Đặc điểm của khối u vùng cổ: khởi phát, vị trí, thời gian mắc bệnh, sự tiến
+- triển, và triệu chứng đau.
+- Các yếu tố hỗ trợ:
+- Nhiễm trùng đường hô hấp trên gần đây, viêm xoang, viêm tai giữa, hoặc
+- Tiếp xúc với mèo, chấn thương gần đây.
+- Đi du lịch, tiếp xúc với nguồn lao.
+- Suy giảm miễn dịch (HIV, tiểu đường không kiểm soát, dùng corticosteroid
+- Tuổi: thường nhiễm trùng ở trẻ nhỏ, ở người lớn có nguy cơ ác tính.

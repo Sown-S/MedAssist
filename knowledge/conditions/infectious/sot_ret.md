@@ -9,39 +9,39 @@ description: Bệnh sốt rét là bệnh truyền nhiễm do 5 loài ký sinh t
   gây nên gồm Plasmodium falciparum, Plasmodium vivax, Plasmodium malariae, Plasmodium
   ovale và Plasmodium knowlesi. Bệnh lây truyền chủ yếu là do muỗi Anopheles.
 relations:
-- symptom_code: chills_rigors
-  polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
-  source_key: moh_qd_2699_2020
-  source_edition: Quyết định số 2699/QĐ-BYT
 - symptom_code: fever_high
   polarity: SUPPORTS
-  weight: 0.95
+  weight: 0.9
   is_key: true
   source_key: moh_qd_2699_2020
   source_edition: Quyết định số 2699/QĐ-BYT
-- symptom_code: sweating_profuse
+- symptom_code: petechiae_mucosal_bleeding
   polarity: SUPPORTS
-  weight: 0.94
+  weight: 0.88
+  is_key: true
+  source_key: moh_qd_2699_2020
+  source_edition: Quyết định số 2699/QĐ-BYT
+- symptom_code: fever_prolonged
+  polarity: SUPPORTS
+  weight: 0.85
+  is_key: true
+  source_key: moh_qd_2699_2020
+  source_edition: Quyết định số 2699/QĐ-BYT
+- symptom_code: nausea_vomiting_diarrhea
+  polarity: SUPPORTS
+  weight: 0.82
   is_key: true
   source_key: moh_qd_2699_2020
   source_edition: Quyết định số 2699/QĐ-BYT
 - symptom_code: anemia_pallor_jaundice
   polarity: SUPPORTS
   weight: 0.88
-  is_key: true
+  is_key: false
   source_key: moh_qd_2699_2020
   source_edition: Quyết định số 2699/QĐ-BYT
-- symptom_code: lymphadenopathy_splenomegaly
+- symptom_code: chills_rigors
   polarity: SUPPORTS
-  weight: 0.86
-  is_key: true
-  source_key: moh_qd_2699_2020
-  source_edition: Quyết định số 2699/QĐ-BYT
-- symptom_code: headache_dull
-  polarity: SUPPORTS
-  weight: 0.75
+  weight: 0.84
   is_key: false
   source_key: moh_qd_2699_2020
   source_edition: Quyết định số 2699/QĐ-BYT

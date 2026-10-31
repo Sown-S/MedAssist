@@ -11,12 +11,6 @@ description: Là u da lành tính do sự phát triển quá mức của các t�
 relations:
 - symptom_code: pustular_furuncle_folliculitis
   polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
-  source_key: moh_qd_75_2015
-  source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: verrucous_papule_nodule_ulcer
-  polarity: SUPPORTS
   weight: 0.94
   is_key: true
   source_key: moh_qd_75_2015
@@ -31,6 +25,12 @@ relations:
   polarity: SUPPORTS
   weight: 0.82
   is_key: true
+  source_key: moh_qd_75_2015
+  source_edition: Quyết định số 75/QĐ-BYT
+- symptom_code: scaly_plaque_hyperkeratosis
+  polarity: SUPPORTS
+  weight: 0.75
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 excerpts:

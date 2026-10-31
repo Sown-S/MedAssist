@@ -9,12 +9,6 @@ description: Là bệnh viêm móng thường gặp, tiến triển âm thầm, 
   ƣớc tính khoảng 2-6% dân số mắc bệnh nấm móng. Bệnh do nhiều chủng nấm gây nên và
   có thương tổn lâm sàng đa dạng. Việc.
 relations:
-- symptom_code: psoriatic_plaque_nail_pitting
-  polarity: SUPPORTS
-  weight: 0.97
-  is_key: true
-  source_key: moh_qd_75_2015
-  source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: fungal_ringworm_nail_hair_lesion
   polarity: SUPPORTS
   weight: 0.96
@@ -30,6 +24,12 @@ relations:
 - symptom_code: pruritus_intense_skin_itch
   polarity: SUPPORTS
   weight: 0.78
+  is_key: false
+  source_key: moh_qd_75_2015
+  source_edition: Quyết định số 75/QĐ-BYT
+- symptom_code: scaly_plaque_hyperkeratosis
+  polarity: SUPPORTS
+  weight: 0.75
   is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT

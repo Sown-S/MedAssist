@@ -15,12 +15,6 @@ relations:
   is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: scaly_plaque_hyperkeratosis
-  polarity: SUPPORTS
-  weight: 0.94
-  is_key: true
-  source_key: moh_qd_75_2015
-  source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: fever_high
   polarity: SUPPORTS
   weight: 0.9
@@ -48,12 +42,6 @@ relations:
 - symptom_code: anemia_pallor_jaundice
   polarity: SUPPORTS
   weight: 0.84
-  is_key: false
-  source_key: moh_qd_75_2015
-  source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: chills_rigors
-  polarity: SUPPORTS
-  weight: 0.8
   is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT

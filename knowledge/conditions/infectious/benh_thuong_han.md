@@ -46,18 +46,6 @@ relations:
   is_key: false
   source_key: moh_qd_5642_2015
   source_edition: Quyết định số 5642/QĐ-BYT
-- symptom_code: fever_low_grade
-  polarity: SUPPORTS
-  weight: 0.75
-  is_key: false
-  source_key: moh_qd_5642_2015
-  source_edition: Quyết định số 5642/QĐ-BYT
-- symptom_code: headache_dull
-  polarity: SUPPORTS
-  weight: 0.75
-  is_key: false
-  source_key: moh_qd_5642_2015
-  source_edition: Quyết định số 5642/QĐ-BYT
 excerpts:
 - excerpt_key: benh_thuong_han_chan_doan
   title: Tiêu chuẩn chẩn đoán lâm sàng Bệnh thương hàn
