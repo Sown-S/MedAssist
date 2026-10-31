@@ -2189,6 +2189,13 @@ export const VI = {
     'Các phòng khám và phòng xét nghiệm. Mỗi phòng khám có một bác sĩ, gán ở Tài khoản nhân viên.',
   '+ Add room': '+ Thêm phòng',
   'Add room': 'Thêm phòng',
+  // Chuỗi còn thiếu (phát hiện bởi tests/i18n.test.js)
+  'Inventory /': 'Kho /',
+  '+ Age': '+ Tuổi',
+  '+ Group': '+ Nhóm',
+  'Rename room': 'Đổi tên phòng',
+  'Printed on prescriptions, invoices and reports.': 'In trên đơn thuốc, hoá đơn và báo cáo.',
+  'Check that the transfer has arrived in the clinic’s bank account before confirming. If it has not arrived yet, save it as “waiting for transfer” and confirm it later in Invoices.': 'Kiểm tra tiền đã về tài khoản ngân hàng của phòng khám rồi mới xác nhận. Nếu chưa về, lưu ở trạng thái “chờ chuyển khoản” và xác nhận sau trong mục Hoá đơn.',
   'Code *': 'Mã *',
   'Name *': 'Tên *',
   'The code and type of a room cannot be changed.': 'Không đổi được mã và loại phòng.',
@@ -3649,6 +3656,7 @@ export const VI = {
 }
 
 export const PATTERNS = [
+  [/^e\.g\. (.+)$/, 'VD: $1'],
   [/^Too many failed sign-ins\. Try again in (\d+) minutes\.$/, 'Đăng nhập sai quá nhiều lần. Thử lại sau $1 phút.'],
   [/^At least (\d+) characters$/, 'Tối thiểu $1 ký tự'],
   [/^(\d+) wrong passwords within (\d+) minutes → the account is locked for (\d+) minutes\.$/, 'Sai mật khẩu $1 lần trong $2 phút → khóa tài khoản $3 phút.'],
