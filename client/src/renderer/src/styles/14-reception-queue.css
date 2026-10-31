@@ -1,6 +1,6 @@
-/* Tiếp đón: hàng chờ, ca cờ đỏ, triệu chứng, gọi số */
+/* Tiếp đón: hàng chờ, cờ đỏ, sinh hiệu, triệu chứng, gọi số */
 
-/* ===== Tiếp đón: hàng chờ theo số thứ tự, ca cờ đỏ ===== */
+/* Hàng chờ, ca cờ đỏ */
 .rec-queue-grid{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:18px;align-items:start;margin-bottom:18px;}
 .rec-queue-grid .scroll-list{max-height:520px;}
 @media (max-width:1100px){.rec-queue-grid{grid-template-columns:1fr;}}
@@ -20,7 +20,7 @@
 .redflag-item .foot{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--ink-soft);}
 .dev-tools{display:flex;align-items:center;gap:10px;margin-bottom:14px;padding:6px 10px;border:1px dashed var(--border);border-radius:10px;font-size:12px;color:var(--ink-soft);width:fit-content;}
 .dev-tools label{display:flex;align-items:center;gap:6px;cursor:pointer;}
-/* Sinh hiệu 8 khoá + triệu chứng ba trạng thái (HITL) */
+/* Sinh hiệu + triệu chứng ba trạng thái */
 .vitals-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px 14px;align-items:end;}
 .intake-extra{align-items:end;}
 .intake-print{display:flex;align-items:center;gap:8px;height:40px;font-size:13.5px;color:var(--ink);cursor:pointer;}
@@ -28,7 +28,7 @@
 @media (max-width:900px){.vitals-grid{grid-template-columns:repeat(2,minmax(0,1fr));}}
 .field-ask{border-color:var(--priority) !important;background:var(--priority-soft) !important;}
 .sym-panel{display:flex;flex-direction:column;gap:8px;}
-/* Dải "Tiếp theo" ở bảng gọi: đã check-in (có dấu ✓) / chưa check-in (bấm để check-in) */
+/* Dải “Tiếp theo” ở bảng gọi: đã check-in (✓) / chưa check-in (bấm để check-in) */
 button.call-chip{font:inherit;cursor:pointer;border:1px dashed var(--border);}
 .q-checkin{padding:3px 10px;font-size:12px;}
 button.call-chip:hover{border-color:var(--accent);}
@@ -52,7 +52,7 @@ button.call-chip:hover{border-color:var(--accent);}
 /* Nhóm triệu chứng thu gọn / mở rộng */
 .sym-section{border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:2px 8px 6px;}
 .sym-section.danger{border-color:rgba(239,68,68,.25);}
-/* Danh mục có nhóm (backend thật): một cột — tên dài không bị ép nhiều dòng */
+/* Danh mục có nhóm (chạy thật): một cột để tên dài không bị ép nhiều dòng */
 .sym-section.grouped .sym-grid{grid-template-columns:1fr;gap:2px;}
 .sym-section:not(.grouped){border:none;padding:0;}
 .sym-group{display:flex;align-items:center;gap:6px;width:100%;padding:8px 2px;border:none;background:none;cursor:pointer;font:700 11.5px 'Plus Jakarta Sans Variable';color:var(--ink-soft);text-transform:uppercase;letter-spacing:.04em;text-align:left;}
@@ -62,7 +62,7 @@ button.call-chip:hover{border-color:var(--accent);}
 .sym-count{margin-left:auto;font-weight:600;text-transform:none;letter-spacing:0;color:var(--ink-soft);background:rgba(255,255,255,.06);border-radius:999px;padding:1px 8px;}
 .sym-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 16px;}
 @media (max-width:900px){.sym-grid{grid-template-columns:1fr;}}
-/* Tên co giãn bên trái, cụm Có / Không / Chưa rõ cố định bên phải — các hàng luôn thẳng cột */
+/* Cụm Có / Không / Chưa rõ cố định bên phải để các hàng luôn thẳng cột */
 .sym-row{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:10px;min-height:36px;padding:3px 6px;border-radius:8px;font-size:13px;}
 .sym-row.set{background:rgba(255,255,255,.035);}
 .sym-row.ask{box-shadow:0 0 0 1px var(--priority) inset;}

@@ -1,6 +1,5 @@
-/* Khung quản trị: sidebar, bộ lọc, bảng, vai trò, breadcrumb */
+/* Khung quản trị: sidebar, bộ lọc, bảng, breadcrumb */
 
-/* ===== Admin shell ===== */
 #admin.screen{padding:0;max-width:100%;}
 .admin-shell{display:flex;min-height:calc(100vh - 116px);}
 .admin-sidebar{width:232px;flex-shrink:0;background:var(--surface);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);border-right:1px solid var(--border);padding:14px 10px 20px;transition:width .18s ease;overflow-x:hidden;}

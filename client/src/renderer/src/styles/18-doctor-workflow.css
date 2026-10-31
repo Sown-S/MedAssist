@@ -1,6 +1,6 @@
-/* Bác sĩ: tóm tắt, liều, tái khám, dòng thời gian, tra cứu, trực, gọi số */
+/* Bác sĩ: tóm tắt, liều, tái khám, dòng thời gian, tra cứu, gọi số */
 
-/* ===== Bác sĩ: dòng tóm tắt, liều có cấu trúc, tái khám, dòng thời gian, hàng chờ gọn, kết thúc ca ===== */
+/* Dòng tóm tắt, liều có cấu trúc, tái khám, dòng thời gian */
 .consult-strip{display:flex;flex-wrap:wrap;gap:6px;margin:-4px 0 10px;}
 .consult-strip>span{display:flex;flex-direction:column;gap:1px;padding:6px 10px;border-radius:9px;background:var(--surface-alt);min-width:64px;}
 .consult-strip>span.wide{flex:1;min-width:160px;}
@@ -65,7 +65,7 @@
 .shift-sum span{font-size:12px;color:var(--ink-soft);}
 .shift-sum .warn b{color:#FCD34D;}
 
-/* ===== Bác sĩ đợt 1: bỏ về, chẩn đoán phụ, đã về từ xét nghiệm, thông báo bấm được ===== */
+/* Bỏ về, chẩn đoán phụ, đã về từ xét nghiệm */
 .leave-reasons{display:flex;flex-direction:column;gap:6px;}
 .leave-reason{display:flex;align-items:center;gap:8px;padding:8px 11px;border:1px solid var(--border);border-radius:9px;background:var(--surface-alt);cursor:pointer;font-size:13.5px;color:var(--ink);}
 .leave-reason.on{border-color:var(--primary);background:var(--primary-soft);}
@@ -79,7 +79,7 @@
 .notif-item.clickable{cursor:pointer;}
 .notif-item.clickable:hover{background:var(--surface-hover);}
 
-/* ===== Bác sĩ đợt 3: tra cứu hồ sơ, ghi bổ sung ===== */
+/* Tra cứu hồ sơ */
 .lookup{display:grid;grid-template-columns:300px minmax(0,1fr);gap:16px;align-items:start;}
 @media (max-width:900px){.lookup{grid-template-columns:1fr;}}
 .lookup-list{position:sticky;top:12px;max-height:calc(100vh - 200px);overflow:auto;display:flex;flex-direction:column;gap:4px;}
@@ -92,7 +92,7 @@
 .tl-form{display:flex;flex-direction:column;gap:6px;margin-top:6px;}
 .tl-form select{align-self:flex-start;padding:5px 8px;border:1px solid var(--border);border-radius:8px;background:var(--field-bg);color:var(--ink);font-family:inherit;}
 
-/* ===== Bác sĩ đợt 4: phòng khám cố định, liều theo cân nặng ===== */
+/* Phòng khám cố định, liều theo cân nặng */
 .doc-nav-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
 .doc-room{display:inline-flex;align-items:center;gap:7px;padding:6px 12px;border-radius:12px;border:1px solid var(--border);background:var(--surface);font-size:13.5px;font-weight:600;color:var(--ink);white-space:nowrap;}
 .doc-room svg{width:15px;height:15px;color:var(--accent);}
@@ -102,7 +102,7 @@
 .warn-text{color:#FCD34D;font-weight:700;}
 .rx-stock.info{color:#67E8F9;}
 
-/* ===== Gọi số do bác sĩ phát ===== */
+/* Lời mời / gọi số */
 .calling-bar{display:flex;align-items:center;flex-wrap:wrap;gap:8px;padding:10px 12px;margin:-4px 0 10px;border-radius:11px;background:var(--primary-soft);border:1px solid rgba(59,130,246,.45);}
 .calling-bar>svg{width:18px;height:18px;color:#93C5FD;}
 .calling-bar>span{flex:1;min-width:160px;display:flex;flex-direction:column;}
@@ -113,7 +113,7 @@
 .call-row{display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:9px;background:var(--surface-alt);font-size:13px;color:var(--ink);}
 .call-row b.mono{color:var(--accent);font-size:15px;}
 .call-row span{flex:1;}
-/* Chân phiếu khám nhiều nút: xuống dòng, nút không bẻ chữ; 2 nút chốt đơn luôn nằm cùng hàng bên phải. */
+/* Chân phiếu khám: nút xuống dòng, không bẻ chữ; hai nút chốt đơn luôn cùng hàng bên phải. */
 .consult-footer{flex-wrap:wrap;row-gap:8px;}
 .consult-footer .btn{white-space:nowrap;}
 .consult-footer .btn-primary{margin-left:0;}

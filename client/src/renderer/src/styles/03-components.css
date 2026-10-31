@@ -1,4 +1,4 @@
-/* Tab trong trang, thẻ bệnh nhân, modal, form, bảng, badge, khung khám, cảnh báo, hóa đơn */
+/* Tab trong trang, thẻ bệnh nhân, modal, form, bảng, badge, khung khám, cảnh báo, hoá đơn */
 
 .itabs{display:inline-flex;gap:4px;background:rgba(255,255,255,.04);padding:3px;border-radius:10px;margin-bottom:13px;}
 .itab{padding:6px 13px;border-radius:7px;font-size:13.5px;font-weight:600;cursor:pointer;color:var(--ink-soft);border:none;background:transparent;font-family:'Plus Jakarta Sans Variable',sans-serif;}
