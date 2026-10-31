@@ -7,7 +7,7 @@ beforeEach(async () => {
 })
 
 const doctor = (username, roomId, extra = {}) => s.accounts.createAccount({ username, fullName: 'BS ' + username, roleKey: 'doctor', roomId, ...extra }, ADMIN)
-// Mật khẩu mặc định của admin đầu tiên (chỉ có ở bản demo).
+// Mật khẩu mặc định của admin đầu tiên (bản demo).
 const ADMIN_PW = 'Admin@123'
 
 describe('Tạo & sửa tài khoản nhân viên', () => {

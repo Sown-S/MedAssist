@@ -10,8 +10,8 @@ import SourcesTab from './SourcesTab'
 import AiLogsTab from './AiLogsTab'
 import { useKnowledge, useNames, groupByKey, errorText } from './shared'
 
-// Trang Cấu hình AI khi chạy với backend thật: tri thức OKF lưu ở server, duyệt theo bản phát hành (FR11, Architecture 5.1.10).
-// Admin soạn nháp, mở / gửi bản phát hành, tắt khẩn cấp; Bác sĩ (reviewOnly) duyệt hoặc từ chối cả bản.
+// Cấu hình AI khi chạy thật: tri thức OKF trên server, duyệt theo bản phát hành (FR11).
+// Admin soạn nháp, gửi duyệt, tắt khẩn cấp; bác sĩ (reviewOnly) duyệt hoặc từ chối cả bản.
 export default function KnowledgeLive({ reviewOnly = false }) {
   const { user } = useAuth()
   const { data, error, reload } = useKnowledge()

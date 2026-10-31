@@ -4,7 +4,6 @@ import Icon from '../../../components/Icon'
 import { translate } from '../../../i18n'
 import { ICD10 } from '../../admin/ai/catalog'
 
-// Chẩn đoán phụ / bệnh kèm: chọn từ ICD-10 (chọn xong tự thêm vào danh sách) hoặc gõ rồi bấm Thêm.
 export function SecondaryDx({ list, onChange }) {
   const [text, setText] = useState('')
   const add = (v) => {

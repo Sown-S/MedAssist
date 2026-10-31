@@ -1,6 +1,5 @@
-/* Điểm vào của toàn bộ CSS (import từ main.jsx). Mỗi file trong styles/ là một vùng giao diện.
-   THỨ TỰ IMPORT = THỨ TỰ CASCADE: file sau ghi đè file trước, nên đừng đổi thứ tự;
-   CSS mới thêm vào cuối file của vùng tương ứng (hoặc tạo file mới ở cuối danh sách). */
+/* Điểm vào của toàn bộ CSS. Thứ tự import = thứ tự cascade (file sau ghi đè file trước) — đừng đổi thứ tự;
+   CSS mới thêm vào cuối file của vùng tương ứng. */
 
 @import './styles/01-tokens-base.css';
 @import './styles/02-topbar-layout.css';

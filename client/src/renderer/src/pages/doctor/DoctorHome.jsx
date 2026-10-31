@@ -16,9 +16,6 @@ import { useTakePatient, pastVisitsOf, PatientBrief, LabOrderResults, InviteBar 
 const no = (t) => String(t).padStart(3, '0')
 const waitTone = (n) => (n >= 45 ? 'long' : n >= 25 ? 'warn' : 'ok')
 
-// Trang chủ Bác sĩ: số liệu trong ngày + thao tác nhanh + người kế tiếp + đơn vừa kê.
-// Chờ khám → danh sách chờ kèm hồ sơ bệnh lý sơ lược; Trong phòng tôi → mở thẳng bệnh nhân đang khám;
-// Xét nghiệm → danh sách phiếu chỉ định & kết quả cận lâm sàng bác sĩ đã ghi.
 export default function DoctorHome({ go, onRx }) {
   const { user } = useAuth()
   const { visits } = useQueue()
@@ -153,7 +150,7 @@ export default function DoctorHome({ go, onRx }) {
           })}
           {!waiting.length && <p className="ai-soft" style={{ fontSize: 14 }}>No one is waiting.</p>}
           <InviteBar onStart={take} />
-          {/* Backend thật: server mời cả người chưa check-in (lễ tân check-in khi họ đến quầy). */}
+          {/* Chạy thật: server mời cả người chưa check-in (lễ tân check-in khi họ đến quầy). */}
           <button className="btn btn-primary btn-sm" style={{ marginTop: 10 }} onClick={next} disabled={DEMO_MODE ? !ready.length : !waiting.length}>
             <Icon name="megaphone" /> Call next patient
           </button>
@@ -201,7 +198,6 @@ export default function DoctorHome({ go, onRx }) {
   )
 }
 
-// Danh sách chờ khám kèm hồ sơ bệnh lý sơ lược (bấm vào từng người để mở / thu gọn).
 function WaitingModal({ list, initial, now, past, onTake, onClose }) {
   const [open, setOpen] = useState(initial || list[0]?.id || null)
   return (
@@ -275,7 +271,6 @@ const LAB_FILTERS = [
   { key: 'done', label: 'Results entered' }
 ]
 
-// Phiếu chỉ định xét nghiệm của bác sĩ đang đăng nhập (hôm nay + các ngày trước) kèm kết quả đã ghi.
 function LabListModal({ onResume, onClose }) {
   const { user } = useAuth()
   const { visits } = useQueue()

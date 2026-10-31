@@ -1,6 +1,6 @@
-/* Hồ sơ bệnh nhân (thẻ + form), hóa đơn thanh toán (quản trị) */
+/* Hồ sơ bệnh nhân, hoá đơn (quản trị) */
 
-/* ===== Hồ sơ bệnh nhân: danh sách dạng thẻ + form xem/chỉnh sửa ===== */
+/* Hồ sơ bệnh nhân */
 .prec-list{display:flex;flex-direction:column;gap:12px;}
 .prec-card{display:flex;align-items:center;gap:16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;transition:background .15s;}
 .prec-card:hover{background:var(--surface-alt);}
@@ -40,7 +40,7 @@
 .num-steps button{flex:1;width:24px;display:flex;align-items:center;justify-content:center;border:none;border-radius:5px;background:var(--surface-alt);color:var(--ink-soft);font-size:11px;cursor:pointer;padding:0;}
 .num-steps button:hover{background:var(--primary);color:#fff;}
 
-/* ===== Hóa đơn thanh toán (quản trị) — chỉ xem ===== */
+/* Hoá đơn (quản trị, chỉ xem) */
 .prec-btn.invoice{width:auto;gap:6px;padding:0 12px;font-family:inherit;font-weight:700;font-size:12.5px;background:rgba(34,197,94,.16);border:1px solid rgba(34,197,94,.45);color:#4ADE80;}
 .bill-none{font-size:12.5px;font-weight:600;color:var(--ink-soft);}
 .bill-card{margin-bottom:16px;}

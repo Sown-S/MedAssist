@@ -1,10 +1,8 @@
 import { createPortal } from 'react-dom'
 
-// Thay cho openModal(id)/closeModal(id) thao tác thẳng lên DOM bằng classList,
-// giờ modal chỉ hiện ra khi prop `open` là true — đúng tư duy "UI = hàm của state" của React.
 export default function Modal({ open, onClose, wide, children }) {
   if (!open) return null
-  // Portal ra <body>: phần tử cha có backdrop-filter (topbar, card) sẽ "nhốt" position:fixed bên trong nó.
+  // Portal ra <body>: phần tử cha có backdrop-filter sẽ “nhốt” position: fixed bên trong nó.
   return createPortal(
     <div
       className="modal-overlay show"

@@ -1,6 +1,6 @@
-/* Kho theo lô, kiểm kho, nhà cung cấp, quản lý danh mục */
+/* Kho theo lô, danh mục */
 
-/* ===== Kho: tồn theo lô, danh mục thuốc, kiểm kho ===== */
+/* Kho */
 table.dt th.num,table.dt td.num{text-align:right;}
 .inv-sort{cursor:pointer;user-select:none;}
 .inv-sort:hover{color:var(--ink);}
@@ -31,7 +31,7 @@ table.dt th.num,table.dt td.num{text-align:right;}
 .rx-stock.danger{color:#FCA5A5;}
 .rx-stock.caution{color:#FCD34D;}
 
-/* ===== Phiên kiểm kho ===== */
+/* Kiểm kho */
 .st-start{max-width:860px;}
 .st-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;padding-bottom:12px;border-bottom:1px solid var(--border);}
 .st-title{display:flex;align-items:center;gap:8px;font-size:16px;margin-bottom:4px;}
@@ -49,7 +49,7 @@ table.dt th.num,table.dt td.num{text-align:right;}
 .st-second{margin-top:14px;padding:12px 14px;border:1px solid rgba(168,85,247,.4);background:rgba(168,85,247,.08);border-radius:12px;}
 .st-second .section-label{margin-top:0;}
 
-/* ===== Nhà cung cấp & công nợ ===== */
+/* Nhà cung cấp */
 .sp-overdue td{background:rgba(239,68,68,.07);}
 .sp-overdue td:first-child{box-shadow:inset 3px 0 0 var(--warn);}
 .sp-warn{color:#FCD34D;font-weight:600;}
@@ -59,7 +59,7 @@ table.dt th.num,table.dt td.num{text-align:right;}
 .rc-facts{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:12px;font-size:13px;color:var(--ink-soft);}
 .rc-facts b{color:var(--ink);}
 
-/* ===== Quản lý danh mục ===== */
+/* Quản lý danh mục */
 .side-subitem{white-space:normal;line-height:1.3;}
 .side-group.open .side-sub{max-height:900px;}
 .cat-crumb{cursor:pointer;text-decoration:underline dotted;}

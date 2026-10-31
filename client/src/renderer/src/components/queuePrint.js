@@ -1,4 +1,4 @@
-// In phiếu số thứ tự và biên lai — gọn, một bấm, khổ giấy theo "Hoá đơn" trong Cài đặt › In ấn (mặc định máy in nhiệt 80 mm).
+// Phiếu số thứ tự và biên lai; khổ giấy theo mục “Hoá đơn” ở Cài đặt › In ấn (mặc định máy in nhiệt 80 mm).
 import { printHtml, esc } from '../pages/admin/inventory/shared'
 import { PAYMENT_METHODS } from '../api/settingsStore'
 import { translate } from '../i18n'
@@ -23,7 +23,6 @@ export function printTicket(v) {
   )
 }
 
-// In (lại) biên lai từ hoá đơn đã lưu: từng dòng, tổng tiền, hình thức, người thu.
 export function printReceipt(inv) {
   const method = PAYMENT_METHODS.find((m) => m.key === inv.method)?.label ?? inv.method
   const rows = inv.items.map((it) => `<tr><td>${esc(t(it.name))}${it.qty > 1 ? ' × ' + it.qty : ''}</td><td class="num">${fmt(it.amount)}</td></tr>`).join('')

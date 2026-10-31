@@ -11,10 +11,8 @@ import { useRxReviews, addReview, reviewsOf, VERDICTS, verdictOf } from '../../a
 import { dmy, hhmm } from '../reception/shared'
 import { DEMO_MODE } from '../../api/client'
 
-// Bác sĩ xem lại một đơn ĐÃ CHỐT: kiểm tra lại với hồ sơ hiện tại (dị ứng / bệnh nền có thể đã đổi),
-// ghi đánh giá (phù hợp / cần điều chỉnh / lo ngại an toàn). Đơn đã chốt không sửa tại chỗ:
-//  - lễ tân CHƯA lập hoá đơn → bác sĩ kê đơn được thu hồi đơn về phòng khám để sửa;
-//  - đã thu tiền / đã xuất thuốc → ghi "cần điều chỉnh", hệ thống nhắc khi bệnh nhân vào phòng khám lần sau.
+// Bác sĩ xem lại đơn đã chốt với hồ sơ hiện tại. Đơn chưa thu tiền thì thu hồi về để sửa; đã thu tiền / xuất thuốc
+// thì chỉ ghi đánh giá (bản demo) để nhắc ở lần khám sau.
 export default function RxReviewPanel({ visit, onRecalled }) {
   const { user } = useAuth()
   const { showToast } = useToast()
@@ -31,7 +29,7 @@ export default function RxReviewPanel({ visit, onRecalled }) {
   const changed = current && ((current.allergies ?? '') !== (visit.allergies ?? '') || (current.history ?? '') !== (visit.history ?? ''))
   const reviews = reviewsOf(visit.id, all)
   const inv = live?.invoiceId && invoiceById(live.invoiceId)
-  // Mở lại đơn (reopen): chưa thu tiền và chưa cấp thuốc nào — hoàn kho, huỷ hoá đơn pending.
+  // Mở lại được khi chưa thu tiền và chưa cấp thuốc nào.
   const recallable = live?.status === ST.PRESCRIBED && isMine(live, user) && inv?.status !== 'paid' && !(live.rx ?? []).some((l) => l.dispense_status === 'Dispensed')
 
   function save() {
@@ -63,7 +61,7 @@ export default function RxReviewPanel({ visit, onRecalled }) {
         <span>The system does not check drug interactions, doses or duplicate prescriptions — the doctor is responsible for reviewing the prescription.</span>
       </p>
 
-      {/* Chạy thật: chưa có trong FR / ERD nên không có API đánh giá đơn → chỉ còn thu hồi đơn (PATCH …/prescription/reopen). */}
+      {/* Chạy thật không có API đánh giá đơn (không có trong FR / ERD) → chỉ còn thu hồi đơn. */}
       {!DEMO_MODE && user.roleKey === 'doctor' && recallable && (
         <div className="rx-review-actions">
           <button className="btn btn-ghost btn-sm" onClick={recall} title={translate('Reception has not invoiced this visit yet')}>

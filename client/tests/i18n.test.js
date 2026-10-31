@@ -4,15 +4,12 @@ import { join, relative, resolve } from 'path'
 import * as espree from 'espree'
 import { VI, PATTERNS } from '../src/renderer/src/i18n/vi.js'
 
-// Kiểm tra bản dịch tiếng Việt (vi.js) bằng cách đọc mã nguồn giao diện:
-//  - mọi chuỗi tiếng Anh hiển thị (chữ trong JSX, title / placeholder / aria-label, translate('…')) phải có bản dịch
-//    — thiếu thì giao diện tiếng Việt hiện lẫn chữ tiếng Anh mà không ai báo;
-//  - vi.js không có khoá trùng — khoá sau đè khoá trước, bản dịch đang thấy có thể không phải bản vừa sửa.
-// Chuỗi dựng động (`${n} …`) dịch bằng PATTERNS; chuỗi trong biến / mảng dữ liệu không kiểm ở đây.
+// Đọc mã nguồn giao diện để kiểm tra vi.js: mọi chuỗi tiếng Anh hiển thị (chữ JSX, title / placeholder / aria-label,
+// translate('…')) phải có bản dịch, và vi.js không có khoá trùng. Chuỗi trong biến / mảng dữ liệu không kiểm ở đây.
 const SRC = resolve(__dirname, '../src/renderer/src')
 const VI_FILE = join(SRC, 'i18n/vi.js')
 
-// Chuỗi cố ý không dịch: tên riêng, mã, phím tắt, đơn vị, ví dụ nhập liệu đã viết bằng tiếng Việt.
+// Cố ý không dịch: tên riêng, mã, phím tắt, đơn vị.
 const KEEP = new Set([
   'M',
   'MedAssist',
@@ -41,7 +38,7 @@ const KEEP = new Set([
   'hash',
   '· prev'
 ])
-// Chuỗi có dấu tiếng Việt hoặc placeholder "vd: …" (ví dụ nhập liệu) là đã viết sẵn bằng tiếng Việt.
+// Có dấu tiếng Việt hoặc placeholder “vd: …” = đã viết sẵn bằng tiếng Việt.
 const VIETNAMESE = /[àáảãạăằắẳẵặâầấẩẫậđèéẻẽẹêềếểễệìíỉĩịòóỏõọôồốổỗộơờớởỡợùúủũụưừứửữựỳýỷỹỵ]|^vd: /i
 
 function sourceFiles(dir, out = []) {
@@ -69,7 +66,6 @@ function walk(node, fn) {
 const TEXT_PROPS = new Set(['title', 'placeholder', 'aria-label'])
 const isString = (n) => n?.type === 'Literal' && typeof n.value === 'string'
 
-// Các chuỗi hiển thị của một file: [{ text, line }]
 function displayStrings(file) {
   const out = []
   walk(parse(file), (n) => {
@@ -107,8 +103,8 @@ describe('Bản dịch tiếng Việt (vi.js)', () => {
     expect(dup).toEqual([])
   })
 
-  // Khoá là câu tiếng Anh nên một từ chỉ có MỘT bản dịch. Từ nhiều nghĩa chỉ được dùng ở đúng khu vực của nghĩa đó;
-  // nơi khác dùng cụm rõ nghĩa hơn (VD cân nặng là "Body weight", dòng hoá đơn là "Line item").
+  // Khoá là câu tiếng Anh nên một từ chỉ có một bản dịch: từ nhiều nghĩa chỉ dùng ở khu vực của nghĩa đó,
+  // nơi khác dùng cụm rõ nghĩa hơn (VD cân nặng là “Body weight”).
   it('từ nhiều nghĩa chỉ dùng đúng khu vực', () => {
     const ONLY_IN = {
       Weight: ['pages/admin/ai/', 'pages/admin/knowledge/'], // "Trọng số" của luật AI

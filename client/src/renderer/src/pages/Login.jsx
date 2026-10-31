@@ -9,7 +9,6 @@ import ServerAddress from "../components/ServerAddress";
 import AppIcon from "../components/Icon";
 import Button from "../components/Button";
 
-// Icon đơn sắc (nét vẽ theo currentColor) — không dùng emoji để màu đồng nhất với giao diện.
 function Icon({ children }) {
   return (
     <svg
@@ -99,9 +98,8 @@ export default function Login() {
   const [show, setShow] = useState(false);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
-  // Đổi địa chỉ server của máy này ngay ở màn đăng nhập (máy mới cài, hoặc server đổi IP).
   const [serverOpen, setServerOpen] = useState(false);
-  const [pending, setPending] = useState(null); // tài khoản phải đổi mật khẩu lần đầu
+  const [pending, setPending] = useState(null);
   const [np, setNp] = useState("");
   const [np2, setNp2] = useState("");
 
@@ -133,7 +131,7 @@ export default function Login() {
       logEvent({ name: pending.fullName, username: pending.username, roleKey: pending.roleKey }, 'auth.password_changed', { target: { kind: 'account', id: pending.username } });
       return startSession({ ...pending, mustChange: false });
     }
-    // API thật: server đã thu hồi token cũ → đăng nhập lại bằng mật khẩu mới để lấy token không còn bị chặn.
+    // Server đã thu hồi token cũ → đăng nhập lại bằng mật khẩu mới.
     const again = await authenticate(username, np, roleKey);
     setBusy(false);
     setPending(null);
@@ -147,7 +145,7 @@ export default function Login() {
     startSession(again.account);
   }
 
-  // Thoát màn đặt mật khẩu: huỷ token của lần đăng nhập dở dang.
+  // Huỷ token của lần đăng nhập dở dang.
   function cancelChange() {
     logout();
     setPending(null);

@@ -4,8 +4,7 @@ import { RULE_TYPES, DISMISS_REASONS, fmtPct } from './catalog'
 import { prf } from './ruleEngine'
 import { TypeBadge, IcdCell } from './ui'
 
-// Số liệu lấy từ phản hồi của bác sĩ trên từng gợi ý (chấp nhận / bỏ qua + lý do) và
-// đối chiếu với chẩn đoán cuối cùng đã xác nhận (để tính bỏ sót — FN).
+// Từ phản hồi của bác sĩ trên từng gợi ý, đối chiếu chẩn đoán cuối cùng (để tính bỏ sót — FN).
 const sum = (list, k) => list.reduce((s, r) => s + (r.stats[k] ?? 0), 0)
 const HIGH_DISMISS = 0.4
 

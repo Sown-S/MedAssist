@@ -8,7 +8,7 @@ import { ticketNo } from './queuePrint'
 import { DEMO_MODE } from '../api/client'
 import { lookupPatients, getPatient } from '../api/clinicApi'
 
-// Backend thật: tìm qua GET /patients/lookup (gõ sau 300 ms), chọn ai thì tải đủ hồ sơ (dị ứng, bệnh nền, mang thai).
+// Chạy thật: tìm qua GET /patients/lookup (gõ xong 300 ms), chọn ai thì tải đủ hồ sơ.
 function useServerSearch(q, picked) {
   const [results, setResults] = useState([])
   const [detail, setDetail] = useState(null)
@@ -40,8 +40,7 @@ function useServerSearch(q, picked) {
   return { results, detail, error }
 }
 
-// Tra cứu nhanh bệnh nhân theo TỪ KHOÁ (họ tên có/không dấu, SĐT, mã hồ sơ) rồi tiếp đón (cấp số).
-// readOnly = đang mất kết nối: vẫn tra cứu được, nút tiếp đón bị khoá.
+// readOnly = mất kết nối: vẫn tra cứu được, nút tiếp đón bị khoá.
 export default function SearchModal({ open, onClose, onCheckIn, readOnly }) {
   usePatients()
   const { visits } = useQueue()

@@ -1,7 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 
-// Chỉ định cận lâm sàng và danh mục dịch vụ khi chạy với server (ERD v2.1): đổi phiếu server sang dạng phiếu client,
-// và màn danh mục Quản trị gửi đúng body cho API (không gửi mã / loại khi sửa, gói gửi service_id).
+// Phiếu server → phiếu client, và màn danh mục Quản trị gửi đúng body cho API (ERD v2.1).
 const ORDER = {
   order_id: 'o1',
   visit_id: 'v1',

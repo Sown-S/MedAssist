@@ -26,7 +26,7 @@ import { fmtDate, fmtDateTime } from './inventory/shared'
 import { translate } from '../../i18n'
 
 const EMPTY = { fullName: '', username: '', roleKey: 'doctor', phone: '', staffCode: '', roomId: null, licenseNo: '' }
-// Không đăng nhập quá bấy nhiêu ngày → coi là tài khoản bỏ không, nên xem xét vô hiệu hoá.
+// Không đăng nhập quá số ngày này → coi là tài khoản bỏ không, nên xem xét vô hiệu hoá.
 const IDLE_DAYS = 30
 
 const daysSince = (iso) => (iso ? Math.floor((Date.now() - new Date(iso).getTime()) / 86400000) : null)
@@ -49,13 +49,13 @@ function matchStatus(a, f) {
   return true
 }
 
-// Trường thay đổi khi sửa — nhãn tiếng Anh, được dịch khi hiển thị nhật ký.
+// Nhãn tiếng Anh, dịch khi hiển thị nhật ký.
 const FIELD_LABELS = { fullName: 'Full name', staffCode: 'Staff code', phone: 'Phone', roomId: 'Consultation room', licenseNo: 'Practising licence no.' }
 
 export default function StaffPage() {
   const { showToast } = useToast()
   const { user: me, refreshUser } = useAuth()
-  // Phòng khám để gán cho bác sĩ (GET /rooms): mỗi phòng khám chỉ một bác sĩ đang hoạt động.
+  // Mỗi phòng khám chỉ một bác sĩ đang hoạt động.
   const [rooms, setRooms] = useState([])
 
   const [accounts, setAccounts] = useState(null)
@@ -66,10 +66,10 @@ export default function StaffPage() {
 
   const [form, setForm] = useState(null) // null = đóng; có id = đang sửa
   const [formErr, setFormErr] = useState('')
-  const [reauth, setReauth] = useState(null) // { title, message, confirmLabel, danger, run }
-  const [secret, setSecret] = useState(null) // { account, password, reset } — mật khẩu tạm, chỉ hiện 1 lần
+  const [reauth, setReauth] = useState(null)
+  const [secret, setSecret] = useState(null) // mật khẩu tạm, chỉ hiện một lần
   const [ownPw, setOwnPw] = useState(false)
-  const [confirm, setConfirm] = useState(null) // { title, message, confirmLabel, run }
+  const [confirm, setConfirm] = useState(null)
 
   async function refresh() {
     try {
@@ -87,7 +87,6 @@ export default function StaffPage() {
   const editing = form?.id ? accounts?.find((a) => a.id === form.id) : null
   const target = (a) => ({ target: { kind: 'account', id: a.username, label: a.fullName } })
 
-  // ---------- Tạo / sửa ----------
   function openCreate(roleKey = 'doctor') {
     setFormErr('')
     setForm({ ...EMPTY, roleKey })
@@ -151,7 +150,6 @@ export default function StaffPage() {
     refresh()
   }
 
-  // ---------- Mật khẩu, khoá, phiên ----------
   function askReset(a) {
     setReauth({
       title: `Reset password — ${a.username}`,
@@ -198,7 +196,6 @@ export default function StaffPage() {
     refresh()
   }
 
-  // ---------- Lọc ----------
   const counts = useMemo(() => {
     const c = { locked: 0, pending: 0, idle: 0 }
     for (const k of Object.keys(ROLES)) c[k] = { total: 0, active: 0 }
@@ -453,7 +450,6 @@ export default function StaffPage() {
         </>
       )}
 
-      {/* Tạo / sửa tài khoản */}
       <Modal open={!!form} onClose={() => setForm(null)}>
         {form && (
           <form onSubmit={submitForm}>
@@ -497,7 +493,7 @@ export default function StaffPage() {
                       <select value={form.roomId ?? ''} onChange={(e) => setForm({ ...form, roomId: e.target.value || null })}>
                         <option value="">— Not assigned —</option>
                         {rooms.map((r) => {
-                          // Phòng đã có bác sĩ khác: không chọn được (server trả 409 ROOM_TAKEN)
+                          // Phòng đã có bác sĩ khác → không chọn được (server: 409 ROOM_TAKEN)
                           const taken = r.physician && r.physician.id !== form.id
                           return (
                             <option key={r.id} value={r.id} disabled={!!taken}>
@@ -536,21 +532,17 @@ export default function StaffPage() {
         )}
       </Modal>
 
-      {/* Xác thực lại bằng mật khẩu admin */}
       <ReauthModal open={!!reauth} title={reauth?.title ?? ''} confirmLabel={reauth?.confirmLabel} danger={reauth?.danger} onClose={() => setReauth(null)} onConfirm={() => reauth.run()}>
         {reauth && <p className="ai-soft">{reauth.message}</p>}
       </ReauthModal>
 
-      {/* Mật khẩu tạm — chỉ hiện 1 lần */}
       {/* Không đóng khi bấm ra ngoài — tránh mất mật khẩu trước khi kịp sao chép. */}
       <Modal open={!!secret} onClose={() => {}}>
         {secret && <SecretPanel secret={secret} onClose={() => setSecret(null)} />}
       </Modal>
 
-      {/* Tự đổi mật khẩu của mình */}
       <ChangePasswordModal open={ownPw} onClose={() => setOwnPw(false)} />
 
-      {/* Xác nhận thường (buộc đăng xuất) */}
       <Modal open={!!confirm} onClose={() => setConfirm(null)}>
         {confirm && (
           <>

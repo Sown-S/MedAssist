@@ -1,6 +1,5 @@
-// CÀI ĐẶT HỆ THỐNG — lớp giả lập cho bảng system_settings của backend.
-// Mỗi lần lưu ghi nhật ký từng trường (giá trị cũ → mới). Bản thật: GET/PUT /admin/settings, server kiểm tra lại
-// mọi giá trị và tự áp dụng phần do server đảm nhiệm (lịch sao lưu, giờ làm mới số thứ tự...).
+// Cài đặt hệ thống. Mỗi lần lưu ghi nhật ký từng trường (cũ → mới). Chạy thật: vài tham số nghiệp vụ nằm trên server
+// (xem SERVER_SETTINGS), còn lại là cài đặt của máy này.
 import { useSyncExternalStore } from 'react'
 import { logEvent } from './activityStore'
 import { apiGet, apiRequest, ApiError, DEMO_MODE } from './client'
@@ -14,14 +13,13 @@ export const PAPERS = [
   { key: '80mm', label: 'Thermal receipt 80 mm', css: '80mm auto' },
   { key: '58mm', label: 'Thermal receipt 58 mm', css: '58mm auto' }
 ]
-// Giấy tờ in được — khổ giấy riêng cho từng loại.
 export const PRINT_DOCS = [
   { key: 'prescription', label: 'Prescription' },
   { key: 'labOrder', label: 'Lab test order' },
   { key: 'invoice', label: 'Invoice / payment receipt' },
   { key: 'other', label: 'Other documents & reports' }
 ]
-// Chứng từ được đánh số. date = phần ngày trong số → quyết định chu kỳ làm mới số.
+// date: phần ngày trong số → quyết định chu kỳ làm mới số.
 export const NUMBERED_DOCS = [
   { key: 'invoice', label: 'Invoice' }
 ]
@@ -85,16 +83,15 @@ export const DEFAULT_SETTINGS = {
     close: '17:30',
     workDays: [1, 2, 3, 4, 5, 6],
     nearDays: 90,
-    // Khoảng an toàn hạn dùng khi trừ kho lúc chốt đơn: chỉ cấp lô còn hạn > hôm nay + max(số ngày dùng, khoảng này).
+    // Chỉ cấp lô còn hạn > hôm nay + max(số ngày dùng, khoảng này).
     shelfBufferDays: 0,
     defaultThreshold: 50,
     consultFee: 80000,
     rounding: 1000,
     methods: ['cash', 'transfer'],
-    // Nhà thuốc của phòng khám có bán thuốc gây nghiện / hướng thần (N/H) không. Mặc định KHÔNG: bác sĩ vẫn kê đơn N/H riêng,
-    // bệnh nhân mua ở nhà thuốc đủ điều kiện bên ngoài; nhà thuốc phòng khám không thu tiền / xuất kho các thuốc này.
+    // Mặc định nhà thuốc phòng khám không bán thuốc N / H: bác sĩ vẫn kê đơn riêng, bệnh nhân mua ở nhà thuốc đủ điều kiện.
     sellControlled: false,
-    // Loa ở quầy đọc kèm HỌ TÊN khi bác sĩ mời ("Mời số 9, Nguyễn Văn A, vào phòng P.101"). Mặc định tắt — chỉ đọc số + phòng (quyền riêng tư).
+    // Loa ở quầy đọc kèm họ tên khi mời. Mặc định tắt, chỉ đọc số và phòng (quyền riêng tư).
     announceName: false
   },
   retention: { auditYears: 10, recordYears: 10 }
@@ -110,11 +107,9 @@ function read(key) {
 function write(key, v) {
   try {
     localStorage.setItem(key, JSON.stringify(v))
-  } catch {
-    /* chỉ giữ trong phiên */
-  }
+  } catch {/* không lưu được thì chỉ giữ trong phiên */}
 }
-// Gộp sâu với mặc định: thêm cài đặt mới ở bản sau không làm hỏng dữ liệu đã lưu.
+// Gộp sâu với mặc định để cài đặt mới thêm ở bản sau không làm hỏng dữ liệu đã lưu.
 function merge(def, saved) {
   if (!saved || typeof def !== 'object' || Array.isArray(def)) return saved ?? def
   const out = {}
@@ -135,7 +130,6 @@ export function useSettings() {
   return useSyncExternalStore(subscribe, getSettingsState)
 }
 
-// Danh sách phẳng "đường dẫn → giá trị" để so sánh bản nháp với bản đã lưu.
 export function flatten(obj, prefix = '') {
   const out = {}
   for (const [k, v] of Object.entries(obj)) {
@@ -152,9 +146,8 @@ export function changedPaths(draft) {
   return Object.keys(b).filter((k) => !same(a[k], b[k]))
 }
 
-// ===================== Backend thật: tham số vận hành trên server (GET / PUT /api/v1/admin/settings — chỉ Admin) =====================
-// Server giữ 4 tham số dùng cho nghiệp vụ (cảnh báo sắp hết hạn, khoảng an toàn hạn dùng khi trừ kho, thông tin phòng khám
-// in trên phiếu, phí khám mặc định trên hóa đơn). Các cài đặt còn lại (in ấn, giao diện...) vẫn là cài đặt của máy này.
+// Tham số nghiệp vụ trên server (GET / PUT /admin/settings, chỉ Admin): ngưỡng sắp hết hạn, khoảng an toàn hạn dùng,
+// thông tin phòng khám in trên phiếu, phí khám mặc định.
 const SERVER_SETTINGS = [
   { key: 'inventory.near_expiry_days', paths: ['ops.nearDays'], get: (v) => Math.round(Number(v.ops.nearDays)), set: (v, x) => ({ ...v, ops: { ...v.ops, nearDays: x } }) },
   { key: 'inventory.min_remaining_shelf_days', paths: ['ops.shelfBufferDays'], get: (v) => Math.round(Number(v.ops.shelfBufferDays)), set: (v, x) => ({ ...v, ops: { ...v.ops, shelfBufferDays: x } }) },
@@ -166,7 +159,6 @@ const SERVER_SETTINGS = [
     set: (v, x) => ({ ...v, clinic: { ...v.clinic, name: x.name ?? '', address: x.address ?? '', phone: x.phone ?? '' } })
   }
 ]
-// Nạp giá trị trên server vào cài đặt của máy này (gọi khi Admin mở trang Cài đặt).
 export async function loadServerSettings() {
   if (DEMO_MODE) return
   const rows = await apiGet('/api/v1/admin/settings')
@@ -179,7 +171,7 @@ export async function loadServerSettings() {
   write(KEY, state)
   listeners.forEach((fn) => fn())
 }
-// Ghi các tham số server có thay đổi trong bản nháp. Lỗi → { ok: false, error } (giữ nguyên, không lưu ở máy).
+// Lỗi → { ok: false, error }, không lưu gì ở máy.
 export async function saveServerSettings(draft) {
   if (DEMO_MODE) return { ok: true }
   const changed = new Set(changedPaths(draft))
@@ -191,7 +183,7 @@ export async function saveServerSettings(draft) {
   }
 }
 
-// labelOf(path) → nhãn tiếng Anh của trường (để nhật ký hiển thị theo ngôn ngữ), show(path, v) → chuỗi giá trị.
+// labelOf(path): nhãn tiếng Anh của trường (để nhật ký dịch theo ngôn ngữ); show(path, v): chuỗi giá trị.
 export function saveSettings(draft, user, labelOf, show) {
   const paths = changedPaths(draft)
   if (!paths.length) return 0
@@ -210,7 +202,6 @@ export function saveSettings(draft, user, labelOf, show) {
   return paths.length
 }
 
-// ---------- Đánh số chứng từ ----------
 function datePart(kind, d) {
   const y = String(d.getFullYear()).slice(2)
   const m = String(d.getMonth() + 1).padStart(2, '0')
@@ -221,9 +212,7 @@ export function formatNumber(rule, seq, d = new Date()) {
   const parts = [rule.prefix, datePart(rule.date, d), String(seq).padStart(rule.digits, '0')].filter(Boolean)
   return parts.join('-')
 }
-// Số tiếp theo khi đã có đủ danh sách chứng từ (phiên kiểm kho, biên bản huỷ, phiếu thu chi): số nhỏ nhất chưa dùng
-// trong kỳ hiện tại. Hàm thuần — gọi để hiện trước số trên form cũng không "tiêu" mất số nào.
-// Bản thật: server cấp số trong cùng giao dịch lưu chứng từ (sequence của PostgreSQL), client không tự đánh số.
+// Số nhỏ nhất chưa dùng trong kỳ. Hàm thuần — gọi để hiện trước số trên form không “tiêu” mất số nào.
 export function nextNumber(kind, existing = [], d = new Date()) {
   const rule = state.values.numbering[kind]
   const used = new Set(existing)
@@ -243,7 +232,6 @@ export function takeNumber(kind, d = new Date()) {
   return formatNumber(rule, n, d)
 }
 
-// Làm tròn số tiền thu theo cài đặt (làm tròn đến bội gần nhất).
 export function roundMoney(n) {
   const step = state.values.ops.rounding || 1
   return Math.round(n / step) * step

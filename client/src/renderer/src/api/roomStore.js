@@ -1,9 +1,5 @@
-// Phòng khám cố định của bác sĩ (bảng room, ERD v1.9) — thay khoa phòng và ca trực.
-// Phòng 01–03 là phòng khám, 04 là phòng xét nghiệm. Mỗi phòng khám tối đa MỘT bác sĩ đang hoạt động;
-// bác sĩ được gắn phòng ở Quản trị › Tài khoản nhân viên (users.room_id), đăng nhập là khám ở phòng đó.
-// Không xóa phòng, chỉ ngừng dùng (is_active = false). Không đổi mã và loại phòng.
-// Backend thật: GET /rooms (?include_inactive=true), POST /admin/rooms, PATCH /admin/rooms/{id}.
-// Bản demo: danh sách phòng trong localStorage, bác sĩ của phòng suy ra từ tài khoản (accountStore, roomId).
+// Phòng khám cố định của bác sĩ (ERD v1.9). Mỗi phòng khám tối đa một bác sĩ đang hoạt động; bác sĩ được gắn phòng
+// ở Tài khoản nhân viên. Không xoá phòng, chỉ ngừng dùng; không đổi mã và loại phòng.
 import { apiGet, apiPost, apiRequest, ApiError, DEMO_MODE } from './client'
 
 const KEY = 'medassist_rooms_v1'
@@ -28,12 +24,9 @@ function save(next) {
   rooms = next
   try {
     localStorage.setItem(KEY, JSON.stringify(rooms))
-  } catch {
-    /* chỉ giữ trong phiên */
-  }
+  } catch {/* không lưu được thì chỉ giữ trong phiên */}
 }
 
-// Bản demo: tra phòng theo id ngay (accountStore gắn mã, tên phòng vào tài khoản).
 export const roomById = (id) => rooms.find((r) => r.id === id) ?? null
 
 const fromServer = (r) => ({
@@ -53,7 +46,7 @@ const ERRORS = {
 const apiError = (e) =>
   e instanceof ApiError ? (ERRORS[e.code] ?? e.details?.[0]?.message ?? e.message) : 'Cannot reach the clinic server. Check the server address and the network connection.'
 
-// Danh sách phòng kèm bác sĩ đang hoạt động của mỗi phòng. accounts: chỉ cần ở bản demo (tránh import vòng với accountStore).
+// accounts chỉ cần ở bản demo (tránh import vòng với accountStore).
 export async function listRooms({ includeInactive = false, accounts = [] } = {}) {
   if (!DEMO_MODE) return (await apiGet(`/api/v1/rooms${includeInactive ? '?include_inactive=true' : ''}`)).map(fromServer)
   return rooms
@@ -82,7 +75,7 @@ export async function createRoom({ code, name, type = 'Exam' }) {
   return { ok: true, room }
 }
 
-// Đổi tên / ngừng dùng / dùng lại. Bản demo: inUse = phòng đang có bác sĩ (server tự kiểm tra ROOM_IN_USE).
+// Bản demo: inUse = phòng đang có bác sĩ (server tự kiểm tra ROOM_IN_USE).
 export async function updateRoom(id, { name, active }, { inUse = false } = {}) {
   const body = {}
   if (name !== undefined) body.name = name.trim()

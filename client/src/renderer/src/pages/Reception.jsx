@@ -20,7 +20,7 @@ import { hhmm } from './reception/shared'
 import useCallAnnouncer from '../components/useCallAnnouncer'
 import { useServerOnline } from '../api/connectivity'
 
-// Công cụ cho nhà phát triển (giả lập mất mạng...): chỉ hiện khi chạy với VITE_DEV_TOOLS=true, lễ tân không thấy.
+// Công cụ cho nhà phát triển (giả lập mất mạng…): chỉ hiện khi VITE_DEV_TOOLS=true.
 const DEV_TOOLS = import.meta.env.VITE_DEV_TOOLS === 'true'
 
 const VIEWS = {
@@ -45,28 +45,26 @@ function useOnline() {
   return online
 }
 
-// Trang Lễ tân: bảng điều khiển + các màn con (?view=queue | invoices | prescriptions), dùng chung các hộp thoại.
 export default function Reception() {
   const { user } = useAuth()
   usePermissions()
-  useQueueSync() // backend thật: hỏi lại hàng đợi vài giây một lần
+  useQueueSync() // chạy thật: hỏi lại hàng đợi vài giây một lần
   useEffect(() => void syncStale(), [])
   const { redFlags, stale = [] } = useQueue()
   const [staleOpen, setStaleOpen] = useState(false)
-  // Báo ở quầy: tiếng "ding" mỗi khi bác sĩ sẵn sàng nhận người tiếp — lễ tân gọi miệng bệnh nhân vào phòng.
+  // Tiếng “ding” ở quầy mỗi khi bác sĩ mời bệnh nhân.
   useCallAnnouncer()
   const [params, setParams] = useSearchParams()
   const view = VIEWS[params.get('view')] ? params.get('view') : 'home'
   const go = (v, status) => setParams(v === 'home' ? {} : { view: v, ...(status ? { status } : {}) })
 
-  // Mất mạng (navigator.onLine) hoặc không tới được máy chủ (GET /health — api/connectivity.js).
   const serverOnline = useServerOnline()
   const online = useOnline() && serverOnline
   const [simulateOffline, setSimulateOffline] = useState(false)
   // Mất kết nối → chỉ đọc: vẫn xem được, mọi nút ghi bị khoá.
   const readOnly = !online || simulateOffline
 
-  const [intake, setIntake] = useState(null) // { patient: null | hồ sơ cũ }
+  const [intake, setIntake] = useState(null)
   const [searchOpen, setSearchOpen] = useState(false)
   const [redFlag, setRedFlag] = useState(null)
   const [paying, setPaying] = useState(null)
@@ -187,7 +185,7 @@ export default function Reception() {
         <Dashboard go={go} readOnly={readOnly} onRegister={() => setIntake({ patient: null })} onSearch={() => setSearchOpen(true)} onPay={pay} />
       )}
       {view === 'queue' && <QueueView readOnly={readOnly} onPay={pay} onRx={setRxOf} />}
-      {/* Backend thật: server chưa có API liệt kê hóa đơn / đơn thuốc theo kỳ → hiện các lượt còn việc ở quầy. */}
+      {/* Chạy thật: server chỉ liệt kê hoá đơn theo ngày, không theo kỳ → dùng BillingLiveView. */}
       {view === 'invoices' &&
         (DEMO_MODE ? (
           <InvoicesView key={params.get('status') ?? ''} initialStatus={params.get('status') ?? ''} readOnly={readOnly} canVoid={canVoid} onPay={pay} />

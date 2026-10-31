@@ -1,6 +1,5 @@
-/* Màn đăng nhập (bản đầu) */
+/* Màn đăng nhập */
 
-/* ===== Login ===== */
 .login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;background:
   radial-gradient(900px 500px at 15% -10%, rgba(59,130,246,.25) 0%, transparent 60%),
   radial-gradient(800px 460px at 110% 10%, rgba(34,211,238,.18) 0%, transparent 55%),

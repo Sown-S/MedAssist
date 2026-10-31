@@ -1,9 +1,8 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { DOC_A, DOC_B } from './helpers'
 
-// Chạy queueStore như khi nối server thật (VITE_USE_MOCK=false), thay các lời gọi API bằng một "server" nhỏ trong bộ nhớ
-// làm đúng luật của backend (ERD v2.0 / v2.1): start-exam CheckedIn → Examining; đi xét nghiệm là cột lab_out_at do
-// server giữ (lập phiếu chỉ định tự đặt, lab-return xoá); release / huỷ / chốt đơn xoá cột này. Máy client không tự lưu cờ.
+// queueStore khi nối server (VITE_USE_MOCK=false), với “server” nhỏ trong bộ nhớ làm đúng luật backend: đi xét nghiệm
+// là cột lab_out_at do server giữ (lập phiếu chỉ định đặt, lab-return / release / huỷ / chốt đơn xoá) — máy không tự lưu cờ.
 let server
 let api
 let queue
@@ -53,7 +52,7 @@ afterEach(() => {
 })
 
 const visit = (id) => queue.getQueue().visits.find((v) => v.id === id)
-// Bác sĩ A nhận v1 rồi lập phiếu chỉ định trên server (POST service-orders đặt lab_out_at), máy đồng bộ lại.
+// Bác sĩ A nhận v1 rồi lập phiếu chỉ định (server đặt lab_out_at), máy đồng bộ lại.
 async function sendV1ToLabs() {
   expect((await queue.takePatient('v1', DOC_A)).ok).toBe(true)
   server[0].labOut = true
@@ -121,7 +120,7 @@ describe('Đi xét nghiệm khi chạy với server thật (server giữ cờ)',
   it('gọi khám tiếp mà bệnh nhân chưa vào → báo lại server đi xét nghiệm (lab-out)', async () => {
     await sendV1ToLabs()
     await queue.takePatient('v1', DOC_A)
-    // Trạng thái "đang mời" của lần khám tiếp: bác sĩ bấm "Không có mặt".
+    // Đang mời lại sau xét nghiệm thì bác sĩ bấm “Không có mặt”.
     queue.getQueue().visits.find((v) => v.id === 'v1').entered = false
     expect(queue.markNotPresent('v1', DOC_A).ok).toBe(true)
     await vi.waitFor(() => expect(api.labOut).toHaveBeenCalledWith('v1'))

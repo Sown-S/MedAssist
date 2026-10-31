@@ -1,16 +1,11 @@
-// ĐÂY LÀ LỚP GIẢ LẬP (demo) cho lịch sử đơn thuốc (bảng prescriptions).
-// Hàng chờ (queueStore) chỉ giữ lượt khám của HÔM NAY; khi sang ngày mới, các lượt có đơn thuốc của ngày cũ
-// được chép vào đây để lễ tân xem lại đơn theo ngày / tuần / tháng.
-// Backend thật: GET /prescriptions?from=&to=&doctor=
+// Lịch sử đơn thuốc của bản demo: hàng chờ chỉ giữ hôm nay, sang ngày mới các lượt có đơn được chép vào đây.
 import { useSyncExternalStore } from 'react'
 import { getInvoices, dayOf } from './invoiceStore'
 import { getPatients, ageOf } from './patientStore'
 
 const KEY = 'medassist_rx_history_v1'
 
-// Đơn thuốc mẫu (bác sĩ kê) — tên thuốc khớp Danh mục thuốc để tính tiền.
-// dose: liều có cấu trúc (Sáng/Trưa/Chiều/Tối × số ngày) — áp đơn mẫu là có sẵn liều, bác sĩ chỉ sửa nếu cần.
-// Cách dùng viết tiếng Việt vì đơn thuốc in cho bệnh nhân; thuốc dùng KHI CẦN không có liều cố định.
+// Đơn mẫu: tên thuốc khớp danh mục để tính tiền; cách dùng viết tiếng Việt vì đơn in cho bệnh nhân.
 const dose = (m, n, a, e, days, meal = 'after') => ({ m: m ? String(m) : '', n: n ? String(n) : '', a: a ? String(a) : '', e: e ? String(e) : '', days: String(days), meal })
 export const RX = {
   throat: [
@@ -40,7 +35,6 @@ const record = (v, day) => ({
   diagnosis: v.diagnosis ?? '',
   diagnosesExtra: v.diagnosesExtra ?? [],
   hpi: v.hpi ?? '',
-  // Ghi chép khám đi kèm đơn — để lần tái khám bác sĩ đọc lại được đã khám thấy gì, dặn gì.
   exam: v.exam ?? '',
   plan: v.plan ?? '',
   vitals: v.vitals ?? null,
@@ -53,7 +47,6 @@ const record = (v, day) => ({
   invoiceId: v.invoiceId ?? null
 })
 
-// Dữ liệu mẫu: đơn thuốc ứng với các hoá đơn mẫu của những ngày trước (bỏ hoá đơn đã huỷ).
 function seed() {
   const today = dayOf(new Date().toISOString())
   const dir = getPatients()
@@ -95,9 +88,7 @@ function commit(next) {
   history = next
   try {
     localStorage.setItem(KEY, JSON.stringify(history))
-  } catch {
-    /* chỉ giữ trong phiên */
-  }
+  } catch {/* không lưu được thì chỉ giữ trong phiên */}
   listeners.forEach((fn) => fn())
 }
 commit(history)
@@ -110,7 +101,6 @@ export function useRxHistory() {
   return useSyncExternalStore(subscribe, getRxHistory)
 }
 
-// Hàng chờ của ngày cũ sắp bị thay → lưu lại các lượt có đơn thuốc (bỏ qua lượt đã lưu).
 export function archiveVisits(visits, day) {
   const have = new Set(history.map((r) => r.id))
   const fresh = visits.filter((v) => v.rx?.length && !have.has(v.id)).map((v) => record(v, day))

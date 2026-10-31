@@ -1,20 +1,9 @@
-// NHẬT KÝ HOẠT ĐỘNG (audit log) — lớp giả lập cho bảng audit_log của backend.
-//
-// Mỗi dòng lưu CÓ CẤU TRÚC: mã hành động + tham số (hiển thị theo ngôn ngữ giao diện ở activityMessages.js),
-// loại thao tác, mức độ, đối tượng, giá trị trước / sau, kết quả, máy trạm.
-//
-// Bảo vệ nhật ký:
-//  - Chỉ GHI THÊM: module này không có hàm sửa hay xoá dòng nào (kể cả cho Quản trị viên).
-//  - Chuỗi băm: mỗi dòng chứa hash của dòng trước → sửa / xoá một dòng bất kỳ sẽ làm đứt chuỗi và bị phát hiện.
-//    Hash ở đây (FNV-1a) chỉ để minh hoạ; backend thật dùng SHA-256 + bảng chỉ cho phép INSERT (không UPDATE/DELETE),
-//    sao lưu hằng ngày ra nơi lưu trữ không ghi đè được.
-//  - Chỉ Quản trị viên được xem (trang Lịch sử hoạt động nằm trong khu Quản trị).
+// Nhật ký hoạt động của bản demo (chạy thật dùng audit_log trên server). Chỉ ghi thêm, không có hàm sửa / xoá;
+// mỗi dòng giữ hash của dòng trước nên sửa một dòng sẽ làm đứt chuỗi (FNV-1a chỉ để minh hoạ).
 import { useSyncExternalStore } from 'react'
 
 const KEY = 'medassist_audit_v2'
-// Thời gian lưu nhật ký: Cài đặt › Sao lưu & lưu trữ (settingsStore.retention.auditYears).
 
-// ---------- Máy trạm: mã cố định cho mỗi máy cài app ----------
 function workstation() {
   try {
     let ws = localStorage.getItem('medassist_ws')
@@ -38,7 +27,6 @@ function fnv(str) {
 }
 const body = (e) => JSON.stringify([e.seq, e.at, e.actor, e.action, e.type, e.level, e.result, e.target, e.before, e.after, e.params, e.ws, e.prev])
 
-// ---------- Dữ liệu mẫu (trước đây là các dòng chữ tự do trong mockData) ----------
 const ROLE = { admin: 'admin', doctor: 'doctor', reception: 'reception' }
 function seedEntries() {
   const d = (days, hms) => {
@@ -85,7 +73,6 @@ function seedEntries() {
   }))
 }
 
-// ---------- Kho ----------
 function read() {
   try {
     return JSON.parse(localStorage.getItem(KEY))
@@ -98,13 +85,10 @@ const listeners = new Set()
 function persist() {
   try {
     localStorage.setItem(KEY, JSON.stringify(entries))
-  } catch {
-    /* chỉ giữ trong phiên */
-  }
+  } catch {/* không lưu được thì chỉ giữ trong phiên */}
   listeners.forEach((fn) => fn())
 }
 
-// Loại thao tác & mức độ mặc định của từng mã hành động.
 export const ACTION_META = {
   'auth.login': ['login', 'info'],
   'auth.logout': ['logout', 'info'],
@@ -238,7 +222,7 @@ export function logEvent(user, action, opts = {}) {
   persist()
 }
 
-// Kiểm tra toàn vẹn: tính lại hash từng dòng và nối chuỗi. Trả về số thứ tự dòng đầu tiên bị sai (nếu có).
+// Tính lại hash từng dòng; trả về số thứ tự dòng đầu tiên bị sai (nếu có).
 export function verifyChain(list = entries) {
   const asc = [...list].sort((a, b) => a.seq - b.seq)
   let prev = '0'

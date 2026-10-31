@@ -9,14 +9,13 @@ import { estimateTotal } from '../api/billing'
 import { ticketNo } from './queuePrint'
 import { fmt, dmy } from '../pages/reception/shared'
 
-// Lượt chưa đóng từ những ngày trước (backend: GET /visits/stale) — Lễ tân xử lý đầu ngày:
-//  - bệnh nhân quay lại trả tiền → "Thu tiền" (lượt về hàng chờ hôm nay ở bước Chờ thanh toán);
-//  - còn lại → "Đóng lượt" kèm lý do (POST /visits/stale/cancel). Còn lượt chưa đóng thì bệnh nhân chưa tiếp đón lại được.
+// Lượt chưa đóng từ những ngày trước — Lễ tân xử lý đầu ngày: bệnh nhân quay lại trả tiền → Thu tiền;
+// còn lại → Đóng lượt kèm lý do. Còn lượt chưa đóng thì bệnh nhân chưa tiếp đón lại được.
 export default function StaleVisitsModal({ readOnly, onClose, onPay }) {
   const { user } = useAuth()
   const { showToast } = useToast()
   const { stale = [] } = useQueue()
-  const [closing, setClosing] = useState(null) // id lượt đang chọn lý do
+  const [closing, setClosing] = useState(null)
   const [reason, setReason] = useState('left_waiting')
   const [note, setNote] = useState('')
 

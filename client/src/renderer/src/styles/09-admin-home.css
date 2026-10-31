@@ -1,9 +1,8 @@
 /* Trang chủ quản trị, chọn ngôn ngữ ở đăng nhập */
 
-/* ===== Trang chủ quản trị ===== */
 .badge.warn{background:var(--priority-soft);color:#FCD34D;}
 .dash-grid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:14px;margin-bottom:14px;align-items:stretch;}
-/* Vùng nội dung Admin đã trừ thanh bên 232px: dưới ~1200px cột phải quá hẹp → xếp một cột. */
+/* Vùng nội dung Admin đã trừ sidebar 232px: dưới ~1200px cột phải quá hẹp → xếp một cột. */
 @media (max-width:1200px){.dash-grid{grid-template-columns:minmax(0,1fr);}}
 .dash-stack{display:flex;flex-direction:column;gap:14px;}
 .dash-empty{margin:0;font-size:14px;color:var(--ink-soft);}
@@ -33,7 +32,7 @@
 .shortcut-grid .btn{text-align:left;color:var(--ink);}
 table.dt tr.row-warn td{color:#FCA5A5;}
 
-/* ===== Chọn ngôn ngữ ở trang đăng nhập ===== */
+/* Chọn ngôn ngữ ở trang đăng nhập */
 .login-lang{display:flex;justify-content:center;gap:6px;margin-top:14px;}
 .login-lang button{padding:5px 12px;border-radius:8px;border:1px solid transparent;background:none;color:#CBD5E1;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;}
 .login-lang button:hover{background:var(--surface-hover);}

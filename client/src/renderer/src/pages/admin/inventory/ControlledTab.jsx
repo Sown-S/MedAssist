@@ -5,7 +5,6 @@ import { stockOf } from '../../../api/inventoryStore'
 import { Empty } from '../ai/ui'
 import { exportCsv, fmtDate, fmtDateTime } from './shared'
 
-// ======================= Sổ theo dõi thuốc kiểm soát đặc biệt =======================
 export function monthOptions() {
   const out = []
   const d = new Date()

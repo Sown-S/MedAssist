@@ -5,7 +5,7 @@ import { PAPERS, PRINT_DOCS } from '../../../api/settingsStore'
 import { useDevice, setDevice, getDevice } from '../../../api/deviceSettings'
 import { printHtml, fmtMoney } from '../inventory/shared'
 
-// Cài đặt riêng máy này (khổ giấy, bảng gọi bệnh nhân) — lưu ngay trên máy, không qua nút Lưu chung.
+// Cài đặt riêng máy này — lưu ngay, không qua nút Lưu chung.
 export function DeviceTab({ draft }) {
   const dev = useDevice()
   return (

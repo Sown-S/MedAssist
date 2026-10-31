@@ -1,6 +1,5 @@
-/* Sổ quỹ, ca thu ngân */
+/* Sổ quỹ */
 
-/* ===== Sổ quỹ ===== */
 .cash-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:14px;}
 .cash-summary .stat-card .val.in{color:#4ADE80;}
 .cash-summary .stat-card .val.out{color:#FCA5A5;}

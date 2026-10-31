@@ -2,9 +2,8 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { DOC_A, DOC_B } from './helpers'
 import { groupProposals, applicable } from '../src/renderer/src/api/vitals'
 
-// ERD v2.0 phía giao diện khi nối server thật: mời vào phòng (call-next / call / huỷ mời) và ca cờ đỏ lấy từ hàng chờ
-// (không lưu ở máy). "Server" nhỏ trong bộ nhớ làm đúng luật backend: mỗi bác sĩ một lời mời (409 ACTIVE_CALL),
-// hết người → 409 QUEUE_EMPTY, không giành người bác sĩ khác đang mời (CALLED_BY_OTHER).
+// Mời vào phòng và ca cờ đỏ khi nối server (ERD v2.0). “Server” trong bộ nhớ làm đúng luật: mỗi bác sĩ một lời mời
+// (409 ACTIVE_CALL), hết người → 409 QUEUE_EMPTY, không giành người bác sĩ khác đang mời (CALLED_BY_OTHER).
 let server
 let api
 let queue

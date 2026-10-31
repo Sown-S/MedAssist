@@ -1,11 +1,9 @@
-// Nhật ký hoạt động trên server (chỉ Admin, chỉ dùng khi tắt giả lập): GET /api/v1/admin/audit-logs (+ /export).
-// Nhật ký chỉ-thêm, CSDL chặn sửa / xoá. Xem và xuất đều được server ghi lại (VIEW / EXPORT).
+// Nhật ký hoạt động trên server (chỉ Admin): GET /admin/audit-logs và /export. Xem và xuất đều được server ghi lại.
 import { apiGet, ApiError } from './client'
 import { getBaseUrl, tokenStore } from './serverConfig'
 
 const BASE = '/api/v1/admin/audit-logs'
 export const ACTION_TYPES = ['LOGIN', 'LOGIN_FAILED', 'LOGOUT', 'VIEW', 'CREATE', 'UPDATE', 'DELETE', 'EXPORT', 'APPROVE', 'REJECT', 'RETIRE', 'AI_ASSESSMENT']
-// Nhãn và màu của từng loại hành động — dùng chung cho trang Lịch sử hoạt động và trang chủ Quản trị.
 export const ACTION_LABEL = {
   LOGIN: 'Sign-in',
   LOGIN_FAILED: 'Failed sign-in',
@@ -22,7 +20,7 @@ export const ACTION_LABEL = {
 }
 export const ACTION_TONE = { LOGIN_FAILED: 'low', DELETE: 'low', RETIRE: 'warn', REJECT: 'warn', APPROVE: 'ok', EXPORT: 'info', AI_ASSESSMENT: 'info' }
 
-// filters: { username, action_type, target_entity, from, to } — from / to là ngày yyyy-mm-dd (giờ Việt Nam).
+// from / to là ngày yyyy-mm-dd theo giờ Việt Nam.
 function query(filters, extra = {}) {
   const p = new URLSearchParams()
   if (filters.username?.trim()) p.set('username', filters.username.trim())
@@ -36,8 +34,7 @@ function query(filters, extra = {}) {
 
 export const listAuditLogs = (filters, limit, offset) => apiGet(`${BASE}?${query(filters, { limit, offset })}`)
 
-// Xuất .xlsx (mặc định) hoặc .csv: tải dạng nhị phân (không đọc thành chữ, giữ BOM của CSV), lưu bằng tên server đặt.
-// Trả { truncated } — server cắt ở 50.000 dòng và báo qua header X-Export-Truncated.
+// Tải dạng nhị phân để giữ BOM của CSV; server cắt ở 50.000 dòng và báo qua header X-Export-Truncated.
 export async function exportAuditLogs(filters, format = 'xlsx') {
   const token = await tokenStore.get('access')
   const res = await fetch(getBaseUrl() + `${BASE}/export?${query(filters, { format })}`, { headers: token ? { Authorization: `Bearer ${token}` } : {} })

@@ -4,8 +4,7 @@ import { useToast } from '../../context/ToastContext'
 import { translate } from '../../i18n'
 import { ACTION_TYPES, ACTION_LABEL, ACTION_TONE as TONE, listAuditLogs, exportAuditLogs } from '../../api/auditApi'
 
-// Nhật ký hoạt động với backend thật (US09, FR09): mọi lượt xem hồ sơ, đăng nhập, thay đổi dữ liệu, duyệt tri thức,
-// đánh giá AI. Bệnh nhân / lượt khám chỉ ghi tên trường thay đổi, không ghi giá trị (Quy định v5 mục 7).
+// Nhật ký hoạt động trên server (US09). Với bệnh nhân / lượt khám chỉ ghi tên trường thay đổi, không ghi giá trị (Quy định v5 §7).
 const PAGE = 50
 const EMPTY = { username: '', action_type: '', target_entity: '', from: '', to: '' }
 const when = (iso) => new Date(iso).toLocaleString('vi-VN', { dateStyle: 'short', timeStyle: 'medium' })

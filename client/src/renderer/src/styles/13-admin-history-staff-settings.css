@@ -1,6 +1,6 @@
-/* Lịch sử hoạt động, tài khoản, phân quyền, cài đặt hệ thống */
+/* Lịch sử hoạt động, tài khoản, phân quyền, cài đặt */
 
-/* ===== Lịch sử hoạt động ===== */
+/* Lịch sử hoạt động */
 .log-filters{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px;}
 .log-filters .ai-search{flex:1 1 260px;}
 .log-date{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--ink-soft);}
@@ -15,7 +15,7 @@
 .ai-sug{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:14px;margin-top:4px;}
 .ai-sug-actions{display:inline-flex;gap:4px;margin-left:auto;}
 
-/* ===== Quản lý tài khoản ===== */
+/* Tài khoản nhân viên */
 .staff-callout{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px;padding:14px 16px;border-color:rgba(251,191,36,.35);}
 .staff-callout > svg{width:20px;height:20px;color:#FCD34D;flex-shrink:0;}
 .staff-callout > div{flex:1 1 260px;color:var(--ink);}
@@ -28,7 +28,7 @@
 .staff-secret-pw{font-size:17px !important;font-weight:700;letter-spacing:.04em;}
 .staff-secret .btn{margin-left:auto;display:inline-flex;align-items:center;gap:6px;}
 
-/* ===== Phân quyền vai trò ===== */
+/* Phân quyền */
 .role-radio-row{align-items:flex-start;}
 .role-radio-row input{margin-top:3px;}
 .role-radio-txt{display:flex;flex-wrap:wrap;align-items:center;gap:6px;flex:1;}
@@ -54,7 +54,7 @@
 .perm-diff li.add{color:#86EFAC;}
 .perm-diff li.rem{color:#FCA5A5;}
 
-/* ===== Cài đặt hệ thống ===== */
+/* Cài đặt hệ thống */
 .settings-page{padding-bottom:70px;}
 .set-dot{width:7px;height:7px;border-radius:50%;background:var(--priority);display:inline-block;}
 .set-intro{margin:0 0 12px;}

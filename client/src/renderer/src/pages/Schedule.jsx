@@ -17,7 +17,7 @@ export default function Schedule() {
   const [activeDay, setActiveDay] = useState(0)
   const [searchOpen, setSearchOpen] = useState(false)
   const [intakeOpen, setIntakeOpen] = useState(false)
-  const [redFlag, setRedFlag] = useState(null) // bệnh nhân đang được cảnh báo dấu hiệu nguy hiểm
+  const [redFlag, setRedFlag] = useState(null)
 
   return (
     <div className="page">

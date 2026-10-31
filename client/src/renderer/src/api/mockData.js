@@ -1,11 +1,6 @@
-// Toàn bộ dữ liệu giả trước đây nằm rải rác trong Reception.jsx / Doctor.jsx / các trang admin
-// giờ gom về 1 chỗ. Khi ghép API thật, các hằng số này bị xoá dần — nhưng CẤU TRÚC dữ liệu
-// (tên field: id, name, meta, time, priority, details...) nên giữ nguyên để phía backend
-// biết chính xác cần trả JSON hình dạng gì cho từng trang.
+// Dữ liệu mẫu cho các endpoint đọc của bản demo (apiGet trả về khi giả lập).
 
-// Hàng chờ tiếp đón: xem api/queueStore.js (giờ đến tính lùi từ thời điểm mở app).
 
-// ===== Lịch hẹn (Schedule) =====
 const SCHEDULE_DAYS = ['Tue · 28/08', 'Wed · 29/08', 'Thu · 30/08', 'Fri · 31/08']
 const SCHEDULE_SLOTS = [
   { time: '08:00', name: 'Đặng Thị Kim', note: 'General check-up · Checked in', late: false },
@@ -18,8 +13,7 @@ const SCHEDULE_SLOTS = [
 ]
 
 
-// ===== Báo cáo (Reports) =====
-// Cùng định dạng số thô với GET /api/v1/reports/summary (xem api/reportsApi.js). Giả lập không lọc theo ngày.
+// Cùng định dạng với GET /reports/summary; giả lập không lọc theo ngày.
 const daysAgo = (n) => {
   const d = new Date()
   d.setDate(d.getDate() - n)
@@ -42,13 +36,8 @@ const REPORT_SUMMARY = () => ({
   }
 })
 
-// Bác sĩ: hàng đợi / đơn thuốc dùng queueStore + rxHistory. Cận lâm sàng: phiếu chỉ định in giấy (LabOrderModal).
-// Quản trị: Hồ sơ bệnh nhân / Hoá đơn đọc patientStore + invoiceStore.
-// Phân quyền vai trò: xem api/permissionStore.js (3 vai trò cố định, có lưu & nhật ký).
 
-// "path" ở đây được đặt tên theo đúng quy ước REST mà Sơn nhiều khả năng sẽ dùng bên FastAPI
-// (GET /schedule/slots, GET /reports/summary...).
-// Các trang gọi apiGet('/api/v1/reports/summary?...') — không cần biết là mock hay thật (giả lập bỏ qua phần ?query).
+// Giả lập bỏ qua phần ?query của đường dẫn.
 export const MOCK_ENDPOINTS = {
   '/schedule/days': () => SCHEDULE_DAYS,
   '/schedule/slots': () => SCHEDULE_SLOTS,

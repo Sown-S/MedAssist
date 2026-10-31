@@ -41,12 +41,11 @@ const SORTS = [
   { key: 'amount', label: 'Highest amount' }
 ]
 
-// Doanh thu = hoá đơn ĐÃ THU (không tính hoá đơn huỷ), tính theo ngày thu tiền.
+// Doanh thu = hoá đơn đã thu (không tính hoá đơn huỷ), theo ngày thu tiền.
 const collectedIn = (invoices, range) => invoices.filter((x) => x.status === 'paid' && inRange(dayOf(x.paidAt ?? x.createdAt), range))
 const sumOf = (list) => list.reduce((s, x) => s + x.total, 0)
 
-// Hoá đơn & thanh toán: doanh thu theo ngày / tuần / tháng, ai đã thanh toán, ai đang chờ tiền chuyển khoản, ai chưa thanh toán.
-// canCollect = false: Quản trị viên xem cùng dữ liệu nhưng không thu tiền / xác nhận chuyển khoản (việc của lễ tân).
+// canCollect = false: Quản trị viên xem cùng dữ liệu nhưng không thu tiền / xác nhận chuyển khoản.
 export default function InvoicesView({ readOnly, canVoid, onPay, onNew, initialStatus = '', canCollect = true }) {
   const { user } = useAuth()
   const { visits } = useQueue()
@@ -67,7 +66,7 @@ export default function InvoicesView({ readOnly, canVoid, onPay, onNew, initialS
     setDate(d)
   }
 
-  // Hoá đơn tự tạo ở trạng thái pending khi bác sĩ chốt đơn; chỉ lượt cũ (dữ liệu trước đây) mới có thể chưa có hoá đơn.
+  // Hoá đơn tự tạo khi chốt đơn; chỉ lượt của dữ liệu cũ mới có thể chưa có hoá đơn.
   const unpaid = inRange(today, range)
     ? visits
         .filter((v) => v.status === ST.PRESCRIBED && !activeInvoiceOf(v.id))
@@ -77,7 +76,7 @@ export default function InvoicesView({ readOnly, canVoid, onPay, onNew, initialS
     ...unpaid,
     ...invoices
       .filter((x) => inRange(dayOf(x.createdAt), range))
-      // pending = "Chưa thanh toán" (hoặc "Chờ chuyển khoản" khi đã chọn hình thức chuyển khoản mà tiền chưa về).
+      // pending đã chọn chuyển khoản mà tiền chưa về = “Chờ chuyển khoản”.
       .map((x) => ({ key: x.id, status: x.status === 'pending' ? (x.method === 'transfer' ? 'processing' : 'unpaid') : x.status, visit: x.status === 'pending' ? visits.find((v) => v.id === x.visitId) : null, invoice: x, name: x.name, phone: x.phone, patientId: x.patientId, ticket: x.ticket, amount: x.total, at: x.paidAt ?? x.createdAt, doctor: x.doctor }))
   ]
   const byStatus = (s) => rows.filter((r) => r.status === s)
@@ -91,7 +90,7 @@ export default function InvoicesView({ readOnly, canVoid, onPay, onNew, initialS
           ? a.at.localeCompare(b.at)
           : sort === 'amount'
             ? b.amount - a.amount
-            : // Việc cần làm lên đầu: chưa thanh toán, rồi đang chờ chuyển khoản; còn lại mới nhất trước.
+            : // việc cần làm lên đầu, còn lại mới nhất trước
               URGENT[a.status] - URGENT[b.status] || b.at.localeCompare(a.at)
     )
 
@@ -445,8 +444,8 @@ function ConfirmTransfer({ inv, user, onClose }) {
   )
 }
 
-// Huỷ hoá đơn. Hoá đơn ĐÃ THU: Quản trị viên phải xác nhận tại quầy (nhập tài khoản + mật khẩu), tránh thu tiền rồi tự huỷ.
-// Hoá đơn đang chờ chuyển khoản: lễ tân tự huỷ được. Có thuốc đã xuất → hỏi bệnh nhân đã trả lại thuốc chưa để hoàn kho.
+// Huỷ hoá đơn đã thu cần Quản trị viên xác nhận tại quầy (tránh thu tiền rồi tự huỷ); hoá đơn chờ chuyển khoản
+// lễ tân tự huỷ được. Có thuốc đã xuất → hỏi bệnh nhân đã trả lại thuốc chưa để hoàn kho.
 function CancelInvoice({ inv, user, onClose }) {
   const { showToast } = useToast()
   const [reason, setReason] = useState('')

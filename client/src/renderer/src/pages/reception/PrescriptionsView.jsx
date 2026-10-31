@@ -17,7 +17,7 @@ import { ticketNo } from '../../components/queuePrint'
 import { fmt, hhmm, dmy, ymd, periodRange, inRange, periodLabel, PAY_STATUS } from './shared'
 import { normalizeVitals } from '../../api/vitals'
 
-// Trạng thái thanh toán của một đơn: lượt khám hôm nay theo hàng chờ, đơn ngày cũ theo hoá đơn đã lập.
+// Lượt hôm nay theo hàng chờ, đơn ngày cũ theo hoá đơn đã lập.
 function payOf(r) {
   if (r.live) return payStatusOf(r.v) ?? 'unpaid'
   const inv = r.v.invoiceId && invoiceById(r.v.invoiceId)
@@ -31,9 +31,8 @@ const STATUS_FILTERS = [
   { key: 'paid', label: 'Paid' }
 ]
 
-// Đơn thuốc bác sĩ kê — lễ tân CHỈ XEM để đối chiếu khi lập hoá đơn, không sửa.
-// Hôm nay lấy từ hàng chờ; các ngày trước lấy từ lịch sử đơn thuốc (rxHistory) → lọc được theo ngày / tuần / tháng.
-// showReviews: màn của bác sĩ — hiện kết quả đánh giá lại gần nhất của từng đơn.
+// Lễ tân chỉ xem đơn để đối chiếu. Hôm nay lấy từ hàng chờ, ngày trước từ rxHistory.
+// showReviews: màn của bác sĩ — hiện kết quả đánh giá lại gần nhất.
 export default function PrescriptionsView({ readOnly, onPay, onRx, initialDoctor = '', showReviews = false }) {
   const { visits } = useQueue()
   const history = useRxHistory()
@@ -213,8 +212,7 @@ export default function PrescriptionsView({ readOnly, onPay, onRx, initialDoctor
   )
 }
 
-// Chi tiết đơn thuốc (chỉ xem): thông tin bệnh nhân, cảnh báo dị ứng / bệnh nền, từng thuốc + cách dùng, tạm tính.
-// children: phần riêng của từng vai trò hiện dưới bảng thuốc (VD bác sĩ đánh giá lại đơn — RxReviewPanel).
+// children: phần riêng của từng vai trò hiện dưới bảng thuốc.
 export function RxDetail({ visit, readOnly, onClose, onPay, children }) {
   const items = buildItems(visit)
   return (

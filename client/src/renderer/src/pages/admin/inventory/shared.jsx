@@ -74,7 +74,7 @@ export function ExpiryCell({ batch }) {
   )
 }
 
-// Xuất CSV có BOM UTF-8 để Excel mở đúng tiếng Việt. Tiêu đề cột được dịch theo ngôn ngữ đang chọn.
+// Có BOM UTF-8 để Excel mở đúng tiếng Việt; tiêu đề cột dịch theo ngôn ngữ đang chọn.
 export function exportCsv(fileName, headers, rows) {
   const esc = (v) => {
     const s = v == null ? '' : String(v)
@@ -89,7 +89,6 @@ export function exportCsv(fileName, headers, rows) {
   URL.revokeObjectURL(url)
 }
 
-// Hiện tối đa PAGER_WINDOW nút trang quanh trang hiện tại (kèm trang đầu / cuối); nhiều trang thì có ô nhảy tới trang.
 const PAGER_WINDOW = 5
 export function Pager({ page, pages, total, from, to, onPage }) {
   const [jump, setJump] = useState('')
@@ -156,7 +155,6 @@ export function SortTh({ k, sort, onSort, children, className }) {
   )
 }
 
-// Phần đầu trang in: logo + thông tin phòng khám (Cài đặt › Phòng khám) + dòng tiêu đề thêm (Cài đặt › In ấn).
 export function printHeaderHtml(set = getSettings()) {
   const c = set.clinic
   const p = set.print
@@ -186,12 +184,9 @@ export const PRINT_CSS =
   '.pf{margin-top:18px;border-top:1px dashed #666;padding-top:6px;text-align:center;font-size:11px;font-style:italic}' +
   '.thermal body,.thermal{margin:4px;font-size:11px}.thermal .ph{flex-direction:column;text-align:center}.thermal .sign{display:none}'
 
-// In phiếu (kiểm kho, biên bản huỷ, hoá đơn...): dựng HTML trong 1 iframe ẩn rồi gọi hộp thoại in của hệ điều hành.
-// Không dùng window.open vì cửa sổ Electron chặn mở cửa sổ mới (setWindowOpenHandler → deny).
-// doc = loại giấy tờ (PRINT_DOCS) → khổ giấy lấy theo Cài đặt › In ấn; thêm phần đầu & chân trang chung.
-// set: cài đặt dùng để in — mặc định là bản đã lưu; trang Cài đặt truyền bản nháp để in thử.
+// In bằng iframe ẩn vì cửa sổ Electron chặn mở cửa sổ mới (setWindowOpenHandler → deny).
+// Khổ giấy theo loại giấy tờ (doc) là cài đặt riêng máy; set: cài đặt dùng để in — trang Cài đặt truyền bản nháp để in thử.
 export function printHtml(title, body, doc = 'other', set = getSettings()) {
-  // Khổ giấy là cài đặt RIÊNG MÁY (máy quầy in nhiệt, máy bác sĩ in A5...) — xem api/deviceSettings.js.
   const paper = PAPERS.find((x) => x.key === (getDevice().papers[doc] ?? 'A4')) ?? PAPERS[0]
   const thermal = paper.key.endsWith('mm')
   const frame = document.createElement('iframe')

@@ -10,15 +10,13 @@ import { exportCsv, fmtDateTime, unitLabel } from './inventory/shared'
 import { SCHEMAS } from './catalogs/schemas'
 import { exportCatalog, readCatalogFile, ImportModal } from './catalogs/catalogCsv'
 
-// Trang trung tâm của Quản lý danh mục: mỗi dòng là 1 danh mục, bấm để mở trang chi tiết.
-// Thuốc & vật tư có trang riêng (dùng chung dữ liệu với Kho).
+// Trang trung tâm của Quản lý danh mục; Thuốc & vật tư có trang riêng (dùng chung dữ liệu với Kho).
 const ORDER = [
   { group: 'Administrative catalogs', keys: ['general', 'address'] },
   { group: 'Medical catalogs', keys: ['icd', '@drugs', 'services', 'packages', 'labs', 'units', 'routes', 'rxtemplates', 'advice'] }
 ]
 const latest = (list, k = 'updatedAt') => list.reduce((m, r) => (r[k] > m ? r[k] : m), '')
 
-// Trạng thái từng danh mục: "Cần xem lại" kèm lý do cụ thể.
 function review(key, cats, inv) {
   const r = []
   if (key === 'address') {
@@ -45,7 +43,7 @@ function refActive(ref, cats) {
 }
 
 export default function CatalogPage({ onNavigate }) {
-  // Backend thật: Dịch vụ, Xét nghiệm, Gói khám lấy từ server (ERD v2.1).
+  // Chạy thật: Dịch vụ, Xét nghiệm, Gói khám lấy từ server.
   const local = useCatalogs()
   const lc = useLiveCatalog(!DEMO_MODE)
   const cats = useMemo(
@@ -66,7 +64,6 @@ export default function CatalogPage({ onNavigate }) {
     return { title: s.title, desc: s.desc, list: cats[key], page: 'cat-' + key, last: latest(cats[key]) }
   }
 
-  // Tìm nhanh 1 mã / 1 tên trong mọi danh mục.
   const results = useMemo(() => {
     const t = q.trim().toLowerCase()
     if (t.length < 2) return []

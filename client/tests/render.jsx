@@ -6,8 +6,8 @@ import { AuthProvider, useAuth } from '../src/renderer/src/context/AuthContext.j
 import { ToastProvider } from '../src/renderer/src/context/ToastContext.jsx'
 import ErrorBoundary from '../src/renderer/src/components/ErrorBoundary.jsx'
 
-// Dựng một trang như trong app: đã đăng nhập bằng `user` (hình dạng giống tests/helpers.js), đứng ở `path`.
-// Bọc ErrorBoundary như App.jsx → trang lỗi lúc dựng sẽ hiện "Something went wrong on this screen" để test bắt được.
+// Dựng một trang như trong app: đã đăng nhập bằng `user`, đứng ở `path`, bọc ErrorBoundary như App.jsx
+// để trang lỗi lúc dựng hiện thông báo cho test bắt được.
 function SignedIn({ user, children }) {
   const { user: current, startSession } = useAuth()
   useEffect(() => {

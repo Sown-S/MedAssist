@@ -1,9 +1,6 @@
-// QUYỀN THEO VAI TRÒ — cố định, không chỉnh trên giao diện (backend dùng 3 vai trò cố định: Physician, Nurse/Lễ tân, Admin).
-//
-// Quyền chỉ có ý nghĩa khi MÁY CHỦ ép: mỗi endpoint FastAPI kiểm tra vai trò của người gọi (require_roles) và trả 403
-// FORBIDDEN nếu không được phép. Bảng dưới chỉ để ẩn / khoá nút cho dễ dùng, không phải lớp bảo vệ.
+// Quyền theo 3 vai trò cố định của backend. Bảng này chỉ để ẩn / khoá nút; lớp bảo vệ thật là server
+// (mỗi endpoint kiểm tra vai trò và trả 403).
 
-// 3 vai trò cố định theo Proposal.
 export const ROLE_KEYS = ['doctor', 'reception', 'admin']
 
 export const ACTIONS = [
@@ -42,7 +39,7 @@ export const SPECIALS = [
 const all = (m) => MODULES.find((x) => x.key === m).actions.map((a) => m + '.' + a)
 const some = (m, ...acts) => acts.map((a) => m + '.' + a)
 
-// QUYỀN TỐI THIỂU: Quản trị viên quản lý hệ thống, kho và xem nhật ký — KHÔNG khám, kê đơn hay xem dữ liệu bệnh nhân
+// Quyền tối thiểu: Quản trị viên quản lý hệ thống, kho, nhật ký — không khám, kê đơn hay xem dữ liệu bệnh nhân
 // (Quy định v5 §7). Duyệt quy tắc AI là việc của bác sĩ.
 const GRANTS = {
   doctor: [
@@ -84,7 +81,7 @@ const GRANTS = {
 }
 const SETS = Object.fromEntries(ROLE_KEYS.map((r) => [r, new Set(GRANTS[r])]))
 
-// Nhãn hiển thị của 1 mã quyền (tiếng Anh — được dịch khi hiển thị). Dùng cho dữ liệu cũ trong nhật ký.
+// Dùng cho dữ liệu cũ trong nhật ký.
 export function permLabel(k) {
   const sp = SPECIALS.find((s) => s.key === k)
   if (sp) return [sp.label]
@@ -93,6 +90,6 @@ export function permLabel(k) {
 }
 
 export const getPermissions = () => GRANTS
-// Giữ chữ ký cũ để các trang không phải sửa; quyền không đổi lúc chạy nên chỉ trả bảng cố định.
+// Quyền không đổi lúc chạy nên trả bảng cố định; giữ tên hook cũ để các trang không phải sửa.
 export const usePermissions = () => GRANTS
 export const can = (roleKey, perm) => !!SETS[roleKey]?.has(perm)

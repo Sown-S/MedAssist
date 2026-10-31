@@ -6,7 +6,7 @@ import { translate } from '../../../i18n'
 import { receiveStock, daysLeft, todayISO } from '../../../api/inventoryStore'
 import { unitLabel, fmtMoney } from './shared'
 
-// Nhập kho = tạo 1 LÔ mới (backend: POST /inventory/batches). Không quản lý nhà cung cấp / công nợ (Proposal §6.2).
+// Nhập kho = tạo một lô mới. Không quản lý nhà cung cấp / công nợ (ngoài phạm vi).
 export default function ReceiveModal({ drug, drugs, user, onClose }) {
   const { showToast } = useToast()
   const [f, setF] = useState(null)
@@ -35,7 +35,7 @@ export default function ReceiveModal({ drug, drugs, user, onClose }) {
   async function save() {
     setTried(true)
     if (errors.length) return
-    // Backend thật trả Promise { ok, error } (vd số lô đã có); bản giả lập trả id ngay.
+    // Chạy thật trả Promise { ok, error } (VD số lô đã có).
     const r = await receiveStock({ drugId: f.drugId, lot: f.lot.trim().toUpperCase(), expiry: f.expiry, qty, cost }, user)
     if (r?.ok === false) return showToast(translate(r.error))
     showToast('Stock received')

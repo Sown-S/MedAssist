@@ -1,6 +1,5 @@
 
 
-// Khi nào thay đổi có hiệu lực.
 export const EFFECTS = {
   now: { label: 'Applies immediately', cls: 'ok' },
   signin: { label: 'From next sign-in', cls: 'info' },
@@ -8,7 +7,7 @@ export const EFFECTS = {
   restart: { label: 'Requires restart', cls: 'warn' }
 }
 
-// Nhãn (tiếng Anh, dịch khi hiển thị) + hiệu lực của từng cài đặt. Nhãn cũng dùng cho nhật ký.
+// Nhãn tiếng Anh (dịch khi hiển thị, dùng cả cho nhật ký) + thời điểm có hiệu lực của từng cài đặt.
 export const FIELDS = {
   'clinic.name': ['Clinic name', 'now'],
   'clinic.address': ['Address', 'now'],
@@ -54,7 +53,6 @@ export const FIELDS = {
   'ops.announceName': ['Read the patient’s name aloud when calling', 'now']
 }
 
-// Ô cài đặt: nhãn + nhãn hiệu lực + dấu "đã sửa" + lỗi.
 export function Field({ path, hint, error, changed, wide, children }) {
   const [label, effect] = FIELDS[path] ?? [path, 'now']
   const ef = EFFECTS[effect]

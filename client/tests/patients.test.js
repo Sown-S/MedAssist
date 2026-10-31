@@ -6,7 +6,7 @@ beforeEach(async () => {
   s = await fresh()
 })
 
-// Ngày sinh dd/mm/yyyy ±n năm so với hôm nay (cùng ngày, cùng tháng).
+// Ngày sinh dd/mm/yyyy cách hôm nay n năm (± dayShift ngày).
 const dobYearsAgo = (years, dayShift = 0) => {
   const d = new Date()
   d.setFullYear(d.getFullYear() - years)

@@ -1,7 +1,7 @@
 import Icon from './Icon'
 import { translate } from '../i18n'
 
-// Nhắc nhở CHỈ ĐỌC về dị ứng thuốc và bệnh nền — hiện ngay khi mở hồ sơ / tiếp đón. Lễ tân không sửa ở đây.
+// Chỉ đọc; lễ tân không sửa dị ứng / bệnh nền ở đây.
 export default function PatientAlerts({ p, compact = false }) {
   const allergies = p.allergies?.trim()
   const history = p.history?.trim()

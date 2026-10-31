@@ -21,13 +21,13 @@ const TABS = [
   { key: 'settings', label: 'Module settings' }
 ]
 
-// Backend thật: tri thức OKF ở server, duyệt theo bản phát hành (knowledge/KnowledgeLive). Chế độ giả lập giữ các tab demo bên dưới.
+// Chạy thật: tri thức OKF ở server, duyệt theo bản phát hành (KnowledgeLive).
 export default function AIConfigPage({ reviewOnly = false }) {
   if (!DEMO_MODE) return <KnowledgeLive reviewOnly={reviewOnly} />
   return <AIConfigDemo reviewOnly={reviewOnly} />
 }
 
-// reviewOnly: bác sĩ vào khu Admin bằng tài khoản của mình — chỉ thấy hàng duyệt tri thức (không sửa quy tắc, không cài đặt).
+// reviewOnly: bác sĩ chỉ thấy hàng duyệt.
 function AIConfigDemo({ reviewOnly = false }) {
   const [tab, setTab] = useState(reviewOnly ? 'review' : 'rules')
   const { user } = useAuth()

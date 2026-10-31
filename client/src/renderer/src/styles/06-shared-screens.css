@@ -1,11 +1,11 @@
-/* Khung app/RBAC, hộp xác nhận & tìm kiếm, cờ đỏ, mất mạng, thu chi, lịch hẹn, báo cáo, cận lâm sàng, ICD, toast, phân trang */
+/* Màn dùng chung: hộp xác nhận, tìm kiếm, cờ đỏ, mất mạng, báo cáo, cận lâm sàng, ICD, toast, phân trang */
 
-/* ===== App shell / RBAC ===== */
+/* App shell */
 #appShell{display:none;}
 #appShell.show{display:block;}
 .lock-badge{display:inline-flex;align-items:center;gap:4px;font-size:11.5px;color:var(--ink-soft);background:var(--surface-alt);padding:3px 8px;border-radius:20px;font-family:'IBM Plex Mono',monospace;}
 
-/* ===== Confirm / search modals reuse modal-overlay ===== */
+/* Hộp xác nhận / tìm kiếm */
 .confirm-box{background:var(--solid);border:1px solid var(--border);border-radius:18px;padding:20px 22px;width:300px;text-align:center;box-shadow:0 30px 70px -20px rgba(0,0,0,.6);}
 .confirm-box .ic{font-size:23px;margin-bottom:8px;}
 .confirm-box p{font-size:14.5px;margin:0 0 16px;color:var(--ink);}
@@ -23,7 +23,7 @@
 .search-table td{padding:9px 10px;font-size:13.5px;border-bottom:1px solid var(--border);color:var(--ink);}
 .search-table tr:hover td{background:var(--surface-hover);}
 
-/* ===== Red-flag escalation ===== */
+/* Cờ đỏ */
 .redflag-overlay{position:fixed;inset:0;background:rgba(69,10,10,.82);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;z-index:80;padding:20px;}
 .redflag-overlay.show{display:flex;}
 .redflag-box{background:var(--solid);border:1px solid rgba(239,68,68,.3);border-radius:20px;padding:30px 28px;width:460px;max-width:100%;border-top:6px solid var(--warn);text-align:center;box-shadow:0 30px 70px -20px rgba(0,0,0,.6);}
@@ -33,16 +33,16 @@
 .redflag-box .note{font-size:12.5px;color:var(--ink-soft);margin-bottom:18px;}
 .redflag-actions{display:flex;flex-direction:column;gap:8px;}
 
-/* ===== Offline banner ===== */
+/* Mất kết nối */
 .offline-banner{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:var(--solid);border:1px solid var(--border);color:#fff;padding:10px 18px;border-radius:30px;font-size:13.5px;display:none;align-items:center;gap:9px;z-index:70;box-shadow:0 20px 50px -15px rgba(0,0,0,.6);}
 .offline-banner.show{display:flex;}
 .offline-banner .dot{width:7px;height:7px;border-radius:50%;background:var(--priority);}
 
-/* ===== Essential drug flag ===== */
+/* Thuốc thiết yếu */
 .essential-chip{font-size:10.5px;font-weight:700;background:var(--warn-soft);color:#FCA5A5;padding:2px 6px;border-radius:20px;margin-left:6px;}
 .essential-warn{background:var(--warn-soft);border:1px solid rgba(239,68,68,.3);border-radius:11px;padding:9px 11px;font-size:13px;color:#FCA5A5;margin:8px 0;display:flex;gap:8px;align-items:flex-start;}
 
-/* ===== Cashier (Thu chi) ===== */
+/* Thu chi */
 .cashier-layout{display:grid;grid-template-columns:310px 1fr;gap:16px;align-items:start;}
 .cashier-item{padding:11px 13px;border-bottom:1px solid var(--border);cursor:pointer;display:flex;justify-content:space-between;align-items:center;}
 .cashier-item:hover{background:var(--surface-hover);}
@@ -52,7 +52,7 @@
 .cashier-item .amt{font-family:'IBM Plex Mono',monospace;font-size:13.5px;font-weight:700;color:var(--ink);}
 .cashier-form-grid{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px;margin-bottom:16px;}
 
-/* ===== Schedule (Lịch hẹn) ===== */
+/* Lịch hẹn */
 .schedule-toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
 .schedule-days{display:flex;gap:6px;}
 .schedule-day{padding:8px 14px;border-radius:9px;background:var(--surface-alt);color:var(--ink-soft);font-size:13.5px;font-weight:600;cursor:pointer;border:none;font-family:'Plus Jakarta Sans Variable',sans-serif;}
@@ -64,7 +64,7 @@
 .schedule-chip b{font-size:13.5px;}
 .schedule-chip.late{background:var(--warn-soft);color:#FCA5A5;}
 
-/* ===== Reports ===== */
+/* Báo cáo */
 .report-toolbar{display:flex;gap:10px;align-items:center;margin-bottom:16px;}
 .report-toolbar select,.report-toolbar input{padding:8px 11px;border:1px solid var(--border);border-radius:9px;font-size:13.5px;background:var(--field-bg);color:var(--ink);}
 .report-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px;align-items:stretch;}
@@ -76,7 +76,7 @@
 .bar-fill{height:100%;background:var(--primary);border-radius:20px;}
 .bar-row .num{width:86px;text-align:right;font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--ink);}
 
-/* ===== Cận lâm sàng ===== */
+/* Cận lâm sàng */
 .lab-order-row{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border:1px solid var(--border);border-radius:11px;margin-bottom:8px;background:var(--surface-alt);}
 .lab-order-row .st{font-size:11.5px;font-weight:700;padding:3px 9px;border-radius:20px;}
 .lab-order-row .st.pending{background:var(--priority-soft);color:#FCD34D;}
@@ -92,7 +92,7 @@
 .lab-ordered small{display:block;font-size:12px;color:var(--ink-soft);margin-top:2px;}
 @media (max-width:1100px){.lab-pick{grid-template-columns:1fr;}}
 
-/* ===== ICD-10 / template picker ===== */
+/* Chọn ICD-10 / đơn mẫu */
 .icd-picker{position:relative;}
 .icd-picker>input{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:9px;font-size:14.5px;font-family:'Plus Jakarta Sans Variable',sans-serif;background:var(--field-bg);color:var(--ink);}
 .icd-list{display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--solid);border:1px solid var(--border);border-radius:12px;box-shadow:0 20px 50px -14px rgba(0,0,0,.6);z-index:10;overflow:hidden;}
@@ -103,13 +103,13 @@
 .icd-opt b{font-family:'IBM Plex Mono',monospace;color:var(--accent);margin-right:6px;font-size:12.5px;}
 .vital-trend{margin-top:8px;}
 
-/* ===== Toast / spinner / empty state (demo Design System) ===== */
+/* Toast, spinner, ô trống */
 .toast-demo{position:fixed;right:20px;bottom:20px;background:var(--solid);border:1px solid var(--border);color:#fff;padding:12px 16px;border-radius:12px;font-size:13.5px;display:none;align-items:center;gap:9px;z-index:90;box-shadow:0 20px 50px -14px rgba(0,0,0,.6);}
 .toast-demo.show{display:flex;}
 .toast-demo .ic{color:#4ADE80;}
 .spinner{width:16px;height:16px;border-radius:50%;border:2px solid rgba(255,255,255,.25);border-top-color:#fff;animation:spin .7s linear infinite;display:inline-block;}
 @keyframes spin{to{transform:rotate(360deg);}}
-/* Spinner trong nút: theo màu chữ của nút nên dùng được cả nút nền đậm lẫn nút ghost; nút đang chạy không bị mờ như nút disabled. */
+/* Spinner trong nút theo màu chữ của nút (dùng được cho nút đậm lẫn nút ghost); nút đang chạy không bị mờ như disabled. */
 .btn-spinner{width:13px;height:13px;border-color:currentColor;border-right-color:transparent;opacity:.85;vertical-align:-2px;margin-right:7px;}
 .btn[aria-busy="true"]:disabled{opacity:.8;cursor:progress;}
 @media (prefers-reduced-motion: reduce){.spinner{animation-duration:1.6s;}}
@@ -121,20 +121,20 @@
 .field-error-msg{font-size:12px;color:#FCA5A5;margin-top:3px;display:none;}
 .field-error-msg.show{display:block;}
 
-/* ===== Roadmap / out-of-scope badge ===== */
+/* Nhãn “ngoài phạm vi” */
 .roadmap-badge{display:inline-flex;align-items:center;gap:4px;font-size:10.5px;font-weight:700;background:var(--surface-alt);color:var(--ink-soft);padding:2px 7px;border-radius:20px;margin-left:6px;letter-spacing:.2px;}
 .roadmap-card{border:1px dashed var(--border);border-radius:14px;padding:14px 16px;background:var(--surface-alt);}
 .roadmap-card h4{margin:0 0 4px;font-size:14px;display:flex;align-items:center;gap:6px;color:var(--ink);}
 .roadmap-card p{margin:0;font-size:13px;color:var(--ink-soft);line-height:1.5;}
 
-/* ===== Qty stepper on invoice / BHYT split ===== */
+/* Ô tăng / giảm số lượng */
 .qty-stepper{display:flex;align-items:center;gap:5px;}
 .qty-stepper button{width:20px;height:20px;border-radius:6px;border:1px solid var(--border);background:var(--surface-alt);color:var(--ink);font-size:13px;cursor:pointer;line-height:1;}
 .qty-stepper button:hover{background:var(--surface-hover);}
 .qty-stepper span{font-family:'IBM Plex Mono',monospace;font-size:13px;width:20px;text-align:center;color:var(--ink);}
 .bhyt-split{display:flex;justify-content:space-between;font-size:12.5px;color:var(--ink-soft);padding:2px 0;}
 
-/* ===== Kiosk queue-call display ===== */
+/* Màn hình gọi số */
 .kiosk-screen{background:#0B1220;color:#fff;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;font-family:'Plus Jakarta Sans Variable',sans-serif;}
 .kiosk-screen .now-call{font-size:15px;letter-spacing:2px;text-transform:uppercase;color:var(--accent);}
 .kiosk-screen .call-num{font-size:110px;font-weight:700;line-height:1;}
@@ -142,7 +142,7 @@
 .kiosk-next{display:flex;gap:16px;}
 .kiosk-next .chip{background:rgba(255,255,255,.08);padding:10px 18px;border-radius:12px;font-family:'IBM Plex Mono',monospace;font-size:15px;}
 
-/* ===== Patient detail drill-down ===== */
+/* Dòng bấm được */
 .row-click{cursor:pointer;}
 .row-click:hover td{background:var(--surface-hover);}
 .timeline{position:relative;padding-left:22px;}
@@ -157,7 +157,7 @@
 .tl-body .lbl{color:var(--ink-soft);font-weight:600;font-size:12px;display:block;margin-top:6px;}
 .tl-body .lbl:first-child{margin-top:0;}
 
-/* ===== Pagination ===== */
+/* Phân trang */
 .pager{display:flex;align-items:center;justify-content:space-between;padding:12px 14px 4px;font-size:13px;color:var(--ink-soft);}
 .pager-btns{display:flex;align-items:center;gap:4px;flex-wrap:wrap;}
 .pager-btns button{min-width:26px;padding:0 5px;height:26px;border-radius:7px;border:1px solid var(--border);background:var(--surface-alt);color:var(--ink);font-size:12.5px;cursor:pointer;font-family:'IBM Plex Mono',monospace;}

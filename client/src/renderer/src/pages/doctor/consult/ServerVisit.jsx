@@ -3,8 +3,7 @@ import { translate } from '../../../i18n'
 import { DEMO_MODE } from '../../../api/client'
 import { getVisitDetail } from '../../../api/clinicApi'
 
-// Backend thật: hàng đợi chỉ có thông tin tóm tắt → tải sinh hiệu, triệu chứng đã xác nhận, hồ sơ (dị ứng, bệnh nền,
-// mang thai) trước khi mở phiếu khám, để phiếu khởi tạo đúng dữ liệu. Giả lập: dùng thẳng lượt khám trong store.
+// Chạy thật: hàng đợi chỉ có thông tin tóm tắt → tải sinh hiệu, triệu chứng, hồ sơ trước khi mở phiếu để phiếu khởi tạo đúng dữ liệu.
 export function ServerVisit({ visit, children }) {
   const [detail, setDetail] = useState(null)
   const [error, setError] = useState('')

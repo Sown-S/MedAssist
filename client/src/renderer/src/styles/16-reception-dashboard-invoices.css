@@ -1,6 +1,6 @@
-/* Tiếp đón v2, bảng điều khiển lễ tân, tạo hóa đơn, doanh thu theo kỳ */
+/* Lễ tân: thẻ bệnh nhân, bảng điều khiển, gọi số, hoá đơn, doanh thu theo kỳ */
 
-/* ===== Tiếp đón v2: thông báo cờ đỏ, tra cứu, cảnh báo dị ứng ===== */
+/* Thông báo cờ đỏ, tra cứu, cảnh báo dị ứng */
 .p-card.open .p-detail{max-height:420px;}
 .btn kbd{font-family:'IBM Plex Mono',monospace;font-size:10.5px;padding:1px 5px;border-radius:5px;border:1px solid currentColor;opacity:.6;margin-left:4px;}
 .stat-card.alert{border-color:rgba(239,68,68,.6);background:var(--warn-soft);}
@@ -39,7 +39,7 @@
 .dupe-row .btn{margin-left:auto;}
 @media (max-width:800px){.pl-grid{grid-template-columns:1fr;}}
 
-/* ===== Bảng điều khiển Lễ tân ===== */
+/* Bảng điều khiển Lễ tân */
 .back-btn{margin-bottom:10px;}
 .dash-cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:22px;}
 @media (max-width:1100px){.dash-cards{grid-template-columns:repeat(2,minmax(0,1fr));}}
@@ -106,7 +106,7 @@ table.dt tr.clickable:hover td{background:var(--surface);}
 .inv-meta{display:flex;flex-direction:column;gap:5px;font-size:13px;color:var(--ink-soft);margin-top:12px;}
 .icon-btn.sm{align-items:center;justify-content:center;}
 
-/* ===== Tạo hoá đơn (lễ tân nhập theo đơn giấy) ===== */
+/* Nhập hoá đơn theo đơn giấy */
 .inv-qty-input{width:64px;padding:5px 7px;border:1px solid var(--border);border-radius:7px;background:var(--field-bg);color:var(--ink);font-family:'IBM Plex Mono',monospace;font-size:13px;text-align:right;}
 .ninv-grid{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:16px;align-items:start;}
 @media (max-width:1100px){.ninv-grid{grid-template-columns:1fr;}}
@@ -118,7 +118,7 @@ table.dt tr.clickable:hover td{background:var(--surface);}
 .ninv-patient{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--border);border-radius:10px;background:var(--surface-alt);}
 .ninv-patient .grow{flex:1;min-width:0;}
 
-/* ===== Lọc theo kỳ, doanh thu theo ngày / tuần / tháng ===== */
+/* Lọc theo kỳ, doanh thu */
 .period-picker{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
 .period-picker input[type=date]{padding:7px 10px;border:1px solid var(--border);border-radius:9px;background:var(--field-bg);color:var(--ink-soft);font-family:'Plus Jakarta Sans Variable',sans-serif;font-size:13px;color-scheme:dark;}
 .period-picker input[type=date].active{border-color:var(--primary);color:var(--ink);background:var(--primary-soft);}
@@ -163,6 +163,6 @@ table.dt tr.clickable:hover td{background:var(--surface);}
 .inv-stat.static{cursor:default;}
 .empty-state svg{width:34px;height:34px;opacity:.55;margin-bottom:8px;}
 .empty-state span{display:block;font-size:12.5px;}
-/* Nút trong ô trống giữ icon cỡ chữ, cùng hàng với nhãn (không ăn quy tắc icon lớn ở trên). */
+/* Nút trong ô trống giữ icon cỡ chữ, cùng hàng với nhãn. */
 .empty-state .btn svg{width:1.15em;height:1.15em;opacity:1;margin:0;vertical-align:-.2em;}
 .empty-state .btn span{display:inline;font-size:inherit;}

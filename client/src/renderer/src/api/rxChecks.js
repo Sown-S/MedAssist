@@ -1,12 +1,11 @@
-// Kiểm tra đơn thuốc lúc bác sĩ kê, theo danh mục tương tác do bác sĩ duyệt trong Cấu hình AI › Tương tác thuốc
-// (dị ứng chéo, thuốc–thuốc, cùng nhóm, thuốc–bệnh nền, giới hạn liều). Chạy hoàn toàn ở máy.
-// Mức độ quyết định hành vi: contraindicated = chặn chốt đơn, severe = phải ghi lý do, warning = chỉ nhắc.
+// Kiểm tra đơn lúc kê theo danh mục tương tác bác sĩ đã duyệt (dị ứng chéo, thuốc–thuốc, cùng nhóm, thuốc–bệnh nền,
+// giới hạn liều). Mức độ quyết định hành vi: contraindicated = chặn chốt đơn, severe = phải ghi lý do, warning = chỉ nhắc.
 import { getState } from './aiConfigStore'
 import { findDrugByName, getInventory } from './inventoryStore'
 import { fold } from './patientStore'
 
 const RANK = { contraindicated: 0, severe: 1, warning: 2 }
-// Bệnh nền ghi trong hồ sơ có thể bằng tiếng Anh hoặc tiếng Việt.
+// Bệnh nền trong hồ sơ có thể ghi bằng tiếng Anh hoặc tiếng Việt.
 const CONDITION_WORDS = {
   'chronic kidney disease': ['chronic kidney', 'kidney disease', 'suy than', 'benh than man'],
   asthma: ['asthma', 'hen'],
@@ -14,20 +13,19 @@ const CONDITION_WORDS = {
 }
 
 const drugText = (d) => fold([d.name, d.ingredient].join(' '))
-// "Amoxicillin" + ATC J01CA04 khớp thuốc trong danh mục theo mã ATC (cả nhóm: M01A), hoặc theo tên hoạt chất.
+// Khớp theo mã ATC (cả nhóm, VD M01A) hoặc theo tên hoạt chất.
 function matches(name, atc, d) {
   if (!d) return false
   if (atc && d.atc && d.atc.startsWith(atc)) return true
   const word = fold(name).split(' ')[0]
   return word.length > 3 && !word.includes('(') && drugText(d).includes(word)
 }
-// "Warfarin (B01AA03)" → { name: 'Warfarin', atc: 'B01AA03' }
+// “Warfarin (B01AA03)” → { name: 'Warfarin', atc: 'B01AA03' }
 function partner(b) {
   const atc = b.match(/\(([A-Z0-9]+)\)/)?.[1] ?? ''
   return { name: b.replace(/\s*\(.*\)\s*/, '').trim(), atc }
 }
 
-// items: [{ name }], patient: { age, allergies, history } → [{ key, level, type, drug, other, source }]
 export function checkRx(items, patient) {
   const drugs = getInventory().drugs
   const lines = items.map((it) => ({ it, d: findDrugByName(it.name, drugs) })).filter((x) => x.d)
@@ -36,7 +34,6 @@ export function checkRx(items, patient) {
   const adult = !(Number(patient?.age) < 16)
   const out = []
 
-  // Dị ứng ghi thẳng trong hồ sơ trùng tên / hoạt chất thuốc.
   for (const { d } of lines)
     for (const a of allergies.split(/[,;]/).map((s) => s.trim()).filter((s) => s.length > 3))
       if (drugText(d).includes(a)) out.push({ key: 'own-' + d.id + a, level: 'contraindicated', type: 'allergy', drug: d.name, other: patient.allergies, source: 'Patient record' })
@@ -57,7 +54,7 @@ export function checkRx(items, patient) {
       const words = CONDITION_WORDS[fold(r.b)] ?? [fold(r.b)]
       if (words.some((w) => history.includes(w))) hits.forEach(({ d }) => out.push({ ...base, key: r.id + d.id, drug: d.name, other: r.b + ' — ' + patient.history }))
     } else if (r.type === 'dose') {
-      // Nhắc giới hạn liều theo nhóm tuổi (người lớn / trẻ em) — không chặn.
+      // Giới hạn liều theo nhóm tuổi chỉ nhắc, không chặn.
       const forChild = /child/i.test(r.b)
       if (forChild !== adult) hits.forEach(({ d }) => out.push({ ...base, level: 'warning', key: r.id + d.id, drug: d.name }))
     }
@@ -66,5 +63,5 @@ export function checkRx(items, patient) {
   return out.filter((x) => !seen.has(x.key) && seen.add(x.key)).sort((a, b) => RANK[a.level] - RANK[b.level])
 }
 
-// Các quy tắc trong danh mục tương tác có nhắc tới thuốc này (để bác sĩ tra trước khi kê).
+// Quy tắc có nhắc tới thuốc này, để bác sĩ tra trước khi kê.
 export const rulesFor = (d) => getState().ddi.filter((r) => matches(r.a, r.aAtc, d) || (['ddi', 'class'].includes(r.type) && matches(partner(r.b).name, partner(r.b).atc, d)))

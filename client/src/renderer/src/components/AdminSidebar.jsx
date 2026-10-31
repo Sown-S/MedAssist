@@ -1,8 +1,6 @@
 import { useState } from 'react'
 import Icon from './Icon'
 
-// Cả cây menu là 1 mảng dữ liệu, KHÔNG phải chép tay từng <div> như bản HTML gốc.
-// Muốn thêm/bớt mục menu sau này chỉ cần sửa mảng NAV, không đụng vào phần render bên dưới.
 const NAV = [
   { id: 'dash', icon: 'home', label: 'Home' },
   {
@@ -16,7 +14,7 @@ const NAV = [
   { id: 'ai', icon: 'bulb', label: 'AI configuration' },
   { id: 'rooms', icon: 'stethoscope', label: 'Rooms' },
   { id: 'inventory', icon: 'box', label: 'Stock & expiry' },
-  // Các danh mục (hành chính, y tế) mở từ trang trung tâm — sidebar chỉ giữ 1 mục để menu không phải cuộn.
+  // Các danh mục mở từ trang trung tâm — sidebar chỉ giữ một mục để menu không phải cuộn.
   { id: 'catalog', icon: 'folder', label: 'Catalog management', match: (p) => p === 'drugs' || p.startsWith('cat-') },
   { id: 'history', icon: 'clock', label: 'Activity history' },
   { id: 'staff', icon: 'lock', label: 'Staff accounts' },
@@ -27,7 +25,6 @@ const NAV = [
 export default function AdminSidebar({ page, onNavigate }) {
   const nav = NAV
   const [collapsed, setCollapsed] = useState(false)
-  // Set lưu tên các group đang mở — mặc định mở sẵn "Quản lý bệnh nhân" giống bản gốc.
   const [openGroups, setOpenGroups] = useState(new Set(['Patient management']))
 
   function toggleGroup(name) {

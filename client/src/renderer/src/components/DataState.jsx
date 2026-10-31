@@ -7,7 +7,7 @@ export function LoadingBlock({ text = 'Loading...' }) {
   )
 }
 
-// Màn mà server chưa cho vai trò này đọc dữ liệu (chạy thật): báo rõ lý do thay vì hiện dữ liệu mẫu trên máy.
+// Server chưa cho vai trò này đọc dữ liệu: báo rõ lý do thay vì hiện dữ liệu mẫu trên máy.
 export function ServerPending({ title, children, action }) {
   return (
     <div className="card">

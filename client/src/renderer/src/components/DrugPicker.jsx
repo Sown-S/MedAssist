@@ -2,10 +2,8 @@ import { useState } from 'react'
 import { useInventory, stockOf } from '../api/inventoryStore'
 import { unitLabel } from '../pages/admin/inventory/shared'
 
-// Ô tìm thuốc trong Danh mục (tên, hoạt chất, ATC) — hiện tồn dùng được của từng thuốc.
-// Dùng khi lễ tân nhập thuốc theo đơn giấy của bác sĩ. onPick(drug) khi chọn một thuốc.
-// drugs: danh mục thuốc từ server (backend thật, kèm d.stock) — bỏ trống thì dùng kho giả lập.
-// inputId / title: để trang cha gắn phím tắt nhảy tới ô tìm (VD Alt+T ở màn khám).
+// Ô tìm thuốc (tên, hoạt chất, ATC) kèm tồn dùng được. drugs: danh mục từ server; bỏ trống thì dùng kho giả lập.
+// inputId / title: để trang cha gắn phím tắt (VD Alt+T ở màn khám).
 export default function DrugPicker({ onPick, disabled, drugs, inputId, title }) {
   const inv = useInventory()
   const [q, setQ] = useState('')

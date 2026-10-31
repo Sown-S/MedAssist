@@ -16,7 +16,6 @@ const FILTERS = [
   { key: 'all', label: 'All' }
 ]
 
-// Chuỗi dùng để tìm: mã + mọi giá trị chữ của bản mới nhất + tên triệu chứng / bệnh liên quan.
 function haystack(g, names) {
   const v = (g.open ?? g.active ?? g.latest).values
   const extra = [names.condition[v.condition_code], names.symptom[v.symptom_code]]
@@ -28,7 +27,7 @@ export default function ItemsTab({ data, names, canEdit, openRelease, onChanged,
   const [kind, setKind] = useState('rules')
   const [q, setQ] = useState('')
   const [filter, setFilter] = useState('current')
-  const [form, setForm] = useState(null) // { group | null }
+  const [form, setForm] = useState(null)
   const [historyOf, setHistoryOf] = useState(null)
   const [off, setOff] = useState(null)
   const editable = canEdit && openRelease?.status === 'Draft'
@@ -227,7 +226,7 @@ function HistoryModal({ kind, group, names, onClose }) {
   )
 }
 
-// Tắt khẩn cấp: xem trước mục phụ thuộc sẽ bị tắt theo (vd tắt triệu chứng -> tắt luật / quan hệ dùng nó), bắt buộc lý do.
+// Xem trước các mục phụ thuộc sẽ bị tắt theo (VD tắt triệu chứng → tắt luật dùng nó); bắt buộc lý do.
 function DeactivateModal({ kind, group, names, onClose, onDone }) {
   const [deps, setDeps] = useState(null)
   const [reason, setReason] = useState('')

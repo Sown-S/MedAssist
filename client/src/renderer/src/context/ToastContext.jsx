@@ -1,8 +1,5 @@
 import { createContext, useCallback, useContext, useRef, useState } from 'react'
 
-// Bản HTML cũ dùng 1 hàm toàn cục showToast(msg) gọi ở bất kỳ đâu.
-// Trong React, cách làm đúng là dùng Context: bọc App trong <ToastProvider>,
-// rồi ở bất kỳ component con nào chỉ cần const { showToast } = useToast().
 const ToastContext = createContext(null)
 
 export function ToastProvider({ children }) {

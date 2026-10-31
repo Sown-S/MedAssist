@@ -1,6 +1,5 @@
-// ĐÂY LÀ LỚP GIẢ LẬP (demo) cho bảng patients (danh bạ bệnh nhân dùng ở quầy tiếp đón).
-// Tìm kiếm là tìm TỪ KHOÁ (họ tên, SĐT, mã hồ sơ), không phải tìm ngữ nghĩa.
-// Backend thật: GET /patients?q=..., POST /patients (server kiểm tra trùng lần nữa trước khi tạo).
+// Danh bạ bệnh nhân của bản demo. Tìm theo từ khoá (họ tên, SĐT, mã hồ sơ). Chạy thật: GET / POST /patients,
+// server kiểm tra trùng lần nữa trước khi tạo.
 import { useSyncExternalStore } from 'react'
 import { logEvent } from './activityStore'
 
@@ -43,9 +42,7 @@ function commit(next) {
   patients = next
   try {
     localStorage.setItem(KEY, JSON.stringify(patients))
-  } catch {
-    /* chỉ giữ trong phiên */
-  }
+  } catch {/* không lưu được thì chỉ giữ trong phiên */}
   listeners.forEach((fn) => fn())
 }
 const subscribe = (fn) => {
@@ -58,7 +55,7 @@ export function usePatients() {
 }
 export const findPatient = (id) => patients.find((p) => p.id === id)
 
-// Bỏ dấu + chữ thường để gõ "nguyen thi lan" vẫn ra "Nguyễn Thị Lan".
+// Bỏ dấu + chữ thường: gõ “nguyen thi lan” vẫn ra “Nguyễn Thị Lan”.
 export const fold = (s) =>
   String(s ?? '')
     .normalize('NFD')
@@ -70,11 +67,10 @@ export const fold = (s) =>
     .trim()
 const digits = (s) => String(s ?? '').replace(/\D/g, '')
 
-// Tuổi từ ngày sinh dd/mm/yyyy ('' nếu chưa đúng định dạng).
 export function ageOf(dob) {
   const m = String(dob ?? '').trim().match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/)
   if (!m) return ''
-  // Ngày phải có thật trên lịch: 31/02, 30/02/2001, tháng 13… là gõ nhầm.
+  // Ngày phải có thật trên lịch (31/02, tháng 13… là gõ nhầm).
   const real = new Date(+m[3], +m[2] - 1, +m[1])
   if (real.getFullYear() !== +m[3] || real.getMonth() !== +m[2] - 1 || real.getDate() !== +m[1]) return ''
   const now = new Date()
@@ -83,7 +79,7 @@ export function ageOf(dob) {
   return age >= 0 && age < 130 ? age : ''
 }
 
-// Tìm theo từ khoá: mọi từ phải khớp họ tên / mã hồ sơ; chuỗi toàn số thì khớp SĐT hoặc mã.
+// Mọi từ phải khớp họ tên / mã hồ sơ; chuỗi toàn số thì khớp SĐT hoặc mã.
 export function searchPatients(q, limit = 30) {
   const k = fold(q)
   if (!k) return []
@@ -98,8 +94,7 @@ export function searchPatients(q, limit = 30) {
     .slice(0, limit)
 }
 
-// Bệnh nhân có thể trùng: cùng SĐT, hoặc cùng họ tên + ngày sinh.
-// CCCD là duy nhất (ERD: PATIENT.id_number unique khi có). Trả hồ sơ đang giữ số này (trừ chính hồ sơ exceptId).
+// CCCD là duy nhất khi có (ERD). Trả hồ sơ đang giữ số này, trừ chính exceptId.
 export const idNumberOwner = (idNumber, exceptId = null) => {
   const n = digits(idNumber)
   return n ? patients.find((p) => p.id !== exceptId && digits(p.idNumber) === n) ?? null : null
@@ -129,10 +124,8 @@ export function registerPatient(data, user) {
   return p
 }
 
-// Sửa thông tin HÀNH CHÍNH (họ tên, SĐT, ngày sinh, giới, CCCD) — nhập nhầm lúc đăng ký thì sửa,
-// không tạo hồ sơ mới (tránh trùng hồ sơ). Ghi nhật ký kèm giá trị trước / sau. Dị ứng & bệnh nền do bác sĩ sửa (bên dưới).
-// Backend thật: PATCH /patients/{id}.
-// BHYT (đối tượng, số thẻ) đã bỏ: backend không quản lý BHYT.
+// Sửa thông tin hành chính nhập nhầm lúc đăng ký thay vì tạo hồ sơ mới (tránh trùng); ghi nhật ký trước / sau.
+// Dị ứng và bệnh nền do bác sĩ sửa (updatePatientClinical).
 export const ADMIN_FIELDS = ['name', 'phone', 'dob', 'gender', 'idNumber']
 export function updatePatientAdmin(id, fields, user) {
   const old = findPatient(id)
@@ -153,9 +146,8 @@ export function updatePatientAdmin(id, fields, user) {
   return { ok: true, changed: true }
 }
 
-// Bác sĩ cập nhật thông tin lâm sàng (dị ứng thuốc, bệnh nền) phát hiện khi khám — lưu vào hồ sơ để lần khám sau
-// kiểm tra tương tác vẫn thấy. Lễ tân chỉ ghi lời khai lúc tiếp đón; bác sĩ là người xác nhận / sửa.
-// Backend thật: PATCH /patients/{id} (quyền patient.clinical).
+// Dị ứng / bệnh nền bác sĩ phát hiện khi khám được lưu vào hồ sơ để lần sau kiểm tra đơn vẫn thấy.
+// Lễ tân chỉ ghi lời khai; bác sĩ xác nhận / sửa.
 export function updatePatientClinical(id, { allergies, history }, user) {
   const old = findPatient(id)
   if (!old) return { ok: false, error: 'Patient not found.' }
@@ -172,8 +164,7 @@ export function updatePatientClinical(id, { allergies, history }, user) {
   return { ok: true, changed: true }
 }
 
-// Tình trạng mang thai ('yes' | 'no' | '' = chưa hỏi) — lưu ở HỒ SƠ bệnh nhân, lễ tân hỏi lại mỗi lần tiếp đón.
-// Backend thật: PATCH /patients/{id} với medical_history.is_pregnant (true / false / null).
+// Mang thai lưu ở hồ sơ ('yes' | 'no' | '' = chưa hỏi); lễ tân hỏi lại mỗi lần tiếp đón.
 export function setPregnancy(id, pregnancy, user) {
   const old = findPatient(id)
   if (!old) return { ok: false, error: 'Patient not found.' }

@@ -19,7 +19,7 @@ const FIELDS = [
   { key: 'retired', label: 'Retired', render: (d) => <span>{d.retired ? 'Yes' : 'No'}</span> }
 ]
 
-// Lý do từ chối hay gặp — bấm để điền nhanh; người soạn thấy lý do này khi bản nháp quay về.
+// Lý do từ chối hay gặp — bấm để điền nhanh; người soạn thấy lý do khi bản nháp quay về.
 const REJECT_REASONS = [
   'Clinical content is not correct',
   'Threshold or condition needs adjusting',
@@ -32,7 +32,7 @@ const ISSUE_TEXT = { duplicate: 'Duplicate of', conflict: 'Contradicts', overlap
 
 export default function ReviewTab({ rules, audit, user }) {
   const { showToast } = useToast()
-  const [review, setReview] = useState(null) // { rule, mode: 'approve' | 'reject' }
+  const [review, setReview] = useState(null)
   const [discard, setDiscard] = useState(null)
   const pending = rules
     .filter((r) => r.pending && (user.roleKey !== 'doctor' || r.pending.stage === 'review'))
@@ -235,9 +235,7 @@ export default function ReviewTab({ rules, audit, user }) {
   )
 }
 
-// Người duyệt là BÁC SĨ đang đăng nhập bằng tài khoản của mình (server ghi người duyệt theo phiên đăng nhập —
-// Architecture 5.1.10: người duyệt là bác sĩ và khác người soạn). Admin không duyệt thay được.
-// Backend thật: POST /api/v1/knowledge/releases/{id}/approve | reject.
+// Người duyệt là bác sĩ đang đăng nhập và phải khác người soạn; Admin không duyệt thay được.
 function ReviewerModal({ review, reviewer, onClose }) {
   const { showToast } = useToast()
   const [comment, setComment] = useState('')

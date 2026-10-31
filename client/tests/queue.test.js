@@ -233,7 +233,7 @@ describe('Ca cờ đỏ', () => {
 describe('Sang ngày mới', () => {
   it('lượt chưa đóng của hôm qua không mất: vào danh sách "lượt chưa đóng"', async () => {
     const v = admit(s, 0)
-    // Giả lập dữ liệu đã lưu từ hôm qua rồi mở lại app.
+    // Dữ liệu lưu từ hôm qua rồi mở lại app.
     const saved = JSON.parse(localStorage.getItem('medassist_queue_v2'))
     localStorage.setItem('medassist_queue_v2', JSON.stringify({ ...saved, day: '2000-01-01' }))
     vi.resetModules()

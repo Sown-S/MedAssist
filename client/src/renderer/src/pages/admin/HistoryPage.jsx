@@ -14,7 +14,6 @@ import AuditLogLive from './AuditLogLive'
 
 const PAGE_SIZE = 15
 const p2 = (n) => String(n).padStart(2, '0')
-// Luôn đủ ngày + giờ theo giờ máy: 14/10/2026 15:41:21
 function fullTime(iso) {
   const d = new Date(iso)
   return `${p2(d.getDate())}/${p2(d.getMonth() + 1)}/${d.getFullYear()} ${p2(d.getHours())}:${p2(d.getMinutes())}:${p2(d.getSeconds())}`
@@ -34,13 +33,13 @@ function LevelTag({ level }) {
   )
 }
 
-// Backend thật: nhật ký audit_log trên server (AuditLogLive). Giả lập: nhật ký hoạt động ghi ở máy này (bên dưới).
+// Chạy thật: audit_log trên server (AuditLogLive); bản demo: nhật ký ghi ở máy này.
 export default function HistoryPage(props) {
   return DEMO_MODE ? <HistoryDemo {...props} /> : <AuditLogLive />
 }
 
 function HistoryDemo({ onNavigate }) {
-  const all = useActivity() // mới nhất ở đầu
+  const all = useActivity()
   const { user } = useAuth()
   const [q, setQ] = useState('')
   const [role, setRole] = useState('all')
@@ -102,7 +101,7 @@ function HistoryDemo({ onNavigate }) {
         ])
       )
     else {
-      // Bản sao lưu đầy đủ (kèm chuỗi băm) để nộp / lưu trữ ngoài hệ thống.
+      // Bản đầy đủ kèm chuỗi băm để nộp / lưu trữ ngoài hệ thống.
       const url = URL.createObjectURL(new Blob([JSON.stringify({ exportedAt: new Date().toISOString(), integrity: verifyChain(all), entries: all }, null, 2)], { type: 'application/json' }))
       const a = document.createElement('a')
       a.href = url
@@ -323,7 +322,7 @@ function HistoryDemo({ onNavigate }) {
 
 function Detail({ e, onClose, onNavigate }) {
   const dest = targetPage(e.target)
-  // Cặp [nhãn, giá trị] — mỗi giá trị là một phần tử đơn lẻ, không phải danh sách con nên không cần key.
+  // Mảng ô cố định [nhãn, giá trị], không phải danh sách con nên không cần key.
   /* eslint-disable react/jsx-key */
   const rows = [
     ['No.', <span className="mono">#{e.seq}</span>],

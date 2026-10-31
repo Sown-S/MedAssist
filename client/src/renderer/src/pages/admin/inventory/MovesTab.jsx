@@ -4,7 +4,6 @@ import { translate } from '../../../i18n'
 import { todayISO } from '../../../api/inventoryStore'
 import { MOVE_TYPES, Pager, paginate, exportCsv, fmtDateTime } from './shared'
 
-// ======================= Nhập / xuất =======================
 export function MovesTab({ inv }) {
   const [type, setType] = useState('all')
   const [q, setQ] = useState('')

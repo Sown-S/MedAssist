@@ -1,6 +1,5 @@
-// Cấu hình của từng danh mục: trường nhập, cột hiển thị, cột file Excel/CSV, bộ lọc riêng.
-// Trang chi tiết (CatalogDetailPage) đọc cấu hình này nên thêm danh mục mới chỉ cần thêm 1 mục ở đây
-// (+ dữ liệu mẫu trong api/catalogStore.js).
+// Cấu hình từng danh mục (trường nhập, cột hiển thị, cột file, bộ lọc). Thêm danh mục mới chỉ cần thêm một mục ở đây
+// và dữ liệu mẫu trong catalogStore.
 import { fmtMoney, fmtDate } from '../inventory/shared'
 
 export const GENERAL_GROUPS = [
@@ -55,13 +54,12 @@ const ADVICE_KINDS = [
 export const optLabel = (opts, k) => opts.find((o) => o.key === k)?.label ?? k ?? ''
 
 const T = ({ children }) => <span>{children}</span>
-// Cột hiển thị nhãn của 1 trường dạng chọn — trang chi tiết gọi render(row, cats, inv, key).
 const opt = (opts) =>
   function renderOpt(r, cats, inv, k) {
     return <T>{optLabel(opts, r[k])}</T>
   }
 
-// Tham chiếu dịch vụ / xét nghiệm trong gói khám: "service:DV01" | "lab:XN05".
+// "service:DV01" | "lab:XN05"
 export function resolveRef(ref, cats) {
   const [kind, code] = ref.split(':')
   const list = kind === 'service' ? cats.services : cats.labs
@@ -120,7 +118,7 @@ export const SCHEMAS = {
       { key: 'note', label: 'Note', wide: true }
     ],
     columns: [
-      // Thêm ký tự rỗng (U+200B) để bộ dịch tự động KHÔNG đổi tên tiếng Anh sang tiếng Việt.
+      // Thêm U+200B để bộ dịch tự động không đổi tên tiếng Anh sang tiếng Việt.
       { key: 'nameEn', label: 'English name', render: (r) => <span className="ai-soft">{r.nameEn ? r.nameEn + '\u200B' : ''}</span> },
       { key: 'chapter', label: 'Chapter', render: (r) => <span className="mono">{r.chapter}</span> },
       { key: 'custom', label: 'Source', render: (r) => (r.custom ? <span className="badge warn">Custom</span> : <span className="badge">Standard</span>) }

@@ -1,6 +1,5 @@
-// Lời gọi API kết thúc khám của bác sĩ (chỉ dùng khi tắt giả lập): chẩn đoán, đơn thuốc, xác nhận đơn.
-// Server: server/app/routers/prescription_router.py. Thứ tự khi chốt: đồng bộ chẩn đoán → lưu đơn nháp → xác nhận
-// (trừ kho FEFO, lượt khám -> Prescribed, lập hóa đơn Pending). Không kê thuốc → "Hoàn tất khám".
+// Kết thúc khám: đồng bộ chẩn đoán → lưu đơn nháp → xác nhận (server trừ kho FEFO, lượt sang Prescribed, lập hoá đơn).
+// Không kê thuốc thì dùng “Hoàn tất khám”.
 import { apiGet, apiPost, apiRequest, ApiError } from './client'
 
 const V1 = '/api/v1'
@@ -24,7 +23,7 @@ export const confirmPrescription = (visitId) => apiPost(`${V1}/visits/${visitId}
 export const completeExam = (visitId) => apiPost(`${V1}/visits/${visitId}/complete-exam`, {})
 export const reopenPrescription = (visitId, reason) => apiPost(`${V1}/visits/${visitId}/prescription/reopen`, { reason })
 
-// "J03.9 — Viêm amidan cấp" → { icd: 'J03.9', name: 'Viêm amidan cấp' }; chữ tự do → { icd: null, name }.
+// “J03.9 — Viêm amidan cấp” → { icd: 'J03.9', name }; chữ tự do → { icd: null, name }.
 export function parseDiagnosis(text) {
   const t = String(text ?? '').trim()
   const m = t.match(/^([A-Z]\d{2}(?:\.[0-9A-Z]{1,4})?)\s*[—–-]\s*(.+)$/i)
@@ -32,9 +31,8 @@ export function parseDiagnosis(text) {
 }
 const same = (a, b) => String(a ?? '').trim().toLowerCase() === String(b ?? '').trim().toLowerCase()
 
-// Đồng bộ danh sách chẩn đoán trên phiếu với server (chốt lại sau lần bị chặn vì thiếu thuốc không tạo trùng):
-// giữ chẩn đoán đã có, rút lại chẩn đoán không còn trên phiếu, thêm chẩn đoán mới. Chẩn đoán chính thêm trước.
-// candidates: gợi ý AI đang hiện (để gắn condition_code khi bác sĩ chọn đúng bệnh trong danh sách đang dùng).
+// Đồng bộ chẩn đoán trên phiếu với server mà không tạo trùng khi chốt lại: giữ cái đã có, rút lại cái đã bỏ, thêm cái mới
+// (chẩn đoán chính trước). candidates: gợi ý AI đang hiện, để gắn condition_code khi bác sĩ chọn đúng bệnh gợi ý.
 export async function syncDiagnoses(visitId, { primary, extra, notes, candidates, assessmentId }) {
   const want = [{ ...parseDiagnosis(primary), primary: true, notes }, ...extra.map((x) => ({ ...parseDiagnosis(x), primary: false, notes: null }))].filter((x) => x.name)
   const have = (await listDiagnoses(visitId)).filter((x) => x.confirmed_by_physician)
@@ -61,7 +59,7 @@ export async function syncDiagnoses(visitId, { primary, extra, notes, candidates
   }
 }
 
-// 409 STOCK_SHORTAGE: details [{ drug_id, needed, available_for_course, available_total, reason }] → dạng banner hiện có.
+// 409 STOCK_SHORTAGE → dạng banner thiếu thuốc của phiếu khám.
 export const shortageOf = (e, lines) =>
   (e.details ?? []).map((x) => {
     const l = lines.find((y) => y.drugId === x.drug_id)

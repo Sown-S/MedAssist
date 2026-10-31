@@ -1,6 +1,5 @@
-/* Cấu hình AI & quy tắc CDSS */
+/* Cấu hình AI */
 
-/* ===== Cấu hình AI & quy tắc CDSS ===== */
 .btn:disabled{opacity:.45;cursor:not-allowed;}
 .btn-success{background:var(--success);color:#fff;}
 .btn-success:hover:not(:disabled){background:#16A34A;}
