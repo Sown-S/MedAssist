@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Icon from '../../../components/Icon'
 import Modal, { ModalHeader } from '../../../components/Modal'
 import { translate } from '../../../i18n'
@@ -9,6 +9,7 @@ import { useInventory, todayISO } from '../../../api/inventoryStore'
 import { ConfirmDialog, Empty } from '../ai/ui'
 import { Pager, paginate, exportCsv, fmtMoney, fmtDate, fmtDateTime } from '../inventory/shared'
 import { SCHEMAS, optLabel, resolveRef, packageTotal } from './schemas'
+import { isLiveCatalog, useLiveCatalog, saveLiveRow, setLiveActive, livePriceHistory } from '../../../api/serviceCatalogLive'
 
 // ---------- CSV ----------
 function splitCsv(line) {
@@ -80,7 +81,13 @@ export function parseCatalogCsv(key, text) {
 // ---------- Trang ----------
 export default function CatalogDetailPage({ catalogKey, params, onNavigate }) {
   const s = SCHEMAS[catalogKey]
-  const cats = useCatalogs()
+  // Backend thật: Dịch vụ, Xét nghiệm, Gói khám đọc / ghi qua server (ERD v2.1); các danh mục khác vẫn ở máy này.
+  const live = isLiveCatalog(catalogKey)
+  const lc = useLiveCatalog(live)
+  const local = useCatalogs()
+  const cats = live ? { ...local, services: lc.services, labs: lc.labs, packages: lc.packages } : local
+  // Server không lưu ngày hiệu lực của giá → bỏ cột "Giá áp dụng từ" (lịch sử giá xem trong form sửa).
+  const columns = live ? s.columns.filter((c) => c.key !== 'priceHistory') : s.columns
   const inv = useInventory()
   const { user } = useAuth()
   const { showToast } = useToast()
@@ -178,9 +185,11 @@ export default function CatalogDetailPage({ catalogKey, params, onNavigate }) {
                 </button>
               ))}
             </div>
-            <button className="btn btn-ghost btn-sm" onClick={() => fileRef.current?.click()}>
-              <Icon name="paperclip" /> <span>Import from Excel (CSV)</span>
-            </button>
+            {!live && (
+              <button className="btn btn-ghost btn-sm" onClick={() => fileRef.current?.click()}>
+                <Icon name="paperclip" /> <span>Import from Excel (CSV)</span>
+              </button>
+            )}
             <input ref={fileRef} type="file" accept=".csv,text/csv" hidden onChange={onFile} />
             <button className="btn btn-ghost btn-sm" onClick={() => exportCatalog(catalogKey, list)}>
               <Icon name="download" /> <span>Export</span>
@@ -191,7 +200,10 @@ export default function CatalogDetailPage({ catalogKey, params, onNavigate }) {
           </div>
         </div>
 
-        {pg.total === 0 ? (
+        {live && lc.error && <div className="warn-banner show danger">{lc.error}</div>}
+        {live && !lc.loaded ? (
+          <p className="ai-soft">{translate('Loading the catalog…')}</p>
+        ) : pg.total === 0 ? (
           <Empty title="No records match" text="Try another keyword or filter, or import the list from a file." />
         ) : (
           <div className="ai-table-wrap">
@@ -200,7 +212,7 @@ export default function CatalogDetailPage({ catalogKey, params, onNavigate }) {
                 <tr>
                   <th>Code</th>
                   <th>Name</th>
-                  {s.columns.map((c) => (
+                  {columns.map((c) => (
                     <th key={c.key} className={c.num ? 'num' : ''}>
                       {c.label}
                     </th>
@@ -217,7 +229,7 @@ export default function CatalogDetailPage({ catalogKey, params, onNavigate }) {
                     <td>
                       <b>{r.name}</b>
                     </td>
-                    {s.columns.map((c) => (
+                    {columns.map((c) => (
                       <td key={c.key} className={c.num ? 'num' : ''}>
                         {c.render ? c.render(r, cats, inv, c.key) : r[c.key] || <span className="ai-soft">—</span>}
                       </td>
@@ -248,7 +260,7 @@ export default function CatalogDetailPage({ catalogKey, params, onNavigate }) {
         </p>
       </div>
 
-      {edit && <RowForm catalogKey={catalogKey} row={edit} all={all} cats={cats} inv={inv} user={user} onClose={() => setEdit(null)} />}
+      {edit && <RowForm catalogKey={catalogKey} live={live} row={edit} all={all} cats={cats} inv={inv} user={user} onClose={() => setEdit(null)} />}
       <ConfirmDialog
         open={!!toggle}
         title={toggle ? translate(toggle.active ? 'Discontinue' : 'Re-activate') + ' · ' + toggle.code + ' ' + toggle.name : ''}
@@ -256,8 +268,11 @@ export default function CatalogDetailPage({ catalogKey, params, onNavigate }) {
         confirmLabel={toggle?.active ? 'Discontinue' : 'Re-activate'}
         danger={toggle?.active}
         requireNote={toggle?.active}
-        onConfirm={(note) => {
-          setRowActive(catalogKey, toggle.id, !toggle.active, user, s.title, note)
+        onConfirm={async (note) => {
+          if (live) {
+            const r = await setLiveActive(catalogKey, toggle.id, !toggle.active)
+            if (!r.ok) return showToast(translate(r.error))
+          } else setRowActive(catalogKey, toggle.id, !toggle.active, user, s.title, note)
           showToast(toggle.active ? 'Record discontinued' : 'Record re-activated')
           setToggle(null)
         }}
@@ -269,10 +284,16 @@ export default function CatalogDetailPage({ catalogKey, params, onNavigate }) {
 }
 
 // ---------- Form thêm / sửa ----------
-function RowForm({ catalogKey, row, all, cats, inv, user, onClose }) {
+function RowForm({ catalogKey, live, row, all, cats, inv, user, onClose }) {
   const s = SCHEMAS[catalogKey]
   const { showToast } = useToast()
   const isNew = !row.id
+  const [saving, setSaving] = useState(false)
+  // Backend thật: lịch sử giá đọc từ nhật ký server (GET /admin/services/{id}/price-history), mới nhất trước.
+  const [prices, setPrices] = useState(null)
+  useEffect(() => {
+    if (live && !isNew && catalogKey !== 'packages') livePriceHistory(row.id).then(setPrices, () => setPrices([]))
+  }, [live, isNew, catalogKey, row.id])
   const [f, setF] = useState(() => {
     const init = { ...row }
     for (const fd of s.fields) {
@@ -298,7 +319,7 @@ function RowForm({ catalogKey, row, all, cats, inv, user, onClose }) {
   if (catalogKey === 'labs' && f.low !== '' && f.high !== '' && f.low != null && f.high != null && Number(f.low) > Number(f.high)) errors.push('Reference low is greater than reference high.')
   if (catalogKey === 'rxtemplates' && (f.items ?? []).some((it) => !it.drugId || !(it.qty > 0))) errors.push('Every drug line needs a drug and a quantity.')
 
-  function save() {
+  async function save() {
     setTried(true)
     if (errors.length) return
     const data = { ...f, code: s.upperCode ? code.toUpperCase() : code, name: String(f.name).trim() }
@@ -307,7 +328,12 @@ function RowForm({ catalogKey, row, all, cats, inv, user, onClose }) {
       if (fd.onlyWhenPriceChanges && !priceChanged) delete data[fd.key]
     }
     if (catalogKey === 'icd' && isNew) data.custom = true
-    upsertRow(catalogKey, data, user, s.title)
+    if (live) {
+      setSaving(true)
+      const r = await saveLiveRow(catalogKey, { ...data, id: row.id })
+      setSaving(false)
+      if (!r.ok) return showToast(translate(r.error))
+    } else upsertRow(catalogKey, data, user, s.title)
     showToast(isNew ? 'Record added' : 'Record saved')
     onClose()
   }
@@ -323,13 +349,18 @@ function RowForm({ catalogKey, row, all, cats, inv, user, onClose }) {
         )}
         <div className="ai-grid3">
           {s.fields
-            .filter((fd) => !fd.onlyWhenPriceChanges || priceChanged)
+            // Server ghi giá mới ngay khi lưu (không có ngày hiệu lực riêng).
+            .filter((fd) => !fd.onlyWhenPriceChanges || (priceChanged && !live))
             .map((fd) => (
               <div className="field" key={fd.key} style={fd.wide ? { gridColumn: '1 / -1' } : undefined}>
                 <label>
                   {fd.label} {fd.required && <span className="ai-req">*</span>}
                 </label>
-                <FieldInput fd={fd} value={f[fd.key]} onChange={(v) => set(fd.key, v)} cats={cats} inv={inv} />
+                {live && !isNew && fd.key === 'code' ? (
+                  <input value={f.code} disabled title={translate('The code cannot be changed after it is created.')} />
+                ) : (
+                  <FieldInput fd={fd} value={f[fd.key]} onChange={(v) => set(fd.key, v)} cats={cats} inv={inv} />
+                )}
               </div>
             ))}
         </div>
@@ -346,7 +377,33 @@ function RowForm({ catalogKey, row, all, cats, inv, user, onClose }) {
             )}
           </p>
         )}
-        {catalogKey === 'services' && !isNew && (
+        {live && !isNew && prices && (
+          <>
+            <div className="section-label">Price history</div>
+            <table className="dt">
+              <thead>
+                <tr>
+                  <th>Changed at</th>
+                  <th className="num">Old price</th>
+                  <th className="num">New price</th>
+                  <th>Changed by</th>
+                </tr>
+              </thead>
+              <tbody>
+                {prices.map((h, i) => (
+                  <tr key={i}>
+                    <td className="mono">{fmtDateTime(h.changed_at)}</td>
+                    <td className="num mono">{h.old_price == null ? '—' : fmtMoney(Number(h.old_price))}</td>
+                    <td className="num mono">{h.price == null ? '—' : fmtMoney(Number(h.price))}</td>
+                    <td>{h.changed_by_name ?? '—'}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <p className="ai-hint">Invoices and lab orders store the price at the time they are made, so changing the price here does not change old documents.</p>
+          </>
+        )}
+        {!live && catalogKey === 'services' && !isNew && (
           <>
             <div className="section-label">Price history</div>
             <table className="dt">
@@ -392,7 +449,7 @@ function RowForm({ catalogKey, row, all, cats, inv, user, onClose }) {
         <button className="btn btn-ghost" onClick={onClose}>
           Cancel
         </button>
-        <button className="btn btn-primary" onClick={save}>
+        <button className="btn btn-primary" onClick={save} disabled={saving}>
           <Icon name="save" /> <span>Save</span>
         </button>
       </div>

@@ -3,6 +3,8 @@ import Icon from '../../components/Icon'
 import { translate } from '../../i18n'
 import { getHistory, getVisitRecord, VISIT_STATUS_LABEL, PRIORITY_LABEL } from '../../api/emrApi'
 import { vitalsText } from '../../api/vitals'
+import { toLabOrder } from '../../api/serviceStore'
+import { LabOrderResults } from './doctorShared'
 
 // Lịch sử khám của một bệnh nhân lấy từ server (FR04): mỗi lượt có chẩn đoán đã xác nhận và tóm tắt đơn thuốc;
 // bấm vào một lượt để xem đầy đủ (sinh hiệu, lời kể, ghi chú lâm sàng, liều dùng, hóa đơn). Dùng ở Tra cứu hồ sơ
@@ -142,6 +144,16 @@ function VisitDetail({ visitId }) {
         ))
       ) : (
         <p className="ai-soft ai-small">No diagnosis recorded.</p>
+      )}
+
+      {/* ERD v2.1: phiếu chỉ định cận lâm sàng và kết quả bác sĩ ghi từ phiếu giấy. */}
+      {(r.service_orders ?? []).length > 0 && (
+        <>
+          <div className="section-label">Lab tests &amp; diagnostics</div>
+          {r.service_orders.map((o) => (
+            <LabOrderResults key={o.order_id} order={toLabOrder(o)} />
+          ))}
+        </>
       )}
 
       <div className="section-label">Prescription</div>

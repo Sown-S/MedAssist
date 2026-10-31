@@ -10,7 +10,7 @@ export const GENERAL_GROUPS = [
   { key: 'relationship', label: 'Relationship' },
   { key: 'blood', label: 'Blood type' }
 ]
-const SERVICE_GROUPS = [
+export const SERVICE_GROUPS = [
   { key: 'consult', label: 'Consultation' },
   { key: 'procedure', label: 'Procedure' },
   { key: 'injection', label: 'Injection / infusion' },

@@ -140,9 +140,11 @@ export function PatientBrief({ v, past }) {
   )
 }
 
-// Một phiếu chỉ định xét nghiệm kèm kết quả từng dòng (chỉ xem).
+// Một phiếu chỉ định xét nghiệm kèm kết quả từng dòng (chỉ xem). Phiếu từ server có kết luận riêng (order.conclusion)
+// và dòng đã huỷ (bệnh nhân không làm).
 export function LabOrderResults({ order, summary }) {
   const rows = labRows(order)
+  const conclusion = summary || order.conclusion
   return (
     <div className="lab-res">
       <div className="lab-res-head">
@@ -155,16 +157,16 @@ export function LabOrderResults({ order, summary }) {
       <table className="dt lab-res-table">
         <tbody>
           {rows.map((r) => (
-            <tr key={r.key}>
-              <td>{r.name}</td>
-              <td className={r.result ? '' : 'ai-soft'}>{r.result || translate('No result yet')}</td>
+            <tr key={r.key} className={r.cancelled ? 'ai-dim' : ''}>
+              <td>{r.cancelled ? <s>{r.name}</s> : r.name}</td>
+              <td className={r.result ? '' : 'ai-soft'}>{r.cancelled ? translate('Cancelled — not done') : r.result || translate('No result yet')}</td>
             </tr>
           ))}
         </tbody>
       </table>
-      {summary && (
+      {conclusion && (
         <p className="lab-res-sum">
-          <b>{translate('Conclusion')}:</b> {summary}
+          <b>{translate('Conclusion')}:</b> {conclusion}
         </p>
       )}
     </div>
