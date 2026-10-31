@@ -10,9 +10,11 @@ export default defineConfig({
       '@i18n': resolve('src/renderer/src/i18n')
     }
   },
+  // JSX dịch qua runtime của app (@i18n/jsx-runtime) giống electron.vite.config — test giao diện thấy đúng chữ như khi chạy thật.
+  esbuild: { jsx: 'automatic', jsxImportSource: '@i18n' },
   test: {
     environment: 'jsdom',
-    include: ['tests/**/*.test.js'],
+    include: ['tests/**/*.test.{js,jsx}'],
     env: { VITE_USE_MOCK: 'true' },
     setupFiles: ['tests/setup.js']
   }

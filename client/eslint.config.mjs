@@ -41,7 +41,10 @@ export default [
     languageOptions: { sourceType: 'module', globals: { ...globals.node } }
   },
   {
-    files: ['tests/**/*.js'],
-    languageOptions: { sourceType: 'module', globals: { ...globals.browser, ...globals.node } }
+    files: ['tests/**/*.{js,jsx}'],
+    languageOptions: { sourceType: 'module', globals: { ...globals.browser, ...globals.node }, parserOptions: { ecmaFeatures: { jsx: true } } },
+    // Test giao diện (.jsx) dùng component trong JSX và hook như code app.
+    plugins: { react, 'react-hooks': reactHooks },
+    rules: { 'react/jsx-uses-vars': 'warn', ...asWarnings(reactHooks.configs.recommended.rules) }
   }
 ]
