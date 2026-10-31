@@ -90,8 +90,8 @@ export default function PaymentModalLive({ open, onClose, patient, initialTab = 
   const services = paraclinical.filter((x) => !x.service_order_id)
   const ordered = paraclinical.filter((x) => x.service_order_id)
   const consultLine = (inv?.items ?? []).find((x) => x.item_type === 'Consultation')
-  // Chỉ định ngoài danh mục chưa có giá; server vẫn liệt kê sau khi quầy đã thêm tay → ẩn dòng đã có tên trên hoá đơn.
-  const unbilled = (inv?.unbilled_items ?? []).filter((u) => !services.some((x) => x.item_name === u.item_name))
+  // Chỉ định ngoài danh mục chưa có giá; server đã bỏ những mục quầy thêm tay cùng tên.
+  const unbilled = inv?.unbilled_items ?? []
   const consultServices = cat.services.filter((s) => s.kind === 'Service' && s.group_key === 'consult' && s.is_active !== false)
   // Dòng hoá đơn từ chỉ định → dòng chỉ định tương ứng (để huỷ). Dòng gói ("Gói: …") không huỷ riêng ở quầy.
   const orderItemOf = (x) =>

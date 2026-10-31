@@ -10,6 +10,7 @@ const refText = (x) =>
   x.ref_text || (x.ref_low != null || x.ref_high != null ? `${x.ref_low ?? ''}–${x.ref_high ?? ''}${x.unit ? ' ' + x.unit : ''}` : '')
 
 // Phiếu server → phiếu client. Mỗi dòng giữ item_id làm `code` nên khoá kết quả "<order_id>:<item_id>" khớp labRows.
+// Dịch vụ khám trong gói (group_key "consult") không có kết quả → không đưa vào danh sách xét nghiệm.
 export const toLabOrder = (o) => ({
   id: o.order_id,
   at: o.ordered_at,
@@ -19,7 +20,7 @@ export const toLabOrder = (o) => ({
   conclusion: o.conclusion ?? '',
   packageName: o.package_name ?? '',
   other: '',
-  tests: o.items.map((x) => ({
+  tests: o.items.filter((x) => x.group_key !== 'consult').map((x) => ({
     code: x.item_id,
     itemId: x.item_id,
     name: x.item_name,
