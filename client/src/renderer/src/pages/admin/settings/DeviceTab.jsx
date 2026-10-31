@@ -79,7 +79,7 @@ export function printTest(doc, draft) {
   printHtml(
     t('Test page'),
     `<h1>${t('Test page')} — ${t(doc.label)}</h1><p class="meta">${t('Paper size')}: ${getDevice().papers[doc.key]}</p>
-    <table><thead><tr><th>${t('Item')}</th><th class="num">${t('Amount')}</th></tr></thead>
+    <table><thead><tr><th>${t('Line item')}</th><th class="num">${t('Amount')}</th></tr></thead>
     <tbody><tr><td>${t('Consultation fee')}</td><td class="num">${fmtMoney(draft.ops.consultFee)}</td></tr></tbody></table>`,
     doc.key,
     draft
