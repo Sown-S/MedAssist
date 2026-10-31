@@ -102,3 +102,25 @@ jobs:
       - run: pip install -r tools/drug_data/requirements.txt -r tools/hospital_data/requirements.txt
       - working-directory: tools
         run: python -m pytest
+
+  client:
+    name: Client (lint + test)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: client
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: client/package-lock.json
+      - name: Cài thư viện (không tải Electron, test không cần)
+        run: npm ci
+        env:
+          ELECTRON_SKIP_BINARY_DOWNLOAD: "1"
+      - name: ESLint (giai đoạn đầu chỉ cảnh báo, không chặn PR)
+        run: npm run lint
+      - name: Vitest
+        run: npm test
