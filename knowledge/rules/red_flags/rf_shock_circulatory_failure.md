@@ -4,9 +4,9 @@ rule_key: rf_shock_circulatory_failure
 rule_name: 'Cờ đỏ: Sốc hoặc suy tuần hoàn cấp (Tụt huyết áp hoặc mạch nhanh vượt ngưỡng theo tuổi)'
 rule_type: RED_FLAG
 resulting_priority: Emergency
-source_key: moh_qd_1327_2014
-source_edition: Quyết định số 1327/QĐ-BYT
-reason_text: 'CẤP CỨU: Dấu hiệu sốc/suy tuần hoàn theo lứa tuổi (Người lớn/trẻ lớn: HATT < 90 mmHg hoặc mạch > 130; Trẻ 1-5 tuổi: HATT < 80 hoặc mạch > 150; Nhũ nhi < 1 tuổi: HATT < 70 hoặc mạch > 170 lần/phút theo QĐ 292/QĐ-BYT & QĐ 2699/QĐ-BYT).'
+source_key: moh_qd_292_2024
+source_edition: Quyết định số 292/QĐ-BYT
+reason_text: 'CẤP CỨU: Dấu hiệu sốc/suy tuần hoàn (Ngưỡng trẻ em theo QĐ 292/QĐ-BYT mục II.6: nhũ nhi < 1 tuổi HATT < 70 mmHg hoặc mạch > 170, trẻ nhỏ 1-12 tuổi HATT < 80 hoặc mạch > 150; Ngưỡng người lớn theo QĐ 2699/QĐ-BYT: HATT < 90 hoặc mạch > 130 lần/phút).'
 condition_logic:
   op: OR
   args:
@@ -68,4 +68,4 @@ condition_logic:
 ---
 
 # Cờ đỏ: Sốc hoặc suy tuần hoàn cấp (Tụt huyết áp hoặc mạch nhanh vượt ngưỡng theo tuổi)
-CẤP CỨU: Dấu hiệu sốc/suy tuần hoàn theo lứa tuổi (Người lớn/trẻ lớn: HATT < 90 mmHg hoặc mạch > 130; Trẻ 1-5 tuổi: HATT < 80 hoặc mạch > 150; Nhũ nhi < 1 tuổi: HATT < 70 hoặc mạch > 170 lần/phút theo QĐ 292/QĐ-BYT & QĐ 2699/QĐ-BYT).
+CẤP CỨU: Dấu hiệu sốc/suy tuần hoàn (Ngưỡng trẻ em theo QĐ 292/QĐ-BYT mục II.6: nhũ nhi < 1 tuổi HATT < 70 mmHg hoặc mạch > 170, trẻ nhỏ 1-12 tuổi HATT < 80 hoặc mạch > 150; Ngưỡng người lớn theo QĐ 2699/QĐ-BYT: HATT < 90 hoặc mạch > 130 lần/phút).
