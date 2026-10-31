@@ -43,6 +43,7 @@ class PatientContext(BaseModel):
     """Khung nhắc khi kê đơn — CHỈ ĐỌC. Hệ thống KHÔNG kiểm tra tương tác thuốc."""
     chronic_conditions: list[str] = []
     medical_notes: str | None = None
+    is_pregnant: bool | None = None
     allergy_notes: str | None = None
     disclaimer: str = "Hệ thống không kiểm tra tương tác thuốc. Bác sĩ tự đối chiếu bệnh nền và dị ứng."
 

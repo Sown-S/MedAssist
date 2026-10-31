@@ -1,9 +1,6 @@
-"""Reasoning trong worker trên danh sách ứng viên đóng của Node 2.
+"""Node 3: lập luận LLM trên danh sách ứng viên đóng của Node 2.
 
-Chỉ mã ứng viên, điểm và bằng chứng có cấu trúc được đưa vào prompt. Không chuyển
-tiếp đặc trưng đầu vào thô, định danh hoặc metadata tùy ý. JSON trả về được giữ ở
-``llm_output`` cho Node 4; không hiển thị hoặc dùng để đổi ưu tiên tại đây. Không
-log/lưu prompt hoặc dữ liệu bệnh nhân.
+Chỉ truyền mã ứng viên, điểm và bằng chứng cấu trúc vào prompt; không truyền PII.
 """
 
 import json
@@ -25,13 +22,7 @@ async def run_node3(
     *,
     timeout_seconds: float,
 ) -> PipelineState:
-    """Yêu cầu xếp hạng/lý do và đề nghị Routine -> HighPriority tùy chọn.
-
-    Worker truyền ngân sách đánh giá *còn lại* tính từ lúc xếp hàng thay vì khởi
-    động lại deadline 90 giây. Lỗi client và cancellation từ worker được truyền
-    tới nhánh fallback Rule-only/cancellation của graph. Node 4 chịu trách nhiệm
-    kiểm tra schema, mã Active, bằng chứng và mức sàn an toàn.
-    """
+    """Yêu cầu xếp hạng/giải thích ứng viên và đề nghị nâng ưu tiên trong ngân sách còn lại."""
     result = state.copy()
     for key in ("llm_output", "validation_result", "error"):
         result.pop(key, None)
@@ -58,7 +49,7 @@ async def run_node3(
     prompt = _reasoning_prompt(state, candidates)
     result["llm_output"] = await llm_client.generate_json(
         prompt=prompt,
-        schema=reasoning_json_schema(),
+        schema=reasoning_json_schema([c["condition_code"] for c in candidates]),
         timeout_seconds=timeout_seconds,
     )
     return result

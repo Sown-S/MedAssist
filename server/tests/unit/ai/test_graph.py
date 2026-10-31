@@ -30,9 +30,9 @@ def triage_rule(kind="RED_FLAG"):
         "reason_text": "Luật giả lập.",
         "resulting_priority": "Emergency" if kind == "RED_FLAG" else "HighPriority",
         "condition_logic": {
-            "type": "vital_sign", "key": "spo2_pct", "operator": "lt", "value": 90,
+            "type": "vital", "vital": "spo2_pct", "cmp": "<", "value": 90,
         } if kind == "RED_FLAG" else {
-            "type": "symptom", "code": "signal_a", "status": "PRESENT",
+            "type": "symptom", "symptom_code": "signal_a", "state": "PRESENT",
         },
         "status": "Active",
     }
@@ -96,7 +96,13 @@ def case(monkeypatch):
                         {"symptom_code": "signal_b", "polarity": "SUPPORTS", "weight": 1,
                          "is_key": True},
                     ],
-                    "guidelines": [{"excerpt_key": "synthetic_guide", "excerpt": "Giả lập."}],
+            "guidelines": [{
+                "excerpt_key": "synthetic_guide",
+                "title": "Khuyến cáo giả lập",
+                "content": "Nội dung giả lập",
+                "source_title": "Nguồn giả lập",
+                "source_locator": None,
+            }],
                 } for letter in "abcd"],
                 symptoms=[{"symptom_code": "signal_a"}, {"symptom_code": "signal_b"}],
             )
@@ -154,6 +160,21 @@ def assert_rule_only(result, code, *, priority="Routine"):
                for c in result["candidates"])
 
 
+def test_manual_test_mode_ignores_exhausted_queue_budget(case):
+    from app.ai.test_mode import unlimited_assessment
+
+    async def scenario():
+        token = unlimited_assessment.set(True)
+        try:
+            result = await case.run(timeout_seconds=0)
+            assert result["mode"] == "Full"
+            assert result["validation_result"]["valid"] is True
+        finally:
+            unlimited_assessment.reset(token)
+
+    asyncio.run(scenario())
+
+
 def test_success_runs_gate_retrieval_preliminary_reasoning_validation_in_order(case):
     original = deepcopy(case.state)
     snapshots = []
@@ -194,7 +215,7 @@ def test_success_runs_gate_retrieval_preliminary_reasoning_validation_in_order(c
     assert case.state == original
     result["input_features"]["symptoms"]["signal_a"] = "ABSENT"
     result["candidates"][1]["supporting_evidence"][0]["weight"] = 0.1
-    result["candidates"][1]["guidelines"][0]["excerpt"] = "Changed"
+    result["candidates"][1]["guidelines"][0]["content"] = "Changed"
     assert case.state == original
     assert snapshot["candidates"][2]["supporting_evidence"][0]["weight"] == 1
 

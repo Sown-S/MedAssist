@@ -1,0 +1,58 @@
+{
+  "name": "medassist-app",
+  "version": "0.1.0",
+  "description": "MedAssist — Clinical Decision Support System for Outpatient Clinics (Electron + React desktop client)",
+  "main": "./out/main/index.js",
+  "author": "C1SE.28",
+  "scripts": {
+    "dev": "electron-vite dev",
+    "build": "electron-vite build",
+    "start": "electron-vite preview",
+    "build:win": "electron-vite build && electron-builder --win",
+    "build:mac": "electron-vite build && electron-builder --mac",
+    "build:linux": "electron-vite build && electron-builder --linux",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@electron-toolkit/utils": "^3.0.0",
+    "@fontsource-variable/plus-jakarta-sans": "^5.3.0",
+    "@fontsource/ibm-plex-mono": "^5.2.5",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.26.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.1",
+    "electron": "^31.3.0",
+    "electron-builder": "^24.13.3",
+    "electron-vite": "^2.3.0",
+    "jsdom": "^25.0.1",
+    "vite": "^5.4.0",
+    "vitest": "^2.1.9"
+  },
+  "productName": "MedAssist",
+  "build": {
+    "appId": "vn.edu.dtu.c1se28.medassist",
+    "productName": "MedAssist",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "out/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "certs",
+        "to": "certs",
+        "filter": [
+          "*.crt",
+          "*.pem"
+        ]
+      }
+    ],
+    "win": {
+      "target": "nsis"
+    }
+  }
+}

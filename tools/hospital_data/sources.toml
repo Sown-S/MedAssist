@@ -1,0 +1,146 @@
+# Văn bản nguồn của danh mục cơ sở nhận chuyển tuyến. File gốc tải tay bằng trình duyệt (các trang đều
+# chặn công cụ tự động hoặc có mã xác nhận), chép vào sources/<id>/. build.py ghi SHA-256 vào sources/manifest.json.
+# tinh: tên tỉnh/thành theo 34 đơn vị hành chính sau 01/7/2025; để trống thì lấy theo byt_tinh.csv.
+# so_huu: Public (công lập địa phương), Ministry (bộ/ngành), Private; để trống nếu văn bản không ghi.
+# bo_sung: nguồn cũ, chỉ điền địa chỉ cho cơ sở đã có ở nguồn khai trước nó (so theo phần tên riêng);
+#          dòng không khớp vẫn được thêm nhưng gắn cờ can_xem.
+
+[[nguon]]
+id = "byt_xep_cap_2025"
+co_quan = "Cục Quản lý Khám, chữa bệnh - Bộ Y tế"
+van_ban = "Kết quả xếp cấp chuyên môn kỹ thuật của các đơn vị trực thuộc Bộ Y tế (cập nhật 01/01/2025)"
+url = "https://kcb.vn/chat-luong/ket-qua-xep-cap-chuyen-mon-ky-thuat-cua-cac-don-vi-truc-thuoc-bo-y-te.html"
+files = ["Tong_hop_Xep_cap_1c4c4.pdf"]
+parser = "byt_xep_cap"
+tinh = ""
+
+[[nguon]]
+id = "hanoi_ksk_2026"
+co_quan = "Sở Y tế thành phố Hà Nội"
+van_ban = "Cơ sở đủ điều kiện khám sức khỏe trên địa bàn thành phố Hà Nội (cập nhật 07/10/2026)"
+url = "https://soyte.hanoi.gov.vn/du-lieu-mo/4-co-so-du-dieu-kien-kham-suc-khoe-tren-dia-ban-thanh-pho-ha-noi-2849251116222712122.htm"
+files = ["cap-nhat-710-kham-suc-khoe-2026.xlsx"]
+parser = "xlsx_table"
+tinh = "Hà Nội"
+
+[[nguon]]
+id = "hcm_ksk_2026"
+co_quan = "Sở Y tế Thành phố Hồ Chí Minh"
+van_ban = "Danh sách cơ sở khám bệnh, chữa bệnh trên địa bàn TP. Hồ Chí Minh công bố đủ điều kiện khám sức khỏe (cập nhật 18/5/2026)"
+url = "https://medinet.hochiminhcity.gov.vn/chuyen-muc/so-y-te-thanh-pho-ho-chi-minh-cap-nhat-danh-sach-co-so-kham-benh-chua-benh-tren-cmobile16675-75306.aspx"
+files = ["tt1805danh_sach_ksk_6_19520267.pdf"]
+parser = "hcm_ksk"
+tinh = "Hồ Chí Minh"
+
+[[nguon]]
+id = "danang_tb6539_2026"
+co_quan = "Sở Y tế thành phố Đà Nẵng"
+van_ban = "Thông báo 6539/TB-SYT ngày 29/5/2026 công bố danh sách cơ sở KCB đủ điều kiện thực hiện khám sức khỏe"
+url = "https://soyte.danang.gov.vn/vi/w/thong-bao-ve-cong-bo-danh-sach-co-so-kham-benh-chua-benh-du-dieu-kien-thuc-hien-kham-suc-khoe-thuoc-tham-quyen-quan-ly-cua-so-y-te-danh-sach-cap-nhat-den-ngay-25-5-2026"
+files = ["6539.SYT.PNVY.29.05.2026.pdf"]
+parser = "danang_ksk"
+tinh = "Đà Nẵng"
+
+[[nguon]]
+id = "gialai_cv6710_2026"
+co_quan = "Sở Y tế tỉnh Gia Lai"
+van_ban = "Công văn 6710/SYT-NVY ngày 25/8/2026 thông tin danh sách cơ sở KCB đủ điều kiện thực hiện khám sức khỏe"
+url = "https://syt.gialai.gov.vn/vi/download/Cong-bo-co-so-KCB-du-dieu-kien-thuc-hien-kham-suc-khoe-thuoc-tham-quyen-cua-So-Y-te/Cong-van-so-6710-SYT-NVY-25-08-2026-V-v-thong-tin-danh-sach-co-so-kham-benh-chua-benh-du-dieu-kien-thuc-hien-kham-suc-khoe.html"
+files = ["CV_6710_SYT_NVY_25_08_2026.pdf"]
+parser = "gialai_cv"
+tinh = "Gia Lai"
+
+[[nguon]]
+id = "hue_truc_thuoc"
+co_quan = "Sở Y tế thành phố Huế"
+van_ban = "Các đơn vị trực thuộc Sở Y tế thành phố Huế"
+url = "https://syt.hue.gov.vn/cac-don-vi-truc-thuoc-so-y-te/cac-don-vi-truc-thuoc-so-y-te-thanh-pho-hue.html"
+files = ["don_vi_truc_thuoc.html"]
+parser = "html_table"
+cot_ten = 1
+cot_dia_chi = [2]
+so_huu = "Public"
+tinh = "Huế"
+
+[[nguon]]
+id = "hue_du_dieu_kien"
+co_quan = "Sở Y tế thành phố Huế"
+van_ban = "Cơ sở y tế đủ điều kiện (chuyên mục Sở Y tế thành phố Huế, trang 1-2)"
+url = "https://syt.hue.gov.vn/chuyen-muc/co-so-y-te-du-dieu-kien-6864.html"
+files = ["trang_1.html", "trang_2.html"]
+parser = "html_table"
+cot_ten = 1
+cot_dia_chi = [2]
+tinh = "Huế"
+
+[[nguon]]
+id = "quangngai_tu_nhan"
+co_quan = "Sở Y tế tỉnh Quảng Ngãi"
+van_ban = "Danh sách cơ sở khám bệnh, chữa bệnh tư nhân"
+url = "https://syt.quangngai.gov.vn/quan-ly-hanh-nghe-tu-cong-bo2/ds-y-te-tu-nhan"
+files = ["ds_kcb_tu_nhan.html"]
+parser = "html_table"
+cot_ten = 1
+cot_dia_chi = [4, 5]
+so_huu = "Private"
+tinh = "Quảng Ngãi"
+
+[[nguon]]
+id = "quangngai_emr_2025"
+co_quan = "Sở Y tế tỉnh Quảng Ngãi"
+van_ban = "Danh sách cơ sở KCB tỉnh Quảng Ngãi công bố triển khai bệnh án điện tử (17/9/2025)"
+url = "https://syt.quangngai.gov.vn/cai-cach-hanh-chinh-chuyen-doi-so/danh-sach-cskcb-tinh-quang-ngai-cong-bo-trien-khai-benh-an-dien-tu.html"
+files = ["ds_cskcb_benh_an_dien_tu.html"]
+parser = "html_table"
+cot_ten = 3
+so_huu = "Public"
+tinh = "Quảng Ngãi"
+
+[[nguon]]
+id = "quangngai_gphd_cong_lap"
+co_quan = "Sở Y tế tỉnh Quảng Ngãi"
+van_ban = "Danh sách cấp giấy phép hoạt động cơ sở KCB (sheet Nhà Nước, số liệu đến 2022, trước sáp nhập)"
+url = ""
+files = ["co-so-kcb-chi-tiet.xlsx"]
+parser = "xlsx_table"
+sheet = "Nhà Nước"
+so_huu = "Public"
+tinh = "Quảng Ngãi"
+bo_sung = true
+can_xem = "nguồn cấp phép cũ (2022), kiểm tra tên hiện hành"
+
+[[nguon]]
+id = "hanoi_truc_thuoc"
+co_quan = "Sở Y tế thành phố Hà Nội"
+van_ban = "Các đơn vị trực thuộc Sở Y tế Hà Nội (bảng 1: bệnh viện)"
+url = "https://tracuuqlhn.hanoi.gov.vn/don-vi-truc-thuoc/-/asset_publisher/4IVkx5Jltnbg/content/aa"
+files = ["don_vi_truc_thuoc.html"]
+parser = "html_table"
+cot_ten = 1
+so_huu = "Public"
+tinh = "Hà Nội"
+
+[[nguon]]
+id = "hcm_qd10_2025"
+co_quan = "Sở Y tế Thành phố Hồ Chí Minh"
+van_ban = "Danh sách cơ sở y tế trực thuộc Sở (ban hành kèm Quyết định 10/2025/QĐ-UBND ngày 01/7/2025)"
+url = "http://medinet.gov.vn/co-so-y-te/danh-sach-co-so-y-te-so-y-te-hcm-cmobile4636-72856.aspx"
+files = ["danh_sach_co_so_y_te.html"]
+parser = "html_list"
+khoi = "ContentODM"
+# Mục Trung tâm Y tế bỏ: 38 TTYT đã đổi thành TTYT khu vực từ 2025, tên mới có ở hcm_ksk_2026
+muc = ["Bệnh viện đa khoa", "Bệnh viện chuyên khoa"]
+so_huu = "Public"
+tinh = "Hồ Chí Minh"
+
+[[nguon]]
+id = "danang_truc_thuoc"
+co_quan = "Sở Y tế thành phố Đà Nẵng"
+van_ban = "Các đơn vị trực thuộc Sở Y tế Đà Nẵng (gồm Quảng Nam cũ)"
+url = "https://soyte.danang.gov.vn/cac-don-vi-truc-thuoc"
+files = ["cac_don_vi_truc_thuoc.html"]
+parser = "html_js_data"
+truong_ten = "ten_don_vi"
+truong_dia_chi = "dia_chi_moi"
+so_huu = "Public"
+tinh = "Đà Nẵng"

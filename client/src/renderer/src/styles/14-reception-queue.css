@@ -1,0 +1,75 @@
+/* Tiếp đón: hàng chờ, ca cờ đỏ, triệu chứng, gọi số */
+
+/* ===== Tiếp đón: hàng chờ theo số thứ tự, ca cờ đỏ ===== */
+.rec-queue-grid{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:18px;align-items:start;margin-bottom:18px;}
+.rec-queue-grid .scroll-list{max-height:520px;}
+@media (max-width:1100px){.rec-queue-grid{grid-template-columns:1fr;}}
+.itab-cnt{font-family:'IBM Plex Mono',monospace;font-size:11.5px;opacity:.75;}
+.p-head{gap:12px;}
+.p-info{flex:1;min-width:0;}
+.p-ticket{font-family:'IBM Plex Mono',monospace;font-size:22px;font-weight:700;line-height:1;color:var(--accent);min-width:50px;text-align:center;}
+.p-wait{font-size:12px;font-weight:700;padding:3px 9px;border-radius:20px;white-space:nowrap;background:var(--surface);color:var(--ink-soft);}
+.p-wait.warn{background:var(--priority-soft);color:#FCD34D;}
+.p-wait.long{background:var(--warn-soft);color:#FCA5A5;}
+.redflag-card{border-top:4px solid var(--warn);}
+.redflag-card .card-title svg{color:#FCA5A5;width:17px;height:17px;}
+.redflag-card-note{font-size:12.5px;color:var(--ink-soft);margin:0 0 12px;}
+.redflag-item{border:1px solid rgba(239,68,68,.3);background:rgba(239,68,68,.06);border-radius:12px;padding:10px 12px;margin-bottom:8px;font-size:13.5px;}
+.redflag-item .top{display:flex;justify-content:space-between;align-items:center;color:var(--ink);}
+.redflag-item .signs{color:var(--ink-soft);margin:3px 0 7px;}
+.redflag-item .foot{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--ink-soft);}
+.dev-tools{display:flex;align-items:center;gap:10px;margin-bottom:14px;padding:6px 10px;border:1px dashed var(--border);border-radius:10px;font-size:12px;color:var(--ink-soft);width:fit-content;}
+.dev-tools label{display:flex;align-items:center;gap:6px;cursor:pointer;}
+/* Sinh hiệu 8 khoá + triệu chứng ba trạng thái (HITL) */
+.vitals-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px 14px;align-items:end;}
+.intake-extra{align-items:end;}
+.intake-print{display:flex;align-items:center;gap:8px;height:40px;font-size:13.5px;color:var(--ink);cursor:pointer;}
+.intake-print input{accent-color:var(--primary);}
+@media (max-width:900px){.vitals-grid{grid-template-columns:repeat(2,minmax(0,1fr));}}
+.field-ask{border-color:var(--priority) !important;background:var(--priority-soft) !important;}
+.sym-panel{display:flex;flex-direction:column;gap:8px;}
+/* Dải "Tiếp theo" ở bảng gọi: đã check-in (có dấu ✓) / chưa check-in (bấm để check-in) */
+button.call-chip{font:inherit;cursor:pointer;border:1px dashed var(--border);}
+.q-checkin{padding:3px 10px;font-size:12px;}
+button.call-chip:hover{border-color:var(--accent);}
+.call-chip.ready{display:inline-flex;align-items:center;gap:4px;box-shadow:0 0 0 1px rgba(34,197,94,.55) inset;}
+.call-chip.ready svg{width:12px;height:12px;color:#86EFAC;}
+.sym-extract{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:12.5px;}
+.sym-warn{color:#FCD34D;display:inline-flex;align-items:center;gap:5px;}
+.sym-proposals{border:1px dashed rgba(34,211,238,.45);background:rgba(34,211,238,.06);border-radius:11px;padding:9px 11px;}
+.sym-proposals-head{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:13px;margin-bottom:7px;}
+.sym-chips{display:flex;flex-wrap:wrap;gap:6px;}
+.sym-chip{display:inline-flex;align-items:center;gap:6px;padding:3px 4px 3px 3px;border-radius:20px;border:1px solid var(--border);background:var(--field-bg);font-size:13px;}
+.sym-chip button{border:none;background:transparent;color:var(--ink-soft);cursor:pointer;display:inline-flex;align-items:center;padding:3px;border-radius:50%;}
+.sym-chip button svg{width:14px;height:14px;}
+.sym-chip .sym-chip-state{font:700 11.5px 'Plus Jakarta Sans Variable';padding:3px 9px;border-radius:14px;background:rgba(34,197,94,.18);color:#86EFAC;}
+.sym-chip.absent .sym-chip-state{background:rgba(148,163,184,.18);color:var(--ink-soft);}
+.sym-chip .sym-chip-ok:hover{color:#86EFAC;}
+.sym-chip .sym-chip-x:hover{color:#FCA5A5;}
+.sym-ask{display:flex;align-items:center;flex-wrap:wrap;gap:6px 10px;padding:8px 10px;border-radius:10px;border:1px solid rgba(245,158,11,.45);background:var(--priority-soft);font-size:13px;color:#FDE68A;}
+.sym-ask svg{width:15px;height:15px;}
+.sym-ask-item{display:inline-flex;align-items:center;gap:4px;color:var(--ink);}
+/* Nhóm triệu chứng thu gọn / mở rộng */
+.sym-section{border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:2px 8px 6px;}
+.sym-section.danger{border-color:rgba(239,68,68,.25);}
+/* Danh mục có nhóm (backend thật): một cột — tên dài không bị ép nhiều dòng */
+.sym-section.grouped .sym-grid{grid-template-columns:1fr;gap:2px;}
+.sym-section:not(.grouped){border:none;padding:0;}
+.sym-group{display:flex;align-items:center;gap:6px;width:100%;padding:8px 2px;border:none;background:none;cursor:pointer;font:700 11.5px 'Plus Jakarta Sans Variable';color:var(--ink-soft);text-transform:uppercase;letter-spacing:.04em;text-align:left;}
+.sym-group:hover{color:var(--ink);}
+.sym-group svg{width:14px;height:14px;flex-shrink:0;}
+.sym-section.danger .sym-group{color:#FCA5A5;}
+.sym-count{margin-left:auto;font-weight:600;text-transform:none;letter-spacing:0;color:var(--ink-soft);background:rgba(255,255,255,.06);border-radius:999px;padding:1px 8px;}
+.sym-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 16px;}
+@media (max-width:900px){.sym-grid{grid-template-columns:1fr;}}
+/* Tên co giãn bên trái, cụm Có / Không / Chưa rõ cố định bên phải — các hàng luôn thẳng cột */
+.sym-row{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:10px;min-height:36px;padding:3px 6px;border-radius:8px;font-size:13px;}
+.sym-row.set{background:rgba(255,255,255,.035);}
+.sym-row.ask{box-shadow:0 0 0 1px var(--priority) inset;}
+.sym-name{display:flex;flex-direction:column;min-width:0;line-height:1.3;}
+.sym-src{font-size:11px;color:var(--accent);}
+.sym-seg{flex-wrap:nowrap;flex-shrink:0;}
+.sym-seg button{width:58px;justify-content:center;padding:4px 0;font-size:12px;white-space:nowrap;}
+.sym-seg button.active.present{background:rgba(34,197,94,.2);color:#86EFAC;}
+.sym-seg button.active.absent{background:rgba(148,163,184,.2);color:var(--ink);}
+.sym-seg button.active.unknown{background:rgba(255,255,255,.08);color:var(--ink-soft);}

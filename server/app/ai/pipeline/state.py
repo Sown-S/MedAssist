@@ -4,11 +4,7 @@ from typing import Any, NotRequired, TypedDict
 
 
 class PipelineState(TypedDict):
-    """Trạng thái có thể tuần tự hóa của một lượt chạy pipeline đánh giá.
-
-    Khi khởi tạo chỉ bắt buộc ``input_features``. Mỗi node tự bổ sung trường của
-    mình, nhờ đó Node 1 vẫn dùng được mà không import hoặc gọi LLM.
-    """
+    """Trạng thái của một lượt chạy pipeline; khởi tạo chỉ cần ``input_features``."""
 
     input_features: dict[str, Any]
     priority_rule: NotRequired[str]

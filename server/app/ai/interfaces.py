@@ -1,7 +1,6 @@
-"""Các ranh giới phụ thuộc ổn định mà pipeline AI sử dụng.
+"""Hợp đồng phụ thuộc của pipeline AI.
 
-Pipeline chỉ nhận các mapping thuần để không phụ thuộc model SQLAlchemy hoặc cách
-triển khai Knowledge Reader cụ thể thuộc module khác.
+Chỉ nhận mapping thuần để tách biệt với model SQLAlchemy và tầng lưu trữ.
 """
 
 from collections.abc import Mapping, Sequence
@@ -23,13 +22,8 @@ class KnowledgeReader(Protocol):
         ...
 
     def active_conditions(self) -> Sequence[JsonObject]:
-        """Trả các bệnh Active cùng ``symptoms``/``guidelines`` Active lồng bên trong.
-
-        Mapping tạm của Node 2: condition_code, name_vi, icd10_code; symptoms chứa
-        symptom_code, polarity, weight, is_key; guidelines chứa excerpt_key cùng
-        các trường excerpt/source. Phải đối chiếu với OKF và reader thật trước khi
-        tích hợp production.
-        """
+        """Trả các bệnh Active kèm ``symptoms`` và ``guidelines`` Active.
+        Mỗi guideline gồm ``excerpt_key``, ``title``, ``content``, ``source_title`` và ``source_locator``."""
         ...
 
     def active_symptoms(self) -> Sequence[JsonObject]:
@@ -48,9 +42,5 @@ class LLMClient(Protocol):
         schema: Mapping[str, Any],
         timeout_seconds: float,
     ) -> dict[str, Any]:
-        """Yêu cầu JSON bị ràng buộc bởi schema hoặc phát sinh lỗi client có kiểu.
-
-        Object trả về vẫn chưa đáng tin cho đến khi Node 4 kiểm tra, hoặc với trích
-        xuất là sau khi kiểm tra catalog Active và điều dưỡng xác nhận, rồi mới dùng.
-        """
+        """Yêu cầu JSON theo schema; kết quả chưa đáng tin cho đến khi qua Node 4 hoặc HITL."""
         ...

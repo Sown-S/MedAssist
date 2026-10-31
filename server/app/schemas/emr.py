@@ -7,10 +7,11 @@ import uuid
 from datetime import date, datetime
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, computed_field
+from pydantic import BaseModel, ConfigDict, Field, computed_field
 
 from app.schemas.inventory import MoneyOut
 from app.schemas.patient import patient_code
+from app.schemas.service import ServiceOrderOut
 from app.schemas.visit import VisitOut
 
 __all__ = ["patient_code"]
@@ -88,6 +89,8 @@ class VisitHistoryItem(BaseModel):
     chief_complaint: str
     triage_priority: str | None
     is_red_flag: bool
+    outcome: str | None = Field(None, description="Referred: lượt kết thúc bằng chuyển tuyến")
+    referral_facility: str | None = Field(None, description="Nơi chuyển đến (referral.facility_name)")
     physician_name: str | None
     diagnoses: list[HistoryDiagnosis]
     prescription: HistoryPrescription | None
@@ -151,3 +154,4 @@ class VisitRecord(BaseModel):
     diagnoses: list[RecordDiagnosis]
     prescription: RecordPrescription | None
     invoice: RecordInvoice | None
+    service_orders: list[ServiceOrderOut] = []

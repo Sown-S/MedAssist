@@ -15,6 +15,7 @@ from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.core.request_meta import client_ip, path_template, user_agent
 from app.core.security import decode_access_token, stamp_matches
+from app.exceptions import AppError
 from app.models.user import ROLES, User
 from app.services import audit_service as audit
 
@@ -27,10 +28,15 @@ _UNAUTHORIZED = HTTPException(
 )
 
 
-def get_current_user(
+_PASSWORD_CHANGE_REQUIRED = AppError(403, "PASSWORD_CHANGE_REQUIRED",
+                                     "Bạn cần đổi mật khẩu trước khi tiếp tục")
+
+
+def get_user_allow_password_change(
     creds: HTTPAuthorizationCredentials | None = Depends(_bearer),
     db: Session = Depends(get_db),
 ) -> User:
+    """Như get_current_user nhưng cho qua tài khoản chưa đổi mật khẩu (chỉ dùng ở /auth/me, đổi mật khẩu, đăng xuất)."""
     if creds is None or creds.scheme.lower() != "bearer":
         raise _UNAUTHORIZED
     try:
@@ -44,6 +50,12 @@ def get_current_user(
     user = db.get(User, user_id)
     if user is None or not user.is_active or not stamp_matches(payload, user.password_hash):
         raise _UNAUTHORIZED
+    return user
+
+
+def get_current_user(user: User = Depends(get_user_allow_password_change)) -> User:
+    if user.must_change_password:
+        raise _PASSWORD_CHANGE_REQUIRED
     return user
 
 

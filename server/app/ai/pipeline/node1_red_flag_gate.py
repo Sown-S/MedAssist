@@ -6,15 +6,7 @@ from app.ai.rules.red_flag_rules import evaluate_triage_rules
 
 
 def run_node1(state: PipelineState, knowledge_reader: KnowledgeReader) -> PipelineState:
-    """Bắt đầu đánh giá chỉ bằng đặc trưng đã xác nhận và chuẩn hóa.
-
-    Trả trạng thái mới để lượt đánh giá lặp lại không giữ chẩn đoán hoặc đầu ra LLM
-    cũ. Hai mức ưu tiên đều bắt đầu từ mức sàn do luật tất định đặt ra. Cờ đỏ là
-    trạng thái kết thúc (``is_red_flag=True``, ``ai_status=Skipped``); bên gọi phải
-    trả kết quả ngay, không xếp lịch hoặc chạy các node AI sau. Nếu không có cờ đỏ,
-    trạng thái lượt khám là ``Pending``; việc tạo hàng đợi thuộc service/router đánh
-    giá, không thuộc cổng thuần này.
-    """
+    """Đánh giá cờ đỏ và mức sàn ưu tiên từ đặc trưng đã xác nhận; cờ đỏ dừng ở ``Skipped``."""
     result = evaluate_triage_rules(
         state["input_features"], knowledge_reader.active_triage_rules()
     )

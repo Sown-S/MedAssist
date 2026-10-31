@@ -16,6 +16,7 @@ from app.exceptions import AppError, NotFoundError
 from app.models import Diagnosis, Drug, Invoice, Patient, Prescription, PrescriptionItem, User, Visit
 from app.schemas.patient import PatientCreate, PatientSummary, PatientUpdate
 from app.services import audit_service as audit
+from app.services import service_order_service
 
 MAX_DUPLICATE_CANDIDATES = 10
 
@@ -280,14 +281,16 @@ def patient_history(db: Session, patient_id: uuid.UUID, *, limit: int, offset: i
                             "confirmed_at": rx[0].confirmed_at, "item_count": len(lines), "items": lines}
         items.append({"visit_id": v.visit_id, "visit_date": v.visit_date, "status": v.status,
                       "chief_complaint": v.chief_complaint, "triage_priority": v.triage_priority,
-                      "is_red_flag": v.is_red_flag, "physician_name": names.get(v.physician_id),
+                      "is_red_flag": v.is_red_flag, "outcome": v.outcome,
+                      "referral_facility": (v.referral or {}).get("facility_name"),
+                      "physician_name": names.get(v.physician_id),
                       "diagnoses": dx_by_visit[v.visit_id], "prescription": prescription})
     return {"patient": patient, "total": total, "limit": limit, "offset": offset, "items": items}
 
 
 def visit_record(db: Session, visit_id: uuid.UUID) -> dict:
     """Toàn bộ một lượt khám để xem lại: lượt khám + sinh hiệu, mọi chẩn đoán (kể cả đã rút lại),
-    đơn thuốc còn hiệu lực (kể cả nháp nếu lượt đang khám), tóm tắt hóa đơn."""
+    đơn thuốc còn hiệu lực (kể cả nháp nếu lượt đang khám), phiếu chỉ định kèm kết quả, tóm tắt hóa đơn."""
     visit = db.get(Visit, visit_id)
     if visit is None:
         raise NotFoundError("Không tìm thấy lượt khám")
@@ -308,4 +311,5 @@ def visit_record(db: Session, visit_id: uuid.UUID) -> dict:
     names = _user_names(db, {visit.nurse_id, visit.physician_id})
     return {"patient": patient, "visit": visit, "nurse_name": names.get(visit.nurse_id),
             "physician_name": names.get(visit.physician_id), "diagnoses": list(diagnoses),
-            "prescription": prescription, "invoice": invoice}
+            "prescription": prescription, "invoice": invoice,
+            "service_orders": service_order_service.orders_for_visits(db, [visit_id]).get(visit_id, [])}

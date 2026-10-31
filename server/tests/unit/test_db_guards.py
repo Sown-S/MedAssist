@@ -47,12 +47,12 @@ def test_models_match_migrated_schema(users):
 
 
 def test_every_table_has_a_model(users):
-    """Đủ 25 model: bảng nào thêm bằng migration cũng phải có model tương ứng."""
+    """Đủ 31 model (ERD v2.1): bảng nào thêm bằng migration cũng phải có model tương ứng."""
     from sqlalchemy import inspect
 
     from app.models import Base
     db_tables = set(inspect(engine).get_table_names()) - {"alembic_version"}
-    assert len(db_tables) == 25
+    assert len(db_tables) == 31
     assert set(Base.metadata.tables) == db_tables
 
 

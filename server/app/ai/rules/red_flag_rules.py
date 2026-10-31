@@ -1,11 +1,4 @@
-"""Đánh giá cờ đỏ và mức sàn ưu tiên tất định cho Node 1.
-
-Luật đến từ ``KnowledgeReader.active_triage_rules()``; module không đóng gói ngưỡng
-lâm sàng. Mapping dùng các trường luật hiện có: ``rule_key``, ``version``,
-``rule_type``, ``reason_text`` và ``condition_logic``. Cây điều kiện theo định dạng
-tạm của AI-01 cho đến khi có đặc tả OKF. Mức ưu tiên được suy ra từ loại luật,
-không bao giờ lấy từ ``resulting_priority`` được truyền vào.
-"""
+"""Đánh giá luật cờ đỏ (``RED_FLAG``) và mức sàn ưu tiên (``PRIORITY_FLOOR``) cho Node 1."""
 
 from collections.abc import Mapping, Sequence
 from typing import Any, Literal, TypedDict
@@ -35,14 +28,7 @@ class TriageResult(TypedDict):
 def evaluate_triage_rules(
     input_features: Mapping[str, Any], rules: Sequence[Mapping[str, Any]]
 ) -> TriageResult:
-    """Đánh giá luật Active bằng logic Kleene và áp dụng mức sàn cao nhất.
-
-    Chỉ luật TRUE được tính là khớp. Chỉ cờ đỏ UNKNOWN bổ sung đường dẫn đặc trưng
-    thiếu vào ``complete_now`` (loại trùng theo thứ tự luật/cây). Khi cờ đỏ TRUE,
-    Emergency đã được xác định nên không cần hoàn thiện dữ liệu để ra quyết định.
-    Luật hoặc tập luật sai định dạng phát sinh lỗi rõ ràng thay vì âm thầm trả
-    Routine. Sequence rỗng hợp lệ; mapping rỗng hoặc chuỗi không phải tập luật rỗng.
-    """
+    """Đánh giá luật Active bằng logic Kleene; chỉ cờ đỏ ``UNKNOWN`` bổ sung vào ``complete_now``."""
     if not isinstance(input_features, Mapping):
         raise ConditionFormatError("input_features phải là object")
     if not isinstance(rules, Sequence) or isinstance(rules, (str, bytes, bytearray)):

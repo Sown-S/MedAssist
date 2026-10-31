@@ -1,0 +1,36 @@
+/* Sổ quỹ, ca thu ngân */
+
+/* ===== Sổ quỹ ===== */
+.cash-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:14px;}
+.cash-summary .stat-card .val.in{color:#4ADE80;}
+.cash-summary .stat-card .val.out{color:#FCA5A5;}
+@media (max-width:1100px){.cash-summary{grid-template-columns:repeat(2,minmax(0,1fr));}}
+.cash-filters{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:14px;}
+.cash-filters select,.cash-filters input{padding:8px 10px;border:1px solid var(--border);border-radius:9px;font-size:13.5px;background:var(--field-bg);color:var(--ink);font-family:'Plus Jakarta Sans Variable',sans-serif;}
+.cash-filters select option{background:var(--solid);}
+.cash-filters .grow{flex:1;min-width:180px;}
+.cash-filters .sep{color:var(--ink-soft);font-size:13px;}
+.cashier-item .nm{display:flex;align-items:center;flex-wrap:wrap;gap:4px;}
+.cashier-item .sub{display:flex;gap:6px;align-items:center;margin-top:3px;flex-wrap:wrap;}
+.cashier-item.voided .nm,.cashier-item.voided .amt{text-decoration:line-through;color:var(--ink-soft);}
+.cashier-item .amt.in{color:#4ADE80;}
+.cat-chip{font-size:10.5px;font-weight:700;padding:2px 7px;border-radius:20px;background:var(--surface-alt);color:var(--ink-soft);}
+.cat-chip.thu{background:rgba(34,197,94,.14);color:#86EFAC;}
+.cat-chip.chi{background:var(--primary-soft);color:#93C5FD;}
+.cash-attach{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px;}
+.cash-attach a,.cash-attach span.file{display:inline-flex;align-items:center;gap:6px;font-size:13px;padding:6px 10px;border-radius:9px;background:var(--surface-alt);color:var(--ink);text-decoration:none;cursor:pointer;}
+.cash-attach svg{width:14px;height:14px;}
+.cash-detail-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px;}
+.cash-detail-actions .btn{display:inline-flex;align-items:center;gap:6px;}
+.shift-table td.num,.shift-table th.num{text-align:right;font-family:'IBM Plex Mono',monospace;}
+.shift-table tr.total td{font-weight:700;border-top:1px solid var(--border);}
+.shift-diff{font-family:'IBM Plex Mono',monospace;font-weight:700;}
+.shift-diff.ok{color:#4ADE80;}
+.shift-diff.bad{color:#FCA5A5;}
+.void-restock{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:1px solid var(--border);border-radius:10px;background:var(--surface-alt);margin:4px 0 10px;cursor:pointer;}
+.void-restock input{width:16px;height:16px;margin-top:2px;accent-color:var(--primary);flex-shrink:0;}
+.void-restock b{display:block;font-size:13.5px;color:var(--ink);}
+.void-restock small{font-size:12px;color:var(--ink-soft);}
+.notif-item.urgent b{color:#FCA5A5;}
+.rx-only-chip{margin-left:6px;font-size:10.5px;vertical-align:middle;}
+.void-approve{border-top:1px solid var(--border);padding-top:8px;margin-bottom:6px;}

@@ -1,9 +1,10 @@
 import uuid
 from datetime import datetime
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 from app.schemas.inventory import MoneyOut
+from app.schemas.service import UnbilledOrderItem
 
 
 class InvoiceItemOut(BaseModel):
@@ -11,6 +12,7 @@ class InvoiceItemOut(BaseModel):
     invoice_item_id: uuid.UUID
     item_type: str
     prescription_item_id: uuid.UUID | None
+    service_order_id: uuid.UUID | None
     item_name: str
     quantity: int
     unit_price: MoneyOut
@@ -32,12 +34,12 @@ class InvoiceOut(BaseModel):
     cancel_reason: str | None
     created_at: datetime
     items: list[InvoiceItemOut]
+    unbilled_items: list[UnbilledOrderItem] = Field(default_factory=list,
+                                                    description="Chỉ định ngoài danh mục chưa tính tiền, quầy thêm tay")
 
 
 from decimal import Decimal
 from typing import Literal
-
-from pydantic import Field
 
 from app.schemas.common import CleanStr
 from app.schemas.inventory import Money
@@ -57,9 +59,12 @@ class ParaclinicalLine(BaseModel):
 
 
 class InvoiceEdit(BaseModel):
-    """Bỏ trống một trường = giữ nguyên. paraclinical_items = danh sách MỚI thay toàn bộ dòng nhập tay."""
+    """Bỏ trống một trường = giữ nguyên. paraclinical_items = danh sách MỚI thay toàn bộ dòng nhập tay
+    (dòng từ phiếu chỉ định không nằm trong danh sách này). consultation_service_id: đổi dịch vụ khám
+    (tên và giá theo danh mục, consultation_fee nếu gửi kèm thì ghi đè giá)."""
     model_config = ConfigDict(extra="forbid")
     consultation_fee: Money | None = None
+    consultation_service_id: uuid.UUID | None = None
     paraclinical_items: list[ParaclinicalLine] | None = Field(default=None, max_length=30)
 
 
@@ -83,6 +88,23 @@ class AwaitingPaymentItem(BaseModel):
     payment_status: str | None
     has_prescription: bool
     pending_items: int
+
+
+class InvoiceHistoryItem(BaseModel):
+    invoice_id: uuid.UUID
+    invoice_code: str
+    visit_id: uuid.UUID
+    queue_number: int | None
+    patient_name: str
+    consultation_fee: MoneyOut
+    paraclinical_fee: MoneyOut
+    drug_fee: MoneyOut
+    total_amount: MoneyOut
+    payment_method: str
+    payment_status: str
+    paid_at: datetime | None
+    cancelled_at: datetime | None
+    created_at: datetime
 
 
 class PrintPatient(BaseModel):

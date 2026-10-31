@@ -1,0 +1,24 @@
+/* Điểm vào của toàn bộ CSS (import từ main.jsx). Mỗi file trong styles/ là một vùng giao diện.
+   THỨ TỰ IMPORT = THỨ TỰ CASCADE: file sau ghi đè file trước, nên đừng đổi thứ tự;
+   CSS mới thêm vào cuối file của vùng tương ứng (hoặc tạo file mới ở cuối danh sách). */
+
+@import './styles/01-tokens-base.css';
+@import './styles/02-topbar-layout.css';
+@import './styles/03-components.css';
+@import './styles/04-admin-shell.css';
+@import './styles/05-login.css';
+@import './styles/06-shared-screens.css';
+@import './styles/07-login-v2.css';
+@import './styles/08-icons-select-notify.css';
+@import './styles/09-admin-home.css';
+@import './styles/10-admin-patients-invoices.css';
+@import './styles/11-ai-config.css';
+@import './styles/12-inventory-catalog.css';
+@import './styles/13-admin-history-staff-settings.css';
+@import './styles/14-reception-queue.css';
+@import './styles/15-reception-cashbook.css';
+@import './styles/16-reception-dashboard-invoices.css';
+@import './styles/17-doctor-consult.css';
+@import './styles/18-doctor-workflow.css';
+@import './styles/19-connection-intake.css';
+@import './styles/20-ai-knowledge-emr.css';

@@ -1,10 +1,6 @@
-"""Ranh giới LLM cục bộ công khai, chỉ dùng cho reasoning và extraction ở worker.
+"""Ranh giới LLM cục bộ cho reasoning và extraction trong worker.
 
-Bên gọi cung cấp prompt đã che định danh và ngân sách thời gian *còn lại* (đánh giá:
-90 giây; trích xuất: 30 giây, do worker tính từ lúc xếp hàng). Không lưu prompt hay
-văn bản sinh ra tại đây; chỉ được log phiên bản prompt. Object sinh ra chưa đáng
-tin: Node 4 vẫn phải kiểm tra schema, mã Active, ứng viên, bằng chứng và mức sàn an
-toàn Node 1 trước khi sử dụng/hiển thị.
+Không log/lưu prompt hay văn bản sinh ra; đầu ra phải qua Node 4 hoặc HITL kiểm tra.
 """
 
 import asyncio
@@ -25,6 +21,7 @@ from app.ai.llm.errors import (
     LLMTimeoutError,
 )
 from app.ai.llm.ollama_client import OllamaClient
+from app.ai.test_mode import unlimited_assessment
 
 __all__ = [
     "LLMClient", "LLMError", "LLMConfigurationError", "LLMTimeoutError",
@@ -57,11 +54,7 @@ def _json_object(raw: str | bytes) -> dict[str, Any]:
 
 
 class LLMClient:
-    """Triển khai app.ai.interfaces.LLMClient mà không chạy tác vụ khi import.
-
-    Tên model truyền rõ ràng là tag model cục bộ đã cài. Không có tag mặc định cho
-    đến khi nhóm chốt model. Khởi tạo client không gửi request.
-    """
+    """Client LLM cục bộ; khởi tạo không tạo kết nối mạng."""
 
     def __init__(
         self,
@@ -86,12 +79,7 @@ class LLMClient:
         schema: Mapping[str, Any],
         timeout_seconds: float,
     ) -> dict[str, Any]:
-        """Yêu cầu JSON theo schema; trả object đang chờ Node 4 kiểm tra.
-
-        Timeout HTTPX áp dụng cho từng thao tác I/O. asyncio.timeout đồng thời giới
-        hạn toàn bộ request, kể cả response chậm nhưng vẫn tiếp tục gửi dữ liệu.
-        Chủ động để cancellation từ worker truyền lên.
-        """
+        """Yêu cầu JSON theo schema với giới hạn tổng thời gian ``asyncio.timeout``."""
         if (
             isinstance(timeout_seconds, bool)
             or not isinstance(timeout_seconds, (int, float))
@@ -111,9 +99,10 @@ class LLMClient:
         if request_schema.get("type") != "object":
             raise LLMConfigurationError("LLM schema must describe a JSON object.")
         try:
-            async with asyncio.timeout(timeout_seconds):
+            request_timeout = None if unlimited_assessment.get() else timeout_seconds
+            async with asyncio.timeout(request_timeout):
                 raw = await self._ollama.generate(
-                    prompt=prompt, schema=request_schema, timeout_seconds=timeout_seconds
+                    prompt=prompt, schema=request_schema, timeout_seconds=request_timeout
                 )
         except TimeoutError:
             raise LLMTimeoutError("Local LLM request timed out.") from None

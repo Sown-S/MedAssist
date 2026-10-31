@@ -5,8 +5,7 @@ from typing import Annotated, Literal
 
 from pydantic import AfterValidator, BaseModel, ConfigDict, Field
 
-from app.core.security import MIN_PASSWORD_LENGTH
-from app.schemas.common import CleanStr, PhoneVN
+from app.schemas.common import CleanStr, NewPassword, PhoneVN
 
 Role = Literal["Physician", "Nurse", "Admin"]
 
@@ -27,7 +26,17 @@ def _email(v: str) -> str:
     return v.lower()
 
 
+def _staff_code(v: str) -> str | None:
+    v = v.strip().upper()
+    if not v:
+        return None
+    if not re.fullmatch(r"[A-Z0-9_-]{1,20}", v):
+        raise ValueError("Mã nhân viên tối đa 20 ký tự: chữ không dấu, số, gạch nối")
+    return v
+
+
 Username = Annotated[str, AfterValidator(_username)]
+StaffCode = Annotated[str, AfterValidator(_staff_code)]
 Email = Annotated[str, AfterValidator(_email)]
 
 
@@ -36,9 +45,12 @@ class UserCreate(BaseModel):
     username: Username
     full_name: CleanStr = Field(min_length=1, max_length=100)
     role: Role
-    password: str = Field(min_length=MIN_PASSWORD_LENGTH, max_length=128)
+    password: NewPassword
     email: Email | None = Field(default=None, max_length=100)
     phone: PhoneVN | None = None
+    staff_code: StaffCode | None = None
+    license_no: CleanStr | None = Field(default=None, max_length=30, description="Số chứng chỉ hành nghề (bác sĩ)")
+    room_id: uuid.UUID | None = Field(default=None, description="Phòng khám cố định (chỉ bác sĩ)")
 
 
 class UserUpdate(BaseModel):
@@ -49,10 +61,13 @@ class UserUpdate(BaseModel):
     is_active: bool | None = None
     email: Email | None = Field(default=None, max_length=100)
     phone: PhoneVN | None = None
+    staff_code: StaffCode | None = None
+    license_no: CleanStr | None = Field(default=None, max_length=30)
+    room_id: uuid.UUID | None = None
 
 
 class PasswordReset(BaseModel):
-    new_password: str = Field(min_length=MIN_PASSWORD_LENGTH, max_length=128)
+    new_password: NewPassword
 
 
 class UserOut(BaseModel):
@@ -64,4 +79,14 @@ class UserOut(BaseModel):
     email: str | None
     phone: str | None
     is_active: bool
+    must_change_password: bool
+    staff_code: str | None
+    license_no: str | None
+    room_id: uuid.UUID | None
+    room_code: str | None = None
+    room_name: str | None = None
     created_at: datetime
+    # Tính từ audit_log, không phải cột (ERD v1.9 mục 2.1)
+    created_by: str | None = None
+    last_login_at: datetime | None = None
+    locked_until: datetime | None = None

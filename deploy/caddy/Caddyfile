@@ -1,0 +1,11 @@
+{
+	auto_https off
+	admin off
+}
+
+# Một chứng chỉ do CA của dự án cấp cho IP / tên máy admin (deploy/scripts/new-certs.ps1).
+:443 {
+	tls /certs/server.crt /certs/server.key
+	encode gzip
+	reverse_proxy api:8000
+}

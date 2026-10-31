@@ -1,23 +1,6 @@
-"""Chấm điểm Node 2 thuần và tạm thời trên một snapshot reader Active.
+"""Chấm điểm tất định Node 2 trên tập bệnh và triệu chứng Active.
 
-Mapping reader tạm (phải đối chiếu với OKF và reader thật): một bệnh có
-``condition_code``, ``name_vi``, ``icd10_code`` tùy chọn, ``symptoms`` lồng bên
-trong (các hàng quan hệ bệnh-triệu chứng) và ``guidelines`` (các hàng trích đoạn).
-Quan hệ dùng ``symptom_code``, ``polarity`` (SUPPORTS/CONTRADICTS), ``weight``
-trong [0, 1] và ``is_key``. Mọi hàng phải đến từ các hàm Active của reader.
-
-Công thức tạm, cần xem lại sau đánh giá Sprint 3:
-* coverage = trọng số SUPPORTS PRESENT / trọng số của mọi SUPPORTS;
-* precision = số SUPPORTS PRESENT / số triệu chứng PRESENT trong catalog;
-* score = trung bình điều hòa(coverage, precision) * (1 - tỷ lệ phản bác), trong đó
-  tỷ lệ phản bác = trọng số bị phản bác / trọng số mọi quan hệ dùng được.
-CONTRADICTS PRESENT và SUPPORTS ABSENT là bằng chứng phản bác. CONTRADICTS ABSENT
-là trung tính: thiếu bằng chứng phản bác không phải bằng chứng ủng hộ bệnh. UNKNOWN
-(kể cả triệu chứng bị bỏ qua) không bao giờ là bằng chứng. Bỏ qua quan hệ trọng số
-0. Chỉ lấy bệnh có bằng chứng ủng hộ dương.
-
-Các điểm này chỉ hỗ trợ xếp hạng, không phải xác suất hay ngưỡng lâm sàng. Module
-không tự cung cấp dữ kiện lâm sàng, mục catalog hoặc hướng dẫn.
+Điểm dựa trên trung bình điều hòa của ``coverage`` và ``precision`` trừ tỷ lệ bằng chứng phản bác.
 """
 
 from collections.abc import Mapping, Sequence
@@ -39,13 +22,7 @@ def rank_conditions(
     conditions: Sequence[JsonObject],
     symptoms: Sequence[JsonObject],
 ) -> list[dict[str, Any]]:
-    """Xếp hạng mọi bệnh được hỗ trợ; Node 2 áp giới hạn bốn ứng viên.
-
-    Nội bộ dùng phân số chính xác để thứ tự quan hệ không ảnh hưởng điểm sát nhau
-    hoặc hòa. Xuất float thông thường để state pipeline tuần tự hóa được. Phép giao
-    catalog giới hạn retrieval tại đây; việc kiểm tra mã/Active dùng chung ở các
-    biên vẫn thuộc ``validation.knowledge_validators``.
-    """
+    """Xếp hạng các bệnh có bằng chứng ủng hộ dương; tính nội bộ bằng ``Fraction`` để tránh lệch thứ tự."""
     if not isinstance(input_features, Mapping):
         raise ScoringFormatError("input_features phải là object")
     observed = input_features.get("symptoms", {})
@@ -122,10 +99,7 @@ def rank_conditions(
                 contradicting.append(evidence)
                 contradicted_weight += weight
 
-        guidelines = sorted(
-            _objects(condition.get("guidelines", ()), "condition.guidelines"),
-            key=lambda item: _text(item, "excerpt_key"),
-        )
+        guidelines = _guidelines(condition.get("guidelines", ()))
         if not matched_weight:
             continue
         coverage = matched_weight / support_total
@@ -141,7 +115,7 @@ def rank_conditions(
             "precision": float(precision),
             "supporting_evidence": sorted(supporting, key=lambda item: item["symptom_code"]),
             "contradicting_evidence": sorted(contradicting, key=lambda item: item["symptom_code"]),
-            "guidelines": deepcopy([dict(item) for item in guidelines]),
+            "guidelines": deepcopy(guidelines),
             "unknown_key_symptoms": sorted(unknown),
             "label": "Reference Suggestion",
         }
@@ -178,3 +152,30 @@ def _weight(value: object) -> Fraction:
     ):
         raise ScoringFormatError("weight phải là số hữu hạn trong [0, 1]")
     return Fraction(str(value))
+
+
+def _guidelines(value: object) -> list[dict[str, str | None]]:
+    """Chiếu guideline của reader về đúng hợp đồng ổn định mà Node 2 công bố."""
+    projected: list[dict[str, str | None]] = []
+    seen: set[str] = set()
+    for item in _objects(value, "condition.guidelines"):
+        excerpt_key = _text(item, "excerpt_key")
+        if excerpt_key in seen:
+            raise ScoringFormatError("Bệnh có guideline trùng excerpt_key")
+        seen.add(excerpt_key)
+        source_locator = item.get("source_locator")
+        if source_locator is not None and (
+            not isinstance(source_locator, str) or not source_locator.strip()
+        ):
+            raise ScoringFormatError("source_locator phải là chuỗi không rỗng hoặc null")
+        projected.append(
+            {
+                "excerpt_key": excerpt_key,
+                "title": _text(item, "title"),
+                "content": _text(item, "content"),
+                "source_title": _text(item, "source_title"),
+                "source_locator": source_locator,
+            }
+        )
+    projected.sort(key=lambda item: item["excerpt_key"] or "")
+    return projected

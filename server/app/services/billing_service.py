@@ -7,14 +7,15 @@
   * Lượt khám tự Finished khi hóa đơn Paid VÀ không còn dòng thuốc Pending (đơn -> Dispensed).
   * Hủy lượt khám ở Prescribed (bệnh nhân bỏ về): chỉ khi chưa cấp thuốc nào, chưa thu tiền.
 """
+import datetime
 import uuid
 from decimal import Decimal
 
-from sqlalchemy import func, select
+from sqlalchemy import Date, cast, func, select
 from sqlalchemy.orm import Session
 
 from app.exceptions import AppError, NotFoundError
-from app.models import Invoice, Patient, Prescription, PrescriptionItem, User, Visit
+from app.models import Invoice, Patient, Prescription, PrescriptionItem, Service, User, Visit
 from app.schemas.patient import patient_code
 from app.services import audit_service as audit
 from app.services import inventory_service, invoice_service, queue_service
@@ -108,8 +109,17 @@ def dispense_all(db: Session, visit_id: uuid.UUID, actor: User) -> bool:
 
 # ---------------------------------------------------------------------------- hóa đơn
 def edit_invoice(db: Session, visit_id: uuid.UUID, consultation_fee: Decimal | None,
-                 paraclinical: list[dict] | None, actor: User) -> Invoice:
+                 paraclinical: list[dict] | None, actor: User,
+                 consultation_service_id: uuid.UUID | None = None) -> Invoice:
     visit = _prescribed_visit(db, visit_id)
+    consultation_name = None
+    if consultation_service_id is not None:
+        service = db.scalar(select(Service).where(Service.service_id == consultation_service_id,
+                                                  Service.kind == "Service", Service.is_active.is_(True)))
+        if service is None:
+            raise AppError(422, "INVALID_SERVICE", "Dịch vụ khám không tồn tại hoặc đã ngừng dùng")
+        consultation_name = service.name
+        consultation_fee = service.price if consultation_fee is None else consultation_fee
     invoice = invoice_service.active_invoice(db, visit_id, for_update=True)
     if invoice is None:
         raise NotFoundError("Lượt khám chưa có hóa đơn")
@@ -118,8 +128,8 @@ def edit_invoice(db: Session, visit_id: uuid.UUID, consultation_fee: Decimal | N
     lines = None if paraclinical is None else [
         dict(item_type="Paraclinical", item_name=p["item_name"], quantity=p["quantity"],
              unit_price=p["unit_price"], prescription_item_id=None) for p in paraclinical]
-    return invoice_service.reissue(db, visit, invoice, "Sửa hóa đơn", actor,
-                                   consultation_fee=consultation_fee, paraclinical=lines)
+    return invoice_service.reissue(db, visit, invoice, "Sửa hóa đơn", actor, consultation_fee=consultation_fee,
+                                   consultation_name=consultation_name, paraclinical=lines)
 
 
 def pay(db: Session, visit_id: uuid.UUID, method: str, actor: User) -> tuple[Invoice, bool]:
@@ -181,6 +191,23 @@ def awaiting_payment(db: Session) -> list[dict]:
                     "payment_status": inv.payment_status if inv else None,
                     "has_prescription": rx is not None, "pending_items": pending})
     return out
+
+
+def invoice_history(db: Session, day: datetime.date | None, include_cancelled: bool) -> list[dict]:
+    """Hóa đơn trong ngày, mới nhất trước. Hóa đơn đã thu xếp theo ngày thu, còn lại theo ngày lập."""
+    day = day or db.scalar(select(func.current_date()))
+    stmt = (select(Invoice, Visit.queue_number, Patient.full_name)
+            .join(Visit, Visit.visit_id == Invoice.visit_id)
+            .join(Patient, Patient.patient_id == Visit.patient_id)
+            .where(cast(func.coalesce(Invoice.paid_at, Invoice.created_at), Date) == day))
+    if not include_cancelled:
+        stmt = stmt.where(Invoice.payment_status != "Cancelled")
+    rows = db.execute(stmt.order_by(func.coalesce(Invoice.paid_at, Invoice.created_at).desc())).all()
+    return [{"invoice_id": inv.invoice_id, "invoice_code": inv.invoice_code, "visit_id": inv.visit_id,
+             "queue_number": qn, "patient_name": name, "consultation_fee": inv.consultation_fee,
+             "paraclinical_fee": inv.paraclinical_fee, "drug_fee": inv.drug_fee, "total_amount": inv.total_amount,
+             "payment_method": inv.payment_method, "payment_status": inv.payment_status, "paid_at": inv.paid_at,
+             "cancelled_at": inv.cancelled_at, "created_at": inv.created_at} for inv, qn, name in rows]
 
 
 def print_data(db: Session, visit_id: uuid.UUID) -> dict:

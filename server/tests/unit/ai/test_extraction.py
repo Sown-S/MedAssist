@@ -577,3 +577,61 @@ def test_reader_failures_are_not_misreported_as_an_empty_extraction(catalogue):
     with pytest.raises(RuntimeError, match="synthetic reader"):
         extract(catalogue, client, reader=Reader())
     assert client.calls == catalogue.calls == []
+
+
+def test_large_active_catalogue_is_filtered_to_top_relevant_candidates(catalogue):
+    large_rows = list(ROWS) + [
+        {"symptom_code": f"extra_signal_{idx:02d}", "symptom_name": f"Biểu hiện phụ {idx:02d}", "status": "Active"}
+        for idx in range(100)
+    ]
+    catalogue.active = {row["symptom_code"] for row in large_rows}
+    client = MockLLMClient(OUTPUT)
+
+    result = extract(catalogue, client, reader=FakeKnowledgeReader(symptoms=large_rows))
+
+    sent_cat = payload(client)["catalogue"]
+    sent_codes = {row["symptom_code"] for row in sent_cat}
+    assert len(client.calls) == 1
+    assert len(sent_cat) == feature_extractor._MAX_PROMPT_CATALOGUE
+    assert {"signal_a", "signal_b", "signal_c"} <= sent_codes
+    assert codes_and_statuses(result) == {
+        "signal_a": "PRESENT", "signal_b": "ABSENT", "signal_c": "UNKNOWN",
+    }
+
+
+@pytest.mark.parametrize("text,status", [
+    ("Không nóng người", "ABSENT"),
+    ("BN thấy nóng người", "PRESENT"),
+    ("Chua ro nong nguoi", "UNKNOWN"),
+])
+def test_colloquial_and_unaccented_synonyms_rank_into_top_candidates(catalogue, text, status):
+    rows = [{"symptom_code": f"aaa_{i:02d}", "symptom_name": "Dấu hiệu khác"} for i in range(40)]
+    rows.append({"symptom_code": "zzz_target", "symptom_name": "Sốt"})
+    catalogue.active = {r["symptom_code"] for r in rows}
+
+    class Client:
+        calls = []
+
+        async def generate_json(self, **kwargs):
+            self.calls.append(kwargs)
+            data = json.loads(kwargs["prompt"].split("\n")[-1])
+            assert data["text"] == text
+            return {"symptoms": [
+                {"symptom_code": "zzz_target", "status": status}
+                for row in data["catalogue"] if row["symptom_code"] == "zzz_target"
+            ]}
+
+    client = Client()
+    result = extract(catalogue, client, reader=FakeKnowledgeReader(symptoms=rows), text=text)
+    assert len(client.calls) == 1
+    assert codes_and_statuses(result) == {"zzz_target": status}
+
+
+@pytest.mark.parametrize("note,expanded", [
+    ("trời ơi mệt quá", False), ("troi oi met qua", False),
+    ("ho nhiều theo mùa", False), ("mua thuoc ve uong", False),
+    ("buồn ói từ sáng", True), ("buon oi tu sang", True), ("nong nguoi", True),
+])
+def test_colloquial_expansion_does_not_match_accent_stripped_lookalikes(note, expanded):
+    result = feature_extractor._expand_colloquial_text(note)
+    assert (result != note.lower()) is expanded

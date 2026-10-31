@@ -1,17 +1,6 @@
-"""Đánh giá ``condition_logic`` phân loại bằng logic ba giá trị Kleene mạnh.
+"""Đánh giá cây ``condition_logic`` bằng logic ba giá trị Kleene mạnh (TRUE/FALSE/UNKNOWN).
 
-Giả định định dạng tạm của AI-01 (đối chiếu lại với ``okf_format.md`` khi có):
-
-* nhóm: ``{"op": "AND" | "OR", "conditions": [node, ...]}``
-* lá triệu chứng: ``{"type": "symptom", "code": str, "status":
-  "PRESENT" | "ABSENT"}``
-* lá sinh hiệu: ``{"type": "vital_sign", "key": str, "operator": comparator,
-  "value": number}``
-* lá tuổi: ``{"type": "age", "operator": comparator, "value": number}``
-
-Đặc trưng đầu vào dùng ``symptoms`` (mã -> PRESENT/ABSENT/UNKNOWN),
-``vital_signs`` (khóa -> số) và ``age_years`` tùy chọn. Thiếu giá trị cho kết quả
-UNKNOWN; luật sai định dạng phát sinh :class:`ConditionFormatError`.
+Đặc tả nút nhóm (``AND``/``OR``) và lá (``symptom``, ``vital``, ``age``) theo ``knowledge/_spec/okf_format.md``.
 """
 
 from collections.abc import Callable, Mapping, Sequence
@@ -41,14 +30,14 @@ class EvaluationResult:
 
 
 _COMPARATORS: dict[str, Callable[[Any, Any], bool]] = {
-    "eq": operator.eq,
-    "ne": operator.ne,
-    "gt": operator.gt,
-    "gte": operator.ge,
-    "lt": operator.lt,
-    "lte": operator.le,
+    "<": operator.lt,
+    "<=": operator.le,
+    ">": operator.gt,
+    ">=": operator.ge,
+    "==": operator.eq,
 }
 _SYMPTOM_STATES = frozenset({"PRESENT", "ABSENT", "UNKNOWN"})
+_MAX_DEPTH = 5
 
 
 def evaluate_condition(
@@ -58,31 +47,37 @@ def evaluate_condition(
 
     if not isinstance(input_features, Mapping):
         raise ConditionFormatError("input_features phải là object")
-    result = _evaluate_node(condition_logic, input_features)
+    result = _evaluate_node(condition_logic, input_features, depth=1)
     if result.value is not TruthValue.UNKNOWN:
         return EvaluationResult(result.value)
     return EvaluationResult(result.value, tuple(dict.fromkeys(result.missing)))
 
 
-def _evaluate_node(node: Mapping[str, Any], features: Mapping[str, Any]) -> EvaluationResult:
+def _evaluate_node(
+    node: Mapping[str, Any], features: Mapping[str, Any], *, depth: int
+) -> EvaluationResult:
+    if depth > _MAX_DEPTH:
+        raise ConditionFormatError("condition_logic chỉ được lồng tối đa 5 tầng")
     if not isinstance(node, Mapping):
         raise ConditionFormatError("Mỗi nút condition_logic phải là object")
     if "op" in node:
-        return _evaluate_group(node, features)
+        return _evaluate_group(node, features, depth=depth)
 
     leaf_type = node.get("type")
     if leaf_type == "symptom":
         return _evaluate_symptom(node, features)
-    if leaf_type == "vital_sign":
+    if leaf_type == "vital":
         return _evaluate_numeric_leaf(node, features, "vital_signs")
     if leaf_type == "age":
         return _evaluate_numeric_leaf(node, features, "age_years")
     raise ConditionFormatError(f"Loại điều kiện không được hỗ trợ: {leaf_type!r}")
 
 
-def _evaluate_group(node: Mapping[str, Any], features: Mapping[str, Any]) -> EvaluationResult:
+def _evaluate_group(
+    node: Mapping[str, Any], features: Mapping[str, Any], *, depth: int
+) -> EvaluationResult:
     logical_operator = node.get("op")
-    children = node.get("conditions")
+    children = node.get("args")
     if logical_operator not in {"AND", "OR"}:
         raise ConditionFormatError(f"Toán tử logic không hợp lệ: {logical_operator!r}")
     if (
@@ -90,11 +85,11 @@ def _evaluate_group(node: Mapping[str, Any], features: Mapping[str, Any]) -> Eva
         or isinstance(children, (str, bytes))
         or not children
     ):
-        raise ConditionFormatError("conditions phải là danh sách không rỗng")
+        raise ConditionFormatError("args phải là danh sách không rỗng")
 
     # Đánh giá mọi node con để khóa sinh hiệu sai không thể ẩn sau short-circuit
     # của giá trị logic.
-    results = [_evaluate_node(child, features) for child in children]
+    results = [_evaluate_node(child, features, depth=depth + 1) for child in children]
     values = [result.value for result in results]
     missing = tuple(item for result in results for item in result.missing)
 
@@ -115,8 +110,8 @@ def _evaluate_group(node: Mapping[str, Any], features: Mapping[str, Any]) -> Eva
 def _evaluate_symptom(
     node: Mapping[str, Any], features: Mapping[str, Any]
 ) -> EvaluationResult:
-    code = node.get("code")
-    expected = node.get("status")
+    code = node.get("symptom_code")
+    expected = node.get("state")
     if not isinstance(code, str) or not code:
         raise ConditionFormatError("Mã triệu chứng phải là chuỗi không rỗng")
     if expected not in {"PRESENT", "ABSENT"}:
@@ -136,7 +131,7 @@ def _evaluate_symptom(
 def _evaluate_numeric_leaf(
     node: Mapping[str, Any], features: Mapping[str, Any], feature_type: str
 ) -> EvaluationResult:
-    comparator_name = node.get("operator")
+    comparator_name = node.get("cmp")
     comparator = _COMPARATORS.get(comparator_name)
     threshold = node.get("value")
     if comparator is None:
@@ -145,7 +140,7 @@ def _evaluate_numeric_leaf(
         raise ConditionFormatError("Ngưỡng so sánh phải là số")
 
     if feature_type == "vital_signs":
-        key = node.get("key")
+        key = node.get("vital")
         if key not in vital_sign_keys():
             raise ConditionFormatError(f"Khóa sinh hiệu không hợp lệ: {key!r}")
         vitals = features.get("vital_signs", {})
@@ -154,8 +149,11 @@ def _evaluate_numeric_leaf(
         actual = vitals.get(key)
         missing_key = f"vital_signs.{key}"
     else:
-        actual = features.get("age_years")
-        missing_key = "age_years"
+        unit = node.get("unit")
+        if unit not in ("years", "months"):
+            raise ConditionFormatError("unit của tuổi phải là years hoặc months")
+        missing_key = "age_years" if unit == "years" else "age_months"
+        actual = features.get(missing_key)
 
     if actual is None:
         return EvaluationResult(TruthValue.UNKNOWN, (missing_key,))

@@ -3,6 +3,9 @@
 Công cụ chạy **trên máy dev** để tạo `server/data/drugs.csv`. Không thuộc server, không vào image Docker,
 không import gì từ `server/app`. Người phụ trách: Sơn.
 
+Kết quả hiện tại: `drugs.csv` có 386 thuốc (100 chọn tay, 286 thêm tự động), mọi dòng đã có giá
+(286 giá ước tính). Chỉ cần chạy lại công cụ khi đổi danh mục; nạp vào CSDL thì xem `server/data/README.md`.
+
 ## Cài đặt (một lần, trong `tools/`)
 
 ```powershell
@@ -10,7 +13,7 @@ cd tools
 python -m venv .venv
 .venv\Scripts\activate
 pip install -r drug_data/requirements.txt
-python -m pytest            # test không cần DB, không truy cập mạng
+python -m pytest            # test không cần DB, không truy cập mạng; CI cũng chạy bộ test này
 ```
 
 Đường dẫn nguồn để ở **`config.toml`** (trang văn bản, trang tải về trên vbpl.vn). Email cá nhân dùng khi tra giá

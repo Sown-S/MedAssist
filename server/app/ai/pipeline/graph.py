@@ -1,9 +1,6 @@
-"""Điều phối đánh giá chỉ trong worker; không lưu dữ liệu, tracing hay I/O thật.
+"""Điều phối Node 1-4 trong worker bằng LangGraph; tắt tracing và checkpointer.
 
-Node 1 chạy trước khi nạp các phụ thuộc graph/LLM tùy chọn. Ca không khẩn cấp dùng
-LangGraph cho Node 2 -> Node 3 -> Node 4 mà không có checkpointer. Envelope thay
-toàn bộ giá trị PipelineState; nếu cập nhật từng key theo LangGraph thì các trường
-đã bị node xóa (đặc biệt llm_output thô) có thể vẫn còn.
+Envelope thay toàn bộ ``PipelineState`` để không sót ``llm_output`` thô khi node xóa khóa.
 """
 
 import asyncio
@@ -18,6 +15,7 @@ from sqlalchemy.orm import Session
 from app.ai.interfaces import KnowledgeReader, LLMClient
 from app.ai.pipeline.node1_red_flag_gate import run_node1
 from app.ai.pipeline.state import PipelineState
+from app.ai.test_mode import unlimited_assessment
 
 PreliminaryCallback = Callable[[PipelineState], Awaitable[None]]
 ASSESSMENT_TIMEOUT_SECONDS = 90
@@ -38,20 +36,7 @@ async def run_pipeline(
     timeout_seconds: float,
     on_preliminary: PreliminaryCallback | None = None,
 ) -> PipelineState:
-    """Ghép Node 1-4 cho một lượt worker, chỉ trả kết quả đã kiểm tra.
-
-    Worker/service truyền ngân sách còn lại tính từ lúc xếp hàng. Cổng an toàn,
-    khởi tạo graph, retrieval và callback Preliminary tùy chọn đều tiêu thụ ngân
-    sách đó; không khởi động lại đồng hồ trước reasoning và không retry. Service
-    quản lý hàng đợi, transaction và metadata audit (AI-09). Service có thể await
-    ``on_preliminary`` để công bố tối đa ba gợi ý tất định trước reasoning; snapshot
-    fallback riêng vẫn giữ đủ bốn ứng viên. Không ghi trạng thái lâm sàng truyền
-    vào callback này xuống bảng log.
-
-    Lỗi LLM có kiểu/timeout trở thành Degraded/RuleOnly qua kiểm tra baseline của
-    Node 4. Cancellation và lỗi lập trình/callback/hạ tầng được truyền lên worker.
-    Endpoint API không được gọi hàm này.
-    """
+    """Chạy Node 1-4 trong ngân sách thời gian còn lại; lỗi LLM/timeout suy giảm về ``RuleOnly``."""
     started = monotonic()
     gated = run_node1(deepcopy(state), knowledge_reader)
     if gated["is_red_flag"]:
@@ -64,7 +49,7 @@ async def run_pipeline(
         or not math.isfinite(timeout_seconds)
     ):
         raise ValueError("Assessment timeout must be finite seconds.")
-    deadline = started + min(timeout_seconds, ASSESSMENT_TIMEOUT_SECONDS)
+    deadline = None if unlimited_assessment.get() else started + min(timeout_seconds, ASSESSMENT_TIMEOUT_SECONDS)
 
     # LangGraph/LangSmith chỉ là phụ thuộc chạy cục bộ. Tắt rõ tracing từ môi
     # trường, callback kế thừa và debug vì state graph/payload lỗi có thể chứa dữ
@@ -92,7 +77,7 @@ def _compile_worker_graph(
     knowledge_reader: KnowledgeReader,
     llm_client: LLMClient,
     db: Session,
-    deadline: float,
+    deadline: float | None,
     on_preliminary: PreliminaryCallback | None,
 ) -> Any:
     from langgraph.graph import END, START, StateGraph
@@ -118,13 +103,14 @@ def _compile_worker_graph(
         preliminary = envelope["preliminary"]
         if not preliminary["candidates"]:
             return {"assessment": deepcopy(preliminary)}
-        remaining = deadline - monotonic()
-        if remaining <= 0:
+        remaining = None if deadline is None else deadline - monotonic()
+        if remaining is not None and remaining <= 0:
             return {"assessment": deepcopy(preliminary), "llm_failure": "LLM_TIMEOUT"}
         try:
             async with asyncio.timeout(remaining):
                 reasoning = await run_node3(
-                    deepcopy(preliminary), llm_client, timeout_seconds=remaining
+                    deepcopy(preliminary), llm_client,
+                    timeout_seconds=ASSESSMENT_TIMEOUT_SECONDS if remaining is None else remaining
                 )
         except (LLMTimeoutError, TimeoutError):
             return {"assessment": deepcopy(preliminary), "llm_failure": "LLM_TIMEOUT"}

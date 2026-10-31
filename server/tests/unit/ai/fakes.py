@@ -6,11 +6,7 @@ from typing import Any
 
 
 class FakeKnowledgeReader:
-    """Mô phỏng đọc graph/catalog Active, gồm cả các hàng lồng của Node 2.
-
-    Trong fixture giả lập, thiếu status được hiểu là Active; reader loại các hàng
-    graph/catalog ghi rõ Draft, PendingApproval hoặc Retired.
-    """
+    """Mô phỏng đọc tri thức Active trong bộ nhớ; tự loại các dòng khác trạng thái ``Active``."""
 
     def __init__(
         self,
@@ -74,8 +70,4 @@ class FakeLLMClient:
 
 
 class MockLLMClient(FakeLLMClient):
-    """Mock AI-05: JSON tất định hoặc lỗi LLM có kiểu được chèn vào.
-
-    Các lần gọi chỉ được giữ trong bộ nhớ bằng dữ liệu test giả lập; không log hoặc
-    lưu bền vững. Giữ tương thích với FakeLLMClient của AI-00.
-    """
+    """Mock client trả JSON tất định hoặc lỗi LLM có kiểu trong bộ nhớ."""

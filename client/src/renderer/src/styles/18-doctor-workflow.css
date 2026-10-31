@@ -1,0 +1,119 @@
+/* Bác sĩ: tóm tắt, liều, tái khám, dòng thời gian, tra cứu, trực, gọi số */
+
+/* ===== Bác sĩ: dòng tóm tắt, liều có cấu trúc, tái khám, dòng thời gian, hàng chờ gọn, kết thúc ca ===== */
+.consult-strip{display:flex;flex-wrap:wrap;gap:6px;margin:-4px 0 10px;}
+.consult-strip>span{display:flex;flex-direction:column;gap:1px;padding:6px 10px;border-radius:9px;background:var(--surface-alt);min-width:64px;}
+.consult-strip>span.wide{flex:1;min-width:160px;}
+.consult-strip small{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-soft);}
+.consult-strip b{font-size:13px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.consult-strip .hot b{color:#FCA5A5;}
+.consult-strip .need{background:var(--priority-soft);}
+.consult-strip .need b{color:#FCD34D;}
+.status-chip{font-family:'Plus Jakarta Sans Variable',sans-serif;letter-spacing:.02em;}
+.itab.itab-err{box-shadow:inset 0 0 0 1px #F87171;}
+
+.rx-dose{display:flex;flex-wrap:wrap;align-items:flex-end;gap:6px;margin-top:8px;}
+.rx-dose label{display:flex;flex-direction:column;gap:2px;}
+.rx-dose small{font-size:10.5px;color:var(--ink-soft);}
+.rx-dose input,.rx-dose select{width:52px;padding:5px 6px;border:1px solid var(--border);border-radius:7px;background:var(--field-bg);color:var(--ink);font:13px 'IBM Plex Mono';text-align:center;}
+.rx-dose .meal select{width:auto;font-family:inherit;text-align:left;}
+.rx-daily{font-size:12px;color:#67E8F9;margin-left:auto;align-self:center;font-family:'IBM Plex Mono',monospace;}
+
+.follow-up{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:10px;font-size:13px;color:var(--ink-soft);}
+.follow-up label{display:inline-flex;align-items:center;gap:5px;font-weight:600;}
+.follow-up label svg{width:15px;height:15px;color:var(--accent);}
+.follow-up input{padding:5px 8px;border:1px solid var(--border);border-radius:8px;background:var(--field-bg);color:var(--ink);font-family:inherit;color-scheme:dark;}
+
+.timeline{display:flex;flex-direction:column;gap:8px;}
+.tl-item{border-left:2px solid var(--primary);padding:6px 0 6px 12px;}
+.tl-head{display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:13px;color:var(--ink-soft);}
+.tl-head b{color:var(--ink);}
+.tl-dx{flex-basis:100%;color:var(--ink);font-weight:600;font-size:13.5px;}
+.tl-row{font-size:13px;color:var(--ink);margin-top:4px;line-height:1.45;}
+.tl-row small{display:inline-block;min-width:78px;font-size:11px;font-weight:700;text-transform:uppercase;color:var(--ink-soft);}
+.tl-row svg{width:13px;height:13px;vertical-align:-2px;}
+.tl-rx{display:flex;align-items:center;gap:8px;margin-top:6px;font-size:12.5px;}
+.tl-rx .ai-soft{flex:1;}
+
+.dq-top{display:flex;gap:6px;align-items:center;margin-bottom:4px;}
+.dq-top .btn{white-space:nowrap;padding-left:12px;padding-right:12px;font-size:14px;}
+.dq-no{font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:15px;color:var(--accent);min-width:34px;}
+.dq-main b{white-space:normal;line-height:1.25;}
+.dq-tags .dot{width:8px;height:8px;border-radius:50%;display:inline-block;}
+.dq-tags .dot.warn{background:#F59E0B;}
+.dq-tags .dot.danger{background:#F87171;}
+.dq-handover{display:inline-flex;align-items:center;gap:3px;color:#FCD34D;font-size:11px;}
+.dq-handover svg{width:11px;height:11px;}
+.doc-layout.q-rail{grid-template-columns:62px minmax(0,1.15fr) minmax(0,1fr);}
+@media (max-width:1250px){.doc-layout.q-rail{grid-template-columns:62px minmax(0,1fr);}}
+.dq-rail{position:sticky;top:12px;display:flex;flex-direction:column;align-items:center;gap:10px;padding:12px 6px;}
+.icon-btn.primary{background:var(--primary);color:#fff;}
+.dq-rail-cnt{display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:none;color:var(--ink-soft);cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:12px;}
+.dq-rail-cnt svg{width:16px;height:16px;}
+.dq-rail-cnt b{color:var(--ink);}
+
+.doc-nav-row{display:flex;align-items:center;gap:10px;justify-content:space-between;flex-wrap:wrap;margin-bottom:18px;}
+.doc-nav-row .doc-nav{margin-bottom:0;}
+.shift-check{display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:10px;background:var(--priority-soft);color:#FCD34D;font-size:13.5px;font-weight:600;}
+.shift-check.ok{background:rgba(34,197,94,.14);color:#4ADE80;}
+.shift-check svg{width:17px;height:17px;}
+.shift-row{display:flex;align-items:center;gap:10px;padding:9px 12px;border:1px solid var(--border);border-radius:11px;background:var(--surface);margin-bottom:6px;}
+.shift-row>svg{width:18px;height:18px;color:#F87171;}
+.shift-sum{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;}
+.shift-sum>div{display:flex;flex-direction:column;gap:2px;padding:10px 12px;border-radius:10px;background:var(--surface-alt);}
+.shift-sum b{font-size:22px;color:var(--ink);font-family:'IBM Plex Mono',monospace;}
+.shift-sum span{font-size:12px;color:var(--ink-soft);}
+.shift-sum .warn b{color:#FCD34D;}
+
+/* ===== Bác sĩ đợt 1: bỏ về, chẩn đoán phụ, đã về từ xét nghiệm, thông báo bấm được ===== */
+.leave-reasons{display:flex;flex-direction:column;gap:6px;}
+.leave-reason{display:flex;align-items:center;gap:8px;padding:8px 11px;border:1px solid var(--border);border-radius:9px;background:var(--surface-alt);cursor:pointer;font-size:13.5px;color:var(--ink);}
+.leave-reason.on{border-color:var(--primary);background:var(--primary-soft);}
+.dx2-list{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px;}
+.dx2-chip{display:inline-flex;align-items:center;gap:6px;padding:4px 6px 4px 10px;border-radius:20px;background:var(--surface-alt);border:1px solid var(--border);font-size:12.5px;color:var(--ink);}
+.dx2-chip button{display:flex;background:none;border:none;color:var(--ink-soft);cursor:pointer;padding:0;}
+.dx2-chip svg{width:13px;height:13px;}
+.dx2-add{display:flex;gap:8px;align-items:flex-start;}
+.dq-back{display:inline-flex;align-items:center;gap:3px;color:#4ADE80;font-size:11px;font-weight:700;}
+.dq-back svg{width:11px;height:11px;}
+.notif-item.clickable{cursor:pointer;}
+.notif-item.clickable:hover{background:var(--surface-hover);}
+
+/* ===== Bác sĩ đợt 3: tra cứu hồ sơ, ghi bổ sung ===== */
+.lookup{display:grid;grid-template-columns:300px minmax(0,1fr);gap:16px;align-items:start;}
+@media (max-width:900px){.lookup{grid-template-columns:1fr;}}
+.lookup-list{position:sticky;top:12px;max-height:calc(100vh - 200px);overflow:auto;display:flex;flex-direction:column;gap:4px;}
+.lookup-list .pl-search{width:100%;margin-bottom:6px;}
+.lookup-actions{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 4px;}
+.tl-addendum{margin-top:6px;padding:7px 10px;border-radius:8px;background:var(--surface-alt);border-left:3px solid #67E8F9;font-size:13px;color:var(--ink);}
+.tl-addendum.correction{border-left-color:#FCD34D;}
+.tl-addendum small{display:block;font-size:11px;color:var(--ink-soft);margin-bottom:2px;}
+.tl-add{margin-top:6px;background:none;border:none;color:#67E8F9;font:600 12px 'Plus Jakarta Sans Variable';cursor:pointer;padding:0;}
+.tl-form{display:flex;flex-direction:column;gap:6px;margin-top:6px;}
+.tl-form select{align-self:flex-start;padding:5px 8px;border:1px solid var(--border);border-radius:8px;background:var(--field-bg);color:var(--ink);font-family:inherit;}
+
+/* ===== Bác sĩ đợt 4: phòng khám cố định, liều theo cân nặng ===== */
+.doc-nav-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.doc-room{display:inline-flex;align-items:center;gap:7px;padding:6px 12px;border-radius:12px;border:1px solid var(--border);background:var(--surface);font-size:13.5px;font-weight:600;color:var(--ink);white-space:nowrap;}
+.doc-room svg{width:15px;height:15px;color:var(--accent);}
+.doc-room.warn{border-color:rgba(245,158,11,.45);background:var(--priority-soft);color:#FCD34D;}
+.doc-room.warn svg{color:#FCD34D;}
+.rx-daily.over{color:#FCA5A5;font-weight:700;}
+.warn-text{color:#FCD34D;font-weight:700;}
+.rx-stock.info{color:#67E8F9;}
+
+/* ===== Gọi số do bác sĩ phát ===== */
+.calling-bar{display:flex;align-items:center;flex-wrap:wrap;gap:8px;padding:10px 12px;margin:-4px 0 10px;border-radius:11px;background:var(--primary-soft);border:1px solid rgba(59,130,246,.45);}
+.calling-bar>svg{width:18px;height:18px;color:#93C5FD;}
+.calling-bar>span{flex:1;min-width:160px;display:flex;flex-direction:column;}
+.calling-bar b{color:var(--ink);font-size:14px;}
+.calling-bar small{font-size:12px;color:var(--ink-soft);}
+.call-active{display:flex;flex-direction:column;gap:6px;margin:10px 0;}
+.call-active .lbl{font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-soft);}
+.call-row{display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:9px;background:var(--surface-alt);font-size:13px;color:var(--ink);}
+.call-row b.mono{color:var(--accent);font-size:15px;}
+.call-row span{flex:1;}
+/* Chân phiếu khám nhiều nút: xuống dòng, nút không bẻ chữ; 2 nút chốt đơn luôn nằm cùng hàng bên phải. */
+.consult-footer{flex-wrap:wrap;row-gap:8px;}
+.consult-footer .btn{white-space:nowrap;}
+.consult-footer .btn-primary{margin-left:0;}

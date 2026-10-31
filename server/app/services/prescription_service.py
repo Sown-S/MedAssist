@@ -19,6 +19,7 @@ from app.models import Condition, Diagnosis, Drug, Patient, Prescription, Prescr
 from app.schemas.diagnosis import DiagnosisCreate, DiagnosisUpdate
 from app.schemas.prescription import PrescriptionDraft
 from app.services import audit_service as audit
+from app.services import ai_decision_service as ai_decision
 from app.services import inventory_service, invoice_service, queue_service
 
 
@@ -68,15 +69,21 @@ def add_diagnosis(db: Session, visit_id: uuid.UUID, data: DiagnosisCreate, actor
     is_primary = data.is_primary or not has_primary          # chẩn đoán đầu tiên luôn là chính
     if is_primary and has_primary:
         _demote_primary(db, visit_id)
+    run = ai_decision.resolve_assessment(db, visit_id, data.assessment_id)
     dx = Diagnosis(visit_id=visit_id, physician_id=actor.user_id, condition_code=data.condition_code,
                    icd10_code=icd, diagnosis_name=name, is_primary=is_primary,
+                   assessment_id=run.assessment_id if run else None,
+                   matches_top_suggestion=ai_decision.match_top(run, data.condition_code),
                    clinical_notes=data.clinical_notes, confirmed_by_physician=True, confirmed_at=func.now())
     db.add(dx)
     db.flush()
+    ai_decision.sync_decision(db, visit_id, actor)
     db.refresh(dx)
     audit.record(db, action="CREATE", entity="diagnosis", entity_id=dx.diagnosis_id, actor_id=actor.user_id,
                  new_values={"visit_id": str(visit_id), "is_primary": is_primary,
-                             "from_condition_list": data.condition_code is not None})
+                             "from_condition_list": data.condition_code is not None,
+                             "assessment_id": str(run.assessment_id) if run else None,
+                             "matches_top_suggestion": dx.matches_top_suggestion})
     return dx
 
 
@@ -107,6 +114,8 @@ def update_diagnosis(db: Session, diagnosis_id: uuid.UUID, data: DiagnosisUpdate
         setattr(dx, k, changes[k])
     if changed:
         db.flush()
+        if "is_primary" in changed:
+            ai_decision.sync_decision(db, dx.visit_id, actor)
         audit.record(db, action="UPDATE", entity="diagnosis", entity_id=dx.diagnosis_id,
                      actor_id=actor.user_id, new_values={"changed_fields": sorted(changed)})
     db.refresh(dx)
@@ -129,6 +138,7 @@ def retract_diagnosis(db: Session, diagnosis_id: uuid.UUID, actor: User) -> Diag
         if nxt is not None:
             nxt.is_primary = True
             db.flush()
+    ai_decision.sync_decision(db, dx.visit_id, actor)
     audit.record(db, action="UPDATE", entity="diagnosis", entity_id=dx.diagnosis_id, actor_id=actor.user_id,
                  new_values={"retracted": True})
     db.refresh(dx)
@@ -145,7 +155,7 @@ def _patient_context(db: Session, visit: Visit) -> dict:
     p = db.get(Patient, visit.patient_id)
     mh = p.medical_history or {}
     return {"chronic_conditions": mh.get("chronic_conditions", []), "medical_notes": mh.get("notes"),
-            "allergy_notes": p.allergy_notes}
+            "is_pregnant": mh.get("is_pregnant"), "allergy_notes": p.allergy_notes}
 
 
 def prescription_view(db: Session, visit_id: uuid.UUID) -> dict:

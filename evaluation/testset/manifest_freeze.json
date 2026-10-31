@@ -1,0 +1,38 @@
+{
+  "freeze_version": "testset-v1.2-frozen",
+  "frozen_at": "2026-10-30T22:20:34",
+  "git_tag_recommended": "testset-v1.2-frozen",
+  "knowledge_snapshot": {
+    "total_conditions": 199,
+    "groups": {
+      "dermatology": 63,
+      "ent": 56,
+      "infectious": 17,
+      "musculoskeletal": 32,
+      "ophthalmology": 29,
+      "respiratory": 2
+    },
+    "total_symptoms": 98,
+    "total_triage_rules": 11,
+    "total_sources": 11
+  },
+  "combined_sha256": "b75141885fe33216de882110a2126ca060cd54c9467556275531a78efb8078c5",
+  "files": [
+    {
+      "path": "evaluation/testset/symptom_extraction_testset.jsonl",
+      "num_cases": 29,
+      "sha256": "21c778cd09a9e11091428ac7cdffb1d7ff42f960648a8106abac20f6901de2a7"
+    },
+    {
+      "path": "evaluation/testset/clinical_cases_labeled.jsonl",
+      "num_cases": 20,
+      "sha256": "624fe91ea1edaf51eab6619cd9d0ef17b523cf497f0eeb9f7a135b0186c66134"
+    }
+  ],
+  "retired_cases": {
+    "EXT-015": "Thiếu mã triệu chứng trong catalog hiện hành: myasthenic_ptosis_diplopia_fatigue",
+    "CLIN-012": "condition_code chưa có: thoai_hoa_khop_goi, u_sun_mang_hoat_dich",
+    "CLIN-016": "symptom_code chưa có: myasthenic_ptosis_diplopia_fatigue; condition_code chưa có: nhuoc_co"
+  },
+  "policy_note": "Đóng băng bộ test theo Nguyên tắc vàng #6 (Quy định v5): Không chỉnh rule hay prompt dựa trên bộ test này."
+}

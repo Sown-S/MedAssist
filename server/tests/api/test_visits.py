@@ -79,6 +79,19 @@ def test_update_only_while_waiting(client, nurse, patient_id):
     assert r.status_code == 409 and r.json()["error"]["code"] == "VISIT_LOCKED"
 
 
+def test_vitals_editable_after_check_in(client, nurse, doctor, patient_id):
+    vid = _visit(client, nurse, patient_id).json()["visit_id"]
+    client.patch(f"/api/v1/visits/{vid}/check-in", headers=nurse)
+    r = client.patch(f"/api/v1/visits/{vid}", headers=nurse, json={"vital_signs": {"spo2_pct": 88}})
+    assert r.status_code == 200 and r.json()["vital_signs"] == {"spo2_pct": 88}
+    r = client.patch(f"/api/v1/visits/{vid}", headers=nurse,
+                     json={"vital_signs": {"spo2_pct": 90}, "free_text_description": "Khó thở hơn"})
+    assert r.status_code == 409 and r.json()["error"]["code"] == "VISIT_LOCKED"
+    client.patch(f"/api/v1/visits/{vid}/start-exam", headers=doctor)
+    r = client.patch(f"/api/v1/visits/{vid}", headers=nurse, json={"vital_signs": {"spo2_pct": 90}})
+    assert r.status_code == 409
+
+
 def test_full_flow_to_examining_and_claim_race(client, nurse, doctor, doctor2, patient_id, logs, users):
     vid = _visit(client, nurse, patient_id).json()["visit_id"]
     assert client.patch(f"/api/v1/visits/{vid}/start-exam", headers=doctor).status_code == 409   # chưa check-in
@@ -141,6 +154,17 @@ def test_queue_order_priority_then_fifo(client, nurse, doctor):
     assert item["patient_name"].startswith("Thứ Tự") and "vital_signs" not in item
 
 
+def test_queue_shows_examining_with_physician(client, nurse, doctor, patient_id, users):
+    vid = _visit(client, nurse, patient_id).json()["visit_id"]
+    waiting = next(q for q in client.get("/api/v1/queue", headers=nurse).json() if q["visit_id"] == vid)
+    assert waiting["physician_id"] is None and waiting["physician_name"] is None
+    client.patch(f"/api/v1/visits/{vid}/check-in", headers=nurse)
+    client.patch(f"/api/v1/visits/{vid}/start-exam", headers=doctor)
+    item = next(q for q in client.get("/api/v1/queue", headers=nurse).json() if q["visit_id"] == vid)
+    assert item["status"] == "Examining" and item["exam_started_at"]
+    assert item["physician_id"] == str(users["bs"].user_id) and item["physician_name"] == users["bs"].full_name
+
+
 def test_stale_visits_listed_and_bulk_cancelled(client, nurse, patient_id, users):
     with SessionLocal() as db:
         old = Visit(patient_id=patient_id, nurse_id=users["yta"].user_id, chief_complaint="Hôm qua")
@@ -149,8 +173,9 @@ def test_stale_visits_listed_and_bulk_cancelled(client, nurse, patient_id, users
         db.execute(text("UPDATE visit SET queue_date = CURRENT_DATE - 1 WHERE visit_id = :v"), {"v": old.visit_id})
         db.commit()
         old_id = str(old.visit_id)
-    stale = [v["visit_id"] for v in client.get("/api/v1/visits/stale", headers=nurse).json()]
-    assert old_id in stale
+    stale = client.get("/api/v1/visits/stale", headers=nurse).json()
+    row = next(v for v in stale if v["visit_id"] == old_id)
+    assert row["patient_name"] and row["status"] == "Waiting"
     assert old_id not in [q["visit_id"] for q in client.get("/api/v1/queue", headers=nurse).json()]
     assert client.patch(f"/api/v1/visits/{old_id}/check-in", headers=nurse).status_code == 409   # không check-in lượt cũ
     today = _visit(client, nurse, patient_id)
@@ -160,6 +185,22 @@ def test_stale_visits_listed_and_bulk_cancelled(client, nurse, patient_id, users
     bad = client.post("/api/v1/visits/stale/cancel", headers=nurse,
                       json={"visit_ids": [_visit(client, nurse, patient_id).json()["visit_id"]], "reason": "x x x"})
     assert bad.status_code == 409 and bad.json()["error"]["code"] == "NOT_STALE"
+
+
+def test_examining_visit_from_yesterday_stays_in_queue(client, nurse, doctor, patient_id):
+    vid = _visit(client, nurse, patient_id).json()["visit_id"]
+    client.patch(f"/api/v1/visits/{vid}/check-in", headers=nurse)
+    client.patch(f"/api/v1/visits/{vid}/start-exam", headers=doctor)
+    with SessionLocal() as db:
+        yesterday = db.scalar(text("UPDATE visit SET queue_date = CURRENT_DATE - 1 WHERE visit_id = :v "
+                                   "RETURNING queue_date"), {"v": vid})
+        db.commit()
+    item = next(q for q in client.get("/api/v1/queue", headers=doctor).json() if q["visit_id"] == vid)
+    assert item["status"] == "Examining" and item["queue_date"] == str(yesterday)
+    assert vid not in [v["visit_id"] for v in client.get("/api/v1/visits/stale", headers=nurse).json()]
+    r = client.patch(f"/api/v1/visits/{vid}/cancel", headers=doctor, json={"reason": "Bệnh nhân bỏ về"})
+    assert r.status_code == 200 and r.json()["status"] == "Cancelled"
+    assert vid not in [q["visit_id"] for q in client.get("/api/v1/queue", headers=doctor).json()]
 
 
 def test_history_and_view_logging(client, nurse, doctor, patient_id, logs):

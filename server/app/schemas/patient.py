@@ -43,6 +43,7 @@ class MedicalHistory(BaseModel):
     chronic_conditions: list[Annotated[CleanStr, Field(min_length=1, max_length=100)]] = Field(
         default_factory=list, max_length=30, description="Bệnh nền, vd 'Tăng huyết áp'")
     notes: str | None = Field(default=None, max_length=2000)
+    is_pregnant: bool | None = Field(default=None, description="None = chưa hỏi")
 
 
 class _PatientFields(BaseModel):
