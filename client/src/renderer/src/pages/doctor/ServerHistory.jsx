@@ -64,6 +64,12 @@ export default function ServerHistory({ patientId, excludeVisitId, onLoaded }) {
             <button className="emr-visit-head" onClick={() => setOpen(open === v.visit_id ? null : v.visit_id)}>
               <span className="mono ai-small">{fmt(v.visit_date)}</span>
               <span className={'badge ' + (TONE[v.status] ?? '')}>{translate(VISIT_STATUS_LABEL[v.status] ?? v.status)}</span>
+              {v.outcome === 'Referred' && (
+                <span className="badge low">
+                  {translate('Referred')}
+                  {v.referral_facility ? ' → ' + v.referral_facility : ''}
+                </span>
+              )}
               {v.is_red_flag && <span className="badge low">Red flag</span>}
               {v.triage_priority && v.triage_priority !== 'Routine' && !v.is_red_flag && <span className="badge warn">{translate(PRIORITY_LABEL[v.triage_priority] ?? v.triage_priority)}</span>}
               <span className="emr-dx">
