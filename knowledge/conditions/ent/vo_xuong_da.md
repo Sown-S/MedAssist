@@ -46,12 +46,6 @@ relations:
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: tinnitus_ear_fullness
-  polarity: SUPPORTS
-  weight: 0.88
-  is_key: true
-  source_key: moh_qd_5643_2015
-  source_edition: Quyết định số 5643/QĐ-BYT
 excerpts:
 - excerpt_key: vo_xuong_da_chan_doan
   title: Tiêu chuẩn chẩn đoán lâm sàng Vỡ xương đá

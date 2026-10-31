@@ -210,6 +210,13 @@ export function toQueueVisit(q) {
     doctorId: q.physician_id,
     // Phòng của bác sĩ đang khám (null khi chưa ai nhận) — lượt khám không lưu phòng riêng
     room: q.room_name || q.room || '',
+    // Đi xét nghiệm và lời mời vào phòng do server giữ để máy quầy cũng thấy (ERD v2.0)
+    labOut: !!q.lab_out_at,
+    labOutAt: q.lab_out_at ?? null,
+    calledAt: q.called_at ?? null,
+    calledById: q.called_by ?? null,
+    calledByName: q.called_by_name ?? '',
+    calledRoom: q.called_room_name || q.called_room || '',
     symptoms: [],
     vitals: {},
     rx: [],
@@ -218,3 +225,21 @@ export function toQueueVisit(q) {
   }
 }
 export const fetchQueue = async () => (await apiGet(`${V1}/queue`)).map(toQueueVisit)
+export const fetchStale = async () => (await apiGet(`${V1}/visits/stale`)).map((q) => ({ ...toQueueVisit(q), carriedFrom: q.queue_date }))
+export const cancelStale = (ids, reason) => apiPost(`${V1}/visits/stale/cancel`, { visit_ids: ids, reason })
+
+// ---------- Xét nghiệm, mời vào phòng ----------
+export const labOut = (visitId) => apiRequest(`${V1}/visits/${visitId}/lab-out`, 'PATCH')
+export const labReturn = (visitId) => apiRequest(`${V1}/visits/${visitId}/lab-return`, 'PATCH')
+export const callNext = () => apiPost(`${V1}/queue/call-next`)
+export const callVisit = (visitId) => apiPost(`${V1}/visits/${visitId}/call`)
+export const cancelCall = (visitId) => apiRequest(`${V1}/visits/${visitId}/call`, 'DELETE')
+
+// ---------- Chuyển tuyến ----------
+// referral: { facility_id?, facility_name, reason, diagnosis?, summary?, treatment?, condition?, transport?, signs? }
+// transport: 'Ambulance' | 'Family' | 'Self' | 'Other'
+export const searchFacilities = (q, limit = 10) => apiGet(`${V1}/referral-facilities?q=${encodeURIComponent(q)}&limit=${limit}`)
+export const referVisit = (visitId, referral) => apiRequest(`${V1}/visits/${visitId}/refer`, 'PATCH', referral)
+export const emergencyReferral = (patientId, chiefComplaint, referral, vitalSigns) =>
+  apiPost(`${V1}/visits/emergency-referral`, { patient_id: patientId, chief_complaint: chiefComplaint, referral, ...(vitalSigns ? { vital_signs: vitalSigns } : {}) })
+export const updateReferral = (visitId, fields) => apiRequest(`${V1}/visits/${visitId}/referral`, 'PATCH', fields)

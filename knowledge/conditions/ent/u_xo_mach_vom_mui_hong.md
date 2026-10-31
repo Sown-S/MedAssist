@@ -46,6 +46,3 @@ excerpts:
 - Các biểu hiện chủ yếu là: ngạt mũi kéo dài thường ở một bên kèm theo chảy máu
 - có thể gây chảy máu mũi nhiều lần, số lượng nhiều phải đi cấp cứu, kèm thêm đau tức
 - gây tắc mạch cấp máu cho khối u trước mổ.
-- Các khối u lành tính của vòm mũi họng (u xơ, polyps xơ hóa, u nguyên sống
-- Các u ác tính khác ở vòm mũi họng (Lymphome malin. Sarcom,…).
-- Các u nơi khác di căn đến vòm mũi họng (mũi xoang, đáy sọ, cột sống...).

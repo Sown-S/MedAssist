@@ -54,3 +54,33 @@ Phụ lục I, đối chiếu, thêm thuốc, giá tham khảo) — xem `tools/d
 
 Đổi danh mục: dùng `tools/drug_data` hoặc sửa `drugs.csv` (UTF-8), chạy `tt19_catalog check`, mở PR; chạy lại `seed_drugs` chỉ thêm thuốc mới, không sửa thuốc đã có
 (sửa giá / ngừng dùng thuốc đã có làm trên giao diện hoặc API `PATCH /drugs/{id}`).
+
+## hospitals.csv — cơ sở nhận chuyển tuyến
+
+Nạp bằng `python -m scripts.seed_referral_facilities` (chạy trong `server/`) vào bảng `referral_facility`; ô
+"Nơi chuyển đến" của giấy chuyển tuyến gợi ý từ bảng này (`GET /referral-facilities?q=`). Chạy lại nhiều lần không
+tạo trùng (định danh theo tỉnh + tên không dấu); thêm `--deactivate-others` để ngừng dùng cơ sở không còn trong file.
+
+Trên máy admin:
+
+```powershell
+docker compose -f deploy\docker-compose.yml --env-file deploy\.env exec api python -m scripts.seed_referral_facilities
+```
+
+File do công cụ **`tools/hospital_data/`** tạo từ văn bản công bố của Bộ Y tế và Sở Y tế (Hà Nội, TP. Hồ Chí Minh,
+Đà Nẵng, Huế, Gia Lai, Quảng Ngãi), mỗi dòng ghi văn bản và file nguồn (`source_doc`, `source_file`). Chỉ có bệnh viện
+và trung tâm y tế; chưa có mã cơ sở KCB của BHXH (`kcb_code` trống). Xem `tools/hospital_data/README.md`.
+
+## services.csv, service_packages.csv — dịch vụ, xét nghiệm, gói khám (giá mẫu)
+
+Nạp bằng `python -m scripts.seed_services` (chạy trong `server/`) vào bảng `service`, `service_package`. Chỉ tạo mã chưa
+có, **không ghi đè** dòng đã có, nên giá Admin đã sửa được giữ. Bác sĩ chỉ định từ danh mục này
+(`POST /visits/{id}/service-orders`); hóa đơn tự lấy dòng cận lâm sàng theo giá trong danh mục.
+
+**Giá trong file là giá mẫu** chép từ danh mục mẫu của client (14 dịch vụ, 14 xét nghiệm, 3 gói), không phải bảng giá
+của phòng khám nào. Admin sửa giá thật ở Quản trị › Danh mục. `DV01` (Khám bệnh) là dịch vụ mà tham số
+`billing.consultation_service_code` trỏ tới để lập dòng phí khám.
+
+Cột `services.csv`: `code`, `name`, `kind` (`Service` dịch vụ / thủ thuật, `Lab` xét nghiệm / chẩn đoán hình ảnh),
+`group_key`, `unit`, `price`, `ref_low`, `ref_high`, `ref_text`, `sample` (bốn cột cuối chỉ dùng cho xét nghiệm).
+Cột `service_packages.csv`: `code`, `name`, `price`, `items` (`MÃ:số lượng` cách nhau bằng `;`).

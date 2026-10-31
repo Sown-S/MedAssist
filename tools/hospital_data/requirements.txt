@@ -1,0 +1,5 @@
+# Công cụ dữ liệu bệnh viện — chạy trên máy dev, không thuộc server (không vào image Docker)
+beautifulsoup4>=4.12
+openpyxl>=3.1
+pdfplumber>=0.11
+pytest>=8.3.4

@@ -9,34 +9,28 @@ description: Bệnh gai đen (acanthosis nigricans) đặc trƣng bởi hiện t
   và tăng sắc tố ở các nếp gấp, khi sờ có cảm giác như sờ vào vải nhung. Tỉ lệ mắc
   bệnh khác nhau tuỳ chủng tộc.
 relations:
-- symptom_code: vesicular_blister_rash
+- symptom_code: pigmentary_macule_patch
   polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
-  source_key: moh_qd_75_2015
-  source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: pustular_furuncle_folliculitis
-  polarity: SUPPORTS
-  weight: 0.96
+  weight: 0.94
   is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: scaly_plaque_hyperkeratosis
   polarity: SUPPORTS
-  weight: 0.94
+  weight: 0.92
   is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: fungal_ringworm_nail_hair_lesion
+- symptom_code: maculopapular_rash
   polarity: SUPPORTS
-  weight: 0.94
+  weight: 0.82
   is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: pigmentary_macule_patch
+- symptom_code: pruritus_intense_skin_itch
   polarity: SUPPORTS
-  weight: 0.94
-  is_key: true
+  weight: 0.78
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 excerpts:

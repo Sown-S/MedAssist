@@ -227,6 +227,7 @@ tools/drug_data/config.local.toml
 tools/drug_data/inbox/*
 !tools/drug_data/inbox/README.txt
 tools/drug_data/output/tt19_bang_mau.txt
+tools/hospital_data/output/
 
 # Máy admin: khóa riêng của CA / máy chủ và bản sao lưu CSDL
 deploy/certs/

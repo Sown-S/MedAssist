@@ -45,12 +45,6 @@ relations:
   is_key: true
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
-- symptom_code: conjunctivitis_uveitis_red_eye
-  polarity: SUPPORTS
-  weight: 0.84
-  is_key: false
-  source_key: moh_qd_40_2015
-  source_edition: Quyết định số 40/QĐ-BYT
 excerpts:
 - excerpt_key: viem_mang_bo_dao_cap_tinh_o_tre_em_chan_doan
   title: Tiêu chuẩn chẩn đoán lâm sàng Viêm màng bồ đào cấp tính ở trẻ em

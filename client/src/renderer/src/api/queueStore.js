@@ -6,7 +6,7 @@
 // gọi API thật; không tạo dữ liệu mẫu, không lưu localStorage. Các phần chưa có API vẫn chạy cục bộ.
 import { useEffect, useSyncExternalStore } from 'react'
 import { DEMO_MODE } from './client'
-import { fetchQueue, checkIn as apiCheckIn, cancelVisit as apiCancelVisit, startExam as apiStartExam, releaseVisit as apiRelease } from './clinicApi'
+import { fetchQueue, fetchStale, cancelStale as apiCancelStale, labOut as apiLabOut, labReturn as apiLabReturn, checkIn as apiCheckIn, cancelVisit as apiCancelVisit, startExam as apiStartExam, releaseVisit as apiRelease } from './clinicApi'
 import { reopenPrescription as apiReopen } from './examApi'
 import { VI } from '../i18n/vi'
 import { getSettings } from './settingsStore'
@@ -267,6 +267,14 @@ export function syncQueue() {
     .finally(() => (syncing = null))
   return syncing
 }
+// Lượt chờ khám còn mở từ ngày trước (GET /visits/stale, chỉ Lễ tân).
+export function syncStale() {
+  if (DEMO_MODE) return Promise.resolve(true)
+  return fetchStale().then(
+    (stale) => (commit({ ...state, stale }), true),
+    () => false
+  )
+}
 export function useQueueSync(ms = 3000) {
   useEffect(() => {
     if (DEMO_MODE) return
@@ -307,6 +315,13 @@ export function closeStaleVisit(id, { reason, note = '' }, user) {
   if (!v) return { ok: false, error: 'Visit not found.' }
   if (!STALE_REASONS.some((r) => r.key === reason)) return { ok: false, error: 'Choose a reason.' }
   if (reason === 'other' && !note.trim()) return { ok: false, error: 'Describe what happened.' }
+  if (!DEMO_MODE) {
+    const label = STALE_REASONS.find((r) => r.key === reason).label
+    return apiCancelStale([id], [VI[label] ?? label, note.trim()].filter(Boolean).join(' — ')).then(
+      () => syncStale().then(() => ({ ok: true })),
+      (e) => ({ ok: false, error: e.message })
+    )
+  }
   commit({ ...state, stale: state.stale.filter((x) => x.id !== id) })
   logEvent(user, 'visit.cancel', {
     target: { kind: 'patient', id: v.patientId, label: v.name },
@@ -431,6 +446,7 @@ export function markNotPresent(id, user) {
       x.id === id ? (backToLabs ? { ...x, labOut: true, entered: true } : { ...x, status: ST.CHECKED_IN, absent: true, doctor: '', doctorId: null, room: '' }) : x
     )
   })
+  if (!DEMO_MODE && backToLabs) apiLabOut(id).finally(syncQueue)
   logEvent(user, 'queue.not_present', { target: { kind: 'patient', id: v.patientId, label: v.name }, params: { patient: v.name, ticket: v.ticket } })
   return { ok: true }
 }
@@ -467,6 +483,7 @@ export function takePatient(id, user, { force = false } = {}) {
       // Đi xét nghiệm chỉ là cờ ở máy này, server vẫn Examining: không gọi start-exam (server trả 409 INVALID_TRANSITION).
       // Máy quầy chưa nhận được lệnh gọi qua server → không hiện thanh "quầy đang gọi" (entered: true).
       patch(id, { labOut: false, resumedFromLabs: true, calledAt: new Date().toISOString(), entered: true })
+      apiLabReturn(id).finally(syncQueue)
       return { ok: true, visit: state.visits.find((x) => x.id === id) }
     }
     return apiStartExam(id).then(
@@ -556,6 +573,7 @@ export function sendToLabs(id, { tests, other = '', diagnosis = '', note = '' },
   const at = new Date().toISOString()
   const order = { id: 'cd' + Date.now(), tests, other: other.trim(), diagnosis: diagnosis.trim(), note: note.trim(), at, by: user.name }
   patch(id, { labOut: true, labReturnedAt: null, statusAt: at, labOrders: [...(v.labOrders ?? []), order], doctor: v.doctor || user.name, doctorId: v.doctorId ?? user.id })
+  if (!DEMO_MODE) apiLabOut(id).finally(syncQueue)
   logEvent(user, 'lab.order', {
     target: { kind: 'patient', id: v.patientId, label: v.name },
     params: { patient: v.name, tests: [...tests.map((x) => x.name), ...(order.other ? [order.other] : [])].join(', ') }

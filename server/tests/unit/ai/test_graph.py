@@ -160,6 +160,21 @@ def assert_rule_only(result, code, *, priority="Routine"):
                for c in result["candidates"])
 
 
+def test_manual_test_mode_ignores_exhausted_queue_budget(case):
+    from app.ai.test_mode import unlimited_assessment
+
+    async def scenario():
+        token = unlimited_assessment.set(True)
+        try:
+            result = await case.run(timeout_seconds=0)
+            assert result["mode"] == "Full"
+            assert result["validation_result"]["valid"] is True
+        finally:
+            unlimited_assessment.reset(token)
+
+    asyncio.run(scenario())
+
+
 def test_success_runs_gate_retrieval_preliminary_reasoning_validation_in_order(case):
     original = deepcopy(case.state)
     snapshots = []

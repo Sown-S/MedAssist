@@ -46,18 +46,6 @@ relations:
   is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: serositis_pleural_pericardial
-  polarity: SUPPORTS
-  weight: 0.89
-  is_key: false
-  source_key: moh_qd_361_2014
-  source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: lymphadenopathy_splenomegaly
-  polarity: SUPPORTS
-  weight: 0.84
-  is_key: false
-  source_key: moh_qd_361_2014
-  source_edition: Quyết định số 361/QĐ-BYT
 excerpts:
 - excerpt_key: benh_lupus_ban_do_he_thong_chan_doan
   title: Tiêu chuẩn chẩn đoán lâm sàng Bệnh lupus ban đỏ hệ thống

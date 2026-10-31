@@ -45,18 +45,6 @@ relations:
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: dizziness_vertigo
-  polarity: SUPPORTS
-  weight: 0.9
-  is_key: true
-  source_key: moh_qd_5643_2015
-  source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: otalgia_ear_pain
-  polarity: SUPPORTS
-  weight: 0.9
-  is_key: true
-  source_key: moh_qd_5643_2015
-  source_edition: Quyết định số 5643/QĐ-BYT
 excerpts:
 - excerpt_key: viem_tai_giua_man_tre_em_chan_doan
   title: Tiêu chuẩn chẩn đoán lâm sàng Viêm tai giữa mạn trẻ em

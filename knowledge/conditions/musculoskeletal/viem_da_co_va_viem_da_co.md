@@ -46,18 +46,6 @@ relations:
   is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: myalgia_arthralgia
-  polarity: SUPPORTS
-  weight: 0.84
-  is_key: true
-  source_key: moh_qd_361_2014
-  source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: serositis_pleural_pericardial
-  polarity: SUPPORTS
-  weight: 0.89
-  is_key: false
-  source_key: moh_qd_361_2014
-  source_edition: Quyết định số 361/QĐ-BYT
 excerpts:
 - excerpt_key: viem_da_co_va_viem_da_co_chan_doan
   title: Tiêu chuẩn chẩn đoán lâm sàng Viêm da cơ và viêm đa cơ

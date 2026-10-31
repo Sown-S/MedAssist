@@ -15,12 +15,6 @@ relations:
   is_key: true
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
-- symptom_code: corneal_ulcer_hypopyon_keratitis
-  polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
-  source_key: moh_qd_40_2015
-  source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: visual_acuity_decreased_blur
   polarity: SUPPORTS
   weight: 0.92
@@ -30,6 +24,12 @@ relations:
 - symptom_code: ocular_pain_photophobia_tearing
   polarity: SUPPORTS
   weight: 0.8
+  is_key: false
+  source_key: moh_qd_40_2015
+  source_edition: Quyết định số 40/QĐ-BYT
+- symptom_code: conjunctival_ciliary_injection_discharge
+  polarity: SUPPORTS
+  weight: 0.78
   is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT

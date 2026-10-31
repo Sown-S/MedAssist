@@ -45,12 +45,6 @@ relations:
   is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: fatigue_malaise
-  polarity: SUPPORTS
-  weight: 0.7
-  is_key: false
-  source_key: moh_qd_5643_2015
-  source_edition: Quyết định số 5643/QĐ-BYT
 excerpts:
 - excerpt_key: diec_dot_ngot_chan_doan
   title: Tiêu chuẩn chẩn đoán lâm sàng Điếc đột ngột

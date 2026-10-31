@@ -97,9 +97,9 @@ async def extract_symptoms(
     catalogue = _catalogue(knowledge_reader)
     if not catalogue:
         return []
-    allowed = {row["symptom_code"] for row in catalogue}
+    prompt_catalogue = _select_prompt_catalogue(catalogue, masked)
     prompt = load_prompt(EXTRACTION_PROMPT_VERSION) + "\n" + json.dumps(
-        {"catalogue": catalogue, "text": masked}, ensure_ascii=False, allow_nan=False,
+        {"catalogue": prompt_catalogue, "text": masked}, ensure_ascii=False, allow_nan=False,
     )
     remaining = deadline - monotonic()
     if remaining <= 0:
@@ -113,10 +113,7 @@ async def extract_symptoms(
         return []
     if monotonic() >= deadline:
         return []
-
-    # Trích xuất là thao tác FR12 riêng nên kiểm tra schema/Active ngay tại đây.
-    # Node 4 vẫn kiểm tra đầu ra đánh giá sau khi điều dưỡng xác nhận.
-    suggestions = _validated_suggestions(output, allowed)
+    suggestions = _validated_suggestions(output, {row["symptom_code"] for row in prompt_catalogue})
     if not suggestions:
         return []
     try:
@@ -204,3 +201,105 @@ def _validated_suggestions(output: object, allowed: set[str]) -> list[SymptomSug
          "label": "Reference Suggestion", "requires_confirmation": True}
         for code, status in sorted(statuses.items())
     ]
+
+
+_MAX_PROMPT_CATALOGUE = 20
+_STOP_WORDS = frozenset({
+    "va", "hoac", "co", "khong", "bi", "la", "o", "tai", "cac", "vung",
+    "benh", "nhan", "ngay", "nay", "khi", "do", "kem", "theo", "tren",
+    "duoi", "trong", "ngoai", "mot", "hai", "ba", "bon", "nam", "sau",
+    "bay", "tam", "chin", "muoi", "nhieu", "it", "ro", "hon", "gay",
+    "lam", "thay", "kham", "redacted",
+})
+
+# Bảng mở rộng từ đồng nghĩa/khẩu ngữ lâm sàng tiếng Việt sang thuật ngữ y khoa chuẩn
+# giúp tầng lọc ứng viên (Stage 1) giữ độ phủ cao mà vẫn cố định O(1) lần gọi LLM.
+_CLINICAL_SYNONYMS: tuple[tuple[tuple[str, ...], str], ...] = (
+    (("nóng người", "nong nguoi", "nóng sốt", "hầm hập", "sốt nóng"), "sốt cao sốt nhẹ fever"),
+    (("gai người", "gai nguoi", "lạnh run", "sợ lạnh", "ớn lạnh"), "ớn lạnh gai rét rét run chills"),
+    (("nhức đầu", "nhuc dau", "nặng đầu", "váng đầu"), "đau nhức đầu headache"),
+    (("xây xẩm", "xay xam", "choáng váng", "quay cuồng"), "chóng mặt hoa mắt mất thăng bằng vertigo"),
+    (("ói", "mửa", "nôn mửa", "buồn ói", "non mua", "buon oi"), "buồn nôn nôn ói nôn vọt nausea vomiting"),
+    (("đi ngoài", "di ngoai", "đi cầu", "ỉa chảy", "ia chay", "tiêu lỏng"), "tiêu chảy phân lỏng đi ngoài phân nhầy máu diarrhea"),
+    (("đau bao tử", "dau bao tu", "đau dạ dày", "đau thượng vị"), "đau bụng buồn nôn"),
+    (("hụt hơi", "hut hoi", "ngộp thở", "thở dốc", "khó thở", "kho tho"), "khó thở gắng sức suy hô hấp dyspnea"),
+    (("khò khè", "kho khe", "cò cử", "thở rít"), "thở khò khè cò cử thở rít wheezing stridor"),
+    (("sổ mũi", "so mui", "chảy mũi"), "sổ mũi chảy nước mũi rhinorrhea"),
+    (("nghẹt mũi", "nghet mui", "tắc mũi", "ngạt mũi"), "ngạt tắc mũi nasal obstruction"),
+    (("chảy máu cam", "chay mau cam"), "chảy máu mũi epistaxis"),
+    (("đau họng", "dau hong", "rát cổ", "đau cổ họng", "nuốt vướng"), "đau rát họng nuốt đau amidan sore throat"),
+    (("khàn giọng", "khan giong", "mất giọng", "tắt tiếng"), "khàn tiếng mất tiếng hoarseness"),
+    (("mề đay", "me day", "nổi mẩn", "nổi cục", "dị ứng da"), "mày đay ngứa da phát ban hồng ban rash pruritus"),
+    (("mờ mắt", "mo mat", "nhìn không rõ"), "nhìn mờ giảm thị lực visual"),
+    (("nhức mỏi", "nhuc moi", "đau mình mẩy", "ê ẩm người"), "đau mỏi cơ đau nhức khớp mệt mỏi myalgia fatigue"),
+    (("tức ngực", "tuc nguc", "nặng ngực", "đè ngực"), "đau thắt ngực đè ép ngực nặng ngực chest pain"),
+    (("nổi hạch", "noi hach", "sưng hạch"), "hạch ngoại vi sưng to lymphadenopathy"),
+    (("đái buốt", "dai buot", "tiểu gắt", "tiểu rắt"), "tiểu buốt bí tiểu"),
+    (("ngất xỉu", "ngat xiu", "bất tỉnh", "mê man"), "lơ mơ li bì lú lẫn hôn mê consciousness"),
+)
+
+
+def _strip_accents(value: str) -> str:
+    value = value.replace("đ", "d").replace("Đ", "D")
+    return "".join(
+        char for char in unicodedata.normalize("NFD", value)
+        if unicodedata.category(char) != "Mn"
+    )
+
+
+def _trigger_matches(trigger: str, lowered: str, unaccented: str) -> bool:
+    # Từ khóa có dấu chỉ khớp văn bản có dấu; không tự bỏ dấu từ khóa vì "ói" -> "oi"
+    # sẽ khớp nhầm "ơi", "mửa" -> "mua" khớp nhầm "mùa". Biến thể không dấu được liệt
+    # kê riêng trong bảng và chỉ so với văn bản đã bỏ dấu.
+    if _strip_accents(trigger) == trigger:
+        return re.search(rf"\b{re.escape(trigger)}\b", unaccented) is not None
+    return re.search(rf"\b{re.escape(trigger)}\b", lowered) is not None
+
+
+def _expand_colloquial_text(value: str) -> str:
+    lowered = value.lower()
+    unaccented = _strip_accents(lowered)
+    additions = [
+        canonical for triggers, canonical in _CLINICAL_SYNONYMS
+        if any(_trigger_matches(trigger, lowered, unaccented) for trigger in triggers)
+    ]
+    return f"{lowered} {' '.join(additions)}" if additions else lowered
+
+
+def _lexical_features(value: str, *, expand_synonyms: bool = False) -> tuple[set[str], set[str], set[str], set[str]]:
+    lowered = _expand_colloquial_text(value) if expand_synonyms else value.lower()
+    words = re.findall(r"\w+", lowered)
+    unaccented = [_strip_accents(w) for w in words]
+    word_set = {w for w, uw in zip(words, unaccented) if len(uw) >= 2 and uw not in _STOP_WORDS}
+    unacc_set = {uw for uw in unaccented if len(uw) >= 2 and uw not in _STOP_WORDS}
+    bigrams = {f"{words[i]} {words[i + 1]}" for i in range(len(words) - 1)}
+    unacc_bigrams = {f"{unaccented[i]} {unaccented[i + 1]}" for i in range(len(unaccented) - 1)}
+    return word_set, unacc_set, bigrams, unacc_bigrams
+
+
+def _select_prompt_catalogue(
+    catalogue: list[dict[str, str]],
+    text: str,
+) -> list[dict[str, str]]:
+    """Lọc Top-K ứng viên sát nhất có mở rộng từ đồng nghĩa/khẩu ngữ để giữ cố định 1 lần gọi LLM."""
+    if len(catalogue) <= _MAX_PROMPT_CATALOGUE:
+        return catalogue
+    tw, tuw, tbi, tubi = _lexical_features(text, expand_synonyms=True)
+    scored: list[tuple[float, str, dict[str, str]]] = []
+    for row in catalogue:
+        code = row["symptom_code"]
+        name = row["symptom_name"]
+        sw, suw, sbi, subi = _lexical_features(name)
+        code_tokens = {tok for tok in code.split("_") if len(tok) >= 3}
+        score = (
+            3.0 * len(tbi & sbi)
+            + 2.0 * len(tubi & subi)
+            + 1.5 * len(tw & sw)
+            + 1.0 * len(tuw & suw)
+            + 1.5 * len(tuw & code_tokens)
+        )
+        scored.append((score, code, row))
+    scored.sort(key=lambda item: (-item[0], item[1]))
+    selected = [item[2] for item in scored[:_MAX_PROMPT_CATALOGUE]]
+    selected.sort(key=lambda item: item["symptom_code"])
+    return selected

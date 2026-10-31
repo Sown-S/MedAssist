@@ -18,13 +18,7 @@ relations:
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: mechanical_spinal_pain_stiffness
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
-  source_key: moh_qd_361_2014
-  source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: bone_pain_fracture_lesion
-  polarity: SUPPORTS
-  weight: 0.92
+  weight: 0.94
   is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT

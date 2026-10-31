@@ -12,6 +12,7 @@ class VisitStats(BaseModel):
     total: int
     by_status: dict[str, int]
     red_flags: int
+    referred: int = 0
 
 
 class RevenueDay(BaseModel):

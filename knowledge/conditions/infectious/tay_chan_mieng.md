@@ -5,35 +5,31 @@ name_vi: Tay chân miệng
 name_en: Tay chân miệng
 icd10_code: B08.4
 disease_group: infectious
-description: 1.1. Triệu chứng lâm sàng.
+description: Bệnh tay chân miệng là bệnh truyền nhiễm do vi rút đường ruột gây ra,
+  lây từ người sang người chủ yếu theo đường tiêu hóa, dễ gây thành dịch. Bệnh xảy
+  ra quanh năm và gặp ở mọi lứa tuổi nhưng thường gặp ở trẻ dưới 5 tuổi.
 relations:
-- symptom_code: vesicular_blister_rash
+- symptom_code: fever_high
   polarity: SUPPORTS
-  weight: 0.98
+  weight: 0.85
   is_key: true
   source_key: moh_qd_292_2024
   source_edition: Quyết định số 292/QĐ-BYT
-- symptom_code: oral_mucosal_ulcers
+- symptom_code: fatigue_malaise
   polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
-  source_key: moh_qd_292_2024
-  source_edition: Quyết định số 292/QĐ-BYT
-- symptom_code: startle_myoclonus_ataxia
-  polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
-  source_key: moh_qd_292_2024
-  source_edition: Quyết định số 292/QĐ-BYT
-- symptom_code: fever_low_grade
-  polarity: SUPPORTS
-  weight: 0.82
+  weight: 0.75
   is_key: false
   source_key: moh_qd_292_2024
   source_edition: Quyết định số 292/QĐ-BYT
-- symptom_code: weight_loss_anorexia
+- symptom_code: headache_dull
   polarity: SUPPORTS
-  weight: 0.78
+  weight: 0.7
+  is_key: false
+  source_key: moh_qd_292_2024
+  source_edition: Quyết định số 292/QĐ-BYT
+- symptom_code: chills_rigors
+  polarity: SUPPORTS
+  weight: 0.7
   is_key: false
   source_key: moh_qd_292_2024
   source_edition: Quyết định số 292/QĐ-BYT
@@ -46,7 +42,4 @@ excerpts:
 ---
 
 ## excerpt: tay_chan_mieng_chan_doan
-- 1.1. Triệu chứng lâm sàng
-- 4.2. Các bệnh có phát ban da
-- 4.3. Viêm não - màng não
-- 4.4. Nhiễm khuẩn huyết, sốc nhiễm khuẩn, viêm phổi
+- Bệnh tay chân miệng là bệnh truyền nhiễm do vi rút đường ruột gây ra, lây từ người sang người chủ yếu theo đường tiêu hóa, dễ gây thành dịch. Bệnh xảy ra quanh năm và gặp ở mọi lứa tuổi nhưng thường gặp ở trẻ dưới 5 tuổi.

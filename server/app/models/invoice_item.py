@@ -1,4 +1,4 @@
-"""INVOICE_ITEM — dòng hóa đơn: Drug / Paraclinical (nhập tay) / Consultation.
+"""INVOICE_ITEM — dòng hóa đơn: Drug / Paraclinical (nhập tay hoặc từ phiếu chỉ định) / Consultation.
 
 Sinh từ lược đồ do Alembic 0001 tạo (medassist_schema_v1_8.sql) rồi biên tập; phải khớp
 bảng thật — kiểm tra bằng `alembic check` / tests/test_db_guards.py.
@@ -22,15 +22,19 @@ class InvoiceItem(Base):
         CheckConstraint('unit_price >= 0::numeric', name='invoice_item_unit_price_check'),
         ForeignKeyConstraint(['invoice_id'], ['invoice.invoice_id'], name='invoice_item_invoice_id_fkey'),
         ForeignKeyConstraint(['prescription_item_id'], ['prescription_item.item_id'], name='invoice_item_prescription_item_id_fkey'),
+        ForeignKeyConstraint(['service_order_id'], ['service_order.order_id'], name='fk_invoice_item_service_order'),
+        CheckConstraint("service_order_id IS NULL OR item_type = 'Paraclinical'", name='chk_invoice_item_order'),
         PrimaryKeyConstraint('invoice_item_id', name='invoice_item_pkey'),
         Index('idx_invoice_item_inv', 'invoice_id'),
-        Index('idx_invoice_item_presc', 'prescription_item_id')
+        Index('idx_invoice_item_presc', 'prescription_item_id'),
+        Index('idx_invoice_item_order', 'service_order_id')
     )
 
     invoice_item_id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, server_default=text('gen_random_uuid()'))
     invoice_id: Mapped[uuid.UUID] = mapped_column(Uuid, nullable=False)
     item_type: Mapped[str] = mapped_column(String(30), nullable=False)
     prescription_item_id: Mapped[uuid.UUID | None] = mapped_column(Uuid)
+    service_order_id: Mapped[uuid.UUID | None] = mapped_column(Uuid)
     item_name: Mapped[str] = mapped_column(String(150), nullable=False)
     quantity: Mapped[int] = mapped_column(Integer, nullable=False)
     unit_price: Mapped[decimal.Decimal] = mapped_column(Numeric(12, 2), nullable=False)
