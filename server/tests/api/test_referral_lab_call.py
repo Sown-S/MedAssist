@@ -60,6 +60,10 @@ def test_physician_refers_examining_visit(client, nurse, doctor, doctor2, examin
     (row,) = [x for x in logs(action="UPDATE", entity="visit") if str(x.entity_id) == vid and
               x.new_values.get("outcome") == "Referred"]
     assert row.old_values == {"status": "Examining"}
+    pid = client.get(f"/api/v1/visits/{vid}", headers=doctor).json()["patient_id"]
+    (item,) = [i for i in client.get(f"/api/v1/patients/{pid}/history", headers=doctor).json()["items"]
+               if i["visit_id"] == vid]
+    assert (item["outcome"], item["referral_facility"]) == ("Referred", REFERRAL["facility_name"])
 
 
 def test_nurse_refers_waiting_visit_and_emergency_at_desk(client, nurse, doctor, patient):
