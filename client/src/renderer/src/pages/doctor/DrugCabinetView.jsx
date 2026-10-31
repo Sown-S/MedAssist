@@ -16,14 +16,14 @@ const STOCK_FILTERS = [
   { key: 'low', label: 'Low stock' },
   { key: 'out', label: 'Out of stock' }
 ]
-// Lọc theo hạn dùng của các lô còn trong kho ('near' = theo ngưỡng "sắp hết hạn" ở Cài đặt › Vận hành).
+// 'near' = theo ngưỡng “sắp hết hạn” ở Cài đặt › Vận hành.
 const EXPIRY_FILTERS = [
   { key: '', label: 'All expiry dates' },
   { key: '30', label: 'Expiring within 30 days' },
   { key: 'near', label: 'Near expiry (clinic threshold)' },
   { key: 'expired', label: 'Has expired batches' }
 ]
-// Nhóm điều trị theo chữ cái đầu của mã ATC (WHO) — lọc theo nhóm bệnh mà không cần bảng thuốc–bệnh riêng.
+// Nhóm điều trị theo chữ cái đầu của mã ATC — lọc theo nhóm bệnh mà không cần bảng thuốc–bệnh riêng.
 const ATC_CLASSES = {
   A: 'Alimentary tract & metabolism',
   B: 'Blood & blood-forming organs',
@@ -53,8 +53,7 @@ const GROUPS = [
   { key: 'supply', label: 'Medical supplies' }
 ]
 
-// Tủ thuốc (bác sĩ CHỈ XEM): tồn dùng được, hạn gần nhất, giá, các cảnh báo tương tác — để kê đúng thuốc đang có.
-// Nhập / sửa thuốc và kho do Quản trị viên làm ở Quản trị › Kho thuốc.
+// Tủ thuốc (bác sĩ chỉ xem): tồn dùng được, hạn gần nhất, giá, cảnh báo tương tác — để kê đúng thuốc đang có.
 export default function DrugCabinetView({ go }) {
   const { user } = useAuth()
   const { showToast } = useToast()
@@ -68,7 +67,6 @@ export default function DrugCabinetView({ go }) {
   const [expiry, setExpiry] = useState('')
   const [sort, setSort] = useState('name')
   const [page, setPage] = useState(1)
-  // Đổi bộ lọc → quay về trang 1.
   const filter = (fn) => (e) => {
     fn(e.target.value)
     setPage(1)

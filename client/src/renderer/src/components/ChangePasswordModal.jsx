@@ -6,8 +6,7 @@ import { DEMO_MODE } from '../api/client'
 import { logEvent } from '../api/activityStore'
 import { getSettings } from '../api/settingsStore'
 
-// Tự đổi mật khẩu của mình — mọi vai trò (Cài đặt trên thanh trên cùng; Quản trị › Tài khoản nhân viên).
-// Đổi xong server thu hồi mọi token → về màn đăng nhập, đăng nhập lại bằng mật khẩu mới.
+// Đổi xong server thu hồi mọi token → về màn đăng nhập.
 export default function ChangePasswordModal({ open, onClose }) {
   const { user: me, signOutAfterPasswordChange } = useAuth()
   const [form, setForm] = useState({ old: '', np: '', np2: '', err: '' })

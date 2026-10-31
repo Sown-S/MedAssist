@@ -1,12 +1,6 @@
-// Phân loại lúc tiếp đón (Node 1 — cổng cờ đỏ + mức sàn ưu tiên, luật tất định, KHÔNG dùng LLM) theo logic ba trị.
-// Đầu vào CHỈ gồm dữ liệu đã xác nhận: trạng thái triệu chứng (PRESENT / ABSENT / UNKNOWN), sinh hiệu 8 khoá, tuổi.
-// Mô tả tự do KHÔNG được đọc trực tiếp — phải qua bước trích xuất + lễ tân xác nhận (Architecture 5.1.2).
-//  - luật cờ đỏ khớp đủ           → CẤP CỨU (Emergency);
-//  - luật mức sàn khớp đủ          → ƯU TIÊN (High Priority);
-//  - luật cờ đỏ còn thiếu dữ liệu  → "cần đo / hỏi ngay" (không bỏ qua);
-//  - không khớp gì                 → THƯỜNG (Routine).
-// Luôn chạy, kể cả khi tắt module AI (FR08).
-// Backend thật: POST /visits/{id}/assessment trả priority + is_red_flag + rule hits trong < 2 giây (Architecture 5.1.3).
+// Phân loại lúc tiếp đón (Node 1): luật tất định, không dùng LLM, logic ba trị. Chỉ đọc dữ liệu đã xác nhận
+// (triệu chứng, sinh hiệu, tuổi) — không đọc thẳng lời kể. Cờ đỏ khớp → Cấp cứu; mức sàn khớp → Ưu tiên;
+// luật cờ đỏ còn thiếu dữ liệu → “cần đo / hỏi ngay”. Luôn chạy, kể cả khi tắt module AI (FR08).
 import { getState } from './aiConfigStore'
 import { evaluateCase } from '../pages/admin/ai/ruleEngine'
 import { vitalOf } from '../pages/admin/ai/catalog'
@@ -19,7 +13,7 @@ export const TRIAGE_LEVELS = {
   routine: { label: 'Routine', tone: 'muted' }
 }
 
-// Nhãn của 1 mục còn thiếu: 'age' | 'days' | 'sym:<mã>' | khoá sinh hiệu ngắn (temp, hr…).
+// 'age' | 'days' | 'sym:<mã>' | khoá sinh hiệu ngắn (temp, hr…)
 export const missingLabel = (k) =>
   k === 'age' ? 'Age' : k === 'days' ? 'Symptom duration' : k.startsWith('sym:') ? symptomName(k.slice(4)) : vitalOf(k)?.label ?? k
 

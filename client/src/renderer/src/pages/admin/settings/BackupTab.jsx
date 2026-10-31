@@ -9,8 +9,8 @@ import { Field } from './Field'
 
 export function BackupTab({ user, fp, num, onNavigate, showToast }) {
   const log = useBackupLog()
-  const [check, setCheck] = useState(null) // kết quả kiểm tra file
-  const [mode, setMode] = useState('verify') // 'verify' | 'restore'
+  const [check, setCheck] = useState(null)
+  const [mode, setMode] = useState('verify')
   const [confirm, setConfirm] = useState(false)
   const fileRef = useRef(null)
 
@@ -30,8 +30,7 @@ export function BackupTab({ user, fp, num, onNavigate, showToast }) {
 
   return (
     <>
-      {/* Chạy thật: máy chủ tự sao lưu hằng ngày (deploy/scripts/backup.ps1); khôi phục = dựng CSDL mới rồi hoán đổi
-          (restore.ps1), không làm qua API → chỉ hiện hướng dẫn, không có nút sao lưu / khôi phục. */}
+      {/* Chạy thật: máy chủ tự sao lưu hằng ngày (backup.ps1); khôi phục = dựng CSDL mới rồi hoán đổi (restore.ps1), không làm qua API → chỉ hiện hướng dẫn. */}
       {!DEMO_MODE ? (
         <div className="card">
           <div className="card-title">Backups</div>

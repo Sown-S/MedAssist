@@ -19,9 +19,7 @@ import { triage, TRIAGE_LEVELS, missingLabel } from '../api/triage'
 import { useAIConfig } from '../api/aiConfigStore'
 import DocumentModal from '../pages/doctor/DocumentModal'
 
-// Quầy xử lý lượt ĐANG CHỜ khám (sau khi đã tiếp đón):
-//  - Sửa lượt: bệnh nhân chuyển nặng → đo lại sinh hiệu, cập nhật triệu chứng, bật ưu tiên; luật chạy lại và chỉ NÂNG mức;
-//  - Huỷ lượt: bệnh nhân về trước khi được gọi / tiếp đón nhầm, trùng lượt (không xoá, lưu lý do + nhật ký).
+// Quầy xử lý lượt đang chờ: sửa lượt khi bệnh nhân chuyển nặng (luật chạy lại, chỉ nâng mức) hoặc huỷ lượt (lưu lý do).
 
 const symMap = (list) => Object.fromEntries((list ?? []).map((x) => [x.symptom_code, { state: x.state, source: x.source }]))
 
@@ -36,13 +34,12 @@ export function EditWaitingModal({ visit, onClose }) {
   })
   const [syms, setSyms] = useState(symMap(visit.symptoms))
   const [tried, setTried] = useState(false)
-  // Backend thật: hàng đợi không kèm sinh hiệu / lời kể / triệu chứng → tải lượt khám khi mở.
+  // Chạy thật: hàng đợi không kèm sinh hiệu / lời kể / triệu chứng → tải lượt khám khi mở.
   // Sau check-in server chỉ cho sửa sinh hiệu (lời kể khoá); triệu chứng vẫn sửa được.
   const [loaded, setLoaded] = useState(DEMO_MODE)
   const [busy, setBusy] = useState(false)
-  // Backend thật: chuyển nặng lúc chờ → lễ tân chuyển tuyến lượt này (PATCH /visits/{id}/refer, ERD v2.0).
+  // Chuyển nặng lúc chờ → lễ tân chuyển tuyến lượt này (PATCH /visits/{id}/refer).
   const [referring, setReferring] = useState(false)
-  // Sinh hiệu đọc được trong lời kể — chờ y tá xác nhận, không ghi đè số đã nhập.
   const [vitalProps, setVitalProps] = useState([])
   const textLocked = !DEMO_MODE && visit.status !== ST.WAITING
   useEffect(() => {
@@ -66,7 +63,7 @@ export function EditWaitingModal({ visit, onClose }) {
     days: f.days,
     vitals: vitalsFromForm(f),
     symptoms: toPayload(syms),
-    // Lễ tân không tự nâng ưu tiên: luật đánh giá lại khi lưu (backend: PUT /symptoms rồi POST /assessment).
+    // Lễ tân không tự nâng ưu tiên: luật đánh giá lại khi lưu.
     priority: !!visit.priority,
     triage: tri.level,
     triageRules: [...tri.red, ...tri.high].map((x) => x.rule.id)
@@ -76,7 +73,7 @@ export function EditWaitingModal({ visit, onClose }) {
     await clinic.updateVisit(visit.id, { text })
     return clinic.extractSymptoms(visit.id, { signal })
   }
-  // Backend thật: lưu sinh hiệu (+ lời kể khi còn Waiting), triệu chứng, rồi chạy lại luật ưu tiên (POST /assessment).
+  // Lưu sinh hiệu (+ lời kể khi còn Waiting), triệu chứng, rồi chạy lại luật ưu tiên.
   async function saveReal() {
     setBusy(true)
     try {
@@ -102,7 +99,7 @@ export function EditWaitingModal({ visit, onClose }) {
     showToast('Visit updated')
     onClose()
   }
-  // Chuyển nặng trong lúc chờ: CẤP CỨU vượt khả năng phòng khám → chuyển viện / gọi 115 NGAY, lượt khám đóng; bác sĩ được báo.
+  // Cấp cứu vượt khả năng phòng khám → chuyển viện / gọi 115 ngay, đóng lượt; bác sĩ được báo.
   function redFlag(outcome) {
     updateWaitingVisit(visit.id, { ...payload(), priority: true }, user)
     recordRedFlag(
@@ -215,7 +212,7 @@ export function CancelVisitModal({ visit, onClose }) {
   const { user } = useAuth()
   const { showToast } = useToast()
   const { redFlags } = useQueue()
-  // Đang có ca cờ đỏ chờ bác sĩ đánh giá → không cho huỷ (bác sĩ quyết định trước).
+  // Ca cờ đỏ đang chờ bác sĩ đánh giá → không cho huỷ.
   const pendingFlag = redFlags.some((r) => r.visitId === visit.id && !r.doctorReview)
   const [reason, setReason] = useState('left_waiting')
   const [note, setNote] = useState('')

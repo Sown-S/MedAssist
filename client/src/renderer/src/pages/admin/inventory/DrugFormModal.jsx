@@ -12,12 +12,11 @@ import DrugFormLive from './DrugFormLive'
 const BLANK = { name: '', ingredient: '', atc: '', unit: 'tablet', kind: 'drug', group: 'regular', essential: false, cost: '', price: '', threshold: '', strengthMg: '', maxMgDay: '', maxMgKgDay: '', controlledType: 'H' }
 const optNum = (v) => (v === '' || v == null ? null : Number(String(v).replace(',', '.')))
 
-// Backend thật: trường theo danh mục thuốc của server (DrugFormLive). Giả lập: form bên dưới.
 export default function DrugFormModal(props) {
   return DEMO_MODE ? <DrugFormDemo {...props} /> : <DrugFormLive {...props} />
 }
 
-// Dữ liệu GỐC của thuốc (danh mục). Tồn kho theo lô KHÔNG sửa ở đây — dùng Nhập kho / Kiểm kho.
+// Dữ liệu gốc của thuốc; tồn kho theo lô không sửa ở đây.
 function DrugFormDemo({ drug, drugs, user, onClose }) {
   const { showToast } = useToast()
   const [f, setF] = useState(BLANK)
@@ -29,7 +28,7 @@ function DrugFormDemo({ drug, drugs, user, onClose }) {
         drug.id
           ? { ...BLANK, ...drug, rxOnly: isRxOnly(drug), cost: String(drug.cost), price: String(drug.price), threshold: String(drug.threshold), strengthMg: s(drug.strengthMg), maxMgDay: s(drug.maxMgDay), maxMgKgDay: s(drug.maxMgKgDay), controlledType: drug.controlledType ?? 'H' }
           : { ...BLANK, threshold: String(getSettings().ops.defaultThreshold) }
-      ) // thuốc mới: ngưỡng mặc định ở Cài đặt › Vận hành
+      ) // ngưỡng mặc định ở Cài đặt › Vận hành
       setTried(false)
     }
   }, [drug])

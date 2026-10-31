@@ -24,24 +24,23 @@ const VIEWS = {
   patients: { icon: 'search', tab: 'Patient records', title: 'Patient records', sub: 'Look up any patient’s history, add addenda and print documents' }
 }
 
-// Trang Bác sĩ: tổng quan + phòng khám + đơn thuốc + tủ thuốc (?view=…, ?visit=… cho bệnh nhân đang khám).
 export default function Doctor() {
   const { user } = useAuth()
-  useQueueSync() // backend thật: hỏi lại hàng đợi vài giây một lần
+  useQueueSync() // chạy thật: hỏi lại hàng đợi vài giây một lần
   const { visits, redFlags } = useQueue()
-  // Ca cờ đỏ lễ tân vừa ghi nhận, chưa bác sĩ nào xem — hiện trên mọi màn của Bác sĩ.
+  // Ca cờ đỏ chưa bác sĩ nào xem — hiện trên mọi màn của Bác sĩ.
   const pendingRF = redFlags.filter((r) => !r.doctorReview)
   const [params, setParams] = useSearchParams()
   const view = VIEWS[params.get('view')] ? params.get('view') : 'home'
   const visitId = params.get('visit')
   const go = (v, visit) => setParams(v === 'home' ? {} : { view: v, ...(visit ? { visit } : {}) })
   const [rxOf, setRxOf] = useState(null)
-  // Ca cờ đỏ bác sĩ vừa quyết định chuyển tuyến → mở luôn giấy chuyển tuyến để in.
+  // Bác sĩ vừa quyết chuyển tuyến → mở luôn giấy chuyển tuyến để in.
   const [referral, setReferral] = useState(null)
   const inRoomCount = visits.filter((v) => inRoom(v) && isMine(v, user)).length
   const { showToast } = useToast()
   const { take, dialog } = useTakePatient((id) => go('consult', id))
-  // Backend thật: ca cờ đỏ là lượt Cấp cứu đang chờ ở server — bác sĩ mời vào khám ngay (chuyển tuyến làm trong phòng khám).
+  // Chạy thật: ca cờ đỏ là lượt Cấp cứu đang chờ — bác sĩ mời vào khám ngay, chuyển tuyến làm trong phòng khám.
   async function seeNow(r) {
     const v = visits.find((x) => x.id === r.visitId)
     if (!v) return
@@ -120,7 +119,6 @@ export default function Doctor() {
         ))}
       </div>
       <span className="doc-nav-right">
-        {/* Phòng khám cố định do Quản trị viên gán ở Tài khoản nhân viên — không có ca trực */}
         {user.room ? (
           <span className="doc-room" title={translate('Your consultation room')}>
             <Icon name="stethoscope" /> {user.room}

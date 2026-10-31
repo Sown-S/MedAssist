@@ -1,5 +1,4 @@
-// Hiển thị nhật ký theo NGÔN NGỮ GIAO DIỆN: nhật ký chỉ lưu mã hành động + tham số,
-// câu mô tả được dựng lúc hiển thị → không còn cảnh dòng tiếng Anh lẫn giữa các dòng tiếng Việt.
+// Nhật ký chỉ lưu mã hành động + tham số; câu mô tả dựng lúc hiển thị theo ngôn ngữ đang chọn.
 import { getLang, translate } from '../i18n'
 import { permLabel } from './permissionStore'
 
@@ -20,7 +19,7 @@ const REASONS = {
 }
 const money = (n) => (Number(n) || 0).toLocaleString('vi-VN') + 'đ'
 
-// [tiếng Anh, tiếng Việt] — mỗi mục nhận params p.
+// Mỗi mục: p → [tiếng Anh, tiếng Việt].
 const M = {
   'auth.login': () => ['Signed in', 'Đăng nhập'],
   'auth.logout': () => ['Signed out', 'Đăng xuất'],
@@ -251,10 +250,8 @@ export const TARGET_LABEL = {
   settings: 'Settings',
   backup: 'Backup'
 }
-// Mã đối tượng để hiển thị (vai trò hiện tên theo ngôn ngữ thay vì khoá nội bộ).
 export const targetId = (t) => (!t ? '' : t.kind === 'role' ? roleLabel(t.id) : t.id)
 
-// Trang để "nhảy tới bản ghi liên quan" từ một dòng nhật ký.
 export function targetPage(t) {
   if (!t) return null
   if (t.kind === 'patient') return { page: 'patients' }

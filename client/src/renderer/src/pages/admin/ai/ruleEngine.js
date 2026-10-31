@@ -1,12 +1,10 @@
-// Bộ máy chạy quy tắc cứng (rule-based) — cũng chính là chế độ dự phòng khi mô hình ngôn ngữ ngừng chạy.
-// Chạy hoàn toàn ở máy, không cần mạng.
+// Bộ máy chạy quy tắc cứng, chạy hoàn toàn ở máy — cũng là chế độ dự phòng khi mô hình ngôn ngữ ngừng chạy.
 import { SYMPTOMS, ICD10 } from './catalog'
 
-// Nội dung "đang có hiệu lực" của quy tắc, hoặc nội dung bản nháp nếu đang có thay đổi chờ duyệt.
+// Nội dung đang có hiệu lực, hoặc bản nháp nếu có thay đổi chờ duyệt.
 export const effective = (rule) => (rule.pending ? { ...rule, ...rule.pending.data } : rule)
 export const isLive = (rule) => rule.version > 0 && rule.enabled && !rule.retired
 
-// ---------- Khoảng giá trị (dùng chung cho tuổi, số ngày, sinh hiệu) ----------
 const FULL = { lo: -Infinity, loIn: true, hi: Infinity, hiIn: true }
 function fromOp(op, value) {
   const v = +value
@@ -40,14 +38,10 @@ function ageRange(cond) {
 }
 const dayRange = (cond) => ({ ...FULL, lo: cond.minDays ?? -Infinity })
 
-// ---------- Chạy 1 ca ----------
-// ca = { age, days, symptoms: Set, states?, vitals: { temp, hr, ... } } — trường bỏ trống = null.
-// states (logic BA TRỊ, dùng ở tiếp đón / đánh giá thật): { mã: 'PRESENT' | 'ABSENT' | 'UNKNOWN' }, mã không có = UNKNOWN.
-//   - luật cần triệu chứng CÓ: PRESENT → khớp, ABSENT → không khớp, UNKNOWN → còn thiếu (cần hỏi);
-//   - luật cần triệu chứng KHÔNG: ngược lại.
-// Không có states (bản thử luật trên câu tự do): triệu chứng không nhắc tới = không có (như trước).
-// Trả về: ok (khớp đủ), partial (đã có bằng chứng nhưng còn thiếu thông tin để kết luận), hits, missing.
-// Mã triệu chứng còn thiếu ghi dạng 'sym:<mã>'.
+// ca = { age, days, symptoms: Set, states?, vitals } — trường bỏ trống = null.
+// states (logic ba trị, mã không có = UNKNOWN): luật cần triệu chứng có → PRESENT khớp, ABSENT không khớp, UNKNOWN còn thiếu;
+// luật cần triệu chứng không có thì ngược lại. Không có states (thử luật trên câu tự do): không nhắc tới = không có.
+// Trả về ok (khớp đủ), partial (có bằng chứng nhưng còn thiếu), hits, missing (triệu chứng thiếu ghi 'sym:<mã>').
 export function matchRule(rule, c) {
   const cond = rule.cond
   const hits = []
@@ -87,13 +81,13 @@ export function matchRule(rule, c) {
     if (!pass) return { ok: false }
     hits.push({ kind: 'vital', key: v.key, value: val })
   }
-  // Triệu chứng chưa rõ chỉ tính là "cần hỏi" khi luật đã có ít nhất một bằng chứng — tránh liệt kê mọi luật lúc form còn trống.
+  // Triệu chứng chưa rõ chỉ tính là “cần hỏi” khi luật đã có ít nhất một bằng chứng — tránh liệt kê mọi luật lúc form còn trống.
   const all = [...missing, ...(missingSym.length && (hits.length || missing.length) ? missingSym : [])]
   const unresolved = missing.length + missingSym.length
   return { ok: unresolved === 0, partial: all.length > 0, hits, missing: all }
 }
 
-// Áp dụng cấu hình module: cờ đỏ / ưu tiên luôn hiện; gợi ý chẩn đoán lọc theo ngưỡng tin cậy + số gợi ý tối đa.
+// Cờ đỏ / ưu tiên luôn hiện; gợi ý chẩn đoán lọc theo ngưỡng tin cậy và số gợi ý tối đa.
 export function evaluateCase(rules, c, settings, { includeDrafts = false } = {}) {
   const pool = rules
     .map((r) => (includeDrafts && r.pending ? effective(r) : r))
@@ -113,10 +107,8 @@ export function evaluateCase(rules, c, settings, { includeDrafts = false } = {})
   return { alerts, dxShown, dxHidden, incomplete }
 }
 
-// ---------- Phát hiện trùng / mâu thuẫn ----------
-// - duplicate: điều kiện giống hệt và cùng kết quả → 1 trong 2 thừa.
-// - conflict: điều kiện giống hệt nhưng kết quả (mã ICD / loại) khác nhau → hệ thống không biết tin cái nào.
-// - overlap: điều kiện của quy tắc này nằm gọn trong quy tắc kia, khác mã ICD → luôn kích hoạt cùng lúc.
+// Phát hiện trùng / mâu thuẫn. duplicate: cùng điều kiện, cùng kết quả · conflict: cùng điều kiện, khác kết quả
+// · overlap: điều kiện nằm gọn trong quy tắc kia, khác mã ICD → luôn kích hoạt cùng lúc.
 function sameSet(a = [], b = []) {
   return a.length === b.length && a.every((x) => b.includes(x))
 }
@@ -131,7 +123,7 @@ function sameConditions(a, b) {
   const keys = new Set([...Object.keys(va), ...Object.keys(vb)])
   return [...keys].every((k) => va[k] && vb[k] && sameRange(va[k], vb[k]))
 }
-// Có tồn tại 1 ca thoả cả 2 quy tắc không?
+// Có ca nào thoả cả hai quy tắc không?
 function canCoFire(a, b) {
   if (a.symptoms.some((s) => (b.absent ?? []).includes(s)) || b.symptoms.some((s) => (a.absent ?? []).includes(s))) return false
   if (!nonEmpty(intersect(ageRange(a), ageRange(b)))) return false
@@ -163,7 +155,6 @@ export function findIssues(candidate, rules) {
   return out
 }
 
-// Danh sách cặp có vấn đề trên toàn bộ quy tắc (mỗi cặp 1 lần).
 export function allIssues(rules) {
   const seen = new Set()
   const list = []
@@ -179,14 +170,14 @@ export function allIssues(rules) {
   return list
 }
 
-// ---------- Trích xuất từ câu tự do tiếng Việt (bản đơn giản, dựa trên từ điển đồng nghĩa) ----------
+// Trích xuất từ câu tự do tiếng Việt bằng từ điển đồng nghĩa (bản đơn giản)
 const lower = (s) => s.toLowerCase().normalize('NFC')
 export function extractCase(text, synonyms) {
   const t = lower(text)
   const symptoms = new Set()
   const found = []
   const negated = []
-  // Lần xuất hiện có "không / chưa / hết / ko" đứng ngay trước (VD "không sốt") được coi là phủ định.
+  // “không / chưa / hết / ko” đứng ngay trước (VD “không sốt”) = phủ định.
   const occurs = (p) => {
     const out = []
     for (let i = t.indexOf(p); i >= 0; i = t.indexOf(p, i + 1)) out.push(/(?:không|chưa|hết|ko)\s*$/.test(t.slice(Math.max(0, i - 8), i)))
@@ -217,7 +208,6 @@ export function extractCase(text, synonyms) {
 
 export const icdCodes = ICD10.map((i) => i.code)
 
-// ---------- Hiệu quả ----------
 export function prf({ tp = 0, fp = 0, fn = 0 }) {
   const precision = tp + fp ? tp / (tp + fp) : NaN
   const recall = tp + fn ? tp / (tp + fn) : NaN

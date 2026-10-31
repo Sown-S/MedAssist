@@ -1,6 +1,5 @@
 import { PERIODS, ymd } from './shared'
 
-// Chọn kỳ xem số liệu: Hôm nay / Tuần này / Tháng này / Tất cả, hoặc một ngày cụ thể.
 export default function PeriodPicker({ period, date, onChange }) {
   return (
     <div className="period-picker">

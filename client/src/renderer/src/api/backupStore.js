@@ -1,16 +1,14 @@
-// SAO LƯU & KHÔI PHỤC.
-// Bản demo: toàn bộ dữ liệu nằm trong localStorage (khoá "medassist_*") → sao lưu = tải 1 file JSON có checksum SHA-256.
-// Bản thật (on-premise): server chạy pg_dump theo lịch trong Cài đặt › Sao lưu, lưu vào thư mục cấu hình + bản sao thứ hai
-// (ổ ngoài / NAS), giữ N bản gần nhất; nút "Sao lưu ngay" / "Khôi phục" gọi POST /admin/backups, /admin/backups/{id}/restore.
+// Sao lưu / khôi phục của bản demo: dữ liệu nằm trong localStorage (khoá medassist_*), sao lưu là một file JSON
+// có checksum SHA-256. Chạy thật: máy chủ tự sao lưu hằng ngày (deploy/scripts/backup.ps1).
 import { useSyncExternalStore } from 'react'
 import { logEvent } from './activityStore'
 import { version } from '../../../../package.json'
 
 const LOG_KEY = 'medassist_backup_log_v1'
 const FORMAT = 'medassist-backup'
-// Nhật ký hoạt động KHÔNG bị ghi đè khi khôi phục: nhật ký chỉ ghi thêm, không được "quay ngược".
+// Nhật ký hoạt động không bị khôi phục đè: nhật ký chỉ ghi thêm.
 const AUDIT_KEY = 'medassist_audit_v2'
-// Không thuộc dữ liệu phòng khám: lựa chọn ngôn ngữ, mã máy trạm, token đăng nhập, chính lịch sử sao lưu.
+// Không thuộc dữ liệu phòng khám nên không sao lưu: ngôn ngữ, mã máy trạm, token, lịch sử sao lưu.
 const SKIP = ['medassist_lang', 'medassist_ws', 'medassist_token', LOG_KEY]
 
 function dataKeys() {
@@ -53,9 +51,7 @@ function saveLog(next) {
   log = next
   try {
     localStorage.setItem(LOG_KEY, JSON.stringify(log))
-  } catch {
-    /* chỉ giữ trong phiên */
-  }
+  } catch {/* không lưu được thì chỉ giữ trong phiên */}
   listeners.forEach((fn) => fn())
 }
 const pushLog = (entry) => saveLog([entry, ...log].slice(0, 20))
@@ -87,7 +83,6 @@ export async function createBackup(user) {
   logEvent(user, 'backup.create', { target: { kind: 'backup', id: name }, params: { file: name, size: text.length } })
 }
 
-// Kiểm tra 1 file sao lưu có dùng được không: đúng định dạng, checksum khớp, mỗi phần dữ liệu đọc được.
 export async function verifyBackupFile(fileObj) {
   let parsed
   try {
@@ -108,13 +103,13 @@ export async function verifyBackupFile(fileObj) {
     }
   }
   if (!parts.some((p) => p.key.startsWith('medassist_accounts'))) return { ok: false, error: 'The backup has no staff accounts — restoring it would lock everyone out.' }
-  // File này là bản đã tạo trên máy này → đánh dấu "đã kiểm tra".
+  // File do chính máy này tạo → đánh dấu đã kiểm tra.
   if (log.some((e) => e.checksum === parsed.checksum))
     saveLog(log.map((e) => (e.checksum === parsed.checksum ? { ...e, verified: new Date().toISOString() } : e)))
   return { ok: true, file: parsed, parts, name: fileObj.name }
 }
 
-// Khôi phục: thay toàn bộ dữ liệu bằng bản sao lưu (trừ nhật ký hoạt động) rồi tải lại ứng dụng.
+// Thay toàn bộ dữ liệu bằng bản sao lưu (trừ nhật ký hoạt động) rồi tải lại ứng dụng.
 export function restoreBackup(verified, user) {
   logEvent(user, 'backup.restore', {
     target: { kind: 'backup', id: verified.name },

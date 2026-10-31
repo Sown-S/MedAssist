@@ -24,7 +24,7 @@ export function TypeBadge({ type }) {
   return <span className={'badge ' + t.tone}>{t.short}</span>
 }
 
-// Điều kiện của quy tắc dưới dạng các "chip" — mỗi mẩu chữ là 1 phần tử riêng để được dịch.
+// Mỗi mẩu chữ là một phần tử riêng để được dịch.
 export function CondChips({ cond }) {
   if (!cond) return <span className="ai-soft">—</span>
   return (
@@ -122,7 +122,7 @@ export const KIND_LABEL = {
   rollback: 'Roll back'
 }
 
-// Hộp xác nhận cho thay đổi lâm sàng: bắt buộc ghi lý do (đi vào nhật ký thay đổi).
+// Thay đổi lâm sàng bắt buộc ghi lý do (vào nhật ký thay đổi).
 export function ConfirmDialog({ open, title, message, children, confirmLabel = 'Confirm', danger, requireNote, notePlaceholder, onConfirm, onCancel }) {
   const [note, setNote] = useState('')
   useEffect(() => {

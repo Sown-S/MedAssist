@@ -4,10 +4,8 @@ import { controlledKind, CONTROLLED_LABEL, soldOutside } from '../../api/rxSafet
 import { unitLabel, printHtml, esc } from '../admin/inventory/shared'
 import { dmy } from '../reception/shared'
 
-// In đơn thuốc — dùng chung cho Phòng khám (in bản đang kê) và Chi tiết đơn (in lại đơn đã chốt).
-// Thuốc thường trên đơn chính; thuốc gây nghiện (N) / hướng thần (H) mỗi loại một ĐƠN RIÊNG (trang riêng),
+// Thuốc thường trên đơn chính; thuốc gây nghiện (N) / hướng thần (H) mỗi loại một đơn riêng (trang riêng),
 // có thêm dòng địa chỉ / CCCD để điền tay.
-// rx: { name, gender, age, patientId, phone, allergies, diagnosis, diagnosesExtra, plan, followUp, rx: [{ name, qty, unit, usage }], weight, rxAt }
 export function printPrescription(rx, drugs, doctorName) {
   const t = translate
   const kindOf = (l) => controlledKind(findDrugByName(l.name, drugs))

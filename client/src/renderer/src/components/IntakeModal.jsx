@@ -21,12 +21,12 @@ import PatientAlerts from './PatientAlerts'
 
 const PHONE_RE = /^0\d{9}$/
 const DOB_RE = /^\d{1,2}\/\d{1,2}\/\d{4}$/
-const ID_RE = /^\d{12}$/ // CCCD 12 số — không bắt buộc
+const ID_RE = /^\d{12}$/
 const VITALS_EMPTY = Object.fromEntries(VITAL_KEYS.map((d) => [d.key, '']))
 const EMPTY = { name: '', dob: '', gender: 'Female', phone: '', idNumber: '', history: '', allergies: '', ...VITALS_EMPTY, days: '', pregnancy: '', reason: '', ticket: '' }
 
-// Ô ngày sinh: hiển thị dd/mm/yyyy (ô date gốc của Chromium hiện theo vùng của Windows, máy en-US thành mm/dd/yyyy),
-// nút lịch mở bảng chọn ngày gốc. Form vẫn giữ dd/mm/yyyy như patientStore; lịch không cho chọn ngày tương lai.
+// Hiển thị dd/mm/yyyy cố định: ô date gốc của Chromium theo vùng của Windows (máy en-US thành mm/dd/yyyy).
+// Nút lịch mở bảng chọn ngày gốc, không cho chọn ngày tương lai.
 function DobInput({ value, onChange, className }) {
   const picker = useRef(null)
   return (
@@ -40,39 +40,34 @@ function DobInput({ value, onChange, className }) {
   )
 }
 
-// Kiểm tra sinh hiệu theo khoảng của vital_signs.schema.json (api/vitals.js) — dùng chung với màn sửa lượt chờ.
+// Dùng chung với màn sửa lượt chờ.
 export function vitalCheck(f) {
   const r = checkVitals(f)
   return { errors: r.errors.map((e) => e.msg), errorKeys: new Set(r.errors.map((e) => e.key)), warnings: r.warnings }
 }
-// Hỏi tình trạng mang thai khi là nữ trong tuổi sinh sản.
 const askPregnancy = (gender, age) => gender === 'Female' && age !== '' && age >= 12 && age <= 55
 
-// Hai cách dùng:
-//  - patient = null    → đăng ký bệnh nhân mới (kiểm tra trùng SĐT / họ tên + ngày sinh trước khi tạo) rồi cấp số.
-//  - patient = {...}   → tiếp đón bệnh nhân cũ: thông tin hành chính chỉ đọc, chỉ nhập lý do khám, triệu chứng, sinh hiệu.
-// Mức ưu tiên do luật đặt (backend: POST /visits/{id}/assessment) — lễ tân không tự nâng tay.
-// onRedFlag(patient) — mở cảnh báo dấu hiệu nguy hiểm, kèm thông tin đang nhập để ghi nhận chuyển tuyến.
+// patient = null: đăng ký bệnh nhân mới (kiểm tra trùng trước khi tạo) rồi cấp số.
+// patient có sẵn: tiếp đón bệnh nhân cũ, thông tin hành chính chỉ đọc. Mức ưu tiên do luật đặt, lễ tân không nâng tay.
 export default function IntakeModal({ open, onClose, onRedFlag, patient = null }) {
   const { showToast } = useToast()
   const { user } = useAuth()
   const [form, setForm] = useState(EMPTY)
-  const [syms, setSyms] = useState({}) // triệu chứng ĐÃ XÁC NHẬN: { mã: { state, source } }
+  const [syms, setSyms] = useState({})
   const [print, setPrint] = useState(true)
   const [touched, setTouched] = useState(false)
-  const [dupes, setDupes] = useState(null) // danh sách hồ sơ có thể trùng → hỏi lại trước khi tạo mới
+  const [dupes, setDupes] = useState(null)
   const [existing, setExisting] = useState(patient)
-  const [editing, setEditing] = useState(false) // sửa thông tin hành chính của hồ sơ cũ
-  // Backend thật: lượt khám được tạo sớm (khi trích xuất triệu chứng hoặc khi lưu) — server cấp số ngay.
+  const [editing, setEditing] = useState(false)
+  // Chạy thật: lượt khám được tạo sớm (khi trích xuất hoặc khi lưu) — server cấp số ngay.
   const [busy, setBusy] = useState(false)
-  const [visit, setVisit] = useState(null) // { visit_id, queue_number, ... } của lượt vừa tạo
-  const [idTaken, setIdTaken] = useState(false) // CCCD đã thuộc hồ sơ khác → chỉ được dùng hồ sơ đó
+  const [visit, setVisit] = useState(null)
+  const [idTaken, setIdTaken] = useState(false)
   const visitRef = useRef(null)
-  // Sinh hiệu đọc được trong lời kể (backend thật) — chờ y tá xác nhận, không tự điền.
+  // Chờ y tá xác nhận, không tự điền.
   const [vitalProps, setVitalProps] = useState([])
   const saved = useRef(false)
 
-  // Mỗi lần mở: form trống (hoặc hồ sơ được chọn từ Tra cứu).
   useEffect(() => {
     if (!open) return
     setForm({ ...EMPTY, pregnancy: patient?.pregnancy ?? '' })
@@ -103,7 +98,7 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
   const age = existing ? ageOf(existing.dob) : ageOf(form.dob)
   const child = age !== '' && age < 12
   const pregnancyAsked = askPregnancy(existing ? existing.gender : form.gender, age)
-  // Cổng cờ đỏ chạy ngay trên dữ liệu ĐÃ XÁC NHẬN (triệu chứng ba trạng thái + sinh hiệu + tuổi) — luật tất định, không LLM.
+  // Cổng cờ đỏ chạy ngay trên dữ liệu đã xác nhận — luật tất định, không LLM.
   useAIConfig()
   const states = Object.fromEntries(Object.entries(syms).map(([k, x]) => [k, x.state]))
   const vitals = vitalsFromForm(form)
@@ -120,8 +115,7 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
     if (busy) return showToast(`${p.name} is already in today’s queue — no. ${ticketNo(busy.ticket)}`)
     const old = staleVisitOf(p.id)
     if (old) return showToast(translate('This patient still has an open visit from') + ' ' + old.carriedFrom.split('-').reverse().join('/') + ' — ' + translate('close it or collect payment first (banner at the top of Reception).'))
-    // TODO: khi có API thật — POST /visits; server cấp số thứ tự.
-    // Mang thai lưu ở hồ sơ bệnh nhân (medical_history.is_pregnant), không ở lượt khám.
+    // Mang thai lưu ở hồ sơ bệnh nhân, không ở lượt khám.
     if (existing && pregnancyAsked) setPregnancy(existing.id, form.pregnancy, user)
     const r = createVisit(
       p,
@@ -140,16 +134,14 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
     )
     if (!r.ok) return showToast(r.error)
     const v = r.visit
-    // Cờ đỏ nhưng chưa chuyển viện → lên đầu hàng chờ ở mức Cấp cứu, bác sĩ nhận thông báo đỏ để khám ngay.
+    // Cờ đỏ nhưng chưa chuyển viện → lên đầu hàng chờ mức Cấp cứu, bác sĩ nhận thông báo đỏ.
     if (emergency) recordRedFlag({ id: p.id, name: p.name, gender: p.gender, age: ageOf(p.dob), allergies: p.allergies, history: p.history, signs: redSigns(), visitId: v.id }, user, 'queued')
-    // Số thứ tự do hệ thống cấp; máy quầy in phiếu số để đưa bệnh nhân.
     if (print) printTicket(v)
     onClose()
     showToast(emergency ? translate('Emergency — placed at the top of the queue; doctors have been alerted') + ' · ' + ticketNo(v.ticket) : `Visit created — queue number ${ticketNo(v.ticket)}`)
   }
 
-  // ---------- Backend thật ----------
-  // Tạo (nếu chưa có) hồ sơ + lượt khám Waiting; lần sau chỉ cập nhật lời kể và sinh hiệu (chỉ được khi còn Waiting).
+  // Chạy thật: tạo hồ sơ + lượt Waiting nếu chưa có; lần sau chỉ cập nhật lời kể và sinh hiệu (chỉ khi còn Waiting).
   async function ensureVisit(force = false) {
     if (visitRef.current) {
       await clinic.updateVisit(visitRef.current.visit_id, { text: form.reason, vitals })
@@ -173,7 +165,7 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
     syncQueue()
     return v
   }
-  // Cấp cứu ở quầy (backend thật): chuyển tuyến cần hồ sơ bệnh nhân — bệnh nhân mới thì tạo hồ sơ trước.
+  // Chuyển tuyến cấp cứu cần hồ sơ bệnh nhân — bệnh nhân mới thì tạo hồ sơ trước.
   async function ensurePatientId() {
     if (existing) return existing.id
     setTouched(true)
@@ -191,7 +183,7 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
     setExisting(r.patient)
     return r.patient.id
   }
-  // Thông tin gửi sang cảnh báo cờ đỏ: bản demo ghi nhận tại máy; backend thật cần lượt / hồ sơ để chuyển tuyến.
+  // Bản demo ghi nhận tại máy; chạy thật cần lượt / hồ sơ để chuyển tuyến.
   const redFlagInfo = () => ({
     ...draft(),
     id: existing?.id,
@@ -210,7 +202,7 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
     }
     return !!existing || !invalid
   }
-  // Trích xuất cần lượt khám đã có lời kể (server đọc free_text_description).
+  // Server trích xuất từ free_text_description nên phải có lượt khám đã lưu lời kể.
   async function extract(text, { signal }) {
     if (!checkForm()) throw Object.assign(new Error('form'), { code: 'FORM' })
     const v = await ensureVisit()
@@ -224,7 +216,7 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
       const v = await ensureVisit(force)
       if (!v) return
       await clinic.putSymptoms(v.visit_id, toPayload(syms))
-      // Luật cờ đỏ / ưu tiên chạy ngay trong POST; phần AI chạy nền, bác sĩ xem ở thẻ gợi ý.
+      // Luật cờ đỏ / ưu tiên chạy ngay trong POST; phần AI chạy nền.
       const a = await clinic.triggerAssessment(v.visit_id)
       saved.current = true
       syncQueue()
@@ -241,7 +233,7 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
       setBusy(false)
     }
   }
-  // Đóng khi lượt đã tạo nhưng chưa lưu xong → huỷ lượt đó để không còn lượt "ma" trong hàng chờ.
+  // Đóng khi lượt đã tạo mà chưa lưu xong → huỷ lượt đó để không còn lượt “ma” trong hàng chờ.
   function close() {
     if (!DEMO_MODE && visitRef.current && !saved.current)
       clinic.cancelVisit(visitRef.current.visit_id, 'Huỷ khi đang tiếp đón (chưa lưu)').then(syncQueue, () => {})
@@ -258,7 +250,7 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
     if (child && !String(form.weight_kg).trim()) return showToast(translate('Enter the child’s weight (kg) — it is needed for the prescription.'))
     if (existing) return finish(existing)
     if (invalid) return
-    // CCCD đã thuộc hồ sơ khác → dùng hồ sơ đó (server trả 409 DUPLICATE_ID_NUMBER).
+    // CCCD đã thuộc hồ sơ khác → dùng hồ sơ đó (server: 409 DUPLICATE_ID_NUMBER).
     const owner = idNumberOwner(form.idNumber)
     if (owner) return setDupes([owner])
     if (!force) {
@@ -384,7 +376,7 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
       />
       <VitalsFields value={form} onChange={(k, v) => setForm((f) => ({ ...f, [k]: v }))} errorKeys={touched ? vit.errorKeys : new Set()} requireWeight={child} highlight={askVitals} />
       <div className="form-grid intake-extra" style={{ marginTop: 10 }}>
-        {/* Backend thật: không có trường riêng — lễ tân ghi thẳng vào lời kể, vd "Sốt 3 ngày". */}
+        {/* Chạy thật không có trường riêng — ghi vào lời kể, VD “Sốt 3 ngày”. */}
         {DEMO_MODE && (
           <div className="field">
             <label>Symptom duration (days)</label>
@@ -425,7 +417,7 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
           <Icon name="alert" /> {translate('Unusual value — please double-check')}: {vWarn.map((w) => translate(w)).join(' · ')}
         </p>
       )}
-      {/* Backend thật: luật cờ đỏ / ưu tiên chạy ở server khi lưu (POST /assessment). */}
+      {/* Chạy thật: luật chạy ở server khi lưu. */}
       {DEMO_MODE && <TriageStrip tri={tri} onTransfer={() => onRedFlag(redFlagInfo())} />}
 
       <div className="form-actions">
@@ -443,7 +435,6 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
   )
 }
 
-// Kết quả cổng cờ đỏ ngay trong form: mức phân loại, luật đã khớp (kèm lý do), dữ liệu cần đo / hỏi ngay.
 function TriageStrip({ tri, onTransfer }) {
   const lv = TRIAGE_LEVELS[tri.level]
   return (
@@ -476,7 +467,7 @@ function TriageStrip({ tri, onTransfer }) {
   )
 }
 
-// Sửa thông tin hành chính của hồ sơ cũ (nhập nhầm lúc đăng ký) — không tạo hồ sơ mới, ghi nhật ký trước / sau.
+// Sửa thông tin hành chính nhập nhầm — không tạo hồ sơ mới, ghi nhật ký trước / sau.
 function EditPatient({ p, onSaved }) {
   const { user } = useAuth()
   const { showToast } = useToast()

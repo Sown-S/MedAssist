@@ -9,13 +9,12 @@ import { fmtMoney, fmtDate, fmtDateTime } from '../inventory/shared'
 import { SCHEMAS, resolveRef, packageTotal } from './schemas'
 import { saveLiveRow, livePriceHistory } from '../../../api/serviceCatalogLive'
 
-// ---------- Form thêm / sửa ----------
 export function RowForm({ catalogKey, live, row, all, cats, inv, user, onClose }) {
   const s = SCHEMAS[catalogKey]
   const { showToast } = useToast()
   const isNew = !row.id
   const [saving, setSaving] = useState(false)
-  // Backend thật: lịch sử giá đọc từ nhật ký server (GET /admin/services/{id}/price-history), mới nhất trước.
+  // Chạy thật: lịch sử giá từ nhật ký server, mới nhất trước.
   const [prices, setPrices] = useState(null)
   useEffect(() => {
     if (live && !isNew && catalogKey !== 'packages') livePriceHistory(row.id).then(setPrices, () => setPrices([]))

@@ -17,22 +17,18 @@ import { dmy } from '../pages/reception/shared'
 import { DEMO_MODE } from '../api/client'
 import PaymentModalLive from './PaymentModalLive'
 
-// CẤP PHÁT & THU TIỀN cho một lượt đã chốt đơn (Prescribed) — đúng luồng backend lượt 6c:
-//  - Kho đã trừ lúc bác sĩ chốt đơn (FEFO, lô còn hạn qua hết đợt) → ở đây chỉ GHI NHẬN cấp phát từng dòng:
-//    "Đã cấp" (không trừ lần nữa) hoặc "Bỏ qua" (bắt buộc lý do → hoàn kho đúng lô + lập lại hoá đơn);
-//  - Hoá đơn pending đã tự tạo (phí khám + thuốc). Lễ tân thêm / bỏ dòng dịch vụ (khám, cận lâm sàng: siêu âm, xét nghiệm…);
-//  - Thu tiền: Tiền mặt | Chuyển khoản. Đã thu tiền VÀ cấp phát xong → lượt Hoàn tất (Finished).
-// Không có giảm giá, BHYT, làm tròn hay thêm thuốc theo đơn giấy (ngoài phạm vi; CSDL ràng buộc tổng = tổng các dòng).
+// Cấp phát và thu tiền (bản demo). Kho đã trừ lúc chốt đơn nên chỉ ghi nhận từng dòng: “Đã cấp” không trừ lần nữa,
+// “Bỏ qua” hoàn kho đúng lô và lập lại hoá đơn. Đã thu tiền và cấp phát xong → lượt Finished.
+// Không có giảm giá, BHYT hay làm tròn (ngoài phạm vi; CSDL ràng buộc tổng = tổng các dòng).
 const fmt = (n) => Math.max(n, 0).toLocaleString('vi-VN') + 'đ'
 const DS = {
   Pending: { label: 'Waiting to dispense', cls: 'warn' },
   Dispensed: { label: 'Dispensed', cls: 'ok' },
   Skipped: { label: 'Skipped', cls: 'muted' }
 }
-// Loại dòng dịch vụ: nhóm 'consult' của danh mục Dịch vụ = Khám; còn lại (thủ thuật, tiêm, chẩn đoán hình ảnh, xét nghiệm) = Cận lâm sàng.
+// Nhóm 'consult' của danh mục Dịch vụ = Khám; còn lại = Cận lâm sàng.
 const typeOfService = (group) => (group === 'consult' ? 'Consultation' : 'Paraclinical')
 
-// Backend thật: đọc đơn + hóa đơn từ server (PaymentModalLive). Giả lập: dữ liệu trong queueStore / invoiceStore bên dưới.
 export default function PaymentModal(props) {
   return DEMO_MODE ? <PaymentModalDemo {...props} /> : <PaymentModalLive {...props} />
 }
@@ -44,14 +40,14 @@ function PaymentModalDemo({ open, onClose, patient, initialTab = 'dispense' }) {
   useInvoices()
   const cats = useCatalogs()
   const v = visits.find((x) => x.id === patient?.id) ?? patient
-  // Lượt Prescribed từ dữ liệu cũ chưa có hoá đơn → tạo hoá đơn pending ngay khi mở.
+  // Lượt Prescribed từ dữ liệu cũ chưa có hoá đơn → tạo ngay khi mở.
   useEffect(() => {
     if (v?.status === ST.PRESCRIBED) ensureInvoice(v.id, user)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
   const inv = v?.invoiceId ? invoiceById(v.invoiceId) : null
   const [tab, setTab] = useState(initialTab === 'pay' ? 'pay' : initialTab === 'rx' ? 'dispense' : initialTab)
-  const [skipping, setSkipping] = useState(null) // chỉ số dòng đang nhập lý do bỏ qua
+  const [skipping, setSkipping] = useState(null)
   const [skipReason, setSkipReason] = useState('')
   const [adding, setAdding] = useState('')
   const [custom, setCustom] = useState({ item_type: 'Paraclinical', name: '', amount: '' })
@@ -69,7 +65,6 @@ function PaymentModalDemo({ open, onClose, patient, initialTab = 'dispense' }) {
   const services = (inv?.items ?? []).filter((x) => itemType(x) !== 'Drug')
   const drugItems = (inv?.items ?? []).filter((x) => itemType(x) === 'Drug')
 
-  // ---------- Cấp phát ----------
   function markDispensed(i) {
     const r = dispenseItem(v.id, i, { status: 'Dispensed' }, user)
     if (!r.ok) return showToast(translate(r.error))
@@ -86,7 +81,6 @@ function PaymentModalDemo({ open, onClose, patient, initialTab = 'dispense' }) {
     showToast('All drugs recorded as dispensed')
   }
 
-  // ---------- Dòng dịch vụ ----------
   const saveServices = (next) => {
     const r = setServiceLines(v.id, next, user)
     if (!r.ok) showToast(translate(r.error))
@@ -113,7 +107,6 @@ function PaymentModalDemo({ open, onClose, patient, initialTab = 'dispense' }) {
   }
   const removeService = (idx) => saveServices(services.filter((_, j) => j !== idx).map(asService))
 
-  // ---------- Thu tiền ----------
   function doPay(waiting) {
     const r = payVisit(v.id, { method, ref: transferRef.trim(), waiting }, user)
     if (!r.ok) return showToast(translate(r.error))
@@ -129,7 +122,7 @@ function PaymentModalDemo({ open, onClose, patient, initialTab = 'dispense' }) {
     onClose()
   }
 
-  // Phiếu xuất thuốc (không có giá) — kèm số lô, hạn dùng đã trừ lúc chốt đơn.
+  // Phiếu xuất thuốc không có giá, kèm số lô và hạn dùng đã trừ.
   function printSlip() {
     const t = translate
     const rows = lines

@@ -1,5 +1,4 @@
-// Trang này CHỦ ĐÍCH tồn tại để tự vẽ ranh giới phạm vi cho hội đồng — mỗi mục ở đây khớp
-// với đúng danh sách "Out-of-scope" trong Proposal (mục 6.2), tránh bị hỏi "sao không làm X".
+// Liệt kê đúng danh sách “ngoài phạm vi” của Proposal (mục 6.2) để làm rõ ranh giới dự án.
 import Icon from '../../components/Icon'
 
 const ITEMS = [

@@ -5,9 +5,8 @@ import { translate } from '../i18n'
 import { cancelServiceOrderItem } from '../api/serviceApi'
 import { apiMessage } from '../api/serviceStore'
 
-// Huỷ một dòng chỉ định cận lâm sàng bệnh nhân không làm (POST /service-order-items/{id}/cancel, ERD v2.1).
-// Bác sĩ: lượt đang khám. Lễ tân: lượt chờ thu tiền — hoá đơn tự lập lại. Dòng đã có kết quả thì server từ chối.
-// item: { itemId, name }; onDone() sau khi huỷ xong để màn hình nạp lại.
+// Huỷ một dòng chỉ định bệnh nhân không làm (ERD v2.1). Bác sĩ: lượt đang khám; lễ tân: lượt chờ thu tiền
+// (hoá đơn tự lập lại). Dòng đã có kết quả thì server từ chối.
 export default function CancelOrderItemModal({ item, onClose, onDone }) {
   const [reason, setReason] = useState('')
   const [error, setError] = useState('')

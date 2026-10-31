@@ -3,21 +3,16 @@ import Icon from './Icon'
 import { translate } from '../i18n'
 import { STATES, SOURCES, useSymptomCatalog, groupSymptoms, symptomName, requestExtraction, EXTRACTION_TIMEOUT_MS } from '../api/symptoms'
 
-// Nhập triệu chứng có cấu trúc + trích xuất từ mô tả tự do có NGƯỜI XÁC NHẬN (HITL — FR12, FR14, Architecture 5.1.2).
-//  - value: { mã: { state: PRESENT|ABSENT|UNKNOWN, source: Form|Extracted|Prompt } } — chỉ chứa mục lễ tân đã chọn / xác nhận.
-//  - text / onText: lời kể của bệnh nhân (tiếng Việt, tự do).
-//  - ask: mã triệu chứng luật cờ đỏ đang thiếu (Adaptive Lite) → hiện "Hỏi ngay" để lễ tân hỏi và chọn.
-//  - textLocked: lời kể chỉ đọc (lượt đã check-in) — vẫn chọn triệu chứng được.
-//  - onExtract(text, { signal }): trích xuất ở server (POST/GET /visits/{id}/symptom-extraction); không có thì dùng bản giả lập.
-//  - onVitals(list): sinh hiệu server đọc được trong lời kể (vital_proposals) — form cha hiện để y tá xác nhận.
-// Đề xuất của mô hình chỉ là CHIP CHỜ XÁC NHẬN; bấm xác nhận thì mới vào value (nguồn Extracted). Chưa xác nhận = không dùng.
+// Nhập triệu chứng có cấu trúc + trích xuất từ lời kể có người xác nhận (HITL — FR12, FR14).
+// value chỉ chứa mục lễ tân đã chọn / xác nhận. ask: triệu chứng luật cờ đỏ đang thiếu → hiện “Hỏi ngay”.
+// Đề xuất của mô hình chỉ là chip chờ xác nhận; chưa xác nhận thì không được dùng.
 export default function SymptomPanel({ value, onChange, text, onText, ask = [], disabled = false, textLocked = false, onExtract = requestExtraction, onVitals }) {
-  const [job, setJob] = useState({ status: 'idle' }) // idle | running | done | failed
+  const [job, setJob] = useState({ status: 'idle' })
   const [proposals, setProposals] = useState([])
   const ctrl = useRef(null)
   useEffect(() => () => ctrl.current?.abort(), [])
   const catalog = useSymptomCatalog()
-  // Nhóm thu gọn / mở rộng. Mặc định mở: dấu hiệu nguy hiểm, nhóm đã có lựa chọn hoặc đang được nhắc hỏi.
+  // Mặc định mở: dấu hiệu nguy hiểm, nhóm đã có lựa chọn hoặc đang được nhắc hỏi.
   const [openGroups, setOpenGroups] = useState({})
 
   const setState = (code, state, source = 'Form') => {
@@ -36,14 +31,13 @@ export default function SymptomPanel({ value, onChange, text, onText, ask = [], 
     setJob({ status: 'running' })
     try {
       const r = await onExtract(text, { signal: c.signal })
-      // Mã đã được lễ tân chọn thì không đề xuất lại.
       setProposals(r.proposals.filter((p) => !value[p.symptom_code]))
       onVitals?.(r.vitalProposals ?? [])
-      // Ghi lại lời kể đã đọc: sửa lời kể sau đó (hoặc server báo text_changed) → nhắc trích xuất lại.
+      // Lời kể sửa sau lần đọc (hoặc server báo text_changed) → nhắc trích xuất lại.
       setJob({ status: 'done', count: r.proposals.length, text, textChanged: !!r.textChanged })
     } catch (e) {
       if (c.signal.aborted && e.code === 'ABORTED' && ctrl.current !== c) return
-      // Thiếu thông tin bệnh nhân / hồ sơ có thể trùng: form đã báo lỗi, không phải lỗi AI.
+      // Lỗi của form (thiếu thông tin, hồ sơ có thể trùng), không phải lỗi AI.
       if (e.code === 'FORM') return setJob({ status: 'idle' })
       setJob({ status: 'failed', timeout: e.code === 'ABORTED' })
     } finally {
@@ -63,7 +57,7 @@ export default function SymptomPanel({ value, onChange, text, onText, ask = [], 
   const flip = (p) => setProposals((list) => list.map((x) => (x.symptom_code === p.symptom_code ? { ...x, state: x.state === 'PRESENT' ? 'ABSENT' : 'PRESENT' } : x)))
   const drop = (p) => setProposals((list) => list.filter((x) => x.symptom_code !== p.symptom_code))
 
-  // Chỉ nhắc mã có trong danh mục đang dùng (luật giả lập dùng mã của danh mục mẫu).
+  // Chỉ nhắc mã có trong danh mục đang dùng.
   const inCatalog = new Set(catalog.list.map((s) => s.key))
   const asking = ask.filter((code) => !value[code] && inCatalog.has(code))
 

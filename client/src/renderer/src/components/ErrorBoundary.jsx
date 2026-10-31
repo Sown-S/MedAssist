@@ -1,9 +1,8 @@
 import { Component } from 'react'
 import Icon from './Icon'
 
-// Lưới bắt lỗi giao diện: một màn gặp lỗi JavaScript lúc dựng thì chỉ màn đó hiện thông báo, không làm trắng cả cửa sổ.
-// resetKey đổi (VD chuyển sang trang khác) → tự dựng lại phần bên trong. Lỗi trong hàm xử lý sự kiện (onClick, gọi API)
-// không đi qua đây — những chỗ đó vẫn báo bằng toast / dòng lỗi như cũ.
+// Một màn lỗi lúc dựng chỉ hiện thông báo ở màn đó, không làm trắng cả cửa sổ; resetKey đổi thì dựng lại.
+// Lỗi trong hàm xử lý sự kiện (onClick, gọi API) không đi qua đây.
 export default class ErrorBoundary extends Component {
   state = { error: null }
 

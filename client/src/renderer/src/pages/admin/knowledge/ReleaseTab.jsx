@@ -11,7 +11,6 @@ export const RELEASE_STATUS = { Draft: 'Being drafted', PendingApproval: 'Awaiti
 const RELEASE_TONE = { Draft: '', PendingApproval: 'info', Active: 'ok', Retired: 'muted' }
 export const ReleaseBadge = ({ status }) => <span className={'badge ' + (RELEASE_TONE[status] ?? '')}>{RELEASE_STATUS[status] ?? status}</span>
 
-// Nhãn gợi ý cho bản mới: KB-<năm>.<số kế tiếp trong năm>.
 function nextLabel(releases) {
   const y = new Date().getFullYear()
   const n = releases
@@ -42,7 +41,7 @@ const FIELD_LABEL = {
   reason_text: 'Reason shown to doctors',
   condition_logic: 'Condition'
 }
-// Cột khóa của từng loại (giống KINDS ở knowledge_service.py) — không so sánh, vì khóa không đổi giữa các phiên bản.
+// Cột khoá của từng loại — không so sánh vì khoá không đổi giữa các phiên bản.
 const KEY_COLS = {
   symptoms: ['symptom_code'],
   conditions: ['condition_code'],
@@ -60,7 +59,6 @@ function show(field, v, ctx) {
   return <span>{String(v)}</span>
 }
 
-// Một thay đổi trong bản phát hành: mục mới -> tóm tắt; mục sửa -> từng trường đổi (cũ → mới).
 function Change({ c, ctx, onDrop }) {
   const changed = c.active_values
     ? Object.keys(c.values).filter((k) => !KEY_COLS[c.kind]?.includes(k) && JSON.stringify(c.values[k]) !== JSON.stringify(c.active_values[k]))
@@ -115,7 +113,7 @@ function ChangeList({ detail, ctx, onDrop }) {
 
 const ctxOf = (data, names) => ({ names, sources: Object.fromEntries(data.sources.map((s) => [s.source_id, `${s.organization} · ${s.title}`])) })
 
-// ============================================================================ Admin: bản phát hành đang soạn + lịch sử
+// Admin: bản phát hành đang soạn + lịch sử
 export default function ReleaseTab({ data, names, onChanged, autoCreate }) {
   const { showToast } = useToast()
   const open = data.releases.find((r) => OPEN_STATUSES.includes(r.status))
@@ -324,7 +322,7 @@ function CreateReleaseModal({ open, suggested, onClose, onCreate }) {
   )
 }
 
-// ============================================================================ Bác sĩ: duyệt bản chờ duyệt
+// Bác sĩ: duyệt bản chờ duyệt
 export function ReviewPanel({ data, names, onChanged }) {
   const { showToast } = useToast()
   const pending = data.releases.find((r) => r.status === 'PendingApproval')

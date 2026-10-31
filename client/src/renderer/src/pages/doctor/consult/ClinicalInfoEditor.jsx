@@ -4,8 +4,7 @@ import { useToast } from '../../../context/ToastContext'
 import { translate } from '../../../i18n'
 import { updateVisitClinical } from '../../../api/queueStore'
 
-// Bác sĩ xác nhận / sửa dị ứng thuốc và bệnh nền (lễ tân chỉ ghi lời khai lúc tiếp đón).
-// Lưu vào hồ sơ bệnh nhân → kiểm tra tương tác của đơn đang kê và các lần khám sau đều dùng thông tin mới.
+// Bác sĩ xác nhận / sửa dị ứng và bệnh nền (lễ tân chỉ ghi lời khai); lưu vào hồ sơ để đơn đang kê và các lần sau dùng thông tin mới.
 export function ClinicalInfoEditor({ visit, user }) {
   const { showToast } = useToast()
   const [open, setOpen] = useState(false)

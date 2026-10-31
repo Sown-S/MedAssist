@@ -7,10 +7,8 @@ import { fold } from '../../api/patientStore'
 import { translate } from '../../i18n'
 import { fmt, hhmm, ymd, methodLabel, PAY_STATUS } from './shared'
 
-// Màn "Hóa đơn" và "Đơn thuốc" của Lễ tân khi dùng backend thật: các lượt đã chốt đơn còn việc ở quầy
-// (GET /billing/awaiting — chưa cấp phát xong và / hoặc chưa thu tiền). Bấm một dòng → PaymentModal (bản chạy thật).
-// Tab Hóa đơn có thêm lịch sử hóa đơn theo ngày (GET /billing/invoices). Đơn thuốc cũ xem ở lịch sử của từng bệnh nhân.
-// mode: 'invoices' | 'prescriptions' — chỉ khác cột hiển thị và tab mở sẵn trong hộp thoại.
+// Hoá đơn / Đơn thuốc của Lễ tân khi chạy với server: các lượt còn việc ở quầy (GET /billing/awaiting).
+// Tab Hoá đơn có thêm lịch sử theo ngày; đơn cũ xem ở lịch sử của từng bệnh nhân.
 export default function BillingLiveView({ mode, readOnly, onPay }) {
   const awaiting = useAwaiting()
   const [q, setQ] = useState('')
@@ -117,8 +115,7 @@ export default function BillingLiveView({ mode, readOnly, onPay }) {
   )
 }
 
-// Hóa đơn đã lập trong một ngày: đã thu, chờ thu, (tùy chọn) đã hủy do sửa. Bấm dòng → mở hộp thu tiền / in lại phiếu.
-// reloadKey: số lượt đang chờ thay đổi (vừa thu tiền xong) → tải lại danh sách.
+// reloadKey đổi (vừa thu tiền xong) → tải lại danh sách.
 function InvoiceHistory({ readOnly, onPay, reloadKey }) {
   const [date, setDate] = useState(ymd(new Date()))
   const [withCancelled, setWithCancelled] = useState(false)

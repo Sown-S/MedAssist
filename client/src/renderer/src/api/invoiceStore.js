@@ -1,11 +1,6 @@
-// ĐÂY LÀ LỚP GIẢ LẬP (demo) cho bảng INVOICE / INVOICE_ITEM — đúng luồng backend lượt 6b/6c:
-//  - Hoá đơn TỰ TẠO ở trạng thái 'pending' khi lượt khám sang Prescribed (bác sĩ chốt đơn / hoàn tất khám);
-//  - Dòng hoá đơn: item_type 'Drug' (từ dòng đơn, giữ rx_index) | 'Consultation' | 'Paraclinical' (nhập tay — siêu âm, xét nghiệm…);
-//    tên + đơn giá CHÉP vào dòng, nên đổi giá danh mục sau này không làm đổi hoá đơn đã lập;
-//  - consultation_fee / paraclinical_fee / drug_fee = tổng từng loại; total = tổng ba loại (CHECK trong CSDL);
-//  - 'pending' → 'paid' (POST /visits/{id}/invoice/pay, hình thức Cash | BankingTransfer); 'cancelled' kèm lý do;
-//  - Một lượt chỉ có MỘT hoá đơn chưa huỷ: đổi dòng (bỏ qua thuốc khi cấp phát) = huỷ hoá đơn cũ + lập lại.
-// Backend thật: GET/PATCH /visits/{id}/invoice, POST …/invoice/pay, GET …/invoice/print.
+// Hoá đơn của bản demo, theo đúng luồng backend: tự tạo ở trạng thái pending khi lượt sang Prescribed; tên và đơn giá
+// được chép vào dòng nên đổi giá danh mục không làm đổi hoá đơn đã lập. Mỗi lượt chỉ một hoá đơn chưa huỷ —
+// đổi dòng = huỷ hoá đơn cũ rồi lập lại.
 import { useSyncExternalStore } from 'react'
 import { nextNumber, getSettings } from './settingsStore'
 import { logEvent } from './activityStore'
@@ -24,7 +19,6 @@ export const dayOf = (iso) => {
   return `${d.getFullYear()}-${p2(d.getMonth() + 1)}-${p2(d.getDate())}`
 }
 
-// Dòng hoá đơn mẫu (đơn giá khớp Danh mục thuốc).
 const FEE = () => ({ item_type: 'Consultation', name: 'Consultation fee', qty: 1, amount: getSettings().ops.consultFee })
 const DRUGS = {
   throat: [
@@ -38,7 +32,7 @@ const DRUGS = {
 }
 export const sampleItems = (kind) => [FEE(), ...(DRUGS[kind] ?? [])]
 const sum = (items) => items.reduce((s, x) => s + x.amount, 0)
-// Loại dòng của dữ liệu cũ chưa có item_type.
+// Dữ liệu cũ chưa có item_type.
 export const itemType = (x) => x.item_type ?? (x.name === 'Consultation fee' ? 'Consultation' : 'Drug')
 export function subtotals(items) {
   const by = (t) => items.filter((x) => itemType(x) === t).reduce((n, x) => n + x.amount, 0)
@@ -48,7 +42,7 @@ export function subtotals(items) {
   return { consultation_fee, paraclinical_fee, drug_fee, total: consultation_fee + paraclinical_fee + drug_fee }
 }
 
-// Hoá đơn những ngày trước: [ngày trước, giờ, phút, họ tên, SĐT, mã BN, loại đơn, hình thức, huỷ?]
+// [ngày trước, giờ, phút, họ tên, SĐT, mã BN, loại đơn, hình thức, huỷ?]
 const PAST = [
   [6, 8, 40, 'Nguyễn Văn Thành', '0967622357', 'BN000114', 'throat', 'cash'],
   [6, 10, 5, 'Hồ Thu Ngành', '0339798182', 'BN000116', 'rash', 'transfer'],
@@ -92,7 +86,7 @@ function seed() {
 function read() {
   try {
     const list = JSON.parse(localStorage.getItem(KEY))
-    // Bản cũ: 'processing' (lập hoá đơn chờ tiền chuyển khoản) = hoá đơn 'pending' đã chọn hình thức chuyển khoản.
+    // Bản cũ: 'processing' = hoá đơn pending đã chọn chuyển khoản.
     return list?.map((x) => (x.status === 'processing' ? { ...x, status: 'pending' } : x)) ?? null
   } catch {
     return null
@@ -104,9 +98,7 @@ function commit(next) {
   invoices = next
   try {
     localStorage.setItem(KEY, JSON.stringify(invoices))
-  } catch {
-    /* chỉ giữ trong phiên */
-  }
+  } catch {/* không lưu được thì chỉ giữ trong phiên */}
   listeners.forEach((fn) => fn())
 }
 const subscribe = (fn) => {
@@ -121,8 +113,7 @@ export const invoiceById = (id) => invoices.find((x) => x.id === id)
 
 export const activeInvoiceOf = (visitId) => invoices.find((x) => x.visitId === visitId && x.status !== 'cancelled') ?? null
 
-// Lập hoá đơn. status: 'pending' (tự tạo khi Prescribed, chưa thu) | 'paid' (dữ liệu mẫu đã thu).
-// user = null: hoá đơn mẫu của ngày hôm nay (tạo cùng hàng chờ mẫu).
+// user = null: hoá đơn mẫu tạo cùng hàng chờ mẫu.
 export function issueInvoice(visit, { items, method = null, ref = '', status = 'pending', createdAt }, user) {
   const now = createdAt ?? new Date().toISOString()
   const totals = subtotals(items)
@@ -156,7 +147,6 @@ export function issueInvoice(visit, { items, method = null, ref = '', status = '
   return inv
 }
 
-// Thu tiền (POST /visits/{id}/invoice/pay): 'pending' → 'paid'. method: 'cash' | 'transfer'.
 export function payInvoice(id, { method, ref = '' }, user) {
   const inv = invoiceById(id)
   if (inv?.status !== 'pending') return { ok: false, error: 'This invoice is not waiting for payment.' }
@@ -166,14 +156,13 @@ export function payInvoice(id, { method, ref = '' }, user) {
   logEvent(user, 'invoice.confirm', { target: { kind: 'invoice', id, label: inv.name }, params: { invoice: id, patient: inv.name, amount: inv.total } })
   return { ok: true, invoice: invoiceById(id) }
 }
-// Ghi nhận hình thức "chuyển khoản — chờ tiền về" trên hoá đơn còn pending (chưa thu).
+// Chuyển khoản nhưng tiền chưa về: chỉ ghi hình thức, hoá đơn vẫn pending.
 export function setInvoiceMethod(id, method, ref, _user) {
   const inv = invoiceById(id)
   if (inv?.status !== 'pending') return { ok: false, error: 'This invoice is not waiting for payment.' }
   commit(invoices.map((x) => (x.id === id ? { ...x, method, ref: ref?.trim() ?? x.ref } : x)))
   return { ok: true }
 }
-// Thay các dòng của hoá đơn còn pending (sửa dòng dịch vụ) — tính lại tổng phụ và tổng.
 export function replaceInvoiceItems(id, items, user) {
   const inv = invoiceById(id)
   if (inv?.status !== 'pending') return { ok: false, error: 'This invoice can no longer be changed.' }
@@ -182,10 +171,10 @@ export function replaceInvoiceItems(id, items, user) {
   logEvent(user, 'invoice.update', { target: { kind: 'invoice', id, label: inv.name }, params: { invoice: id, patient: inv.name, amount: totals.total } })
   return { ok: true }
 }
-// Giữ tên cũ cho màn Hoá đơn: tiền chuyển khoản đã về → thu.
+// Tên cũ, giữ cho màn Hoá đơn: tiền chuyển khoản đã về → thu.
 export const confirmInvoice = (id, ref, user) => payInvoice(id, { method: invoiceById(id)?.method || 'transfer', ref }, user)
 
-// approvedBy: Quản trị viên xác nhận tại quầy (bắt buộc khi huỷ hoá đơn ĐÃ THU do người không phải Quản trị viên thực hiện).
+// approvedBy: bắt buộc khi người không phải Quản trị viên huỷ hoá đơn đã thu.
 // restocked: bệnh nhân đã trả lại thuốc và thuốc được nhập lại kho.
 export function cancelInvoice(id, reason, user, { approvedBy = null, restocked = false } = {}) {
   const inv = invoiceById(id)

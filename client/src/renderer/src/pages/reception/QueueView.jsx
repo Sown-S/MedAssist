@@ -15,10 +15,9 @@ import { fmt, hhmm, dmy, methodLabel, useNow, PAY_STATUS } from './shared'
 import { vitalsText } from '../../api/vitals'
 import { DEMO_MODE } from '../../api/client'
 
-// Phút chờ bắt đầu thành vàng / đỏ, theo từng chặng.
+// Số phút chờ bắt đầu thành vàng / đỏ, theo từng chặng.
 const WAIT_LIMITS = { Waiting: [30, 60], CheckedIn: [15, 30], Examining: [30, 45], labs: [30, 60], Prescribed: [10, 20] }
 
-// Hàng chờ đầy đủ theo máy trạng thái của backend: Chờ → Đã check-in → Đang khám → Chờ thanh toán → Hoàn tất / Huỷ.
 export default function QueueView({ readOnly, onPay, onRx }) {
   const { visits, redFlags } = useQueue()
   useInvoices()
@@ -36,7 +35,7 @@ export default function QueueView({ readOnly, onPay, onRx }) {
       : tab === ST.CHECKED_IN
         ? readyOrder(visits)
         : byStatus(tab).sort((a, b) => ([ST.FINISHED, ST.CANCELLED].includes(tab) ? b.statusAt.localeCompare(a.statusAt) : a.statusAt.localeCompare(b.statusAt)))
-  // Lễ tân xác nhận bệnh nhân có mặt khi tới lượt (PATCH /visits/{id}/check-in) — bác sĩ chỉ mời được người đã check-in.
+  // Bác sĩ chỉ mời được người đã check-in.
   async function checkIn(v) {
     const r = await checkInVisit(v.id, user)
     showToast(r.ok ? translate('Checked in — doctors can now call') + ' ' + String(v.ticket).padStart(3, '0') : translate(r.error))
@@ -46,7 +45,7 @@ export default function QueueView({ readOnly, onPay, onRx }) {
     if (v.status === ST.FINISHED) return { label: translate('Done') + ' ' + hhmm(v.statusAt), level: 'ok' }
     if (v.status === ST.CANCELLED) return { label: translate('Left') + ' ' + hhmm(v.statusAt), level: 'long' }
     if (atLabs(v) && v.labReturnedAt) return { label: translate('Back from lab') + ' ' + hhmm(v.labReturnedAt), level: 'warn' }
-    // Backend thật: server giữ giờ đi xét nghiệm (lab_out_at) — máy quầy thấy "Đang xét nghiệm" thay vì "Đang khám".
+    // Chạy thật: server giữ giờ đi xét nghiệm (lab_out_at).
     if (atLabs(v)) {
       const n = minutesSince(v.labOutAt ?? v.statusAt, now)
       return { label: translate('Out for lab tests') + ' ' + n + ' ' + translate('min'), level: n >= 60 ? 'long' : 'ok' }
@@ -99,7 +98,7 @@ export default function QueueView({ readOnly, onPay, onRx }) {
     if (v.status === ST.CHECKED_IN)
       return (
         <>
-          {/* Backend thật: sau check-in vẫn đo lại sinh hiệu / sửa triệu chứng được — luật tính lại mức ưu tiên. */}
+          {/* Chạy thật: sau check-in vẫn đo lại sinh hiệu / sửa triệu chứng được — luật tính lại mức ưu tiên. */}
           {!DEMO_MODE && (
             <button className="btn btn-ghost btn-sm" disabled={readOnly} onClick={() => setEditing(v)} title={translate('Condition worsened while waiting? Update the symptoms and vital signs — the priority is re-assessed when you save.')}>
               <Icon name="pencil" /> Re-measure vitals
@@ -113,8 +112,8 @@ export default function QueueView({ readOnly, onPay, onRx }) {
           </button>
         </>
       )
-    // Bệnh nhân cầm kết quả xét nghiệm quay lại → báo bác sĩ phụ trách (bản demo). Backend thật: bác sĩ tự bấm
-    // "Khám tiếp" khi bệnh nhân vào phòng (server chỉ cho bác sĩ của lượt báo đã về).
+    // Bản demo: báo bác sĩ phụ trách khi bệnh nhân cầm kết quả quay lại. Chạy thật: bác sĩ tự bấm Khám tiếp
+    // (server chỉ cho bác sĩ của lượt báo đã về).
     if (atLabs(v))
       return !DEMO_MODE || v.labReturnedAt ? null : (
         <button className="btn btn-primary btn-sm" disabled={readOnly} onClick={() => markLabReturned(v.id)}>

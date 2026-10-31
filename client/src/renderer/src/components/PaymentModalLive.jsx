@@ -17,10 +17,9 @@ import { unitLabel, printHtml, esc } from '../pages/admin/inventory/shared'
 import { printReceipt } from './queuePrint'
 import { translate } from '../i18n'
 
-// CẤP PHÁT & THU TIỀN với backend thật (billing_router): đọc đơn + hóa đơn của lượt khám từ server, mọi thao tác gọi API
-// rồi tải lại — server là nguồn sự thật (kho, hóa đơn, trạng thái lượt khám). Bản giả lập: PaymentModal.jsx.
-// ERD v2.1: hoá đơn tự có dòng cận lâm sàng từ phiếu chỉ định (service_order_id) — quầy không sửa được, chỉ huỷ chỉ định
-// (hoá đơn tự lập lại); dòng nhập tay sửa như cũ. Chỉ định ngoài danh mục chưa có giá nằm ở unbilled_items để quầy thêm tay.
+// Cấp phát và thu tiền khi chạy với server: mọi thao tác gọi API rồi tải lại — server là nguồn sự thật.
+// Dòng cận lâm sàng sinh từ phiếu chỉ định (service_order_id) quầy không sửa, chỉ huỷ chỉ định;
+// chỉ định ngoài danh mục chưa có giá nằm ở unbilled_items để quầy thêm tay.
 const fmt = (n) => Math.max(Number(n) || 0, 0).toLocaleString('vi-VN') + 'đ'
 const DS = {
   Pending: { label: 'Waiting to dispense', cls: 'warn' },
@@ -33,9 +32,9 @@ export default function PaymentModalLive({ open, onClose, patient, initialTab = 
   const { user } = useAuth()
   const cat = useServiceCatalog()
   const [orders, setOrders] = useState([])
-  const [cancelLine, setCancelLine] = useState(null) // dòng chỉ định đang huỷ
+  const [cancelLine, setCancelLine] = useState(null)
   const [rx, setRx] = useState(null)
-  const [inv, setInv] = useState(undefined) // undefined = đang tải, null = không có hóa đơn
+  const [inv, setInv] = useState(undefined) // undefined = đang tải, null = không có hoá đơn
   const [err, setErr] = useState('')
   const [tab, setTab] = useState(initialTab === 'pay' ? 'pay' : 'dispense')
   const [skipping, setSkipping] = useState(null)
@@ -65,7 +64,6 @@ export default function PaymentModalLive({ open, onClose, patient, initialTab = 
     if (open && visitId) load()
   }, [open, visitId, load])
 
-  // Mọi thao tác: gọi API → tải lại đơn + hóa đơn + hàng đợi; trả kết quả cho nơi gọi.
   async function act(fn, ok) {
     try {
       const r = await fn()
@@ -86,14 +84,13 @@ export default function PaymentModalLive({ open, onClose, patient, initialTab = 
   const paid = inv?.payment_status === 'Paid'
   const editable = inv?.payment_status === 'Pending'
   const paraclinical = (inv?.items ?? []).filter((x) => x.item_type === 'Paraclinical')
-  // Dòng nhập tay (quầy sửa được) và dòng sinh từ phiếu chỉ định (chỉ huỷ được chỉ định).
   const services = paraclinical.filter((x) => !x.service_order_id)
   const ordered = paraclinical.filter((x) => x.service_order_id)
   const consultLine = (inv?.items ?? []).find((x) => x.item_type === 'Consultation')
-  // Chỉ định ngoài danh mục chưa có giá; server đã bỏ những mục quầy thêm tay cùng tên.
+  // Server đã bỏ những mục quầy thêm tay cùng tên.
   const unbilled = inv?.unbilled_items ?? []
   const consultServices = cat.services.filter((s) => s.kind === 'Service' && s.group_key === 'consult' && s.is_active !== false)
-  // Dòng hoá đơn từ chỉ định → dòng chỉ định tương ứng (để huỷ). Dòng gói ("Gói: …") không huỷ riêng ở quầy.
+  // Dòng hoá đơn → dòng chỉ định tương ứng (để huỷ). Dòng gói không huỷ riêng ở quầy.
   const orderItemOf = (x) =>
     orders
       .find((o) => o.order_id === x.service_order_id)
@@ -101,7 +98,6 @@ export default function PaymentModalLive({ open, onClose, patient, initialTab = 
   const drugItems = (inv?.items ?? []).filter((x) => x.item_type === 'Drug')
   const ticket = patient.ticket ? String(patient.ticket).padStart(3, '0') : ''
 
-  // ---------- Cấp phát ----------
   const markDispensed = (l) => act(() => dispenseItem(l.item_id, 'Dispensed'))
   async function confirmSkip() {
     const r = await act(() => dispenseItem(skipping, 'Skipped', skipReason.trim()), 'Skipped — stock returned and the invoice re-issued')
@@ -112,7 +108,7 @@ export default function PaymentModalLive({ open, onClose, patient, initialTab = 
   }
   const all = () => act(() => dispenseAll(visitId), 'All drugs recorded as dispensed')
 
-  // ---------- Dòng cận lâm sàng (thay toàn bộ danh sách NHẬP TAY; dòng từ chỉ định server tự giữ) ----------
+  // Gửi lại toàn bộ dòng nhập tay; dòng từ chỉ định server tự giữ.
   const asLine = (x) => ({ item_name: x.item_name, quantity: x.quantity, unit_price: Number(x.unit_price) })
   const saveServices = (next) => act(() => editInvoice(visitId, { paraclinical_items: next }), 'Invoice updated')
   function addFromCatalog(id) {
@@ -120,7 +116,6 @@ export default function PaymentModalLive({ open, onClose, patient, initialTab = 
     const row = cat.services.find((x) => x.service_id === id)
     if (row) saveServices([...services.map(asLine), { item_name: row.name, quantity: 1, unit_price: Number(row.price) || 0 }])
   }
-  // Đổi dịch vụ khám (vd Khám chuyên khoa Nhi): tên và giá theo danh mục.
   const changeConsult = (id) => id && act(() => editInvoice(visitId, { consultation_service_id: id }), 'Invoice updated')
   function addCustom() {
     if (!custom.name.trim() || custom.amount === '' || !(Number(custom.amount) >= 0)) return showToast(translate('Each service line needs a name and an amount.'))
@@ -130,7 +125,6 @@ export default function PaymentModalLive({ open, onClose, patient, initialTab = 
   const removeService = (idx) => saveServices(services.filter((_, j) => j !== idx).map(asLine))
   const saveFee = () => (Number(fee) >= 0 && fee !== '' ? act(() => editInvoice(visitId, { consultation_fee: Number(fee) }), 'Invoice updated') : showToast(translate('Enter an amount')))
 
-  // ---------- Thu tiền ----------
   async function doPay() {
     const r = await act(() => payInvoice(visitId, toServerMethod(method)))
     if (!r) return

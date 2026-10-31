@@ -5,9 +5,8 @@ import { useToast } from '../../../context/ToastContext'
 import { saveDrugLive } from '../../../api/inventoryStore'
 import { getSettings } from '../../../api/settingsStore'
 
-// Thêm / sửa thuốc với backend thật (DrugCreate / DrugUpdate của server): hoạt chất, tên thương mại, hàm lượng,
-// dạng bào chế, đơn vị nhỏ nhất, giá bán, ngưỡng đặt hàng. Thuốc trùng (hoạt chất + tên + hàm lượng + dạng) server từ chối.
-// Không có giới hạn liều hay kiểm tra tương tác (ngoài phạm vi — Proposal FR03).
+// Thêm / sửa thuốc khi chạy với server. Thuốc trùng (hoạt chất + tên + hàm lượng + dạng) server từ chối.
+// Không có giới hạn liều hay tương tác (ngoài phạm vi FR03).
 const BLANK = { generic_name: '', trade_name: '', strength: '', dosage_form: '', unit: '', sale_price: '', reorder_level: '', drug_class: '', active_ingredient_code: '' }
 
 export default function DrugFormLive({ drug, onClose }) {

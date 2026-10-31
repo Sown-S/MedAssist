@@ -4,7 +4,6 @@ import { render, screen, fireEvent, cleanup } from '@testing-library/react'
 import '../src/renderer/src/i18n/index.js'
 import ErrorBoundary from '../src/renderer/src/components/ErrorBoundary.jsx'
 
-// Lưới bắt lỗi giao diện: một màn lỗi lúc dựng không làm trắng cả cửa sổ; "Try again" / đổi trang thì dựng lại.
 let broken
 function Fragile() {
   if (broken) throw new Error('Dữ liệu lạ từ server')

@@ -1,8 +1,7 @@
 import Icon from '../../../components/Icon'
 import { translate } from '../../../i18n'
 
-// Khung nhắc CHỈ ĐỌC khi kê đơn (Proposal FR03, Architecture 5.1.6): dị ứng + bệnh nền + tình trạng mang thai,
-// ghi rõ hệ thống không kiểm tra tương tác thuốc — bác sĩ tự đánh giá.
+// Khung nhắc chỉ đọc khi kê đơn (FR03): dị ứng, bệnh nền, mang thai — bác sĩ tự đánh giá tương tác thuốc.
 export function ReminderPanel({ visit }) {
   return (
     <div className="rx-reminder">

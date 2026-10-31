@@ -7,18 +7,17 @@ import { ageOf } from '../../api/patientStore'
 import ServerHistory from './ServerHistory'
 import DocumentModal from './DocumentModal'
 
-// Tra cứu hồ sơ bệnh nhân với backend thật (FR04, US04): một ô tìm kiếm (mã BN, SĐT, CCCD, năm sinh, họ tên)
-// → hồ sơ + toàn bộ lịch sử khám từ server. Mỗi lần xem server tự ghi nhật ký VIEW (không cần ghi ở client).
+// Một ô tìm cho mọi khoá (mã BN, SĐT, CCCD, năm sinh, họ tên). Server tự ghi nhật ký VIEW mỗi lần xem.
 export default function PatientLookupLive() {
   const [q, setQ] = useState('')
   const [results, setResults] = useState([])
   const [searching, setSearching] = useState(false)
   const [err, setErr] = useState('')
-  const [sel, setSel] = useState(null) // hồ sơ đầy đủ (getPatient)
-  const [last, setLast] = useState(null) // lượt khám gần nhất có chẩn đoán — cho giấy chuyển tuyến
+  const [sel, setSel] = useState(null)
+  const [last, setLast] = useState(null) // lượt gần nhất có chẩn đoán — cho giấy chuyển tuyến
   const [docs, setDocs] = useState(false)
 
-  // Gõ xong 300 ms mới hỏi server (không gửi mỗi phím).
+  // Gõ xong 300 ms mới hỏi server.
   useEffect(() => {
     const term = q.trim()
     if (!term) return setResults([])

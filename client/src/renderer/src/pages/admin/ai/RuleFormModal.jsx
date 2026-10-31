@@ -85,7 +85,7 @@ export default function RuleFormModal({ open, rule, rules, user, onClose }) {
   const base = rule ? (rule.pending ? rule.pending.data : pickRuleData(rule)) : BLANK
   const [f, setF] = useState(() => toForm(base))
   const [note, setNote] = useState('')
-  const [step, setStep] = useState('edit') // edit → confirm
+  const [step, setStep] = useState('edit')
   const [submit, setSubmit] = useState(false)
   const [ack, setAck] = useState(false)
   const [tried, setTried] = useState(false)
@@ -112,7 +112,7 @@ export default function RuleFormModal({ open, rule, rules, user, onClose }) {
 
   const set = (k, v) => setF((x) => ({ ...x, [k]: v }))
 
-  // Mỗi chip triệu chứng xoay vòng: không dùng → bắt buộc có → bắt buộc KHÔNG có.
+  // Xoay vòng: không dùng → bắt buộc có → bắt buộc không có.
   function cycle(key) {
     setF((x) => {
       if (x.present.includes(key)) return { ...x, present: x.present.filter((k) => k !== key), absent: [...x.absent, key] }

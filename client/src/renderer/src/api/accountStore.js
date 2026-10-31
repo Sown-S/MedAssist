@@ -1,17 +1,12 @@
-// ĐÂY LÀ LỚP GIẢ LẬP (demo) cho bảng `users` của backend FastAPI + PostgreSQL.
-// Khi có backend thật: thay toàn bộ file này bằng các lời gọi POST /auth/login, GET/POST/PATCH /admin/users.
-// Mật khẩu ở backend thật phải băm bằng bcrypt/argon2 phía server; SHA-256 ở đây chỉ để KHÔNG lưu
-// mật khẩu dạng chữ thường trong localStorage của bản demo — nó không đủ an toàn cho sản xuất.
-// Khoá tài khoản, đăng xuất cưỡng bức (sessionVersion) và xác thực lại mật khẩu admin cũng PHẢI do server ép;
-// ở đây chỉ mô phỏng đúng luồng để giao diện được viết đúng.
+// Tài khoản nhân viên. Bản demo lưu trong localStorage (SHA-256 chỉ để không lưu mật khẩu dạng chữ);
+// chạy thật gọi /auth và /admin/users — khoá tài khoản, phiên và mật khẩu đều do server kiểm.
 import { logEvent } from './activityStore'
 import { getSettings } from './settingsStore'
 import { apiGet, apiPost, apiRequest, ApiError, DEMO_MODE } from './client'
 import { roomById } from './roomStore'
 
-// ===================== Backend thật: /api/v1/admin/users (admin_router.py) =====================
-// Server lưu: họ tên, vai trò, SĐT, email, mã NV, số chứng chỉ, phòng khám của bác sĩ (room_id), bật / tắt,
-// khoá tạm (locked_until, server tự đếm và tự hết). Chưa có hết hạn mật khẩu, đăng xuất cưỡng bức. Tắt tài khoản = thu hồi mọi phiên.
+// Server giữ hồ sơ nhân viên và khoá tạm (locked_until). Chưa có hết hạn mật khẩu hay đăng xuất cưỡng bức;
+// tắt tài khoản = thu hồi mọi phiên.
 const ROLE_OF = { Physician: 'doctor', Nurse: 'reception', Admin: 'admin' }
 const SERVER_ROLE = { doctor: 'Physician', reception: 'Nurse', admin: 'Admin' }
 const fromServer = (u) => ({
@@ -37,7 +32,7 @@ const fromServer = (u) => ({
   lockedUntil: u.locked_until ?? null,
   sessionVersion: 0
 })
-// Hồ sơ nhân viên gửi lên POST / PATCH /admin/users. room_id chỉ cho bác sĩ: đổi sang vai trò khác thì gửi null.
+// room_id chỉ dành cho bác sĩ; đổi sang vai trò khác thì gửi null.
 const staffBody = (d, roleKey) => ({
   staff_code: (d.staffCode ?? '').trim() || null,
   license_no: roleKey === 'doctor' ? (d.licenseNo ?? '').trim() || null : null,
@@ -73,8 +68,7 @@ const patchLive = (id, body) => apiRequest(`/api/v1/admin/users/${id}`, 'PATCH',
 
 const KEY = 'medassist_accounts_v1'
 
-// Chính sách mật khẩu và khoá tài khoản do server ép (GET /auth/password-policy, không cần đăng nhập).
-// Cài đặt › Bảo mật hiển thị chỉ đọc khi chạy thật. Lỗi mạng → null.
+// Chính sách mật khẩu do server quy định (GET /auth/password-policy); Cài đặt › Bảo mật chỉ hiển thị. Lỗi mạng → null.
 export async function fetchPasswordPolicy() {
   try {
     const p = await apiGet('/api/v1/auth/password-policy')
@@ -90,22 +84,18 @@ export const ROLES = {
   admin: { label: 'Administrator', home: '/reports' }
 }
 
-// Chính sách mật khẩu & khoá tài khoản: Cài đặt › Bảo mật.
-// Sai mật khẩu liên tiếp maxFailed lần thì khoá TẠM lockMinutes phút (hết hạn tự mở), Quản trị viên mở sớm được.
-// Không khoá vĩnh viễn: nếu không, người lạ gõ sai 5 lần là khoá được Quản trị viên duy nhất → không ai mở khoá được.
-// Theo backend (Quy định v5 §7): sai 5 lần / 15 phút thì khoá 5 phút — cố định ở server, không chỉnh từ giao diện.
+// Sai mật khẩu maxFailed lần thì khoá tạm lockMinutes phút, không khoá vĩnh viễn — tránh người lạ khoá được
+// Quản trị viên duy nhất. Giá trị khớp với server (5 lần / 5 phút).
 export const maxFailed = () => 5
 export const lockMinutes = () => 5
-// Đang bị khoá thật sự? Bản ghi cũ chỉ có locked = true (không có hạn) coi như đã hết hạn.
+// Bản ghi cũ chỉ có locked = true (không có hạn) coi như đã hết hạn.
 const lockActive = (a) => !!a.locked && !!a.lockedUntil && Date.parse(a.lockedUntil) > Date.now()
 const minutesLeft = (a) => Math.max(1, Math.ceil((Date.parse(a.lockedUntil) - Date.now()) / 60000))
 
-// Tài khoản admin đầu tiên được tạo sẵn lúc cài đặt. Mật khẩu mặc định chỉ dùng cho lần đăng nhập đầu
-// và BẮT BUỘC đổi ngay (mustChange = true). Bản triển khai thật nên sinh mật khẩu ngẫu nhiên lúc cài.
+// Admin mặc định của bản demo, bắt đổi mật khẩu ở lần đăng nhập đầu.
 export const SEED_ADMIN = { username: 'admin', password: 'Admin@123', fullName: 'System Administrator' }
-// Tên mặc định của các bản trước — tài khoản đã lưu còn mang tên này sẽ được đổi sang tên mới khi nạp.
+// Tên mặc định của các bản trước — đổi sang tên mới khi nạp.
 const LEGACY_ADMIN_NAMES = ['Quản trị viên hệ thống', 'Receptionist Dashboard']
-// Tài khoản admin còn mang tên mặc định (chưa đổi sang tên người thật).
 export const hasDefaultName = (a) => a.fullName === SEED_ADMIN.fullName
 
 async function hash(pw, salt) {
@@ -117,7 +107,7 @@ function newSalt() {
   return Array.from(crypto.getRandomValues(new Uint8Array(8)), (b) => b.toString(16).padStart(2, '0')).join('')
 }
 
-// Mật khẩu tạm do hệ thống sinh — admin không tự gõ, chỉ xem 1 lần sau khi tạo / đặt lại.
+// Mật khẩu tạm do hệ thống sinh; admin chỉ xem một lần sau khi tạo / đặt lại.
 export function genPassword() {
   const c = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789'
   const r = crypto.getRandomValues(new Uint32Array(Math.max(10, getSettings().security.minLength)))
@@ -134,13 +124,10 @@ function read() {
 function write(list) {
   try {
     localStorage.setItem(KEY, JSON.stringify(list))
-  } catch {
-    /* localStorage không khả dụng: bản demo sẽ quay về tài khoản mặc định */
-  }
+  } catch {/* localStorage không dùng được → quay về tài khoản mặc định */}
 }
 
 const codeOf = (id) => 'NV' + String(id).padStart(3, '0')
-// Bổ sung trường mới cho tài khoản lưu từ các bản trước.
 const migrate = (x) => ({
   staffCode: codeOf(x.id),
   phone: '',
@@ -196,7 +183,7 @@ export function publicView(a) {
   const room = a.roomId ? roomById(a.roomId) : null
   return { ...rest, roomCode: room?.code ?? '', roomName: room?.name ?? '', locked: lockActive(a) }
 }
-// Bản demo: phòng không gán được hoặc đã thuộc bác sĩ đang hoạt động khác → lỗi như 422 INVALID_ROOM / 409 ROOM_TAKEN.
+// Mô phỏng lỗi 422 INVALID_ROOM / 409 ROOM_TAKEN của server.
 function roomConflict(list, id, roomId, roleKey, active = true) {
   if (roleKey !== 'doctor' || !roomId || !active) return null
   const room = roomById(roomId)
@@ -215,7 +202,6 @@ export async function verifyLogin(username, password, roleKey) {
   let a = list.find((x) => x.username.toLowerCase() === username.trim().toLowerCase())
   if (!a) return { ok: false, error: 'Incorrect username or password.' }
   if (lockActive(a)) return { ok: false, error: `This account is locked after too many failed sign-ins. Try again in ${minutesLeft(a)} minutes or ask an administrator to unlock it.` }
-  // Hết hạn khoá → đếm lại từ đầu.
   if (a.locked) {
     patch(a.id, { locked: false, lockedUntil: null, failedAttempts: 0 })
     a = { ...a, locked: false, lockedUntil: null, failedAttempts: 0 }
@@ -234,28 +220,27 @@ export async function verifyLogin(username, password, roleKey) {
   if (!a.active) return { ok: false, error: 'This account has been disabled. Contact your administrator.' }
   if (a.roleKey !== roleKey) return { ok: false, error: 'This account does not belong to the selected role.' }
   if (a.failedAttempts) patch(a.id, { failedAttempts: 0 })
-  // Đổi mật khẩu định kỳ: quá hạn thì bắt đặt mật khẩu mới ngay ở màn đăng nhập (như lần đăng nhập đầu).
+  // Quá hạn đổi mật khẩu định kỳ → bắt đặt mật khẩu mới ngay ở màn đăng nhập.
   const { expiryDays } = getSettings().security
   const expired = !a.mustChange && expiryDays > 0 && (!a.passwordChangedAt || Date.now() - new Date(a.passwordChangedAt) > expiryDays * 86400000)
   return { ok: true, account: { ...publicView(a), mustChange: a.mustChange || expired }, expired }
 }
 
-// Ghi "đăng nhập gần nhất" khi phiên bắt đầu thật (sau bước đổi mật khẩu lần đầu nếu có).
+// Ghi lần đăng nhập gần nhất khi phiên thật sự bắt đầu (sau bước đổi mật khẩu lần đầu nếu có).
 export async function recordLogin(id) {
   await load()
   patch(id, { lastLoginAt: new Date().toISOString() })
 }
 
-// Phiên còn hợp lệ không: đọc thẳng localStorage để thấy thay đổi từ cửa sổ / máy khác (bản thật: server từ chối token).
+// Đọc thẳng localStorage để thấy thay đổi từ cửa sổ khác (chạy thật: server từ chối token).
 export function sessionStillValid(id, sessionVersion) {
   const a = (read() ?? []).map(migrate).find((x) => x.id === id)
-  if (!a) return true // localStorage không đọc được — không đá người dùng ra vì lỗi lưu trữ
+  if (!a) return true // lỗi lưu trữ không được đá người dùng ra
   return a.active && !lockActive(a) && a.sessionVersion === sessionVersion
 }
 
-// Xác thực lại mật khẩu của chính người đang thao tác (admin) trước thao tác nhạy cảm.
-// Backend thật: thử đăng nhập bằng chính tài khoản đó (server đếm sai mật khẩu và khoá như đăng nhập thường);
-// token trả về bị bỏ đi, phiên đang dùng giữ nguyên.
+// Admin nhập lại mật khẩu trước thao tác nhạy cảm. Chạy thật: thử đăng nhập bằng chính tài khoản đó để server
+// đếm sai và khoá như thường; token trả về bị bỏ, phiên đang dùng giữ nguyên.
 export async function verifyPassword(id, password, username) {
   if (!DEMO_MODE) {
     try {
@@ -281,7 +266,7 @@ function nextStaffCode(list) {
   return codeOf(n)
 }
 
-// Họ tên hiện trên thanh trên cùng, hoá đơn, phiếu thu chi — không được để trùng tên đăng nhập (VD "letan").
+// Họ tên in trên giấy tờ nên không được trùng tên đăng nhập.
 const NAME_IS_USERNAME = 'The full name is the same as the username. Enter the staff member’s real full name — it appears on the top bar and on printed documents.'
 const sameAsUsername = (fullName, username) => fullName.trim().toLowerCase() === username.trim().toLowerCase()
 
@@ -290,7 +275,7 @@ export async function createAccount({ username, fullName, roleKey, phone = '', s
   if (!u || !fullName.trim()) return { ok: false, error: 'Please enter a full name and username.' }
   if (sameAsUsername(fullName, u)) return { ok: false, error: NAME_IS_USERNAME }
   if (!ROLES[roleKey]) return { ok: false, error: 'Invalid role.' }
-  // Backend thật: mật khẩu tạm sinh ở máy này, gửi một lần qua HTTPS; server băm Argon2id. Admin đưa cho nhân viên.
+  // Mật khẩu tạm sinh ở máy này, gửi một lần qua HTTPS; server băm Argon2id.
   if (!DEMO_MODE) {
     const password = genPassword()
     return live(async () => {
@@ -322,7 +307,7 @@ export async function createAccount({ username, fullName, roleKey, phone = '', s
     roomId: roleKey === 'doctor' ? roomId || null : null,
     licenseNo: roleKey === 'doctor' ? licenseNo.trim() : '',
     active: true,
-    mustChange: true, // nhân viên mới phải tự đặt mật khẩu ở lần đăng nhập đầu
+    mustChange: true,
     createdAt: new Date().toISOString(),
     createdBy: by?.name ?? null,
     salt,
@@ -336,9 +321,8 @@ function activeAdmins(list) {
   return list.filter((x) => x.roleKey === 'admin' && x.active)
 }
 
-// Sửa thông tin: họ tên, mã NV, SĐT, vai trò, phòng khám & số chứng chỉ hành nghề (bác sĩ).
 export async function updateAccount(id, data) {
-  // Backend thật: server tự chặn tự hạ quyền / tắt Admin cuối cùng; đổi vai trò làm token cũ mất hiệu lực.
+  // Server tự chặn hạ quyền / tắt Admin cuối cùng; đổi vai trò làm token cũ mất hiệu lực.
   if (!DEMO_MODE)
     return live(async () => {
       const before = (await listLive()).find((x) => x.id === id)
@@ -372,7 +356,7 @@ export async function updateAccount(id, data) {
     roomId,
     licenseNo: roleKey === 'doctor' ? (data.licenseNo ?? a.licenseNo).trim() : ''
   }
-  // Đổi vai trò → phiên đang mở hết hiệu lực, người dùng phải đăng nhập lại với vai trò mới.
+  // Đổi vai trò → phiên đang mở hết hiệu lực.
   if (roleKey !== a.roleKey) next.sessionVersion = a.sessionVersion + 1
   save(list.map((x) => (x.id === id ? next : x)))
   return { ok: true, account: publicView(next), before: publicView(a) }
@@ -385,14 +369,14 @@ export async function setActive(id, active) {
   if (!a) return { ok: false, error: 'Account not found.' }
   if (!active && a.roleKey === 'admin' && activeAdmins(list).length <= 1)
     return { ok: false, error: 'The last administrator cannot be disabled.' }
-  // Mở lại bác sĩ mà phòng của họ đã giao người khác → như 409 ROOM_TAKEN của server.
+  // Phòng đã giao cho bác sĩ khác → như 409 ROOM_TAKEN.
   const conflict = active && roomConflict(list, id, a.roomId, a.roleKey)
   if (conflict) return { ok: false, error: conflict }
   patch(id, { active })
   return { ok: true }
 }
 
-// Server chưa có đăng xuất cưỡng bức: thu hồi phiên = tắt tài khoản.
+// Server chưa có đăng xuất cưỡng bức: muốn thu hồi phiên thì tắt tài khoản.
 const NOT_ON_SERVER = { ok: false, error: 'Not available with the clinic server — disable the account to end its sessions.' }
 export async function unlockAccount(id) {
   if (!DEMO_MODE) return live(async () => ({ ok: true, account: fromServer(await apiPost(`/api/v1/admin/users/${id}/unlock`)) }))
@@ -402,7 +386,6 @@ export async function unlockAccount(id) {
   return { ok: true }
 }
 
-// Đăng xuất cưỡng bức: tăng sessionVersion → mọi phiên đang mở của tài khoản này hết hiệu lực.
 export async function forceSignOut(id) {
   if (!DEMO_MODE) return NOT_ON_SERVER
   const list = await load()
@@ -412,9 +395,9 @@ export async function forceSignOut(id) {
   return { ok: true }
 }
 
-// Đặt lại mật khẩu: sinh mật khẩu tạm mới, buộc đổi ở lần đăng nhập tới, mở khoá và đá các phiên đang mở.
+// Sinh mật khẩu tạm mới, buộc đổi ở lần đăng nhập tới, mở khoá và kết thúc các phiên đang mở.
 export async function resetPassword(id) {
-  // Backend thật: đổi mật khẩu = server thu hồi mọi token cũ của tài khoản đó.
+  // Server thu hồi mọi token cũ khi đổi mật khẩu.
   if (!DEMO_MODE) {
     const password = genPassword()
     return live(async () => (await apiPost(`/api/v1/admin/users/${id}/reset-password`, { new_password: password }), { ok: true, password }))

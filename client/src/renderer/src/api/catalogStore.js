@@ -1,7 +1,5 @@
-// ĐÂY LÀ LỚP GIẢ LẬP (demo) cho các bảng danh mục dùng chung của backend.
-// Mỗi danh mục là 1 danh sách bản ghi { id, code, name, active, updatedAt, updatedBy, ...trường riêng }.
-// Không XOÁ bản ghi — chỉ "ngừng sử dụng" (active = false), vì hồ sơ / hoá đơn cũ vẫn tham chiếu tới mã đó.
-// Danh mục Thuốc & vật tư và Nhà cung cấp nằm ở inventoryStore (dùng chung với kho / công nợ).
+// Danh mục dùng chung của bản demo. Không xoá bản ghi, chỉ ngừng sử dụng (active = false) vì hồ sơ / hoá đơn cũ
+// vẫn tham chiếu mã đó. Thuốc & vật tư nằm ở inventoryStore.
 import { useSyncExternalStore } from 'react'
 import { logEvent } from './activityStore'
 
@@ -11,7 +9,6 @@ const T1 = '2026-09-15T08:00:00.000Z'
 
 const rows = (list, extra = {}) => list.map((r) => ({ active: true, updatedAt: T0, updatedBy: 'Trần Thị Lan', ...extra, ...r }))
 
-// ---------- Danh mục chung (nhóm giá trị dùng trong hồ sơ bệnh nhân) ----------
 const GENERAL = rows([
   ...[['M', 'Nam'], ['F', 'Nữ'], ['O', 'Khác']].map(([code, name]) => ({ group: 'gender', code: 'GT-' + code, name })),
   ...['Kinh', 'Tày', 'Thái', 'Mường', 'Khmer', 'Hoa', 'Nùng', "H'Mông", 'Dao', 'Gia Rai', 'Ê Đê', 'Ba Na', 'Chăm', 'Cơ Tu', 'Xơ Đăng'].map((name, i) => ({
@@ -28,9 +25,8 @@ const GENERAL = rows([
   ...['A', 'B', 'AB', 'O'].map((name) => ({ group: 'blood', code: 'NM-' + name, name }))
 ])
 
-// ---------- Địa chỉ: 34 đơn vị hành chính cấp tỉnh sau sắp xếp từ 01/07/2025 ----------
-// Nguồn: Nghị quyết 202/2025/QH15 về sắp xếp đơn vị hành chính cấp tỉnh. Mã ở đây là mã nội bộ của
-// phòng khám; mã chính thức và danh sách xã / phường cần NHẬP TỪ FILE do cơ quan có thẩm quyền ban hành.
+// Địa chỉ: 34 tỉnh / thành sau sắp xếp từ 01/07/2025 (Nghị quyết 202/2025/QH15). Mã là mã nội bộ;
+// mã chính thức và danh sách xã / phường cần nhập từ file do cơ quan có thẩm quyền ban hành.
 const PROVINCES = [
   ['Hà Nội', 'city', ''],
   ['Huế', 'city', ''],
@@ -72,7 +68,6 @@ const ADDRESS = rows(
   { updatedAt: T1 }
 )
 
-// ---------- Bệnh (ICD-10) — bản mẫu các mã hay gặp ở phòng khám ngoại trú ----------
 const ICD = rows(
   [
     ['A09', 'Tiêu chảy và viêm dạ dày ruột có nguồn gốc nhiễm khuẩn', 'Diarrhoea and gastroenteritis of presumed infectious origin', 'I'],
@@ -120,7 +115,6 @@ const ICD = rows(
   ].map(([code, name, nameEn, chapter]) => ({ code, name, nameEn, chapter, custom: false }))
 )
 
-// ---------- Dịch vụ / thủ thuật — có lịch sử giá ----------
 const svc = (code, name, group, price, history = []) => ({ code, name, group, unit: 'lần', price, priceHistory: [...history, { price, from: '2026-01-01', by: 'Trần Thị Lan' }] })
 const SERVICES = rows([
   svc('DV01', 'Khám bệnh', 'consult', 80000, [{ price: 70000, from: '2025-01-01', by: 'Trần Thị Lan' }]),
@@ -139,14 +133,12 @@ const SERVICES = rows([
   svc('DV14', 'Đo đường huyết mao mạch', 'diagnostic', 30000)
 ])
 
-// ---------- Gói khám — liệt kê dịch vụ bên trong (nối với danh mục dịch vụ / xét nghiệm) ----------
 const PACKAGES = rows([
   { code: 'GK01', name: 'Khám tổng quát cơ bản', price: 350000, items: [{ ref: 'service:DV01', qty: 1 }, { ref: 'lab:XN01', qty: 1 }, { ref: 'lab:XN05', qty: 1 }, { ref: 'service:DV12', qty: 1 }] },
   { code: 'GK02', name: 'Khám sức khỏe trẻ em', price: 220000, items: [{ ref: 'service:DV02', qty: 1 }, { ref: 'lab:XN01', qty: 1 }, { ref: 'lab:XN14', qty: 1 }] },
   { code: 'GK03', name: 'Theo dõi tiểu đường định kỳ', price: 300000, items: [{ ref: 'service:DV01', qty: 1 }, { ref: 'lab:XN05', qty: 1 }, { ref: 'lab:XN11', qty: 1 }, { ref: 'lab:XN07', qty: 1 }] }
 ])
 
-// ---------- Xét nghiệm / cận lâm sàng — đơn vị và khoảng tham chiếu ----------
 const lab = (code, name, group, unit, low, high, refText, sample, price) => ({ code, name, group, unit, low, high, refText, sample, price })
 const LABS = rows([
   lab('XN01', 'Công thức máu (CBC) — Bạch cầu (WBC)', 'hematology', 'G/L', 4, 10, '', 'blood', 90000),
@@ -165,7 +157,6 @@ const LABS = rows([
   lab('XN14', 'X-quang ngực thẳng', 'imaging', '', null, null, 'Mô tả', 'none', 120000)
 ])
 
-// ---------- Đơn vị tính (mã trùng với đơn vị đang dùng ở Kho) ----------
 const UNITS = rows(
   [
     ['tablet', 'Viên', 'drug'],
@@ -184,7 +175,6 @@ const UNITS = rows(
   ].map(([code, name, kind]) => ({ code, name, kind }))
 )
 
-// ---------- Đường dùng thuốc ----------
 const ROUTES = rows(
   [
     ['PO', 'Uống'],
@@ -201,7 +191,6 @@ const ROUTES = rows(
   ].map(([code, name]) => ({ code, name }))
 )
 
-// ---------- Mẫu đơn thuốc (thuốc lấy từ danh mục thuốc của Kho) & lời dặn ----------
 const RXTEMPLATES = rows([
   {
     code: 'MD01',
@@ -267,7 +256,7 @@ function read() {
     return null
   }
 }
-// Bỏ khóa "departments" của các bản trước (khoa phòng đã thay bằng phòng khám — roomStore).
+// Bỏ khoá departments của bản cũ (khoa phòng đã thay bằng phòng khám).
 const { departments: _legacy, ...saved } = read() ?? {}
 let state = { ...seed(), ...saved }
 const listeners = new Set()
@@ -275,9 +264,7 @@ function commit(next) {
   state = next
   try {
     localStorage.setItem(KEY, JSON.stringify(state))
-  } catch {
-    /* chỉ giữ trong phiên */
-  }
+  } catch {/* không lưu được thì chỉ giữ trong phiên */}
   listeners.forEach((fn) => fn())
 }
 const subscribe = (fn) => {
@@ -292,13 +279,13 @@ export function useCatalogs() {
 const nextId = (key) => key + '-' + (Math.max(0, ...state[key].map((r) => +r.id.split('-').pop() || 0)) + 1)
 const today = () => new Date().toISOString().slice(0, 10)
 
-// title = tên danh mục (tiếng Anh, được dịch ở nhật ký) — chỉ dùng để ghi nhật ký.
+// title: tên danh mục, chỉ dùng để ghi nhật ký.
 export function upsertRow(key, data, user, title) {
   const now = new Date().toISOString()
   const old = data.id && state[key].find((r) => r.id === data.id)
   let row = { ...(old ?? { active: true }), ...data, updatedAt: now, updatedBy: user.name }
   if (!old) row.id = nextId(key)
-  // Dịch vụ: đổi đơn giá → lưu lịch sử giá (hoá đơn cũ vẫn giữ đơn giá tại thời điểm lập).
+  // Đổi đơn giá dịch vụ → lưu lịch sử giá; hoá đơn cũ giữ đơn giá tại thời điểm lập.
   if (key === 'services' && (!old || old.price !== row.price)) {
     row.priceHistory = [...(old?.priceHistory ?? []), { price: row.price, from: data.priceFrom || today(), by: user.name }]
   }
@@ -326,7 +313,7 @@ export function setRowActive(key, id, active, user, title, note) {
   })
 }
 
-// Nhập từ file: khớp theo MÃ — mã đã có thì cập nhật, mã mới thì thêm.
+// Khớp theo mã: mã đã có thì cập nhật, mã mới thì thêm.
 export function importRows(key, list, user, title, fileName) {
   const now = new Date().toISOString()
   let rows = [...state[key]]

@@ -8,8 +8,7 @@ import { ConfirmDialog, Empty } from './ai/ui'
 import DrugFormModal from './inventory/DrugFormModal'
 import { SortTh, Pager, paginate, exportCsv, unitLabel, fmtMoney, fmtNum } from './inventory/shared'
 
-// Danh mục thuốc & vật tư = DỮ LIỆU GỐC (tên, hoạt chất, ATC, đơn vị, giá, cờ thiết yếu / kiểm soát).
-// Tồn kho theo lô, nhập / xuất nằm ở Kho & nhà cung cấp › Tồn kho & hạn dùng.
+// Danh mục thuốc là dữ liệu gốc; tồn kho theo lô, nhập / xuất nằm ở Tồn kho & hạn dùng.
 export default function DrugCatalogPage({ params, onNavigate }) {
   const inv = useInventory()
   const { user } = useAuth()

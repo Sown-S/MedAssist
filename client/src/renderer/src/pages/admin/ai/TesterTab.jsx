@@ -31,7 +31,6 @@ export default function TesterTab({ rules, settings, synonyms, required }) {
   const empty = !c.symptoms.length && Object.values(c.vitals).every((v) => v === '')
   const res = useMemo(() => evaluateCase(rules, kase, settings, { includeDrafts }), [rules, kase, settings, includeDrafts])
 
-  // Hai quy tắc cùng kích hoạt mà đang trùng / mâu thuẫn nhau.
   const clashes = useMemo(() => {
     const ids = new Set([...res.alerts, ...res.dxShown, ...res.dxHidden].map((f) => f.rule.id))
     return allIssues(rules).filter((i) => ids.has(i.rule.id) && ids.has(i.with.id) && i.kind !== 'overlap')

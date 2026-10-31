@@ -17,15 +17,13 @@ import { useQueue, isMine, inRoom, atLabs } from './api/queueStore'
 import { translate } from './i18n'
 import { useServerOnline } from './api/connectivity'
 
-// Mỗi tab khai báo sẵn "role nào được thấy nó" — thêm/bớt vai trò sau này chỉ sửa mảng allow.
-// Đặt lịch hẹn, sổ quỹ, chốt ca nằm ngoài phạm vi (Proposal §6.2) — Lễ tân chỉ có Tiếp đón (hàng chờ ngay trên trang chủ).
-// Xét nghiệm làm thủ công: bác sĩ in phiếu chỉ định ngay trong Phòng khám, không có tab Cận lâm sàng riêng.
+// Tab theo vai trò. Lịch hẹn, sổ quỹ, chốt ca nằm ngoài phạm vi; xét nghiệm làm thủ công nên không có tab Cận lâm sàng.
 const TABS = [
   { to: '/reception', icon: 'clipboard', label: 'Reception', allow: ['reception'] },
   { to: '/doctor', icon: 'stethoscope', label: 'Consultation', allow: ['doctor'] },
   { to: '/reports', icon: 'chart', label: 'Reports', allow: ['admin'] },
   { to: '/admin', icon: 'settings', label: 'Admin', allow: ['admin'] },
-  // Bác sĩ duyệt tri thức ngay trong khu Admin bằng tài khoản của mình — chỉ thấy đúng mục này.
+  // Bác sĩ duyệt tri thức trong khu Admin bằng tài khoản của mình.
   { to: '/admin', icon: 'bulb', label: 'Knowledge review', allow: ['doctor'] }
 ]
 
@@ -33,7 +31,7 @@ function Shell() {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
-  // Bác sĩ bấm Đăng xuất mà còn bệnh nhân trong phòng / đang đi xét nghiệm → nhắc trước (không có ca trực để kết thúc).
+  // Bác sĩ đăng xuất mà còn bệnh nhân trong phòng / đang đi xét nghiệm → nhắc trước.
   const [leaving, setLeaving] = useState(false)
   const serverOnline = useServerOnline()
   const { visits } = useQueue()
@@ -68,13 +66,13 @@ function Shell() {
           {visibleTabs.map((t) => (
             <NavLink key={t.to + t.label} to={t.to} className={({ isActive }) => 'tab' + (isActive ? ' active' : '')}>
               <Icon name={t.icon} />
-              {/* Bọc trong <span>: NavLink là component nên chuỗi con trực tiếp không qua bước dịch của jsx-runtime. */}
+              {/* NavLink là component nên chuỗi con trực tiếp không được jsx-runtime dịch → bọc <span>. */}
               <span>{t.label}</span>
             </NavLink>
           ))}
         </nav>
       </div>
-      {/* Mất kết nối máy chủ (NFR08): Lễ tân có banner + khoá nút riêng trong trang; các vai trò khác dùng banner chung này. */}
+      {/* Lễ tân có banner mất kết nối riêng trong trang; các vai trò khác dùng banner chung này. */}
       {!serverOnline && user.roleKey !== 'reception' && (
         <div className="warn-banner show caution" style={{ margin: '12px 24px 0' }}>
           <div className="icon">
@@ -87,7 +85,7 @@ function Shell() {
         </div>
       )}
 
-      {/* Lỗi trong một trang chỉ thay trang đó bằng thông báo — thanh trên vẫn đổi tab / đăng xuất được; đổi trang là dựng lại. */}
+      {/* Lỗi trong một trang chỉ thay trang đó; thanh trên vẫn dùng được, đổi trang là dựng lại. */}
       <ErrorBoundary resetKey={location.pathname + location.search}>
         <Routes>
           <Route path="/" element={<Navigate to={user.home} replace />} />
@@ -170,7 +168,7 @@ function Shell() {
 }
 
 export default function App() {
-  // Đổi ngôn ngữ (hoặc cập nhật vi.js khi chạy dev) → đổi key → dựng lại toàn bộ giao diện (phiên đăng nhập vẫn giữ).
+  // Đổi ngôn ngữ → đổi key → dựng lại toàn bộ giao diện (phiên đăng nhập vẫn giữ).
   const lang = useSyncExternalStore(subscribe, getRenderKey)
   return (
     <AuthProvider>

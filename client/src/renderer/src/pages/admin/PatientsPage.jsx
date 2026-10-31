@@ -14,15 +14,13 @@ import { useRxHistory } from '../../api/rxHistory'
 import { useInvoices, invoiceById } from '../../api/invoiceStore'
 import { fmt, dmy } from '../reception/shared'
 
-// Hồ sơ bệnh nhân (Quản trị) — bản ẨN DANH: Quản trị viên không xem dữ liệu định danh (Quy định v5 §7, Nghị định 13/2023).
-// Chỉ hiện mã bệnh nhân, giới, tuổi, các lần khám với chẩn đoán, thuốc đã kê và thanh toán — đủ để thống kê bệnh thường gặp
-// theo mùa và thuốc hay dùng (nền cho AI đề xuất sau này). Không có họ tên, SĐT, ngày sinh, dị ứng, bệnh nền, lý do khám.
-// Backend thật: cần endpoint thống kê riêng cho Admin (Sơn) vì GET /patients chặn vai trò Admin.
+// Hồ sơ bệnh nhân ẩn danh cho Quản trị viên (Quy định v5 §7, Nghị định 13/2023): chỉ mã bệnh nhân, giới, tuổi,
+// các lần khám, chẩn đoán, thuốc, thanh toán — không có họ tên, SĐT, ngày sinh, dị ứng, bệnh nền.
 
 const OUTCOME = { done: 'Completed', left: 'Left without finishing', carried: 'Unpaid — carried to next day' }
 const statusOf = (v) => (v.outcome ? OUTCOME[v.outcome] : statusText(v.status))
 
-// Mọi lượt khám đã biết của từng bệnh nhân: hôm nay → các ngày trước → đơn thuốc cũ chưa có trong lưu trữ lượt khám.
+// Hôm nay → các ngày trước → đơn thuốc cũ chưa có trong lưu trữ lượt khám.
 function useVisitsByPatient() {
   const { day, visits } = useQueue()
   const archive = useVisitArchive()
@@ -46,7 +44,7 @@ function useVisitsByPatient() {
   }, [day, visits, archive, rx])
 }
 
-// Backend thật: chưa có endpoint ẩn danh cho Admin → báo rõ, không hiện danh bạ mẫu lưu trên máy.
+// Chạy thật: server chưa có API thống kê ẩn danh cho Admin → báo rõ, không hiện danh bạ mẫu.
 export default function PatientsPage() {
   return DEMO_MODE ? <PatientsDemo /> : <PatientsPendingLive />
 }
@@ -88,7 +86,6 @@ function PatientsDemo() {
     .sort((a, b) => b.id.localeCompare(a.id))
     .filter((p) => !needle || p.id.toLowerCase().includes(needle) || (byPatient.get(p.id) ?? []).some((v) => (v.diagnosis ?? '').toLowerCase().includes(needle)))
 
-  // Thống kê 30 ngày gần nhất: chẩn đoán và thuốc hay gặp nhất.
   const since = new Date(Date.now() - 30 * 86400000).toISOString().slice(0, 10)
   const recent = [...byPatient.values()].flat().filter((v) => v.day >= since)
   const top = (pairs) => [...pairs.reduce((m, [k, n]) => m.set(k, (m.get(k) ?? 0) + n), new Map())].sort((a, b) => b[1] - a[1]).slice(0, 5)

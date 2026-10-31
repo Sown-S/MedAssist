@@ -1,8 +1,5 @@
-// ĐÂY LÀ LỚP GIẢ LẬP (demo) cho các bảng cấu hình AI của backend: ai_rules (+ ai_rule_versions),
-// ddi_pairs, ai_settings, kb_documents, symptom_synonyms, required_fields, audit_log.
-// Lưu tạm trong localStorage để thao tác demo không mất khi chuyển trang.
-// Khi có backend thật: thay các hàm ghi bên dưới bằng POST/PATCH tương ứng; luồng duyệt và việc
-// kiểm tra "người duyệt phải là bác sĩ, khác người soạn" PHẢI được kiểm lại ở server.
+// Cấu hình AI của bản demo (luật, tương tác thuốc, cài đặt, kho tài liệu) lưu trong localStorage.
+// Chạy thật dùng kho tri thức trên server; luật “người duyệt phải là bác sĩ khác người soạn” do server kiểm.
 import { useSyncExternalStore } from 'react'
 import { logEvent } from './activityStore'
 
@@ -171,7 +168,6 @@ function seedRules() {
       { retired: true, version: 3, updatedAt: '2026-09-15T07:00:00.000Z', stats: stats(4, 21, 0, { broad: 18, differs: 3 }) }
     )
   ]
-  // Thay đổi đang chờ để màn "Duyệt thay đổi" có dữ liệu.
   const r008 = list.find((r) => r.id === 'R-008')
   r008.pending = {
     kind: 'edit',
@@ -218,9 +214,8 @@ const SEED_DDI = [
   { id: 'D-010', a: 'Omeprazol', aAtc: 'A02BC01', b: 'Clopidogrel (B01AC04)', type: 'ddi', level: 'warning', source: 'FDA Drug Safety Communication 2009' }
 ]
 
-// Chỉ "bật / tắt module" chỉnh được ở client. model = tên mô hình server báo về (ghi vào kết quả đánh giá);
-// maxSuggestions / minConfidence chỉ dùng cho tab Thử luật (luật chẩn đoán cục bộ) — server tự giới hạn tối đa 3 ứng viên.
-// Không có endpoint / timeout: client không gọi thẳng LLM (cấu hình nằm ở server).
+// Client chỉ bật / tắt module; tên model do server báo. maxSuggestions / minConfidence chỉ dùng cho tab Thử luật —
+// server tự giới hạn 3 ứng viên và client không gọi thẳng LLM.
 const SEED_SETTINGS = {
   enabled: true,
   model: 'gemma-sea-lion-v3-9b-it',
@@ -296,9 +291,7 @@ function read() {
 function write(s) {
   try {
     localStorage.setItem(KEY, JSON.stringify(s))
-  } catch {
-    /* không lưu được thì chỉ giữ trong phiên này */
-  }
+  } catch {/* không lưu được thì chỉ giữ trong phiên */}
 }
 
 function load() {
@@ -329,7 +322,7 @@ export function resetDemo() {
   commit(seed())
 }
 
-// Nhật ký riêng của cấu hình AI (hiện ở tab Duyệt thay đổi) + ghi song song vào nhật ký hoạt động chung.
+// Nhật ký riêng của cấu hình AI, ghi song song vào nhật ký chung.
 const AUDIT_CODE = {
   'Submitted for review': 'ai.rule_submitted',
   'Approved & applied': 'ai.rule_approved',
@@ -342,7 +335,6 @@ const AUDIT_CODE = {
 function log(s, by, target, action, note = '') {
   const isRule = /^R-\d+$/.test(target ?? '')
   const code = isRule ? AUDIT_CODE[action] ?? 'ai.rule_draft' : /^Interaction pair/.test(action) ? 'ai.ddi' : 'ai.settings'
-  // Duyệt / từ chối quy tắc do bác sĩ thực hiện; các thao tác còn lại do quản trị viên.
   const role = code === 'ai.rule_approved' || code === 'ai.rule_rejected' ? 'doctor' : 'admin'
   logEvent({ name: by, roleKey: role }, code, {
     target: { kind: 'ai', id: target, label: target },
@@ -354,8 +346,7 @@ function mapRule(id, fn) {
   return state.rules.map((r) => (r.id === id ? fn(r) : r))
 }
 
-// ===================== Quy tắc: bản nháp → bác sĩ duyệt → áp dụng =====================
-// user = { name, username } của người đang đăng nhập.
+// Quy tắc: bản nháp → bác sĩ duyệt → áp dụng
 export function saveDraft(id, data, note, user, { submit = false, kind } = {}) {
   let ruleId = id
   let rules
@@ -396,10 +387,8 @@ export function saveDraft(id, data, note, user, { submit = false, kind } = {}) {
   return ruleId
 }
 
-// CÔNG TẮC AN TOÀN (Architecture 5.1.10): Quản trị viên TẮT NGAY một luật sai, không chờ duyệt — luật thôi được dùng
-// ở lần đánh giá kế tiếp. BẬT LẠI thì phải gửi bác sĩ duyệt như một thay đổi bình thường (saveDraft kind 'enable').
-// Bản nháp / bản đang chờ duyệt của luật (nếu có) giữ nguyên.
-// Backend thật: PATCH /api/v1/knowledge/items/{id}/deactivate (audit RETIRE, reason Deactivated) + làm mới cache tri thức.
+// Công tắc an toàn: Quản trị viên tắt ngay luật sai, không cần duyệt; bật lại thì phải gửi bác sĩ duyệt.
+// Bản nháp đang có của luật giữ nguyên.
 export function disableNow(id, note, user) {
   const r = state.rules.find((x) => x.id === id)
   if (!r || r.version === 0) return { ok: false, error: 'Only live rules can be turned off.' }
@@ -479,7 +468,7 @@ export function reject(id, reviewer, comment) {
   return { ok: true }
 }
 
-// ===================== Ma trận DDI =====================
+// Ma trận tương tác thuốc (DDI)
 export function upsertDdi(item, user, note) {
   const exists = item.id && state.ddi.some((d) => d.id === item.id)
   let id = item.id
@@ -500,12 +489,10 @@ export function importDdi(rows, user, fileName) {
   commit({ ...state, ddi: [...state.ddi, ...added], audit: log(state, user.name, fileName, 'Interaction pairs imported', String(added.length)) })
 }
 
-// ===================== Cấu hình module =====================
 export function updateSettings(patch, user, note) {
   commit({ ...state, settings: { ...state.settings, ...patch }, audit: log(state, user.name, 'AI module', 'Module settings changed', note) })
 }
 
-// ===================== Kho tri thức & trích xuất =====================
 export function setDocStatus(id, status) {
   commit({
     ...state,

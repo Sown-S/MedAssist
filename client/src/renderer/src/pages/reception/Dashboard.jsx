@@ -9,20 +9,18 @@ import { fmt, dmy } from './shared'
 import { DEMO_MODE } from '../../api/client'
 import { useAwaiting, fromAwaiting } from '../../api/billingApi'
 
-// Backend thật: lượt Prescribed không có trong GET /queue → lấy từ GET /billing/awaiting, đổi sang dạng lượt khám.
+// Chạy thật: lượt Prescribed không có trong GET /queue → lấy từ GET /billing/awaiting.
 
-// Trang chủ Lễ tân: các ô tổng quan bấm vào được + thao tác nhanh + gọi số + danh sách cần thu tiền.
 export default function Dashboard({ go, readOnly, onRegister, onSearch, onPay }) {
   const { visits, redFlags, calling } = useQueue()
   const invoices = useInvoices()
   const awaiting = useAwaiting({ enabled: !DEMO_MODE })
   const today = dayOf(new Date().toISOString())
   const todayInv = invoices.filter((x) => dayOf(x.createdAt) === today && x.status !== 'cancelled')
-  // Lượt đã chốt đơn còn việc ở quầy: chưa thu tiền và / hoặc chưa cấp phát xong.
   const unpaid = DEMO_MODE ? visits.filter((v) => v.status === ST.PRESCRIBED) : awaiting.list.map(fromAwaiting)
   const processing = todayInv.filter((x) => x.status === 'pending' && x.method === 'transfer').length
   const paid = todayInv.filter((x) => x.status === 'paid').length
-  // Doanh thu hôm nay = hoá đơn đã thu trong ngày (theo giờ thu tiền).
+  // Doanh thu theo giờ thu tiền.
   const revenue = invoices.filter((x) => x.status === 'paid' && dayOf(x.paidAt ?? x.createdAt) === today).reduce((s, x) => s + x.total, 0)
   const rxCount = visits.filter((v) => v.rx.length).length
   const waiting = visits.filter(isQueued).length
@@ -62,7 +60,7 @@ export default function Dashboard({ go, readOnly, onRegister, onSearch, onPay })
       tone: 'red',
       title: 'Red-flag cases',
       value: redFlags.length,
-      // Chuyển viện do quầy quyết ngay (không chờ bác sĩ); ca đưa lên đầu hàng chờ là "khám tại phòng khám".
+      // Chuyển viện do quầy quyết ngay; ca đưa lên đầu hàng chờ là khám tại phòng khám.
       sub:
         `${redFlags.filter((r) => (r.doctorReview?.decision ?? r.outcome) === 'referred').length} ${translate('referred')} · ` +
         `${redFlags.filter((r) => ['seen', 'queued'].includes(r.doctorReview?.decision ?? r.outcome)).length} ${translate('seen at the clinic')}`,

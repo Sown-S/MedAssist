@@ -5,9 +5,8 @@ import { updateSettings } from '../../../api/aiConfigStore'
 import { checkHealth } from '../../../api/client'
 import { Switch, ConfirmDialog } from './ui'
 
-// Cài đặt module AI. Client KHÔNG gọi thẳng Ollama: runtime LLM không có xác thực nên chỉ container api được gọi tới
-// (QA03, TC05 — Ollama nằm trong mạng Docker nội bộ, không mở cổng ra LAN). Trạng thái lấy từ GET /health của backend.
-// Mô hình, timeout, số ca đồng thời, Rule-only khi LLM lỗi… là cấu hình của server (Architecture TC06) — ở đây chỉ hiển thị.
+// Client không gọi thẳng Ollama: LLM không có xác thực nên chỉ nằm trong mạng Docker nội bộ.
+// Mô hình, timeout, chế độ dự phòng… là cấu hình của server — ở đây chỉ hiển thị (trạng thái lấy từ GET /health).
 const SERVER_LIMITS = [
   ['Language model', 'Gemma-SEA-LION-9B (Ollama, on the admin workstation)'],
   ['Free-text extraction', 'p95 ≈ 20 s · timeout 30 s'],

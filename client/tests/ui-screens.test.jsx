@@ -9,11 +9,11 @@ import { getPatients } from '../src/renderer/src/api/patientStore.js'
 import { DOC_A, DOC_B, DESK, ADMIN, tick } from './helpers'
 import { printReceipt } from '../src/renderer/src/components/queuePrint.js'
 
-// In biên lai mở khung in của hệ điều hành (jsdom không có) → thay bằng hàm giả để kiểm tra được gọi.
+// jsdom không có khung in → thay printReceipt bằng hàm giả để kiểm tra được gọi.
 vi.mock('../src/renderer/src/components/queuePrint.js', async (orig) => ({ ...(await orig()), printReceipt: vi.fn() }))
 
-// Test giao diện (chế độ demo): mọi màn chính của 3 vai trò dựng được mà không rơi vào lưới bắt lỗi,
-// và vài luồng chính bấm được trên giao diện thật. Lưới an toàn khi chia nhỏ các file lớn (ConsultView, SettingsPage...).
+// Test giao diện (bản demo): mọi màn chính của 3 vai trò dựng được mà không rơi vào lưới bắt lỗi, và vài luồng chính
+// bấm được. Lưới an toàn khi chia nhỏ các file lớn.
 const FAIL = 'Something went wrong on this screen'
 
 afterEach(() => cleanup())
@@ -23,7 +23,7 @@ async function rendered() {
   expect(screen.queryByText(FAIL)).toBeNull()
 }
 
-// Bệnh nhân thứ `index` trong danh bạ mẫu: tiếp đón → check-in → `doctor` nhận khám (mỗi bác sĩ một người trong phòng).
+// tiếp đón → check-in → `doctor` nhận khám (mỗi bác sĩ một người trong phòng)
 function examining(index, doctor = DOC_A) {
   tick()
   const r = queue.createVisit(getPatients()[index], { reason: 'Ho, sốt', priority: false }, DESK)
@@ -55,7 +55,7 @@ describe('Các màn chính dựng được', () => {
     }
   })
 
-  // Mỗi tab là một file riêng (settings/, inventory/) — bấm qua hết để chắc tab nào cũng dựng được.
+  // Mỗi tab là một file riêng — bấm qua hết để chắc tab nào cũng dựng được.
   it.each([
     ['Settings', ['Printing & numbering', 'Security', 'Backup & retention', 'Connection & AI', 'This computer', 'Operations', 'Clinic']],
     ['Stock & expiry', ['Stock movements', 'Controlled drugs ledger', 'Stock by batch']]
@@ -85,13 +85,12 @@ describe('Luồng chính trên giao diện', () => {
     expect(f.ok).toBe(true)
     renderPage(<Reception />, { user: DESK, path: '/reception?view=home' })
     await rendered()
-    // Trang chủ lễ tân › "Chờ cấp phát & thu tiền": dòng của bệnh nhân → nút "Dispense & collect" → tab hoá đơn → thu tiền.
+    // Trang chủ Lễ tân: dòng của bệnh nhân → “Dispense & collect” → tab hoá đơn → thu tiền.
     const row = (await screen.findAllByText(v.name)).map((el) => el.closest('.pay-row')).find(Boolean)
     fireEvent.click(within(row).getByText('Dispense & collect'))
     fireEvent.click(await screen.findByText('Invoice & payment'))
     fireEvent.click(await screen.findByText('Collect payment'))
     await waitFor(() => expect(queue.getQueue().visits.find((x) => x.id === v.id).status).toBe(queue.ST.FINISHED))
-    // Thu xong tự in biên lai.
     await waitFor(() => expect(printReceipt).toHaveBeenCalledWith(expect.objectContaining({ name: v.name })))
   })
 })

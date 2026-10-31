@@ -9,12 +9,9 @@ import { ticketNo } from '../../components/queuePrint'
 import { callText } from '../../components/useCallAnnouncer'
 import { useDevice } from '../../api/deviceSettings'
 
-// Bảng gọi bệnh nhân ở quầy Lễ tân (máy trạng thái backend):
-//  1. Tới lượt, bệnh nhân có mặt → lễ tân bấm số ở dải "Tiếp theo" để CHECK-IN (Waiting → CheckedIn);
-//  2. Bác sĩ "Mời bệnh nhân tiếp theo" = start-exam người đã check-in đứng đầu (CheckedIn → Examining) → hiện ở đây kèm phòng;
-//  3. Lễ tân GỌI MIỆNG ("Mời số X vào phòng Y") rồi bấm "Đã vào phòng"; không thấy bệnh nhân → "Không có mặt" (release, xuống cuối).
-// Backend thật (ERD v2.0): bác sĩ chỉ MỜI (call-next, lượt vẫn ở hàng chờ) — quầy thấy lời mời kèm tên bác sĩ, phòng; bệnh nhân
-// chưa check-in thì check-in rồi mời vào; không có mặt → bỏ lời mời (DELETE /visits/{id}/call), bệnh nhân giữ chỗ.
+// Bảng gọi bệnh nhân ở quầy. Demo: lễ tân check-in người tới lượt; bác sĩ mời → hiện ở đây kèm phòng; lễ tân gọi rồi bấm
+// “Đã vào phòng” hoặc “Không có mặt”. Chạy thật: bác sĩ chỉ mời (call-next); bệnh nhân chưa check-in thì check-in rồi mời vào;
+// không có mặt → bỏ lời mời (DELETE /visits/{id}/call), bệnh nhân giữ chỗ.
 export default function CallPanel({ readOnly }) {
   const { showToast } = useToast()
   const { user } = useAuth()
@@ -25,7 +22,6 @@ export default function CallPanel({ readOnly }) {
     const t = setInterval(() => tick((x) => x + 1), 30000)
     return () => clearInterval(t)
   }, [])
-  // Bệnh nhân bác sĩ đã nhận nhưng chưa vào phòng = lễ tân cần gọi.
   const toCall = DEMO_MODE
     ? visits.filter((v) => v.status === ST.EXAMINING && v.entered === false).sort((a, b) => (a.calledAt ?? '').localeCompare(b.calledAt ?? ''))
     : invitesOf(visits).map((v) => ({ ...v, room: v.calledRoom, doctor: v.calledByName }))

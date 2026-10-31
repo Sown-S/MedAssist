@@ -5,7 +5,6 @@ import { dmy } from '../../reception/shared'
 import { vitalsText } from '../../../api/vitals'
 import { LabOrderResults } from '../doctorShared'
 
-// Một lần khám trước trong dòng thời gian: chẩn đoán, khám thực thể, hướng điều trị, sinh hiệu, cận lâm sàng, đơn thuốc.
 export function VisitCard({ v, onReuse }) {
   const left = v.outcome === 'left' || v.status === ST.CANCELLED || v.status === 'left'
   const notes = v.draftNotes

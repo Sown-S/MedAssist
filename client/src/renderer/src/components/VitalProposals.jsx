@@ -2,10 +2,8 @@ import Icon from './Icon'
 import { translate } from '../i18n'
 import { vitalDef, groupProposals, applicable } from '../api/vitals'
 
-// Sinh hiệu server đọc được trong lời kể (ERD v2.0, vital_proposals) — chỉ là ĐỀ XUẤT: y tá bấm xác nhận thì mới điền vào ô.
-// Không bao giờ ghi đè số đã nhập: ô đã có giá trị thì đề xuất chỉ hiện để đối chiếu. Huyết áp đi theo cặp (group).
-//  - list: [{ key, value, evidence, group }]; form: giá trị đang nhập (chuỗi) theo khoá sinh hiệu.
-//  - onApply({ khoá: chuỗi }): điền các ô còn trống; onDrop(keys): bỏ đề xuất.
+// Sinh hiệu server đọc được trong lời kể chỉ là đề xuất: y tá xác nhận mới điền. Không bao giờ ghi đè số đã nhập;
+// huyết áp đi theo cặp.
 const text = (item) =>
   item.bp
     ? `${translate('Blood pressure')} ${item.values.systolic_bp_mmhg ?? '?'}/${item.values.diastolic_bp_mmhg ?? '?'} mmHg`

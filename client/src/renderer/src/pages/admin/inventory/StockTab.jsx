@@ -20,7 +20,6 @@ export const GROUPS = [
 
 export const WINDOWS = [0, 30, 60, 90]
 
-// ======================= Tồn theo lô =======================
 export function StockTab({ inv, user }) {
   const [q, setQ] = useState('')
   const [group, setGroup] = useState('all')

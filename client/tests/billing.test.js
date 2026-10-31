@@ -6,7 +6,7 @@ beforeEach(async () => {
   s = await fresh()
 })
 
-// Thuốc test riêng (không dính dữ liệu mẫu): lots = [[số lô, còn n ngày hạn, số lượng]].
+// Thuốc riêng cho test (không dính dữ liệu mẫu): lots = [[số lô, còn n ngày hạn, số lượng]].
 function drug(name, lots, extra = {}) {
   const id = s.inventory.upsertDrug({ name, ingredient: name, atc: '', unit: 'tablet', kind: 'drug', group: 'regular', essential: false, cost: 500, price: 2000, threshold: 0, ...extra }, ADMIN)
   for (const [lot, days, qty] of lots) s.inventory.receiveStock({ drugId: id, lot, expiry: inDays(days), qty, cost: 500 }, ADMIN)
@@ -15,13 +15,11 @@ function drug(name, lots, extra = {}) {
 const lotQty = (lot) => s.inventory.getInventory().batches.find((b) => b.lot === lot).qty
 const line = (name, qty, days = 5) => ({ name, qty, unit: 'tablet', usage: 'Uống sau ăn', dose: { m: 1, n: 0, a: 1, e: 0, days } })
 
-// Bệnh nhân đang khám với bác sĩ A.
 function examining(index = 0) {
   const v = admitReady(s, index)
   s.queue.takePatient(v.id, DOC_A)
   return v
 }
-// Đã chốt đơn với các dòng thuốc cho trước → Chờ thanh toán.
 function prescribed(rx, index = 0) {
   const v = examining(index)
   const r = s.queue.finalizeVisit(v.id, { rx, diagnosis: 'J02.9' }, DOC_A)

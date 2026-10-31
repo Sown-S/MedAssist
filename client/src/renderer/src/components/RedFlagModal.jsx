@@ -5,12 +5,9 @@ import { useToast } from '../context/ToastContext'
 import { recordRedFlag } from '../api/queueStore'
 import { DEMO_MODE } from '../api/client'
 import DocumentModal from '../pages/doctor/DocumentModal'
-// FR09 — Red-flag Escalation. Cố tình KHÔNG dùng component Modal dùng chung ở trên,
-// vì đây là 1 overlay cảnh báo toàn màn hình khác hẳn ý nghĩa với modal nhập liệu thông thường,
-// và không được phép đưa bệnh nhân vào hàng đợi khám như nút "Ưu tiên".
-// patient = { name, gender, age, signs } đang nhập ở form tiếp đón; onReferred: đã ghi nhận chuyển tuyến.
-// Backend thật (ERD v2.0): chuyển tuyến lưu ở server — lượt đã tạo (visitId) thì chuyển lượt đó, chưa có thì tạo lượt
-// cấp cứu và chuyển ngay (POST /visits/emergency-referral); patient.ensurePatient() tạo hồ sơ nếu là bệnh nhân mới.
+// Cảnh báo cờ đỏ toàn màn hình (FR09), cố ý không dùng Modal chung vì khác hẳn modal nhập liệu.
+// Chạy thật: lượt đã có (visitId) thì chuyển tuyến lượt đó; chưa có thì tạo lượt cấp cứu và chuyển ngay
+// (POST /visits/emergency-referral); patient.ensurePatient() tạo hồ sơ nếu là bệnh nhân mới.
 export default function RedFlagModal({ open, onClose, patient, onReferred }) {
   const { user } = useAuth()
   const { showToast } = useToast()

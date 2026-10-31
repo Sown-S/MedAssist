@@ -1,8 +1,5 @@
-// ĐÂY LÀ LỚP GIẢ LẬP (demo) cho bảng prescription_reviews — bác sĩ đánh giá lại đơn thuốc ĐÃ CHỐT.
-// Đơn đã chốt là bệnh án + chứng từ nên KHÔNG BAO GIỜ bị sửa: đánh giá chỉ GHI THÊM bên cạnh đơn.
-// Muốn đổi thuốc: thu hồi đơn (nếu lễ tân chưa thu tiền — queueStore.recallVisit) hoặc kê đơn mới ở lần khám sau;
-// đánh giá "cần điều chỉnh" / "lo ngại an toàn" sẽ nhắc bác sĩ ngay khi bệnh nhân này vào phòng khám lần tới.
-// Backend thật: GET/POST /prescriptions/{id}/reviews, PATCH /prescription-reviews/{id}/resolve.
+// Bác sĩ đánh giá lại đơn đã chốt (chỉ có ở bản demo — không có trong FR / ERD). Đơn đã chốt là chứng từ nên không sửa;
+// đánh giá chỉ ghi thêm và nhắc bác sĩ ở lần khám sau.
 import { useSyncExternalStore } from 'react'
 import { logEvent } from './activityStore'
 
@@ -28,9 +25,7 @@ function commit(next) {
   reviews = next
   try {
     localStorage.setItem(KEY, JSON.stringify(reviews))
-  } catch {
-    /* chỉ giữ trong phiên */
-  }
+  } catch {/* không lưu được thì chỉ giữ trong phiên */}
   listeners.forEach((fn) => fn())
 }
 const subscribe = (fn) => {
@@ -42,7 +37,6 @@ export function useRxReviews() {
   return useSyncExternalStore(subscribe, getRxReviews)
 }
 
-// Ngày kê đơn theo giờ máy, dạng dd/mm/yyyy (để câu nhật ký đọc được).
 function dayOfRx(rx) {
   if (!rx.rxAt) return '—'
   const d = new Date(rx.rxAt)
@@ -50,7 +44,7 @@ function dayOfRx(rx) {
 }
 const target = (rx) => ({ kind: 'patient', id: rx.patientId, label: rx.name })
 
-// rx: lượt khám / đơn thuốc (id, patientId, name, rxAt); verdict: ok | adjust | concern.
+// verdict: ok | adjust | concern
 export function addReview(rx, { verdict, note }, user) {
   const text = (note ?? '').trim()
   if (!VERDICTS.some((v) => v.key === verdict)) return { ok: false, error: 'Choose a verdict.' }
@@ -73,7 +67,6 @@ export function addReview(rx, { verdict, note }, user) {
   return { ok: true, review: r }
 }
 
-// Đánh dấu đã xử lý (VD đã kê đơn mới ở lượt khám visitId).
 export function resolveReview(id, visitId, user) {
   const r = reviews.find((x) => x.id === id)
   if (!r || r.resolved) return { ok: false, error: 'Review not found.' }
@@ -83,5 +76,5 @@ export function resolveReview(id, visitId, user) {
 }
 
 export const reviewsOf = (rxId, list = reviews) => list.filter((r) => r.rxId === rxId)
-// Đánh giá còn mở (cần điều chỉnh / lo ngại an toàn, chưa xử lý) của một bệnh nhân — nhắc ở phòng khám.
+// Đánh giá cần điều chỉnh / lo ngại an toàn chưa xử lý — nhắc ở phòng khám.
 export const openReviewsFor = (patientId, list = reviews) => list.filter((r) => r.patientId === patientId && r.verdict !== 'ok' && !r.resolved)

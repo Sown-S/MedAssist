@@ -2,7 +2,7 @@ import { translate } from '../../../i18n'
 import { SOURCES } from '../../../api/symptoms'
 import { symptomName } from '../../../api/symptoms'
 
-// Triệu chứng lễ tân đã xác nhận lúc tiếp đón (PRESENT / ABSENT), kèm nguồn nếu không phải nhập tay.
+// Kèm nguồn nếu không phải nhập tay.
 export function ConfirmedSymptoms({ list }) {
   if (!list?.length) return null
   const yes = list.filter((x) => x.state === 'PRESENT')

@@ -35,7 +35,6 @@ function haystack(r) {
     ...r.cond.symptoms.map(symptomLabel),
     ...(r.cond.absent ?? []).map(symptomLabel)
   ]
-  // Tìm được bằng cả tiếng Anh lẫn tiếng Việt.
   return parts
     .flatMap((p) => [p, translate(p ?? '')])
     .join(' ')
@@ -49,9 +48,9 @@ export default function RulesTab({ rules, audit, user, onOpenReview }) {
   const [type, setType] = useState('all')
   const [status, setStatus] = useState('all')
   const [q, setQ] = useState('')
-  const [form, setForm] = useState(null) // { rule } | null
+  const [form, setForm] = useState(null)
   const [historyOf, setHistoryOf] = useState(null)
-  const [action, setAction] = useState(null) // { rule, kind, patch }
+  const [action, setAction] = useState(null)
   const [expanded, setExpanded] = useState(null)
 
   const issues = useMemo(() => allIssues(rules), [rules])
@@ -73,7 +72,7 @@ export default function RulesTab({ rules, audit, user, onOpenReview }) {
   }
   function confirmAction(note) {
     const { rule, kind, patch } = action
-    // Tắt: có hiệu lực ngay (công tắc an toàn). Bật lại / ngừng hẳn: gửi bác sĩ duyệt.
+    // Tắt có hiệu lực ngay (công tắc an toàn); bật lại / ngừng hẳn phải gửi bác sĩ duyệt.
     if (kind === 'disable') {
       const r = disableNow(rule.id, note, user)
       setAction(null)

@@ -7,7 +7,6 @@ import { todayISO } from '../../../api/inventoryStore'
 import { exportCsv } from '../inventory/shared'
 import { SCHEMAS } from './schemas'
 
-// ---------- CSV ----------
 export function splitCsv(line) {
   const out = []
   let cur = ''
@@ -43,7 +42,7 @@ export function exportCatalog(key, rows) {
   )
 }
 
-// Đọc file: dòng đầu là tên cột (khoá trường, VD code,name,...). Trả về dòng hợp lệ + lỗi theo số dòng.
+// Dòng đầu là tên cột (khoá trường). Trả về dòng hợp lệ + lỗi theo số dòng.
 export function parseCatalogCsv(key, text) {
   const s = SCHEMAS[key]
   const lines = text.replace(/^\uFEFF/, '').split(/\r?\n/).filter((l) => l.trim())
@@ -77,7 +76,6 @@ export function parseCatalogCsv(key, text) {
   return { rows, errors }
 }
 
-// Đọc file người dùng chọn → kết quả xem trước (số dòng mới / cập nhật / lỗi).
 export function readCatalogFile(e, catalogKey, all, setImp) {
   const file = e.target.files?.[0]
   e.target.value = ''

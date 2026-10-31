@@ -16,8 +16,8 @@ import { translate } from '../../i18n'
 import { describe, roleLabel, LEVELS } from '../../api/activityMessages'
 import { fmtDateTime } from './inventory/shared'
 
-// Cảnh báo kho tính THEO LÔ từ inventoryStore: lô đã hết hạn tách riêng với lô sắp hết hạn.
-// failed: đăng nhập thất bại 24 giờ qua trên server (chạy thật) — gộp thành một cảnh báo.
+// Cảnh báo kho tính theo lô: lô đã hết hạn tách riêng với lô sắp hết hạn.
+// failed: đăng nhập thất bại 24 giờ qua trên server, gộp thành một cảnh báo.
 function buildAlerts(inv, accounts, log, failed = []) {
   const { drugs, batches } = inv
   const alerts = []
@@ -43,7 +43,6 @@ function buildAlerts(inv, accounts, log, failed = []) {
       note: pending.map((a) => a.username).join(', '),
       to: 'staff'
     })
-  // Sự kiện nghiêm trọng trong 7 ngày + đăng nhập thất bại trong 24 giờ.
   const since = (h) => new Date(Date.now() - h * 3600000).toISOString()
   log
     .filter((l) => (l.level === 'critical' && l.at >= since(168)) || (l.action === 'auth.login_failed' && l.at >= since(24)))
@@ -61,21 +60,20 @@ function buildAlerts(inv, accounts, log, failed = []) {
   return alerts.sort((a, b) => (a.level === b.level ? 0 : a.level === 'critical' ? -1 : 1))
 }
 
-// Chạy thật: hoạt động gần đây và đăng nhập thất bại lấy từ nhật ký server (GET /admin/audit-logs);
-// nhật ký trên máy chỉ có ở bản demo. Lỗi tải → bảng trống, phần còn lại của trang vẫn dùng được.
+// Chạy thật: hoạt động gần đây và đăng nhập thất bại lấy từ nhật ký server. Lỗi tải → bảng trống, phần còn lại vẫn dùng được.
 const SELF_VIEWS = ['audit_log', 'report']
 function useServerLog() {
   const [recent, setRecent] = useState(null)
   const [failed, setFailed] = useState([])
   useEffect(() => {
     if (DEMO_MODE) return
-    // Bỏ lượt xem nhật ký / báo cáo — chính trang này và trang Báo cáo tự sinh ra, che mất hoạt động thật.
+    // Bỏ lượt xem nhật ký / báo cáo do chính trang Admin tự sinh — che mất hoạt động thật.
     listAuditLogs({}, 50, 0).then(
       (d) => setRecent(d.items.filter((x) => !(x.action_type === 'VIEW' && SELF_VIEWS.includes(x.target_entity))).slice(0, 6)),
       () => setRecent([])
     )
     const since = Date.now() - 86400000
-    const from = new Date(since).toLocaleDateString('sv-SE') // yyyy-mm-dd theo giờ máy
+    const from = new Date(since).toLocaleDateString('sv-SE')
     listAuditLogs({ action_type: 'LOGIN_FAILED', from }, 200, 0).then(
       (d) => setFailed(d.items.filter((x) => new Date(x.created_at).getTime() >= since)),
       () => {}
@@ -84,7 +82,6 @@ function useServerLog() {
   return { recent, failed }
 }
 
-// Bảng "Hoạt động gần đây" khi chạy thật — cùng nhãn hành động với trang Lịch sử hoạt động.
 function ServerActivity({ items, onOpen }) {
   return (
     <table className="dt">
@@ -121,8 +118,8 @@ const fmtVnd = (n) => n.toLocaleString('vi-VN') + 'đ'
 
 function RevenueChart({ days }) {
   const [hover, setHover] = useState(null)
-  const max = Math.max(...days.map((d) => d.amt), 1) // 7 ngày đều chưa thu tiền → cột cao 0, không chia cho 0
-  const shown = hover ?? days.length - 1 // mặc định ghi nhãn cho hôm nay
+  const max = Math.max(...days.map((d) => d.amt), 1) // 7 ngày đều chưa thu tiền → không chia cho 0
+  const shown = hover ?? days.length - 1
 
   return (
     <div className="mini-chart" onMouseLeave={() => setHover(null)}>
@@ -146,15 +143,13 @@ function RevenueChart({ days }) {
 
 export default function DashboardPage({ onNavigate }) {
   const navigate = useNavigate()
-  // Số liệu hôm nay và doanh thu 7 ngày: GET /reports/summary (số tổng hợp, không có dữ liệu bệnh nhân — Admin xem được).
-  // Báo cáo lỗi (VD server cũ chưa có endpoint) → các ô hiện "—" kèm dòng báo, phần còn lại của trang vẫn dùng được.
+  // Số liệu tổng hợp, không có dữ liệu bệnh nhân nên Admin xem được. Lỗi tải → các ô hiện “—”, phần còn lại vẫn dùng được.
   const days7 = rangeOf('7d')
   const { data: summary, error: e1 } = useApiData(reportPath(rangeOf('today')))
   const { data: week } = useApiData(reportPath(days7))
   const inv = useInventory()
   const activity = useActivity()
-  // Nhật ký mẫu xếp cũ → mới; hoạt động phát sinh trong phiên nối vào cuối (mới nhất).
-  const log = activity // mới nhất ở đầu
+  const log = activity
   const NA = '—'
   const byStatus = summary?.visits.by_status
   const ai = summary?.ai
@@ -233,8 +228,7 @@ export default function DashboardPage({ onNavigate }) {
                   <span className={'badge ' + (s.ok ? 'ok' : s.ok === null ? 'muted' : 'low')}>{s.state}</span>
                 </div>
               ))}
-              {/* Sao lưu: lấy từ lịch sử sao lưu (Cài đặt › Sao lưu), quá 2 ngày chưa sao lưu thì cảnh báo.
-                  Chạy thật: server chưa có API sao lưu → ẩn dòng này thay vì hiện lịch sử lưu trên máy. */}
+              {/* Chạy thật: máy chủ tự sao lưu, không có lịch sử ở đây → ẩn dòng này. */}
               {DEMO_MODE && (
                 <div className="status-row">
                   <span className="alert-txt">

@@ -8,8 +8,7 @@ import { DEMO_MODE } from '../../api/client'
 
 const EMPTY = { code: '', name: '', type: 'Exam' }
 
-// Quản trị › Phòng khám (ERD v1.9): phòng 01–03 khám, 04 xét nghiệm. Mỗi phòng khám một bác sĩ cố định,
-// gán ở Tài khoản nhân viên. Không xóa phòng, không đổi mã / loại — chỉ đổi tên và ngừng dùng.
+// Mỗi phòng khám một bác sĩ cố định (gán ở Tài khoản nhân viên). Không xoá phòng, không đổi mã / loại — chỉ đổi tên và ngừng dùng.
 export default function RoomsPage({ onNavigate }) {
   const { showToast } = useToast()
   const [rooms, setRooms] = useState(null)

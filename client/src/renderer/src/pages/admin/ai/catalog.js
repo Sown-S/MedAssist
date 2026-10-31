@@ -1,7 +1,5 @@
-// Danh mục dùng chung cho cấu hình AI. Quy tắc được dựng từ các mã có cấu trúc dưới đây
-// (triệu chứng, sinh hiệu, mã ICD-10) thay vì gõ chữ tự do — để bộ máy chạy quy tắc so khớp được
-// và để 2 quy tắc giống nhau luôn được phát hiện là trùng.
-// Nhãn viết tiếng Anh như phần còn lại của app; bản dịch nằm trong i18n/vi.js.
+// Quy tắc dựng từ mã có cấu trúc (triệu chứng, sinh hiệu, ICD-10) thay vì chữ tự do — để so khớp được
+// và phát hiện quy tắc trùng.
 
 export const RULE_TYPES = [
   { key: 'redflag', label: 'Red flag', short: 'Red flag', tone: 'low' },
@@ -47,7 +45,7 @@ export const OPS = [
 ]
 export const opLabel = (key) => OPS.find((o) => o.key === key)?.label ?? key
 
-// Danh mục ICD-10 (WHO) rút gọn cho bản demo — bản thật lấy từ Danh mục bệnh ICD-10 của phần Quản lý danh mục.
+// ICD-10 rút gọn cho bản demo.
 export const ICD10 = [
   { code: 'J02.9', label: 'Acute pharyngitis, unspecified' },
   { code: 'J03.9', label: 'Acute tonsillitis, unspecified' },
@@ -66,7 +64,7 @@ export const ICD10 = [
 ]
 export const icdLabel = (code) => ICD10.find((i) => i.code === code)?.label ?? ''
 
-// Mức độ tương tác thuốc gắn với HÀNH VI cụ thể ở màn kê đơn của bác sĩ.
+// Mỗi mức gắn với hành vi cụ thể ở màn kê đơn.
 export const DDI_LEVELS = [
   { key: 'contraindicated', label: 'Contraindicated', action: 'Block prescribing', tone: 'low' },
   { key: 'severe', label: 'Severe', action: 'Require an override reason', tone: 'warn' },
@@ -90,7 +88,7 @@ export const DISMISS_REASONS = [
   { key: 'broad', label: 'Rule too broad' }
 ]
 
-// Trọng số luôn hiển thị 2 chữ số thập phân (0.80, 0.95, 0.60) để các dòng thẳng hàng, dễ so sánh.
+// Luôn 2 chữ số thập phân để các dòng thẳng hàng.
 export const fmtWeight = (w) => (Number.isFinite(+w) ? (+w).toFixed(2) : '—')
 export const fmtPct = (x) => (Number.isFinite(x) ? (x * 100).toFixed(1) + '%' : '—')
 

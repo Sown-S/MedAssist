@@ -1,16 +1,10 @@
-// ĐÂY LÀ LỚP GIẢ LẬP (demo) cho các bảng của backend:
-//   drugs          — danh mục thuốc & vật tư (dữ liệu gốc: tên, hoạt chất, ATC, đơn vị, giá, thiết yếu)
-//   inventory_batch — tồn kho THEO LÔ (số lô, hạn dùng, số lượng còn, ngày nhập, giá nhập) — POST /inventory/batches
-//   stock_movement  — thẻ kho (sổ cái chỉ ghi thêm): nhập / xuất / hoàn kho, kèm người thao tác
-// Không quản lý nhà cung cấp, công nợ, kiểm kho (Proposal §6.2 — ngoài phạm vi).
-// Lưu tạm trong localStorage để thao tác demo không mất khi chuyển trang.
-// Backend thật: thay các hàm ghi bằng POST/PATCH; xuất kho FEFO và chặn lô hết hạn PHẢI kiểm lại ở server.
+// Kho của bản demo: danh mục thuốc, tồn theo lô, thẻ kho (chỉ ghi thêm). Không có nhà cung cấp, công nợ, kiểm kho
+// (ngoài phạm vi). Chạy thật: xuất kho FEFO và chặn lô hết hạn do server làm.
 import { useEffect, useSyncExternalStore } from 'react'
 import { getSettings } from './settingsStore'
 import { logEvent } from './activityStore'
 import { apiGet, apiPost, apiRequest, ApiError, DEMO_MODE } from './client'
 
-// v3: bỏ nhà cung cấp, phiếu nhập, công nợ, kiểm kho (dữ liệu v2 cũ được tạo lại từ đầu).
 const KEY = 'medassist_inventory_v3'
 
 export const todayISO = () => {
@@ -18,21 +12,20 @@ export const todayISO = () => {
   const p = (n) => String(n).padStart(2, '0')
   return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`
 }
-// Lùi/tiến n ngày so với hôm nay — để dữ liệu mẫu luôn "đúng thời điểm" dù mở app ngày nào.
+// Ngày tương đối so với hôm nay để dữ liệu mẫu luôn đúng thời điểm.
 function shift(days) {
   const d = new Date()
   d.setDate(d.getDate() + days)
   return d.toISOString().slice(0, 10)
 }
-// Hạn dùng ghi trên bao bì dạng MM/YYYY = hết ngày cuối cùng của tháng đó.
+// Hạn ghi MM/YYYY trên bao bì = hết ngày cuối cùng của tháng đó.
 export function endOfMonth(mm, yyyy) {
   const d = new Date(yyyy, mm, 0)
   const p = (n) => String(n).padStart(2, '0')
   return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`
 }
 
-// ---------- Dữ liệu mẫu ----------
-// use30 = số đơn vị đã xuất 30 ngày gần nhất (lấy từ báo cáo thuốc dùng nhiều) → tính số ngày còn đủ dùng.
+// use30: số đơn vị đã xuất 30 ngày gần nhất → tính số ngày còn đủ dùng.
 const SEED_DRUGS = [
   { id: 'D01', name: 'Paracetamol 500mg', ingredient: 'Paracetamol', atc: 'N02BE01', unit: 'tablet', kind: 'drug', group: 'regular', essential: false, cost: 400, price: 1000, threshold: 500, use30: 1800 },
   { id: 'D02', name: 'Amoxicillin 500mg', ingredient: 'Amoxicillin', atc: 'J01CA04', unit: 'capsule', kind: 'drug', group: 'regular', essential: true, cost: 1200, price: 2500, threshold: 100, use30: 240 },
@@ -51,22 +44,22 @@ const SEED_DRUGS = [
   { id: 'D15', name: 'Cetirizin 10mg', ingredient: 'Cetirizine', atc: 'R06AE07', unit: 'tablet', kind: 'drug', group: 'regular', essential: false, cost: 500, price: 1200, threshold: 0, use30: 0, active: false }
 ]
 
-// [drugId, số lô, hạn dùng, nhập lúc (số ngày trước), SL nhập, SL còn]
+// [drugId, số lô, hạn dùng, nhập cách đây (ngày), SL nhập, SL còn]
 const SEED_BATCHES = [
   ['D01', 'PA2501', endOfMonth(12, 2027), 120, 3000, 1500, 0],
   ['D01', 'PA2507', endOfMonth(6, 2028), 25, 3000, 3000, 1],
-  ['D02', 'AM2403', endOfMonth(9, 2026), 300, 200, 30, 0], // đã hết hạn
+  ['D02', 'AM2403', endOfMonth(9, 2026), 300, 200, 30, 0],
   ['D02', 'AM2508', endOfMonth(3, 2027), 40, 100, 55, 2],
   ['D03', 'VC2506', endOfMonth(6, 2028), 60, 40, 30, 3],
   ['D04', 'TR2502', endOfMonth(3, 2027), 150, 200, 120, 1],
   ['D05', 'CF2504', endOfMonth(1, 2028), 90, 300, 210, 1],
   ['D06', 'OM2411', endOfMonth(11, 2027), 200, 200, 60, 2],
-  ['D07', 'DZ2410', endOfMonth(10, 2026), 360, 100, 40, 1], // hết hạn trong tháng này
+  ['D07', 'DZ2410', endOfMonth(10, 2026), 360, 100, 40, 1],
   ['D08', 'IB2505', endOfMonth(12, 2026), 130, 500, 180, 3],
   ['D08', 'IB2509', endOfMonth(9, 2028), 10, 300, 300, 3],
   ['D09', 'LO2503', endOfMonth(2, 2027), 180, 300, 140, 2],
   ['D10', 'OR2505', endOfMonth(11, 2026), 120, 200, 45, 0],
-  ['D11', 'SB2407', endOfMonth(8, 2026), 400, 200, 25, 2], // đã hết hạn — toàn bộ tồn đều hỏng
+  ['D11', 'SB2407', endOfMonth(8, 2026), 400, 200, 25, 2],
   ['D12', 'MF2506', endOfMonth(6, 2027), 100, 1000, 380, 3],
   ['D13', 'NC2508', endOfMonth(8, 2028), 55, 40, 26, 4],
   ['D14', 'GZ2504', endOfMonth(4, 2029), 160, 300, 160, 4]
@@ -74,9 +67,8 @@ const SEED_BATCHES = [
 
 const STAFF = { admin: 'Trần Thị Lan', pharm: 'Đinh Văn Dũng', doc: 'Trần Minh' }
 
-// Giới hạn liều (để kiểm tra liều theo cân nặng khi kê đơn): strengthMg = mg hoạt chất / 1 đơn vị;
-// maxMgDay = liều tối đa / ngày (người lớn); maxMgKgDay = liều tối đa mg/kg/ngày (trẻ em); controlledType: 'N' gây nghiện | 'H' hướng thần.
-// SỐ LIỆU MẪU — Quản trị viên phải đối chiếu Dược thư Quốc gia / tờ hướng dẫn sử dụng trước khi dùng thật.
+// Giới hạn liều để kiểm tra khi kê đơn: strengthMg = mg / đơn vị; maxMgDay (người lớn); maxMgKgDay (trẻ em);
+// controlledType 'N' gây nghiện | 'H' hướng thần. Số liệu mẫu — phải đối chiếu Dược thư Quốc gia trước khi dùng thật.
 export const SEED_DOSING = {
   D01: { strengthMg: 500, maxMgDay: 4000, maxMgKgDay: 60 },
   D02: { strengthMg: 500, maxMgDay: 3000, maxMgKgDay: 90 },
@@ -102,7 +94,6 @@ function seed() {
     const date = shift(-ago)
     batches.push({ id, drugId, lot, expiry, qty: qtyLeft, receivedAt: date, cost: d.cost })
     moves.push({ id: 'M' + ++mv, at: date + 'T08:30:00', drugId, batchId: id, lot, type: 'in', qty: qtyIn, ref: id, by: STAFF.pharm, note: '' })
-    // Rải phần đã xuất thành vài phiếu xuất bán theo đơn.
     let out = qtyIn - qtyLeft
     const parts = Math.min(4, Math.max(1, Math.round(out / 40)))
     for (let k = 0; k < parts && out > 0; k++) {
@@ -115,7 +106,7 @@ function seed() {
   return { drugs, batches, moves: recomputeBalances(moves) }
 }
 
-// Tồn sau mỗi phiếu (theo từng thuốc, xếp theo thời gian) — cột "Tồn cuối" của thẻ kho.
+// Tồn sau mỗi phiếu (cột “Tồn cuối” của thẻ kho).
 function recomputeBalances(moves) {
   const sorted = [...moves].sort((a, b) => a.at.localeCompare(b.at) || a.id.localeCompare(b.id))
   const bal = {}
@@ -136,7 +127,7 @@ function read() {
 function load() {
   const saved = read()
   if (!saved?.drugs) return seed()
-  // Bản lưu từ phiên bản trước chưa có giới hạn liều (bổ sung từ dữ liệu mẫu, không ghi đè).
+  // Bản lưu cũ chưa có giới hạn liều → bổ sung từ dữ liệu mẫu, không ghi đè.
   const drugs = saved.drugs.map((d) => (d.strengthMg === undefined && SEED_DOSING[d.id] ? { ...SEED_DOSING[d.id], ...d } : d))
   return { ...saved, drugs }
 }
@@ -147,9 +138,7 @@ function commit(next) {
   if (DEMO_MODE)
     try {
       localStorage.setItem(KEY, JSON.stringify(state))
-    } catch {
-      /* chỉ giữ trong phiên */
-    }
+    } catch {/* không lưu được thì chỉ giữ trong phiên */}
   listeners.forEach((fn) => fn())
 }
 const subscribe = (fn) => {
@@ -158,17 +147,15 @@ const subscribe = (fn) => {
 }
 export const getInventory = () => state
 export function useInventory() {
-  // Backend thật: nạp lần đầu khi có màn hình cần kho (đã đăng nhập) — không nạp lúc khởi động app (chưa có token).
+  // Chỉ nạp khi có màn cần kho (đã đăng nhập), không nạp lúc khởi động vì chưa có token.
   useEffect(() => {
     if (!DEMO_MODE && !liveLoaded) reloadInventory()
   }, [])
   return useSyncExternalStore(subscribe, getInventory)
 }
 
-// ===================== Backend thật: /api/v1/drugs, /inventory/batches (inventory_router.py) =====================
-// Server lưu tên hoạt chất, tên thương mại, hàm lượng, dạng bào chế, đơn vị, giá bán, ngưỡng đặt hàng; tồn theo lô.
-// Thẻ kho: không có API "mọi phiếu" — nạp theo từng thuốc khi mở (loadMovesFor). Trừ / hoàn kho do server làm
-// lúc bác sĩ xác nhận đơn và lễ tân cấp phát, không gọi từ client.
+// Server không có API “mọi phiếu kho”: thẻ kho nạp theo từng thuốc khi mở (loadMovesFor).
+// Trừ / hoàn kho do server làm khi bác sĩ xác nhận đơn và lễ tân cấp phát.
 let liveLoaded = false
 let liveLoading = null
 const liveName = (d) => [d.trade_name && d.trade_name !== d.generic_name ? d.trade_name : d.generic_name, d.strength].filter(Boolean).join(' ')
@@ -210,7 +197,7 @@ async function fetchLive() {
     if (drugs.length >= page.total || !page.items.length) break
   }
   const batches = (await apiGet('/api/v1/inventory/batches?include_depleted=true')).map(fromServerBatch)
-  // Giá nhập gần nhất của từng thuốc (để gợi ý khi nhập lô mới).
+  // Giá nhập gần nhất của từng thuốc, để gợi ý khi nhập lô mới.
   const lastCost = {}
   for (const b of [...batches].sort((x, y) => x.createdAt.localeCompare(y.createdAt))) lastCost[b.drugId] = b.cost
   return { drugs: drugs.map((d) => fromServerDrug(d, lastCost[d.drug_id] ?? 0)), batches }
@@ -228,7 +215,6 @@ export function reloadInventory() {
 }
 const liveError = (e) => (e instanceof ApiError ? (e.details?.[0]?.message ?? e.message) : 'Cannot reach the clinic server. Check the server address and the network connection.')
 
-// Thẻ kho một thuốc: lô nhập (số lượng ban đầu) + các phiếu của server, tính tồn sau mỗi phiếu.
 const MOVE_OF = { Deduct: 'out', Restore: 'return' }
 export async function loadMovesFor(drugId) {
   if (DEMO_MODE) return
@@ -255,15 +241,12 @@ export function resetInventoryDemo() {
   commit(seed())
 }
 
-// ---------- Tính toán tồn ----------
-// Ngưỡng "sắp hết hạn": Cài đặt › Vận hành.
 export const nearDays = () => getSettings().ops.nearDays
 export function daysLeft(iso) {
   const t = new Date(todayISO() + 'T00:00:00')
   return Math.round((new Date(iso + 'T00:00:00') - t) / 86400000)
 }
 
-// Tóm tắt tồn của 1 thuốc: tách phần còn dùng được và phần đã hết hạn.
 export function stockOf(drug, batches = state.batches, near = nearDays()) {
   const list = batches
     .filter((b) => b.drugId === drug.id && b.qty > 0)
@@ -276,7 +259,7 @@ export function stockOf(drug, batches = state.batches, near = nearDays()) {
   const nextExpiry = usableBatches[0] ?? null
   const daily = (drug.use30 ?? 0) / 30
   const daysCover = daily > 0 ? Math.floor(usable / daily) : null
-  // Mức tồn mục tiêu = ngưỡng an toàn + lượng dùng 30 ngày → gợi ý đặt thêm phần còn thiếu (làm tròn lên 10).
+  // Mức tồn mục tiêu = ngưỡng an toàn + lượng dùng 30 ngày; gợi ý đặt phần còn thiếu (làm tròn lên 10).
   const target = drug.threshold + Math.ceil(daily * 30)
   const reorder = drug.active && usable < drug.threshold ? Math.ceil((target - usable) / 10) * 10 : 0
   const statuses = []
@@ -297,7 +280,6 @@ export function findDrugByName(name, drugs = state.drugs) {
   return drugs.find((d) => norm(d.name) === n) ?? drugs.find((d) => n.startsWith(norm(d.name)) || norm(d.name).startsWith(n))
 }
 
-// ---------- Ghi ----------
 function nextId(list, prefix, width = 3) {
   return prefix + String(Math.max(0, ...list.map((x) => +x.id.replace(/\D/g, '') || 0)) + 1).padStart(width, '0')
 }
@@ -308,8 +290,7 @@ function addMoves(s, newMoves) {
 }
 const drugName = (id) => state.drugs.find((d) => d.id === id)?.name ?? id
 
-// Backend thật: data theo trường của server (generic_name, trade_name, strength, dosage_form, unit, sale_price,
-// reorder_level, drug_class, active_ingredient_code). Trả { ok, id } hoặc { ok: false, error }.
+// data dùng tên trường của server (generic_name, trade_name, strength, …). Trả { ok, id } hoặc { ok: false, error }.
 export async function saveDrugLive(id, body) {
   try {
     const r = id ? await apiRequest(`/api/v1/drugs/${id}`, 'PATCH', body) : await apiPost('/api/v1/drugs', body)
@@ -335,9 +316,8 @@ export function setDrugActive(id, active, user, note) {
   logEvent(user, active ? 'drug.reactivate' : 'drug.discontinue', { target: { kind: 'drug', id, label: drugName(id) }, params: { drug: drugName(id), note }, before: !active, after: active })
 }
 
-// Nhập 1 lô mới (backend: POST /inventory/batches — batch_number, expiry_date, initial_quantity, import_price).
 export function receiveStock({ drugId, lot, expiry, qty, cost }, user) {
-  // Backend thật: trả Promise { ok, id } | { ok: false, error } (vd BATCH_EXISTS: số lô đã có cho thuốc này).
+  // Chạy thật trả Promise; số lô đã có cho thuốc này → BATCH_EXISTS.
   if (!DEMO_MODE)
     return apiPost('/api/v1/inventory/batches', { drug_id: drugId, batch_number: lot, expiry_date: expiry, quantity: qty, import_price: cost }).then(
       async (b) => (await reloadInventory(), { ok: true, id: b.batch_id }),
@@ -352,9 +332,8 @@ export function receiveStock({ drugId, lot, expiry, qty, cost }, user) {
   return id
 }
 
-// ---------- Trừ kho khi bác sĩ CHỐT ĐƠN (backend lượt 6b: POST /visits/{id}/prescription/confirm) ----------
-// Lô ĐỦ ĐIỀU KIỆN cho một đợt dùng thuốc: còn hạn qua hết đợt — hạn dùng > hôm nay + max(số ngày dùng, khoảng an toàn
-// trong Cài đặt › Vận hành). Lô còn 3 ngày không bao giờ được cấp cho đợt 7 ngày (ERD: trigger trên sổ cái kiểm lại lần nữa).
+// Lô đủ điều kiện cho một đợt dùng: hạn dùng > hôm nay + max(số ngày dùng, khoảng an toàn ở Cài đặt › Vận hành).
+// Lô còn 3 ngày không được cấp cho đợt 7 ngày.
 export const shelfBuffer = () => Number(getSettings().ops.shelfBufferDays) || 0
 export function eligibleFor(b, days = 0) {
   const need = Math.max(Number(days) || 0, shelfBuffer())
@@ -362,10 +341,8 @@ export function eligibleFor(b, days = 0) {
   return need > 0 ? left > need : left >= 0
 }
 
-// lines: [{ key, drugId, qty, days }] — key = định danh dòng đơn (để trả về phân bổ theo từng dòng).
-// Một giao dịch: thiếu BẤT KỲ dòng nào → không trừ gì cả, trả { ok: false, short: [{ key, drugId, need, usable, reason }] }
-// reason: 'out' (hết hàng) | 'expiring' (còn hàng nhưng hết hạn trước khi hết đợt dùng) | 'inactive' (thuốc ngừng dùng).
-// Đủ → trừ FEFO (hết hạn trước xuất trước) và trả { ok: true, alloc: { [key]: [{ batchId, lot, expiry, qty }] } }.
+// Một giao dịch: thiếu bất kỳ dòng nào thì không trừ gì, trả { ok: false, short } với reason 'out' | 'expiring' | 'inactive'.
+// Đủ thì trừ FEFO (hết hạn trước xuất trước) và trả phân bổ theo từng dòng (key).
 export function deductForCourse(lines, ref, user) {
   let batches = state.batches
   const newMoves = []
@@ -400,7 +377,7 @@ export function deductForCourse(lines, ref, user) {
   return { ok: true, alloc }
 }
 
-// Hoàn kho về ĐÚNG các lô đã trừ (dòng bị bỏ qua khi cấp phát, mở lại / huỷ đơn) — ghi thẻ kho loại "Hoàn kho".
+// Hoàn về đúng các lô đã trừ (bỏ qua khi cấp phát, mở lại / huỷ đơn).
 export function restoreAllocations(allocs, ref, user, note = 'Returned to stock') {
   const flat = allocs.flat().filter((a) => a && a.qty > 0)
   if (!flat.length) return { ok: true }
@@ -420,11 +397,11 @@ export function restoreAllocations(allocs, ref, user, note = 'Returned to stock'
   return { ok: true }
 }
 
-// Thuốc KÊ ĐƠN: lễ tân bán qua quầy (theo đơn giấy / bán lẻ) phải ghi người / nơi kê đơn.
-// Mặc định: kháng sinh toàn thân (ATC J01) và thuốc kiểm soát đặc biệt; Quản trị viên bật / tắt riêng từng thuốc (rxOnly).
+// Thuốc kê đơn bán qua quầy phải ghi người / nơi kê. Mặc định: kháng sinh toàn thân (ATC J01) và thuốc kiểm soát;
+// Quản trị viên bật / tắt riêng từng thuốc (rxOnly).
 export const isRxOnly = (d) => !!d && d.kind !== 'supply' && (d.rxOnly ?? (d.group === 'controlled' || /^J01/.test(d.atc ?? '')))
 
-// Thuốc đã xuất theo 1 chứng từ (số hoá đơn) mà CHƯA hoàn lại, theo từng lô: [{ drugId, batchId, lot, qty }].
+// Thuốc đã xuất theo một chứng từ mà chưa hoàn lại, theo từng lô.
 export function dispensedFor(ref) {
   const left = new Map()
   for (const m of state.moves) {
@@ -436,8 +413,7 @@ export function dispensedFor(ref) {
   return [...left.values()].filter((x) => x.qty > 0)
 }
 
-// Huỷ hoá đơn mà bệnh nhân trả lại thuốc → nhập lại ĐÚNG lô đã xuất (giữ hạn dùng, giá vốn), ghi thẻ kho loại "Hoàn kho".
-// Backend thật: làm trong cùng giao dịch với PATCH /invoices/{id}/cancel.
+// Huỷ hoá đơn mà bệnh nhân trả thuốc → nhập lại đúng lô đã xuất (giữ hạn dùng, giá vốn).
 export function returnDispensed(ref, user) {
   const lines = dispensedFor(ref)
   if (!lines.length) return { ok: true, lines: [] }
@@ -455,6 +431,6 @@ export function returnDispensed(ref, user) {
   return { ok: true, lines }
 }
 
-// Lý do điều chỉnh tồn trong dữ liệu cũ của thẻ kho (chỉ để hiển thị).
+// Lý do điều chỉnh tồn trong dữ liệu cũ (chỉ để hiển thị).
 const REASONS = { lost: 'Lost', damaged: 'Broken / damaged', expired: 'Expired, not yet disposed', entry: 'Data entry error at receipt', dispense: 'Dispensing error', other: 'Other (explain in note)' }
 export const reasonLabel = (k) => REASONS[k] ?? ''

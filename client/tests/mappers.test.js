@@ -3,7 +3,6 @@ import { isoDob, dmyDob, maskDob, toPatient, chiefComplaintOf } from '../src/ren
 import { fromAwaiting, receiptOf, toServerMethod, fromServerMethod } from '../src/renderer/src/api/billingApi.js'
 import { toLabOrder } from '../src/renderer/src/api/serviceStore.js'
 
-// Các hàm đổi dữ liệu server (snake_case, ISO, số dạng chuỗi) sang hình dạng màn hình đang dùng.
 // Sai một tên trường ở đây là cả màn hiện trống / sai mà không báo lỗi — nên khoá lại bằng test.
 
 describe('Ngày sinh dd/mm/yyyy ↔ ISO', () => {

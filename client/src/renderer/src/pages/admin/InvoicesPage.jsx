@@ -6,9 +6,8 @@ import { ServerPending } from '../../components/DataState'
 import Icon from '../../components/Icon'
 import InvoicesView from '../reception/InvoicesView'
 
-// Hoá đơn thanh toán (Quản trị): CÙNG dữ liệu với Lễ tân (invoiceStore + hàng chờ) để số liệu luôn khớp.
-// Quản trị viên xem / lọc / in báo cáo và huỷ hoá đơn (quyền invoice.void); thu tiền vẫn là việc của Lễ tân.
-// Backend thật: GET /billing/invoices chỉ cho Lễ tân (Admin nhận 403) → báo rõ và dẫn sang Báo cáo, không hiện hoá đơn mẫu.
+// Bản demo dùng chung dữ liệu hoá đơn với Lễ tân để số liệu luôn khớp; Quản trị viên xem, in báo cáo và huỷ hoá đơn.
+// Chạy thật: GET /billing/invoices chỉ cho Lễ tân (Admin nhận 403) → báo rõ và dẫn sang Báo cáo.
 export default function InvoicesPage() {
   const { user } = useAuth()
   const navigate = useNavigate()

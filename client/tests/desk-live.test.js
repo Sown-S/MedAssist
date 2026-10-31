@@ -2,10 +2,8 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { DOC_A, DOC_B, DESK } from './helpers'
 import { VI } from '../src/renderer/src/i18n/vi.js'
 
-// Quầy và phòng khám khi nối server thật (VITE_USE_MOCK=false): check-in, huỷ lượt, trả về hàng chờ, thu hồi đơn,
-// đóng lượt cũ. "Server" là vài mảng trong bộ nhớ làm đúng luật của backend; test kiểm tra client gọi đúng API,
-// chặn sớm khi thiếu dữ liệu (không gửi request thừa), gửi lý do bằng tiếng Việt (server ghi vào audit_log)
-// và báo lại đúng câu lỗi của server.
+// Quầy và phòng khám khi nối server (VITE_USE_MOCK=false), với “server” là vài mảng trong bộ nhớ làm đúng luật backend.
+// Kiểm tra: gọi đúng API, chặn sớm khi thiếu dữ liệu, gửi lý do tiếng Việt và báo đúng câu lỗi của server.
 let server
 let stale
 let api

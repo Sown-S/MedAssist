@@ -12,15 +12,14 @@ import { isLiveCatalog, useLiveCatalog, setLiveActive } from '../../../api/servi
 import { RowForm } from './RowForm'
 import { exportCatalog, readCatalogFile, ImportModal } from './catalogCsv'
 
-// ---------- Trang ----------
 export default function CatalogDetailPage({ catalogKey, params, onNavigate }) {
   const s = SCHEMAS[catalogKey]
-  // Backend thật: Dịch vụ, Xét nghiệm, Gói khám đọc / ghi qua server (ERD v2.1); các danh mục khác vẫn ở máy này.
+  // Chạy thật: Dịch vụ, Xét nghiệm, Gói khám đọc / ghi qua server; các danh mục khác vẫn ở máy này.
   const live = isLiveCatalog(catalogKey)
   const lc = useLiveCatalog(live)
   const local = useCatalogs()
   const cats = live ? { ...local, services: lc.services, labs: lc.labs, packages: lc.packages } : local
-  // Server không lưu ngày hiệu lực của giá → bỏ cột "Giá áp dụng từ" (lịch sử giá xem trong form sửa).
+  // Server không lưu ngày hiệu lực của giá → bỏ cột “Giá áp dụng từ”.
   const columns = live ? s.columns.filter((c) => c.key !== 'priceHistory') : s.columns
   const inv = useInventory()
   const { user } = useAuth()

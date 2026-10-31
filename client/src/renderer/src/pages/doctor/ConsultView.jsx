@@ -42,7 +42,7 @@ import { ReminderPanel } from './consult/ReminderPanel'
 import { ServerVisit } from './consult/ServerVisit'
 import { SLOTS, MEALS, blankDose, num, perDay, unitVi, usageOf, stockIssue, serverStockIssue, nextLineId, lineOf, serverItem, draftOf } from './consult/rxDraft'
 
-// Đơn mẫu: bấm 1 lần thêm cả nhóm thuốc (bác sĩ vẫn sửa số lượng / cách dùng sau).
+// Đơn mẫu: một lần bấm thêm cả nhóm thuốc.
 const TEMPLATES = [
   { key: 'throat', title: 'Pharyngitis / tonsillitis' },
   { key: 'gastric', title: 'Gastric pain' },
@@ -50,26 +50,23 @@ const TEMPLATES = [
   { key: 'rash', title: 'Allergic rash' },
   { key: 'pain', title: 'Pain relief' }
 ]
-// Cách dùng gợi ý cho thuốc dùng KHI CẦN (không theo cữ cố định) — viết tiếng Việt vì đơn thuốc là văn bản in cho bệnh nhân.
+// Cách dùng gợi ý cho thuốc dùng khi cần — viết tiếng Việt vì đơn in cho bệnh nhân.
 const USAGES = ['Uống khi sốt trên 38,5°C, cách nhau ít nhất 4–6 giờ', 'Uống khi đau, sau ăn, tối đa 3 lần/ngày', 'Uống trước ăn sáng 30 phút', 'Bôi ngày 2 lần lên vùng da tổn thương']
 const STATUS_CHIP = { waiting: 'WAITING', in_exam: 'IN CONSULTATION', labs: 'WAITING FOR LABS' }
 
-// Tình trạng kho của 1 dòng thuốc trong đơn — chỉ tính lô CÒN HẠN.
-// Lý do bị chặn khi trừ kho lúc chốt đơn (queueStore.finalizeVisit → INSUFFICIENT_STOCK).
+// Lý do bị chặn khi trừ kho lúc chốt đơn (INSUFFICIENT_STOCK).
 const SHORT_REASON = {
   out: 'Out of stock',
   expiring: 'In stock, but the batches expire before the course ends',
   inactive: 'Discontinued in the drug catalog'
 }
 
-// Từ Tủ thuốc: thêm thuốc vào đơn đang kê của bệnh nhân.
 const DRUG_SEARCH_ID = 'consult-drug-search'
 
-// Trẻ dưới 12 tuổi: liều thuốc tính theo cân nặng → bắt buộc có cân nặng mới chốt đơn.
+// Trẻ dưới 12 tuổi: liều tính theo cân nặng → bắt buộc có cân nặng mới chốt đơn.
 const isChild = (v) => v.age !== '' && v.age != null && Number(v.age) < 12
 
-// Phòng khám: hàng đợi thật (từ Tiếp đón) + phiếu khám SOAP + kê đơn có kiểm tra tồn kho và tương tác thuốc.
-// Hàng đợi chia nhóm, bấm tiêu đề để thu gọn / mở rộng; cả cột thu được về dạng thanh hẹp khi đang khám (nhớ theo máy).
+// Cột hàng đợi chia nhóm, thu gọn được; trạng thái nhớ theo máy.
 const GROUPS_KEY = 'medassist_doc_queue_groups'
 const DEFAULT_OPEN = { mine: true, labs: true, waiting: true, done: false, other: false, _rail: false }
 function readOpen() {
@@ -97,12 +94,9 @@ export default function ConsultView({ visitId, onSelect, onRx }) {
     setOpenGroups(nextOpen)
     try {
       localStorage.setItem(GROUPS_KEY, JSON.stringify(nextOpen))
-    } catch {
-      /* không lưu được thì chỉ nhớ trong phiên */
-    }
+    } catch {/* không lưu được thì chỉ nhớ trong phiên */}
   }
 
-  // Phím tắt: Alt+N mời bệnh nhân tiếp theo.
   const nextRef = useRef(next)
   nextRef.current = next
   useEffect(() => {
@@ -119,7 +113,7 @@ export default function ConsultView({ visitId, onSelect, onRx }) {
   const groups = [
     { key: 'mine', title: 'In my room', list: mine },
     { key: 'labs', title: 'Out for lab tests', list: visits.filter(atLabs) },
-    // Người đã check-in (mời được) đứng trước người chưa check-in (chờ lễ tân xác nhận có mặt).
+    // Người đã check-in (mời được) đứng trước người chưa check-in.
     { key: 'waiting', title: 'Waiting', list: [...readyOrder(visits), ...waitingOrder(visits).filter((v) => v.status === ST.WAITING)] },
     {
       key: 'done',
@@ -292,7 +286,7 @@ function ConsultForm({ visit, user, onDone, onNext }) {
   const archive = useVisitArchive()
   const past = pastVisitsOf(visit.patientId, { visits, archive, history: allHistory, exclude: visit.id })
   const reviews = useRxReviews()
-  // Đánh giá lại đơn chỉ có ở bản demo (không có API) → chạy thật không nhắc đánh giá cũ lưu trên máy.
+  // Đánh giá lại đơn chỉ có ở bản demo (không có API).
   const openReviews = DEMO_MODE ? openReviewsFor(visit.patientId, reviews) : []
   const [d, setD] = useState(() => draftOf(visit))
   const [tab, setTab] = useState('clin')
@@ -303,9 +297,9 @@ function ConsultForm({ visit, user, onDone, onNext }) {
   const [leaving, setLeaving] = useState(false)
   const [docs, setDocs] = useState(false)
   const [tried, setTried] = useState(false)
-  const [short, setShort] = useState(null) // thuốc thiếu khi trừ kho lúc chốt đơn (409 INSUFFICIENT_STOCK)
-  const [cancelRow, setCancelRow] = useState(null) // dòng chỉ định đang huỷ (backend thật)
-  // Phiếu chỉ định: demo lưu trong lượt khám; backend thật đọc GET /visits/{id}/service-orders (ERD v2.1).
+  const [short, setShort] = useState(null)
+  const [cancelRow, setCancelRow] = useState(null)
+  // Phiếu chỉ định: demo lưu trong lượt khám; chạy thật đọc GET /visits/{id}/service-orders.
   const so = useServiceOrders(DEMO_MODE ? null : visit.id)
   const labOrders = DEMO_MODE ? visit.labOrders ?? [] : so.orders
   const resultOf = (r) => d.labResults[r.key] ?? r.result
@@ -316,7 +310,7 @@ function ConsultForm({ visit, user, onDone, onNext }) {
   const set = (patch) => setD((x) => ({ ...x, ...patch }))
   const setVital = (k, v) => setD((x) => ({ ...x, vitals: { ...x.vitals, [k]: v } }))
   const setLine = (id, patch) => setD((x) => ({ ...x, rx: x.rx.map((l) => (l.id === id ? { ...l, ...patch } : l)) }))
-  // Đổi liều Sáng/Trưa/Chiều/Tối/số ngày → tự tính số lượng và câu cách dùng (vẫn sửa tay được sau đó).
+  // Tự tính số lượng và câu cách dùng (vẫn sửa tay được sau đó).
   function setDose(line, patch) {
     const dose = { ...line.dose, ...patch }
     const daily = perDay(dose)
@@ -326,7 +320,7 @@ function ConsultForm({ visit, user, onDone, onNext }) {
   const firstD = useRef(d)
   useEffect(() => {
     saveDraft(visit.id, d)
-    // Bác sĩ bắt đầu ghi phiếu khám = bệnh nhân đã vào phòng → hết trạng thái "đang mời" ở quầy.
+    // Bác sĩ bắt đầu ghi phiếu = bệnh nhân đã vào phòng → hết trạng thái “đang mời” ở quầy.
     if (d !== firstD.current && visit.entered === false) confirmEntered(visit.id)
   }, [visit.id, d, visit.entered])
 
@@ -338,9 +332,8 @@ function ConsultForm({ visit, user, onDone, onNext }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  // Kết quả đánh giá AI của lượt khám (Architecture 5.1.4) — hiện là dữ liệu giả, cùng cấu trúc với API.
   const ai = useAssessment(visit)
-  // Ghi nhật ký "đã hiện gợi ý" mỗi khi danh sách ứng viên thay đổi.
+  // Ghi nhật ký “đã hiện gợi ý” mỗi khi danh sách ứng viên thay đổi.
   const dxKey = ai.candidates.map((x) => x.condition_code).join(', ')
   useEffect(() => {
     if (!dxKey || dxKey === shown.current) return
@@ -353,7 +346,7 @@ function ConsultForm({ visit, user, onDone, onNext }) {
     setAiDecision((x) => ({ ...x, [c.condition_code]: decision }))
     if (decision === 'accepted') set({ diagnosis: [c.icd10_code, c.name_vi].filter(Boolean).join(' — ') })
   }
-  // Quyết định của bác sĩ so với gợi ý đứng đầu (ERD: physician_decision + matches_top_suggestion) — tính lúc chốt đơn.
+  // So với gợi ý đứng đầu (physician_decision, matches_top_suggestion) — tính lúc chốt đơn.
   const aiOutcome = () => {
     const top = ai.candidates[0]
     if (!top) return { assessmentId: ai.assessment_id, decision: 'NoSuggestion', matchesTop: null }
@@ -382,12 +375,12 @@ function ConsultForm({ visit, user, onDone, onNext }) {
     if (!add.length) return showToast(translate('These drugs are already on the prescription.'))
     set({ rx: [...d.rx, ...add] })
   }
-  // Đơn gần nhất trong MỌI lần khám trước (kể cả lượt đã xong hôm nay), không chỉ lịch sử các ngày trước.
+  // Đơn gần nhất trong mọi lần khám trước, kể cả lượt đã xong hôm nay.
   const last = past.find((v) => v.rx?.length)
 
   const issues = d.rx.map((it) => ({ it, issue: issueOf(it) })).filter((x) => x.issue && x.issue.level !== 'info')
-  // Proposal FR03: hệ thống KHÔNG đánh giá đơn (không kiểm tra tương tác, liều, trùng đơn) — chỉ nhắc dị ứng / bệnh nền
-  // dạng chỉ đọc. Chỉ chặn khi thiếu dữ liệu bắt buộc: chẩn đoán, số lượng + cách dùng, cân nặng trẻ em (in trên đơn).
+  // FR03: hệ thống không đánh giá đơn, chỉ nhắc dị ứng / bệnh nền. Chỉ chặn khi thiếu dữ liệu bắt buộc:
+  // chẩn đoán, số lượng + cách dùng, cân nặng trẻ em.
   const incomplete = d.rx.some((l) => !(parseInt(l.qty) > 0) || !l.usage.trim())
   const needWeight = isChild(visit) && d.rx.length > 0 && !(num(d.vitals.weight_kg) > 0)
   const vitalErr = checkVitals(d.vitals).errors
@@ -401,7 +394,7 @@ function ConsultForm({ visit, user, onDone, onNext }) {
           ? 'Check the vital signs before finalizing.'
           : null
 
-  // Backend thật: ghi kết quả từng dòng và kết luận từng phiếu đã sửa (PUT …/service-orders/results). Trả false nếu lỗi.
+  // Ghi kết quả từng dòng và kết luận từng phiếu đã sửa. Trả false nếu lỗi.
   async function saveLabResults({ toast = false } = {}) {
     if (DEMO_MODE || !labOrders.length) return true
     const items = labOrders
@@ -427,13 +420,13 @@ function ConsultForm({ visit, user, onDone, onNext }) {
     }
   }
 
-  // Backend thật: đồng bộ chẩn đoán → lưu đơn nháp → xác nhận (server trừ kho FEFO, lập hóa đơn). Không có thuốc
-  // → "Hoàn tất khám". Thiếu thuốc (409 STOCK_SHORTAGE) → liệt kê từng thuốc, chẩn đoán đã lưu giữ nguyên, chốt lại được.
+  // Đồng bộ chẩn đoán → lưu đơn nháp → xác nhận. Thiếu thuốc (409 STOCK_SHORTAGE) → liệt kê từng thuốc,
+  // chẩn đoán đã lưu giữ nguyên, chốt lại được.
   async function finalizeOnServer(andNext) {
     const mapped = d.rx.map((l) => serverItem(l, srv.drugs))
     const bad = mapped.find((x) => x.error)
     if (bad) return showToast(bad.error)
-    // Kết quả cận lâm sàng lưu ở phiếu chỉ định trên server (không gộp vào ghi chú chẩn đoán nữa) — ghi trước khi chốt.
+    // Kết quả cận lâm sàng lưu ở phiếu chỉ định — ghi trước khi chốt.
     if (!(await saveLabResults())) return
     const notes = [
       d.hpi.trim() && 'Bệnh sử: ' + d.hpi.trim(),
@@ -466,7 +459,7 @@ function ConsultForm({ visit, user, onDone, onNext }) {
   }
 
   function finalize(andNext = false) {
-    // Không tới được máy chủ → chỉ đọc (NFR08): không chốt, phiếu nháp vẫn giữ ở máy này.
+    // Mất kết nối máy chủ → không chốt, phiếu nháp vẫn giữ ở máy này.
     if (!DEMO_MODE && !isServerOnline()) return showToast(translate('No connection to the clinic server — the visit cannot be finalized now. Your notes are kept on this computer.'))
     setTried(true)
     if (problem) {
@@ -493,7 +486,6 @@ function ConsultForm({ visit, user, onDone, onNext }) {
       user
     )
     if (!r.ok) {
-      // Thiếu thuốc lúc trừ kho (backend 409): liệt kê từng thuốc + lý do để bác sĩ đổi / bớt thuốc rồi chốt lại.
       if (r.code === 'INSUFFICIENT_STOCK') setShort(r.short)
       return showToast(translate(r.error))
     }
@@ -503,10 +495,9 @@ function ConsultForm({ visit, user, onDone, onNext }) {
     onDone()
     if (andNext) onNext?.()
   }
-  // Nút và phím tắt đi chung 1 khoá — nhấn Ctrl+Enter liên tiếp hay vừa bấm vừa nhấn phím cũng chỉ chốt 1 đơn.
+  // Nút và phím tắt dùng chung một khoá — bấm liên tiếp cũng chỉ chốt một đơn.
   const [runFinalize, finalizing] = useAsyncAction(finalize)
-  // Phím tắt (BC08): Ctrl+Enter chốt đơn, Alt+D chấp nhận gợi ý đứng đầu làm chẩn đoán, Alt+T tới ô tìm thuốc,
-  // Alt+L chỉ định xét nghiệm.
+  // Phím tắt: Ctrl+Enter chốt đơn, Alt+D nhận gợi ý đứng đầu, Alt+T tới ô tìm thuốc, Alt+L chỉ định xét nghiệm.
   const finalizeRef = useRef(runFinalize)
   finalizeRef.current = runFinalize
   const acceptTopRef = useRef(null)
@@ -536,7 +527,7 @@ function ConsultForm({ visit, user, onDone, onNext }) {
     return () => window.removeEventListener('keydown', onKey)
   }, [])
 
-  // In đơn đang kê (bản nháp trên màn hình). Đơn đã chốt in lại ở Chi tiết đơn (pages/doctor/printRx.js).
+  // In bản nháp đang kê; đơn đã chốt in lại ở Chi tiết đơn (printRx.js).
   function printRx() {
     printPrescription({ ...visit, ...d, weight: d.vitals.weight_kg, rxAt: null }, inv.drugs, user.name)
   }
@@ -600,7 +591,6 @@ function ConsultForm({ visit, user, onDone, onNext }) {
             </button>
           </div>
         )}
-        {/* Dòng tóm tắt cố định: sinh hiệu lượt này + lần khám trước — không phải bấm qua các tab. */}
         <div className="consult-strip">
           <span>
             <small>Pulse</small>
@@ -841,7 +831,7 @@ function ConsultForm({ visit, user, onDone, onNext }) {
             <div className="symptom-box">{visit.history ? translate(visit.history) : translate('No chronic conditions on record.')}</div>
             <div className="section-label">Drug allergies</div>
             <div className="symptom-box">{visit.allergies ? translate(visit.allergies) : translate('No recorded drug allergies.')}</div>
-            {/* Backend thật: lịch sử khám lấy từ server (FR04), không tính lượt đang khám. */}
+            {/* Chạy thật: lịch sử khám từ server, không tính lượt đang khám. */}
             {!DEMO_MODE ? (
               <ServerHistory patientId={visit.patientId} excludeVisitId={visit.id} />
             ) : (
@@ -1011,7 +1001,7 @@ function ConsultForm({ visit, user, onDone, onNext }) {
           <button className="btn btn-ghost btn-sm" onClick={() => setHanding(true)} title={translate('Leaving the room? Send this patient back to the waiting queue')}>
             <Icon name="repeat" /> Return to queue
           </button>
-          {/* Backend thật: chuyển tuyến là một cách KẾT THÚC lượt khám (ERD v2.0) — in giấy và đóng lượt, không hoá đơn. */}
+          {/* Chạy thật: chuyển tuyến kết thúc lượt khám — in giấy và đóng lượt, không có hoá đơn. */}
           <button className="btn btn-ghost btn-sm" onClick={() => setDocs(true)} title={translate(DEMO_MODE ? 'Referral letter' : 'Refer & end the visit')}>
             <Icon name="printer" /> {DEMO_MODE ? 'Referral letter' : 'Refer to hospital'}
           </button>

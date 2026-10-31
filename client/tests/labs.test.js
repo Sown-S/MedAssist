@@ -9,7 +9,6 @@ beforeEach(async () => {
 const CBC = { code: 'XN01', name: 'Công thức máu', group: 'hematology', sample: 'blood' }
 const CRP = { code: 'XN10', name: 'CRP', group: 'immunology', sample: 'blood' }
 
-// Bệnh nhân đã vào phòng của bác sĩ (đang khám).
 function inRoom(index = 0, doctor = DOC_A) {
   const v = admitReady(s, index)
   s.queue.takePatient(v.id, doctor)
