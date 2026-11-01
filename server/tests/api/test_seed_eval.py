@@ -6,7 +6,7 @@ import uuid
 from sqlalchemy import func, select
 
 from app.core.database import SessionLocal
-from app.models import AiAssessmentLog, Drug, Invoice, Patient, User, Visit
+from app.models import AiAssessmentLog, Diagnosis, Drug, Invoice, Patient, User, Visit
 from app.services.knowledge_reader import DbKnowledgeReader
 from scripts import seed_eval
 
@@ -72,6 +72,8 @@ def test_history_and_today(client, login, users, wk_knowledge, billing_settings,
         assert codes and all(c[3:11] != today.strftime("%Y%m%d") for c in codes)
         assert {v.status for v in new} == {"Finished", "Prescribed", "Examining", "CheckedIn", "Waiting"}
         handled = [v.visit_id for v in new if v.status in ("Finished", "Prescribed", "Examining")]
+        examining = [v.visit_id for v in new if v.status == "Examining"]
+        assert db.scalar(select(func.count()).select_from(Diagnosis).where(Diagnosis.visit_id.in_(examining))) == 0
         assert db.scalar(select(func.count()).select_from(AiAssessmentLog).where(
             AiAssessmentLog.visit_id.in_(handled), AiAssessmentLog.status == "Queued")) == 0
         assert db.scalar(select(User.must_change_password).where(User.username == "letan01")) is False
