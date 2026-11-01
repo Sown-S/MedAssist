@@ -1557,6 +1557,7 @@ export const VI = {
   'continue with the checklist below.': 'tiếp tục với danh sách bên dưới.',
   'No catalog symptoms found — use the checklist below.': 'Không thấy triệu chứng nào trong danh mục — dùng danh sách bên dưới.',
   'Suggested — confirm before use': 'Đề xuất — cần xác nhận trước khi dùng',
+  'Not sure — ask the patient again:': 'Chưa rõ — cần hỏi lại bệnh nhân:',
   'Confirm all': 'Xác nhận tất cả',
   'Switch Yes / No': 'Đổi Có / Không',
   'Discard': 'Bỏ',
