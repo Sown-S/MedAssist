@@ -44,7 +44,7 @@ export function EditWaitingModal({ visit, onClose }) {
         setSyms(symMap(list.filter((x) => x.state !== 'UNKNOWN')))
         setLoaded(true)
       })
-      .catch((e) => showToast(translate(e.message)))
+      .catch((e) => showToast(translate(e.message), 'error'))
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visit.id])
   const vit = vitalCheck(f)
@@ -65,14 +65,14 @@ export function EditWaitingModal({ visit, onClose }) {
       showToast(translate('Visit updated') + (level !== 'routine' ? ' · ' + translate(LEVEL_LABEL[level]) : ''))
       onClose()
     } catch (e) {
-      showToast(translate(e.message))
+      showToast(translate(e.message), 'error')
     } finally {
       setBusy(false)
     }
   }
   function save() {
     setTried(true)
-    if (vit.errors.length) return showToast(translate('Check the vital signs') + ': ' + vit.errors.map((e) => translate(e)).join('; '))
+    if (vit.errors.length) return showToast(translate('Check the vital signs') + ': ' + vit.errors.map((e) => translate(e)).join('; '), 'error')
     saveOnServer()
   }
   if (referring)
@@ -147,7 +147,7 @@ export function CancelVisitModal({ visit, onClose }) {
   const [note, setNote] = useState('')
   async function submit() {
     const r = await cancelVisit(visit.id, { reason, note })
-    if (!r.ok) return showToast(translate(r.error))
+    if (!r.ok) return showToast(translate(r.error), 'error')
     showToast(translate('Visit cancelled') + ' — ' + ticketNo(visit.ticket))
     onClose()
   }

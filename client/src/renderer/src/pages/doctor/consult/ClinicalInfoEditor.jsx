@@ -19,7 +19,7 @@ export function ClinicalInfoEditor({ visit }) {
       setOpen(false)
       showToast('Patient record updated')
     } catch (e) {
-      showToast(translate(e.message))
+      showToast(translate(e.message), 'error')
     }
   }
   if (!open)

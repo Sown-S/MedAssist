@@ -127,14 +127,14 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
     if (existing) return existing.id
     setTouched(true)
     if (invalid) {
-      showToast(translate('Fill in the patient’s name, date of birth and phone first.'))
+      showToast(translate('Fill in the patient’s name, date of birth and phone first.'), 'error')
       return null
     }
     const r = await clinic.createPatient({ ...form, pregnancy: pregnancyAsked ? form.pregnancy : '' }, { confirmDuplicate: false })
     if (!r.ok) {
       setDupes(r.duplicates)
       setIdTaken(!!r.idTaken)
-      showToast(translate('This patient may already have a record — choose it in the form, then refer again.'))
+      showToast(translate('This patient may already have a record — choose it in the form, then refer again.'), 'error')
       return null
     }
     setExisting(r.patient)
@@ -153,11 +153,11 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
   function checkForm() {
     setTouched(true)
     if (vit.errors.length) {
-      showToast(translate('Check the vital signs') + ': ' + vit.errors.map((e) => translate(e)).join('; '))
+      showToast(translate('Check the vital signs') + ': ' + vit.errors.map((e) => translate(e)).join('; '), 'error')
       return false
     }
     if (child && !String(form.weight_kg).trim()) {
-      showToast(translate('Enter the child’s weight (kg) — it is needed for the prescription.'))
+      showToast(translate('Enter the child’s weight (kg) — it is needed for the prescription.'), 'error')
       return false
     }
     return !!existing || !invalid
@@ -188,7 +188,7 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
       if (level === 'emergency') showToast(translate('Emergency — placed at the top of the queue; doctors have been alerted') + ' · ' + no)
       else showToast('Visit created — queue number ' + no + (level === 'high' ? ' · ' + translate('Priority') : ''))
     } catch (e) {
-      showToast(translate(e.message))
+      showToast(translate(e.message), 'error')
     } finally {
       setBusy(false)
     }
@@ -378,7 +378,7 @@ function EditPatient({ p, onSaved }) {
       showToast('Patient details updated')
       onSaved({ ...p, ...saved })
     } catch (e) {
-      showToast(translate(e.message))
+      showToast(translate(e.message), 'error')
     }
   }
   const bind = (k) => ({ value: f[k], onChange: (e) => setF({ ...f, [k]: e.target.value }) })

@@ -165,7 +165,7 @@ export default function CatalogDetailPage({ catalogKey, params, onNavigate }) {
         danger={toggle?.active}
         onConfirm={async () => {
           const r = await setLiveActive(catalogKey, toggle.id, !toggle.active)
-          if (!r.ok) return showToast(translate(r.error))
+          if (!r.ok) return showToast(translate(r.error), 'error')
           showToast(toggle.active ? 'Record discontinued' : 'Record re-activated')
           setToggle(null)
         }}

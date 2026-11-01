@@ -6,17 +6,27 @@ import { findServerDrug } from '../../../api/serverDrugs'
 import { getDraft, saveDraft } from '../../../api/draftStore'
 import { normalizeVitals, vitalsToForm } from '../../../api/vitals'
 
-// Đơn mẫu: tên thuốc khớp danh mục để tính tiền; cách dùng viết tiếng Việt vì đơn in cho bệnh nhân.
+// Đơn mẫu theo hoạt chất + hàm lượng (+ dạng bào chế ưu tiên), tra ra thuốc của danh mục server lúc áp dụng: tên hiển thị
+// của server ghép từ tên thương mại nên không so theo tên. Cách dùng viết tiếng Việt vì đơn in cho bệnh nhân.
+// Số lượng / cách dùng chưa đối chiếu tài liệu y khoa — giao diện ghi rõ là đơn tham khảo, bác sĩ tự điều chỉnh.
 const dose = (m, n, a, e, days, meal = 'after') => ({ m: m ? String(m) : '', n: n ? String(n) : '', a: a ? String(a) : '', e: e ? String(e) : '', days: String(days), meal })
 export const RX = {
   throat: [
-    { name: 'Amoxicillin 500mg', qty: 20, unit: 'caps', usage: 'Sáng 1 viên nang, Tối 1 viên nang — uống sau ăn — 10 ngày', dose: dose(1, 0, 0, 1, 10) },
-    { name: 'Paracetamol 500mg', qty: 10, unit: 'tabs', usage: 'Uống khi sốt trên 38,5°C, cách nhau ít nhất 4–6 giờ' }
+    { generic: 'Amoxicilin', strength: '500 mg', form: 'viên nang', qty: 20, usage: 'Sáng 1 viên, Tối 1 viên — uống sau ăn — 10 ngày', dose: dose(1, 0, 0, 1, 10) },
+    { generic: 'Paracetamol', strength: '500 mg', form: 'viên nén', qty: 10, usage: 'Uống khi sốt trên 38,5°C, cách nhau ít nhất 4–6 giờ' }
   ],
-  gastric: [{ name: 'Omeprazol 20mg', qty: 14, unit: 'caps', usage: 'Sáng 1 viên nang — uống trước ăn — 14 ngày', dose: dose(1, 0, 0, 0, 14, 'before') }],
-  diabetes: [{ name: 'Metformin 500mg', qty: 60, unit: 'tabs', usage: 'Sáng 1 viên, Tối 1 viên — uống sau ăn — 30 ngày', dose: dose(1, 0, 0, 1, 30) }],
-  rash: [{ name: 'Loratadin 10mg', qty: 10, unit: 'tabs', usage: 'Tối 1 viên — 10 ngày', dose: dose(0, 0, 0, 1, 10, '') }],
-  pain: [{ name: 'Ibuprofen 400mg', qty: 10, unit: 'tabs', usage: 'Uống khi đau, sau ăn, tối đa 3 lần/ngày' }]
+  gastric: [{ generic: 'Omeprazol', strength: '20 mg', form: 'viên nang', qty: 14, usage: 'Sáng 1 viên — uống trước ăn — 14 ngày', dose: dose(1, 0, 0, 0, 14, 'before') }],
+  diabetes: [{ generic: 'Metformin', strength: '500 mg', form: 'viên', qty: 60, usage: 'Sáng 1 viên, Tối 1 viên — uống sau ăn — 30 ngày', dose: dose(1, 0, 0, 1, 30) }],
+  rash: [{ generic: 'Loratadin', strength: '10 mg', form: 'viên', qty: 10, usage: 'Tối 1 viên — 10 ngày', dose: dose(0, 0, 0, 1, 10, '') }],
+  pain: [{ generic: 'Ibuprofen', strength: '400 mg', form: 'viên', qty: 10, usage: 'Uống khi đau, sau ăn, tối đa 3 lần/ngày' }]
+}
+
+const key = (s) => String(s ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/gi, 'd').toLowerCase().replace(/\s+/g, '')
+// Thuốc đang dùng cùng hoạt chất và hàm lượng; nhiều thuốc khớp thì ưu tiên đúng dạng bào chế rồi tới thuốc còn tồn.
+export function drugForTemplate(t, drugs) {
+  const hits = drugs.filter((d) => d.active !== false && key(d.ingredient) === key(t.generic) && key(d.strength) === key(t.strength))
+  const score = (d) => (key(d.form).includes(key(t.form)) ? 2 : 0) + ((d.stock?.usable ?? 0) > 0 ? 1 : 0)
+  return hits.sort((a, b) => score(b) - score(a))[0] ?? null
 }
 
 // Liều có cấu trúc: Sáng / Trưa / Chiều / Tối × số ngày → tự tính số lượng và câu cách dùng.

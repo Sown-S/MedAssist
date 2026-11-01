@@ -62,6 +62,8 @@
 .toast{position:fixed;right:20px;bottom:20px;background:var(--solid);border:1px solid var(--border);color:#fff;padding:12px 16px;border-radius:12px;font-size:13.5px;display:none;align-items:center;gap:9px;z-index:90;box-shadow:0 20px 50px -14px rgba(0,0,0,.6);}
 .toast.show{display:flex;}
 .toast .ic{color:#4ADE80;}
+.toast.error{border-color:rgba(239,68,68,.55);}
+.toast.error .ic{color:#FCA5A5;font-weight:700;}
 .spinner{width:16px;height:16px;border-radius:50%;border:2px solid rgba(255,255,255,.25);border-top-color:#fff;animation:spin .7s linear infinite;display:inline-block;}
 @keyframes spin{to{transform:rotate(360deg);}}
 /* Spinner trong nút theo màu chữ của nút (dùng được cho nút đậm lẫn nút ghost); nút đang chạy không bị mờ như disabled. */

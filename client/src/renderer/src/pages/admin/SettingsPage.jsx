@@ -5,7 +5,7 @@ import { Switch } from './ui'
 import { useAuth } from '../../context/AuthContext'
 import { useToast } from '../../context/ToastContext'
 import { translate } from '../../i18n'
-import { useSettings, saveSettings, saveServerSettings, loadServerSettings, getSettings, changedPaths, PRINT_DOCS, NUMBERED_DOCS, PAYMENT_METHODS, WEEKDAYS } from '../../api/settingsStore'
+import { useSettings, saveSettings, saveServerSettings, loadServerSettings, getSettings, changedPaths, PRINT_DOCS, NUMBERED_DOCS, PAYMENT_METHODS } from '../../api/settingsStore'
 import { fetchPasswordPolicy } from '../../api/accountStore'
 import { printHeaderHtml, fmtDateTime, fmtMoney } from './inventory/shared'
 import { DeviceTab } from './settings/DeviceTab'
@@ -23,7 +23,7 @@ const TABS = [
   { key: 'ops', label: 'Operations' }
 ]
 // Tab “Kết nối & AI” chỉ hiển thị trạng thái, không có giá trị lưu.
-const TAB_OF = (path) => (path.startsWith('numbering') ? 'print' : path.startsWith('retention') ? 'backup' : path.split('.')[0])
+const TAB_OF = (path) => (path.startsWith('numbering') ? 'print' : path.split('.')[0])
 
 for (const d of PRINT_DOCS) FIELDS['print.papers.' + d.key] = [`Paper size — ${d.label}`, 'now']
 for (const d of NUMBERED_DOCS)
@@ -68,10 +68,6 @@ function validate(d) {
   if (!int(d.security.lockMinutes) || d.security.lockMinutes < 1 || d.security.lockMinutes > 1440) e['security.lockMinutes'] = 'Between 1 and 1440 minutes.'
   if (!int(d.backup.keep) || d.backup.keep < 1 || d.backup.keep > 365) e['backup.keep'] = 'Between 1 and 365.'
   if (d.backup.enabled && !d.backup.path.trim()) e['backup.path'] = 'Enter the folder where backups are stored.'
-  if (!int(d.retention.auditYears) || d.retention.auditYears < 1) e['retention.auditYears'] = 'At least 1 year.'
-  if (!int(d.retention.recordYears) || d.retention.recordYears < 1) e['retention.recordYears'] = 'At least 1 year.'
-  if (d.ops.open >= d.ops.close) e['ops.close'] = 'Closing time must be after opening time.'
-  if (!d.ops.workDays.length) e['ops.workDays'] = 'Select at least one working day.'
   if (!int(d.ops.defaultThreshold) || d.ops.defaultThreshold < 0) e['ops.defaultThreshold'] = 'Enter a whole number.'
   if (!int(d.ops.shelfBufferDays ?? 0) || (d.ops.shelfBufferDays ?? 0) < 0 || (d.ops.shelfBufferDays ?? 0) > 365) e['ops.shelfBufferDays'] = 'Enter 0–365 days.'
   if (!int(d.ops.consultFee) || d.ops.consultFee < 0) e['ops.consultFee'] = 'Enter an amount in đồng.'
@@ -91,7 +87,7 @@ export default function SettingsPage({ params, onNavigate, setLeaveGuard }) {
   useEffect(() => {
     loadServerSettings().then(
       () => setDraft(getSettings()),
-      (e) => showToast(e.message)
+      (e) => showToast(e.message, 'error')
     )
     fetchPasswordPolicy().then(setPolicy)
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -123,13 +119,13 @@ export default function SettingsPage({ params, onNavigate, setLeaveGuard }) {
     setReauth(null)
     // Ghi tham số lên server trước; lỗi thì không lưu gì ở máy này.
     const r = await saveServerSettings(draft)
-    if (!r.ok) return showToast(translate(r.error))
+    if (!r.ok) return showToast(translate(r.error), 'error')
     const n = saveSettings(draft, user)
     showToast(n ? 'Settings saved' : 'No changes')
   }
   function save() {
-    if (errCount) return showToast('Fix the highlighted fields before saving')
-    if ([...changed].some((p) => p.startsWith('security.') || p.startsWith('backup.') || p.startsWith('retention.'))) return setReauth(true)
+    if (errCount) return showToast('Fix the highlighted fields before saving', 'error')
+    if ([...changed].some((p) => p.startsWith('security.') || p.startsWith('backup.'))) return setReauth(true)
     doSave()
   }
 
@@ -137,8 +133,8 @@ export default function SettingsPage({ params, onNavigate, setLeaveGuard }) {
     const f = e.target.files?.[0]
     e.target.value = ''
     if (!f) return
-    if (!/^image\/(png|jpeg|svg\+xml|webp)$/.test(f.type)) return showToast('Choose a PNG, JPG, SVG or WebP image')
-    if (f.size > 300 * 1024) return showToast('The logo must be smaller than 300 KB')
+    if (!/^image\/(png|jpeg|svg\+xml|webp)$/.test(f.type)) return showToast('Choose a PNG, JPG, SVG or WebP image', 'error')
+    if (f.size > 300 * 1024) return showToast('The logo must be smaller than 300 KB', 'error')
     const r = new FileReader()
     r.onload = () => set('clinic.logo', r.result)
     r.readAsDataURL(f)
@@ -295,7 +291,7 @@ export default function SettingsPage({ params, onNavigate, setLeaveGuard }) {
         </div>
       )}
 
-      {tab === 'backup' && <BackupTab fp={fp} num={num} onNavigate={onNavigate} />}
+      {tab === 'backup' && <BackupTab onNavigate={onNavigate} />}
 
       {tab === 'connection' && <ConnectionTab onNavigate={onNavigate} />}
       {tab === 'device' && <DeviceTab draft={draft} />}
@@ -303,35 +299,8 @@ export default function SettingsPage({ params, onNavigate, setLeaveGuard }) {
       {tab === 'ops' && (
         <div className="card">
           <div className="section-label" style={{ marginTop: 0 }}>
-            Working hours
+            Inventory
           </div>
-          <div className="set-grid">
-            <Field {...fp('ops.open')}>
-              <input {...text('ops.open', { type: 'time' })} />
-            </Field>
-            <Field {...fp('ops.close')}>
-              <input {...text('ops.close', { type: 'time' })} />
-            </Field>
-            <Field {...fp('ops.workDays')} wide>
-              <div className="ai-seg">
-                {WEEKDAYS.map((d) => {
-                  const on = val('ops.workDays').includes(d.key)
-                  return (
-                    <button
-                      key={d.key}
-                      type="button"
-                      className={on ? 'active' : ''}
-                      onClick={() => set('ops.workDays', on ? val('ops.workDays').filter((x) => x !== d.key) : [...val('ops.workDays'), d.key])}
-                    >
-                      {d.label}
-                    </button>
-                  )
-                })}
-              </div>
-            </Field>
-          </div>
-
-          <div className="section-label">Inventory</div>
           <div className="set-grid">
             <Field {...fp('ops.nearDays')} hint="Batches expiring within this period are flagged on Home and in Stock & expiry.">
               <div className="ai-seg">
@@ -354,11 +323,6 @@ export default function SettingsPage({ params, onNavigate, setLeaveGuard }) {
           <div className="set-grid">
             <Field {...fp('ops.consultFee')} hint={fmtMoney(Number(val('ops.consultFee')) || 0)}>
               <input {...num('ops.consultFee')} min="0" step="1000" />
-            </Field>
-            <Field {...fp('ops.sellControlled')} wide hint="Off: doctors still write separate N/H prescriptions, but the clinic pharmacy does not invoice or dispense them — patients buy them at a licensed outside pharmacy.">
-              <label className="set-checks" style={{ display: 'flex' }}>
-                <input type="checkbox" checked={!!val('ops.sellControlled')} onChange={(e) => set('ops.sellControlled', e.target.checked)} /> <span>The clinic pharmacy is licensed to sell narcotic / psychotropic drugs</span>
-              </label>
             </Field>
             <Field {...fp('ops.methods')} wide>
               <div className="set-checks">

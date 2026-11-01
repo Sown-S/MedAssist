@@ -13,7 +13,6 @@ export const PAGE_SIZE = 10
 export const GROUPS = [
   { key: 'all', label: 'All groups' },
   { key: 'regular', label: 'Regular' },
-  { key: 'controlled', label: 'Controlled' },
   { key: 'essential', label: 'Essential' },
   { key: 'supply', label: 'Medical supplies' }
 ]

@@ -32,7 +32,7 @@ export function useTakePatient(open) {
       return open(r.visit.id)
     }
     if (r.busy) return setBusy(r)
-    showToast(translate(r.error))
+    showToast(translate(r.error), 'error')
   }
 
   const dialog = busy && (
@@ -97,7 +97,7 @@ export function InviteBar({ onStart, compact = false }) {
   if (!v) return null
   const run = async (p, done) => {
     const r = await p
-    showToast(translate(r.ok ? done : r.error))
+    showToast(translate(r.ok ? done : r.error), r.ok ? 'ok' : 'error')
   }
   const waiting = v.status === ST.WAITING
   return (
@@ -218,7 +218,7 @@ export function ReleaseModal({ visit, onClose, onDone }) {
   const { showToast } = useToast()
   async function submit() {
     const r = await releaseVisit(visit.id, user)
-    if (!r.ok) return showToast(translate(r.error))
+    if (!r.ok) return showToast(translate(r.error), 'error')
     deleteDraft(visit.id)
     showToast('Returned to the waiting queue')
     onDone?.()
@@ -251,7 +251,7 @@ export function LeaveVisitModal({ visit, onClose, onDone }) {
   const [note, setNote] = useState('')
   async function submit() {
     const r = await leaveVisit(visit.id, { reason, note }, user)
-    if (!r.ok) return showToast(translate(r.error))
+    if (!r.ok) return showToast(translate(r.error), 'error')
     deleteDraft(visit.id)
     showToast('Visit closed — your notes were kept in the patient’s history')
     onDone?.()

@@ -163,7 +163,7 @@ export default function DoctorHome({ go }) {
                 <small>{r.diagnosis || r.rx.map((x) => x.name).join(', ')}</small>
               </span>
               <span className="ai-soft" style={{ fontSize: 12.5 }}>
-                {r.rx.length} {translate('drugs')}
+                {r.rx.length} {translate(r.rx.length === 1 ? 'drug' : 'drugs')}
               </span>
             </div>
           ))}

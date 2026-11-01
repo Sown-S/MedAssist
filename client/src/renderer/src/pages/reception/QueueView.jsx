@@ -32,7 +32,7 @@ export default function QueueView({ readOnly, onPay }) {
   // Bác sĩ chỉ mời được người đã check-in.
   async function checkIn(v) {
     const r = await checkInVisit(v.id)
-    showToast(r.ok ? translate('Checked in — doctors can now call') + ' ' + String(v.ticket).padStart(3, '0') : translate(r.error))
+    showToast(r.ok ? translate('Checked in — doctors can now call') + ' ' + String(v.ticket).padStart(3, '0') : translate(r.error), r.ok ? 'ok' : 'error')
   }
 
   function waitOf(v) {

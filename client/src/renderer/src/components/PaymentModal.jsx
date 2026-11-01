@@ -72,7 +72,7 @@ export default function PaymentModal({ open, onClose, patient, initialTab = 'dis
       if (ok) showToast(translate(ok))
       return r
     } catch (e) {
-      showToast(e.message)
+      showToast(e.message, 'error')
       return null
     }
   }
@@ -123,7 +123,7 @@ export default function PaymentModal({ open, onClose, patient, initialTab = 'dis
     setCustom({ name: '', amount: '' })
   }
   const removeService = (idx) => saveServices(services.filter((_, j) => j !== idx).map(asLine))
-  const saveFee = () => (Number(fee) >= 0 && fee !== '' ? act(() => editInvoice(visitId, { consultation_fee: Number(fee) }), 'Invoice updated') : showToast(translate('Enter an amount')))
+  const saveFee = () => (Number(fee) >= 0 && fee !== '' ? act(() => editInvoice(visitId, { consultation_fee: Number(fee) }), 'Invoice updated') : showToast(translate('Enter an amount'), 'error'))
 
   async function doPay() {
     const r = await act(() => payInvoice(visitId, toServerMethod(method)))
@@ -142,7 +142,7 @@ export default function PaymentModal({ open, onClose, patient, initialTab = 'dis
       .filter((l) => l.dispense_status !== 'Skipped')
       .map((l, n) => `<tr><td>${n + 1}</td><td><b>${esc(l.drug_name)}</b><br><small>${esc([l.dosage, l.frequency, l.duration_days + ' ngày'].join(' · '))}</small></td><td class="num">${esc(l.quantity)} ${esc(t(unitLabel(l.unit)))}</td></tr>`)
       .join('')
-    if (!rows) return showToast(translate('No drugs to dispense on this invoice.'))
+    if (!rows) return showToast(translate('No drugs to dispense on this invoice.'), 'error')
     printHtml(
       t('Dispensing slip'),
       `<h1>${esc(t('Dispensing slip'))}</h1>

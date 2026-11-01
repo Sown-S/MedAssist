@@ -146,7 +146,7 @@ export default function StaffPage() {
       run: async () => {
         setReauth(null)
         const res = await resetPassword(a.id)
-        if (!res.ok) return showToast(res.error)
+        if (!res.ok) return showToast(res.error, 'error')
         setSecret({ account: a, password: res.password, reset: true })
         refresh()
       }
@@ -154,13 +154,13 @@ export default function StaffPage() {
   }
   async function unlock(a) {
     const res = await unlockAccount(a.id)
-    if (!res.ok) return showToast(res.error)
+    if (!res.ok) return showToast(res.error, 'error')
     showToast('Account unlocked')
     refresh()
   }
   async function toggle(a) {
     const res = await setActive(a.id, !a.active)
-    if (!res.ok) return showToast(res.error)
+    if (!res.ok) return showToast(res.error, 'error')
     showToast(a.active ? 'Account disabled' : 'Account re-enabled')
     refresh()
   }

@@ -19,7 +19,7 @@ import AssessmentCard, { useAssessment } from './AssessmentCard'
 import { putServiceResults } from '../../api/serviceApi'
 import { useServiceOrders, toLabOrder, apiMessage } from '../../api/serviceStore'
 import CancelOrderItemModal from '../../components/CancelOrderItemModal'
-import { useServerDrugs, reloadServerDrugs } from '../../api/serverDrugs'
+import { useServerDrugs, reloadServerDrugs, findServerDrug } from '../../api/serverDrugs'
 import { syncDiagnoses, savePrescription, confirmPrescription, completeExam, shortageOf } from '../../api/examApi'
 import { isServerOnline } from '../../api/connectivity'
 import ServerHistory from './ServerHistory'
@@ -28,13 +28,14 @@ import { saveDraft, deleteDraft } from '../../api/draftStore'
 import DocumentModal from './DocumentModal'
 import VitalsFields from '../../components/VitalsFields'
 import { vitalsText, checkVitals } from '../../api/vitals'
-import { useTakePatient, pastVisitsOf, ReleaseModal, LeaveVisitModal, InviteBar } from './doctorShared'
+import { useTakePatient, ReleaseModal, LeaveVisitModal, InviteBar } from './doctorShared'
+import { getHistory } from '../../api/emrApi'
 import { ClinicalInfoEditor } from './consult/ClinicalInfoEditor'
 import { SecondaryDx } from './consult/SecondaryDx'
 import { ConfirmedSymptoms } from './consult/ConfirmedSymptoms'
 import { ReminderPanel } from './consult/ReminderPanel'
 import { ServerVisit } from './consult/ServerVisit'
-import { RX, SLOTS, MEALS, blankDose, num, perDay, unitVi, usageOf, serverStockIssue, nextLineId, lineOf, serverItem, draftOf } from './consult/rxDraft'
+import { RX, drugForTemplate, SLOTS, MEALS, blankDose, num, perDay, unitVi, usageOf, serverStockIssue, nextLineId, lineOf, serverItem, draftOf } from './consult/rxDraft'
 
 // Đơn mẫu: một lần bấm thêm cả nhóm thuốc.
 const TEMPLATES = [
@@ -201,7 +202,7 @@ export default function ConsultView({ visitId, onSelect }) {
                               )}
                               {g.key === 'done' ? (
                                 <span className="ai-soft">
-                                  {hhmm(v.statusAt)} · {v.rx.length} {translate('drugs')}
+                                  {hhmm(v.statusAt)} · {v.rx.length} {translate(v.rx.length === 1 ? 'drug' : 'drugs')}
                                 </span>
                               ) : (
                                 <span className={'p-wait ' + (n >= 45 ? 'long' : n >= 25 ? 'warn' : 'ok')}>{n} min</span>
@@ -267,13 +268,39 @@ export default function ConsultView({ visitId, onSelect }) {
   )
 }
 
+// Các lần khám trước của bệnh nhân (GET /patients/{id}/history, mới nhất trước), đổi về dạng dòng mà phiếu khám dùng:
+// "Lần khám trước" và nút lặp lại đơn gần nhất.
+const historyItem = (x) => {
+  const dx = x.diagnoses.find((g) => g.is_primary) ?? x.diagnoses[0]
+  return {
+    id: x.visit_id,
+    statusAt: x.visit_date,
+    rxAt: x.prescription?.confirmed_at ?? null,
+    diagnosis: dx ? [dx.icd10_code, dx.diagnosis_name].filter(Boolean).join(' — ') : '',
+    rx: (x.prescription?.items ?? []).map((l) => ({ name: l.drug_label, qty: l.quantity, unit: l.unit, usage: `${l.dosage} — ${l.frequency} — ${l.duration_days} ngày` }))
+  }
+}
+function usePastVisits(visit) {
+  const [past, setPast] = useState([])
+  useEffect(() => {
+    let alive = true
+    getHistory(visit.patientId, { limit: 10 }).then(
+      (h) => alive && setPast(h.items.filter((x) => x.visit_id !== visit.id).map(historyItem)),
+      () => {}
+    )
+    return () => {
+      alive = false
+    }
+  }, [visit.patientId, visit.id])
+  return past
+}
+
 function ConsultForm({ visit, user, onDone, onNext }) {
   const { showToast } = useToast()
   const inv = useInventory()
   const srv = useServerDrugs({ enabled: true })
   const issueOf = (it) => serverStockIssue(it, srv.drugs)
-  const { visits } = useQueue()
-  const past = pastVisitsOf(visit.patientId, { visits, exclude: visit.id })
+  const past = usePastVisits(visit)
   const [d, setD] = useState(() => draftOf(visit))
   const [tab, setTab] = useState('clin')
   const [aiDecision, setAiDecision] = useState({})
@@ -311,7 +338,7 @@ function ConsultForm({ visit, user, onDone, onNext }) {
     if (decision === 'accepted') set({ diagnosis: [c.icd10_code, c.name_vi].filter(Boolean).join(' — ') })
   }
   function addDrug(drug) {
-    if (d.rx.some((x) => x.name === drug.name)) return showToast(translate('This drug is already on the prescription.'))
+    if (d.rx.some((x) => x.name === drug.name)) return showToast(translate('This drug is already on the prescription.'), 'error')
     set({ rx: [...d.rx, lineOf(drug)] })
   }
   function applyLines(lines) {
@@ -320,6 +347,7 @@ function ConsultForm({ visit, user, onDone, onNext }) {
       .filter((l) => !have.has(l.name))
       .map((l) => ({
         id: nextLineId(),
+        drugId: findServerDrug(l.name, srv.drugs)?.id,
         name: l.name,
         qty: String(l.qty),
         unit: l.unit,
@@ -327,8 +355,24 @@ function ConsultForm({ visit, user, onDone, onNext }) {
         essential: !!findDrugByName(l.name, inv.drugs)?.essential,
         dose: { ...blankDose(), ...l.dose }
       }))
-    if (!add.length) return showToast(translate('These drugs are already on the prescription.'))
+    if (!add.length) return showToast(translate('These drugs are already on the prescription.'), 'error')
     set({ rx: [...d.rx, ...add] })
+  }
+  // Đơn mẫu: tra từng dòng ra thuốc của danh mục server (có drug_id) để chốt được; thuốc không có thì bỏ qua và báo.
+  function applyTemplate(tk) {
+    const missing = []
+    const lines = RX[tk].flatMap((t) => {
+      const drug = drugForTemplate(t, srv.drugs)
+      if (!drug) {
+        missing.push(t.generic + ' ' + t.strength)
+        return []
+      }
+      return [{ ...lineOf(drug), qty: String(t.qty), usage: t.usage, dose: { ...blankDose(), ...t.dose } }]
+    })
+    if (missing.length) showToast(translate('Not in the drug catalog on the server') + ': ' + missing.join(', '), 'error')
+    const add = lines.filter((l) => !d.rx.some((x) => x.drugId === l.drugId || x.name === l.name))
+    if (add.length) set({ rx: [...d.rx, ...add] })
+    else if (!missing.length) showToast(translate('These drugs are already on the prescription.'), 'error')
   }
   // Đơn gần nhất trong mọi lần khám trước, kể cả lượt đã xong hôm nay.
   const last = past.find((v) => v.rx?.length)
@@ -370,7 +414,7 @@ function ConsultForm({ visit, user, onDone, onNext }) {
       if (toast) showToast('Lab results saved')
       return true
     } catch (e) {
-      showToast(translate(apiMessage(e)))
+      showToast(translate(apiMessage(e)), 'error')
       return false
     }
   }
@@ -380,7 +424,7 @@ function ConsultForm({ visit, user, onDone, onNext }) {
   async function finalizeOnServer(andNext) {
     const mapped = d.rx.map((l) => serverItem(l, srv.drugs))
     const bad = mapped.find((x) => x.error)
-    if (bad) return showToast(bad.error)
+    if (bad) return showToast(bad.error, 'error')
     // Kết quả cận lâm sàng lưu ở phiếu chỉ định — ghi trước khi chốt.
     if (!(await saveLabResults())) return
     const notes = [
@@ -402,7 +446,7 @@ function ConsultForm({ visit, user, onDone, onNext }) {
         setShort(shortageOf(e, mapped.map((x) => x.line)))
         reloadServerDrugs()
       }
-      return showToast(e.message || translate('Something went wrong'))
+      return showToast(e.message || translate('Something went wrong'), 'error')
     }
     setShort(null)
     deleteDraft(visit.id)
@@ -415,11 +459,11 @@ function ConsultForm({ visit, user, onDone, onNext }) {
 
   function finalize(andNext = false) {
     // Mất kết nối máy chủ → không chốt, phiếu nháp vẫn giữ ở máy này.
-    if (!isServerOnline()) return showToast(translate('No connection to the clinic server — the visit cannot be finalized now. Your notes are kept on this computer.'))
+    if (!isServerOnline()) return showToast(translate('No connection to the clinic server — the visit cannot be finalized now. Your notes are kept on this computer.'), 'error')
     setTried(true)
     if (problem) {
       if (problem.startsWith('Enter the child') || problem.startsWith('Check the vital')) setTab('vitals')
-      return showToast(translate(problem))
+      return showToast(translate(problem), 'error')
     }
     return finalizeOnServer(andNext)
   }
@@ -431,7 +475,7 @@ function ConsultForm({ visit, user, onDone, onNext }) {
   const acceptTopRef = useRef(null)
   acceptTopRef.current = () => {
     const top = ai.candidates[0]
-    if (!top) return showToast(translate('No AI suggestion to accept yet.'))
+    if (!top) return showToast(translate('No AI suggestion to accept yet.'), 'error')
     if (aiDecision[top.condition_code] !== 'accepted') decideAi(top, 'accepted')
   }
   useEffect(() => {
@@ -702,7 +746,7 @@ function ConsultForm({ visit, user, onDone, onNext }) {
         <div className="rx-quick">
           <span className="ai-soft">Templates:</span>
           {TEMPLATES.map((t) => (
-            <button key={t.key} className="chip-btn" onClick={() => applyLines(RX[t.key])}>
+            <button key={t.key} className="chip-btn" onClick={() => applyTemplate(t.key)}>
               {t.title}
             </button>
           ))}
@@ -712,6 +756,9 @@ function ConsultForm({ visit, user, onDone, onNext }) {
             </button>
           )}
         </div>
+        <p className="ai-soft" style={{ fontSize: 12, margin: '4px 0 0' }}>
+          Reference templates — the doctor adjusts the drugs, doses and duration for each patient.
+        </p>
 
         {d.rx.length > 0 ? (
           <div className="rx-lines">

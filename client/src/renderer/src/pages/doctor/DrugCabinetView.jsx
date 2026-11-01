@@ -48,7 +48,6 @@ const PAGE_SIZE = 12
 const GROUPS = [
   { key: '', label: 'All groups' },
   { key: 'essential', label: 'Essential' },
-  { key: 'controlled', label: 'Controlled drugs' },
   { key: 'supply', label: 'Medical supplies' }
 ]
 
@@ -144,7 +143,7 @@ export default function DrugCabinetView({ go }) {
             ))}
           </select>
           <span className="ai-soft" style={{ fontSize: 13 }}>
-            {list.length} / {active.length} {translate('drugs')}
+            {list.length} / {active.length} {translate(active.length === 1 ? 'drug' : 'drugs')}
           </span>
         </div>
         {current && (

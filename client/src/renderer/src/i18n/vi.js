@@ -370,9 +370,13 @@ export const VI = {
   'Future roadmap': 'Định hướng phát triển tương lai',
   'Items outside the current project scope — noted for future expansion after graduation':
     'Các hạng mục nằm ngoài phạm vi đồ án hiện tại — ghi nhận để mở rộng sau khi ra trường',
+  'Drug interaction and dose checking': 'Kiểm tra tương tác và liều thuốc',
+  'Checking each prescription for drug–drug interactions, cross-allergies, contraindications with chronic conditions and dose limits, against a pharmacist-reviewed interaction catalog — the current version only shows a read-only allergy / chronic-condition reminder; the doctor reviews the prescription.':
+    'Kiểm tra từng đơn về tương tác thuốc – thuốc, dị ứng chéo, chống chỉ định với bệnh nền và giới hạn liều theo danh mục tương tác do dược sĩ duyệt — phiên bản hiện tại chỉ có khung nhắc dị ứng / bệnh nền chỉ đọc; bác sĩ tự rà soát đơn.',
+  'The activity log and medical records are kept on the clinic server and are never deleted automatically.': 'Nhật ký hoạt động và hồ sơ bệnh án được lưu trên máy chủ phòng khám, không bao giờ tự động xoá.',
   'Full health insurance integration': 'Liên thông Bảo hiểm Y tế đầy đủ',
-  'Online insurance card lookup through the national social insurance assessment portal, with automatic in-network/out-of-network classification — the current mock UI only supports entering the card number and covered amount manually.':
-    'Tra cứu thẻ BHYT trực tuyến qua Cổng giám định BHXH, tự bóc tách tuyến khám đúng/trái tuyến — hiện tại mock UI mới dừng ở nhập số thẻ và số tiền chi trả thủ công.',
+  'Online insurance card lookup through the national social insurance assessment portal, with automatic in-network/out-of-network classification — the current version does not handle health insurance.':
+    'Tra cứu thẻ BHYT trực tuyến qua cổng giám định BHXH, tự phân loại đúng tuyến / trái tuyến — phiên bản hiện tại chưa xử lý bảo hiểm y tế.',
   'National e-prescription integration': 'Liên thông Đơn thuốc Quốc gia',
   'Submitting electronic prescriptions to the Ministry of Health portal through its standard API — requires a legal-entity account for the clinic, beyond the scope of this prototype.':
     'Đẩy đơn thuốc điện tử lên Cổng thông tin Bộ Y tế qua API chuẩn — cần tài khoản pháp nhân phòng khám, ngoài phạm vi thực nghiệm.',
@@ -831,8 +835,8 @@ export const VI = {
   years: 'năm',
   'At least 1 year.': 'Tối thiểu 1 năm.',
   'Export the activity log': 'Xuất nhật ký hoạt động',
-  'Check these periods against the medical-records rules and the personal data protection regulation the project cites (e.g. Decree 13/2023/NĐ-CP) before going live.':
-    'Hãy đối chiếu các thời hạn này với quy định về hồ sơ bệnh án và quy định bảo vệ dữ liệu cá nhân mà đề tài dẫn chiếu (VD Nghị định 13/2023/NĐ-CP) trước khi đưa vào sử dụng.',
+  'Agree on retention periods with the clinic against the medical-records rules and the personal data protection regulation the project cites (e.g. Decree 13/2023/NĐ-CP) before going live.':
+    'Thống nhất thời hạn lưu trữ với phòng khám theo quy định về hồ sơ bệnh án và bảo vệ dữ liệu cá nhân mà đề tài viện dẫn (VD: Nghị định 13/2023/NĐ-CP) trước khi đưa vào sử dụng.',
   // Kết nối & AI
   'Server connection': 'Kết nối server',
   'Server address': 'Địa chỉ server',
@@ -1106,6 +1110,8 @@ export const VI = {
   'Weight (kg)': 'Cân nặng (kg)',
   'No recorded drug allergies.': 'Chưa ghi nhận dị ứng thuốc.',
   'Templates:': 'Đơn mẫu:',
+  'Reference templates — the doctor adjusts the drugs, doses and duration for each patient.':
+    'Đơn mẫu tham khảo — bác sĩ tự điều chỉnh thuốc, liều và số ngày cho từng bệnh nhân.',
   'Repeat last prescription': 'Lặp lại đơn gần nhất',
   'No drugs yet': 'Chưa có thuốc',
   'Search the catalog, pick a template or repeat the last prescription. A visit can also be completed without drugs.':
@@ -1124,6 +1130,7 @@ export const VI = {
   'Shown on the printed order': 'In trên phiếu chỉ định',
   'Note for the lab': 'Ghi chú cho nơi xét nghiệm',
   'e.g. Fasting sample, urgent': 'ví dụ: Lấy mẫu lúc đói, làm gấp',
+  'test selected': 'xét nghiệm đã chọn',
   'tests selected': 'xét nghiệm đã chọn',
   'Lab order sent to the printer — continue when the patient brings the results back': 'Đã in phiếu chỉ định — khám tiếp khi bệnh nhân mang kết quả về',
   'Test name': 'Tên xét nghiệm',
@@ -1144,6 +1151,7 @@ export const VI = {
   'Stock, expiry and price of each drug': 'Tồn kho, hạn dùng và giá của từng thuốc',
   'Next in line': 'Người kế tiếp',
   'My recent prescriptions': 'Đơn thuốc tôi vừa kê',
+  drug: 'thuốc',
   drugs: 'thuốc',
   'You have not finalized any prescriptions yet.': 'Bạn chưa chốt đơn thuốc nào.',
   'All prescriptions →': 'Tất cả đơn thuốc →',
@@ -1845,6 +1853,7 @@ export const VI = {
   'Search patient or invoice code…': 'Tìm bệnh nhân hoặc mã hóa đơn…',
   Refresh: 'Làm mới',
   'No prescription': 'Không kê đơn',
+  'item waiting': 'thuốc chờ cấp',
   'items waiting': 'thuốc chờ cấp',
   'No visits match the search.': 'Không có lượt khám nào khớp với tìm kiếm.',
   'Nothing waiting at the desk.': 'Không có bệnh nhân nào chờ ở quầy.',

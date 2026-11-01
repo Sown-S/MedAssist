@@ -39,7 +39,7 @@ export default function Doctor() {
     if (!v) return
     if (v.status === ST.CHECKED_IN) return take(v)
     const res = await inviteAgain(v.id)
-    showToast(res.ok ? translate('Invited') + ' — ' + v.name + '. ' + translate('Reception will send the patient in.') : translate(res.error))
+    showToast(res.ok ? translate('Invited') + ' — ' + v.name + '. ' + translate('Reception will send the patient in.') : translate(res.error), res.ok ? 'ok' : 'error')
   }
 
   return (

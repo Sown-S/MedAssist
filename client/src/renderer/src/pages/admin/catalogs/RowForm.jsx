@@ -54,7 +54,7 @@ export function RowForm({ catalogKey, row, all, cats, inv, onClose }) {
     setSaving(true)
     const r = await saveLiveRow(catalogKey, { ...data, id: row.id })
     setSaving(false)
-    if (!r.ok) return showToast(translate(r.error))
+    if (!r.ok) return showToast(translate(r.error), 'error')
     showToast(isNew ? 'Record added' : 'Record saved')
     onClose()
   }
