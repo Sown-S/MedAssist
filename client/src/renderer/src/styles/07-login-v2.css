@@ -1,6 +1,5 @@
-/* Đăng nhập v2 (thẻ vai trò) */
+/* Đăng nhập: thẻ chọn vai trò */
 
-/* ===== Login v2 (role cards) ===== */
 .login-wrap{width:410px;max-width:100%;}
 .login-card{width:100%;padding:40px 28px 36px;}
 .login-screen .login-field{margin-bottom:22px;gap:8px;}

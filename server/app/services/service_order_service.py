@@ -81,7 +81,8 @@ def _orders(db: Session, visit_ids: list[uuid.UUID]) -> dict[uuid.UUID, list[dic
             **{c: getattr(it, c) for c in ("item_id", "service_id", "item_name", "quantity", "unit_price", "in_package",
                                            "status", "result", "result_at", "cancelled_at", "cancel_reason")},
             "service_code": s.code if s else None,
-            **({c: getattr(s, c) for c in ("unit", "ref_low", "ref_high", "ref_text", "sample")} if s else {})})
+            **({c: getattr(s, c) for c in ("kind", "group_key", "unit", "ref_low", "ref_high", "ref_text", "sample")}
+               if s else {})})
     out: dict[uuid.UUID, list[dict]] = {}
     for o in orders:
         out.setdefault(o.visit_id, []).append({
@@ -205,13 +206,28 @@ def billable(db: Session, visit_id: uuid.UUID) -> tuple[list[dict], str | None]:
     return lines, consult_in
 
 
-def unbilled(db: Session, visit_id: uuid.UUID) -> list[dict]:
-    return [{"item_id": it.item_id, "order_id": it.order_id, "item_name": it.item_name, "quantity": it.quantity}
-            for it in db.scalars(select(ServiceOrderItem)
-                                 .join(ServiceOrder, ServiceOrder.order_id == ServiceOrderItem.order_id)
-                                 .where(ServiceOrder.visit_id == visit_id, ServiceOrderItem.status == "Ordered",
-                                        ServiceOrderItem.unit_price.is_(None))
-                                 .order_by(ServiceOrder.ordered_at, ServiceOrderItem.item_name))]
+def _name_key(name: str) -> str:
+    return " ".join(name.casefold().split())
+
+
+def unbilled(db: Session, visit_id: uuid.UUID, manual_names: list[str]) -> list[dict]:
+    """Chỉ định ngoài danh mục chưa có dòng nhập tay cùng tên trên hóa đơn (mỗi dòng tay khớp một chỉ định)."""
+    remaining: dict[str, int] = {}
+    for name in manual_names:
+        remaining[_name_key(name)] = remaining.get(_name_key(name), 0) + 1
+    out = []
+    for it in db.scalars(select(ServiceOrderItem)
+                         .join(ServiceOrder, ServiceOrder.order_id == ServiceOrderItem.order_id)
+                         .where(ServiceOrder.visit_id == visit_id, ServiceOrderItem.status == "Ordered",
+                                ServiceOrderItem.unit_price.is_(None))
+                         .order_by(ServiceOrder.ordered_at, ServiceOrderItem.item_name)):
+        key = _name_key(it.item_name)
+        if remaining.get(key):
+            remaining[key] -= 1
+            continue
+        out.append({"item_id": it.item_id, "order_id": it.order_id, "item_name": it.item_name,
+                    "quantity": it.quantity})
+    return out
 
 
 def orders_for_visits(db: Session, visit_ids: list[uuid.UUID]) -> dict[uuid.UUID, list[dict]]:

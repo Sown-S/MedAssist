@@ -4,8 +4,7 @@ import { useApiData } from '../hooks/useApiData'
 import { PERIODS, rangeOf, reportPath, fillDays, vnd, percent } from '../api/reportsApi'
 import { translate } from '../i18n'
 
-// Báo cáo vận hành cho Admin (Proposal 6.2): số liệu tổng hợp chỉ đọc, không drill-down, không xuất file.
-// Precision / Recall / F1 KHÔNG tính ở đây — phòng khám không có nhãn đúng; đo trên testset v1.0 (evaluation/).
+// Báo cáo vận hành: số liệu tổng hợp chỉ đọc. Precision / Recall không tính ở đây — phòng khám không có nhãn đúng.
 function BarRow({ label, value, of, text, color }) {
   const pct = of > 0 ? Math.round((value / of) * 100) : 0
   return (

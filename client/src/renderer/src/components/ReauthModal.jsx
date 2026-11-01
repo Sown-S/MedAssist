@@ -4,9 +4,8 @@ import Button from './Button'
 import { useAuth } from '../context/AuthContext'
 import { verifyPassword } from '../api/accountStore'
 
-// Thao tác nhạy cảm (tạo quản trị viên, đặt lại mật khẩu, đổi vai trò, đổi quyền) phải nhập lại mật khẩu
-// của chính người đang đăng nhập — tránh trường hợp máy để quên chưa khoá màn hình.
-// Bản thật: server cấp "token xác thực lại" ngắn hạn và endpoint nhạy cảm đòi token đó.
+// Thao tác nhạy cảm (tạo quản trị viên, đặt lại mật khẩu, đổi vai trò) phải nhập lại mật khẩu của chính người đang
+// đăng nhập — phòng khi máy để quên chưa khoá màn hình.
 export default function ReauthModal({ open, title, confirmLabel = 'Confirm', danger, onConfirm, onClose, children }) {
   const { user } = useAuth()
   const [pw, setPw] = useState('')

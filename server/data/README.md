@@ -84,3 +84,11 @@ của phòng khám nào. Admin sửa giá thật ở Quản trị › Danh mục
 Cột `services.csv`: `code`, `name`, `kind` (`Service` dịch vụ / thủ thuật, `Lab` xét nghiệm / chẩn đoán hình ảnh),
 `group_key`, `unit`, `price`, `ref_low`, `ref_high`, `ref_text`, `sample` (bốn cột cuối chỉ dùng cho xét nghiệm).
 Cột `service_packages.csv`: `code`, `name`, `price`, `items` (`MÃ:số lượng` cách nhau bằng `;`).
+
+## eval_cases.jsonl — ca mẫu cho môi trường kiểm thử (55 ca)
+
+Dùng bởi `python -m scripts.seed_eval` để tạo lượt khám các ngày trước và hàng đợi hôm nay. Mỗi dòng một ca: `category`
+(`typical`, `variant`, `red_flag`, `priority_floor`, `ambiguous`), `condition_code` (bệnh dùng làm chẩn đoán cho lượt khám cũ,
+có thể rỗng), `patient`, `visit` (lời kể, sinh hiệu) và `symptoms` (mã triệu chứng → `PRESENT` / `ABSENT` / `UNKNOWN`).
+Lấy từ bộ ca demo v2 của nhóm, bỏ các ca dùng mã triệu chứng không có trong bản tri thức hiện tại. Bộ ca chỉ để thao tác
+kiểm thử; số đo đánh giá dùng `evaluation/testset/`.

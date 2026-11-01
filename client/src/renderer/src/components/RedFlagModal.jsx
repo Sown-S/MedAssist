@@ -1,22 +1,29 @@
+import { useState } from 'react'
 import Icon from './Icon'
-import { useAuth } from '../context/AuthContext'
-import { useToast } from '../context/ToastContext'
-import { recordRedFlag } from '../api/queueStore'
-// FR09 — Red-flag Escalation. Cố tình KHÔNG dùng component Modal dùng chung ở trên,
-// vì đây là 1 overlay cảnh báo toàn màn hình khác hẳn ý nghĩa với modal nhập liệu thông thường,
-// và không được phép đưa bệnh nhân vào hàng đợi khám như nút "Ưu tiên".
-// patient = { name, gender, age, signs } đang nhập ở form tiếp đón; onReferred: đã ghi nhận chuyển tuyến.
+import DocumentModal from '../pages/doctor/DocumentModal'
+// Cảnh báo cờ đỏ toàn màn hình (FR09), cố ý không dùng Modal chung vì khác hẳn modal nhập liệu.
+// Lượt đã có (visitId) thì chuyển tuyến lượt đó; chưa có thì tạo lượt cấp cứu và chuyển ngay
+// (POST /visits/emergency-referral); patient.ensurePatient() tạo hồ sơ nếu là bệnh nhân mới.
 export default function RedFlagModal({ open, onClose, patient, onReferred }) {
-  const { user } = useAuth()
-  const { showToast } = useToast()
+  const [referring, setReferring] = useState(false)
   if (!open) return null
 
-  function handleRefer() {
-    recordRedFlag(patient ?? {}, user, 'referred')
-    onClose()
-    onReferred?.()
-    showToast('Emergency transfer recorded — send the patient to hospital / call 115 now; doctors have been alerted')
-  }
+  const handleRefer = () => setReferring(true)
+
+  if (referring)
+    return (
+      <DocumentModal
+        subject={patient ?? {}}
+        mode="desk"
+        target={{ visitId: patient?.visitId, ensurePatient: patient?.ensurePatient, chief: patient?.chief, vitals: patient?.vitals }}
+        onDone={() => {
+          setReferring(false)
+          onClose()
+          onReferred?.()
+        }}
+        onClose={() => setReferring(false)}
+      />
+    )
 
   return (
     <div className="redflag-overlay show">

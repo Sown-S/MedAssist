@@ -2,6 +2,8 @@
 
 Máy admin chạy toàn bộ phía server bằng Docker Compose; các máy khác trong LAN chỉ cài ứng dụng desktop.
 Máy dev vẫn dùng `docker-compose.dev.yml` (chỉ `db`), xem [`server/README.md`](../server/README.md).
+Kiểm thử trên một máy (Windows, macOS, Linux) không cần chứng chỉ hay GPU: `docker-compose.eval.yml` + `eval.env`,
+xem [`docs/huong-dan-kiem-thu.md`](../docs/huong-dan-kiem-thu.md).
 
 | Dịch vụ | Vai trò | Mở ra LAN |
 |---|---|---|
@@ -46,10 +48,12 @@ Chạy PowerShell tại thư mục gốc repo.
    iex "$dc exec api python -m scripts.create_user --username bs.duyet --full-name 'Bác sĩ duyệt tri thức' --role Physician"
    iex "$dc exec api python -m scripts.seed_drugs --no-batches"
    iex "$dc exec api python -m scripts.seed_services"
+   iex "$dc exec api python -m scripts.seed_referral_facilities"
    iex "$dc exec api python -m scripts.import_okf --submit --approve-as bs.duyet"
    ```
    - `seed_drugs --no-batches`: chỉ nạp danh mục 386 thuốc; nhập lô thật ở màn Kho. Bỏ `--no-batches` nếu cần kho mẫu để demo.
    - `seed_services`: danh mục dịch vụ, xét nghiệm, gói khám với giá mẫu; Admin sửa giá thật ở **Quản trị › Danh mục** trước khi thu tiền.
+   - `seed_referral_facilities`: danh mục bệnh viện, trung tâm y tế để gợi ý nơi chuyển tuyến (vẫn gõ tự do được).
    - `import_okf --submit --approve-as <bác sĩ>`: nạp thư mục `knowledge/` (gắn vào container ở `/knowledge`) và kích hoạt ngay.
      Muốn bác sĩ tự duyệt trên giao diện thì bỏ `--approve-as`; bản tri thức nằm ở trạng thái chờ duyệt, bác sĩ vào tab **Duyệt tri thức**.
    - Các tài khoản khác (bác sĩ từng phòng, lễ tân) do Admin tạo ở **Quản trị › Tài khoản nhân viên**; người dùng phải đổi mật khẩu ở lần đăng nhập đầu.
@@ -70,7 +74,7 @@ Trên mỗi máy client: cài bản `MedAssist Setup *.exe`, ở màn đăng nh�
 | Xem log | `... logs -f api` hoặc `... logs -f worker` |
 | Tắt (giữ dữ liệu, giữ model) | `.\deploy\scripts\stop.ps1` |
 | Sao lưu ngay | `.\deploy\scripts\backup.ps1` (giữ 14 bản mới nhất trong `deploy\backups\`) |
-| Khôi phục | `.\deploy\scripts\restore.ps1 -File deploy\backups\<file>.dump` (ghi đè dữ liệu, phải gõ `KHOIPHUC` để xác nhận) |
+| Khôi phục | `.\deploy\scripts\restore.ps1 -File deploy\backups\<file>.dump` (gõ `KHOIPHUC` để xác nhận): khôi phục vào CSDL mới, kiểm quyền rồi mới thay CSDL đang chạy; CSDL cũ giữ tên `medassist_truoc_<thời điểm>` |
 | Cấp lại chứng chỉ (đổi IP, sắp hết hạn) | `new-certs.ps1 -HostName <IP>` rồi `... restart caddy` |
 | Nạp bản tri thức mới | Đổi `label` trong `knowledge/_release.md`, `start.ps1`, rồi `... exec api python -m scripts.import_okf --submit` |
 | Cho máy dev mượn Ollama (chỉ giai đoạn phát triển) | `.\deploy\scripts\start.ps1 -OllamaLan`; chạy lại `start.ps1` không có `-OllamaLan` để đóng cổng 11434 |
@@ -94,4 +98,7 @@ Trên mỗi máy client: cài bản `MedAssist Setup *.exe`, ở màn đăng nh�
 - `deploy\.env`, `deploy\certs\` (khóa riêng của CA) và `deploy\backups\` **không bao giờ commit**.
 - Giữ một bản `medassist-root-ca.key` ngoài máy admin (USB cất riêng): mất khóa này thì phải tạo CA mới và cài lại app trên mọi máy client.
 - Chỉ Caddy mở cổng ra LAN. Ollama không có xác thực, nên chỉ mở cổng 11434 (`-OllamaLan`) trong giai đoạn phát triển.
-- Sao lưu dùng vai trò chỉ đọc `medassist_backup`; API dùng `medassist_app`, không có quyền sửa / xóa nhật ký.
+- Sao lưu dùng vai trò chỉ đọc `medassist_backup`; API dùng `medassist_app`, không có quyền sửa / xóa nhật ký và sổ kho.
+- Máy từng khôi phục bằng `restore.ps1` bản trước 01/11/2026 (`pg_restore --clean` trên CSDL đang chạy) đã bị cấp lại quyền
+  UPDATE thừa. Thu hồi một lần:
+  `... exec db psql -U medassist_owner -d medassist -c "REVOKE UPDATE, DELETE, TRUNCATE ON audit_log, stock_movement FROM medassist_app"`.

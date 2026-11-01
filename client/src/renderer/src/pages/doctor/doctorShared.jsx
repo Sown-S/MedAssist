@@ -1,37 +1,38 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import Modal, { ModalHeader } from '../../components/Modal'
 import PatientAlerts from '../../components/PatientAlerts'
 import Icon from '../../components/Icon'
 import { useAuth } from '../../context/AuthContext'
 import { useToast } from '../../context/ToastContext'
 import { translate } from '../../i18n'
-import { takePatient, takeNext, minutesSince, labRows, releaseVisit, leaveVisit, LEFT_REASONS, ST } from '../../api/queueStore'
-import { getDraft, deleteDraft } from '../../api/draftStore'
-import { findPatient } from '../../api/patientStore'
+import { takePatient, takeNext, minutesSince, labRows, releaseVisit, leaveVisit, LEFT_REASONS, ST, useQueue, myInvite, inviteAgain, dropInvite } from '../../api/queueStore'
+import { deleteDraft } from '../../api/draftStore'
 import { dmy, hhmm } from '../reception/shared'
 import { vitalsText } from '../../api/vitals'
 
-// Dùng chung cho các màn Bác sĩ: mời bệnh nhân (có điều kiện "khám xong người trong phòng"),
-// hồ sơ bệnh lý sơ lược, lịch sử lượt khám và kết quả cận lâm sàng của một bệnh nhân.
 
 const no = (t) => String(t).padStart(3, '0')
 
-// Mời bệnh nhân vào phòng. Bị chặn vì còn người đang khám → hiện hộp thoại: quay lại người đang khám,
-// hoặc (chỉ với ca ưu tiên) vẫn mời và ghi nhật ký. open(id): mở phòng khám với lượt khám đó.
+// Bị chặn vì còn người đang khám → hỏi lại: quay về người đó, hoặc (chỉ ca ưu tiên) vẫn mời và ghi nhật ký.
 export function useTakePatient(open) {
   const { user } = useAuth()
   const { showToast } = useToast()
   const [busy, setBusy] = useState(null)
 
   async function run(target, force = false) {
-    const r = await (target ? takePatient(target.id, user, { force }) : takeNext(user, { force }))
+    const r = await (target ? takePatient(target.id, user, { force }) : takeNext(user))
+    // Chỉ gửi lời mời — quầy gọi bệnh nhân vào, bác sĩ bắt đầu khám ở thanh lời mời.
+    if (r.ok && 'invited' in r) {
+      const v = r.invited
+      return showToast(v ? translate('Invited') + ' ' + no(v.ticket) + ' — ' + v.name + '. ' + translate('Reception will send the patient in.') : translate('Invited'))
+    }
     if (r.ok) {
       setBusy(null)
       showToast(translate('Now seeing') + ' ' + no(r.visit.ticket) + ' — ' + r.visit.name)
       return open(r.visit.id)
     }
     if (r.busy) return setBusy(r)
-    showToast(translate(r.error))
+    showToast(translate(r.error), 'error')
   }
 
   const dialog = busy && (
@@ -86,8 +87,48 @@ export function useTakePatient(open) {
   return { take: (v) => run(v), next: () => run(null), dialog }
 }
 
-// Các lượt khám TRƯỚC của một bệnh nhân (hôm nay đã xong + các ngày trước), mới nhất trước.
-// Gộp lưu trữ lượt khám (visitArchive) và lịch sử đơn thuốc (rxHistory) — cùng một lượt chỉ lấy một lần.
+// Lời mời đang chờ của bác sĩ: bắt đầu khám (bệnh nhân phải đã check-in), gọi lại, hoặc báo không có mặt
+// (bỏ lời mời, bệnh nhân giữ chỗ trong hàng chờ).
+export function InviteBar({ onStart, compact = false }) {
+  const { user } = useAuth()
+  const { showToast } = useToast()
+  const { visits } = useQueue()
+  const v = myInvite(user, visits)
+  if (!v) return null
+  const run = async (p, done) => {
+    const r = await p
+    showToast(translate(r.ok ? done : r.error), r.ok ? 'ok' : 'error')
+  }
+  const waiting = v.status === ST.WAITING
+  return (
+    <div className={'invite-bar' + (compact ? ' compact' : '')}>
+      <div className="invite-who">
+        <Icon name="megaphone" />
+        <span>
+          <b>
+            {no(v.ticket)} — {v.name}
+          </b>
+          <small>
+            {translate(waiting ? 'Invited — waiting for reception to check the patient in' : 'Invited — waiting for the patient to come in')} · {hhmm(v.calledAt)}
+          </small>
+        </span>
+      </div>
+      <div className="invite-acts">
+        <button className="btn btn-primary btn-sm" disabled={waiting} onClick={() => onStart(v)} title={waiting ? translate('Reception has to check the patient in first.') : undefined}>
+          <Icon name="stethoscope" /> Start the exam
+        </button>
+        <button className="btn btn-ghost btn-sm" onClick={() => run(inviteAgain(v.id), 'Called again')}>
+          <Icon name="megaphone" /> Call again
+        </button>
+        <button className="btn btn-ghost btn-sm" onClick={() => run(dropInvite(v.id), 'Invitation cancelled — the patient keeps their place in the queue')}>
+          Not here
+        </button>
+      </div>
+    </div>
+  )
+}
+
+// Hôm nay đã xong + các ngày trước, mới nhất trước; gộp lưu trữ lượt khám và lịch sử đơn, mỗi lượt lấy một lần.
 export function pastVisitsOf(patientId, { visits = [], archive = [], history = [], exclude } = {}) {
   if (!patientId) return []
   const seen = new Set()
@@ -102,9 +143,8 @@ export function pastVisitsOf(patientId, { visits = [], archive = [], history = [
     .filter((v) => !seen.has(v.id) && seen.add(v.id))
 }
 
-// Hồ sơ bệnh lý sơ lược — xem trước khi mời bệnh nhân vào phòng.
 export function PatientBrief({ v, past }) {
-  const p = findPatient(v.patientId) ?? v
+  const p = v
   const last = past[0]
   return (
     <div className="brief">
@@ -140,9 +180,10 @@ export function PatientBrief({ v, past }) {
   )
 }
 
-// Một phiếu chỉ định xét nghiệm kèm kết quả từng dòng (chỉ xem).
+// Phiếu từ server có kết luận riêng (order.conclusion) và dòng đã huỷ.
 export function LabOrderResults({ order, summary }) {
   const rows = labRows(order)
+  const conclusion = summary || order.conclusion
   return (
     <div className="lab-res">
       <div className="lab-res-head">
@@ -155,30 +196,29 @@ export function LabOrderResults({ order, summary }) {
       <table className="dt lab-res-table">
         <tbody>
           {rows.map((r) => (
-            <tr key={r.key}>
-              <td>{r.name}</td>
-              <td className={r.result ? '' : 'ai-soft'}>{r.result || translate('No result yet')}</td>
+            <tr key={r.key} className={r.cancelled ? 'ai-dim' : ''}>
+              <td>{r.cancelled ? <s>{r.name}</s> : r.name}</td>
+              <td className={r.result ? '' : 'ai-soft'}>{r.cancelled ? translate('Cancelled — not done') : r.result || translate('No result yet')}</td>
             </tr>
           ))}
         </tbody>
       </table>
-      {summary && (
+      {conclusion && (
         <p className="lab-res-sum">
-          <b>{translate('Conclusion')}:</b> {summary}
+          <b>{translate('Conclusion')}:</b> {conclusion}
         </p>
       )}
     </div>
   )
 }
 
-// Trả bệnh nhân về hàng chờ (backend: PATCH /visits/{id}/release) — bác sĩ khác nhận lại từ hàng chờ chung.
-// draft: phiếu khám đang viết dở (nếu có) — đi kèm lượt khám để người sau đọc tiếp.
-export function ReleaseModal({ visit, draft, onClose, onDone }) {
+// Bác sĩ khác nhận lại từ hàng chờ chung.
+export function ReleaseModal({ visit, onClose, onDone }) {
   const { user } = useAuth()
   const { showToast } = useToast()
   async function submit() {
-    const r = await releaseVisit(visit.id, { draft: draft ?? getDraft(visit.id) ?? null }, user)
-    if (!r.ok) return showToast(translate(r.error))
+    const r = await releaseVisit(visit.id, user)
+    if (!r.ok) return showToast(translate(r.error), 'error')
     deleteDraft(visit.id)
     showToast('Returned to the waiting queue')
     onDone?.()
@@ -203,15 +243,15 @@ export function ReleaseModal({ visit, draft, onClose, onDone }) {
   )
 }
 
-// Đóng lượt khám khi bệnh nhân bỏ về / không quay lại sau xét nghiệm / từ chối khám — bắt buộc lý do, lưu kèm ghi chép đã viết.
-export function LeaveVisitModal({ visit, draft, onClose, onDone }) {
+// Bắt buộc lý do.
+export function LeaveVisitModal({ visit, onClose, onDone }) {
   const { user } = useAuth()
   const { showToast } = useToast()
   const [reason, setReason] = useState(visit.labOut ? 'no_return' : 'left_exam')
   const [note, setNote] = useState('')
   async function submit() {
-    const r = await leaveVisit(visit.id, { reason, note, draft: draft ?? getDraft(visit.id) ?? null }, user)
-    if (!r.ok) return showToast(translate(r.error))
+    const r = await leaveVisit(visit.id, { reason, note }, user)
+    if (!r.ok) return showToast(translate(r.error), 'error')
     deleteDraft(visit.id)
     showToast('Visit closed — your notes were kept in the patient’s history')
     onDone?.()

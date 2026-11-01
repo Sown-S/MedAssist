@@ -4,10 +4,11 @@ rule_key: rf_cauda_equina_cord_compression
 rule_name: 'Cờ đỏ: Hội chứng đuôi ngựa hoặc chèn ép tủy cấp'
 rule_type: RED_FLAG
 resulting_priority: Emergency
-source_key: moh_qd_1327_2014
-source_edition: Quyết định số 1327/QĐ-BYT
+source_key: moh_qd_361_2014
+source_edition: Quyết định số 361/QĐ-BYT
 reason_text: 'CẤP CỨU: Bệnh nhân có dấu hiệu hội chứng đuôi ngựa (rối loạn cơ tròn,
-  bí tiểu, tê vùng yên ngựa), cần hội chẩn ngoại thần kinh khẩn.'
+  bí tiểu, tê vùng yên ngựa theo QĐ 361/QĐ-BYT bài Đau thần kinh tọa mục 4.2.4), cần
+  hội chẩn ngoại thần kinh khẩn.'
 condition_logic:
   type: symptom
   symptom_code: sym_cauda_equina
@@ -15,4 +16,4 @@ condition_logic:
 ---
 
 # Cờ đỏ: Hội chứng đuôi ngựa hoặc chèn ép tủy cấp
-CẤP CỨU: Bệnh nhân có dấu hiệu hội chứng đuôi ngựa (rối loạn cơ tròn, bí tiểu, tê vùng yên ngựa), cần hội chẩn ngoại thần kinh khẩn.
+CẤP CỨU: Bệnh nhân có dấu hiệu hội chứng đuôi ngựa (rối loạn cơ tròn, bí tiểu, tê vùng yên ngựa theo QĐ 361/QĐ-BYT bài Đau thần kinh tọa mục 4.2.4), cần hội chẩn ngoại thần kinh khẩn.

@@ -281,7 +281,9 @@ def patient_history(db: Session, patient_id: uuid.UUID, *, limit: int, offset: i
                             "confirmed_at": rx[0].confirmed_at, "item_count": len(lines), "items": lines}
         items.append({"visit_id": v.visit_id, "visit_date": v.visit_date, "status": v.status,
                       "chief_complaint": v.chief_complaint, "triage_priority": v.triage_priority,
-                      "is_red_flag": v.is_red_flag, "physician_name": names.get(v.physician_id),
+                      "is_red_flag": v.is_red_flag, "outcome": v.outcome,
+                      "referral_facility": (v.referral or {}).get("facility_name"),
+                      "physician_name": names.get(v.physician_id),
                       "diagnoses": dx_by_visit[v.visit_id], "prescription": prescription})
     return {"patient": patient, "total": total, "limit": limit, "offset": offset, "items": items}
 

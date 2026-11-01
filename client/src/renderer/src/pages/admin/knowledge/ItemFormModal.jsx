@@ -4,7 +4,7 @@ import { translate } from '../../../i18n'
 import { putDraft, SLUG_RE, KEY_MAX, RULE_PREFIX } from '../../../api/knowledgeApi'
 import { KIND_META, LogicEditor, LogicView, cleanLogic, logicProblem, errorText, usableCodes } from './shared'
 
-// Giá trị form ban đầu: sửa = nội dung bản mới nhất còn hiệu lực (nháp hoặc đang dùng); thêm = trống.
+// Sửa = nội dung bản mới nhất còn hiệu lực (nháp hoặc đang dùng); thêm = trống.
 function initial(kind, base, sources) {
   const v = base?.values ?? {}
   const src = v.source_id ?? sources[0]?.source_id ?? ''
@@ -30,7 +30,7 @@ function initial(kind, base, sources) {
 
 const opt = (s) => (s?.trim() ? s.trim() : null)
 
-// Thân request đúng schema server (SymptomDraft, ConditionDraft, ...): bỏ trống -> null, số -> số.
+// Đúng schema của server: bỏ trống → null, số → số.
 function bodyOf(kind, f) {
   switch (kind) {
     case 'symptoms':
@@ -70,7 +70,7 @@ function problem(kind, key, f, creating) {
   return null
 }
 
-// group: dòng trong bảng (null = thêm mới). Lưu = tạo / cập nhật bản nháp trong bản phát hành đang mở.
+// group = null: thêm mới. Lưu = tạo / cập nhật bản nháp trong bản phát hành đang mở.
 export default function ItemFormModal({ open, kind, group, data, names, onClose, onSaved }) {
   const creating = !group
   const base = group ? (group.open ?? group.active ?? group.latest) : null
@@ -251,7 +251,6 @@ export default function ItemFormModal({ open, kind, group, data, names, onClose,
                   onChange={(e) => {
                     const t = e.target.value
                     set({ rule_type: t })
-                    // Đổi loại lúc tạo mới: đổi luôn tiền tố mã (rf_ / pf_).
                     setKey((k) => RULE_PREFIX[t] + k.replace(/^(rf_|pf_)/, ''))
                   }}
                 >

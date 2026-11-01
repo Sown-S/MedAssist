@@ -4,9 +4,7 @@ import Button from './Button'
 import { translate } from '../i18n'
 import { getBaseUrl, setBaseUrl, subscribeBaseUrl, normalizeUrl } from '../api/serverConfig'
 
-// Ô khai báo địa chỉ Server của phòng khám cho MÁY NÀY (màn đăng nhập và Cài đặt › Kết nối) — bản gọn, cùng tông giao diện.
-// "Kiểm tra" gọi GET /health; vẫn lưu được khi chưa kết nối (VD Server đang khởi động).
-// status: idle | checking | ok | fail
+// Địa chỉ server của máy này (màn đăng nhập và Cài đặt › Kết nối). Vẫn lưu được khi chưa kết nối (VD server đang khởi động).
 export default function ServerAddress({ onSaved, onClose }) {
   const current = useSyncExternalStore(subscribeBaseUrl, getBaseUrl)
   const [value, setValue] = useState(current)

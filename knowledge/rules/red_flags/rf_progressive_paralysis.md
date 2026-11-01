@@ -4,10 +4,11 @@ rule_key: rf_progressive_paralysis
 rule_name: 'Cờ đỏ: Yếu liệt chi tiến triển nhanh'
 rule_type: RED_FLAG
 resulting_priority: Emergency
-source_key: moh_qd_1327_2014
-source_edition: Quyết định số 1327/QĐ-BYT
+source_key: moh_qd_361_2014
+source_edition: Quyết định số 361/QĐ-BYT
 reason_text: 'CẤP CỨU: Bệnh nhân có yếu liệt chi tiến triển nhanh hoặc liệt hai chi
-  dưới, cần khám cấp cứu thần kinh - cột sống ngay.'
+  dưới (QĐ 361/QĐ-BYT bài Đau thần kinh tọa & Hội chứng cổ vai cánh tay), cần khám
+  cấp cứu thần kinh - cột sống ngay.'
 condition_logic:
   type: symptom
   symptom_code: sym_progressive_paralysis
@@ -15,4 +16,4 @@ condition_logic:
 ---
 
 # Cờ đỏ: Yếu liệt chi tiến triển nhanh
-CẤP CỨU: Bệnh nhân có yếu liệt chi tiến triển nhanh hoặc liệt hai chi dưới, cần khám cấp cứu thần kinh - cột sống ngay.
+CẤP CỨU: Bệnh nhân có yếu liệt chi tiến triển nhanh hoặc liệt hai chi dưới (QĐ 361/QĐ-BYT bài Đau thần kinh tọa & Hội chứng cổ vai cánh tay), cần khám cấp cứu thần kinh - cột sống ngay.

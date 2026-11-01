@@ -1,10 +1,7 @@
-/* Biến màu (dark glass), reset, body, font, thanh cuộn */
+/* Biến màu, reset, font, thanh cuộn */
 
 :root{
-  /* ===== Reskin theo phong cách "dark glass" của dhruvpatel16120/clinic-management-system =====
-     (bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900, card = bg-white/5 + backdrop-blur-xl
-     + border-white/10, input cùng tông, nút màu đặc blue/green/red, accent cyan #22d3ee từ chính
-     tailwind.config.js của họ). Mọi TÊN biến giữ nguyên để không phải sửa bất kỳ component nào. */
+  /* Phong cách “dark glass” (tham khảo dhruvpatel16120/clinic-management-system). Tên biến giữ nguyên để component không phải sửa. */
   --bg-solid:#0f172a;
   --surface:rgba(255,255,255,.05);
   --surface-alt:rgba(255,255,255,.08);
@@ -38,7 +35,7 @@ body{
 }
 h1,h2,h3,.display{font-family:'Plus Jakarta Sans Variable',sans-serif;}
 .mono{font-family:'IBM Plex Mono',monospace;letter-spacing:0.02em;}
-/* Nền tối cho cả khung cửa sổ + thanh cuộn tông tối: không để lộ dải trắng ở mép phải khi trang dài phải cuộn. */
+/* Nền tối cho cả khung cửa sổ và thanh cuộn: không lộ dải trắng ở mép phải khi trang phải cuộn. */
 html{background:#0F172A;color-scheme:dark;}
 ::-webkit-scrollbar{width:7px;height:7px;}
 ::-webkit-scrollbar-track,::-webkit-scrollbar-corner{background:transparent;}

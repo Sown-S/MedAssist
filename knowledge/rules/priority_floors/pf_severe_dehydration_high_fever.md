@@ -5,10 +5,11 @@ rule_name: 'Sàn ưu tiên cao: Sốt rất cao >= 39°C kèm dấu hiệu mất
   niêm mạc'
 rule_type: PRIORITY_FLOOR
 resulting_priority: HighPriority
-source_key: moh_qd_1327_2014
-source_edition: Quyết định số 1327/QĐ-BYT
-reason_text: 'ƯU TIÊN CAO: Bệnh nhân sốt cao >= 39°C (ngưỡng cảnh báo theo QĐ 292/QĐ-BYT)
-  hoặc có dấu hiệu mất nước, nôn nhiều, chấm xuất huyết, cần ưu tiên khám sớm.'
+source_key: moh_qd_292_2024
+source_edition: Quyết định số 292/QĐ-BYT
+reason_text: 'ƯU TIÊN CAO: Bệnh nhân sốt cao >= 39°C hoặc có dấu hiệu mất nước, nôn
+  nhiều, chấm xuất huyết (ngưỡng cảnh báo biến chứng theo QĐ 292/QĐ-BYT mục II.6.2.1
+  & III.3.1), cần ưu tiên khám sớm.'
 condition_logic:
   op: OR
   args:
@@ -30,4 +31,4 @@ condition_logic:
 ---
 
 # Sàn ưu tiên cao: Sốt rất cao >= 39°C kèm dấu hiệu mất nước hoặc xuất huyết niêm mạc
-ƯU TIÊN CAO: Bệnh nhân sốt cao >= 39°C (ngưỡng cảnh báo theo QĐ 292/QĐ-BYT) hoặc có dấu hiệu mất nước, nôn nhiều, chấm xuất huyết, cần ưu tiên khám sớm.
+ƯU TIÊN CAO: Bệnh nhân sốt cao >= 39°C hoặc có dấu hiệu mất nước, nôn nhiều, chấm xuất huyết (ngưỡng cảnh báo biến chứng theo QĐ 292/QĐ-BYT mục II.6.2.1 & III.3.1), cần ưu tiên khám sớm.

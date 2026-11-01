@@ -1,8 +1,7 @@
 import { VI, PATTERNS } from './vi'
 
-// Mã nguồn viết chuỗi giao diện bằng tiếng Anh; khi chọn tiếng Việt, mọi chuỗi được dịch ngay lúc
-// tạo phần tử JSX (xem jsx-runtime.js) — nên các trang KHÔNG phải gọi t() ở từng chỗ.
-// Thêm/sửa bản dịch: chỉ sửa vi.js.
+// Mã nguồn viết chuỗi giao diện bằng tiếng Anh; khi chọn tiếng Việt, chuỗi được dịch ngay lúc tạo phần tử JSX
+// (jsx-runtime.js), nên trang không phải gọi translate() ở từng chỗ. Bản dịch nằm trong vi.js.
 const KEY = 'medassist_lang'
 export const LANGUAGES = [
   { code: 'en', name: 'English' },
@@ -17,13 +16,10 @@ function readSaved() {
   }
 }
 
-// Trạng thái đặt trên globalThis để JSX runtime (jsx-runtime.js, được Vite đóng gói riêng khi chạy dev)
-// dùng chung ngôn ngữ và hàm dịch với module này.
+// Trạng thái đặt trên globalThis để jsx-runtime (được Vite đóng gói riêng khi chạy dev) dùng chung với module này.
 const store = (globalThis.__medassistI18n ??= { lang: readSaved(), listeners: new Set(), rev: 0 })
 document.documentElement.lang = store.lang
-// Bảng dịch dùng chung: dịch chuỗi JSX (localizeProps) và translate() luôn đọc CÙNG một bảng — bảng mới nhất.
-// Trước đây mỗi bản nạp của module giữ VI riêng trong closure; khi chạy dev, sau vài lần cập nhật nóng (HMR)
-// hai đường dịch có thể dùng hai bản vi.js khác nhau → chuỗi mới thêm chỉ dịch được một nửa giao diện.
+// Hai đường dịch (JSX và translate) luôn đọc cùng một bảng — tránh việc sau cập nhật nóng mỗi đường giữ một bản vi.js.
 store.tables = { VI, PATTERNS }
 store.rev ??= 0
 
@@ -35,13 +31,10 @@ export function setLang(next) {
   store.lang = next
   try {
     localStorage.setItem(KEY, next)
-  } catch {
-    /* không lưu được thì chỉ áp dụng cho phiên này */
-  }
+  } catch {/* không lưu được thì chỉ áp dụng cho phiên này */}
   document.documentElement.lang = next
   store.listeners.forEach((fn) => fn())
 }
-// Khoá dựng lại giao diện: đổi khi đổi ngôn ngữ hoặc khi vi.js được cập nhật lúc chạy dev.
 export function getRenderKey() {
   return store.lang + ':' + store.rev
 }
@@ -66,8 +59,7 @@ export function translate(s) {
 
 const TEXT_PROPS = ['placeholder', 'title', 'aria-label', 'defaultValue']
 
-// Dịch phần chữ của 1 thẻ HTML: nội dung con dạng chuỗi + vài thuộc tính hiển thị.
-// Không đụng tới `value` của ô nhập đang sửa được (đó là dữ liệu người dùng gõ).
+// Không dịch `value` của ô nhập — đó là dữ liệu người dùng gõ.
 export function localizeProps(type, props) {
   if (store.lang === 'en' || typeof type !== 'string' || !props) return props
   let out = null
@@ -103,7 +95,7 @@ export function localizeProps(type, props) {
 
 store.localizeProps = localizeProps
 
-// Chạy dev: sửa vi.js → nạp bảng dịch mới và dựng lại giao diện tại chỗ (không tải lại trang, không mất phiên đăng nhập).
+// Sửa vi.js khi chạy dev → nạp bảng dịch mới và dựng lại tại chỗ, không mất phiên đăng nhập.
 if (import.meta.hot) {
   import.meta.hot.accept('./vi', (m) => {
     if (!m) return

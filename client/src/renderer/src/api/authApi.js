@@ -1,12 +1,7 @@
-// Đăng nhập / đăng xuất / tự đổi mật khẩu — một chỗ cho cả hai chế độ (công tắc USE_MOCK trong client.js):
-//  - Demo: tài khoản giả lập trong accountStore (localStorage), khoá tài khoản mô phỏng ở client;
-//  - API thật: POST /auth/login → access + refresh token (giữ bằng tokenStore), GET /auth/me lấy họ tên và vai trò.
-//    Đếm sai mật khẩu và khoá do server làm (429 RATE_LIMITED); đổi mật khẩu thì server thu hồi mọi token cũ.
-import { apiGet, apiPost, ApiError, DEMO_MODE } from './client'
+// Đăng nhập / đăng xuất / đổi mật khẩu: POST /auth/login lấy token, GET /auth/me lấy họ tên và vai trò; khoá khi sai mật khẩu (429) và thu hồi token khi đổi mật khẩu do server làm.
+import { apiGet, apiPost, ApiError } from './client'
 import { tokenStore } from './serverConfig'
-import { verifyLogin, changeOwnPassword } from './accountStore'
 
-// Vai trò của server (users.role) ↔ khoá vai trò của client.
 const ROLE_OF = { Physician: 'doctor', Nurse: 'reception', Admin: 'admin' }
 
 function errorText(e) {
@@ -17,13 +12,12 @@ function errorText(e) {
   }
   if (e.code === 'UNAUTHORIZED') return 'Incorrect username or password.'
   if (e.code === 'WRONG_PASSWORD') return 'The current password is incorrect.'
-  // Lỗi kiểm tra dữ liệu: câu tiếng Việt của server cho đúng ô sai (vd mật khẩu mới quá ngắn).
+  // Lỗi kiểm tra dữ liệu: lấy câu tiếng Việt của server cho đúng ô sai.
   return e.details?.[0]?.message ?? e.message
 }
 
-// Trả về { ok, account: { id, username, fullName, roleKey, mustChange } } như verifyLogin của bản demo.
+// Trả { ok, account } hoặc { ok: false, error }.
 export async function login(username, password, roleKey) {
-  if (DEMO_MODE) return verifyLogin(username, password, roleKey)
   await tokenStore.clear()
   try {
     const t = await apiPost('/api/v1/auth/login', { username: username.trim(), password })
@@ -36,7 +30,6 @@ export async function login(username, password, roleKey) {
       fullName: me.full_name,
       roleKey: ROLE_OF[me.role],
       mustChange: !!me.must_change_password,
-      // Bác sĩ khám cố định ở phòng này (Admin gán ở Tài khoản nhân viên)
       roomId: me.room_id ?? null,
       roomCode: me.room_code ?? '',
       roomName: me.room_name ?? ''
@@ -53,18 +46,14 @@ export async function login(username, password, roleKey) {
 }
 
 export async function logout() {
-  if (DEMO_MODE) return
   try {
     await apiPost('/api/v1/auth/logout')
-  } catch {
-    /* token đã hết hạn hoặc mất mạng: vẫn xoá token trên máy */
-  }
+  } catch {/* token hết hạn hoặc mất mạng: vẫn xoá token trên máy */}
   await tokenStore.clear()
 }
 
-// Sau khi đổi thành công, phiên hiện tại hết hiệu lực — trang gọi phải đưa người dùng về màn đăng nhập.
+// Đổi thành công thì phiên hiện tại hết hiệu lực — nơi gọi phải đưa người dùng về màn đăng nhập.
 export async function changePassword(user, oldPassword, newPassword) {
-  if (DEMO_MODE) return changeOwnPassword(user.id, newPassword, oldPassword)
   try {
     await apiPost('/api/v1/auth/change-password', { old_password: oldPassword, new_password: newPassword })
   } catch (e) {

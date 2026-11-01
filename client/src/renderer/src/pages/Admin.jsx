@@ -3,9 +3,7 @@ import { useAuth } from '../context/AuthContext'
 import Modal, { ModalHeader } from '../components/Modal'
 import AdminSidebar from '../components/AdminSidebar'
 import DashboardPage from './admin/DashboardPage'
-import PatientsPage from './admin/PatientsPage'
-import InvoicesPage from './admin/InvoicesPage'
-import AIConfigPage from './admin/AIConfigPage'
+import KnowledgeLive from './admin/knowledge/KnowledgeLive'
 import InventoryPage from './admin/InventoryPage'
 import CatalogPage from './admin/CatalogPage'
 import DrugCatalogPage from './admin/DrugCatalogPage'
@@ -16,13 +14,9 @@ import SettingsPage from './admin/SettingsPage'
 import RoadmapPage from './admin/RoadmapPage'
 import RoomsPage from './admin/RoomsPage'
 
-// Bảng tra "id trang" -> component, thay cho 12 khối <div class="admin-page" id="page-xxx">
-// ẩn/hiện bằng CSS trong bản HTML gốc. Giờ chỉ 1 component được render tại 1 thời điểm.
 const PAGES = {
   dash: DashboardPage,
-  patients: PatientsPage,
-  invoices: InvoicesPage,
-  ai: AIConfigPage,
+  ai: KnowledgeLive,
   inventory: InventoryPage,
   catalog: CatalogPage,
   drugs: DrugCatalogPage,
@@ -35,13 +29,12 @@ const PAGES = {
 
 export default function Admin() {
   const { user } = useAuth()
-  // Bác sĩ đăng nhập bằng tài khoản của mình chỉ thấy mục "Duyệt tri thức" (server ghi đúng người duyệt).
+  // Bác sĩ vào khu Admin bằng tài khoản của mình chỉ thấy mục Duyệt tri thức (server ghi đúng người duyệt).
   const reviewer = user?.roleKey === 'doctor'
   const [page, setPage] = useState(reviewer ? 'ai-review' : 'dash')
-  // params: dữ liệu kèm khi chuyển trang.
   const [params, setParams] = useState(null)
   const Current = PAGES[page] ?? (page.startsWith('cat-') ? CatalogDetailPage : DashboardPage)
-  // Trang có thay đổi chưa lưu (VD Cài đặt) đăng ký 1 hàm trả về true khi "đang dở" → hỏi trước khi rời trang.
+  // Trang có thay đổi chưa lưu đăng ký một hàm trả true khi đang dở → hỏi trước khi rời trang.
   const leaveGuard = useRef(null)
   const [pendingNav, setPendingNav] = useState(null)
   function go(id, p) {
@@ -55,11 +48,10 @@ export default function Admin() {
     go(id, p)
   }
 
-  // Bác sĩ chỉ có 1 việc ở khu này (duyệt tri thức) → không cần menu trái, trang rộng như các màn của bác sĩ.
   if (reviewer)
     return (
       <div className="page">
-        <AIConfigPage reviewOnly />
+        <KnowledgeLive reviewOnly />
       </div>
     )
 

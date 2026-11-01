@@ -1,5 +1,5 @@
 // Danh mục dịch vụ, xét nghiệm, gói khám và phiếu chỉ định cận lâm sàng trên server (ERD v2.1).
-// Chỉ dùng khi tắt giả lập. Hóa đơn tự có dòng cận lâm sàng từ chỉ định; GET hóa đơn trả thêm
+// Hóa đơn tự có dòng cận lâm sàng từ chỉ định; GET hóa đơn trả thêm
 // unbilled_items = chỉ định ngoài danh mục chưa có giá, quầy thêm tay.
 import { apiGet, apiPost, apiRequest } from './client'
 

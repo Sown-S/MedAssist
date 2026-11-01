@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 
-// Chống "chớp" của spinner/skeleton: chỉ bật khi `on` kéo dài quá `delay` ms (thao tác nhanh thì không hiện gì),
-// và một khi đã hiện thì giữ ít nhất `minShow` ms để mắt kịp thấy thay vì loé lên rồi tắt.
+// Chống “chớp”: chỉ hiện khi `on` kéo dài quá `delay` ms, đã hiện thì giữ ít nhất `minShow` ms.
 export function useDelayedFlag(on, delay = 300, minShow = 400) {
   const [shown, setShown] = useState(false)
   const since = useRef(0)

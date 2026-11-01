@@ -1,6 +1,6 @@
 ---
 schema: okf_spec_v1
-label: KB-2026.03
+label: KB-2026.05
 description: Đặc tả định dạng OKF, quy ước mã slug bất biến, 8 khóa sinh hiệu chuẩn,
   cấu trúc condition_logic và thứ tự nạp của MedAssist.
 ---
@@ -42,12 +42,7 @@ Trường `condition_logic` trong các file luật `rf_*.md` và `pf_*.md` biể
      8. `height_cm` — Chiều cao (cm)
    - `cmp`: Toán tử so sánh thuộc tập `["<", "<=", ">", ">=", "=="]`.
    - `value`: Giá trị số hữu hạn (`int` hoặc `float`).
-3. **Lá Nhóm tuổi (`type: "age"`)**:
-   - `type`: `"age"`
-   - `unit`: Nhận `"years"` (năm tuổi) hoặc `"months"` (tháng tuổi).
-   - `cmp`: Toán tử so sánh thuộc tập `["<", "<=", ">", ">=", "=="]`.
-   - `value`: Giá trị số hữu hạn.
-   - **Tách ngưỡng sinh hiệu theo lứa tuổi**: Kết hợp `AND` giữa lá `type: "age"` (nhũ nhi `< 1` tuổi, trẻ nhỏ `1 - 12` tuổi, trẻ lớn & người lớn `>= 12` tuổi) với các lá `vital` (`heart_rate_bpm`, `respiratory_rate_bpm`, `systolic_bp_mmhg`) theo hướng dẫn Bộ Y tế để trẻ nhũ nhi (nhịp tim sinh lý 120–160 lần/phút) không bị gắn cờ đỏ sai.
+   - **Tách ngưỡng sinh hiệu theo nhóm tuổi/cân nặng**: Kết hợp `AND` giữa lá `vital: "weight_kg"` (nhũ nhi `< 10 kg`, trẻ nhỏ `10 - 25 kg`, trẻ lớn & người lớn `>= 25 kg`) với lá `heart_rate_bpm`, `respiratory_rate_bpm`, `systolic_bp_mmhg` theo hướng dẫn của Bộ Y tế để trẻ nhũ nhi (nhịp tim bình thường 120–160 lần/phút) không bị gắn cờ đỏ sai.
 
 ## 3. Thứ tự Nạp Tri thức vào Cơ sở dữ liệu (`import_okf.py`)
 Để đảm bảo toàn vẹn khóa ngoại (`FOREIGN KEY`) và kiểm tra tính đóng qua `v_knowledge_integrity_issues`, trình nạp (`server/scripts/import_okf.py`) bắt buộc nạp theo thứ tự **triệu chứng và bệnh trước, quan hệ sau** trong cùng một giao dịch (transaction):

@@ -3,10 +3,14 @@ import Icon from '../../components/Icon'
 import { translate } from '../../i18n'
 import { getHistory, getVisitRecord, VISIT_STATUS_LABEL, PRIORITY_LABEL } from '../../api/emrApi'
 import { vitalsText } from '../../api/vitals'
+import { toLabOrder } from '../../api/serviceStore'
+import { LabOrderResults } from './doctorShared'
+import DocumentModal from './DocumentModal'
+import { useAuth } from '../../context/AuthContext'
+import { ageFrom } from '../../api/clinicApi'
 
-// Lịch sử khám của một bệnh nhân lấy từ server (FR04): mỗi lượt có chẩn đoán đã xác nhận và tóm tắt đơn thuốc;
-// bấm vào một lượt để xem đầy đủ (sinh hiệu, lời kể, ghi chú lâm sàng, liều dùng, hóa đơn). Dùng ở Tra cứu hồ sơ
-// và trong phiếu khám (excludeVisitId = lượt đang khám). onLoaded(history) để trang cha lấy thông tin bệnh nhân.
+// Lịch sử khám từ server (FR04); bấm một lượt để xem đầy đủ. excludeVisitId = lượt đang khám;
+// onLoaded(history) để trang cha lấy thông tin bệnh nhân.
 const PAGE = 10
 const fmt = (iso) => (iso ? new Date(iso).toLocaleString('vi-VN', { dateStyle: 'short', timeStyle: 'short' }) : '—')
 const money = (n) => (Number(n) || 0).toLocaleString('vi-VN') + 'đ'
@@ -59,6 +63,12 @@ export default function ServerHistory({ patientId, excludeVisitId, onLoaded }) {
             <button className="emr-visit-head" onClick={() => setOpen(open === v.visit_id ? null : v.visit_id)}>
               <span className="mono ai-small">{fmt(v.visit_date)}</span>
               <span className={'badge ' + (TONE[v.status] ?? '')}>{translate(VISIT_STATUS_LABEL[v.status] ?? v.status)}</span>
+              {v.outcome === 'Referred' && (
+                <span className="badge low">
+                  {translate('Referred')}
+                  {v.referral_facility ? ' → ' + v.referral_facility : ''}
+                </span>
+              )}
               {v.is_red_flag && <span className="badge low">Red flag</span>}
               {v.triage_priority && v.triage_priority !== 'Routine' && !v.is_red_flag && <span className="badge warn">{translate(PRIORITY_LABEL[v.triage_priority] ?? v.triage_priority)}</span>}
               <span className="emr-dx">
@@ -92,6 +102,57 @@ export default function ServerHistory({ patientId, excludeVisitId, onLoaded }) {
           Show older visits
         </button>
       )}
+    </div>
+  )
+}
+
+// Lượt kết thúc bằng chuyển tuyến: tóm tắt giấy, in lại; bác sĩ bổ sung giấy.
+const TRANSPORT_LABEL = { Ambulance: 'Ambulance', Family: 'Family vehicle', Self: 'On their own', Other: 'Other' }
+function ReferralBox({ record, onSaved }) {
+  const { user } = useAuth()
+  const [open, setOpen] = useState(false)
+  const v = record.visit
+  const f = v.referral
+  const p = record.patient ?? {}
+  const doctor = user?.roleKey === 'doctor'
+  const subject = {
+    name: p.full_name ?? '',
+    gender: p.gender,
+    age: p.date_of_birth ? ageFrom(p.date_of_birth) : '',
+    patientId: p.patient_code,
+    allergies: p.allergy_notes,
+    referral: f
+  }
+  return (
+    <div className="emr-referral">
+      <div className="emr-referral-head">
+        <span className="badge low">
+          <Icon name="ban" /> {translate('Referred')}
+        </span>
+        <b>{f.facility_name}</b>
+        <span className="ai-small ai-soft">
+          {f.reason}
+          {f.transport ? ' · ' + translate(TRANSPORT_LABEL[f.transport] ?? f.transport) : ''}
+        </span>
+        <button className="btn btn-ghost btn-sm" onClick={() => setOpen(true)}>
+          <Icon name="printer" /> {translate(doctor ? 'Amend / reprint' : 'Reprint')}
+        </button>
+      </div>
+      {f.diagnosis && (
+        <div className="ai-small">
+          <span>Diagnosis</span>: {f.diagnosis}
+        </div>
+      )}
+      {f.signs && (
+        <div className="ai-small">
+          <span>Warning signs</span>: {f.signs}
+        </div>
+      )}
+      <div className="ai-small ai-soft">
+        {translate(f.referred_by_role === 'Nurse' ? 'Recorded by' : 'Doctor')} {f.referred_by_name} · {fmt(f.referred_at)}
+        {f.amended_by_name ? ' · ' + translate('amended by') + ' ' + f.amended_by_name + ' ' + fmt(f.amended_at) : ''}
+      </div>
+      {open && <DocumentModal subject={subject} mode={doctor ? 'amend' : 'reprint'} target={{ visitId: v.visit_id }} onDone={onSaved} onClose={() => setOpen(false)} />}
     </div>
   )
 }
@@ -130,6 +191,7 @@ function VisitDetail({ visitId }) {
           <b>Red flag:</b> {v.red_flag_reason}
         </div>
       )}
+      {v.outcome === 'Referred' && v.referral && <ReferralBox record={r} onSaved={() => getVisitRecord(visitId).then(setR, () => {})} />}
 
       <div className="section-label">Diagnoses</div>
       {r.diagnoses.length ? (
@@ -142,6 +204,16 @@ function VisitDetail({ visitId }) {
         ))
       ) : (
         <p className="ai-soft ai-small">No diagnosis recorded.</p>
+      )}
+
+      {/* Phiếu chỉ định và kết quả bác sĩ ghi từ phiếu giấy. */}
+      {(r.service_orders ?? []).length > 0 && (
+        <>
+          <div className="section-label">Lab tests &amp; diagnostics</div>
+          {r.service_orders.map((o) => (
+            <LabOrderResults key={o.order_id} order={toLabOrder(o)} />
+          ))}
+        </>
       )}
 
       <div className="section-label">Prescription</div>
