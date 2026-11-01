@@ -383,17 +383,20 @@ def _queue_rows(db: Session, *where, order_by=None) -> list[dict]:
                                            "chief_complaint", "triage_priority", "is_red_flag",
                                            "red_flag_reason", "priority_raised_by_ai", "ai_status",
                                            "visit_date", "checked_in_at", "physician_id", "exam_started_at",
-                                           "lab_out_at", "called_at", "called_by")},
+                                           "lab_out_at", "called_at", "called_by", "finished_at", "outcome")},
+             "referred_by_role": (v.referral or {}).get("referred_by_role"),
              "patient_name": name, "date_of_birth": dob, "gender": gender, "physician_name": physician,
              "room": room, "room_name": room_name, "called_by_name": caller_name,
              "called_room": c_room, "called_room_name": c_room_name}
             for v, name, dob, gender, physician, room, room_name, caller_name, c_room, c_room_name in rows]
 
 
-def queue_today(db: Session) -> list[dict]:
+def queue_today(db: Session, include_closed: bool = False) -> list[dict]:
     # Lượt Examining của ngày trước vẫn hiện: khám vắt qua nửa đêm không được rơi khỏi phòng bác sĩ.
-    return _queue_rows(db, Visit.status.in_(QUEUE_VIEW_STATUSES),
-                       or_(Visit.queue_date == func.current_date(), Visit.status == "Examining"))
+    today = or_(Visit.queue_date == func.current_date(), Visit.status == "Examining")
+    if include_closed:
+        return _queue_rows(db, today)
+    return _queue_rows(db, Visit.status.in_(QUEUE_VIEW_STATUSES), today)
 
 
 def stale_open_visits(db: Session) -> list[dict]:

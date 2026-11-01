@@ -88,6 +88,20 @@ def test_nurse_refers_waiting_visit_and_emergency_at_desk(client, nurse, doctor,
     assert client.patch(f"/api/v1/visits/{eid}/referral", headers=nurse, json={"diagnosis": "x"}).status_code == 403
 
 
+def test_queue_include_closed_lists_finished_and_referred(client, nurse, doctor, prescribed, patient):
+    done, _ = prescribed([])
+    eid = client.post("/api/v1/visits/emergency-referral", headers=nurse, json={
+        "patient_id": patient(), "chief_complaint": "Khó thở nặng", "referral": REFERRAL}).json()["visit_id"]
+    assert _queue_item(client, nurse, done) is None and _queue_item(client, nurse, eid) is None
+
+    rows = {q["visit_id"]: q for q in client.get("/api/v1/queue?include_closed=true", headers=nurse).json()}
+    assert rows[done]["status"] == "Prescribed" and rows[done]["outcome"] is None
+    ref = rows[eid]
+    assert (ref["status"], ref["outcome"], ref["referred_by_role"]) == ("Finished", "Referred", "Nurse")
+    assert ref["finished_at"]
+    assert client.get("/api/v1/queue?include_closed=true", headers=doctor).status_code == 200
+
+
 def test_referral_validation_and_open_visit(client, nurse, patient):
     pid = patient()
     bad = client.patch(f"/api/v1/visits/{uuid.uuid4()}/refer", headers=nurse, json={"facility_name": "X"})
