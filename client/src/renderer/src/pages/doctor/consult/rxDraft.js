@@ -1,13 +1,23 @@
 import { translate } from '../../../i18n'
 import { VI } from '../../../i18n/vi'
 import { labRows } from '../../../api/queueStore'
-import { findDrugByName, stockOf, eligibleFor, daysLeft } from '../../../api/inventoryStore'
-import { soldOutside } from '../../../api/rxSafety'
 import { unitLabel } from '../../admin/inventory/shared'
-import { DEMO_MODE } from '../../../api/client'
 import { findServerDrug } from '../../../api/serverDrugs'
 import { getDraft, saveDraft } from '../../../api/draftStore'
 import { normalizeVitals, vitalsToForm } from '../../../api/vitals'
+
+// Đơn mẫu: tên thuốc khớp danh mục để tính tiền; cách dùng viết tiếng Việt vì đơn in cho bệnh nhân.
+const dose = (m, n, a, e, days, meal = 'after') => ({ m: m ? String(m) : '', n: n ? String(n) : '', a: a ? String(a) : '', e: e ? String(e) : '', days: String(days), meal })
+export const RX = {
+  throat: [
+    { name: 'Amoxicillin 500mg', qty: 20, unit: 'caps', usage: 'Sáng 1 viên nang, Tối 1 viên nang — uống sau ăn — 10 ngày', dose: dose(1, 0, 0, 1, 10) },
+    { name: 'Paracetamol 500mg', qty: 10, unit: 'tabs', usage: 'Uống khi sốt trên 38,5°C, cách nhau ít nhất 4–6 giờ' }
+  ],
+  gastric: [{ name: 'Omeprazol 20mg', qty: 14, unit: 'caps', usage: 'Sáng 1 viên nang — uống trước ăn — 14 ngày', dose: dose(1, 0, 0, 0, 14, 'before') }],
+  diabetes: [{ name: 'Metformin 500mg', qty: 60, unit: 'tabs', usage: 'Sáng 1 viên, Tối 1 viên — uống sau ăn — 30 ngày', dose: dose(1, 0, 0, 1, 30) }],
+  rash: [{ name: 'Loratadin 10mg', qty: 10, unit: 'tabs', usage: 'Tối 1 viên — 10 ngày', dose: dose(0, 0, 0, 1, 10, '') }],
+  pain: [{ name: 'Ibuprofen 400mg', qty: 10, unit: 'tabs', usage: 'Uống khi đau, sau ăn, tối đa 3 lần/ngày' }]
+}
 
 // Liều có cấu trúc: Sáng / Trưa / Chiều / Tối × số ngày → tự tính số lượng và câu cách dùng.
 export const SLOTS = [
@@ -38,25 +48,7 @@ export function usageOf(dose, unit) {
   return parts.join(', ') + (meal ? ` — uống ${meal}` : '') + (num(dose.days) ? ` — ${num(dose.days)} ngày` : '')
 }
 
-export function stockIssue(item, inv) {
-  const d = findDrugByName(item.name, inv.drugs)
-  if (!d) return null
-  // Thuốc N / H nhà thuốc không bán → bệnh nhân mua ngoài, không cần tồn ở đây.
-  if (soldOutside(d)) return { level: 'info', text: 'Bought at an outside pharmacy — not dispensed here' }
-  const need = parseInt(item.qty, 10) || 0
-  const s = stockOf(d, inv.batches)
-  if (!d.active) return { level: 'danger', text: 'Discontinued in the drug catalog' }
-  if (s.usable === 0 && s.expired > 0) return { level: 'danger', text: 'Only expired batches left — cannot be dispensed' }
-  if (s.usable === 0) return { level: 'danger', text: 'Out of stock' }
-  // Giống lúc trừ kho khi chốt đơn: chỉ tính lô còn hạn qua hết đợt dùng.
-  const days = Number(item.dose?.days) || 0
-  const ok = inv.batches.filter((b) => b.drugId === d.id && b.qty > 0 && daysLeft(b.expiry) >= 0 && eligibleFor(b, days)).reduce((n, b) => n + b.qty, 0)
-  if (need && ok < need && s.usable >= need) return { level: 'caution', text: 'Some batches expire before the course ends — not enough stock that stays valid', usable: ok, unit: d.unit }
-  if (s.usable < need) return { level: 'caution', text: 'Not enough stock', usable: s.usable, unit: d.unit }
-  return null
-}
-
-// Chạy thật: tồn lấy từ server (chỉ lô còn hạn); lô đủ hạn cho cả liệu trình do server kiểm khi xác nhận đơn.
+// Tồn lấy từ server (chỉ lô còn hạn); lô đủ hạn cho cả liệu trình do server kiểm khi xác nhận đơn.
 export function serverStockIssue(item, drugs) {
   const d = (item.drugId && drugs.find((x) => x.id === item.drugId)) || findServerDrug(item.name, drugs)
   if (!d) return drugs.length ? { level: 'danger', text: 'Not in the drug catalog on the server' } : null
@@ -72,7 +64,7 @@ let seq = 0
 export const nextLineId = () => 'r' + Date.now() + '-' + ++seq
 
 // drugId: id thuốc trên server; dòng chép từ đơn cũ / đơn mẫu không có thì tra theo tên lúc chốt.
-export const lineOf = (d) => ({ id: nextLineId(), drugId: DEMO_MODE ? undefined : d.id, name: d.name, qty: '', unit: d.unit, usage: '', essential: !!d.essential, dose: blankDose() })
+export const lineOf = (d) => ({ id: nextLineId(), drugId: d.id, name: d.name, qty: '', unit: d.unit, usage: '', essential: !!d.essential, dose: blankDose() })
 
 // Dòng thuốc → PrescriptionItemIn của server. Liều có cấu trúc: liều từng cữ + số lần / ngày + số ngày;
 // thuốc dùng khi cần: cách dùng ghi tay, số ngày tính từ số lượng nếu được. Trả { item } hoặc { error }.
@@ -112,7 +104,7 @@ export function initDraft(v) {
     rx: (v.rx ?? []).map((l, i) => ({ id: 'r' + i, name: l.name, qty: String(l.qty ?? ''), unit: l.unit, usage: l.usage ?? '', essential: !!l.essential, dose: { ...blankDose(), ...l.dose } })),
     vitals: vitalsToForm(normalizeVitals(v.vitals)),
     labResult: v.labResult ?? '',
-    // Chạy thật: kết luận theo từng phiếu { "<order_id>": kết luận } — chỉ giữ phiếu bác sĩ đang sửa.
+    // Kết luận theo từng phiếu { "<order_id>": kết luận } — chỉ giữ phiếu bác sĩ đang sửa.
     labConclusions: {},
     labResults: Object.fromEntries((v.labOrders ?? []).flatMap(labRows).map((r) => [r.key, r.result]))
   }

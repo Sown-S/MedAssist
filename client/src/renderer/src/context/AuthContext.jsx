@@ -1,14 +1,10 @@
 import { createContext, useContext, useEffect, useRef, useState } from 'react'
-import { ROLES, recordLogin, sessionStillValid } from '../api/accountStore'
+import { ROLES } from '../api/accountStore'
 import * as authApi from '../api/authApi'
-import { DEMO_MODE, setSessionExpiredHandler, setPasswordChangeRequiredHandler } from '../api/client'
-import { logEvent } from '../api/activityStore'
+import { setSessionExpiredHandler, setPasswordChangeRequiredHandler } from '../api/client'
 import { getSettings } from '../api/settingsStore'
 
 const AuthContext = createContext(null)
-
-// Chu kỳ kiểm tra lại phiên (bản demo).
-const SESSION_CHECK_MS = 5000
 
 export function toSessionUser(account) {
   const r = ROLES[account.roleKey]
@@ -32,26 +28,14 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
   const [notice, setNotice] = useState('') // lý do bị đăng xuất, hiện ở màn đăng nhập
 
-  // Chưa đặt user ở bước này để còn xử lý bắt buộc đổi mật khẩu. Chạy thật: vai trò lấy từ server,
-  // không tin vai trò chọn ở màn đăng nhập.
-  async function authenticate(username, password, roleKey) {
-    const res = await authApi.login(username, password, roleKey)
-    // Chạy thật: server tự ghi nhật ký đăng nhập.
-    if (!res.ok && DEMO_MODE)
-      logEvent({ name: username.trim() || '?', username: username.trim(), roleKey }, 'auth.login_failed', {
-        params: { username: username.trim(), reason: res.error },
-        result: 'failure'
-      })
-    return res
+  // Chưa đặt user ở bước này để còn xử lý bắt buộc đổi mật khẩu. Vai trò lấy từ server, không tin vai trò chọn ở màn
+  // đăng nhập; server tự ghi nhật ký đăng nhập.
+  function authenticate(username, password, roleKey) {
+    return authApi.login(username, password, roleKey)
   }
   function startSession(account) {
-    const u = toSessionUser(account)
-    if (DEMO_MODE) {
-      recordLogin(u.id)
-      logEvent(u, 'auth.login', { target: { kind: 'account', id: u.username, label: u.name } })
-    }
     setNotice('')
-    setUser(u)
+    setUser(toSessionUser(account))
   }
   function endSession(notice = '') {
     authApi.logout()
@@ -59,7 +43,6 @@ export function AuthProvider({ children }) {
     setUser(null)
   }
   function logout() {
-    if (user && DEMO_MODE) logEvent(user, 'auth.logout', { target: { kind: 'account', id: user.username, label: user.name } })
     endSession()
   }
   function signOutAfterPasswordChange() {
@@ -80,17 +63,6 @@ export function AuthProvider({ children }) {
     setPasswordChangeRequiredHandler(() => endSession('You need to change your password before continuing. Please sign in again.'))
   }, [])
 
-  // Bản demo không có server từ chối token nên kiểm tra định kỳ trong localStorage.
-  useEffect(() => {
-    if (!user || !DEMO_MODE) return
-    const t = setInterval(() => {
-      if (sessionStillValid(user.id, user.sessionVersion)) return
-      setNotice('Your session was ended by an administrator. Please sign in again.')
-      setUser(null)
-    }, SESSION_CHECK_MS)
-    return () => clearInterval(t)
-  }, [user])
-
   // Tự đăng xuất khi không thao tác — máy phòng khám dùng chung, có dữ liệu bệnh nhân.
   const lastActive = useRef(Date.now())
   useEffect(() => {
@@ -102,7 +74,6 @@ export function AuthProvider({ children }) {
     const t = setInterval(() => {
       const mins = getSettings().security.idleMinutes
       if (!mins || Date.now() - lastActive.current < mins * 60000) return
-      if (DEMO_MODE) logEvent(user, 'auth.auto_logout', { target: { kind: 'account', id: user.username, label: user.name }, params: { minutes: mins } })
       endSession(`You were signed out after ${mins} minutes of inactivity.`)
     }, 10000)
     return () => {

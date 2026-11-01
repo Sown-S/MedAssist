@@ -5,15 +5,14 @@ import { useAuth } from '../../context/AuthContext'
 import { useToast } from '../../context/ToastContext'
 import { translate } from '../../i18n'
 import { VI } from '../../i18n/vi'
-import { logEvent } from '../../api/activityStore'
 import { labRows, syncQueue } from '../../api/queueStore'
 import { searchFacilities, referVisit, emergencyReferral, updateReferral } from '../../api/clinicApi'
 import { apiMessage } from '../../api/serviceStore'
 import { printHtml, esc } from '../admin/inventory/shared'
 import { dmy } from '../reception/shared'
 
-// Giấy chuyển tuyến. Chạy thật, chuyển tuyến kết thúc lượt khám và lưu ở server (ERD v2.0). mode:
-// 'print' (demo) chỉ điền và in · 'doctor' chuyển lượt đang khám (PATCH /visits/{id}/refer) · 'desk' lễ tân chuyển lượt
+// Giấy chuyển tuyến. Chuyển tuyến kết thúc lượt khám và lưu ở server (ERD v2.0). mode:
+// 'print' chỉ điền và in, không lưu · 'doctor' chuyển lượt đang khám (PATCH /visits/{id}/refer) · 'desk' lễ tân chuyển lượt
 // đang chờ hoặc cấp cứu ngay ở quầy (POST /visits/emergency-referral) · 'amend' bác sĩ bổ sung giấy đã chuyển ·
 // 'reprint' xem và in lại (không sửa được).
 // target: { visitId, ensurePatient: async () => patientId, chief, vitals }
@@ -81,7 +80,6 @@ export default function DocumentModal({ subject, onClose, mode = 'print', target
   const reasons = REFER_REASONS.includes(ref.reason) ? REFER_REASONS : [...REFER_REASONS, ref.reason]
 
   function log() {
-    logEvent(user, 'doc.print', { target: { kind: 'patient', id: subject.patientId ?? subject.name, label: subject.name }, params: { patient: subject.name, doc: 'referral' } })
   }
 
   // Người ký: bác sĩ, hoặc người ghi nhận ở quầy.

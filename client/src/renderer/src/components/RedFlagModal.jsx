@@ -1,26 +1,14 @@
 import { useState } from 'react'
 import Icon from './Icon'
-import { useAuth } from '../context/AuthContext'
-import { useToast } from '../context/ToastContext'
-import { recordRedFlag } from '../api/queueStore'
-import { DEMO_MODE } from '../api/client'
 import DocumentModal from '../pages/doctor/DocumentModal'
 // Cảnh báo cờ đỏ toàn màn hình (FR09), cố ý không dùng Modal chung vì khác hẳn modal nhập liệu.
-// Chạy thật: lượt đã có (visitId) thì chuyển tuyến lượt đó; chưa có thì tạo lượt cấp cứu và chuyển ngay
+// Lượt đã có (visitId) thì chuyển tuyến lượt đó; chưa có thì tạo lượt cấp cứu và chuyển ngay
 // (POST /visits/emergency-referral); patient.ensurePatient() tạo hồ sơ nếu là bệnh nhân mới.
 export default function RedFlagModal({ open, onClose, patient, onReferred }) {
-  const { user } = useAuth()
-  const { showToast } = useToast()
   const [referring, setReferring] = useState(false)
   if (!open) return null
 
-  function handleRefer() {
-    if (!DEMO_MODE) return setReferring(true)
-    recordRedFlag(patient ?? {}, user, 'referred')
-    onClose()
-    onReferred?.()
-    showToast('Emergency transfer recorded — send the patient to hospital / call 115 now; doctors have been alerted')
-  }
+  const handleRefer = () => setReferring(true)
 
   if (referring)
     return (

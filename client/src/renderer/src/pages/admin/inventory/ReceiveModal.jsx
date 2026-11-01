@@ -7,7 +7,7 @@ import { receiveStock, daysLeft, todayISO } from '../../../api/inventoryStore'
 import { unitLabel, fmtMoney } from './shared'
 
 // Nhập kho = tạo một lô mới. Không quản lý nhà cung cấp / công nợ (ngoài phạm vi).
-export default function ReceiveModal({ drug, drugs, user, onClose }) {
+export default function ReceiveModal({ drug, drugs, onClose }) {
   const { showToast } = useToast()
   const [f, setF] = useState(null)
   const [tried, setTried] = useState(false)
@@ -35,8 +35,8 @@ export default function ReceiveModal({ drug, drugs, user, onClose }) {
   async function save() {
     setTried(true)
     if (errors.length) return
-    // Chạy thật trả Promise { ok, error } (VD số lô đã có).
-    const r = await receiveStock({ drugId: f.drugId, lot: f.lot.trim().toUpperCase(), expiry: f.expiry, qty, cost }, user)
+    // Trả Promise { ok, error } (VD số lô đã có).
+    const r = await receiveStock({ drugId: f.drugId, lot: f.lot.trim().toUpperCase(), expiry: f.expiry, qty, cost })
     if (r?.ok === false) return showToast(translate(r.error))
     showToast('Stock received')
     onClose()

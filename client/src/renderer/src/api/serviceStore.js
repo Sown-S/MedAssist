@@ -1,7 +1,7 @@
 // Dịch vụ, xét nghiệm, gói khám và phiếu chỉ định khi chạy với server (ERD v2.1). Phiếu server được đổi sang dạng
 // phiếu client để printLabOrder, labRows, LabOrderResults dùng chung cho hai chế độ.
 import { useCallback, useEffect, useState } from 'react'
-import { DEMO_MODE, ApiError } from './client'
+import { ApiError } from './client'
 import { fetchServices, fetchPackages, fetchServiceOrders } from './serviceApi'
 
 const refText = (x) =>
@@ -33,12 +33,12 @@ export const toLabOrder = (o) => ({
 export const apiMessage = (e) =>
   e instanceof ApiError ? e.details?.[0]?.message ?? e.message : 'Cannot reach the clinic server. Check the server address and the network connection.'
 
-// visitId = null → không nạp (bản demo).
+// visitId = null → không nạp.
 export function useServiceOrders(visitId) {
   const [orders, setOrders] = useState(null)
   const [error, setError] = useState('')
   const reload = useCallback(() => {
-    if (!visitId || DEMO_MODE) return Promise.resolve()
+    if (!visitId) return Promise.resolve()
     return fetchServiceOrders(visitId).then(
       (list) => {
         setOrders(list.map(toLabOrder))
@@ -53,7 +53,7 @@ export function useServiceOrders(visitId) {
   return { orders: orders ?? [], loaded: orders !== null, error, reload, setOrders }
 }
 
-export function useServiceCatalog({ enabled = !DEMO_MODE } = {}) {
+export function useServiceCatalog({ enabled = true } = {}) {
   const [data, setData] = useState({ services: [], packages: [], loaded: false, error: '' })
   const reload = useCallback(() => {
     if (!enabled) return Promise.resolve()

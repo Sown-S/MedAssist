@@ -31,7 +31,7 @@ export function vitalsFromForm(form) {
 }
 export const vitalsToForm = (v) => Object.fromEntries(VITAL_KEYS.map((d) => [d.key, v?.[d.key] ?? '']))
 
-// Đọc được cả dữ liệu cũ của bản demo ({ pulseBp: '80 · 120/80', temp: '37.5°C', … }).
+// Đọc được cả dạng cũ ({ pulseBp: '80 · 120/80', temp: '37.5°C', … }).
 export function normalizeVitals(v) {
   if (!v) return {}
   if (VITAL_KEYS.some((d) => d.key in v)) return vitalsFromForm(v)
@@ -83,15 +83,6 @@ export function vitalsText(raw, { withWeight = true } = {}) {
   if (withWeight && v.weight_kg != null) parts.push(v.weight_kg + ' kg')
   return parts.join(' · ') || '—'
 }
-
-// Bộ luật dùng khoá ngắn temp / hr / rr / spo2 / sbp.
-export function ruleVitals(raw) {
-  const v = normalizeVitals(raw)
-  return { temp: v.temperature_c ?? null, hr: v.heart_rate_bpm ?? null, rr: v.respiratory_rate_bpm ?? null, spo2: v.spo2_pct ?? null, sbp: v.systolic_bp_mmhg ?? null }
-}
-
-// Để tô vàng ô cần đo ngay khi luật cờ đỏ còn thiếu dữ liệu.
-export const RULE_KEY_TO_VITAL = { temp: 'temperature_c', hr: 'heart_rate_bpm', rr: 'respiratory_rate_bpm', spo2: 'spo2_pct', sbp: 'systolic_bp_mmhg' }
 
 // Đề xuất sinh hiệu từ lời kể: y tá xác nhận mới điền, không ghi đè số đã nhập.
 const filled = (form, k) => String(form[k] ?? '').trim() !== ''

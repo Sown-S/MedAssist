@@ -4,7 +4,7 @@ import Icon from '../../../components/Icon'
 import { useToast } from '../../../context/ToastContext'
 import { translate } from '../../../i18n'
 import { KINDS, itemVersions, previewDeactivate, deactivate } from '../../../api/knowledgeApi'
-import { Empty } from '../ai/ui'
+import { Empty } from '../ui'
 import ItemFormModal from './ItemFormModal'
 import { KIND_META, StatusBadge, Summary, groupByKey, errorText, fmtDate } from './shared'
 

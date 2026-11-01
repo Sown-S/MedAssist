@@ -2,10 +2,10 @@ import { useState } from 'react'
 import Icon from '../../../components/Icon'
 import { useToast } from '../../../context/ToastContext'
 import { translate } from '../../../i18n'
-import { updateVisitClinical } from '../../../api/queueStore'
+import { updateClinical } from '../../../api/clinicApi'
 
 // Bác sĩ xác nhận / sửa dị ứng và bệnh nền (lễ tân chỉ ghi lời khai); lưu vào hồ sơ để đơn đang kê và các lần sau dùng thông tin mới.
-export function ClinicalInfoEditor({ visit, user }) {
+export function ClinicalInfoEditor({ visit }) {
   const { showToast } = useToast()
   const [open, setOpen] = useState(false)
   const [f, setF] = useState({ allergies: '', history: '' })
@@ -13,11 +13,14 @@ export function ClinicalInfoEditor({ visit, user }) {
     setF({ allergies: visit.allergies ?? '', history: visit.history ?? '' })
     setOpen(true)
   }
-  function save() {
-    const r = updateVisitClinical(visit.id, f, user)
-    if (!r.ok) return showToast(translate(r.error))
-    setOpen(false)
-    showToast('Patient record updated — prescription checks now use the new information')
+  async function save() {
+    try {
+      await updateClinical(visit.patientId, f)
+      setOpen(false)
+      showToast('Patient record updated')
+    } catch (e) {
+      showToast(translate(e.message))
+    }
   }
   if (!open)
     return (

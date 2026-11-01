@@ -1,9 +1,7 @@
-import { useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import Icon from '../components/Icon'
 import { useAuth } from '../context/AuthContext'
 import { useQueue, useQueueSync, isMine, reviewRedFlag, inRoom, inviteAgain, ST } from '../api/queueStore'
-import { DEMO_MODE } from '../api/client'
 import { useToast } from '../context/ToastContext'
 import { useTakePatient } from './doctor/doctorShared'
 import { translate } from '../i18n'
@@ -11,11 +9,8 @@ import { hhmm } from './reception/shared'
 import DoctorHome from './doctor/DoctorHome'
 import ConsultView from './doctor/ConsultView'
 import DrugCabinetView from './doctor/DrugCabinetView'
-import PrescriptionsView, { RxDetail } from './reception/PrescriptionsView'
 import PrescriptionsLive from './reception/PrescriptionsLive'
-import RxReviewPanel from './doctor/RxReviewPanel'
 import PatientLookup from './doctor/PatientLookup'
-import DocumentModal from './doctor/DocumentModal'
 
 const VIEWS = {
   home: { icon: 'home', tab: 'Overview', title: 'Doctor dashboard', sub: 'Today’s queue, your patients and prescriptions at a glance' },
@@ -27,7 +22,7 @@ const VIEWS = {
 
 export default function Doctor() {
   const { user } = useAuth()
-  useQueueSync() // chạy thật: hỏi lại hàng đợi vài giây một lần
+  useQueueSync() // hỏi lại hàng đợi vài giây một lần
   const { visits, redFlags } = useQueue()
   // Ca cờ đỏ chưa bác sĩ nào xem — hiện trên mọi màn của Bác sĩ.
   const pendingRF = redFlags.filter((r) => !r.doctorReview)
@@ -35,13 +30,10 @@ export default function Doctor() {
   const view = VIEWS[params.get('view')] ? params.get('view') : 'home'
   const visitId = params.get('visit')
   const go = (v, visit) => setParams(v === 'home' ? {} : { view: v, ...(visit ? { visit } : {}) })
-  const [rxOf, setRxOf] = useState(null)
-  // Bác sĩ vừa quyết chuyển tuyến → mở luôn giấy chuyển tuyến để in.
-  const [referral, setReferral] = useState(null)
   const inRoomCount = visits.filter((v) => inRoom(v) && isMine(v, user)).length
   const { showToast } = useToast()
   const { take, dialog } = useTakePatient((id) => go('consult', id))
-  // Chạy thật: ca cờ đỏ là lượt Cấp cứu đang chờ — bác sĩ mời vào khám ngay, chuyển tuyến làm trong phòng khám.
+  // Ca cờ đỏ là lượt Cấp cứu đang chờ — bác sĩ mời vào khám ngay, chuyển tuyến làm trong phòng khám.
   async function seeNow(r) {
     const v = visits.find((x) => x.id === r.visitId)
     if (!v) return
@@ -65,48 +57,26 @@ export default function Doctor() {
           <div className="txt">
             <b>
               <span>
-                {r.outcome === 'queued'
-                  ? translate('Red-flag case — top of the queue (Emergency), see the patient now')
-                  : r.outcome === 'assess'
-                    ? translate('Red-flag case — reception asks a doctor to assess now')
-                    : translate('Red-flag case — reception guided a referral')}
+                {translate('Red-flag case — top of the queue (Emergency), see the patient now')}
               </span>{' '}
               · {r.name}
               {r.age !== '' && r.age != null ? ', ' + r.age : ''} · {hhmm(r.at)}
             </b>
             <span>{translate(r.signs) || '—'}</span>
             <span className="hint">
-              {!DEMO_MODE && translate('Emergency — top of the queue. Call the patient in now; refer to hospital from the consultation if needed.')}
-              {DEMO_MODE && r.outcome === 'referred' && translate('Being transferred to hospital now — come out for first aid if needed, then sign the referral letter.') + ' '}
+              {translate('Emergency — top of the queue. Call the patient in now; refer to hospital from the consultation if needed.')}
               {r.by && translate('Recorded by') + ' ' + r.by}
               {r.allergies ? ' · ' + translate('Drug allergy') + ': ' + translate(r.allergies) : ''}
             </span>
           </div>
-          {!DEMO_MODE ? (
-            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-              <button className="btn btn-sm" onClick={() => seeNow(r)}>
-                <Icon name="stethoscope" /> See the patient now
-              </button>
-              <button className="btn btn-ghost btn-sm" onClick={() => reviewRedFlag(r.id, 'seen', user)}>
-                Dismiss
-              </button>
-            </div>
-          ) : (
           <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-            <button
-              className="btn btn-sm"
-              onClick={() => {
-                reviewRedFlag(r.id, 'referred', user)
-                setReferral({ ...r, redFlag: true, diagnosis: '' })
-              }}
-            >
-              {r.outcome === 'assess' || r.outcome === 'queued' ? translate('Refer to hospital') : translate('Acknowledge & write referral letter')}
+            <button className="btn btn-sm" onClick={() => seeNow(r)}>
+              <Icon name="stethoscope" /> See the patient now
             </button>
             <button className="btn btn-ghost btn-sm" onClick={() => reviewRedFlag(r.id, 'seen', user)}>
-              See at the clinic
+              Dismiss
             </button>
           </div>
-          )}
         </div>
       ))}
 
@@ -132,26 +102,13 @@ export default function Doctor() {
       </span>
       </div>
 
-      {view === 'home' && <DoctorHome go={go} onRx={setRxOf} />}
-      {view === 'consult' && <ConsultView visitId={visitId} onSelect={(id) => go('consult', id)} onRx={setRxOf} />}
-      {view === 'prescriptions' &&
-        (DEMO_MODE ? <PrescriptionsView readOnly showReviews onRx={setRxOf} initialDoctor={user.name} /> : <PrescriptionsLive initialDoctorId={user.id} initialDoctorName={user.name} />)}
+      {view === 'home' && <DoctorHome go={go} />}
+      {view === 'consult' && <ConsultView visitId={visitId} onSelect={(id) => go('consult', id)} />}
+      {view === 'prescriptions' && <PrescriptionsLive initialDoctorId={user.id} initialDoctorName={user.name} />}
       {view === 'drugs' && <DrugCabinetView go={go} />}
       {view === 'patients' && <PatientLookup />}
-      {referral && <DocumentModal subject={referral} onClose={() => setReferral(null)} />}
       {dialog}
 
-      {rxOf && (
-        <RxDetail visit={rxOf} readOnly onClose={() => setRxOf(null)}>
-          <RxReviewPanel
-            visit={rxOf}
-            onRecalled={(id) => {
-              setRxOf(null)
-              go('consult', id)
-            }}
-          />
-        </RxDetail>
-      )}
     </div>
   )
 }

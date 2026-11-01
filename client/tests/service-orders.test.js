@@ -63,7 +63,6 @@ describe('Danh mục Dịch vụ / Xét nghiệm / Gói khám trên server', () 
   let live
   beforeEach(async () => {
     vi.resetModules()
-    vi.stubEnv('VITE_USE_MOCK', 'false')
     api = {
       fetchServices: vi.fn(async () => [
         { service_id: 's1', code: 'DV01', name: 'Khám bệnh', kind: 'Service', group_key: 'consult', unit: 'lần', price: 80000, is_active: true },
@@ -81,14 +80,7 @@ describe('Danh mục Dịch vụ / Xét nghiệm / Gói khám trên server', () 
     await live.reloadLiveCatalog()
   })
   afterEach(() => {
-    vi.unstubAllEnvs()
     vi.doUnmock('../src/renderer/src/api/serviceApi.js')
-  })
-
-  it('chỉ 3 danh mục này đi qua server; danh mục khác vẫn ở máy', () => {
-    expect(live.isLiveCatalog('services')).toBe(true)
-    expect(live.isLiveCatalog('packages')).toBe(true)
-    expect(live.isLiveCatalog('icd')).toBe(false)
   })
 
   it('thêm xét nghiệm: gửi mã, loại Lab, nhóm, giá và khoảng tham chiếu', async () => {

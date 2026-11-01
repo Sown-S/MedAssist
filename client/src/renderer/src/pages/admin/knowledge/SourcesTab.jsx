@@ -3,7 +3,7 @@ import Modal, { ModalHeader } from '../../../components/Modal'
 import { useToast } from '../../../context/ToastContext'
 import { translate } from '../../../i18n'
 import { createSource } from '../../../api/knowledgeApi'
-import { Empty } from '../ai/ui'
+import { Empty } from '../ui'
 import { errorText } from './shared'
 
 // Mọi quan hệ, trích dẫn và luật phải trích một nguồn.

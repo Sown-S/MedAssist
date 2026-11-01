@@ -3,22 +3,21 @@ import Icon from '../../../components/Icon'
 import Modal, { ModalHeader } from '../../../components/Modal'
 import { translate } from '../../../i18n'
 import { useToast } from '../../../context/ToastContext'
-import { upsertRow } from '../../../api/catalogStore'
 import { todayISO } from '../../../api/inventoryStore'
-import { fmtMoney, fmtDate, fmtDateTime } from '../inventory/shared'
+import { fmtMoney, fmtDateTime } from '../inventory/shared'
 import { SCHEMAS, resolveRef, packageTotal } from './schemas'
 import { saveLiveRow, livePriceHistory } from '../../../api/serviceCatalogLive'
 
-export function RowForm({ catalogKey, live, row, all, cats, inv, user, onClose }) {
+export function RowForm({ catalogKey, row, all, cats, inv, onClose }) {
   const s = SCHEMAS[catalogKey]
   const { showToast } = useToast()
   const isNew = !row.id
   const [saving, setSaving] = useState(false)
-  // Chạy thật: lịch sử giá từ nhật ký server, mới nhất trước.
+  // Lịch sử giá từ nhật ký server, mới nhất trước.
   const [prices, setPrices] = useState(null)
   useEffect(() => {
-    if (live && !isNew && catalogKey !== 'packages') livePriceHistory(row.id).then(setPrices, () => setPrices([]))
-  }, [live, isNew, catalogKey, row.id])
+    if (!isNew && catalogKey !== 'packages') livePriceHistory(row.id).then(setPrices, () => setPrices([]))
+  }, [isNew, catalogKey, row.id])
   const [f, setF] = useState(() => {
     const init = { ...row }
     for (const fd of s.fields) {
@@ -52,13 +51,10 @@ export function RowForm({ catalogKey, live, row, all, cats, inv, user, onClose }
       if (fd.type === 'money' || fd.type === 'number') data[fd.key] = f[fd.key] === '' || f[fd.key] == null ? null : Number(f[fd.key])
       if (fd.onlyWhenPriceChanges && !priceChanged) delete data[fd.key]
     }
-    if (catalogKey === 'icd' && isNew) data.custom = true
-    if (live) {
-      setSaving(true)
-      const r = await saveLiveRow(catalogKey, { ...data, id: row.id })
-      setSaving(false)
-      if (!r.ok) return showToast(translate(r.error))
-    } else upsertRow(catalogKey, data, user, s.title)
+    setSaving(true)
+    const r = await saveLiveRow(catalogKey, { ...data, id: row.id })
+    setSaving(false)
+    if (!r.ok) return showToast(translate(r.error))
     showToast(isNew ? 'Record added' : 'Record saved')
     onClose()
   }
@@ -75,13 +71,13 @@ export function RowForm({ catalogKey, live, row, all, cats, inv, user, onClose }
         <div className="ai-grid3">
           {s.fields
             // Server ghi giá mới ngay khi lưu (không có ngày hiệu lực riêng).
-            .filter((fd) => !fd.onlyWhenPriceChanges || (priceChanged && !live))
+            .filter((fd) => !fd.onlyWhenPriceChanges)
             .map((fd) => (
               <div className="field" key={fd.key} style={fd.wide ? { gridColumn: '1 / -1' } : undefined}>
                 <label>
                   {fd.label} {fd.required && <span className="ai-req">*</span>}
                 </label>
-                {live && !isNew && fd.key === 'code' ? (
+                {!isNew && fd.key === 'code' ? (
                   <input value={f.code} disabled title={translate('The code cannot be changed after it is created.')} />
                 ) : (
                   <FieldInput fd={fd} value={f[fd.key]} onChange={(v) => set(fd.key, v)} cats={cats} inv={inv} />
@@ -102,7 +98,7 @@ export function RowForm({ catalogKey, live, row, all, cats, inv, user, onClose }
             )}
           </p>
         )}
-        {live && !isNew && prices && (
+        {!isNew && prices && (
           <>
             <div className="section-label">Price history</div>
             <table className="dt">
@@ -126,30 +122,6 @@ export function RowForm({ catalogKey, live, row, all, cats, inv, user, onClose }
               </tbody>
             </table>
             <p className="ai-hint">Invoices and lab orders store the price at the time they are made, so changing the price here does not change old documents.</p>
-          </>
-        )}
-        {!live && catalogKey === 'services' && !isNew && (
-          <>
-            <div className="section-label">Price history</div>
-            <table className="dt">
-              <thead>
-                <tr>
-                  <th>Effective from</th>
-                  <th className="num">Unit price</th>
-                  <th>Changed by</th>
-                </tr>
-              </thead>
-              <tbody>
-                {[...(row.priceHistory ?? [])].reverse().map((h, i) => (
-                  <tr key={i}>
-                    <td className="mono">{fmtDate(h.from)}</td>
-                    <td className="num mono">{fmtMoney(h.price)}</td>
-                    <td>{h.by}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            <p className="ai-hint">Invoices store the unit price at the time they are issued, so changing the price here does not change old invoices.</p>
           </>
         )}
         {!isNew && (

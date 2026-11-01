@@ -20,7 +20,6 @@ async function load() {
 
 beforeEach(async () => {
   localStorage.clear()
-  vi.stubEnv('VITE_USE_MOCK', 'false')
   current = DOC_A
   const row = (id, ticket, status, extra = {}) => ({ id, ticket, name: 'Bệnh nhân ' + ticket, status, triage: 'routine', doctor: '', doctorId: null, room: '', labOut: false, calledAt: null, calledById: null, calledByName: '', calledRoom: '', ...extra })
   server = [row('v1', 1, 'CheckedIn'), row('v2', 2, 'Waiting'), row('v3', 3, 'Waiting', { triage: 'emergency', redFlagReason: 'Đau ngực dữ dội' })]
@@ -55,7 +54,6 @@ beforeEach(async () => {
   await load()
 })
 afterEach(() => {
-  vi.unstubAllEnvs()
   vi.doUnmock('../src/renderer/src/api/clinicApi.js')
 })
 

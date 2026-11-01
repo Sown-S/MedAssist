@@ -62,7 +62,7 @@ Chạy kiểm tra của phần mình đã sửa:
 |---|---|---|
 | `server/` | `cd server; python -m pytest` (cần PostgreSQL trong Docker, xem `server/README.md` mục 5) | Có, kèm độ phủ ≥ 90% |
 | Model hoặc migration | `python -m alembic upgrade head; python -m alembic check` | Có |
-| `client/` | `cd client; npm test; npm run build` | Không, phải tự chạy |
+| `client/` | `cd client; npm run lint; npm test; npm run build` | Có lint + test (build phải tự chạy) |
 | `tools/` | `cd tools; python -m pytest` | Có |
 | `knowledge/` | `cd server; python -m scripts.import_okf --dry-run` (kiểm tra toàn bộ thư mục, không ghi) | Gián tiếp qua test của server |
 

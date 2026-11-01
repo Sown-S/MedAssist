@@ -1,33 +1,8 @@
 // Phòng khám cố định của bác sĩ (ERD v1.9). Mỗi phòng khám tối đa một bác sĩ đang hoạt động; bác sĩ được gắn phòng
 // ở Tài khoản nhân viên. Không xoá phòng, chỉ ngừng dùng; không đổi mã và loại phòng.
-import { apiGet, apiPost, apiRequest, ApiError, DEMO_MODE } from './client'
+import { apiGet, apiPost, apiRequest, ApiError } from './client'
 
-const KEY = 'medassist_rooms_v1'
 export const ROOM_TYPES = { Exam: 'Consultation room', Lab: 'Lab room' }
-
-const SEED = [
-  { id: 'room-01', code: '01', name: 'Phòng khám 01', type: 'Exam' },
-  { id: 'room-02', code: '02', name: 'Phòng khám 02', type: 'Exam' },
-  { id: 'room-03', code: '03', name: 'Phòng khám 03', type: 'Exam' },
-  { id: 'room-04', code: '04', name: 'Phòng xét nghiệm', type: 'Lab' }
-].map((r) => ({ ...r, active: true, updatedAt: null }))
-
-function read() {
-  try {
-    return JSON.parse(localStorage.getItem(KEY))
-  } catch {
-    return null
-  }
-}
-let rooms = read() ?? SEED
-function save(next) {
-  rooms = next
-  try {
-    localStorage.setItem(KEY, JSON.stringify(rooms))
-  } catch {/* không lưu được thì chỉ giữ trong phiên */}
-}
-
-export const roomById = (id) => rooms.find((r) => r.id === id) ?? null
 
 const fromServer = (r) => ({
   id: r.room_id,
@@ -46,49 +21,29 @@ const ERRORS = {
 const apiError = (e) =>
   e instanceof ApiError ? (ERRORS[e.code] ?? e.details?.[0]?.message ?? e.message) : 'Cannot reach the clinic server. Check the server address and the network connection.'
 
-// accounts chỉ cần ở bản demo (tránh import vòng với accountStore).
-export async function listRooms({ includeInactive = false, accounts = [] } = {}) {
-  if (!DEMO_MODE) return (await apiGet(`/api/v1/rooms${includeInactive ? '?include_inactive=true' : ''}`)).map(fromServer)
-  return rooms
-    .filter((r) => includeInactive || r.active)
-    .map((r) => {
-      const doc = accounts.find((a) => a.roleKey === 'doctor' && a.active && a.roomId === r.id)
-      return { ...r, physician: doc ? { id: doc.id, name: doc.fullName } : null }
-    })
-}
+export const listRooms = async ({ includeInactive = false } = {}) =>
+  (await apiGet(`/api/v1/rooms${includeInactive ? '?include_inactive=true' : ''}`)).map(fromServer)
 export const examRooms = (list) => list.filter((r) => r.type === 'Exam' && r.active)
 
 export async function createRoom({ code, name, type = 'Exam' }) {
   const c = code.trim()
   const n = name.trim()
   if (!c || !n) return { ok: false, error: 'Enter the room code and name.' }
-  if (!DEMO_MODE) {
-    try {
-      return { ok: true, room: fromServer(await apiPost('/api/v1/admin/rooms', { code: c, name: n, room_type: type })) }
-    } catch (e) {
-      return { ok: false, error: apiError(e) }
-    }
+  try {
+    return { ok: true, room: fromServer(await apiPost('/api/v1/admin/rooms', { code: c, name: n, room_type: type })) }
+  } catch (e) {
+    return { ok: false, error: apiError(e) }
   }
-  if (rooms.some((r) => r.code.toLowerCase() === c.toLowerCase())) return { ok: false, error: ERRORS.ROOM_CODE_TAKEN }
-  const room = { id: 'room-' + Date.now(), code: c, name: n, type, active: true, updatedAt: new Date().toISOString() }
-  save([...rooms, room])
-  return { ok: true, room }
 }
-
-// Bản demo: inUse = phòng đang có bác sĩ (server tự kiểm tra ROOM_IN_USE).
-export async function updateRoom(id, { name, active }, { inUse = false } = {}) {
+// Server tự chặn ngừng dùng phòng còn bác sĩ (ROOM_IN_USE).
+export async function updateRoom(id, { name, active }) {
   const body = {}
   if (name !== undefined) body.name = name.trim()
   if (active !== undefined) body.is_active = active
   if (body.name === '') return { ok: false, error: 'Enter the room code and name.' }
-  if (!DEMO_MODE) {
-    try {
-      return { ok: true, room: fromServer(await apiRequest(`/api/v1/admin/rooms/${id}`, 'PATCH', body)) }
-    } catch (e) {
-      return { ok: false, error: apiError(e) }
-    }
+  try {
+    return { ok: true, room: fromServer(await apiRequest(`/api/v1/admin/rooms/${id}`, 'PATCH', body)) }
+  } catch (e) {
+    return { ok: false, error: apiError(e) }
   }
-  if (active === false && inUse) return { ok: false, error: ERRORS.ROOM_IN_USE }
-  save(rooms.map((r) => (r.id === id ? { ...r, ...(body.name ? { name: body.name } : {}), ...(active !== undefined ? { active } : {}), updatedAt: new Date().toISOString() } : r)))
-  return { ok: true, room: roomById(id) }
 }

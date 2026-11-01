@@ -1,23 +1,6 @@
-import { MOCK_ENDPOINTS } from './mockData'
 import { getBaseUrl, tokenStore } from './serverConfig'
 
-// Mặc định chạy giả lập. Nối server: đặt VITE_USE_MOCK=false trong client/.env rồi chạy lại npm run dev.
 // Địa chỉ server lấy từ serverConfig; token giữ trong kho mã hoá của hệ điều hành.
-const USE_MOCK = import.meta.env.VITE_USE_MOCK !== 'false'
-
-function delay(ms) {
-  return new Promise((r) => setTimeout(r, ms))
-}
-
-// Giả lập độ trễ mạng để giao diện luôn xử lý trạng thái đang tải.
-async function mockRequest(path) {
-  await delay(300 + Math.random() * 300)
-  const handler = MOCK_ENDPOINTS[path.split('?')[0]]
-  if (!handler) {
-    throw new Error(`[mock] No mock endpoint for: ${path}`)
-  }
-  return handler()
-}
 
 // Lỗi theo định dạng chung của backend: { error: { code, message, details, request_id } }. Giao diện rẽ nhánh theo code;
 // message (tiếng Việt) làm dự phòng; details[].field để đánh dấu ô sai.
@@ -80,42 +63,15 @@ async function realRequest(path, options = {}, retried = false) {
   return res.status === 204 ? null : res.json()
 }
 
-export async function apiGet(path) {
-  return USE_MOCK ? mockRequest(path) : realRequest(path)
-}
-
-export async function apiPost(path, body) {
-  if (USE_MOCK) {
-    await delay(300)
-    console.log('[mock POST]', path, body)
-    return { ok: true }
-  }
-  return realRequest(path, { method: 'POST', body: JSON.stringify(body) })
-}
-
-// PATCH / PUT / DELETE chỉ dùng khi nối server (store giả lập tự xử lý dữ liệu cục bộ).
+export const apiGet = (path) => realRequest(path)
+export const apiPost = (path, body) => realRequest(path, { method: 'POST', body: JSON.stringify(body) })
 export function apiRequest(path, method, body) {
-  if (USE_MOCK) return Promise.reject(new Error(`[mock] ${method} ${path} chỉ có khi dùng backend thật`))
   return realRequest(path, { method, ...(body !== undefined ? { body: JSON.stringify(body) } : {}) })
 }
 
-export const DEMO_MODE = USE_MOCK
-
 // GET /health: đọc được cả dạng { database: 'connected' } lẫn { database: { ok, detail }, ai, version }; mục server
-// không báo → ok = null. Bản demo trả số liệu mẫu, đánh dấu sample = true.
+// không báo → ok = null.
 export async function checkHealth() {
-  if (USE_MOCK) {
-    await delay(300)
-    return {
-      sample: true,
-      checkedAt: new Date().toISOString(),
-      services: [
-        { key: 'api', name: 'API server', ok: true, state: 'Connected', detail: 'FastAPI · 192.168.1.10:8000 · 12 ms' },
-        { key: 'db', name: 'Database', ok: true, state: 'Connected', detail: 'PostgreSQL · 14 active connections' },
-        { key: 'ai', name: 'AI service', ok: true, state: 'Running', detail: 'Ollama · model loaded' }
-      ]
-    }
-  }
   const t0 = performance.now()
   try {
     const res = await fetch(getBaseUrl() + '/health', { signal: AbortSignal.timeout(5000) })
@@ -127,7 +83,6 @@ export async function checkHealth() {
       return { key, name, ok, state: ok ? up : 'Unavailable', detail: typeof x === 'string' ? '' : x.detail ?? '' }
     }
     return {
-      sample: false,
       checkedAt: new Date().toISOString(),
       serverVersion: h.version,
       services: [
@@ -138,7 +93,6 @@ export async function checkHealth() {
     }
   } catch (e) {
     return {
-      sample: false,
       checkedAt: new Date().toISOString(),
       services: [
         { key: 'api', name: 'API server', ok: false, state: 'No connection', detail: `${getBaseUrl()} · ${e.name === 'TimeoutError' ? 'timed out after 5 s' : e.message}` },

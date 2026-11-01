@@ -16,11 +16,8 @@ import {
   updateAccount,
   setActive,
   resetPassword,
-  unlockAccount,
-  forceSignOut
+  unlockAccount
 } from '../../api/accountStore'
-import { DEMO_MODE } from '../../api/client'
-import { logEvent } from '../../api/activityStore'
 import { listRooms, examRooms } from '../../api/roomStore'
 import { fmtDate, fmtDateTime } from './inventory/shared'
 import { translate } from '../../i18n'
@@ -85,7 +82,6 @@ export default function StaffPage() {
   }, [])
 
   const editing = form?.id ? accounts?.find((a) => a.id === form.id) : null
-  const target = (a) => ({ target: { kind: 'account', id: a.username, label: a.fullName } })
 
   function openCreate(roleKey = 'doctor') {
     setFormErr('')
@@ -121,10 +117,9 @@ export default function StaffPage() {
   }
   async function doCreate() {
     setReauth(null)
-    const res = await createAccount(form, me)
+    const res = await createAccount(form)
     if (!res.ok) return setFormErr(res.error)
     const a = res.account
-    logEvent(me, 'account.create', { ...target(a), params: { account: a.username, role: a.roleKey } })
     showToast(`Account ${a.username} created`)
     setForm(null)
     setSecret({ account: a, password: res.password })
@@ -136,14 +131,6 @@ export default function StaffPage() {
     if (!res.ok) return setFormErr(res.error)
     const { before, account: a } = res
     const fields = Object.keys(FIELD_LABELS).filter((k) => (before[k] ?? '') !== (a[k] ?? ''))
-    if (fields.length)
-      logEvent(me, 'account.update', {
-        ...target(a),
-        params: { account: a.username, fields: fields.map((k) => FIELD_LABELS[k]) },
-        before: fields.includes('fullName') ? before.fullName : null,
-        after: fields.includes('fullName') ? a.fullName : null
-      })
-    if (before.roleKey !== a.roleKey) logEvent(me, 'account.role_change', { ...target(a), params: { account: a.username, from: before.roleKey, to: a.roleKey } })
     if (a.id === me.id) refreshUser(a)
     showToast(fields.length || before.roleKey !== a.roleKey ? 'Account updated' : 'No changes')
     setForm(null)
@@ -160,7 +147,6 @@ export default function StaffPage() {
         setReauth(null)
         const res = await resetPassword(a.id)
         if (!res.ok) return showToast(res.error)
-        logEvent(me, 'account.reset_password', { ...target(a), params: { account: a.username } })
         setSecret({ account: a, password: res.password, reset: true })
         refresh()
       }
@@ -169,29 +155,12 @@ export default function StaffPage() {
   async function unlock(a) {
     const res = await unlockAccount(a.id)
     if (!res.ok) return showToast(res.error)
-    logEvent(me, 'account.unlock', { ...target(a), params: { account: a.username } })
     showToast('Account unlocked')
     refresh()
-  }
-  function askForceSignOut(a) {
-    setConfirm({
-      title: `Force sign-out — ${a.username}`,
-      message: 'Every open session of this account ends within a few seconds. If you suspect the password has leaked, also reset the password.',
-      confirmLabel: 'Sign out now',
-      run: async () => {
-        setConfirm(null)
-        const res = await forceSignOut(a.id)
-        if (!res.ok) return showToast(res.error)
-        logEvent(me, 'account.force_logout', { ...target(a), params: { account: a.username } })
-        showToast('Sessions ended')
-        refresh()
-      }
-    })
   }
   async function toggle(a) {
     const res = await setActive(a.id, !a.active)
     if (!res.ok) return showToast(res.error)
-    logEvent(me, a.active ? 'account.disable' : 'account.enable', { ...target(a), params: { account: a.username }, before: a.active, after: !a.active })
     showToast(a.active ? 'Account disabled' : 'Account re-enabled')
     refresh()
   }
@@ -427,11 +396,6 @@ export default function StaffPage() {
                                   <button className="btn btn-ghost btn-sm" onClick={() => askReset(a)}>
                                     Reset password
                                   </button>
-                                  {a.active && DEMO_MODE && (
-                                    <button className="btn btn-ghost btn-sm" onClick={() => askForceSignOut(a)}>
-                                      Force sign-out
-                                    </button>
-                                  )}
                                   <button className="btn btn-ghost btn-sm" onClick={() => toggle(a)}>
                                     {a.active ? 'Disable' : 'Enable'}
                                   </button>

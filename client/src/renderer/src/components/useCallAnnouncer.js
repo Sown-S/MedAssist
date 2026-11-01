@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useRef } from 'react'
 import { useQueue, invitesOf } from '../api/queueStore'
-import { DEMO_MODE } from '../api/client'
 
 // Máy quầy phát tiếng “ding” mỗi lần bác sĩ mời bệnh nhân, để lễ tân gọi bệnh nhân vào đúng phòng.
 // Gắn ở cấp trang Tiếp đón nên ở màn nào cũng nghe; chỉ báo lần gọi phát sinh sau khi mở trang.
@@ -25,12 +24,12 @@ function ding() {
   } catch {/* máy không phát được âm thanh — chỉ hiện trên màn hình */}
 }
 
-// Chạy thật: mỗi called_at mới (mời / gọi lại) giữa hai lần tải là một lần báo.
+// Mỗi called_at mới (mời / gọi lại) giữa hai lần tải là một lần báo.
 const liveCalls = (visits) => invitesOf(visits).map((v) => ({ id: v.id + '@' + v.calledAt }))
 
 export default function useCallAnnouncer() {
-  const { calls: localCalls = [], visits } = useQueue()
-  const calls = useMemo(() => (DEMO_MODE ? localCalls : liveCalls(visits)), [localCalls, visits])
+  const { visits } = useQueue()
+  const calls = useMemo(() => liveCalls(visits), [visits])
   const seen = useRef(null)
   useEffect(() => {
     if (seen.current === null) {

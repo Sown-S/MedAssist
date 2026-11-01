@@ -6,9 +6,7 @@ import { useAuth } from '../../context/AuthContext'
 import { useToast } from '../../context/ToastContext'
 import { translate } from '../../i18n'
 import { takePatient, takeNext, minutesSince, labRows, releaseVisit, leaveVisit, LEFT_REASONS, ST, useQueue, myInvite, inviteAgain, dropInvite } from '../../api/queueStore'
-import { DEMO_MODE } from '../../api/client'
-import { getDraft, deleteDraft } from '../../api/draftStore'
-import { findPatient } from '../../api/patientStore'
+import { deleteDraft } from '../../api/draftStore'
 import { dmy, hhmm } from '../reception/shared'
 import { vitalsText } from '../../api/vitals'
 
@@ -22,8 +20,8 @@ export function useTakePatient(open) {
   const [busy, setBusy] = useState(null)
 
   async function run(target, force = false) {
-    const r = await (target ? takePatient(target.id, user, { force }) : takeNext(user, { force }))
-    // Chạy thật: chỉ gửi lời mời — quầy gọi bệnh nhân vào, bác sĩ bắt đầu khám ở thanh lời mời.
+    const r = await (target ? takePatient(target.id, user, { force }) : takeNext(user))
+    // Chỉ gửi lời mời — quầy gọi bệnh nhân vào, bác sĩ bắt đầu khám ở thanh lời mời.
     if (r.ok && 'invited' in r) {
       const v = r.invited
       return showToast(v ? translate('Invited') + ' ' + no(v.ticket) + ' — ' + v.name + '. ' + translate('Reception will send the patient in.') : translate('Invited'))
@@ -95,7 +93,7 @@ export function InviteBar({ onStart, compact = false }) {
   const { user } = useAuth()
   const { showToast } = useToast()
   const { visits } = useQueue()
-  const v = DEMO_MODE ? null : myInvite(user, visits)
+  const v = myInvite(user, visits)
   if (!v) return null
   const run = async (p, done) => {
     const r = await p
@@ -122,7 +120,7 @@ export function InviteBar({ onStart, compact = false }) {
         <button className="btn btn-ghost btn-sm" onClick={() => run(inviteAgain(v.id), 'Called again')}>
           <Icon name="megaphone" /> Call again
         </button>
-        <button className="btn btn-ghost btn-sm" onClick={() => run(dropInvite(v.id, user), 'Invitation cancelled — the patient keeps their place in the queue')}>
+        <button className="btn btn-ghost btn-sm" onClick={() => run(dropInvite(v.id), 'Invitation cancelled — the patient keeps their place in the queue')}>
           Not here
         </button>
       </div>
@@ -146,7 +144,7 @@ export function pastVisitsOf(patientId, { visits = [], archive = [], history = [
 }
 
 export function PatientBrief({ v, past }) {
-  const p = findPatient(v.patientId) ?? v
+  const p = v
   const last = past[0]
   return (
     <div className="brief">
@@ -214,12 +212,12 @@ export function LabOrderResults({ order, summary }) {
   )
 }
 
-// Bác sĩ khác nhận lại từ hàng chờ chung; phiếu dở đi kèm lượt khám để người sau đọc tiếp.
-export function ReleaseModal({ visit, draft, onClose, onDone }) {
+// Bác sĩ khác nhận lại từ hàng chờ chung.
+export function ReleaseModal({ visit, onClose, onDone }) {
   const { user } = useAuth()
   const { showToast } = useToast()
   async function submit() {
-    const r = await releaseVisit(visit.id, { draft: draft ?? getDraft(visit.id) ?? null }, user)
+    const r = await releaseVisit(visit.id, user)
     if (!r.ok) return showToast(translate(r.error))
     deleteDraft(visit.id)
     showToast('Returned to the waiting queue')
@@ -245,14 +243,14 @@ export function ReleaseModal({ visit, draft, onClose, onDone }) {
   )
 }
 
-// Bắt buộc lý do; ghi chép đã viết được lưu kèm.
-export function LeaveVisitModal({ visit, draft, onClose, onDone }) {
+// Bắt buộc lý do.
+export function LeaveVisitModal({ visit, onClose, onDone }) {
   const { user } = useAuth()
   const { showToast } = useToast()
   const [reason, setReason] = useState(visit.labOut ? 'no_return' : 'left_exam')
   const [note, setNote] = useState('')
   async function submit() {
-    const r = await leaveVisit(visit.id, { reason, note, draft: draft ?? getDraft(visit.id) ?? null }, user)
+    const r = await leaveVisit(visit.id, { reason, note }, user)
     if (!r.ok) return showToast(translate(r.error))
     deleteDraft(visit.id)
     showToast('Visit closed — your notes were kept in the patient’s history')

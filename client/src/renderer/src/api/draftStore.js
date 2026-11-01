@@ -1,9 +1,7 @@
-// Phiếu khám đang viết dở, lưu trên máy để tắt app hay app treo không mất. Chỉ giữ trong ngày; phiếu dở của ngày cũ
-// được đính kèm vào lượt khám khi lưu trữ (staleDraft). Không ghi nhật ký vì chưa phải dữ liệu chính thức.
-import { dayOf } from './invoiceStore'
+// Phiếu khám đang viết dở, lưu trên máy để tắt app hay app treo không mất. Chỉ giữ trong ngày.
 
 const KEY = 'medassist_consult_drafts_v1'
-const today = () => dayOf(new Date().toISOString())
+const today = () => new Date().toLocaleDateString('sv-SE') // yyyy-mm-dd theo giờ máy
 
 function read() {
   try {
@@ -14,8 +12,6 @@ function read() {
 }
 const saved = read()
 let drafts = saved?.day === today() ? saved.drafts : {}
-const stale = saved?.day && saved.day !== today() ? saved.drafts ?? {} : {}
-export const staleDraft = (visitId) => stale[visitId]
 let timer = null
 // Gõ phím nào cũng lưu thì nặng → gom lại, ghi sau 400 ms.
 function persist() {

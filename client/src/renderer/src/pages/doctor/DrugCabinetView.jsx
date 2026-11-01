@@ -5,8 +5,7 @@ import { useToast } from '../../context/ToastContext'
 import { translate } from '../../i18n'
 import { useQueue, isMine, inRoom } from '../../api/queueStore'
 import { useInventory, stockOf, nearDays } from '../../api/inventoryStore'
-import { useAIConfig } from '../../api/aiConfigStore'
-import { fold } from '../../api/patientStore'
+import { fold } from '../../api/patient'
 import { unitLabel, fmtMoney, fmtDate, STATUS, Pager, paginate } from '../admin/inventory/shared'
 import { addDrugToDraft } from './consult/rxDraft'
 
@@ -59,7 +58,6 @@ export default function DrugCabinetView({ go }) {
   const { showToast } = useToast()
   const inv = useInventory()
   const { visits } = useQueue()
-  useAIConfig()
   const [q, setQ] = useState('')
   const [stock, setStock] = useState('')
   const [group, setGroup] = useState('')

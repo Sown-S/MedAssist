@@ -2,7 +2,6 @@ import { useState } from 'react'
 import ICDPicker from '../../../components/ICDPicker'
 import Icon from '../../../components/Icon'
 import { translate } from '../../../i18n'
-import { ICD10 } from '../../admin/ai/catalog'
 
 export function SecondaryDx({ list, onChange }) {
   const [text, setText] = useState('')
@@ -28,7 +27,7 @@ export function SecondaryDx({ list, onChange }) {
       )}
       <div className="dx2-add">
         <div style={{ flex: 1 }}>
-          <ICDPicker value={text} onChange={(v) => (ICD10.some((o) => v.startsWith(o.code + ' — ')) ? add(v) : setText(v))} />
+          <ICDPicker value={text} onChange={setText} onPick={add} />
         </div>
         <button className="btn btn-ghost btn-sm" disabled={!text.trim()} onClick={() => add(text)}>
           + Add

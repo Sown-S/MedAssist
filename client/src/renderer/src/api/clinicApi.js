@@ -82,6 +82,27 @@ export async function setPregnancy(patient, pregnancy) {
   await apiRequest(`${V1}/patients/${patient.id}`, 'PATCH', { medical_history: mh })
 }
 
+// Dị ứng / bệnh nền bác sĩ xác nhận. Bệnh nền hiển thị gộp (chronic_conditions + notes) nên ghi lại cả đoạn vào notes;
+// các khoá khác của medical_history (mang thai…) giữ nguyên.
+export async function updateClinical(patientId, { allergies, history }) {
+  const { chronic_conditions: _old, notes: _notes, ...mh } = (await getPatient(patientId)).medicalHistory ?? {}
+  const notes = history.trim()
+  const body = { allergy_notes: allergies.trim() || null, medical_history: { ...mh, ...(notes ? { notes } : {}) } }
+  return toPatient(await apiRequest(`${V1}/patients/${patientId}`, 'PATCH', body))
+}
+
+// Sửa thông tin hành chính ở quầy. CCCD trùng hồ sơ khác → server trả 409 kèm câu lỗi tiếng Việt.
+export async function updatePatient(id, f) {
+  const body = {
+    full_name: f.name.trim(),
+    date_of_birth: isoDob(f.dob),
+    gender: f.gender,
+    phone: String(f.phone).trim() || null,
+    id_number: String(f.idNumber).trim() || null
+  }
+  return toPatient(await apiRequest(`${V1}/patients/${id}`, 'PATCH', body))
+}
+
 // Lý do khám (bắt buộc) = câu đầu của lời kể; lời kể đầy đủ dùng cho AI trích xuất triệu chứng.
 export const chiefComplaintOf = (text) => (String(text ?? '').trim().split(/[.\n]/)[0].trim() || 'Khám bệnh').slice(0, 2000)
 

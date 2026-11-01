@@ -5,7 +5,7 @@ import { translate } from '../../../i18n'
 import { reasonLabel, loadMovesFor } from '../../../api/inventoryStore'
 import { MOVE_TYPES, fmtDateTime, unitLabel, exportCsv } from './shared'
 
-// Chạy thật: phiếu kho nạp khi mở (loadMovesFor); bản demo đã có sẵn trong moves.
+// Phiếu kho nạp từ server khi mở (loadMovesFor).
 export default function StockCardModal({ drug, moves, onClose }) {
   const [type, setType] = useState('all')
   useEffect(() => {

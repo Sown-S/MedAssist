@@ -1,7 +1,6 @@
 // Theo dõi kết nối máy chủ (NFR08): hỏi GET /health khoảng 3 giây một lần. Không trả lời → chế độ chỉ đọc,
-// khoá mọi thao tác ghi; có lại thì tự mở. Bản demo chỉ dựa vào navigator.onLine.
+// khoá mọi thao tác ghi; có lại thì tự mở.
 import { useEffect, useSyncExternalStore } from 'react'
-import { DEMO_MODE } from './client'
 import { getBaseUrl } from './serverConfig'
 
 const INTERVAL_MS = 3000
@@ -14,7 +13,6 @@ const subscribe = (f) => (subs.add(f), () => subs.delete(f))
 const snapshot = () => online && reachable
 
 async function probe() {
-  if (DEMO_MODE) return
   let ok = false
   try {
     const res = await fetch(getBaseUrl() + '/health', { signal: AbortSignal.timeout(TIMEOUT_MS), cache: 'no-store' })
@@ -35,10 +33,8 @@ function start() {
   started = true
   window.addEventListener('online', () => ((online = true), emit(), probe()))
   window.addEventListener('offline', () => ((online = false), emit()))
-  if (!DEMO_MODE) {
-    probe()
-    setInterval(probe, INTERVAL_MS)
-  }
+  probe()
+  setInterval(probe, INTERVAL_MS)
 }
 
 export function useServerOnline() {

@@ -61,7 +61,7 @@ Máy client (Windows)              Máy admin (Docker Compose)
 | Kiểm thử trên một máy, có sẵn tài khoản và dữ liệu mẫu | [docs/huong-dan-kiem-thu.md](docs/huong-dan-kiem-thu.md) |
 | Cài máy admin cho phòng khám hoặc buổi demo | [deploy/README.md](deploy/README.md) |
 | Chạy backend trên máy dev | [server/README.md](server/README.md) mục 2 |
-| Chạy ứng dụng desktop (giả lập hoặc nối server) | [client/README.md](client/README.md) mục 1 |
+| Chạy ứng dụng desktop | [client/README.md](client/README.md) mục 1 |
 | Dùng phần mềm theo vai trò | [docs/huong-dan-su-dung.md](docs/huong-dan-su-dung.md) |
 | Chuẩn bị demo, kiểm thử AI | [docs/huong-dan-demo-kiem-thu-ai.md](docs/huong-dan-demo-kiem-thu-ai.md) |
 | Đóng góp code | [CONTRIBUTING.md](CONTRIBUTING.md) |

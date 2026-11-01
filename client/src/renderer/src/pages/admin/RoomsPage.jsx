@@ -3,8 +3,6 @@ import Icon from '../../components/Icon'
 import { useToast } from '../../context/ToastContext'
 import { translate } from '../../i18n'
 import { listRooms, createRoom, updateRoom, ROOM_TYPES } from '../../api/roomStore'
-import { listAccounts } from '../../api/accountStore'
-import { DEMO_MODE } from '../../api/client'
 
 const EMPTY = { code: '', name: '', type: 'Exam' }
 
@@ -18,7 +16,7 @@ export default function RoomsPage({ onNavigate }) {
 
   async function refresh() {
     try {
-      setRooms(await listRooms({ includeInactive: true, accounts: DEMO_MODE ? await listAccounts() : [] }))
+      setRooms(await listRooms({ includeInactive: true }))
       setError('')
     } catch (e) {
       setError(e.message)
@@ -37,7 +35,7 @@ export default function RoomsPage({ onNavigate }) {
     refresh()
   }
   async function toggle(r) {
-    const res = await updateRoom(r.id, { active: !r.active }, { inUse: !!r.physician })
+    const res = await updateRoom(r.id, { active: !r.active })
     if (!res.ok) return showToast(translate(res.error))
     showToast(r.active ? 'Room no longer in use' : 'Room back in use')
     refresh()

@@ -4,7 +4,7 @@ import { translate } from '../../i18n'
 import { useAuth } from '../../context/AuthContext'
 import { useToast } from '../../context/ToastContext'
 import { useInventory, stockOf, setDrugActive, todayISO } from '../../api/inventoryStore'
-import { ConfirmDialog, Empty } from './ai/ui'
+import { ConfirmDialog, Empty } from './ui'
 import DrugFormModal from './inventory/DrugFormModal'
 import { SortTh, Pager, paginate, exportCsv, unitLabel, fmtMoney, fmtNum } from './inventory/shared'
 
@@ -51,7 +51,7 @@ export default function DrugCatalogPage({ params, onNavigate }) {
       <div className="page-head">
         <div>
           <h1>Drugs &amp; supplies</h1>
-          <p>Master data shared by prescribing, invoices and the interaction check. Stock levels are in Inventory › Stock &amp; expiry.</p>
+          <p>Master data shared by prescribing and invoices. Stock levels are in Inventory › Stock &amp; expiry.</p>
         </div>
         <button className="btn btn-ghost btn-sm" onClick={() => onNavigate('inventory')}>
           <Icon name="box" /> <span>Stock &amp; expiry</span>
@@ -67,7 +67,7 @@ export default function DrugCatalogPage({ params, onNavigate }) {
             <b>
               <span className="mono">{missingAtc}</span> <span>drugs have no ATC code</span>
             </b>
-            They are skipped by the drug interaction check.
+            Antibiotics among them are not recognised as prescription-only.
           </div>
         </div>
       )}
@@ -185,7 +185,7 @@ export default function DrugCatalogPage({ params, onNavigate }) {
         )}
         <p className="ai-foot-note">
           <Icon name="help" />{' '}
-          <span>Selling prices here fill invoices automatically; ATC codes feed the drug interaction check; the essential flag drives the checkout warning.</span>
+          <span>Selling prices here fill invoices automatically; ATC codes mark antibiotics (J01) as prescription-only; the essential flag drives the checkout warning.</span>
         </p>
       </div>
 
@@ -203,8 +203,8 @@ export default function DrugCatalogPage({ params, onNavigate }) {
         confirmLabel={toggle?.d.active ? 'Discontinue' : 'Re-activate'}
         danger={toggle?.d.active}
         requireNote
-        onConfirm={async (note) => {
-          const r = await setDrugActive(toggle.d.id, !toggle.d.active, user, note)
+        onConfirm={async () => {
+          const r = await setDrugActive(toggle.d.id, !toggle.d.active)
           if (r?.ok === false) return showToast(translate(r.error))
           showToast(toggle.d.active ? 'Drug discontinued' : 'Drug re-activated')
           setToggle(null)
