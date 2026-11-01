@@ -756,6 +756,9 @@ function ConsultForm({ visit, user, onDone, onNext }) {
             </button>
           )}
         </div>
+        <p className="ai-soft" style={{ fontSize: 12, margin: '4px 0 0' }}>
+          Reference templates — the doctor adjusts the drugs, doses and duration for each patient.
+        </p>
 
         {d.rx.length > 0 ? (
           <div className="rx-lines">

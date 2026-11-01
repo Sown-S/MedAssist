@@ -8,6 +8,7 @@ import { normalizeVitals, vitalsToForm } from '../../../api/vitals'
 
 // Đơn mẫu theo hoạt chất + hàm lượng (+ dạng bào chế ưu tiên), tra ra thuốc của danh mục server lúc áp dụng: tên hiển thị
 // của server ghép từ tên thương mại nên không so theo tên. Cách dùng viết tiếng Việt vì đơn in cho bệnh nhân.
+// Số lượng / cách dùng chưa đối chiếu tài liệu y khoa — giao diện ghi rõ là đơn tham khảo, bác sĩ tự điều chỉnh.
 const dose = (m, n, a, e, days, meal = 'after') => ({ m: m ? String(m) : '', n: n ? String(n) : '', a: a ? String(a) : '', e: e ? String(e) : '', days: String(days), meal })
 export const RX = {
   throat: [

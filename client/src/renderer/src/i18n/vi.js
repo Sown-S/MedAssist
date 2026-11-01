@@ -1110,6 +1110,8 @@ export const VI = {
   'Weight (kg)': 'Cân nặng (kg)',
   'No recorded drug allergies.': 'Chưa ghi nhận dị ứng thuốc.',
   'Templates:': 'Đơn mẫu:',
+  'Reference templates — the doctor adjusts the drugs, doses and duration for each patient.':
+    'Đơn mẫu tham khảo — bác sĩ tự điều chỉnh thuốc, liều và số ngày cho từng bệnh nhân.',
   'Repeat last prescription': 'Lặp lại đơn gần nhất',
   'No drugs yet': 'Chưa có thuốc',
   'Search the catalog, pick a template or repeat the last prescription. A visit can also be completed without drugs.':
