@@ -80,7 +80,10 @@ PR chỉ merge khi CI xanh. Không đổi migration đã merge: thay đổi CSDL
    git tag -a v0.N-sprintN -m "Kết thúc Sprint N"
    git push origin v0.N-sprintN
    ```
-4. Trên Trello: chỉ kéo card sang Done khi PR chứa code của card đã merge vào `develop`.
+4. Cần bản cài mới cho người kiểm thử: tăng `version` trong `client/package.json` (và `package-lock.json`) qua PR, rồi gắn tag
+   trùng phiên bản trên `main`, vd `git tag v0.2.0` rồi `git push origin v0.2.0`. Workflow `.github/workflows/release.yml` build
+   bản cài Windows và macOS, tạo Release kèm file (khoảng 15 phút).
+5. Trên Trello: chỉ kéo card sang Done khi PR chứa code của card đã merge vào `develop`.
 
 ## 5. Quy tắc chú thích trong code
 

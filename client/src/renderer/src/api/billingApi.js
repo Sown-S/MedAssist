@@ -79,3 +79,20 @@ export function useAwaiting({ enabled = true, ms = 4000 } = {}) {
   }, [enabled, ms, tick])
   return { list, loaded, error, reload: () => setTick((n) => n + 1) }
 }
+
+// Hoá đơn hôm nay (không gồm hoá đơn huỷ) cho thẻ tổng quan của Lễ tân.
+export function useTodayInvoices({ enabled = true, ms = 10000 } = {}) {
+  const [list, setList] = useState([])
+  useEffect(() => {
+    if (!enabled) return
+    let alive = true
+    const load = () => listInvoices().then((x) => alive && setList(x), () => {})
+    load()
+    const t = setInterval(load, ms)
+    return () => {
+      alive = false
+      clearInterval(t)
+    }
+  }, [enabled, ms])
+  return list
+}

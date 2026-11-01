@@ -151,7 +151,7 @@ python -m scripts.import_okf --approve-as bs01  # máy dev: tạo bản phát h�
 - Chỉ mục mới hoặc có nội dung khác mới tạo phiên bản mới; chạy lại khi không có gì đổi thì báo "Không có thay đổi".
 - Bản sửa sau: đổi `label` trong `knowledge/_release.md` (vd `KB-2026.02`) rồi chạy lại. Nên đổi nhãn mỗi lần nạp nội dung mới,
   nếu không sẽ khó biết máy đang chạy bản nào.
-- Kho hiện tại: 124 bệnh, 99 triệu chứng, 11 luật (9 cờ đỏ, 2 sàn ưu tiên), 11 nguồn Bộ Y tế.
+- Kho hiện tại: 199 bệnh, 97 triệu chứng, 12 luật (9 cờ đỏ, 3 sàn ưu tiên), 11 nguồn Bộ Y tế.
 - Không có `--approve-as`: tạo bản **Draft** (thêm `--submit` để gửi duyệt) chờ bác sĩ duyệt qua API quản trị tri thức.
 - Người duyệt phải là Physician khác người soạn (mặc định người soạn là tài khoản `system`, đổi bằng `--as <admin>`).
 - `--retire-missing`: mục đang Active mà đã bị xóa khỏi thư mục sẽ bị tắt khi kích hoạt.
@@ -277,6 +277,20 @@ python -m scripts.seed_drugs --deactivate-others # ngừng dùng thuốc không 
 - **Chạy lại không cập nhật** thuốc đã có (giá, tên...). Sửa thuốc đã có: giao diện / `PATCH /api/v1/drugs/{id}`.
 - Tạo / cập nhật `drugs.csv` (đối chiếu văn bản, thêm thuốc, giá): công cụ ở `tools/drug_data/` — xem README trong đó.
 
+### Dữ liệu cho môi trường kiểm thử (`scripts.seed_eval`)
+
+Nạp một lượt: tài khoản `admin`, `bs01`, `bs02`, `letan01` (mật khẩu chung lấy từ biến `EVAL_PASSWORD`, mặc định
+`Kiemthu@2026`), thuốc có lô, dịch vụ, cơ sở chuyển tuyến, tri thức Active, khoảng 34 lượt khám đã xong trong 14 ngày trước
+và 15 lượt trong hàng đợi hôm nay. Ca mẫu ở `server/data/eval_cases.jsonl`. Chạy lại an toàn: phần nào đã có thì bỏ qua,
+hàng đợi chỉ tạo khi hôm nay chưa có lượt nào. Dịch vụ `seed` của `deploy/docker-compose.eval.yml` tự chạy script này.
+
+```powershell
+python -m scripts.seed_eval --knowledge-dir ..\knowledge    # máy dev, CSDL trống
+```
+
+Lượt khám cũ được tạo qua đúng service rồi dời mốc thời gian về ngày trước; `audit_log` và `stock_movement` chỉ ghi thêm
+nên giữ giờ thật lúc nạp. Không chạy trên CSDL phòng khám thật.
+
 ---
 
 ## 7. Làm lại CSDL từ đầu
@@ -348,6 +362,7 @@ Tiền tố `/api/v1`. Chi tiết tham số và schema: **Swagger `/docs`** (lu�
 | Trích xuất triệu chứng | `POST visits/{id}/symptom-extraction`; `GET …/symptom-extraction` (gợi ý, phải xác nhận qua `PUT …/symptoms`) | Nurse chạy; Physician, Nurse xem |
 | Chẩn đoán | `GET/POST visits/{id}/diagnoses`; `PATCH diagnoses/{id}`; `POST diagnoses/{id}/retract` | Physician đang khám; Nurse xem |
 | Đơn thuốc | `GET/PUT/DELETE visits/{id}/prescription`; `POST …/prescription/confirm`, `…/prescription/reopen`; `POST visits/{id}/complete-exam` | Physician đang khám; Nurse xem |
+| Danh sách đơn thuốc | `GET prescriptions` (`date_from`, `date_to`, mặc định hôm nay; `physician_id`): đơn đã xác nhận kèm trạng thái hóa đơn, tối đa 500 | Physician, Nurse |
 | Cấp phát, thu tiền | `GET billing/awaiting`; `GET billing/invoices` (`date`, `include_cancelled`); `GET/PATCH visits/{id}/invoice`; `GET …/invoice/print`; `POST …/invoice/pay`; `PATCH prescription-items/{id}/dispense`; `POST visits/{id}/dispense-all` | Nurse; Physician xem hóa đơn |
 | Tri thức: bản phát hành | `GET/POST admin/knowledge/releases`; `GET …/releases/{id}` (kèm thay đổi); `POST …/{id}/submit`; `POST …/{id}/approve`, `…/{id}/reject` | Admin soạn, gửi duyệt; Physician duyệt / từ chối |
 | Tri thức: soạn nháp | `PUT admin/knowledge/symptoms/{mã}`, `conditions/{mã}`, `relations/{bệnh}/{triệu chứng}`, `excerpts/{mã}`, `rules/{mã}`; `DELETE …/{loại}/{mã}/draft`; `GET/POST admin/knowledge/sources` | Admin |
@@ -405,8 +420,8 @@ server/
 │   └── main.py
 ├── alembic/           # migration 0001–0006 (alembic.ini ở server/)
 ├── db/                # initdb (vai trò, múi giờ, medassist_test), lược đồ v1.8, tài khoản system
-├── data/              # drugs.csv + README (nguồn danh mục thuốc)
-├── scripts/           # create_user, seed_drugs, seed_services, import_okf (dùng code của app)
+├── data/              # drugs.csv, services.csv, hospitals.csv, eval_cases.jsonl + README
+├── scripts/           # create_user, seed_drugs, seed_services, seed_referral_facilities, import_okf, seed_eval
 ├── tests/             # api/, unit/ (kể cả unit/ai/) — chạy trên medassist_test
 ├── Dockerfile         # image dùng chung cho api, worker, migrate trên máy admin
 ├── .env.example

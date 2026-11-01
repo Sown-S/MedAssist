@@ -9,13 +9,15 @@ App không có quyền DELETE: đơn nháp sửa = hủy đơn nháp cũ + tạo
 confirmed_by_physician = FALSE (không còn tính là chẩn đoán đã xác nhận).
 Nhật ký chỉ ghi tên trường / số lượng, không ghi tên bệnh hay tên thuốc (dữ liệu sức khỏe).
 """
+import datetime
 import uuid
 
-from sqlalchemy import func, select, update
+from sqlalchemy import Date, cast, func, select, update
 from sqlalchemy.orm import Session
 
 from app.exceptions import AppError, NotFoundError
-from app.models import Condition, Diagnosis, Drug, Patient, Prescription, PrescriptionItem, User, Visit
+from app.models import Condition, Diagnosis, Drug, Invoice, Patient, Prescription, PrescriptionItem, User, Visit
+from app.schemas.patient import patient_code
 from app.schemas.diagnosis import DiagnosisCreate, DiagnosisUpdate
 from app.schemas.prescription import PrescriptionDraft
 from app.services import audit_service as audit
@@ -289,3 +291,52 @@ def reopen(db: Session, visit_id: uuid.UUID, reason: str, actor: User) -> None:
     if invoice is not None:
         invoice_service.cancel(db, invoice, f"Bác sĩ mở lại đơn: {reason}", actor)
     queue_service.reopen_exam(db, visit_id, actor)
+
+
+LIST_LIMIT = 500
+
+
+def list_confirmed(db: Session, date_from: datetime.date | None, date_to: datetime.date | None,
+                   physician_id: uuid.UUID | None = None) -> list[dict]:
+    """Đơn đã xác nhận (Confirmed, Dispensed) theo ngày xác nhận, mới nhất trước, kèm trạng thái hóa đơn."""
+    date_from = date_from or date_to or db.scalar(select(func.current_date()))
+    date_to = date_to or date_from
+    if date_to < date_from:
+        raise AppError(422, "INVALID_RANGE", "Ngày kết thúc phải sau ngày bắt đầu")
+    stmt = (select(Prescription, Visit, Patient, User.full_name)
+            .join(Visit, Visit.visit_id == Prescription.visit_id)
+            .join(Patient, Patient.patient_id == Visit.patient_id)
+            .join(User, User.user_id == Prescription.physician_id)
+            .where(Prescription.status.in_(("Confirmed", "Dispensed")),
+                   cast(Prescription.confirmed_at, Date).between(date_from, date_to)))
+    if physician_id is not None:
+        stmt = stmt.where(Prescription.physician_id == physician_id)
+    rows = db.execute(stmt.order_by(Prescription.confirmed_at.desc()).limit(LIST_LIMIT)).all()
+    if not rows:
+        return []
+    ids = [rx.prescription_id for rx, *_ in rows]
+    lines: dict[uuid.UUID, list] = {i: [] for i in ids}
+    for item, drug in db.execute(select(PrescriptionItem, Drug).join(Drug, Drug.drug_id == PrescriptionItem.drug_id)
+                                 .where(PrescriptionItem.prescription_id.in_(ids))
+                                 .order_by(Drug.generic_name, PrescriptionItem.item_id)).all():
+        lines[item.prescription_id].append((item, drug))
+    invoices = {inv.visit_id: inv for inv in db.scalars(
+        select(Invoice).where(Invoice.visit_id.in_([v.visit_id for _, v, *_ in rows]),
+                              Invoice.payment_status != "Cancelled"))}
+    out = []
+    for rx, visit, patient, physician_name in rows:
+        inv = invoices.get(visit.visit_id)
+        items = lines[rx.prescription_id]
+        out.append({
+            "prescription_id": rx.prescription_id, "visit_id": visit.visit_id, "visit_date": visit.visit_date,
+            "queue_number": visit.queue_number, "patient_code": patient_code(patient.patient_id),
+            "patient_name": patient.full_name, "physician_id": rx.physician_id, "physician_name": physician_name,
+            "status": rx.status, "confirmed_at": rx.confirmed_at,
+            "items": [{"drug_name": invoice_service.drug_label(d), "unit": d.unit, "quantity": i.quantity,
+                       "dosage": i.dosage, "frequency": i.frequency, "duration_days": i.duration_days,
+                       "dispense_status": i.dispense_status} for i, d in items],
+            "drug_total": sum((d.sale_price * i.quantity for i, d in items if i.dispense_status != "Skipped"), 0),
+            "invoice_status": inv.payment_status if inv else None,
+            "invoice_total": inv.total_amount if inv else None,
+        })
+    return out
