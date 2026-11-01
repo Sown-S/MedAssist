@@ -25,8 +25,7 @@ beforeEach(async () => {
   localStorage.clear()
   server = [
     { id: 'w1', ticket: 1, name: 'Bệnh nhân chờ', status: 'Waiting', doctor: '', doctorId: null, room: '' },
-    { id: 'e1', ticket: 2, name: 'Bệnh nhân đang khám', status: 'Examining', doctor: DOC_A.name, doctorId: DOC_A.id, room: DOC_A.room },
-    { id: 'p1', ticket: 3, name: 'Bệnh nhân chờ thanh toán', status: 'Prescribed', doctor: DOC_B.name, doctorId: DOC_B.id, room: DOC_B.room }
+    { id: 'e1', ticket: 2, name: 'Bệnh nhân đang khám', status: 'Examining', doctor: DOC_A.name, doctorId: DOC_A.id, room: DOC_A.room }
   ]
   stale = [{ id: 's1', ticket: 9, name: 'Lượt hôm qua', status: 'CheckedIn', carriedFrom: '2026-10-31' }]
   const find = (id) => server.find((v) => v.id === id)
@@ -47,7 +46,8 @@ beforeEach(async () => {
     labOut: vi.fn(async () => {}),
     labReturn: vi.fn(async () => {})
   }
-  exam = { reopenPrescription: vi.fn(async (id) => Object.assign(find(id), { status: 'Examining' })) }
+  // Như server thật: lượt Prescribed không nằm trong GET /queue; mở lại đơn thì lượt về Examining và hiện lại.
+  exam = { reopenPrescription: vi.fn(async (id) => server.push({ id, ticket: 3, name: 'Bệnh nhân chờ thanh toán', status: 'Examining', doctor: DOC_B.name, doctorId: DOC_B.id, room: DOC_B.room })) }
   await load()
 })
 afterEach(() => {
@@ -106,22 +106,33 @@ describe('Trả bệnh nhân về hàng chờ (server thật)', () => {
   })
 })
 
+// Một dòng của GET /prescriptions sau fromServerRx.
+const rxRow = (over = {}) => ({ visitId: 'p1', doctorId: DOC_B.id, status: 'Confirmed', pay: 'unpaid', rx: [{ name: 'Paracetamol 500mg', dispense: 'Pending' }], ...over })
+
 describe('Thu hồi đơn chờ thanh toán (server thật)', () => {
   it('bác sĩ kê đơn, phòng đang trống → reopen kèm lý do tiếng Việt, lượt về Đang khám', async () => {
-    expect(await queue.recallVisit('p1', DOC_B)).toEqual({ ok: true })
+    expect(queue.canRecall(rxRow(), DOC_B)).toBe(true)
+    expect(await queue.recallVisit(rxRow(), DOC_B)).toEqual({ ok: true })
     expect(exam.reopenPrescription).toHaveBeenCalledWith('p1', expect.stringMatching(/thu hồi/))
     expect(visit('p1').status).toBe('Examining')
   })
 
   it('bác sĩ khác không thu hồi được', async () => {
-    expect((await queue.recallVisit('p1', DOC_A)).ok).toBe(false)
+    expect(queue.canRecall(rxRow(), DOC_A)).toBe(false)
+    expect((await queue.recallVisit(rxRow(), DOC_A)).ok).toBe(false)
+    expect(exam.reopenPrescription).not.toHaveBeenCalled()
+  })
+
+  it('đã thu tiền hoặc đã cấp thuốc → không thu hồi được', async () => {
+    expect((await queue.recallVisit(rxRow({ pay: 'paid' }), DOC_B)).error).toMatch(/awaiting payment/)
+    expect((await queue.recallVisit(rxRow({ rx: [{ name: 'Paracetamol 500mg', dispense: 'Dispensed' }] }), DOC_B)).error).toMatch(/already been dispensed/)
     expect(exam.reopenPrescription).not.toHaveBeenCalled()
   })
 
   it('bác sĩ còn bệnh nhân trong phòng → phải xong người đó trước', async () => {
     server[1] = { ...server[1], doctor: DOC_B.name, doctorId: DOC_B.id, room: DOC_B.room }
     await queue.syncQueue()
-    const r = await queue.recallVisit('p1', DOC_B)
+    const r = await queue.recallVisit(rxRow(), DOC_B)
     expect(r.ok).toBe(false)
     expect(r.error).toMatch(/Finish the patient in your room first/)
     expect(exam.reopenPrescription).not.toHaveBeenCalled()

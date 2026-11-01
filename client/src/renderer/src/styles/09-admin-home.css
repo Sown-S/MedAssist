@@ -30,7 +30,6 @@
 .ai-metric .val{font-size:30px;font-weight:700;color:var(--ink);}
 .shortcut-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
 .shortcut-grid .btn{text-align:left;color:var(--ink);}
-table.dt tr.row-warn td{color:#FCA5A5;}
 
 /* Chọn ngôn ngữ ở trang đăng nhập */
 .login-lang{display:flex;justify-content:center;gap:6px;margin-top:14px;}

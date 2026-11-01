@@ -1,5 +1,5 @@
 import { vi } from 'vitest'
-import { DOC_A } from './helpers'
+import { DOC_A, DOC_B } from './helpers'
 
 // Server giả cho test giao diện: thay fetch, trả JSON đúng hình dạng API cho các endpoint màn hình gọi lúc dựng.
 // Endpoint không khai báo: có limit= → trang rỗng { items, total }, còn lại → mảng rỗng.
@@ -22,9 +22,15 @@ const SUMMARY = {
   ai: { assessments: zero, decisions: { accepted_top: 0, chose_other: 0, no_suggestion: 0, acceptance_rate: null }, extractions: { total: 0, completed: 0, failed: 0 } }
 }
 
+// Đơn của bác sĩ B (phòng đang trống) còn chờ thanh toán, chưa cấp thuốc → thu hồi được.
+const PRESCRIPTIONS = [
+  { prescription_id: 'rx1', visit_id: 'v-paid-wait', visit_date: today, queue_number: 5, patient_code: 'BN000005', patient_name: 'Lê Văn Cường', physician_id: DOC_B.id, physician_name: DOC_B.name, status: 'Confirmed', confirmed_at: today, items: [{ drug_name: 'Paracetamol 500mg', unit: 'viên', quantity: 10, dosage: '1 viên', frequency: '3 lần/ngày', duration_days: 3, dispense_status: 'Pending' }], drug_total: '20000', invoice_status: 'Pending', invoice_total: '120000' }
+]
+
 const ROUTES = [
   [/^\/health$/, () => ({ status: 'healthy', database: { ok: true, detail: '' }, ai: { ok: true, detail: '' }, version: 'test' })],
   [/^\/api\/v1\/queue$/, () => QUEUE],
+  [/^\/api\/v1\/prescriptions$/, () => PRESCRIPTIONS],
   [/^\/api\/v1\/symptoms$/, () => [{ symptom_code: 'fever', symptom_name: 'Sốt', category: 'constitutional' }]],
   [/^\/api\/v1\/reports\/summary/, () => SUMMARY],
   [/^\/api\/v1\/auth\/password-policy$/, () => ({ min_length: 8, require_letters_and_digits: true, max_failed_attempts: 5, failed_window_minutes: 15, lock_minutes: 5 })],
@@ -52,7 +58,11 @@ async function respond(url, init = {}) {
   return new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } })
 }
 
-export function installFakeServer() {
+export function resetCalls() {
   calls.length = 0
+}
+
+export function installFakeServer() {
+  resetCalls()
   vi.stubGlobal('fetch', vi.fn(respond))
 }

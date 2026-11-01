@@ -35,11 +35,6 @@
 .stale-close{margin-top:10px;padding-top:10px;border-top:1px solid var(--border);}
 
 /* Phân loại lúc tiếp đón (cổng cờ đỏ) */
-.triage-strip{display:flex;align-items:flex-start;gap:10px;flex-wrap:wrap;margin:8px 0 10px;padding:10px 12px;border-radius:11px;background:var(--surface-alt);border:1px solid var(--border);font-size:13px;}
-.triage-strip .txt{flex:1;min-width:200px;display:flex;flex-direction:column;gap:3px;color:var(--ink);}
-.triage-strip .need{color:#FCD34D;}
-.triage-strip.high{border-color:rgba(252,211,77,.45);}
-.triage-strip.emergency{background:rgba(239,68,68,.12);border-color:rgba(239,68,68,.6);}
 .call-chip.emerg{background:rgba(239,68,68,.25);color:#FCA5A5;}
 
 /* Ô ngày sinh dd/mm/yyyy + nút lịch */

@@ -26,7 +26,6 @@
 .intake-print{display:flex;align-items:center;gap:8px;height:40px;font-size:13.5px;color:var(--ink);cursor:pointer;}
 .intake-print input{accent-color:var(--primary);}
 @media (max-width:900px){.vitals-grid{grid-template-columns:repeat(2,minmax(0,1fr));}}
-.field-ask{border-color:var(--priority) !important;background:var(--priority-soft) !important;}
 .sym-panel{display:flex;flex-direction:column;gap:8px;}
 /* Dải “Tiếp theo” ở bảng gọi: đã check-in (✓) / chưa check-in (bấm để check-in) */
 button.call-chip{font:inherit;cursor:pointer;border:1px dashed var(--border);}
@@ -46,9 +45,6 @@ button.call-chip:hover{border-color:var(--accent);}
 .sym-chip.absent .sym-chip-state{background:rgba(148,163,184,.18);color:var(--ink-soft);}
 .sym-chip .sym-chip-ok:hover{color:#86EFAC;}
 .sym-chip .sym-chip-x:hover{color:#FCA5A5;}
-.sym-ask{display:flex;align-items:center;flex-wrap:wrap;gap:6px 10px;padding:8px 10px;border-radius:10px;border:1px solid rgba(245,158,11,.45);background:var(--priority-soft);font-size:13px;color:#FDE68A;}
-.sym-ask svg{width:15px;height:15px;}
-.sym-ask-item{display:inline-flex;align-items:center;gap:4px;color:var(--ink);}
 /* Nhóm triệu chứng thu gọn / mở rộng */
 .sym-section{border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:2px 8px 6px;}
 .sym-section.danger{border-color:rgba(239,68,68,.25);}
@@ -65,7 +61,6 @@ button.call-chip:hover{border-color:var(--accent);}
 /* Cụm Có / Không / Chưa rõ cố định bên phải để các hàng luôn thẳng cột */
 .sym-row{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:10px;min-height:36px;padding:3px 6px;border-radius:8px;font-size:13px;}
 .sym-row.set{background:rgba(255,255,255,.035);}
-.sym-row.ask{box-shadow:0 0 0 1px var(--priority) inset;}
 .sym-name{display:flex;flex-direction:column;min-width:0;line-height:1.3;}
 .sym-src{font-size:11px;color:var(--accent);}
 .sym-seg{flex-wrap:nowrap;flex-shrink:0;}

@@ -232,14 +232,16 @@ export function takeNext(user) {
   if (busy.length) return { ok: false, busy: busy[0], target: { ...busy[0], priority: false }, error: 'Finish the patient in your room first — finalize the visit or send them for lab tests.' }
   return inviteNext()
 }
-// Mở lại đơn vừa chốt để sửa. Server kiểm lại (chưa thu tiền, chưa cấp thuốc), hoàn kho, huỷ đơn và hoá đơn, đưa lượt về
-// Examining. Đơn đã thu tiền / xuất kho là chứng từ: không sửa, kê đơn mới ở lần khám sau.
-export function recallVisit(id, user) {
-  const v = state.visits.find((x) => x.id === id)
-  if (!v || v.status !== ST.PRESCRIBED) return { ok: false, error: 'Only prescriptions still awaiting payment can be recalled.' }
-  if (!isMine(v, user)) return { ok: false, error: 'Only the prescribing doctor can recall this prescription.' }
+// Thu hồi đơn vừa chốt để sửa. rx là một dòng của GET /prescriptions (fromServerRx): GET /queue không có lượt Prescribed
+// nên kiểm theo dòng đơn. Server kiểm lại, hoàn kho, huỷ đơn và hoá đơn chờ thu, đưa lượt về Examining.
+// Đơn đã thu tiền / đã cấp thuốc là chứng từ: không sửa, kê đơn mới ở lần khám sau.
+export const canRecall = (rx, user) => rx.doctorId === user.id && rx.status === 'Confirmed' && rx.pay !== 'paid' && rx.rx.every((x) => x.dispense === 'Pending')
+export function recallVisit(rx, user) {
+  if (rx.doctorId !== user.id) return { ok: false, error: 'Only the prescribing doctor can recall this prescription.' }
+  if (rx.status !== 'Confirmed' || rx.pay === 'paid') return { ok: false, error: 'Only prescriptions still awaiting payment can be recalled.' }
+  if (!canRecall(rx, user)) return { ok: false, error: 'Some drugs have already been dispensed — the prescription can no longer be reopened.' }
   if (inRoomOf(user).length) return { ok: false, error: 'Finish the patient in your room first — finalize the visit or send them for lab tests.' }
-  return apiReopen(id, 'Bác sĩ thu hồi đơn để sửa').then(
+  return apiReopen(rx.visitId, 'Bác sĩ thu hồi đơn để sửa').then(
     async () => (await syncQueue(), { ok: true }),
     (e) => ({ ok: false, error: e.message })
   )

@@ -163,7 +163,6 @@ export default function CatalogDetailPage({ catalogKey, params, onNavigate }) {
         message={toggle?.active ? 'The code can no longer be chosen for new records. Existing records keep it.' : 'The code can be chosen again.'}
         confirmLabel={toggle?.active ? 'Discontinue' : 'Re-activate'}
         danger={toggle?.active}
-        requireNote={toggle?.active}
         onConfirm={async () => {
           const r = await setLiveActive(catalogKey, toggle.id, !toggle.active)
           if (!r.ok) return showToast(translate(r.error))

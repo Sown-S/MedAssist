@@ -2,6 +2,9 @@ import { Fragment, useState } from 'react'
 import Icon from '../../components/Icon'
 import { translate } from '../../i18n'
 import { usePrescriptions } from '../../api/prescriptionApi'
+import { canRecall, recallVisit } from '../../api/queueStore'
+import { useAuth } from '../../context/AuthContext'
+import { useToast } from '../../context/ToastContext'
 import { printHtml, esc } from '../admin/inventory/shared'
 import { fold } from '../../api/patient'
 import { ticketNo } from '../../components/queuePrint'
@@ -14,8 +17,13 @@ const STATUS_FILTERS = [
   { key: 'paid', label: 'Paid' }
 ]
 
-// Chạy với server: đơn đã xác nhận theo kỳ từ GET /prescriptions. Bấm một dòng để xem các thuốc.
-export default function PrescriptionsLive({ initialDoctorId = '', initialDoctorName = '' }) {
+// Đơn đã xác nhận theo kỳ từ GET /prescriptions. Bấm một dòng để xem các thuốc. onRecalled (màn bác sĩ): có nút thu hồi
+// đơn còn chờ thanh toán của chính mình để sửa; thu hồi xong gọi onRecalled(visitId) để mở phòng khám.
+export default function PrescriptionsLive({ initialDoctorId = '', initialDoctorName = '', onRecalled }) {
+  const { user } = useAuth()
+  const { showToast } = useToast()
+  const [asking, setAsking] = useState(null)
+  const [recalling, setRecalling] = useState(false)
   const [q, setQ] = useState('')
   const [period, setPeriod] = useState('today')
   const [date, setDate] = useState('')
@@ -38,6 +46,16 @@ export default function PrescriptionsLive({ initialDoctorId = '', initialDoctorN
   const count = (s) => list.filter((r) => r.pay === s).length
   const value = list.reduce((s, r) => s + r.amount, 0)
   const when = (r) => (period === 'today' ? hhmm(r.at) : dmy(r.at) + ' ' + hhmm(r.at))
+
+  async function recall(r) {
+    setRecalling(true)
+    const res = await recallVisit(r, user)
+    setRecalling(false)
+    setAsking(null)
+    if (!res.ok) return showToast(translate(res.error))
+    showToast('Prescription recalled — edit it in the consultation room')
+    onRecalled(r.visitId)
+  }
 
   function printList() {
     const t = translate
@@ -160,6 +178,25 @@ export default function PrescriptionsLive({ initialDoctorId = '', initialDoctorN
                           ))}
                         </tbody>
                       </table>
+                      {onRecalled && canRecall(r, user) && (
+                        <div className="rx-recall">
+                          {asking === r.id ? (
+                            <>
+                              <span>Recall this prescription? Stock is returned and the unpaid invoice is cancelled; you then edit and finalize it again.</span>
+                              <button className="btn btn-ghost btn-sm" disabled={recalling} onClick={() => setAsking(null)}>
+                                Cancel
+                              </button>
+                              <button className="btn btn-primary btn-sm" disabled={recalling} onClick={() => recall(r)}>
+                                <Icon name="repeat" /> Recall
+                              </button>
+                            </>
+                          ) : (
+                            <button className="btn btn-ghost btn-sm" onClick={() => setAsking(r.id)} title={translate('Reception has not collected payment or dispensed any drug yet')}>
+                              <Icon name="repeat" /> Recall to edit (not yet paid)
+                            </button>
+                          )}
+                        </div>
+                      )}
                     </td>
                   </tr>
                 )}

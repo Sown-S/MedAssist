@@ -202,7 +202,6 @@ export default function DrugCatalogPage({ params, onNavigate }) {
         }
         confirmLabel={toggle?.d.active ? 'Discontinue' : 'Re-activate'}
         danger={toggle?.d.active}
-        requireNote
         onConfirm={async () => {
           const r = await setDrugActive(toggle.d.id, !toggle.d.active)
           if (r?.ok === false) return showToast(translate(r.error))
