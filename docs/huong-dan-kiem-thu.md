@@ -57,6 +57,9 @@ npm run eval    # build rồi mở cửa sổ MedAssist
 
 Cả hai cách đều nối sẵn `http://127.0.0.1:8000`. Nếu màn đăng nhập báo không kết nối được, kiểm tra lại mục 2.
 
+Giao diện mặc định là tiếng Anh: chọn **Tiếng Việt** ở màn đăng nhập (sau khi đăng nhập: nút **Settings** góc trên › **Language**).
+Tên nút và màn hình trong hướng dẫn này theo giao diện tiếng Việt.
+
 **Mở nhiều vai trò cùng lúc** (lễ tân, bác sĩ, quản trị mỗi người một cửa sổ): mỗi cửa sổ dùng một hồ sơ riêng.
 
 ```bash
@@ -82,13 +85,14 @@ Dữ liệu nạp sẵn:
 
 - Danh mục: 386 thuốc có lô (3 lô hết hạn sau 20 ngày, 3 thuốc dưới ngưỡng tồn), 28 dịch vụ và xét nghiệm, 3 gói khám,
   374 cơ sở nhận chuyển tuyến, bản tri thức Active (199 bệnh, 97 triệu chứng, 12 luật).
-- Lượt khám 14 ngày trước: khoảng 34 lượt đã xong (có chẩn đoán, đơn thuốc, hóa đơn), 2 lượt chuyển tuyến, 1 lượt hủy.
+- Lượt khám cũ trong 2–3 tuần trước ngày nạp: 34 lượt, gồm 31 lượt đã xong (có chẩn đoán, đơn thuốc, hóa đơn), 2 lượt chuyển
+  tuyến, 1 lượt hủy.
   Báo cáo, lịch sử khám, danh sách đơn thuốc theo tuần/tháng có số liệu ngay.
 - **Hàng đợi hôm nay** (15 lượt): số 001 đã xong, 002 chờ cấp phát và thu tiền, 003 bác sĩ `bs01` đang khám, 004–005 cờ đỏ
   (Cấp cứu), 006–010 đã check-in, 011–015 chờ check-in. Bệnh nhân số 001, 002, 003 và 008 có lượt khám cũ để xem lịch sử.
 
 Hàng đợi chỉ tạo khi hôm nay chưa có lượt nào. Kiểm thử sang ngày khác thì chạy lại lệnh `up` (dịch vụ `seed` tự tạo hàng đợi
-mới); lượt chưa xong của hôm trước hiện ở hộp **Lượt chưa đóng từ ngày trước** của Lễ tân.
+mới); lượt chưa xong của hôm trước hiện ở hộp **Lượt chưa đóng từ những ngày trước** của Lễ tân.
 
 ## 5. Kịch bản kiểm thử gợi ý
 
@@ -96,7 +100,7 @@ Kết quả mong đợi theo luật của bản tri thức trong thư mục `kno
 
 | # | Vai trò | Thao tác | Kết quả mong đợi |
 |---|---|---|---|
-| 1 | Bất kỳ | Đăng nhập sai mật khẩu 5 lần, rồi đăng nhập đúng | Tài khoản bị khóa tạm 5 phút; `admin` mở khóa ở **Quản trị › Tài khoản nhân viên** |
+| 1 | Bất kỳ | Đăng nhập sai mật khẩu 5 lần, rồi đăng nhập đúng | Tài khoản bị khóa tạm 5 phút; `admin` mở khóa ở **Quản trị › Quản lý tài khoản** |
 | 2 | Quản trị | Tạo tài khoản lễ tân mới, đăng nhập bằng tài khoản đó | Bắt buộc đổi mật khẩu trước khi làm việc khác |
 | 3 | Lễ tân | **+ Đăng ký bệnh nhân mới** (F2), nhập lời kể, triệu chứng Có / Không / Chưa rõ, sinh hiệu | Lượt khám có số thứ tự, mức ưu tiên hiện ngay |
 | 4 | Lễ tân | Tiếp đón người lớn có SpO2 = 88 | Cờ đỏ, mức **Cấp cứu**, đứng đầu hàng chờ; gợi ý AI ở trạng thái Bỏ qua |
