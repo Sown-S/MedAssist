@@ -41,14 +41,10 @@
 .rx-qty .ai-soft{font-size:12px;}
 .rx-line-fields input{padding:7px 9px;border:1px solid var(--border);border-radius:8px;background:var(--field-bg);color:var(--ink);font-size:13.5px;font-family:inherit;}
 .rx-usage{flex:1;min-width:0;}
-.rx-ok{display:flex;align-items:center;gap:6px;font-size:12.5px;color:#4ADE80;margin:12px 0 0;}
-.rx-ok svg{width:15px;height:15px;}
 .rx-reminder{display:flex;gap:10px;align-items:flex-start;margin:12px 0 0;padding:10px 12px;border-radius:11px;background:var(--surface-alt);border:1px dashed var(--border);font-size:13px;color:var(--ink);}
 .rx-reminder>svg{width:17px;height:17px;flex-shrink:0;color:#FCD34D;margin-top:2px;}
 .rx-reminder>div{display:flex;flex-direction:column;gap:3px;}
 .rx-reminder small{font-size:12px;color:var(--ink-soft);}
-.rx-diag{font-size:13.5px;color:var(--ink);margin:6px 0;}
-.doc-vitals{grid-template-columns:repeat(5,minmax(0,1fr));}
 .drug-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px;}
 .drug-card{display:flex;flex-direction:column;gap:10px;padding:16px 18px;border-radius:var(--radius);background:var(--surface);border:1px solid var(--border);transition:border-color .15s,transform .15s;}
 .drug-card:hover{border-color:var(--primary);transform:translateY(-2px);}
@@ -61,9 +57,6 @@
 .drug-facts>span{display:flex;align-items:center;gap:6px;}
 .drug-facts svg{width:15px;height:15px;color:var(--accent);}
 .drug-facts b{color:var(--ink);}
-.drug-rules-btn{display:flex;align-items:center;gap:6px;padding:6px 10px;border-radius:9px;border:1px solid rgba(251,191,36,.3);background:rgba(251,191,36,.08);color:#FCD34D;font:600 12px 'Plus Jakarta Sans Variable';cursor:pointer;}
-.drug-rules-btn svg{width:14px;height:14px;}
-.drug-rules{margin:0;padding:0 0 0 2px;list-style:none;display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--ink-soft);}
 
 /* Thu gọn / mở rộng, danh sách chờ, cận lâm sàng, tủ thuốc */
 /* Hiệu ứng thu gọn bằng grid-template-rows 0fr ↔ 1fr — không cần biết trước chiều cao. */
@@ -122,11 +115,6 @@ table.dt.lab-res-table td:first-child{width:52%;color:var(--ink-soft);}
 .lab-entry-row>.btn svg{width:14px;height:14px;}
 .lab-entry-row input{padding:6px 9px;border:1px solid var(--border);border-radius:8px;background:var(--field-bg);color:var(--ink);font-size:13px;font-family:inherit;}
 .lab-entry-row input:focus{outline:none;border-color:var(--accent);}
-
-.rx-review{margin-top:14px;padding-top:4px;border-top:1px solid var(--border);}
-.rx-review-warn{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--ink);}
-.rx-review-actions{display:flex;align-items:center;justify-content:flex-end;gap:8px;}
-.rx-review-actions .btn-ghost{margin-right:auto;}
 
 .exp-days{font-size:11px;font-family:'IBM Plex Mono',monospace;color:var(--ink-soft);margin-left:4px;}
 .exp-days.near{color:#FCD34D;}

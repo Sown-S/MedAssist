@@ -25,15 +25,6 @@
 .follow-up input{padding:5px 8px;border:1px solid var(--border);border-radius:8px;background:var(--field-bg);color:var(--ink);font-family:inherit;color-scheme:dark;}
 
 .timeline{display:flex;flex-direction:column;gap:8px;}
-.tl-item{border-left:2px solid var(--primary);padding:6px 0 6px 12px;}
-.tl-head{display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:13px;color:var(--ink-soft);}
-.tl-head b{color:var(--ink);}
-.tl-dx{flex-basis:100%;color:var(--ink);font-weight:600;font-size:13.5px;}
-.tl-row{font-size:13px;color:var(--ink);margin-top:4px;line-height:1.45;}
-.tl-row small{display:inline-block;min-width:78px;font-size:11px;font-weight:700;text-transform:uppercase;color:var(--ink-soft);}
-.tl-row svg{width:13px;height:13px;vertical-align:-2px;}
-.tl-rx{display:flex;align-items:center;gap:8px;margin-top:6px;font-size:12.5px;}
-.tl-rx .ai-soft{flex:1;}
 
 .dq-top{display:flex;gap:6px;align-items:center;margin-bottom:4px;}
 .dq-top .btn{white-space:nowrap;padding-left:12px;padding-right:12px;font-size:14px;}
@@ -54,16 +45,6 @@
 
 .doc-nav-row{display:flex;align-items:center;gap:10px;justify-content:space-between;flex-wrap:wrap;margin-bottom:18px;}
 .doc-nav-row .doc-nav{margin-bottom:0;}
-.shift-check{display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:10px;background:var(--priority-soft);color:#FCD34D;font-size:13.5px;font-weight:600;}
-.shift-check.ok{background:rgba(34,197,94,.14);color:#4ADE80;}
-.shift-check svg{width:17px;height:17px;}
-.shift-row{display:flex;align-items:center;gap:10px;padding:9px 12px;border:1px solid var(--border);border-radius:11px;background:var(--surface);margin-bottom:6px;}
-.shift-row>svg{width:18px;height:18px;color:#F87171;}
-.shift-sum{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;}
-.shift-sum>div{display:flex;flex-direction:column;gap:2px;padding:10px 12px;border-radius:10px;background:var(--surface-alt);}
-.shift-sum b{font-size:22px;color:var(--ink);font-family:'IBM Plex Mono',monospace;}
-.shift-sum span{font-size:12px;color:var(--ink-soft);}
-.shift-sum .warn b{color:#FCD34D;}
 
 /* Bỏ về, chẩn đoán phụ, đã về từ xét nghiệm */
 .leave-reasons{display:flex;flex-direction:column;gap:6px;}
@@ -85,12 +66,6 @@
 .lookup-list{position:sticky;top:12px;max-height:calc(100vh - 200px);overflow:auto;display:flex;flex-direction:column;gap:4px;}
 .lookup-list .pl-search{width:100%;margin-bottom:6px;}
 .lookup-actions{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 4px;}
-.tl-addendum{margin-top:6px;padding:7px 10px;border-radius:8px;background:var(--surface-alt);border-left:3px solid #67E8F9;font-size:13px;color:var(--ink);}
-.tl-addendum.correction{border-left-color:#FCD34D;}
-.tl-addendum small{display:block;font-size:11px;color:var(--ink-soft);margin-bottom:2px;}
-.tl-add{margin-top:6px;background:none;border:none;color:#67E8F9;font:600 12px 'Plus Jakarta Sans Variable';cursor:pointer;padding:0;}
-.tl-form{display:flex;flex-direction:column;gap:6px;margin-top:6px;}
-.tl-form select{align-self:flex-start;padding:5px 8px;border:1px solid var(--border);border-radius:8px;background:var(--field-bg);color:var(--ink);font-family:inherit;}
 
 /* Phòng khám cố định, liều theo cân nặng */
 .doc-nav-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
@@ -99,20 +74,8 @@
 .doc-room.warn{border-color:rgba(245,158,11,.45);background:var(--priority-soft);color:#FCD34D;}
 .doc-room.warn svg{color:#FCD34D;}
 .rx-daily.over{color:#FCA5A5;font-weight:700;}
-.warn-text{color:#FCD34D;font-weight:700;}
 .rx-stock.info{color:#67E8F9;}
 
-/* Lời mời / gọi số */
-.calling-bar{display:flex;align-items:center;flex-wrap:wrap;gap:8px;padding:10px 12px;margin:-4px 0 10px;border-radius:11px;background:var(--primary-soft);border:1px solid rgba(59,130,246,.45);}
-.calling-bar>svg{width:18px;height:18px;color:#93C5FD;}
-.calling-bar>span{flex:1;min-width:160px;display:flex;flex-direction:column;}
-.calling-bar b{color:var(--ink);font-size:14px;}
-.calling-bar small{font-size:12px;color:var(--ink-soft);}
-.call-active{display:flex;flex-direction:column;gap:6px;margin:10px 0;}
-.call-active .lbl{font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-soft);}
-.call-row{display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:9px;background:var(--surface-alt);font-size:13px;color:var(--ink);}
-.call-row b.mono{color:var(--accent);font-size:15px;}
-.call-row span{flex:1;}
 /* Chân phiếu khám: nút xuống dòng, không bẻ chữ; hai nút chốt đơn luôn cùng hàng bên phải. */
 .consult-footer{flex-wrap:wrap;row-gap:8px;}
 .consult-footer .btn{white-space:nowrap;}

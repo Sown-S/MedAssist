@@ -20,27 +20,6 @@
 .assess-expl{margin:6px 0 0 28px;font-size:12.5px;color:var(--ink);}
 .assess-meta{font-size:11px;margin:8px 0 0;}
 
-/* Hàng duyệt tri thức: kiểm tra trùng / mâu thuẫn, lý do từ chối nhanh */
-.rv-issues{margin-top:12px;padding:10px 14px;border-radius:12px;background:transparent;border:1px solid var(--border);border-left:3px solid #EF4444;display:flex;flex-direction:column;gap:6px;}
-.rv-issues.caution{border-left-color:#FBBF24;}
-.rv-issues-head{display:flex;align-items:center;gap:7px;font-size:12.5px;font-weight:600;color:var(--ink);margin-bottom:2px;}
-.rv-issues-head svg{width:15px;height:15px;color:#FCA5A5;}
-.rv-issues.caution .rv-issues-head svg{color:#FCD34D;}
-.rv-issue{display:flex;align-items:center;gap:9px;flex-wrap:wrap;font-size:13px;color:var(--ink);}
-.rv-issue .mono{font-size:12.5px;}
-.rv-kind{font-size:11.5px;font-weight:600;padding:2px 8px;border-radius:7px;background:rgba(239,68,68,.16);color:#FCA5A5;}
-.rv-kind.overlap{background:rgba(251,191,36,.16);color:#FCD34D;}
-.rv-kind.duplicate{background:rgba(148,163,184,.18);color:#CBD5E1;}
-.rv-icd{color:var(--ink-soft);}
-.rv-name{color:var(--ink);}
-.rv-reasons{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 8px;}
-
-/* Trang Duyệt tri thức của bác sĩ: các ô cùng kiểu Bảng điều khiển, nằm thẳng trên nền, không lồng nhau */
-.review-page .card,.review-page .stat-card,.review-page .ai-flow-step{background:var(--surface);border:1px solid var(--border);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);}
-.review-page .ai-diff th{background:transparent;}
-/* Tiêu đề bảng: nền trong suốt + kính mờ thay nền đặc (vẫn che chữ khi cuộn). */
-.review-page .ai-table-wrap table.dt thead th{background:transparent;}
-
 /* Kho tri thức (pages/admin/knowledge) */
 .kb-banner{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 13px;margin-bottom:12px;border-radius:10px;background:rgba(34,211,238,.08);border:1px solid rgba(34,211,238,.25);font-size:13.5px;}
 .kb-banner svg{width:17px;height:17px;flex-shrink:0;}

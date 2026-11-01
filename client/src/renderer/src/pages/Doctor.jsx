@@ -104,7 +104,7 @@ export default function Doctor() {
 
       {view === 'home' && <DoctorHome go={go} />}
       {view === 'consult' && <ConsultView visitId={visitId} onSelect={(id) => go('consult', id)} />}
-      {view === 'prescriptions' && <PrescriptionsLive initialDoctorId={user.id} initialDoctorName={user.name} />}
+      {view === 'prescriptions' && <PrescriptionsLive initialDoctorId={user.id} initialDoctorName={user.name} onRecalled={(id) => go('consult', id)} />}
       {view === 'drugs' && <DrugCabinetView go={go} />}
       {view === 'patients' && <PatientLookup />}
       {dialog}

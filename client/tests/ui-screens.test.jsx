@@ -1,25 +1,28 @@
-import { describe, it, expect, afterEach, beforeEach, vi } from 'vitest'
+import { describe, it, expect, afterAll, afterEach, beforeAll, beforeEach, vi } from 'vitest'
 import { screen, cleanup, waitFor, fireEvent } from '@testing-library/react'
 import { renderPage } from './render.jsx'
 import Reception from '../src/renderer/src/pages/Reception.jsx'
 import Doctor from '../src/renderer/src/pages/Doctor.jsx'
 import Admin from '../src/renderer/src/pages/Admin.jsx'
 import { syncQueue } from '../src/renderer/src/api/queueStore.js'
-import { DOC_A, DESK, ADMIN } from './helpers'
-import { installFakeServer, calls } from './fakeServer'
+import { DOC_A, DOC_B, DESK, ADMIN } from './helpers'
+import { installFakeServer, resetCalls, calls } from './fakeServer'
 
 // Test giao diện trên server giả (fakeServer.js): mọi màn chính của 3 vai trò dựng được mà không rơi vào lưới bắt lỗi,
 // và vài thao tác chính gọi đúng API. Lưới an toàn khi sửa / chia nhỏ các file lớn.
 const FAIL = 'Something went wrong on this screen'
 
-beforeEach(() => installFakeServer())
-afterEach(() => {
-  cleanup()
-  vi.unstubAllGlobals()
-})
+// Giữ fetch giả suốt cả file: bộ đếm giờ còn sót của test trước (polling hàng đợi, /health) không được gọi ra mạng thật
+// — nếu máy đang bật server, nó trả 401 và làm phiên của test sau bị đăng xuất.
+beforeAll(() => installFakeServer())
+beforeEach(() => resetCalls())
+afterEach(() => cleanup())
+afterAll(() => vi.unstubAllGlobals())
 
+// Chờ trang dựng xong; bỏ qua ô thông báo (luôn có sẵn dấu ✓) để không coi là đã dựng khi chưa đăng nhập xong.
+const pageText = () => [...document.body.querySelectorAll('body > div > :not(.toast)')].map((el) => el.textContent).join('').trim()
 async function rendered() {
-  await waitFor(() => expect(document.body.textContent.trim()).not.toBe(''))
+  await waitFor(() => expect(pageText()).not.toBe(''))
   expect(screen.queryByText(FAIL)).toBeNull()
 }
 
@@ -67,6 +70,15 @@ describe('Luồng chính trên giao diện', () => {
     await rendered()
     expect((await screen.findAllByText('Nguyễn Văn An')).length).toBeGreaterThan(0)
     await waitFor(() => expect(calls.some((c) => c.path === '/api/v1/visits/v-exam')).toBe(true))
+  })
+
+  it('bác sĩ thu hồi đơn còn chờ thanh toán của mình → POST …/prescription/reopen', async () => {
+    renderPage(<Doctor />, { user: DOC_B, path: '/doctor?view=prescriptions' })
+    await rendered()
+    fireEvent.click(await screen.findByText('Lê Văn Cường'))
+    fireEvent.click(await screen.findByText('Recall to edit (not yet paid)'))
+    fireEvent.click(await screen.findByText('Recall', { selector: 'button, button *' }))
+    await waitFor(() => expect(calls).toContainEqual(expect.objectContaining({ method: 'POST', path: '/api/v1/visits/v-paid-wait/prescription/reopen' })))
   })
 
   it('lễ tân check-in bệnh nhân đang chờ → PATCH /visits/{id}/check-in', async () => {

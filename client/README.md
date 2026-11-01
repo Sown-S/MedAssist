@@ -458,7 +458,7 @@ CI (`.github/workflows/ci.yml`, job *Client*) chạy `npm run lint` và `npm tes
 - [x] Nối server: đăng nhập, bệnh nhân, hàng đợi, khám, kê đơn, cấp phát, thu tiền, EMR, phòng khám, kho, cài đặt, nhật ký, báo cáo, tri thức.
 - [x] Gợi ý AI thật qua `GET /visits/{id}/assessment`; client không gọi thẳng LLM; ghim chứng chỉ CA dự án.
 - [ ] Đóng gói: `icon` cho electron-builder, chữ ký số cho bản cài.
-- [ ] Thu hồi đơn chờ thanh toán để sửa: `queueStore.recallVisit` gọi `POST …/prescription/reopen`, giao diện chưa có nút.
+- [x] Thu hồi đơn chờ thanh toán để sửa: nút ở màn Đơn thuốc của bác sĩ (`PrescriptionsLive`), gọi `POST …/prescription/reopen`.
 - [x] Chạy `npm run lint` và `npm test` trong CI; bản cài Windows / macOS build tự động khi đẩy tag.
 
 Giới hạn (ghi vào báo cáo đồ án):
