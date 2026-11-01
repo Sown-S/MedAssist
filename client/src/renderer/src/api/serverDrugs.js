@@ -1,6 +1,4 @@
-// Danh mục thuốc + tồn kho đọc từ server (chỉ dùng khi tắt giả lập). Bác sĩ chỉ được XEM kho (Quy định v5);
-// kê đơn phải dùng drug_id của server, nên ô tìm thuốc ở màn khám lấy danh mục này thay cho kho giả lập.
-// Đổi sang đúng hình dạng thuốc mà các màn hình đang dùng (id, name, ingredient, unit, price, active) + stock.
+// Danh mục thuốc + tồn kho từ server. Kê đơn phải dùng drug_id của server nên ô tìm thuốc ở màn khám dùng danh mục này.
 import { useEffect, useSyncExternalStore } from 'react'
 import { apiGet } from './client'
 
@@ -12,7 +10,7 @@ const commit = (s) => {
   subs.forEach((f) => f())
 }
 
-// Tên hiển thị: tên thương mại + hàm lượng (tên hoạt chất nếu không có tên thương mại riêng).
+// Tên thương mại + hàm lượng; không có tên thương mại riêng thì dùng tên hoạt chất.
 const nameOf = (d) => [d.trade_name && d.trade_name !== d.generic_name ? d.trade_name : d.generic_name, d.strength].filter(Boolean).join(' ')
 
 export function toDrug(d, stock) {
@@ -43,7 +41,7 @@ async function fetchAll() {
 }
 
 let loading = null
-// Tải lại danh mục + tồn (gọi khi mở màn khám và sau khi chốt đơn — tồn thay đổi).
+// Gọi khi mở màn khám và sau khi chốt đơn (tồn thay đổi).
 export function reloadServerDrugs() {
   loading ??= fetchAll()
     .then((drugs) => commit({ drugs, loaded: true, error: null }))
@@ -68,5 +66,7 @@ const fold = (s) =>
     .replace(/đ/gi, 'd')
     .toLowerCase()
     .trim()
-// Tìm thuốc theo tên đã kê (dòng thuốc chép từ đơn cũ / đơn mẫu không có drug_id).
-export const findServerDrug = (name, drugs) => drugs.find((d) => fold(d.name) === fold(name)) ?? null
+// Dòng thuốc chép từ đơn cũ không có drug_id → tìm theo tên. Lịch sử khám / hoá đơn ghi nhãn của server:
+// "<hoạt chất> <hàm lượng>" hoặc "<hoạt chất> <hàm lượng> (<tên thương mại>)".
+const labelsOf = (d) => [d.name, `${d.ingredient} ${d.strength}`, `${d.ingredient} ${d.strength} (${d.tradeName})`]
+export const findServerDrug = (name, drugs) => drugs.find((d) => labelsOf(d).some((x) => fold(x) === fold(name))) ?? null

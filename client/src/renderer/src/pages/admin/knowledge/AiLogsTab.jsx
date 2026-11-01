@@ -4,8 +4,8 @@ import { translate } from '../../../i18n'
 import { AI_MODES, AI_RUN_TYPES, AI_STATUSES, listAiLogs } from '../../../api/reportsApi'
 import { fmtDate } from './shared'
 
-// Nhật ký AI cho Admin (FR09, NFR09): mỗi lượt chạy AI kèm phiên bản tri thức / model / prompt, độ trễ và quyết định
-// của bác sĩ — truy vết được mà không lộ bệnh nhân (server không trả họ tên, triệu chứng hay đầu ra thô của LLM).
+// Mỗi lượt chạy AI kèm phiên bản tri thức / model / prompt, độ trễ và quyết định của bác sĩ — truy vết được mà không lộ
+// bệnh nhân (server không trả họ tên, triệu chứng hay đầu ra thô của LLM).
 const PAGE = 50
 const EMPTY = { from: '', to: '', run_type: '', status: '', mode: '' }
 

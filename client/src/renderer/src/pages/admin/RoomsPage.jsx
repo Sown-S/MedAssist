@@ -3,13 +3,10 @@ import Icon from '../../components/Icon'
 import { useToast } from '../../context/ToastContext'
 import { translate } from '../../i18n'
 import { listRooms, createRoom, updateRoom, ROOM_TYPES } from '../../api/roomStore'
-import { listAccounts } from '../../api/accountStore'
-import { DEMO_MODE } from '../../api/client'
 
 const EMPTY = { code: '', name: '', type: 'Exam' }
 
-// Quản trị › Phòng khám (ERD v1.9): phòng 01–03 khám, 04 xét nghiệm. Mỗi phòng khám một bác sĩ cố định,
-// gán ở Tài khoản nhân viên. Không xóa phòng, không đổi mã / loại — chỉ đổi tên và ngừng dùng.
+// Mỗi phòng khám một bác sĩ cố định (gán ở Tài khoản nhân viên). Không xoá phòng, không đổi mã / loại — chỉ đổi tên và ngừng dùng.
 export default function RoomsPage({ onNavigate }) {
   const { showToast } = useToast()
   const [rooms, setRooms] = useState(null)
@@ -19,7 +16,7 @@ export default function RoomsPage({ onNavigate }) {
 
   async function refresh() {
     try {
-      setRooms(await listRooms({ includeInactive: true, accounts: DEMO_MODE ? await listAccounts() : [] }))
+      setRooms(await listRooms({ includeInactive: true }))
       setError('')
     } catch (e) {
       setError(e.message)
@@ -38,8 +35,8 @@ export default function RoomsPage({ onNavigate }) {
     refresh()
   }
   async function toggle(r) {
-    const res = await updateRoom(r.id, { active: !r.active }, { inUse: !!r.physician })
-    if (!res.ok) return showToast(translate(res.error))
+    const res = await updateRoom(r.id, { active: !r.active })
+    if (!res.ok) return showToast(translate(res.error), 'error')
     showToast(r.active ? 'Room no longer in use' : 'Room back in use')
     refresh()
   }

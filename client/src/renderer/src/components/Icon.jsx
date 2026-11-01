@@ -1,5 +1,4 @@
-// Bộ icon đơn sắc dùng chung (nét vẽ theo currentColor, cỡ theo font-size của phần tử cha)
-// — thay cho emoji vốn mỗi cái một màu. Thêm icon mới: chỉ cần thêm 1 mục vào PATHS.
+// Icon đơn sắc theo currentColor, cỡ theo font-size của phần tử cha.
 const PATHS = {
   calendar: (
     <>

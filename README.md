@@ -17,7 +17,7 @@ còn lại cài ứng dụng desktop. Không gửi dữ liệu bệnh nhân ra n
 **Module AI** (chỉ hỗ trợ, bác sĩ quyết định):
 
 1. **Node 1 – Cổng cờ đỏ**: luật tất định trên triệu chứng đã xác nhận và sinh hiệu. Cờ đỏ thì xếp Cấp cứu ngay và không chạy LLM.
-2. **Node 2 – Truy xuất**: chấm điểm bệnh trong kho tri thức (124 bệnh, 99 triệu chứng, 11 luật, nguồn Bộ Y tế).
+2. **Node 2 – Truy xuất**: chấm điểm bệnh trong kho tri thức (199 bệnh, 97 triệu chứng, 12 luật, nguồn Bộ Y tế).
 3. **Node 3 – Suy luận**: LLM cục bộ (Gemma-SEA-LION 9B qua Ollama) xếp hạng lại và giải thích bằng tiếng Việt.
 4. **Node 4 – Kiểm tra đầu ra**: chỉ giữ bệnh có trong danh sách Node 2, đúng schema; lỗi thì quay về kết quả theo luật.
 
@@ -45,19 +45,23 @@ Máy client (Windows)              Máy admin (Docker Compose)
 |---|---|---|---|
 | `server/` | Backend FastAPI + PostgreSQL, module AI, worker | Sơn (AI: Huy) | [server/README.md](server/README.md) |
 | `client/` | Ứng dụng desktop Electron + React | Nhật Anh | [client/README.md](client/README.md) |
-| `deploy/` | Docker Compose, Caddy, script bật / tắt / sao lưu cho máy admin | Sơn | [deploy/README.md](deploy/README.md) |
+| `deploy/` | Docker Compose, Caddy, script bật / tắt / sao lưu cho máy admin; môi trường kiểm thử 1 máy | Sơn | [deploy/README.md](deploy/README.md) |
 | `knowledge/` | Kho tri thức lâm sàng OKF (Markdown) | Tuấn | [knowledge/_spec/okf_format.md](knowledge/_spec/okf_format.md) |
 | `evaluation/` | Bộ test đóng băng cho đánh giá NCKH | Tuấn | [evaluation/testset/README.md](evaluation/testset/README.md) |
 | `tools/` | Công cụ máy dev: thu thập danh mục thuốc | Sơn | [tools/drug_data/README.md](tools/drug_data/README.md) |
-| `docs/` | Hướng dẫn sử dụng, hướng dẫn demo | Cả nhóm | [docs/](docs/) |
+| `docs/` | Hướng dẫn sử dụng, kiểm thử, demo | Cả nhóm | [docs/](docs/) |
 
 ## Bắt đầu nhanh
 
+> **Giảng viên / người kiểm thử:** chạy cả hệ thống trên một máy (Windows, macOS, Linux) với dữ liệu mẫu theo
+> [docs/huong-dan-kiem-thu.md](docs/huong-dan-kiem-thu.md). Bản cài sẵn ở trang Releases.
+
 | Bạn muốn | Đọc |
 |---|---|
+| Kiểm thử trên một máy, có sẵn tài khoản và dữ liệu mẫu | [docs/huong-dan-kiem-thu.md](docs/huong-dan-kiem-thu.md) |
 | Cài máy admin cho phòng khám hoặc buổi demo | [deploy/README.md](deploy/README.md) |
 | Chạy backend trên máy dev | [server/README.md](server/README.md) mục 2 |
-| Chạy ứng dụng desktop (giả lập hoặc nối server) | [client/README.md](client/README.md) mục 1 |
+| Chạy ứng dụng desktop | [client/README.md](client/README.md) mục 1 |
 | Dùng phần mềm theo vai trò | [docs/huong-dan-su-dung.md](docs/huong-dan-su-dung.md) |
 | Chuẩn bị demo, kiểm thử AI | [docs/huong-dan-demo-kiem-thu-ai.md](docs/huong-dan-demo-kiem-thu-ai.md) |
 | Đóng góp code | [CONTRIBUTING.md](CONTRIBUTING.md) |
@@ -80,7 +84,7 @@ uvicorn app.main:app --reload      # http://127.0.0.1:8000/docs
 | AI | Pipeline 4 node, Ollama, Gemma-SEA-LION-v3-9B-IT (GGUF Q4_K_M) |
 | Client | Electron 31, React 18, electron-vite, Vitest |
 | Triển khai | Docker Compose, Caddy (HTTPS bằng CA riêng của dự án), sao lưu `pg_dump` hằng ngày |
-| Kiểm thử | pytest (hơn 1.000 test, CI yêu cầu độ phủ ≥ 90%), Vitest cho client, GitHub Actions |
+| Kiểm thử | pytest (hơn 1.000 test, CI yêu cầu độ phủ ≥ 90%), Vitest + ESLint cho client, GitHub Actions; bản cài Windows / macOS build tự động khi đẩy tag |
 
 ## Nhóm
 

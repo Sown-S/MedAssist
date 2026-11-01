@@ -1,6 +1,4 @@
 import Icon from './Icon'
-// Thay cho confirm() của trình duyệt (xấu, không đồng bộ style) — 1 modal nhỏ,
-// nhận vào message + 2 callback. Dùng lại được ở bất kỳ đâu cần "chắc chắn muốn xoá?".
 export default function ConfirmModal({ open, message, onConfirm, onCancel }) {
   if (!open) return null
   return (

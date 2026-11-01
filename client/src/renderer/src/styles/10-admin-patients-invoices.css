@@ -1,65 +1,10 @@
-/* Hồ sơ bệnh nhân (thẻ + form), hóa đơn thanh toán (quản trị) */
+/* Hồ sơ bệnh nhân, hoá đơn (quản trị) */
 
-/* ===== Hồ sơ bệnh nhân: danh sách dạng thẻ + form xem/chỉnh sửa ===== */
-.prec-list{display:flex;flex-direction:column;gap:12px;}
-.prec-card{display:flex;align-items:center;gap:16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;transition:background .15s;}
-.prec-card:hover{background:var(--surface-alt);}
-.prec-main{flex:1;min-width:0;}
-.prec-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:7px;}
-.prec-name{font-size:16px;font-weight:700;color:var(--ink);}
-.prec-token{font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:600;padding:2px 8px;border-radius:7px;background:var(--primary-soft);border:1px solid rgba(59,130,246,.45);color:#93C5FD;white-space:nowrap;}
-.prec-status{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:700;padding:3px 9px;border-radius:20px;white-space:nowrap;}
-.prec-status.completed{background:rgba(34,197,94,.16);color:#4ADE80;}
-.prec-status.scheduled{background:var(--primary-soft);color:#93C5FD;}
-.prec-status.in_progress{background:var(--surface-alt);color:var(--ink-soft);}
-.prec-status.cancelled{background:var(--warn-soft);color:#FCA5A5;}
-.prec-meta{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px 16px;font-size:13.5px;color:var(--ink);}
-.prec-meta span{display:flex;align-items:center;gap:8px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.prec-meta .icn{color:var(--ink-soft);}
-.prec-note{font-size:13px;color:var(--ink-soft);margin-top:7px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.prec-actions{display:flex;gap:6px;flex-shrink:0;}
-.prec-btn{display:inline-flex;align-items:center;justify-content:center;width:34px;height:28px;border-radius:7px;border:none;color:#fff;font-size:13.5px;cursor:pointer;transition:filter .15s;}
-.prec-btn:hover{filter:brightness(1.15);}
-.prec-btn.view{background:rgba(34,211,238,.16);border:1px solid rgba(34,211,238,.4);color:var(--accent);}
-.prec-btn.edit{background:var(--primary);}
-.prec-btn.del{background:var(--warn);}
+/* Hồ sơ bệnh nhân */
 .form-grid.cols-2{grid-template-columns:1fr 1fr;}
 .form-grid.cols-4{grid-template-columns:repeat(4,1fr);}
-.form-section-title{font-size:15.5px;font-weight:700;color:var(--accent);margin:20px 0 12px;padding-top:16px;border-top:1px solid var(--border);}
-.form-sub-label{font-size:13px;font-weight:600;color:var(--ink-soft);margin:14px 0 7px;}
-@media (max-width:1100px){.prec-meta{grid-template-columns:repeat(2,minmax(0,1fr));}}
+
 .form-grid.cols-2 .field,.form-grid.cols-4 .field{min-width:0;}
 .form-grid.cols-2 .field input,.form-grid.cols-2 .field select,.form-grid.cols-4 .field input{width:100%;height:40px;}
 .form-grid.cols-2 .field textarea{width:100%;resize:vertical;}
-.modal-scroll{max-height:calc(100vh - 240px);overflow-y:auto;padding-right:10px;margin-right:-10px;}
 .modal-overlay.center{align-items:center;}
-.num-field{position:relative;}
-.num-field input{padding-right:34px;-moz-appearance:textfield;}
-.num-field input::-webkit-inner-spin-button,.num-field input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0;}
-.num-steps{position:absolute;top:4px;right:4px;bottom:4px;display:flex;flex-direction:column;gap:2px;}
-.num-steps button{flex:1;width:24px;display:flex;align-items:center;justify-content:center;border:none;border-radius:5px;background:var(--surface-alt);color:var(--ink-soft);font-size:11px;cursor:pointer;padding:0;}
-.num-steps button:hover{background:var(--primary);color:#fff;}
-
-/* ===== Hóa đơn thanh toán (quản trị) — chỉ xem ===== */
-.prec-btn.invoice{width:auto;gap:6px;padding:0 12px;font-family:inherit;font-weight:700;font-size:12.5px;background:rgba(34,197,94,.16);border:1px solid rgba(34,197,94,.45);color:#4ADE80;}
-.bill-none{font-size:12.5px;font-weight:600;color:var(--ink-soft);}
-.bill-card{margin-bottom:16px;}
-.bill-paid{margin-left:auto;}
-.bill-info{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px 18px;}
-.bill-info div{display:flex;flex-direction:column;gap:4px;min-width:0;}
-.bill-info span{font-size:12.5px;font-weight:600;color:var(--ink-soft);}
-.bill-info b{font-size:14.5px;font-weight:600;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.bill-row{display:grid;grid-template-columns:minmax(0,1fr) 100px 150px 150px;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);font-size:14px;color:var(--ink);}
-.bill-row:last-child{border-bottom:none;}
-.bill-row span:nth-child(n+2){text-align:right;}
-.bill-head{font-size:11.5px;font-weight:700;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.03em;padding-top:0;}
-.bill-amt{font-family:'IBM Plex Mono',monospace;font-weight:600;color:#4ADE80;}
-.bill-cols{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start;}
-.bill-label{font-size:13px;font-weight:600;color:var(--ink-soft);margin-bottom:6px;}
-.bill-line{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:9px 0;border-bottom:1px solid var(--border);font-size:14px;color:var(--ink);}
-.bill-line b{display:inline-flex;align-items:center;gap:6px;font-weight:700;}
-.bill-total{font-size:17px;font-weight:700;border-bottom:none;}
-.bill-total .mono{color:#4ADE80;font-size:19px;}
-.bill-pay{margin-top:8px;padding:4px 14px;border:1px solid rgba(34,211,238,.3);background:rgba(34,211,238,.05);border-radius:12px;}
-.bill-pay .bill-line:last-child{border-bottom:none;}
-@media (max-width:1100px){.bill-cols{grid-template-columns:1fr;}}

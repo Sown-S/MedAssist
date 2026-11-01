@@ -1,6 +1,6 @@
-/* Thẻ gợi ý AI, duyệt tri thức, kho tri thức, lịch sử khám từ server */
+/* Thẻ gợi ý AI, duyệt tri thức, kho tri thức, lịch sử khám, thu tiền, chuyển tuyến */
 
-/* ===== Thẻ gợi ý AI (Architecture 5.1.4) ===== */
+/* Thẻ gợi ý AI */
 .assess-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px;}
 .assess-banner{display:flex;gap:6px;align-items:flex-start;margin:4px 0 8px;padding:7px 10px;border-radius:9px;background:rgba(239,68,68,.12);color:#FCA5A5;font-size:12.5px;}
 .assess-banner svg{width:15px;height:15px;flex-shrink:0;}
@@ -20,29 +20,7 @@
 .assess-expl{margin:6px 0 0 28px;font-size:12.5px;color:var(--ink);}
 .assess-meta{font-size:11px;margin:8px 0 0;}
 
-/* ===== Hàng duyệt tri thức: khung kiểm tra trùng / mâu thuẫn, lý do từ chối nhanh ===== */
-.rv-issues{margin-top:12px;padding:10px 14px;border-radius:12px;background:transparent;border:1px solid var(--border);border-left:3px solid #EF4444;display:flex;flex-direction:column;gap:6px;}
-.rv-issues.caution{border-left-color:#FBBF24;}
-.rv-issues-head{display:flex;align-items:center;gap:7px;font-size:12.5px;font-weight:600;color:var(--ink);margin-bottom:2px;}
-.rv-issues-head svg{width:15px;height:15px;color:#FCA5A5;}
-.rv-issues.caution .rv-issues-head svg{color:#FCD34D;}
-.rv-issue{display:flex;align-items:center;gap:9px;flex-wrap:wrap;font-size:13px;color:var(--ink);}
-.rv-issue .mono{font-size:12.5px;}
-.rv-kind{font-size:11.5px;font-weight:600;padding:2px 8px;border-radius:7px;background:rgba(239,68,68,.16);color:#FCA5A5;}
-.rv-kind.overlap{background:rgba(251,191,36,.16);color:#FCD34D;}
-.rv-kind.duplicate{background:rgba(148,163,184,.18);color:#CBD5E1;}
-.rv-icd{color:var(--ink-soft);}
-.rv-name{color:var(--ink);}
-.rv-reasons{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 8px;}
-
-/* ===== Trang Duyệt tri thức của bác sĩ: các khung cùng tông xanh đen, không chồng nền trắng ===== */
-/* Cùng kiểu ô ở Bảng điều khiển bác sĩ: nền --surface, viền --border, kính mờ — mỗi ô nằm thẳng trên nền, không lồng nhau. */
-.review-page .card,.review-page .stat-card,.review-page .ai-flow-step{background:var(--surface);border:1px solid var(--border);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);}
-.review-page .ai-diff th{background:transparent;}
-/* Hàng tiêu đề bảng (Nhật ký thay đổi): bỏ nền đặc --solid, dùng nền trong suốt cùng tông + kính mờ (vẫn che được chữ khi cuộn). */
-.review-page .ai-table-wrap table.dt thead th{background:transparent;}
-
-/* ===== Kho tri thức (backend thật) — pages/admin/knowledge ===== */
+/* Kho tri thức (pages/admin/knowledge) */
 .kb-banner{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 13px;margin-bottom:12px;border-radius:10px;background:rgba(34,211,238,.08);border:1px solid rgba(34,211,238,.25);font-size:13.5px;}
 .kb-banner svg{width:17px;height:17px;flex-shrink:0;}
 .kb-banner.warn{background:var(--priority-soft);border-color:rgba(245,158,11,.35);color:#FDE68A;}
@@ -77,13 +55,13 @@
 .kb-release-empty{padding:10px 0 4px;}
 .svc-fee{display:flex;align-items:center;gap:6px;}
 .svc-fee input{width:120px;padding:6px 9px;border:1px solid var(--border);border-radius:8px;background:var(--field-bg);color:var(--ink);font-family:'IBM Plex Mono',monospace;text-align:right;}
-/* Cấp phát & thu tiền (PaymentModalLive): nhãn, tên, giá, nút thẳng cột; vùng thêm dịch vụ cùng kiểu ô nhập. */
+/* Cấp phát & thu tiền (PaymentModalLive): nhãn, tên, giá, nút thẳng cột. */
 .pay-status-line{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;}
 .pay-cols .invoice-row>.badge{flex:0 0 104px;justify-content:center;text-align:center;white-space:normal;}
 .pay-cols .invoice-row .inv-name{min-width:0;}
 .pay-cols .invoice-row .inv-name .ai-select{display:block;width:100%;margin-top:6px;}
 .pay-cols .invoice-row .inv-price{flex:0 0 100px;text-align:right;}
-/* Cột cuối 36px dành cho nút xoá ở MỌI dòng → cột giá luôn thẳng hàng dù dòng có nút hay không. */
+/* Cột cuối 36px dành cho nút xoá ở mọi dòng → cột giá luôn thẳng hàng dù dòng có nút hay không. */
 .pay-cols .invoice-row{position:relative;padding-right:36px;}
 .pay-cols .invoice-row>.icon-btn{position:absolute;right:0;top:50%;transform:translateY(-50%);width:28px;height:28px;}
 .pay-cols .svc-fee{flex:0 0 auto;}
@@ -98,7 +76,7 @@
 .svc-custom .btn{white-space:nowrap;}
 .kb-json{margin:6px 0 0;padding:8px 10px;max-width:520px;white-space:pre-wrap;word-break:break-word;font:12px 'IBM Plex Mono';background:var(--field-bg);border:1px solid var(--border);border-radius:8px;color:var(--ink-soft);}
 
-/* ===== Lịch sử khám từ server (pages/doctor/ServerHistory.jsx) ===== */
+/* Lịch sử khám từ server */
 .emr-visit{border:1px solid var(--border);border-radius:10px;background:var(--surface);margin-bottom:8px;overflow:hidden;}
 .emr-visit-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap;width:100%;padding:9px 12px;background:transparent;border:none;color:var(--ink);text-align:left;cursor:pointer;font:inherit;}
 .emr-visit-head:hover{background:rgba(255,255,255,.03);}
@@ -112,7 +90,7 @@
 .emr-dx-row.retracted{text-decoration:line-through;opacity:.6;}
 .emr-notes{white-space:pre-wrap;font-size:13px;color:var(--ink-soft);margin:3px 0 0 4px;}
 
-/* ---- Chuyển tuyến, lời mời vào phòng, đề xuất sinh hiệu (ERD v2.0) ---- */
+/* Chuyển tuyến, lời mời vào phòng, đề xuất sinh hiệu */
 .fac-input{position:relative;}
 .fac-list{position:absolute;z-index:30;left:0;right:0;top:calc(100% + 4px);max-height:260px;overflow:auto;background:var(--solid);border:1px solid var(--border);border-radius:11px;box-shadow:0 12px 30px rgba(0,0,0,.35);padding:4px;}
 .fac-list button{display:flex;flex-direction:column;align-items:flex-start;gap:1px;width:100%;text-align:left;border:none;background:transparent;color:var(--ink);padding:7px 9px;border-radius:8px;cursor:pointer;font:inherit;}

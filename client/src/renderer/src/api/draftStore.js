@@ -1,10 +1,7 @@
-// Phiếu khám DỞ của bác sĩ (SOAP, sinh hiệu, đơn đang kê...) theo từng lượt khám — lưu lại để tắt app / app treo không mất.
-// Chỉ giữ trong ngày; sang ngày mới thì phiếu dở được đính kèm vào lượt khám đã lưu trữ (xem staleDraft). Không ghi nhật ký vì chưa phải dữ liệu chính thức.
-// Backend thật: có thể bỏ qua (lưu cục bộ trên máy bác sĩ là đủ) hoặc PUT /visits/{id}/draft.
-import { dayOf } from './invoiceStore'
+// Phiếu khám đang viết dở, lưu trên máy để tắt app hay app treo không mất. Chỉ giữ trong ngày.
 
 const KEY = 'medassist_consult_drafts_v1'
-const today = () => dayOf(new Date().toISOString())
+const today = () => new Date().toLocaleDateString('sv-SE') // yyyy-mm-dd theo giờ máy
 
 function read() {
   try {
@@ -15,10 +12,6 @@ function read() {
 }
 const saved = read()
 let drafts = saved?.day === today() ? saved.drafts : {}
-// Phiếu dở của NGÀY CŨ: không bỏ ngay — hàng chờ (queueStore.rollOver) đính kèm vào lượt khám "bỏ về" khi lưu trữ,
-// để ghi chép lâm sàng đã viết không bị mất mà không ai hay.
-const stale = saved?.day && saved.day !== today() ? saved.drafts ?? {} : {}
-export const staleDraft = (visitId) => stale[visitId]
 let timer = null
 // Gõ phím nào cũng lưu thì nặng → gom lại, ghi sau 400 ms.
 function persist() {
@@ -26,9 +19,7 @@ function persist() {
   timer = setTimeout(() => {
     try {
       localStorage.setItem(KEY, JSON.stringify({ day: today(), drafts }))
-    } catch {
-      /* chỉ giữ trong phiên */
-    }
+    } catch {/* không lưu được thì chỉ giữ trong phiên */}
   }, 400)
 }
 

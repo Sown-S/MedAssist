@@ -4,12 +4,11 @@ import { translate } from '../../i18n'
 import { useAuth } from '../../context/AuthContext'
 import { useToast } from '../../context/ToastContext'
 import { useInventory, stockOf, setDrugActive, todayISO } from '../../api/inventoryStore'
-import { ConfirmDialog, Empty } from './ai/ui'
+import { ConfirmDialog, Empty } from './ui'
 import DrugFormModal from './inventory/DrugFormModal'
 import { SortTh, Pager, paginate, exportCsv, unitLabel, fmtMoney, fmtNum } from './inventory/shared'
 
-// Danh mục thuốc & vật tư = DỮ LIỆU GỐC (tên, hoạt chất, ATC, đơn vị, giá, cờ thiết yếu / kiểm soát).
-// Tồn kho theo lô, nhập / xuất nằm ở Kho & nhà cung cấp › Tồn kho & hạn dùng.
+// Danh mục thuốc là dữ liệu gốc; tồn kho theo lô, nhập / xuất nằm ở Tồn kho & hạn dùng.
 export default function DrugCatalogPage({ params, onNavigate }) {
   const inv = useInventory()
   const { user } = useAuth()
@@ -26,7 +25,7 @@ export default function DrugCatalogPage({ params, onNavigate }) {
   const term = q.trim().toLowerCase()
   const filtered = rows.filter(({ d }) => {
     if (term && ![d.name, d.ingredient, d.atc].some((x) => (x ?? '').toLowerCase().includes(term))) return false
-    if (kind === 'essential' ? !d.essential : kind === 'controlled' ? d.group !== 'controlled' : kind !== 'all' && d.kind !== kind) return false
+    if (kind === 'essential' ? !d.essential : kind !== 'all' && d.kind !== kind) return false
     if (active !== 'all' && d.active !== (active === 'active')) return false
     return true
   })
@@ -52,7 +51,7 @@ export default function DrugCatalogPage({ params, onNavigate }) {
       <div className="page-head">
         <div>
           <h1>Drugs &amp; supplies</h1>
-          <p>Master data shared by prescribing, invoices and the interaction check. Stock levels are in Inventory › Stock &amp; expiry.</p>
+          <p>Master data shared by prescribing and invoices. Stock levels are in Inventory › Stock &amp; expiry.</p>
         </div>
         <button className="btn btn-ghost btn-sm" onClick={() => onNavigate('inventory')}>
           <Icon name="box" /> <span>Stock &amp; expiry</span>
@@ -68,7 +67,7 @@ export default function DrugCatalogPage({ params, onNavigate }) {
             <b>
               <span className="mono">{missingAtc}</span> <span>drugs have no ATC code</span>
             </b>
-            They are skipped by the drug interaction check.
+            Antibiotics among them are not recognised as prescription-only.
           </div>
         </div>
       )}
@@ -85,7 +84,6 @@ export default function DrugCatalogPage({ params, onNavigate }) {
               <option value="drug">Drugs only</option>
               <option value="supply">Medical supplies only</option>
               <option value="essential">Essential</option>
-              <option value="controlled">Controlled</option>
             </select>
             <select className="ai-select" value={active} onChange={(e) => (setActive(e.target.value), setPage(1))}>
               <option value="active">In use</option>
@@ -186,7 +184,7 @@ export default function DrugCatalogPage({ params, onNavigate }) {
         )}
         <p className="ai-foot-note">
           <Icon name="help" />{' '}
-          <span>Selling prices here fill invoices automatically; ATC codes feed the drug interaction check; the essential flag drives the checkout warning.</span>
+          <span>Selling prices here fill invoices automatically; ATC codes mark antibiotics (J01) as prescription-only; the essential flag drives the checkout warning.</span>
         </p>
       </div>
 
@@ -203,10 +201,9 @@ export default function DrugCatalogPage({ params, onNavigate }) {
         }
         confirmLabel={toggle?.d.active ? 'Discontinue' : 'Re-activate'}
         danger={toggle?.d.active}
-        requireNote
-        onConfirm={async (note) => {
-          const r = await setDrugActive(toggle.d.id, !toggle.d.active, user, note)
-          if (r?.ok === false) return showToast(translate(r.error))
+        onConfirm={async () => {
+          const r = await setDrugActive(toggle.d.id, !toggle.d.active)
+          if (r?.ok === false) return showToast(translate(r.error), 'error')
           showToast(toggle.d.active ? 'Drug discontinued' : 'Drug re-activated')
           setToggle(null)
         }}

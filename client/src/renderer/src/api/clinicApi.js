@@ -1,13 +1,9 @@
-// Lời gọi API thật cho Tiếp đón và Hàng đợi (chỉ dùng khi tắt giả lập — xem DEMO_MODE trong client.js).
-// Đổi dữ liệu server sang đúng hình dạng các màn hình đang dùng, để giao diện không phải viết lại.
-// Hợp đồng: docs đối chiếu API của Sơn (19/10) và trả lời bổ sung ngày 20/10.
+// API thật cho Tiếp đón và Hàng đợi; đổi dữ liệu server sang hình dạng các màn hình đang dùng.
 import { apiGet, apiPost, apiRequest, ApiError } from './client'
 import { VITAL_KEYS } from './vitals'
 
 const V1 = '/api/v1'
 
-// ---------- Bệnh nhân ----------
-// Ngày sinh: client dùng dd/mm/yyyy, server dùng ISO yyyy-mm-dd.
 export const isoDob = (dmy) => {
   const m = String(dmy ?? '').trim().match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/)
   return m ? `${m[3]}-${m[2].padStart(2, '0')}-${m[1].padStart(2, '0')}` : null
@@ -16,7 +12,6 @@ export const dmyDob = (iso) => {
   const m = String(iso ?? '').match(/^(\d{4})-(\d{2})-(\d{2})/)
   return m ? `${m[3]}/${m[2]}/${m[1]}` : ''
 }
-// Ô ngày sinh: gõ số liền nhau → tự chèn dấu "/" thành dd/mm/yyyy.
 export const maskDob = (s) => {
   const d = s.replace(/\D/g, '').slice(0, 8)
   return [d.slice(0, 2), d.slice(2, 4), d.slice(4)].filter(Boolean).join('/')
@@ -24,7 +19,7 @@ export const maskDob = (s) => {
 // Mang thai: 'yes' | 'no' | '' (chưa hỏi) ↔ medical_history.is_pregnant true | false | (không có khoá).
 const pregnancyOf = (mh) => (mh?.is_pregnant === true ? 'yes' : mh?.is_pregnant === false ? 'no' : '')
 
-// Hồ sơ server → hình dạng patientStore (id, name, dob dd/mm/yyyy, phone, ...). Giữ medicalHistory để PATCH không làm mất dữ liệu.
+// Giữ medicalHistory gốc để PATCH sau không làm mất dữ liệu.
 export function toPatient(p) {
   const mh = p.medical_history ?? null
   return {
@@ -42,7 +37,7 @@ export function toPatient(p) {
   }
 }
 
-// Ô tìm kiếm duy nhất ở quầy: mã BN, SĐT, CCCD, năm sinh, họ tên (có dấu hay không đều được).
+// Một ô tìm cho mọi khoá: mã BN, SĐT, CCCD, năm sinh, họ tên (có dấu hay không đều được).
 export async function lookupPatients(term, limit = 20) {
   const r = await apiGet(`${V1}/patients/lookup?term=${encodeURIComponent(term)}&limit=${limit}`)
   return r.items.map((x) => ({ ...toPatient(x), dob: dmyDob(x.date_of_birth) }))
@@ -50,7 +45,7 @@ export async function lookupPatients(term, limit = 20) {
 
 export const getPatient = async (id) => toPatient(await apiGet(`${V1}/patients/${id}`))
 
-// Tạo hồ sơ. Lỗi 409 POSSIBLE_DUPLICATE (cùng họ tên + ngày sinh) → { duplicates }, gửi lại với confirmDuplicate.
+// 409 POSSIBLE_DUPLICATE (trùng họ tên + ngày sinh) → trả { duplicates }; người dùng xác nhận thì gửi lại với confirmDuplicate.
 export async function createPatient(f, { confirmDuplicate = false } = {}) {
   const body = {
     full_name: f.name.trim(),
@@ -78,7 +73,7 @@ export async function createPatient(f, { confirmDuplicate = false } = {}) {
   }
 }
 
-// Ghi tình trạng mang thai vào hồ sơ — gửi lại TOÀN BỘ medical_history để không mất bệnh nền / ghi chú.
+// Gửi lại toàn bộ medical_history để không mất bệnh nền / ghi chú.
 export async function setPregnancy(patient, pregnancy) {
   if (pregnancy === (patient.pregnancy ?? '')) return
   const mh = { ...(patient.medicalHistory ?? {}) }
@@ -87,8 +82,28 @@ export async function setPregnancy(patient, pregnancy) {
   await apiRequest(`${V1}/patients/${patient.id}`, 'PATCH', { medical_history: mh })
 }
 
-// ---------- Lượt khám ----------
-// Lý do khám (bắt buộc) = câu đầu của lời kể; lời kể đầy đủ là văn bản để AI trích xuất triệu chứng.
+// Dị ứng / bệnh nền bác sĩ xác nhận. Bệnh nền hiển thị gộp (chronic_conditions + notes) nên ghi lại cả đoạn vào notes;
+// các khoá khác của medical_history (mang thai…) giữ nguyên.
+export async function updateClinical(patientId, { allergies, history }) {
+  const { chronic_conditions: _old, notes: _notes, ...mh } = (await getPatient(patientId)).medicalHistory ?? {}
+  const notes = history.trim()
+  const body = { allergy_notes: allergies.trim() || null, medical_history: { ...mh, ...(notes ? { notes } : {}) } }
+  return toPatient(await apiRequest(`${V1}/patients/${patientId}`, 'PATCH', body))
+}
+
+// Sửa thông tin hành chính ở quầy. CCCD trùng hồ sơ khác → server trả 409 kèm câu lỗi tiếng Việt.
+export async function updatePatient(id, f) {
+  const body = {
+    full_name: f.name.trim(),
+    date_of_birth: isoDob(f.dob),
+    gender: f.gender,
+    phone: String(f.phone).trim() || null,
+    id_number: String(f.idNumber).trim() || null
+  }
+  return toPatient(await apiRequest(`${V1}/patients/${id}`, 'PATCH', body))
+}
+
+// Lý do khám (bắt buộc) = câu đầu của lời kể; lời kể đầy đủ dùng cho AI trích xuất triệu chứng.
 export const chiefComplaintOf = (text) => (String(text ?? '').trim().split(/[.\n]/)[0].trim() || 'Khám bệnh').slice(0, 2000)
 
 export async function createVisit(patientId, { text, vitals }) {
@@ -99,7 +114,7 @@ export async function createVisit(patientId, { text, vitals }) {
     vital_signs: Object.keys(vitals ?? {}).length ? vitals : null
   })
 }
-// Chỉ sửa được khi lượt còn Waiting (server trả 409 VISIT_LOCKED).
+// Chỉ sửa được khi lượt còn Waiting (409 VISIT_LOCKED).
 export const updateVisit = (visitId, { text, vitals }) =>
   apiRequest(`${V1}/visits/${visitId}`, 'PATCH', {
     ...(text !== undefined ? { chief_complaint: chiefComplaintOf(text), free_text_description: String(text).trim() || null } : {}),
@@ -108,12 +123,12 @@ export const updateVisit = (visitId, { text, vitals }) =>
 export const putSymptoms = (visitId, symptoms) => apiRequest(`${V1}/visits/${visitId}/symptoms`, 'PUT', { symptoms })
 export const getVisitSymptoms = (visitId) => apiGet(`${V1}/visits/${visitId}/symptoms`)
 export const checkIn = (visitId) => apiRequest(`${V1}/visits/${visitId}/check-in`, 'PATCH')
-// Bác sĩ nhận khám (CheckedIn → Examining). Bác sĩ khác nhận trước → 409 VISIT_TAKEN.
+// Bác sĩ khác nhận trước → 409 VISIT_TAKEN.
 export const startExam = (visitId) => apiRequest(`${V1}/visits/${visitId}/start-exam`, 'PATCH')
-// Trả về hàng chờ (nhận nhầm) — không được khi đã có chẩn đoán (409 HAS_DIAGNOSIS).
+// Không trả được khi đã có chẩn đoán (409 HAS_DIAGNOSIS).
 export const releaseVisit = (visitId) => apiRequest(`${V1}/visits/${visitId}/release`, 'PATCH')
 
-// Chi tiết cho phiếu khám (hàng đợi chỉ có thông tin tóm tắt): sinh hiệu, lời kể, triệu chứng đã xác nhận, hồ sơ.
+// Hàng đợi chỉ có thông tin tóm tắt; phiếu khám cần thêm sinh hiệu, lời kể, triệu chứng đã xác nhận và hồ sơ.
 export async function getVisitDetail(visitId, patientId) {
   const [v, symptoms, p] = await Promise.all([
     apiGet(`${V1}/visits/${visitId}`),
@@ -134,8 +149,7 @@ export async function getVisitDetail(visitId, patientId) {
 }
 export const cancelVisit = (visitId, reason) => apiRequest(`${V1}/visits/${visitId}/cancel`, 'PATCH', { reason })
 
-// ---------- Đánh giá AI / phân loại ----------
-// POST chạy luật cờ đỏ + ưu tiên ngay (kết quả có priority, alerts), phần AI chạy nền → GET hỏi lại tới khi xong.
+// POST chạy luật cờ đỏ và ưu tiên ngay; phần AI chạy nền, GET hỏi lại tới khi xong.
 export const triggerAssessment = (visitId) => apiPost(`${V1}/visits/${visitId}/assessment`)
 export async function getAssessment(visitId) {
   try {
@@ -147,19 +161,17 @@ export async function getAssessment(visitId) {
 }
 export const assessmentPending = (a) => !!a && ['Pending', 'Preliminary'].includes(a.ai_status)
 
-// Mức phân loại của server → mức client: Emergency → emergency, HighPriority → high, còn lại routine.
 export const triageOf = (priority) => (priority === 'Emergency' ? 'emergency' : priority === 'HighPriority' ? 'high' : 'routine')
 
-// Mục "cần hỏi / đo ngay": server gửi khoá sinh hiệu dạng "vital_signs.spo2_pct" kèm tên chưa dịch → đổi sang nhãn sinh hiệu.
+// Server gửi khoá sinh hiệu dạng “vital_signs.spo2_pct” kèm tên chưa dịch → đổi sang nhãn sinh hiệu.
 export const missingName = (x) => {
   if (!x.symptom_code.startsWith('vital_signs.')) return x.symptom_name
   const key = x.symptom_code.slice('vital_signs.'.length)
   return VITAL_KEYS.find((d) => d.key === key)?.label ?? key
 }
 
-// ---------- Trích xuất triệu chứng từ lời kể (HITL) ----------
-// Lượt phải còn Waiting và đã lưu lời kể. Hỏi lại khoảng 2 giây một lần, dừng sau timeoutMs.
-// Trả về { status: 'Completed', proposals } như bản giả lập; Failed → lỗi AI_UNAVAILABLE.
+// Trích xuất triệu chứng từ lời kể: lượt phải còn Waiting và đã lưu lời kể; hỏi lại khoảng 2 giây một lần tới timeoutMs.
+// Failed → lỗi AI_UNAVAILABLE.
 export async function extractSymptoms(visitId, { signal, timeoutMs = 30000 } = {}) {
   let r = await apiPost(`${V1}/visits/${visitId}/symptom-extraction`)
   const until = Date.now() + timeoutMs
@@ -175,14 +187,12 @@ export async function extractSymptoms(visitId, { signal, timeoutMs = 30000 } = {
   return {
     status: 'Completed',
     proposals: r.suggestions.filter((s) => s.status !== 'UNKNOWN').map((s) => ({ symptom_code: s.symptom_code, state: s.status, phrase: '' })),
-    // ERD v2.0: sinh hiệu đọc được trong lời kể — y tá xác nhận mới điền; lời kể đã sửa sau lần trích xuất → nhắc chạy lại.
+    // Sinh hiệu đọc được trong lời kể chỉ là đề xuất, y tá xác nhận mới điền; lời kể sửa sau lần trích xuất → nhắc chạy lại.
     vitalProposals: (r.vital_proposals ?? []).map((p) => ({ key: p.key, value: p.value, evidence: p.evidence ?? '', group: p.group ?? null })),
     textChanged: !!r.text_changed
   }
 }
 
-// ---------- Hàng đợi ----------
-// Một dòng GET /queue → hình dạng lượt khám của queueStore (thẻ hàng chờ, gọi số, đếm số liệu).
 export const ageFrom = (iso) => {
   const d = new Date(iso)
   if (Number.isNaN(+d)) return ''
@@ -211,7 +221,7 @@ export function toQueueVisit(q) {
     statusAt: q.exam_started_at ?? q.checked_in_at ?? q.visit_date,
     doctor: q.physician_name ?? '',
     doctorId: q.physician_id,
-    // Phòng của bác sĩ đang khám (null khi chưa ai nhận) — lượt khám không lưu phòng riêng
+    // Lượt khám không lưu phòng riêng: lấy phòng của bác sĩ đang khám (rỗng khi chưa ai nhận).
     room: q.room_name || q.room || '',
     // Đi xét nghiệm và lời mời vào phòng do server giữ để máy quầy cũng thấy (ERD v2.0)
     labOut: !!q.lab_out_at,

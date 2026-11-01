@@ -62,7 +62,7 @@ Chạy kiểm tra của phần mình đã sửa:
 |---|---|---|
 | `server/` | `cd server; python -m pytest` (cần PostgreSQL trong Docker, xem `server/README.md` mục 5) | Có, kèm độ phủ ≥ 90% |
 | Model hoặc migration | `python -m alembic upgrade head; python -m alembic check` | Có |
-| `client/` | `cd client; npm test; npm run build` | Không, phải tự chạy |
+| `client/` | `cd client; npm run lint; npm test; npm run build` | Có lint + test (build phải tự chạy) |
 | `tools/` | `cd tools; python -m pytest` | Có |
 | `knowledge/` | `cd server; python -m scripts.import_okf --dry-run` (kiểm tra toàn bộ thư mục, không ghi) | Gián tiếp qua test của server |
 
@@ -80,7 +80,11 @@ PR chỉ merge khi CI xanh. Không đổi migration đã merge: thay đổi CSDL
    git tag -a v0.N-sprintN -m "Kết thúc Sprint N"
    git push origin v0.N-sprintN
    ```
-4. Trên Trello: chỉ kéo card sang Done khi PR chứa code của card đã merge vào `develop`.
+4. Bản cài cho người kiểm thử: merge vào `main` thì workflow `.github/workflows/release.yml` tự build bản cài Windows và macOS,
+   tạo Release kèm tag `v<version>` theo `client/package.json` (khoảng 15 phút). Version đã có Release thì bỏ qua; cần bản cài
+   mới thì tăng `version` trong `client/package.json` (và `package-lock.json`) qua PR trước khi merge vào `main`. Không tạo
+   Release hay tag `vX.Y.Z` bằng tay trên GitHub.
+5. Trên Trello: chỉ kéo card sang Done khi PR chứa code của card đã merge vào `develop`.
 
 ## 5. Quy tắc chú thích trong code
 

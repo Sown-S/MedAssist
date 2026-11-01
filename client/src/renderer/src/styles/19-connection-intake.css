@@ -1,6 +1,6 @@
-/* Ô địa chỉ máy chủ, lượt chưa đóng, phân loại lúc tiếp đón */
+/* Địa chỉ máy chủ, lượt chưa đóng, phân loại lúc tiếp đón */
 
-/* ===== Ô Server (màn đăng nhập, Cài đặt › Kết nối) — gọn, cùng tông khung đăng nhập ===== */
+/* Ô địa chỉ máy chủ (đăng nhập, Cài đặt › Kết nối) */
 .srv-box{display:flex;flex-direction:column;gap:8px;}
 .srv-top{display:flex;align-items:center;justify-content:space-between;}
 .srv-label{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--ink-soft);}
@@ -21,29 +21,23 @@
 .srv-msg.checking{color:#FCD34D;}
 .srv-msg.ok{color:#86EFAC;}
 .srv-msg.fail{color:#FCA5A5;}
-/* Cùng hiệu ứng với khung đăng nhập: nền kính mờ, viền mảnh, bóng đổ lớn. */
 .login-server{width:100%;box-sizing:border-box;margin-top:14px;padding:16px 18px;background:var(--surface);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);border:1px solid var(--border);border-radius:22px;box-shadow:0 30px 70px -20px rgba(0,0,0,.55);}
 .login-screen .srv-label{color:#fff;font-size:13px;}
 .login-lang .login-server-btn{display:inline-flex;align-items:center;gap:6px;}
 .login-lang .login-server-btn svg{width:14px;height:14px;}
 .login-lang-sep{width:1px;align-self:stretch;margin:4px 4px;background:var(--border);}
 
-/* ===== Lượt chưa đóng từ những ngày trước ===== */
+/* Lượt chưa đóng từ những ngày trước */
 .stale-row{padding:10px 12px;border-radius:11px;background:var(--surface-alt);margin-bottom:8px;}
 .stale-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
 .stale-head .wait-main{flex:1;min-width:180px;display:flex;flex-direction:column;}
 .stale-head small{font-size:12px;color:var(--ink-soft);}
 .stale-close{margin-top:10px;padding-top:10px;border-top:1px solid var(--border);}
 
-/* ===== Phân loại lúc tiếp đón (cổng cờ đỏ) ===== */
-.triage-strip{display:flex;align-items:flex-start;gap:10px;flex-wrap:wrap;margin:8px 0 10px;padding:10px 12px;border-radius:11px;background:var(--surface-alt);border:1px solid var(--border);font-size:13px;}
-.triage-strip .txt{flex:1;min-width:200px;display:flex;flex-direction:column;gap:3px;color:var(--ink);}
-.triage-strip .need{color:#FCD34D;}
-.triage-strip.high{border-color:rgba(252,211,77,.45);}
-.triage-strip.emergency{background:rgba(239,68,68,.12);border-color:rgba(239,68,68,.6);}
+/* Phân loại lúc tiếp đón (cổng cờ đỏ) */
 .call-chip.emerg{background:rgba(239,68,68,.25);color:#FCA5A5;}
 
-/* ===== Ô ngày sinh dd/mm/yyyy + nút lịch (IntakeModal) ===== */
+/* Ô ngày sinh dd/mm/yyyy + nút lịch */
 .dob-input{position:relative;display:flex;}
 .dob-input input[type=text]{flex:1;min-width:0;padding-right:38px;}
 .dob-input .dob-cal{position:absolute;right:4px;top:50%;transform:translateY(-50%);display:flex;padding:6px;border:none;border-radius:7px;background:none;color:var(--ink-soft);cursor:pointer;}

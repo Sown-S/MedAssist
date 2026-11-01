@@ -1,21 +1,9 @@
-/* Lịch sử hoạt động, tài khoản, phân quyền, cài đặt hệ thống */
+/* Lịch sử hoạt động, tài khoản, phân quyền, cài đặt */
 
-/* ===== Lịch sử hoạt động ===== */
-.log-filters{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px;}
-.log-filters .ai-search{flex:1 1 260px;}
-.log-date{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--ink-soft);}
-.log-legend{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px;}
-.log-level{display:inline-flex;align-items:center;gap:4px;}
-.log-table td{vertical-align:top;}
-.log-warning td:first-child{box-shadow:inset 3px 0 0 var(--priority);}
-.log-critical td{background:rgba(239,68,68,.07);}
-.log-critical td:first-child{box-shadow:inset 3px 0 0 var(--warn);}
-.log-ok{display:flex;align-items:center;gap:5px;font-size:12.5px;color:#86EFAC;margin-top:2px;}
-.log-detail th{width:170px;text-transform:none;letter-spacing:0;font-size:12.5px;}
-.ai-sug{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:14px;margin-top:4px;}
+/* Lịch sử hoạt động */
 .ai-sug-actions{display:inline-flex;gap:4px;margin-left:auto;}
 
-/* ===== Quản lý tài khoản ===== */
+/* Tài khoản nhân viên */
 .staff-callout{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px;padding:14px 16px;border-color:rgba(251,191,36,.35);}
 .staff-callout > svg{width:20px;height:20px;color:#FCD34D;flex-shrink:0;}
 .staff-callout > div{flex:1 1 260px;color:var(--ink);}
@@ -28,33 +16,12 @@
 .staff-secret-pw{font-size:17px !important;font-weight:700;letter-spacing:.04em;}
 .staff-secret .btn{margin-left:auto;display:inline-flex;align-items:center;gap:6px;}
 
-/* ===== Phân quyền vai trò ===== */
-.role-radio-row{align-items:flex-start;}
-.role-radio-row input{margin-top:3px;}
-.role-radio-txt{display:flex;flex-wrap:wrap;align-items:center;gap:6px;flex:1;}
-.role-radio-txt > div{flex-basis:100%;}
-.roles-fixed-note{margin:12px 0 0;}
-.roles-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:12px;}
-.roles-head .card-title{margin-bottom:2px;}
-.roles-last{text-align:right;}
-.roles-notes{display:flex;flex-direction:column;gap:6px;margin-bottom:14px;padding:10px 12px;border-radius:10px;background:var(--field-bg);border:1px solid var(--border);font-size:12.5px;color:var(--ink-soft);}
-.roles-notes > div{display:flex;gap:8px;align-items:flex-start;}
-.roles-notes svg{width:14px;height:14px;flex-shrink:0;margin-top:2px;}
-.perm-table tr.perm-group td{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:#94A3B8;font-weight:700;padding-top:14px;}
-.perm-table td svg{width:12px;height:12px;vertical-align:-1px;opacity:.6;}
-.perm-table input[type=checkbox]:disabled{opacity:.55;cursor:not-allowed;}
-.perm-specials{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:8px;}
-.perm-special{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:1px solid var(--border);border-radius:10px;cursor:pointer;color:var(--ink);font-size:13.5px;}
-.perm-special.on{border-color:var(--accent);background:var(--primary-soft);}
-.perm-special input{margin-top:3px;accent-color:var(--primary);}
-.roles-actions{align-items:center;flex-wrap:wrap;}
-.roles-actions .btn{display:inline-flex;align-items:center;gap:6px;}
+/* Phân quyền */
 .perm-diff{margin:10px 0 0;padding:0;list-style:none;max-height:220px;overflow:auto;font-size:13px;}
 .perm-diff li{padding:3px 0;}
 .perm-diff li.add{color:#86EFAC;}
-.perm-diff li.rem{color:#FCA5A5;}
 
-/* ===== Cài đặt hệ thống ===== */
+/* Cài đặt hệ thống */
 .settings-page{padding-bottom:70px;}
 .set-dot{width:7px;height:7px;border-radius:50%;background:var(--priority);display:inline-block;}
 .set-intro{margin:0 0 12px;}
@@ -72,8 +39,6 @@
 .set-logo .btn{display:inline-flex;align-items:center;gap:6px;cursor:pointer;}
 .set-split{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:18px;align-items:start;}
 @media (max-width:900px){.set-split{grid-template-columns:1fr;}}
-.set-row-changed td{background:rgba(251,191,36,.07);}
-.set-narrow{width:80px;}
 .set-print-preview{background:#fff;color:#000;border-radius:8px;padding:12px 14px;font:11px Arial,sans-serif;}
 .set-print-preview .ph{display:flex;gap:10px;align-items:center;border-bottom:1px solid #000;padding-bottom:6px;}
 .set-print-preview .ph img{max-height:48px;max-width:90px;}
@@ -87,11 +52,6 @@
 .set-backup-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:8px;}
 .set-backup-head .btn{display:inline-flex;align-items:center;gap:6px;}
 .set-backup-head .card-title{margin-bottom:2px;}
-.set-inline{margin-left:8px;}
-.set-check{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:10px;margin-top:10px;border:1px solid var(--border);}
-.set-check svg{width:18px;height:18px;flex-shrink:0;margin-top:2px;}
-.set-check.ok{border-color:rgba(34,197,94,.45);background:rgba(34,197,94,.08);}
-.set-check.bad{border-color:rgba(239,68,68,.45);background:rgba(239,68,68,.08);}
 .set-savebar{position:sticky;bottom:12px;display:flex;align-items:center;justify-content:flex-end;gap:10px;flex-wrap:wrap;margin-top:16px;padding:10px 14px;border-radius:12px;background:var(--solid);border:1px solid var(--priority);box-shadow:0 10px 30px -10px rgba(0,0,0,.6);}
 .set-savebar > span:first-child{margin-right:auto;font-size:13.5px;color:#FCD34D;}
 .set-savebar .btn{display:inline-flex;align-items:center;gap:6px;}

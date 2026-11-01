@@ -1,6 +1,6 @@
 {
   "name": "medassist-app",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "MedAssist — Clinical Decision Support System for Outpatient Clinics (Electron + React desktop client)",
   "main": "./out/main/index.js",
   "author": "C1SE.28",
@@ -8,11 +8,14 @@
     "dev": "electron-vite dev",
     "build": "electron-vite build",
     "start": "electron-vite preview",
+    "eval": "electron-vite preview --mode eval",
     "build:win": "electron-vite build && electron-builder --win",
     "build:mac": "electron-vite build && electron-builder --mac",
     "build:linux": "electron-vite build && electron-builder --linux",
+    "dist:eval": "electron-vite build --mode eval && electron-builder --publish never",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "lint": "eslint ."
   },
   "dependencies": {
     "@electron-toolkit/utils": "^3.0.0",
@@ -23,10 +26,18 @@
     "react-router-dom": "^6.26.0"
   },
   "devDependencies": {
+    "@eslint/js": "^9.17.0",
+    "@testing-library/dom": "^10.4.0",
+    "@testing-library/react": "^16.1.0",
     "@vitejs/plugin-react": "^4.3.1",
     "electron": "^31.3.0",
     "electron-builder": "^24.13.3",
     "electron-vite": "^2.3.0",
+    "eslint": "^9.17.0",
+    "eslint-plugin-react": "^7.37.2",
+    "eslint-plugin-react-hooks": "^5.1.0",
+    "espree": "^10.4.0",
+    "globals": "^15.14.0",
     "jsdom": "^25.0.1",
     "vite": "^5.4.0",
     "vitest": "^2.1.9"
@@ -52,7 +63,27 @@
       }
     ],
     "win": {
-      "target": "nsis"
-    }
+      "target": "nsis",
+      "artifactName": "MedAssist-Setup-${version}.${ext}"
+    },
+    "mac": {
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "arm64",
+            "x64"
+          ]
+        }
+      ],
+      "category": "public.app-category.medical",
+      "identity": null,
+      "artifactName": "MedAssist-${version}-${arch}.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    },
+    "publish": null
   }
 }

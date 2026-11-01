@@ -1,12 +1,13 @@
 # Hướng dẫn demo và kiểm thử AI
 
 Chuẩn bị buổi demo / bảo vệ và kiểm tra module AI trên máy admin. Cài đặt máy chủ: [`deploy/README.md`](../deploy/README.md).
+Kiểm thử trên một máy với dữ liệu mẫu (giảng viên): [`huong-dan-kiem-thu.md`](huong-dan-kiem-thu.md).
 Số đo chính thức cho báo cáo dùng bộ test đóng băng ở [`evaluation/testset/`](../evaluation/testset/README.md), không dùng ca demo.
 
 ## 1. Chuẩn bị (trước buổi demo 1 ngày)
 
 1. Kéo `develop` mới nhất, `.\deploy\scripts\start.ps1`. Mở `https://<IP máy admin>/health`: `database.ok` và `ai.ok` phải là `true`.
-2. Kiểm tra bản tri thức Active ở **Quản trị › Cấu hình AI** đúng số bệnh của `knowledge/` hiện tại (124 bệnh, 99 triệu chứng, 11 luật).
+2. Kiểm tra bản tri thức Active ở **Quản trị › Cấu hình AI** đúng số bệnh của `knowledge/` hiện tại (199 bệnh, 97 triệu chứng, 12 luật).
    Nhãn bản phát hành không tự đổi theo nội dung, nên so số lượng chứ không so nhãn.
 3. Tài khoản: 1 Quản trị, 1–2 Bác sĩ đã **gắn phòng**, 1 Lễ tân; đăng nhập thử từng tài khoản và đổi mật khẩu lần đầu xong trước buổi demo.
 4. Kho: nếu cần kho mẫu, `exec api python -m scripts.seed_drugs` (có lô ban đầu); nếu đã nạp `--no-batches` thì nhập vài lô ở màn Kho.
@@ -32,22 +33,18 @@ Số đo chính thức cho báo cáo dùng bộ test đóng băng ở [`evaluati
 
 ## 3. Nạp nhiều ca mẫu vào hàng đợi
 
-Để có sẵn hàng đợi đủ loại ca (cờ đỏ, sàn ưu tiên, ca sát ngưỡng, ca điển hình theo từng bệnh), nhóm dùng bộ ca demo và script
-`seed_demo_queue.py` **không commit vào repo** (bộ ca chưa được bác sĩ rà soát nhãn). Lấy bộ file từ Sơn, rồi:
+`scripts.seed_eval` nạp ca mẫu (`server/data/eval_cases.jsonl`) đi đúng luồng màn Tiếp đón: tạo lượt, lưu triệu chứng, chạy
+đánh giá, check-in. Hàng đợi chỉ tạo khi hôm nay chưa có lượt nào, nên dùng trên máy demo trống hoặc môi trường kiểm thử
+(`deploy/docker-compose.eval.yml` tự chạy). Trên máy admin đã có dữ liệu thật, không chạy script này.
 
 ```powershell
 $dc = "docker compose -f deploy\docker-compose.yml --env-file deploy\.env"
-iex "$dc cp seed_demo_queue.py api:/srv/scripts/seed_demo_queue.py"
-iex "$dc cp demo_cases_v2.jsonl api:/tmp/demo_cases_v2.jsonl"
-iex "$dc exec api python -m scripts.seed_demo_queue --file /tmp/demo_cases_v2.jsonl --as <lễ tân> --dry-run"
-iex "$dc exec api python -m scripts.seed_demo_queue --file /tmp/demo_cases_v2.jsonl --as <lễ tân> --limit 10"
-iex "$dc exec api python -m scripts.seed_demo_queue --file /tmp/demo_cases_v2.jsonl --as <lễ tân> --cancel"   # dọn sau buổi test
+iex "$dc exec -e EVAL_PASSWORD=<mật khẩu> api python -m scripts.seed_eval --skip-knowledge"
 ```
 
-- Script đi đúng luồng màn Tiếp đón (tạo lượt, lưu triệu chứng, chạy đánh giá, check-in) nên số thứ tự, nhật ký, ràng buộc giống nhập tay.
-- Nạp theo đợt khoảng 10 ca: worker xử lý lần lượt, mỗi ca có LLM 10–40 giây.
-- Check-in chỉ hợp lệ trong ngày: nạp đúng hôm demo. Mỗi lần `start.ps1` build lại image thì phải chép lại 2 file.
-- Script dừng nếu bộ ca dùng mã triệu chứng không có trong bản tri thức Active.
+- Script tạo tài khoản `admin`, `bs01`, `bs02`, `letan01` nếu chưa có, cùng lượt khám 14 ngày trước và 15 lượt hôm nay
+  (2 cờ đỏ, 3 ưu tiên cao, ca đã khám xong, ca chờ thu tiền).
+- Worker xử lý lần lượt từng ca có LLM, mỗi ca 10–40 giây; ca nạp sẵn có gợi ý đầy đủ sau vài phút.
 
 ## 4. Kiểm thử AI trên máy dev (không cần GPU)
 
@@ -69,11 +66,13 @@ python -m app.worker                # terminal 2
 | Thứ tự hàng đợi | Cấp cứu → Ưu tiên cao → Thường, trong cùng mức theo thời điểm tiếp đón |
 | Trạng thái AI | Cờ đỏ → `Skipped`; không có triệu chứng "Có" → `Degraded` (không có ứng viên); còn lại → `Ready`. `Degraded` do LLM quá giờ là lỗi môi trường, ghi lại và xem log worker |
 | Gợi ý cuối | Chỉ gồm bệnh trong danh sách ứng viên theo luật; lý do tiếng Việt, dẫn đúng triệu chứng của ca |
-| Ngưỡng sinh hiệu | SpO2 < 92, nhịp thở ≥ 30, huyết áp tâm thu < 90, mạch > 120 → Cấp cứu; nhiệt độ ≥ 39°C → Ưu tiên cao. Giá trị đúng bằng ngưỡng (SpO2 92, mạch 120…) không kích hoạt |
+| Ngưỡng cờ đỏ (Cấp cứu) | SpO2 < 92. Nhịp thở theo cân nặng: ≥ 30 (≥ 25 kg), ≥ 40 (10–25 kg), ≥ 50 (< 10 kg); thiếu cân nặng thì mục *Hỏi ngay* đòi cân nặng. Huyết áp tâm thu / mạch theo tuổi: ≥ 12 tuổi < 90 hoặc > 130; 1–12 tuổi < 80 hoặc > 150; < 1 tuổi < 70 hoặc > 170 |
+| Ngưỡng sàn (Ưu tiên cao) | Nhiệt độ ≥ 38,5°C (`pf_sot_cao`); mất nước nặng, hoặc sốt cao kèm chấm xuất huyết; ho ra máu / nôn ra máu / phân đen |
+| Giá trị đúng bằng ngưỡng | SpO2 92, mạch 130 (người lớn) không kích hoạt; nhiệt độ 38,5°C và nhịp thở 30 có kích hoạt (so sánh ≥) |
 
 ## 6. Giới hạn đã biết (nên chủ động nói khi demo)
 
-- Ngưỡng sinh hiệu dùng chung cho mọi lứa tuổi: trẻ nhỏ có mạch > 120 khi sốt vẫn bị xếp Cấp cứu.
-- Một số bệnh cần xử trí sớm (uốn ván chưa co giật, viêm màng não còn tỉnh, viêm nắp thanh quản) chưa có luật cờ đỏ riêng; ra mức Thường nếu sốt dưới 39°C.
+- Ngưỡng nhịp thở dựa trên cân nặng (không theo tuổi), nên ca thiếu cân nặng phải hỏi thêm trước khi vào hàng chờ.
+- Một số bệnh cần xử trí sớm (uốn ván chưa co giật, viêm màng não còn tỉnh, viêm nắp thanh quản) chưa có luật cờ đỏ riêng; ra mức Thường nếu sốt dưới 38,5°C.
 - Kho tri thức trích xuất tự động từ văn bản Bộ Y tế, một số quan hệ triệu chứng chưa được bác sĩ rà soát; đây là lý do gợi ý chỉ để tham khảo.
 - AI không gợi ý thuốc và hệ thống không đánh giá đơn thuốc (phạm vi Proposal v2.0).

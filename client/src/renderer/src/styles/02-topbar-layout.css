@@ -1,6 +1,6 @@
 /* Thanh trên cùng, điều hướng, tiêu đề trang, thẻ số liệu, nút, card */
 
-/* ===== Topbar row 1 : identity & actions ===== */
+/* Topbar hàng 1: người dùng và thao tác */
 .topbar-1{position:relative;z-index:40;display:flex;align-items:center;justify-content:space-between;padding:11px 28px;background:var(--surface);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);border-bottom:1px solid var(--border);}
 .brand{display:flex;align-items:center;gap:10px;}
 .brand .mark{width:28px;height:28px;border-radius:10px;background:var(--primary);display:flex;align-items:center;justify-content:center;color:#fff;font-family:'Plus Jakarta Sans Variable',sans-serif;font-weight:700;font-size:15px;}
@@ -17,7 +17,7 @@
 .logout-btn{background:var(--warn);color:#fff;border:none;padding:8px 15px;border-radius:10px;font-weight:600;font-size:13.5px;cursor:pointer;font-family:'Plus Jakarta Sans Variable',sans-serif;transition:background .15s;}
 .logout-btn:hover{background:#DC2626;}
 
-/* ===== Topbar row 2 : nav ===== */
+/* Topbar hàng 2: tab */
 .topbar-2{display:flex;justify-content:center;padding:9px 28px;background:var(--surface);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:30;}
 .tabs{display:flex;gap:4px;background:rgba(255,255,255,.04);padding:4px;border-radius:12px;}
 .tab{padding:8px 18px;border-radius:9px;font-size:14.5px;font-weight:600;cursor:pointer;color:var(--ink-soft);transition:.15s;border:none;background:transparent;font-family:'Plus Jakarta Sans Variable',sans-serif;display:flex;align-items:center;gap:7px;text-decoration:none;}
@@ -27,7 +27,7 @@
 .page{padding:22px 28px 60px;max-width:1560px;margin:0 auto;}
 
 .page-head{margin-bottom:18px;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:12px 20px;}
-/* Khối tiêu đề co giãn, khối nút giữ nguyên một dòng: cửa sổ hẹp thì nút xuống hàng dưới thay vì bị bẻ chữ. */
+/* Cửa sổ hẹp thì khối nút xuống hàng dưới thay vì bẻ chữ. */
 .page-head>:first-child{flex:1 1 380px;min-width:0;}
 .page-head>:not(:first-child){flex:0 0 auto;flex-wrap:wrap;}
 .page-head .btn,.page-head .badge{white-space:nowrap;}

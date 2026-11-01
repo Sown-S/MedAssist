@@ -1,38 +1,21 @@
-import { useMemo, useRef, useState } from 'react'
+import { useMemo, useState } from 'react'
 import Icon from '../../components/Icon'
 import { translate } from '../../i18n'
-import { useAuth } from '../../context/AuthContext'
-import { useCatalogs } from '../../api/catalogStore'
-import { useLiveCatalog, isLiveCatalog } from '../../api/serviceCatalogLive'
-import { DEMO_MODE } from '../../api/client'
+import { useLiveCatalog } from '../../api/serviceCatalogLive'
 import { useInventory, todayISO } from '../../api/inventoryStore'
 import { exportCsv, fmtDateTime, unitLabel } from './inventory/shared'
 import { SCHEMAS } from './catalogs/schemas'
-import { exportCatalog, readCatalogFile, ImportModal } from './catalogs/CatalogDetailPage'
+import { exportCatalog } from './catalogs/catalogCsv'
 
-// Trang trung tâm của Quản lý danh mục: mỗi dòng là 1 danh mục, bấm để mở trang chi tiết.
-// Thuốc & vật tư có trang riêng (dùng chung dữ liệu với Kho).
-const ORDER = [
-  { group: 'Administrative catalogs', keys: ['general', 'address'] },
-  { group: 'Medical catalogs', keys: ['icd', '@drugs', 'services', 'packages', 'labs', 'units', 'routes', 'rxtemplates', 'advice'] }
-]
+// Trang trung tâm của Quản lý danh mục; Thuốc & vật tư có trang riêng (dùng chung dữ liệu với Kho).
+// Dịch vụ, Xét nghiệm, Gói khám lấy từ server.
+const SERVER_KEYS = ['services', 'packages', 'labs']
+const ORDER = [{ group: 'Medical catalogs', keys: ['@drugs', ...SERVER_KEYS] }]
 const latest = (list, k = 'updatedAt') => list.reduce((m, r) => (r[k] > m ? r[k] : m), '')
 
-// Trạng thái từng danh mục: "Cần xem lại" kèm lý do cụ thể.
 function review(key, cats, inv) {
   const r = []
-  if (key === 'address') {
-    if (!cats.address.some((x) => x.level === 'commune')) r.push('Ward / commune list not imported yet')
-    r.push('Check against the 2025 reorganisation resolution')
-  }
-  if (key === 'icd') {
-    if (cats.icd.length < 1000) r.push('Sample list — import the full ICD-10 file')
-    const custom = cats.icd.filter((x) => x.custom && x.active).length
-    if (custom) r.push(`${custom} custom codes to verify`)
-  }
   if (key === 'packages' && cats.packages.some((p) => p.active && p.items.some((it) => !refActive(it.ref, cats)))) r.push('A package includes a discontinued service')
-  if (key === 'rxtemplates' && cats.rxtemplates.some((t) => t.active && t.items.some((it) => !inv.drugs.find((d) => d.id === it.drugId)?.active)))
-    r.push('A template uses a discontinued drug')
   if (key === '@drugs') {
     const n = inv.drugs.filter((d) => d.active && d.kind === 'drug' && !d.atc).length
     if (n) r.push(`${n} drugs without ATC code`)
@@ -45,16 +28,10 @@ function refActive(ref, cats) {
 }
 
 export default function CatalogPage({ onNavigate }) {
-  // Backend thật: Dịch vụ, Xét nghiệm, Gói khám lấy từ server (ERD v2.1).
-  const local = useCatalogs()
-  const lc = useLiveCatalog(!DEMO_MODE)
-  const cats = DEMO_MODE ? local : { ...local, services: lc.services, labs: lc.labs, packages: lc.packages }
+  const lc = useLiveCatalog(true)
+  const cats = useMemo(() => ({ services: lc.services, labs: lc.labs, packages: lc.packages }), [lc.services, lc.labs, lc.packages])
   const inv = useInventory()
-  const { user } = useAuth()
   const [q, setQ] = useState('')
-  const [imp, setImp] = useState(null)
-  const fileRef = useRef(null)
-  const importKey = useRef(null)
 
   const info = (key) => {
     if (key === '@drugs')
@@ -63,12 +40,11 @@ export default function CatalogPage({ onNavigate }) {
     return { title: s.title, desc: s.desc, list: cats[key], page: 'cat-' + key, last: latest(cats[key]) }
   }
 
-  // Tìm nhanh 1 mã / 1 tên trong mọi danh mục.
   const results = useMemo(() => {
     const t = q.trim().toLowerCase()
     if (t.length < 2) return []
     const out = []
-    for (const key of Object.keys(SCHEMAS))
+    for (const key of SERVER_KEYS)
       for (const r of cats[key]) if ([r.code, r.name, r.nameEn].some((x) => (x ?? '').toLowerCase().includes(t))) out.push({ key, page: 'cat-' + key, code: r.code, name: r.name, active: r.active, id: r.id })
     for (const d of inv.drugs) if ([d.name, d.ingredient, d.atc].some((x) => (x ?? '').toLowerCase().includes(t))) out.push({ key: '@drugs', page: 'drugs', code: d.atc || d.id, name: d.name, active: d.active })
     return out.slice(0, 40)
@@ -166,17 +142,6 @@ export default function CatalogPage({ onNavigate }) {
                       )}
                     </td>
                     <td className="ai-actions" onClick={(e) => e.stopPropagation()}>
-                      <button
-                        className="btn btn-ghost btn-sm"
-                        title={key.startsWith('@') || isLiveCatalog(key) ? 'Add or edit on the catalog page' : 'Import from Excel (CSV)'}
-                        disabled={key.startsWith('@') || isLiveCatalog(key)}
-                        onClick={() => {
-                          importKey.current = key
-                          fileRef.current?.click()
-                        }}
-                      >
-                        <Icon name="paperclip" />
-                      </button>
                       <button className="btn btn-ghost btn-sm" title="Export" onClick={() => exportRow(key)}>
                         <Icon name="download" />
                       </button>
@@ -191,8 +156,6 @@ export default function CatalogPage({ onNavigate }) {
           </table>
         </div>
       ))}
-      <input ref={fileRef} type="file" accept=".csv,text/csv" hidden onChange={(e) => readCatalogFile(e, importKey.current, cats[importKey.current], (r) => setImp({ ...r, key: importKey.current }))} />
-      {imp && <ImportModal catalogKey={imp.key} imp={imp} user={user} onClose={() => setImp(null)} />}
     </div>
   )
 }

@@ -1,34 +1,30 @@
 import Icon from '../../components/Icon'
 import { translate } from '../../i18n'
-import { useQueue, payStatusOf, isQueued, ST } from '../../api/queueStore'
-import { useInvoices, dayOf } from '../../api/invoiceStore'
-import { estimateTotal } from '../../api/billing'
-import { useToast } from '../../context/ToastContext'
+import { useQueue, isQueued } from '../../api/queueStore'
 import { ticketNo } from '../../components/queuePrint'
 import CallPanel from './CallPanel'
-import { fmt, dmy } from './shared'
-import { DEMO_MODE } from '../../api/client'
-import { useAwaiting, fromAwaiting } from '../../api/billingApi'
+import { fmt, dmy, ymd } from './shared'
+import { useAwaiting, fromAwaiting, useTodayInvoices } from '../../api/billingApi'
+import { usePrescriptions } from '../../api/prescriptionApi'
 
-// Backend thật: lượt Prescribed không có trong GET /queue → lấy từ GET /billing/awaiting, đổi sang dạng lượt khám.
+// Lượt Prescribed không có trong GET /queue → lấy từ GET /billing/awaiting.
 
-// Trang chủ Lễ tân: các ô tổng quan bấm vào được + thao tác nhanh + gọi số + danh sách cần thu tiền.
 export default function Dashboard({ go, readOnly, onRegister, onSearch, onPay }) {
-  const { showToast } = useToast()
-  const { visits, redFlags, calling } = useQueue()
-  const invoices = useInvoices()
-  const awaiting = useAwaiting({ enabled: !DEMO_MODE })
-  const today = dayOf(new Date().toISOString())
-  const todayInv = invoices.filter((x) => dayOf(x.createdAt) === today && x.status !== 'cancelled')
-  // Lượt đã chốt đơn còn việc ở quầy: chưa thu tiền và / hoặc chưa cấp phát xong.
-  const unpaid = DEMO_MODE ? visits.filter((v) => v.status === ST.PRESCRIBED) : awaiting.list.map(fromAwaiting)
+  const { visits, redFlags } = useQueue()
+  const awaiting = useAwaiting()
+  const serverInvoices = useTodayInvoices()
+  const serverRx = usePrescriptions({})
+  const today = ymd(new Date())
+  // GET /billing/invoices đã lọc theo hôm nay (hoá đơn đã thu tính theo giờ thu).
+  const invoices = serverInvoices.map((x) => ({ status: x.payment_status.toLowerCase(), method: x.payment_method === 'BankingTransfer' ? 'transfer' : 'cash', createdAt: x.created_at, paidAt: x.paid_at, total: Number(x.total_amount) }))
+  const todayInv = invoices.filter((x) => x.status !== 'cancelled')
+  const unpaid = awaiting.list.map(fromAwaiting)
   const processing = todayInv.filter((x) => x.status === 'pending' && x.method === 'transfer').length
   const paid = todayInv.filter((x) => x.status === 'paid').length
-  // Doanh thu hôm nay = hoá đơn đã thu trong ngày (theo giờ thu tiền).
-  const revenue = invoices.filter((x) => x.status === 'paid' && dayOf(x.paidAt ?? x.createdAt) === today).reduce((s, x) => s + x.total, 0)
-  const rxCount = visits.filter((v) => v.rx.length).length
+  // Doanh thu theo giờ thu tiền.
+  const revenue = invoices.filter((x) => x.status === 'paid' && ymd(new Date(x.paidAt ?? x.createdAt)) === today).reduce((s, x) => s + x.total, 0)
+  const rxCount = serverRx.list.length
   const waiting = visits.filter(isQueued).length
-  const cur = visits.find((v) => v.id === calling)
 
   const cards = [
     {
@@ -55,7 +51,7 @@ export default function Dashboard({ go, readOnly, onRegister, onSearch, onPay })
       tone: 'green',
       title: 'Waiting queue',
       value: waiting,
-      sub: cur ? translate('Now calling') + ' ' + ticketNo(cur.ticket) + ' — ' + cur.name : translate('Waiting for consultation'),
+      sub: translate('Waiting for consultation'),
       link: 'Click to manage the queue →'
     },
     {
@@ -64,7 +60,7 @@ export default function Dashboard({ go, readOnly, onRegister, onSearch, onPay })
       tone: 'red',
       title: 'Red-flag cases',
       value: redFlags.length,
-      // Chuyển viện do quầy quyết ngay (không chờ bác sĩ); ca đưa lên đầu hàng chờ là "khám tại phòng khám".
+      // Chuyển viện do quầy quyết ngay; ca đưa lên đầu hàng chờ là khám tại phòng khám.
       sub:
         `${redFlags.filter((r) => (r.doctorReview?.decision ?? r.outcome) === 'referred').length} ${translate('referred')} · ` +
         `${redFlags.filter((r) => ['seen', 'queued'].includes(r.doctorReview?.decision ?? r.outcome)).length} ${translate('seen at the clinic')}`,
@@ -127,7 +123,7 @@ export default function Dashboard({ go, readOnly, onRegister, onSearch, onPay })
                   {v.carriedFrom ? ' · ' + translate('Unpaid from') + ' ' + dmy(v.carriedFrom + 'T00:00:00') : ''}
                 </small>
               </span>
-              <span className="mono amt">{fmt(DEMO_MODE ? estimateTotal(v) : v.total)}</span>
+              <span className="mono amt">{fmt(v.total)}</span>
               <button className="btn btn-primary btn-sm" disabled={readOnly} onClick={() => onPay(v)}>
                 Dispense &amp; collect
               </button>

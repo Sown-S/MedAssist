@@ -39,10 +39,15 @@ const readJson = (name) => {
 }
 const writeJson = (name, data) => writeFileSync(fileOf(name), JSON.stringify(data), 'utf8')
 
+// Máy không có kho khoá của hệ điều hành (Linux thiếu keyring): giữ token trong bộ nhớ đến khi tắt app,
+// không ghi chữ thường xuống đĩa (TC03).
+const memoryOnly = new Map()
+
 function registerIpc() {
   ipcMain.handle('secure:get', (_e, key) => {
+    if (!safeStorage.isEncryptionAvailable()) return memoryOnly.get(key) ?? null
     const v = readJson('secure.json')[key]
-    if (!v || !safeStorage.isEncryptionAvailable()) return null
+    if (!v) return null
     try {
       return safeStorage.decryptString(Buffer.from(v, 'base64'))
     } catch {
@@ -50,13 +55,17 @@ function registerIpc() {
     }
   })
   ipcMain.handle('secure:set', (_e, key, value) => {
-    if (!safeStorage.isEncryptionAvailable()) return false
+    if (!safeStorage.isEncryptionAvailable()) {
+      memoryOnly.set(key, String(value))
+      return true
+    }
     const all = readJson('secure.json')
     all[key] = safeStorage.encryptString(String(value)).toString('base64')
     writeJson('secure.json', all)
     return true
   })
   ipcMain.handle('secure:remove', (_e, key) => {
+    memoryOnly.delete(key)
     const all = readJson('secure.json')
     delete all[key]
     writeJson('secure.json', all)

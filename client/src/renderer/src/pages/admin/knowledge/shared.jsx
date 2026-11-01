@@ -20,7 +20,6 @@ export const RuleTypeBadge = ({ type }) => <span className={'badge ' + (type ===
 
 export const fmtDate = (iso) => (iso ? new Date(iso).toLocaleString('vi-VN', { dateStyle: 'short', timeStyle: 'short' }) : '—')
 
-// Thông báo lỗi API: message tiếng Việt của server + chi tiết (path/field) nếu có.
 export function errorText(e) {
   const d = (e?.details ?? [])
     .map((x) => [x.field ?? x.path, x.message ?? x.msg].filter(Boolean).join(': '))
@@ -28,7 +27,7 @@ export function errorText(e) {
   return [e?.message || translate('Something went wrong'), ...d].join(' — ')
 }
 
-// Tải toàn bộ tri thức (mọi trạng thái) + bản phát hành + nguồn. Dữ liệu nhỏ (vài trăm dòng) nên tải hết một lần.
+// Dữ liệu nhỏ (vài trăm dòng) nên tải hết một lần.
 export function useKnowledge() {
   const [data, setData] = useState(null)
   const [error, setError] = useState(null)
@@ -47,7 +46,6 @@ export function useKnowledge() {
   return { data, error, reload }
 }
 
-// Gộp các phiên bản theo mã: bản đang dùng (Active), bản nháp / chờ duyệt (nếu có), bản mới nhất.
 export function groupByKey(rows) {
   const map = new Map()
   for (const r of rows) {
@@ -60,7 +58,7 @@ export function groupByKey(rows) {
   return [...map.values()]
 }
 
-// Tên hiển thị của mã triệu chứng / bệnh: ưu tiên bản nháp (đang soạn), sau đó bản đang dùng, rồi bản cũ.
+// Ưu tiên bản nháp, sau đó bản đang dùng, rồi bản cũ.
 export function useNames(items) {
   return useMemo(() => {
     const pick = (rows, field) => {
@@ -72,7 +70,7 @@ export function useNames(items) {
   }, [items])
 }
 
-// Mã còn dùng được để tham chiếu (Active hoặc đang soạn) — đúng điều server kiểm (UNKNOWN_CODE).
+// Active hoặc đang soạn — đúng điều server kiểm (UNKNOWN_CODE).
 export function usableCodes(rows) {
   return groupByKey(rows ?? [])
     .filter((g) => g.active || g.open)
@@ -80,8 +78,8 @@ export function usableCodes(rows) {
     .sort()
 }
 
-// ======================================================================= condition_logic (luật cờ đỏ / ưu tiên)
-// Nhóm: {op: 'AND'|'OR', args: [...]}; lá: symptom {symptom_code, state} | vital {vital, cmp, value} | age {unit, cmp, value}.
+// condition_logic: nhóm { op: 'AND' | 'OR', args }; lá: symptom { symptom_code, state } | vital { vital, cmp, value }
+// | age { unit, cmp, value }.
 export const CMPS = ['<', '<=', '>', '>=', '==']
 const CMP_TEXT = { '<': '<', '<=': '≤', '>': '>', '>=': '≥', '==': '=' }
 export const MAX_DEPTH = 5
@@ -139,7 +137,7 @@ export const newLeaf = (type, symptoms) =>
         ? { type: 'age', unit: 'years', cmp: '<', value: '' }
         : { op: 'AND', args: [] }
 
-// Lỗi phía client trước khi gửi (server kiểm lại đầy đủ). Trả về chuỗi lỗi đầu tiên hoặc null.
+// Kiểm tra sơ bộ trước khi gửi (server kiểm lại đầy đủ). Trả lỗi đầu tiên hoặc null.
 export function logicProblem(node, depth = 1) {
   if (depth > MAX_DEPTH) return translate('Too many nested groups')
   if (node.op) {
@@ -154,7 +152,7 @@ export function logicProblem(node, depth = 1) {
   return node.value === '' || !Number.isFinite(Number(node.value)) ? translate('Enter a number') : null
 }
 
-// Ô nhập số lưu chuỗi khi đang gõ; gửi lên server thì đổi thành số.
+// Ô số lưu chuỗi khi đang gõ; gửi lên server thì đổi thành số.
 export function cleanLogic(node) {
   if (node.op) return { op: node.op, args: node.args.map(cleanLogic) }
   if (node.type === 'symptom') return { type: 'symptom', symptom_code: node.symptom_code, state: node.state }
@@ -275,7 +273,6 @@ function CmpSelect({ value, onChange }) {
   )
 }
 
-// Tóm tắt nội dung một mục theo loại (dùng cho bảng, lịch sử, so sánh thay đổi).
 export function Summary({ kind, values, names }) {
   const v = values ?? {}
   if (kind === 'symptoms')

@@ -1,9 +1,7 @@
 import { useState } from 'react'
 import Icon from './Icon'
 
-// Mỗi thẻ bệnh nhân trong hàng chờ tự quản lý trạng thái mở/đóng của chính nó bằng useState.
-// ticket = số thứ tự (hiện to bên trái); wait = { label, level: 'ok' | 'warn' | 'long' } — thời gian đã chờ.
-// badges = các nhãn thêm ở bên phải (VD dị ứng); extra = nội dung chèn trên các dòng chi tiết (VD cảnh báo dị ứng).
+// wait = { label, level: 'ok' | 'warn' | 'long' }; badges: nhãn bên phải; extra: nội dung chèn trên các dòng chi tiết.
 export default function PatientQueueCard({ ticket, name, meta, time, wait, priority, badges, extra, details, actions }) {
   const [open, setOpen] = useState(false)
 

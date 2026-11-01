@@ -9,9 +9,8 @@ import DocumentModal from './DocumentModal'
 import { useAuth } from '../../context/AuthContext'
 import { ageFrom } from '../../api/clinicApi'
 
-// Lịch sử khám của một bệnh nhân lấy từ server (FR04): mỗi lượt có chẩn đoán đã xác nhận và tóm tắt đơn thuốc;
-// bấm vào một lượt để xem đầy đủ (sinh hiệu, lời kể, ghi chú lâm sàng, liều dùng, hóa đơn). Dùng ở Tra cứu hồ sơ
-// và trong phiếu khám (excludeVisitId = lượt đang khám). onLoaded(history) để trang cha lấy thông tin bệnh nhân.
+// Lịch sử khám từ server (FR04); bấm một lượt để xem đầy đủ. excludeVisitId = lượt đang khám;
+// onLoaded(history) để trang cha lấy thông tin bệnh nhân.
 const PAGE = 10
 const fmt = (iso) => (iso ? new Date(iso).toLocaleString('vi-VN', { dateStyle: 'short', timeStyle: 'short' }) : '—')
 const money = (n) => (Number(n) || 0).toLocaleString('vi-VN') + 'đ'
@@ -107,7 +106,7 @@ export default function ServerHistory({ patientId, excludeVisitId, onLoaded }) {
   )
 }
 
-// Lượt kết thúc bằng chuyển tuyến (ERD v2.0): nhãn "Chuyển tuyến", tóm tắt giấy, in lại; bác sĩ bổ sung giấy.
+// Lượt kết thúc bằng chuyển tuyến: tóm tắt giấy, in lại; bác sĩ bổ sung giấy.
 const TRANSPORT_LABEL = { Ambulance: 'Ambulance', Family: 'Family vehicle', Self: 'On their own', Other: 'Other' }
 function ReferralBox({ record, onSaved }) {
   const { user } = useAuth()
@@ -207,7 +206,7 @@ function VisitDetail({ visitId }) {
         <p className="ai-soft ai-small">No diagnosis recorded.</p>
       )}
 
-      {/* ERD v2.1: phiếu chỉ định cận lâm sàng và kết quả bác sĩ ghi từ phiếu giấy. */}
+      {/* Phiếu chỉ định và kết quả bác sĩ ghi từ phiếu giấy. */}
       {(r.service_orders ?? []).length > 0 && (
         <>
           <div className="section-label">Lab tests &amp; diagnostics</div>

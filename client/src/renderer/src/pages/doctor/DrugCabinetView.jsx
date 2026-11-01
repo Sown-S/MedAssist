@@ -5,10 +5,9 @@ import { useToast } from '../../context/ToastContext'
 import { translate } from '../../i18n'
 import { useQueue, isMine, inRoom } from '../../api/queueStore'
 import { useInventory, stockOf, nearDays } from '../../api/inventoryStore'
-import { useAIConfig } from '../../api/aiConfigStore'
-import { fold } from '../../api/patientStore'
+import { fold } from '../../api/patient'
 import { unitLabel, fmtMoney, fmtDate, STATUS, Pager, paginate } from '../admin/inventory/shared'
-import { addDrugToDraft } from './ConsultView'
+import { addDrugToDraft } from './consult/rxDraft'
 
 const STOCK_FILTERS = [
   { key: '', label: 'All stock levels' },
@@ -16,14 +15,14 @@ const STOCK_FILTERS = [
   { key: 'low', label: 'Low stock' },
   { key: 'out', label: 'Out of stock' }
 ]
-// Lọc theo hạn dùng của các lô còn trong kho ('near' = theo ngưỡng "sắp hết hạn" ở Cài đặt › Vận hành).
+// 'near' = theo ngưỡng “sắp hết hạn” ở Cài đặt › Vận hành.
 const EXPIRY_FILTERS = [
   { key: '', label: 'All expiry dates' },
   { key: '30', label: 'Expiring within 30 days' },
   { key: 'near', label: 'Near expiry (clinic threshold)' },
   { key: 'expired', label: 'Has expired batches' }
 ]
-// Nhóm điều trị theo chữ cái đầu của mã ATC (WHO) — lọc theo nhóm bệnh mà không cần bảng thuốc–bệnh riêng.
+// Nhóm điều trị theo chữ cái đầu của mã ATC — lọc theo nhóm bệnh mà không cần bảng thuốc–bệnh riêng.
 const ATC_CLASSES = {
   A: 'Alimentary tract & metabolism',
   B: 'Blood & blood-forming organs',
@@ -49,18 +48,15 @@ const PAGE_SIZE = 12
 const GROUPS = [
   { key: '', label: 'All groups' },
   { key: 'essential', label: 'Essential' },
-  { key: 'controlled', label: 'Controlled drugs' },
   { key: 'supply', label: 'Medical supplies' }
 ]
 
-// Tủ thuốc (bác sĩ CHỈ XEM): tồn dùng được, hạn gần nhất, giá, các cảnh báo tương tác — để kê đúng thuốc đang có.
-// Nhập / sửa thuốc và kho do Quản trị viên làm ở Quản trị › Kho thuốc.
+// Tủ thuốc (bác sĩ chỉ xem): tồn dùng được, hạn gần nhất, giá, cảnh báo tương tác — để kê đúng thuốc đang có.
 export default function DrugCabinetView({ go }) {
   const { user } = useAuth()
   const { showToast } = useToast()
   const inv = useInventory()
   const { visits } = useQueue()
-  useAIConfig()
   const [q, setQ] = useState('')
   const [stock, setStock] = useState('')
   const [group, setGroup] = useState('')
@@ -68,8 +64,6 @@ export default function DrugCabinetView({ go }) {
   const [expiry, setExpiry] = useState('')
   const [sort, setSort] = useState('name')
   const [page, setPage] = useState(1)
-  const [open, setOpen] = useState(null)
-  // Đổi bộ lọc → quay về trang 1.
   const filter = (fn) => (e) => {
     fn(e.target.value)
     setPage(1)
@@ -149,7 +143,7 @@ export default function DrugCabinetView({ go }) {
             ))}
           </select>
           <span className="ai-soft" style={{ fontSize: 13 }}>
-            {list.length} / {active.length} {translate('drugs')}
+            {list.length} / {active.length} {translate(active.length === 1 ? 'drug' : 'drugs')}
           </span>
         </div>
         {current && (
