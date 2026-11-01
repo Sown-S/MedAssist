@@ -12,6 +12,7 @@ import DoctorHome from './doctor/DoctorHome'
 import ConsultView from './doctor/ConsultView'
 import DrugCabinetView from './doctor/DrugCabinetView'
 import PrescriptionsView, { RxDetail } from './reception/PrescriptionsView'
+import PrescriptionsLive from './reception/PrescriptionsLive'
 import RxReviewPanel from './doctor/RxReviewPanel'
 import PatientLookup from './doctor/PatientLookup'
 import DocumentModal from './doctor/DocumentModal'
@@ -133,7 +134,8 @@ export default function Doctor() {
 
       {view === 'home' && <DoctorHome go={go} onRx={setRxOf} />}
       {view === 'consult' && <ConsultView visitId={visitId} onSelect={(id) => go('consult', id)} onRx={setRxOf} />}
-      {view === 'prescriptions' && <PrescriptionsView readOnly showReviews={DEMO_MODE} onRx={setRxOf} initialDoctor={user.name} />}
+      {view === 'prescriptions' &&
+        (DEMO_MODE ? <PrescriptionsView readOnly showReviews onRx={setRxOf} initialDoctor={user.name} /> : <PrescriptionsLive initialDoctorId={user.id} initialDoctorName={user.name} />)}
       {view === 'drugs' && <DrugCabinetView go={go} />}
       {view === 'patients' && <PatientLookup />}
       {referral && <DocumentModal subject={referral} onClose={() => setReferral(null)} />}

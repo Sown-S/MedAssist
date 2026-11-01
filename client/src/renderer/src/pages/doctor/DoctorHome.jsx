@@ -5,6 +5,7 @@ import { useAuth } from '../../context/AuthContext'
 import { translate } from '../../i18n'
 import { useQueue, waitingOrder, minutesSince, isMine, labRows, inRoom, atLabs, ST, readyOrder } from '../../api/queueStore'
 import { useRxHistory } from '../../api/rxHistory'
+import { usePrescriptions } from '../../api/prescriptionApi'
 import { useVisitArchive } from '../../api/visitArchive'
 import { useInventory, stockOf } from '../../api/inventoryStore'
 import { soldOutside } from '../../api/rxSafety'
@@ -39,7 +40,11 @@ export default function DoctorHome({ go, onRx }) {
     ...visits.filter((v) => v.rx.length && isMine(v, user) && v.status !== ST.EXAMINING).map((v) => ({ ...v, day: today })),
     ...history.filter((r) => isMine(r, user))
   ].sort((a, b) => (b.rxAt ?? '').localeCompare(a.rxAt ?? ''))
-  const rxWeek = myRx.filter((r) => inRange(r.day, week)).length
+  const serverWeek = usePrescriptions({ from: week[0], to: week[1], physicianId: user.id, enabled: !DEMO_MODE })
+  const rxWeek = DEMO_MODE ? myRx.filter((r) => inRange(r.day, week)).length : serverWeek.list.length
+  // Chạy thật: GET /queue không trả lượt đã khám xong, nên đếm đơn đã xác nhận hôm nay từ GET /prescriptions.
+  const rxToday = serverWeek.list.filter((r) => ymd(new Date(r.at)) === today)
+  const recent = DEMO_MODE ? myRx : serverWeek.list.map((r) => ({ ...r, day: ymd(new Date(r.at)), rxAt: r.at, live: true }))
   const lowStock = inv.drugs.filter((d) => d.active && d.kind === 'drug' && !soldOutside(d) && stockOf(d, inv.batches).statuses.some((s) => s === 'out' || s === 'low')).length
 
   const cards = [
@@ -66,7 +71,9 @@ export default function DoctorHome({ go, onRx }) {
       icon: 'clipboard',
       title: 'My prescriptions',
       value: rxWeek,
-      sub: `${doneToday.length} ${translate('visits completed today')} · ${rxWeek} ${translate('prescriptions this week')}`,
+      sub: DEMO_MODE
+        ? `${doneToday.length} ${translate('visits completed today')} · ${rxWeek} ${translate('prescriptions this week')}`
+        : `${rxToday.length} ${translate('prescriptions today')} · ${rxWeek} ${translate('prescriptions this week')}`,
       link: 'Click to view prescriptions →',
       run: () => go('prescriptions')
     },
@@ -90,7 +97,7 @@ export default function DoctorHome({ go, onRx }) {
     },
     { icon: 'stethoscope', title: 'Consultation room', sub: 'Examine, diagnose and prescribe', run: () => go('consult') },
     { icon: 'clipboard', title: 'My prescriptions', sub: 'By day, week or month', run: () => go('prescriptions') },
-    { icon: 'box', title: 'Drug cabinet', sub: 'Stock, price and interactions of each drug', run: () => go('drugs') },
+    { icon: 'box', title: 'Drug cabinet', sub: 'Stock, expiry and price of each drug', run: () => go('drugs') },
     { icon: 'flask', title: 'Lab tests', sub: `${labs.length} ${translate('patients out for lab tests')}`, run: () => setLabOpen(true) }
   ]
 
@@ -158,10 +165,10 @@ export default function DoctorHome({ go, onRx }) {
 
         <div className="card">
           <div className="card-title">
-            <Icon name="clipboard" /> My recent prescriptions <span className="cnt">{myRx.length}</span>
+            <Icon name="clipboard" /> My recent prescriptions <span className="cnt">{recent.length}</span>
           </div>
-          {myRx.slice(0, 6).map((r) => (
-            <div className="pay-row clickable" key={r.id} onClick={() => onRx(r)} title={translate('View & review the prescription')}>
+          {recent.slice(0, 6).map((r) => (
+            <div className="pay-row clickable" key={r.id} onClick={() => (r.live ? go('prescriptions') : onRx(r))} title={translate('View & review the prescription')}>
               <span className="mono t">{r.day === today ? hhmm(r.rxAt) : dmy(r.rxAt).slice(0, 5)}</span>
               <span className="nm">
                 <b>{r.name}</b>
@@ -172,7 +179,7 @@ export default function DoctorHome({ go, onRx }) {
               </span>
             </div>
           ))}
-          {!myRx.length && <p className="ai-soft" style={{ fontSize: 14 }}>You have not finalized any prescriptions yet.</p>}
+          {!recent.length && <p className="ai-soft" style={{ fontSize: 14 }}>You have not finalized any prescriptions yet.</p>}
           <button className="btn btn-ghost btn-sm" style={{ marginTop: 10 }} onClick={() => go('prescriptions')}>
             All prescriptions →
           </button>

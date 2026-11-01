@@ -11,10 +11,13 @@ import { SCHEMAS } from './catalogs/schemas'
 import { exportCatalog, readCatalogFile, ImportModal } from './catalogs/catalogCsv'
 
 // Trang trung tâm của Quản lý danh mục; Thuốc & vật tư có trang riêng (dùng chung dữ liệu với Kho).
-const ORDER = [
+const DEMO_ORDER = [
   { group: 'Administrative catalogs', keys: ['general', 'address'] },
   { group: 'Medical catalogs', keys: ['icd', '@drugs', 'services', 'packages', 'labs', 'units', 'routes', 'rxtemplates', 'advice'] }
 ]
+// Chạy với server: chỉ các danh mục server dùng thật; danh mục còn lại chỉ có ở bản giả lập.
+const LIVE_KEYS = ['@drugs', 'services', 'packages', 'labs']
+const LIVE_ORDER = [{ group: 'Medical catalogs', keys: LIVE_KEYS }]
 const latest = (list, k = 'updatedAt') => list.reduce((m, r) => (r[k] > m ? r[k] : m), '')
 
 function review(key, cats, inv) {
@@ -68,7 +71,7 @@ export default function CatalogPage({ onNavigate }) {
     const t = q.trim().toLowerCase()
     if (t.length < 2) return []
     const out = []
-    for (const key of Object.keys(SCHEMAS))
+    for (const key of Object.keys(SCHEMAS).filter((k) => DEMO_MODE || LIVE_KEYS.includes(k)))
       for (const r of cats[key]) if ([r.code, r.name, r.nameEn].some((x) => (x ?? '').toLowerCase().includes(t))) out.push({ key, page: 'cat-' + key, code: r.code, name: r.name, active: r.active, id: r.id })
     for (const d of inv.drugs) if ([d.name, d.ingredient, d.atc].some((x) => (x ?? '').toLowerCase().includes(t))) out.push({ key: '@drugs', page: 'drugs', code: d.atc || d.id, name: d.name, active: d.active })
     return out.slice(0, 40)
@@ -118,7 +121,7 @@ export default function CatalogPage({ onNavigate }) {
         )}
       </div>
 
-      {ORDER.map(({ group, keys }) => (
+      {(DEMO_MODE ? DEMO_ORDER : LIVE_ORDER).map(({ group, keys }) => (
         <div className="card" style={{ marginTop: 14 }} key={group}>
           <div className="card-title">{group}</div>
           <table className="dt">

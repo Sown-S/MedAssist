@@ -51,6 +51,8 @@ npm run dev        # Vite dev server + cửa sổ Electron, sửa code thấy ng
 | `npm run build` | Build ra `out/` (main, preload, renderer); dùng để kiểm tra cú pháp trước khi commit |
 | `npm start` | Chạy thử bản đã build trong `out/` |
 | `npm run build:win` | Build + đóng gói bản cài Windows (NSIS) vào `dist/`, kèm `certs/*.crt`. `:mac`, `:linux` tương tự |
+| `npm run eval` | Build theo `.env.eval` (nối `http://127.0.0.1:8000` của `deploy/docker-compose.eval.yml`) rồi mở app: cách giảng viên chạy kiểm thử, xem [`docs/huong-dan-kiem-thu.md`](../docs/huong-dan-kiem-thu.md) |
+| `npm run dist:eval` | Bản cài kiểm thử cho hệ điều hành đang dùng. Bản Windows + macOS do workflow `.github/workflows/release.yml` build khi đẩy tag `vX.Y.Z` |
 
 **Biến môi trường**: chép `.env.example` thành `.env` (file riêng của máy, không commit), sửa rồi chạy lại `npm run dev`:
 
@@ -107,7 +109,7 @@ và chỉ nhận địa chỉ `https://` khi server không phải máy này.
 ```
 
 - `src/main/index.js`: cửa sổ 1360×860 (`contextIsolation: true`, `nodeIntegration: false`); bản build tải giao diện qua giao thức riêng
-  **`app://medassist`**; lưu token mã hóa bằng `safeStorage` (`userData/secure.json`) và cấu hình riêng máy (`userData/config.json`);
+  **`app://medassist`**; lưu token mã hóa bằng `safeStorage` (`userData/secure.json`; máy không có kho khóa của hệ điều hành thì chỉ giữ trong bộ nhớ) và cấu hình riêng máy (`userData/config.json`);
   ép locale `en-GB` để ô ngày hiện `dd/mm/yyyy`; **chỉ tin chứng chỉ CA của dự án** khi nói chuyện với máy chủ đã cấu hình
   (`setCertificateVerifyProc` + `src/main/certPin.js`, Architecture TC03).
 - `src/preload/index.js`: `window.api.secureStore` (get/set/remove token) và `window.api.config` (địa chỉ server).
@@ -213,7 +215,7 @@ Phím tắt: **F2** đăng ký mới, **F3 / Ctrl+K** tra cứu. Mất kết n�
 |---|---|---|
 | `home` | `DoctorHome` | Chờ khám (người đã check-in trước), trong phòng tôi, đơn của tôi |
 | `consult` | `ConsultView` | Hàng đợi; **Mời bệnh nhân tiếp theo** (Alt+N); chip triệu chứng lễ tân đã xác nhận; thẻ **Gợi ý tham khảo**; SOAP; ICD-10; kê đơn (Alt+T tìm thuốc); phiếu chỉ định xét nghiệm (Alt+L); chốt đơn (Ctrl+Enter); giấy chuyển tuyến; trả về hàng chờ |
-| `prescriptions` | `PrescriptionsView` | Dùng chung với Lễ tân, mặc định lọc theo chính bác sĩ |
+| `prescriptions` | `PrescriptionsView` / `PrescriptionsLive` | Đơn theo kỳ, mặc định lọc theo chính bác sĩ; nối server đọc `GET /prescriptions` |
 | `drugs` | `DrugCabinetView` | Tủ thuốc (chỉ xem): tồn dùng được, hạn gần nhất, giá; **+ Thêm vào đơn** |
 | `patients` | `PatientLookup` | Tra cứu bệnh nhân và hồ sơ khám cũ (EMR) |
 
@@ -287,8 +289,8 @@ Không có giảm giá, BHYT, làm tròn. **Hóa đơn đã thu là trạng thá
 
 ### 5.4 Chỉ định xét nghiệm (làm thủ công)
 
-Bác sĩ *Chỉ định xét nghiệm* → `LabOrderModal` (chọn từ danh mục) → in phiếu; lượt vẫn `Examining`, đánh dấu `labOut` (giữ trên máy, server không có cờ này).
-Bệnh nhân cầm kết quả giấy về → lễ tân *Đã về – báo bác sĩ* → bác sĩ *Khám tiếp*. Phí xét nghiệm đưa vào hóa đơn bằng dòng cận lâm sàng.
+Bác sĩ *Chỉ định xét nghiệm* → `LabOrderModal` (danh mục, gói từ server) → `POST visits/{id}/service-orders` và in phiếu; lượt vẫn `Examining`, server đánh dấu đi xét nghiệm (`lab_out_at`).
+Bệnh nhân cầm kết quả giấy về → lễ tân *Đã về – báo bác sĩ* → bác sĩ *Khám tiếp* và nhập kết quả. Phí xét nghiệm tự vào hóa đơn từ phiếu chỉ định (ERD v2.1).
 
 ### 5.5 Kê đơn: KHÔNG đánh giá đơn (Proposal FR03)
 
@@ -304,7 +306,7 @@ Chốt đơn chỉ chặn khi thiếu chẩn đoán, số lượng + cách dùng
 - **Giả lập**: store đọc/ghi `localStorage`, dữ liệu mẫu tính lùi từ lúc mở app để luôn khớp "hôm nay"; `apiGet` của vài trang tĩnh trả `MOCK_ENDPOINTS` (trễ giả 300–600 ms).
 - **Nối server**: các file `*Api.js` gọi FastAPI và đổi dữ liệu server sang đúng hình dạng màn hình đang dùng, nên trang không phải viết lại.
   `queueStore` lấy lượt khám từ `GET /queue` (polling), không tạo dữ liệu mẫu, không lưu `localStorage`.
-  Phần chưa có API (cờ đi xét nghiệm, tín hiệu bảng gọi) vẫn chạy cục bộ trên từng máy.
+  Mời bệnh nhân, đi xét nghiệm, chuyển tuyến đều qua server (ERD v2.0), mọi máy thấy như nhau.
 
 **`client.js` khi nối server**
 
@@ -479,12 +481,11 @@ CI trên GitHub **chưa** chạy phần client, nên trước khi commit phải 
 - [x] Nối server: đăng nhập, bệnh nhân, hàng đợi, khám, kê đơn, cấp phát, thu tiền, EMR, phòng khám, kho, cài đặt, nhật ký, báo cáo, tri thức.
 - [x] Gợi ý AI thật qua `GET /visits/{id}/assessment`; client không gọi thẳng LLM; ghim chứng chỉ CA dự án.
 - [ ] Đóng gói: `icon` cho electron-builder, chữ ký số cho bản cài.
-- [ ] Chạy `npm test` trong CI.
+- [x] Chạy `npm run lint` và `npm test` trong CI; bản cài Windows / macOS build tự động khi đẩy tag.
 
 Giới hạn (ghi vào báo cáo đồ án):
 
 - **Vai trò Lễ tân** (đề tài cố định 3 vai trò) đảm nhận cả tiếp đón, cấp phát và thu tiền (thực tế do dược sĩ đứng quầy).
 - **Không đánh giá đơn thuốc** (tương tác, liều, trùng đơn), đúng Proposal FR03.
-- **Bảng gọi bệnh nhân và cờ đi xét nghiệm** chạy cục bộ trên từng máy, không có API.
-- **Xét nghiệm làm ngoài hệ thống**: không nhận kết quả điện tử; phí tính bằng dòng cận lâm sàng nhập tay.
+- **Xét nghiệm làm ngoài hệ thống**: không nhận kết quả điện tử; bác sĩ nhập kết quả từ phiếu giấy.
 - **Hóa đơn đã thu không hủy được** trên server; lịch hẹn ngoài phạm vi v2.0.

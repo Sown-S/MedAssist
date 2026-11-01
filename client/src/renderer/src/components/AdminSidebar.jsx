@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import Icon from './Icon'
+import { DEMO_MODE } from '../api/client'
 
 const NAV = [
   { id: 'dash', icon: 'home', label: 'Home' },
@@ -22,8 +23,11 @@ const NAV = [
   { id: 'roadmap', icon: 'compass', label: 'Roadmap' }
 ]
 
+// Chạy với server: Admin không đọc được dữ liệu bệnh nhân và hoá đơn (QA03) nên bỏ nhóm này; doanh thu xem ở Báo cáo.
+const LIVE_NAV = NAV.filter((n) => n.group !== 'Patient management')
+
 export default function AdminSidebar({ page, onNavigate }) {
-  const nav = NAV
+  const nav = DEMO_MODE ? NAV : LIVE_NAV
   const [collapsed, setCollapsed] = useState(false)
   const [openGroups, setOpenGroups] = useState(new Set(['Patient management']))
 

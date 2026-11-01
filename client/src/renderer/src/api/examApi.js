@@ -1,6 +1,7 @@
 // Kết thúc khám: đồng bộ chẩn đoán → lưu đơn nháp → xác nhận (server trừ kho FEFO, lượt sang Prescribed, lập hoá đơn).
 // Không kê thuốc thì dùng “Hoàn tất khám”.
 import { apiGet, apiPost, apiRequest, ApiError } from './client'
+import { conditionOf } from './conditionCatalog'
 
 const V1 = '/api/v1'
 
@@ -48,8 +49,9 @@ export async function syncDiagnoses(visitId, { primary, extra, notes, candidates
       continue
     }
     const cand = candidates.find((c) => (w.icd && same(c.icd10_code, w.icd)) || same(c.name_vi, w.name))
+    const code = cand?.condition_code ?? conditionOf(w.name, w.icd)?.conditionCode
     await addDiagnosis(visitId, {
-      ...(cand ? { condition_code: cand.condition_code } : {}),
+      ...(code ? { condition_code: code } : {}),
       diagnosis_name: w.name,
       icd10_code: w.icd,
       is_primary: w.primary,
