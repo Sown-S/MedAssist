@@ -1,21 +1,60 @@
-# Phát hành bản cài kiểm thử: đẩy tag vX.Y.Z (trùng "version" trong client/package.json) thì GitHub tự build
-# bản cài Windows (.exe) và macOS (.dmg, chip Apple và Intel), rồi tạo Release kèm các file đó.
-#   git tag v0.2.0 && git push origin v0.2.0
-# Chạy tay (Actions › Release › Run workflow) chỉ build và giữ file ở mục Artifacts, không tạo Release.
+# Phát hành bản cài kiểm thử: Windows (.exe), macOS (.dmg, chip Apple và Intel).
+# - Merge vào main: chưa có tag v<version> (version trong client/package.json) thì build và tạo Release kèm tag đó;
+#   version đã phát hành thì bỏ qua. Muốn phát hành bản mới: tăng version qua PR trước khi merge vào main.
+# - Đẩy tag vX.Y.Z bằng tay (dự phòng, khi chưa có Release của version đó): tag phải trùng version.
+# - Chạy tay (Actions › Release › Run workflow): chỉ build, file ở mục Artifacts, không tạo Release.
 # Bản cài nối http://127.0.0.1:8000 (deploy/docker-compose.eval.yml), chưa ký số; xem docs/huong-dan-kiem-thu.md.
 name: Release
 
 on:
   push:
+    branches: [main]
     tags: ["v[0-9]+.[0-9]+.[0-9]+"]       # tag sprint dạng v0.N-sprintN không kích hoạt
   workflow_dispatch:
 
 permissions:
   contents: write
 
+# Merge và đẩy tag sát nhau thì chạy lần lượt, lần sau thấy tag đã có.
+concurrency:
+  group: release
+  cancel-in-progress: false
+
 jobs:
+  plan:
+    name: Xác định phiên bản
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.v.outputs.tag }}
+      build: ${{ steps.v.outputs.build }}
+      release: ${{ steps.v.outputs.release }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: v
+        shell: bash
+        run: |
+          tag="v$(node -p "require('./client/package.json').version")"
+          build=true release=true
+          if [ "$GITHUB_EVENT_NAME" = workflow_dispatch ]; then
+            release=false
+          elif [ "$GITHUB_REF_TYPE" = tag ]; then
+            [ "$GITHUB_REF_NAME" = "$tag" ] || { echo "::error::Tag $GITHUB_REF_NAME khác version $tag trong client/package.json"; exit 1; }
+          elif gh release view "$tag" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo "::notice::$tag đã có Release, bỏ qua. Tăng version trong client/package.json để phát hành bản mới."
+            build=false release=false
+          elif git ls-remote --exit-code --tags origin "refs/tags/$tag" >/dev/null; then
+            echo "::error::Tag $tag đã có nhưng chưa có Release. Xóa tag hoặc tăng version."
+            exit 1
+          fi
+          { echo "tag=$tag"; echo "build=$build"; echo "release=$release"; } >> "$GITHUB_OUTPUT"
+        env:
+          GH_TOKEN: ${{ github.token }}
+
   build:
     name: Bản cài ${{ matrix.name }}
+    needs: plan
+    if: needs.plan.outputs.build == 'true'
     strategy:
       fail-fast: false
       matrix:
@@ -35,13 +74,6 @@ jobs:
           cache: npm
           cache-dependency-path: client/package-lock.json
 
-      - name: Kiểm tra tag khớp version
-        if: startsWith(github.ref, 'refs/tags/')
-        shell: bash
-        run: |
-          want="v$(node -p "require('./package.json').version")"
-          [ "$GITHUB_REF_NAME" = "$want" ] || { echo "::error::Tag $GITHUB_REF_NAME khác version $want trong client/package.json"; exit 1; }
-
       - run: npm ci
 
       - name: Build giao diện (chế độ eval)
@@ -60,8 +92,8 @@ jobs:
 
   release:
     name: Tạo Release
-    needs: build
-    if: startsWith(github.ref, 'refs/tags/')
+    needs: [plan, build]
+    if: needs.plan.outputs.release == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v4
@@ -69,11 +101,13 @@ jobs:
           path: dist
           merge-multiple: true
 
+      # Chạy từ main: gh tạo luôn tag tại commit vừa merge.
       - name: Tạo Release và đính kèm bản cài
         env:
           GH_TOKEN: ${{ github.token }}
+          TAG: ${{ needs.plan.outputs.tag }}
         run: |
-          gh release create "$GITHUB_REF_NAME" dist/* --repo "$GITHUB_REPOSITORY" --title "MedAssist $GITHUB_REF_NAME" --notes "Bản cài kiểm thử MedAssist $GITHUB_REF_NAME.
+          gh release create "$TAG" dist/* --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --title "MedAssist $TAG" --notes "Bản cài kiểm thử MedAssist $TAG.
 
           - Windows: MedAssist-Setup-*.exe
           - macOS: MedAssist-*-arm64.dmg (chip Apple) hoặc MedAssist-*-x64.dmg (chip Intel)

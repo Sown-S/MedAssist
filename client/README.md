@@ -48,7 +48,7 @@ npm run dev        # Vite dev server + cửa sổ Electron, sửa code thấy ng
 | `npm start` | Chạy thử bản đã build trong `out/` |
 | `npm run build:win` | Build + đóng gói bản cài Windows (NSIS) vào `dist/`, kèm `certs/*.crt`. `:mac`, `:linux` tương tự |
 | `npm run eval` | Build theo `.env.eval` (nối `http://127.0.0.1:8000` của `deploy/docker-compose.eval.yml`) rồi mở app: cách giảng viên chạy kiểm thử, xem [`docs/huong-dan-kiem-thu.md`](../docs/huong-dan-kiem-thu.md) |
-| `npm run dist:eval` | Bản cài kiểm thử cho hệ điều hành đang dùng. Bản Windows + macOS do workflow `.github/workflows/release.yml` build khi đẩy tag `vX.Y.Z` |
+| `npm run dist:eval` | Bản cài kiểm thử cho hệ điều hành đang dùng. Bản Windows + macOS do workflow `.github/workflows/release.yml` build khi merge vào `main` |
 
 **Biến môi trường**: chép `.env.example` thành `.env` (file riêng của máy, không commit), sửa rồi chạy lại `npm run dev`:
 
