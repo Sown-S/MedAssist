@@ -4,7 +4,7 @@ import Icon from '../../../components/Icon'
 import { useToast } from '../../../context/ToastContext'
 import { translate } from '../../../i18n'
 import { getRelease, createRelease, submitRelease, approveRelease, rejectRelease, dropDraft, OPEN_STATUSES } from '../../../api/knowledgeApi'
-import { Empty } from '../ai/ui'
+import { Empty } from '../ui'
 import { KIND_META, LogicView, Summary, errorText, fmtDate } from './shared'
 
 export const RELEASE_STATUS = { Draft: 'Being drafted', PendingApproval: 'Awaiting approval', Active: 'Approved', Retired: 'Superseded' }

@@ -1,20 +1,18 @@
 import { useEffect, useState } from 'react'
 import Modal, { ModalHeader } from './Modal'
 import PatientAlerts from './PatientAlerts'
-import { usePatients, searchPatients, ageOf } from '../api/patientStore'
+import { ageOf } from '../api/patient'
 import { useQueue, isClosed, statusLabel } from '../api/queueStore'
 import { translate } from '../i18n'
 import { ticketNo } from './queuePrint'
-import { DEMO_MODE } from '../api/client'
 import { lookupPatients, getPatient } from '../api/clinicApi'
 
-// Chạy thật: tìm qua GET /patients/lookup (gõ xong 300 ms), chọn ai thì tải đủ hồ sơ.
+// Tìm qua GET /patients/lookup (gõ xong 300 ms), chọn ai thì tải đủ hồ sơ.
 function useServerSearch(q, picked) {
   const [results, setResults] = useState([])
   const [detail, setDetail] = useState(null)
   const [error, setError] = useState('')
   useEffect(() => {
-    if (DEMO_MODE) return
     const term = q.trim()
     if (!term) return setResults([])
     let stop = false
@@ -30,7 +28,7 @@ function useServerSearch(q, picked) {
   }, [q])
   const id = picked ?? results[0]?.id
   useEffect(() => {
-    if (DEMO_MODE || !id) return setDetail(null)
+    if (!id) return setDetail(null)
     let stop = false
     getPatient(id).then((p) => !stop && setDetail(p), () => {})
     return () => {
@@ -42,7 +40,6 @@ function useServerSearch(q, picked) {
 
 // readOnly = mất kết nối: vẫn tra cứu được, nút tiếp đón bị khoá.
 export default function SearchModal({ open, onClose, onCheckIn, readOnly }) {
-  usePatients()
   const { visits } = useQueue()
   const [q, setQ] = useState('')
   const [picked, setPicked] = useState(null)
@@ -54,8 +51,8 @@ export default function SearchModal({ open, onClose, onCheckIn, readOnly }) {
   }, [open])
 
   const server = useServerSearch(q, picked)
-  const results = DEMO_MODE ? searchPatients(q) : server.results
-  const sel = DEMO_MODE ? results.find((r) => r.id === picked) ?? results[0] : server.detail
+  const results = server.results
+  const sel = server.detail
   const todayOf = (p) => [...visits].reverse().find((v) => v.patientId === p.id)
   const today = sel && todayOf(sel)
   const busy = today && !isClosed(today)

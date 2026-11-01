@@ -1,10 +1,8 @@
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { changePassword } from "../api/authApi";
-import { DEMO_MODE } from "../api/client";
 import { getSettings } from "../api/settingsStore";
 import { LANGUAGES, getLang, setLang } from "../i18n";
-import { logEvent } from "../api/activityStore";
 import ServerAddress from "../components/ServerAddress";
 import AppIcon from "../components/Icon";
 import Button from "../components/Button";
@@ -125,11 +123,6 @@ export default function Login() {
     if (!res.ok) {
       setBusy(false);
       return setError(res.error);
-    }
-    if (DEMO_MODE) {
-      setBusy(false);
-      logEvent({ name: pending.fullName, username: pending.username, roleKey: pending.roleKey }, 'auth.password_changed', { target: { kind: 'account', id: pending.username } });
-      return startSession({ ...pending, mustChange: false });
     }
     // Server đã thu hồi token cũ → đăng nhập lại bằng mật khẩu mới.
     const again = await authenticate(username, np, roleKey);

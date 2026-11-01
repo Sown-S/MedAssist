@@ -1,37 +1,26 @@
-import { describe, it, expect, afterEach, vi } from 'vitest'
-import { screen, cleanup, waitFor, fireEvent, within } from '@testing-library/react'
+import { describe, it, expect, afterEach, beforeEach, vi } from 'vitest'
+import { screen, cleanup, waitFor, fireEvent } from '@testing-library/react'
 import { renderPage } from './render.jsx'
 import Reception from '../src/renderer/src/pages/Reception.jsx'
 import Doctor from '../src/renderer/src/pages/Doctor.jsx'
 import Admin from '../src/renderer/src/pages/Admin.jsx'
-import * as queue from '../src/renderer/src/api/queueStore.js'
-import { getPatients } from '../src/renderer/src/api/patientStore.js'
-import { DOC_A, DOC_B, DESK, ADMIN, tick } from './helpers'
-import { printReceipt } from '../src/renderer/src/components/queuePrint.js'
+import { syncQueue } from '../src/renderer/src/api/queueStore.js'
+import { DOC_A, DESK, ADMIN } from './helpers'
+import { installFakeServer, calls } from './fakeServer'
 
-// jsdom không có khung in → thay printReceipt bằng hàm giả để kiểm tra được gọi.
-vi.mock('../src/renderer/src/components/queuePrint.js', async (orig) => ({ ...(await orig()), printReceipt: vi.fn() }))
-
-// Test giao diện (bản demo): mọi màn chính của 3 vai trò dựng được mà không rơi vào lưới bắt lỗi, và vài luồng chính
-// bấm được. Lưới an toàn khi chia nhỏ các file lớn.
+// Test giao diện trên server giả (fakeServer.js): mọi màn chính của 3 vai trò dựng được mà không rơi vào lưới bắt lỗi,
+// và vài thao tác chính gọi đúng API. Lưới an toàn khi sửa / chia nhỏ các file lớn.
 const FAIL = 'Something went wrong on this screen'
 
-afterEach(() => cleanup())
+beforeEach(() => installFakeServer())
+afterEach(() => {
+  cleanup()
+  vi.unstubAllGlobals()
+})
 
 async function rendered() {
   await waitFor(() => expect(document.body.textContent.trim()).not.toBe(''))
   expect(screen.queryByText(FAIL)).toBeNull()
-}
-
-// tiếp đón → check-in → `doctor` nhận khám (mỗi bác sĩ một người trong phòng)
-function examining(index, doctor = DOC_A) {
-  tick()
-  const r = queue.createVisit(getPatients()[index], { reason: 'Ho, sốt', priority: false }, DESK)
-  if (!r.ok) throw new Error(r.error)
-  queue.checkInVisit(r.visit.id, DESK)
-  const t = queue.takePatient(r.visit.id, doctor)
-  if (!t.ok) throw new Error(t.error)
-  return r.visit
 }
 
 describe('Các màn chính dựng được', () => {
@@ -48,7 +37,7 @@ describe('Các màn chính dựng được', () => {
   it('Quản trị › mọi mục trên menu trái', async () => {
     renderPage(<Admin onNavigate={() => {}} />, { user: ADMIN, path: '/admin' })
     await rendered()
-    const items = ['Patient records', 'Payment invoices', 'AI configuration', 'Rooms', 'Stock & expiry', 'Catalog management', 'Activity history', 'Staff accounts', 'Settings', 'Roadmap', 'Home']
+    const items = ['AI configuration', 'Rooms', 'Stock & expiry', 'Catalog management', 'Activity history', 'Staff accounts', 'Settings', 'Roadmap', 'Home']
     for (const label of items) {
       fireEvent.click(screen.getByText(label, { selector: '.side-item .lb, .side-subitem' }))
       await rendered()
@@ -72,25 +61,20 @@ describe('Các màn chính dựng được', () => {
 })
 
 describe('Luồng chính trên giao diện', () => {
-  it('bác sĩ mở phiếu khám của bệnh nhân đang trong phòng', async () => {
-    const v = examining(0)
-    renderPage(<Doctor />, { user: DOC_A, path: `/doctor?view=consult&visit=${v.id}` })
+  it('bác sĩ mở phiếu khám của bệnh nhân đang trong phòng (tải chi tiết lượt từ server)', async () => {
+    await syncQueue()
+    renderPage(<Doctor />, { user: DOC_A, path: '/doctor?view=consult&visit=v-exam' })
     await rendered()
-    expect((await screen.findAllByText(v.name)).length).toBeGreaterThan(0)
+    expect((await screen.findAllByText('Nguyễn Văn An')).length).toBeGreaterThan(0)
+    await waitFor(() => expect(calls.some((c) => c.path === '/api/v1/visits/v-exam')).toBe(true))
   })
 
-  it('lễ tân thu tiền lượt đã kết thúc khám (không kê thuốc)', async () => {
-    const v = examining(1, DOC_B)
-    const f = queue.finalizeVisit(v.id, { rx: [], diagnosis: 'J02.9' }, DOC_B)
-    expect(f.ok).toBe(true)
-    renderPage(<Reception />, { user: DESK, path: '/reception?view=home' })
+  it('lễ tân check-in bệnh nhân đang chờ → PATCH /visits/{id}/check-in', async () => {
+    await syncQueue()
+    renderPage(<Reception />, { user: DESK, path: '/reception?view=queue' })
     await rendered()
-    // Trang chủ Lễ tân: dòng của bệnh nhân → “Dispense & collect” → tab hoá đơn → thu tiền.
-    const row = (await screen.findAllByText(v.name)).map((el) => el.closest('.pay-row')).find(Boolean)
-    fireEvent.click(within(row).getByText('Dispense & collect'))
-    fireEvent.click(await screen.findByText('Invoice & payment'))
-    fireEvent.click(await screen.findByText('Collect payment'))
-    await waitFor(() => expect(queue.getQueue().visits.find((x) => x.id === v.id).status).toBe(queue.ST.FINISHED))
-    await waitFor(() => expect(printReceipt).toHaveBeenCalledWith(expect.objectContaining({ name: v.name })))
+    fireEvent.click(await screen.findByText('Trần Thị Bình'))
+    fireEvent.click(await screen.findByText('Mark present — check in'))
+    await waitFor(() => expect(calls).toContainEqual(expect.objectContaining({ method: 'PATCH', path: '/api/v1/visits/v-wait/check-in' })))
   })
 })

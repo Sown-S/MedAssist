@@ -1,11 +1,8 @@
-// Cài đặt hệ thống. Mỗi lần lưu ghi nhật ký từng trường (cũ → mới). Chạy thật: vài tham số nghiệp vụ nằm trên server
-// (xem SERVER_SETTINGS), còn lại là cài đặt của máy này.
+// Cài đặt hệ thống. Vài tham số nghiệp vụ nằm trên server (xem SERVER_SETTINGS), còn lại là cài đặt của máy này.
 import { useSyncExternalStore } from 'react'
-import { logEvent } from './activityStore'
-import { apiGet, apiRequest, ApiError, DEMO_MODE } from './client'
+import { apiGet, apiRequest, ApiError } from './client'
 
 const KEY = 'medassist_settings_v1'
-const COUNTERS_KEY = 'medassist_counters_v1'
 
 export const PAPERS = [
   { key: 'A4', label: 'A4 (210 × 297 mm)', css: 'A4' },
@@ -23,23 +20,11 @@ export const PRINT_DOCS = [
 export const NUMBERED_DOCS = [
   { key: 'invoice', label: 'Invoice' }
 ]
-export const DATE_PARTS = [
-  { key: 'yymmdd', label: 'Day (YYMMDD)', reset: 'Daily' },
-  { key: 'yymm', label: 'Month (YYMM)', reset: 'Monthly' },
-  { key: 'yy', label: 'Year (YY)', reset: 'Yearly' },
-  { key: 'none', label: 'No date', reset: 'Never' }
-]
 export const PAYMENT_METHODS = [
   { key: 'cash', label: 'Cash' },
   { key: 'transfer', label: 'Bank transfer' },
   { key: 'card', label: 'Bank card' },
   { key: 'ewallet', label: 'E-wallet' }
-]
-export const ROUNDING = [
-  { key: 1, label: 'No rounding' },
-  { key: 100, label: 'To 100đ' },
-  { key: 500, label: 'To 500đ' },
-  { key: 1000, label: 'To 1,000đ' }
 ]
 export const WEEKDAYS = [
   { key: 1, label: 'Mon' },
@@ -160,7 +145,6 @@ const SERVER_SETTINGS = [
   }
 ]
 export async function loadServerSettings() {
-  if (DEMO_MODE) return
   const rows = await apiGet('/api/v1/admin/settings')
   let values = state.values
   for (const s of SERVER_SETTINGS) {
@@ -173,7 +157,6 @@ export async function loadServerSettings() {
 }
 // Lỗi → { ok: false, error }, không lưu gì ở máy.
 export async function saveServerSettings(draft) {
-  if (DEMO_MODE) return { ok: true }
   const changed = new Set(changedPaths(draft))
   try {
     for (const s of SERVER_SETTINGS) if (s.paths.some((p) => changed.has(p))) await apiRequest(`/api/v1/admin/settings/${s.key}`, 'PUT', { value: s.get(draft) })
@@ -183,22 +166,13 @@ export async function saveServerSettings(draft) {
   }
 }
 
-// labelOf(path): nhãn tiếng Anh của trường (để nhật ký dịch theo ngôn ngữ); show(path, v): chuỗi giá trị.
-export function saveSettings(draft, user, labelOf, show) {
+// Trả số trường đã đổi.
+export function saveSettings(draft, user) {
   const paths = changedPaths(draft)
   if (!paths.length) return 0
-  const before = flatten(state.values)
-  const after = flatten(draft)
   state = { values: draft, updatedAt: new Date().toISOString(), updatedBy: user.name }
   write(KEY, state)
   listeners.forEach((fn) => fn())
-  for (const p of paths)
-    logEvent(user, 'settings.update', {
-      target: { kind: 'settings', id: p.split('.')[0] },
-      params: { field: labelOf(p) },
-      before: show(p, before[p]),
-      after: show(p, after[p])
-    })
   return paths.length
 }
 
@@ -211,28 +185,4 @@ function datePart(kind, d) {
 export function formatNumber(rule, seq, d = new Date()) {
   const parts = [rule.prefix, datePart(rule.date, d), String(seq).padStart(rule.digits, '0')].filter(Boolean)
   return parts.join('-')
-}
-// Số nhỏ nhất chưa dùng trong kỳ. Hàm thuần — gọi để hiện trước số trên form không “tiêu” mất số nào.
-export function nextNumber(kind, existing = [], d = new Date()) {
-  const rule = state.values.numbering[kind]
-  const used = new Set(existing)
-  let n = 0
-  let code
-  do code = formatNumber(rule, ++n, d)
-  while (used.has(code))
-  return code
-}
-// Chứng từ không có danh sách ở client (hoá đơn): giữ bộ đếm theo kỳ.
-export function takeNumber(kind, d = new Date()) {
-  const rule = state.values.numbering[kind]
-  const counters = read(COUNTERS_KEY) ?? {}
-  const period = kind + ':' + rule.prefix + ':' + datePart(rule.date, d)
-  const n = (counters[period] ?? 0) + 1
-  write(COUNTERS_KEY, { ...counters, [period]: n })
-  return formatNumber(rule, n, d)
-}
-
-export function roundMoney(n) {
-  const step = state.values.ops.rounding || 1
-  return Math.round(n / step) * step
 }

@@ -1,216 +1,98 @@
 import { useEffect, useState } from 'react'
 import Modal, { ModalHeader } from '../../../components/Modal'
-import Icon from '../../../components/Icon'
 import { translate } from '../../../i18n'
 import { useToast } from '../../../context/ToastContext'
-import { upsertDrug, isRxOnly } from '../../../api/inventoryStore'
-import { UNITS, fmtMoney } from './shared'
+import { saveDrugLive } from '../../../api/inventoryStore'
 import { getSettings } from '../../../api/settingsStore'
-import { DEMO_MODE } from '../../../api/client'
-import DrugFormLive from './DrugFormLive'
 
-const BLANK = { name: '', ingredient: '', atc: '', unit: 'tablet', kind: 'drug', group: 'regular', essential: false, cost: '', price: '', threshold: '', strengthMg: '', maxMgDay: '', maxMgKgDay: '', controlledType: 'H' }
-const optNum = (v) => (v === '' || v == null ? null : Number(String(v).replace(',', '.')))
+// Thêm / sửa thuốc khi chạy với server. Thuốc trùng (hoạt chất + tên + hàm lượng + dạng) server từ chối.
+// Không có giới hạn liều hay tương tác (ngoài phạm vi FR03).
+const BLANK = { generic_name: '', trade_name: '', strength: '', dosage_form: '', unit: '', sale_price: '', reorder_level: '', drug_class: '', active_ingredient_code: '' }
 
-export default function DrugFormModal(props) {
-  return DEMO_MODE ? <DrugFormDemo {...props} /> : <DrugFormLive {...props} />
-}
-
-// Dữ liệu gốc của thuốc; tồn kho theo lô không sửa ở đây.
-function DrugFormDemo({ drug, drugs, user, onClose }) {
+export default function DrugFormModal({ drug, onClose }) {
   const { showToast } = useToast()
   const [f, setF] = useState(BLANK)
-  const [tried, setTried] = useState(false)
+  const [err, setErr] = useState('')
+  const [busy, setBusy] = useState(false)
   useEffect(() => {
-    if (drug) {
-      const s = (v) => (v == null ? '' : String(v))
-      setF(
-        drug.id
-          ? { ...BLANK, ...drug, rxOnly: isRxOnly(drug), cost: String(drug.cost), price: String(drug.price), threshold: String(drug.threshold), strengthMg: s(drug.strengthMg), maxMgDay: s(drug.maxMgDay), maxMgKgDay: s(drug.maxMgKgDay), controlledType: drug.controlledType ?? 'H' }
-          : { ...BLANK, threshold: String(getSettings().ops.defaultThreshold) }
-      ) // ngưỡng mặc định ở Cài đặt › Vận hành
-      setTried(false)
-    }
+    if (!drug) return
+    setErr('')
+    setF(
+      drug.id
+        ? {
+            generic_name: drug.ingredient ?? '',
+            trade_name: drug.tradeName ?? '',
+            strength: drug.strength ?? '',
+            dosage_form: drug.form ?? '',
+            unit: drug.unit ?? '',
+            sale_price: String(drug.price ?? ''),
+            reorder_level: String(drug.threshold ?? ''),
+            drug_class: drug.drugClass ?? '',
+            active_ingredient_code: drug.atc ?? ''
+          }
+        : { ...BLANK, reorder_level: String(getSettings().ops.defaultThreshold ?? 0) }
+    )
   }, [drug])
   if (!drug) return null
-
   const set = (k, v) => setF((x) => ({ ...x, [k]: v }))
-  const num = (s) => (String(s).trim() === '' ? NaN : Number(String(s).replace(/[.\s]/g, '').replace(',', '.')))
-  const cost = num(f.cost)
-  const price = num(f.price)
-  const threshold = num(f.threshold)
-  const errors = []
-  if (!f.name.trim()) errors.push('Enter the drug name.')
-  if (drugs.some((d) => d.id !== drug.id && d.name.trim().toLowerCase() === f.name.trim().toLowerCase())) errors.push('A drug with this name already exists.')
-  if (f.kind === 'drug' && !f.ingredient.trim()) errors.push('Enter the active ingredient.')
-  if (f.kind === 'drug' && !/^[A-Z]\d{2}[A-Z]{0,2}\d{0,2}$/.test(f.atc.trim())) errors.push('Enter a valid ATC code (e.g. J01CA04) — the interaction check depends on it.')
-  if (!(cost >= 0)) errors.push('Enter the purchase price.')
-  if (!(price >= 0)) errors.push('Enter the selling price.')
-  if (cost >= 0 && price >= 0 && price < cost) errors.push('Selling price is lower than purchase price.')
-  if (!(threshold >= 0)) errors.push('Enter the minimum stock threshold.')
-  for (const k of ['strengthMg', 'maxMgDay', 'maxMgKgDay']) if (optNum(f[k]) != null && !(optNum(f[k]) > 0)) errors.push('Dosing limits must be positive numbers (leave empty if unknown).')
+  const price = Number(String(f.sale_price).replace(/[.\s]/g, '').replace(',', '.'))
+  const level = Number(f.reorder_level || 0)
 
-  function save() {
-    setTried(true)
-    if (errors.length) return
-    upsertDrug(
-      {
-        ...f,
-        id: drug.id,
-        name: f.name.trim(),
-        ingredient: f.ingredient.trim(),
-        atc: f.atc.trim().toUpperCase(),
-        cost,
-        price,
-        threshold,
-        strengthMg: optNum(f.strengthMg),
-        maxMgDay: optNum(f.maxMgDay),
-        maxMgKgDay: optNum(f.maxMgKgDay),
-        controlledType: f.group === 'controlled' ? f.controlledType : null
-      },
-      user
-    )
+  async function save() {
+    for (const k of ['generic_name', 'trade_name', 'strength', 'dosage_form', 'unit']) if (!f[k].trim()) return setErr(translate('Fill in every field marked *'))
+    if (!(price >= 0) || f.sale_price === '') return setErr(translate('Enter the selling price.'))
+    if (!(Number.isInteger(level) && level >= 0)) return setErr(translate('Enter the minimum stock threshold.'))
+    const opt = (s) => (s.trim() ? s.trim() : null)
+    setBusy(true)
+    const r = await saveDrugLive(drug.id, {
+      generic_name: f.generic_name.trim(),
+      trade_name: f.trade_name.trim(),
+      strength: f.strength.trim(),
+      dosage_form: f.dosage_form.trim(),
+      unit: f.unit.trim(),
+      sale_price: price,
+      reorder_level: level,
+      drug_class: opt(f.drug_class),
+      active_ingredient_code: opt(f.active_ingredient_code)
+    })
+    setBusy(false)
+    if (!r.ok) return setErr(r.error)
     showToast(drug.id ? 'Drug information saved' : 'Drug added to the catalog')
     onClose()
   }
 
+  const field = (k, label, req, props = {}) => (
+    <div className="field">
+      <label>
+        {label} {req && <span className="ai-req">*</span>}
+      </label>
+      <input value={f[k]} onChange={(e) => set(k, e.target.value)} {...props} />
+    </div>
+  )
   return (
     <Modal open onClose={onClose} wide>
       <ModalHeader title={drug.id ? translate('Edit drug information') + ' · ' + drug.name : 'Add drug'} onClose={onClose} />
       <div className="modal-body">
-        <div className="ai-seg" style={{ marginBottom: 12 }}>
-          <button className={f.kind === 'drug' ? 'active' : ''} onClick={() => set('kind', 'drug')}>
-            Medicine
-          </button>
-          <button className={f.kind === 'supply' ? 'active' : ''} onClick={() => set('kind', 'supply')}>
-            Medical supply
-          </button>
+        <div className="form-grid cols-2">
+          {field('generic_name', 'Active ingredient', true, { placeholder: 'Paracetamol' })}
+          {field('trade_name', 'Trade name', true, { placeholder: 'Panadol' })}
+          {field('strength', 'Strength', true, { placeholder: '500 mg' })}
+          {field('dosage_form', 'Dosage form', true, { placeholder: 'viên nén' })}
+          {field('unit', 'Smallest unit sold', true, { placeholder: 'viên' })}
+          {field('sale_price', 'Selling price (per unit)', true, { inputMode: 'numeric' })}
+          {field('reorder_level', 'Minimum stock threshold', false, { inputMode: 'numeric' })}
+          {field('drug_class', 'Drug group (optional)', false)}
+          {field('active_ingredient_code', 'ATC code (optional)', false, { placeholder: 'N02BE01' })}
         </div>
-        <div className="ai-grid3">
-          <div className="field" style={{ gridColumn: 'span 2' }}>
-            <label>
-              Name &amp; strength <span className="ai-req">*</span>
-            </label>
-            <input value={f.name} onChange={(e) => set('name', e.target.value)} placeholder="e.g. Amoxicillin 500mg" />
-          </div>
-          <div className="field">
-            <label>Unit</label>
-            <select value={f.unit} onChange={(e) => set('unit', e.target.value)}>
-              {UNITS.map((u) => (
-                <option key={u.key} value={u.key}>
-                  {u.label}
-                </option>
-              ))}
-            </select>
-          </div>
-          {f.kind === 'drug' && (
-            <>
-              <div className="field" style={{ gridColumn: 'span 2' }}>
-                <label>
-                  Active ingredient <span className="ai-req">*</span>
-                </label>
-                <input value={f.ingredient} onChange={(e) => set('ingredient', e.target.value)} />
-              </div>
-              <div className="field">
-                <label>
-                  ATC code <span className="ai-req">*</span>
-                </label>
-                <input value={f.atc} onChange={(e) => set('atc', e.target.value.toUpperCase())} placeholder="J01CA04" />
-              </div>
-            </>
-          )}
-          <div className="field">
-            <label>Purchase price (per unit)</label>
-            <input inputMode="numeric" value={f.cost} onChange={(e) => set('cost', e.target.value)} />
-          </div>
-          <div className="field">
-            <label>Selling price (per unit)</label>
-            <input inputMode="numeric" value={f.price} onChange={(e) => set('price', e.target.value)} />
-          </div>
-          <div className="field">
-            <label>Minimum stock threshold</label>
-            <input inputMode="numeric" value={f.threshold} onChange={(e) => set('threshold', e.target.value)} />
-          </div>
-        </div>
-        {f.kind === 'drug' && (
-          <>
-            <div className="section-label">Dosing limits — used to check doses when prescribing</div>
-            <div className="ai-grid3">
-              <div className="field">
-                <label>Strength (mg per unit)</label>
-                <input inputMode="decimal" value={f.strengthMg} onChange={(e) => set('strengthMg', e.target.value)} placeholder="e.g. 500" />
-              </div>
-              <div className="field">
-                <label>Max daily dose — adult (mg/day)</label>
-                <input inputMode="decimal" value={f.maxMgDay} onChange={(e) => set('maxMgDay', e.target.value)} placeholder="e.g. 4000" />
-              </div>
-              <div className="field">
-                <label>Max daily dose — child (mg/kg/day)</label>
-                <input inputMode="decimal" value={f.maxMgKgDay} onChange={(e) => set('maxMgKgDay', e.target.value)} placeholder="e.g. 60" />
-              </div>
-            </div>
-            <p className="ai-hint">
-              <span>Check the National Drug Formulary / package insert. Leave empty if unknown — the dose is then not checked.</span>
-            </p>
-          </>
-        )}
-        {cost >= 0 && price > 0 && (
-          <p className="ai-hint">
-            <span>Margin</span> <span className="mono">{fmtMoney(price - cost)}</span>{' '}
-            <span className="mono">({Math.round(((price - cost) / price) * 100)}%)</span> ·{' '}
-            <span>Invoices use this selling price automatically.</span>
-          </p>
-        )}
-        <div className="inv-flags">
-          <label className="ai-check">
-            <input type="checkbox" checked={f.essential} onChange={(e) => set('essential', e.target.checked)} />
-            <span>
-              <b>Essential medication</b> — <span>reception is warned if it is removed from an invoice</span>
-            </span>
-          </label>
-          <label className="ai-check">
-            <input type="checkbox" checked={f.group === 'controlled'} onChange={(e) => set('group', e.target.checked ? 'controlled' : 'regular')} />
-            <span>
-              <b>Specially controlled drug</b> — <span>tracked in a separate in/out ledger</span>
-            </span>
-          </label>
-          {f.group === 'controlled' && f.kind === 'drug' && (
-            <div className="field" style={{ marginLeft: 26, maxWidth: 320 }}>
-              <label>Prescription type</label>
-              <select value={f.controlledType} onChange={(e) => set('controlledType', e.target.value)}>
-                <option value="N">Narcotic (prescription “N”)</option>
-                <option value="H">Psychotropic (prescription “H”)</option>
-              </select>
-            </div>
-          )}
-          {f.kind === 'drug' && (
-            <label className="ai-check">
-              <input type="checkbox" checked={f.rxOnly ?? isRxOnly(f)} onChange={(e) => set('rxOnly', e.target.checked)} />
-              <span>
-                <b>Prescription-only drug</b> — <span>reception must record who prescribed it when selling over the counter</span>
-              </span>
-            </label>
-          )}
-        </div>
-        {tried && errors.length > 0 && (
-          <div className="warn-banner show danger">
-            <div className="icon">
-              <Icon name="ban" />
-            </div>
-            <div className="txt">
-              {errors.map((e) => (
-                <div key={e}>{e}</div>
-              ))}
-            </div>
-          </div>
-        )}
+        <p className="ai-foot-note">The batch purchase price is entered when receiving stock. The system does not check drug interactions or dose limits.</p>
+        {err && <div className="kb-error">{err}</div>}
       </div>
       <div className="modal-foot">
         <button className="btn btn-ghost" onClick={onClose}>
           Cancel
         </button>
-        <button className="btn btn-primary" onClick={save}>
-          <Icon name="save" /> <span>Save</span>
+        <button className="btn btn-primary" disabled={busy} onClick={save}>
+          {drug.id ? 'Save' : 'Add drug'}
         </button>
       </div>
     </Modal>

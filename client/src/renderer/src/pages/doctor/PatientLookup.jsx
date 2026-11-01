@@ -1,62 +1,67 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import PatientAlerts from '../../components/PatientAlerts'
 import Icon from '../../components/Icon'
-import { useAuth } from '../../context/AuthContext'
 import { translate } from '../../i18n'
-import { logEvent } from '../../api/activityStore'
-import { usePatients, searchPatients, ageOf } from '../../api/patientStore'
-import { useQueue, statusLabel } from '../../api/queueStore'
-import { useVisitArchive } from '../../api/visitArchive'
-import { useRxHistory } from '../../api/rxHistory'
-import { pastVisitsOf } from './doctorShared'
-import { VisitCard } from './consult/VisitCard'
+import { lookupPatients, getPatient } from '../../api/clinicApi'
+import { ageOf } from '../../api/patient'
+import ServerHistory from './ServerHistory'
 import DocumentModal from './DocumentModal'
-import { DEMO_MODE } from '../../api/client'
-import PatientLookupLive from './PatientLookupLive'
 
-// Bác sĩ tra cứu hồ sơ bất kỳ bệnh nhân nào (không chỉ người trong hàng chờ); mỗi lần mở hồ sơ được ghi nhật ký.
-// Chạy thật: PatientLookupLive.
+// Một ô tìm cho mọi khoá (mã BN, SĐT, CCCD, năm sinh, họ tên). Server tự ghi nhật ký VIEW mỗi lần xem.
 export default function PatientLookup() {
-  return DEMO_MODE ? <PatientLookupDemo /> : <PatientLookupLive />
-}
-
-function PatientLookupDemo() {
-  const { user } = useAuth()
-  usePatients()
-  const { visits } = useQueue()
-  const archive = useVisitArchive()
-  const history = useRxHistory()
   const [q, setQ] = useState('')
+  const [results, setResults] = useState([])
+  const [searching, setSearching] = useState(false)
+  const [err, setErr] = useState('')
   const [sel, setSel] = useState(null)
-  const [docs, setDocs] = useState(null)
-  const logged = useRef(new Set())
+  const [last, setLast] = useState(null) // lượt gần nhất có chẩn đoán — cho giấy chuyển tuyến
+  const [docs, setDocs] = useState(false)
 
-  const results = searchPatients(q, 50)
-  const p = sel && (results.find((r) => r.id === sel) ?? searchPatients(sel, 1)[0])
-  const past = p ? pastVisitsOf(p.id, { visits, archive, history }) : []
-  const today = p && [...visits].reverse().find((v) => v.patientId === p.id)
-
-  // Ghi nhật ký “xem hồ sơ” một lần cho mỗi bệnh nhân trong phiên.
+  // Gõ xong 300 ms mới hỏi server.
   useEffect(() => {
-    if (!p || logged.current.has(p.id)) return
-    logged.current.add(p.id)
-    logEvent(user, 'patient.view', { target: { kind: 'patient', id: p.id, label: p.name }, params: { patient: p.name, mode: 'lookup' } })
-  }, [p, user])
+    const term = q.trim()
+    if (!term) return setResults([])
+    setSearching(true)
+    const t = setTimeout(() => {
+      lookupPatients(term, 30)
+        .then((r) => (setResults(r), setErr('')), (e) => setErr(e.message))
+        .finally(() => setSearching(false))
+    }, 300)
+    return () => clearTimeout(t)
+  }, [q])
 
-  const subject = p && { ...p, age: ageOf(p.dob), patientId: p.id, diagnosis: past[0]?.diagnosis ?? '', rx: past[0]?.rx ?? [] }
+  async function open(id) {
+    setLast(null)
+    try {
+      setSel(await getPatient(id))
+    } catch (e) {
+      setErr(e.message)
+    }
+  }
+  const p = sel
+  const subject = p && {
+    ...p,
+    age: ageOf(p.dob),
+    patientId: p.id,
+    diagnosis: last?.diagnoses?.map((d) => [d.icd10_code, d.diagnosis_name].filter(Boolean).join(' — ')).join('; ') ?? '',
+    rx: last?.prescription?.items.map((x) => ({ name: x.drug_label, qty: x.quantity })) ?? []
+  }
+
   return (
     <div className="lookup">
       <div className="card lookup-list">
-        <input className="pl-search" type="search" autoFocus placeholder="Name, phone number or record ID…" value={q} onChange={(e) => setQ(e.target.value)} />
+        <input className="pl-search" type="search" autoFocus placeholder="Name, phone number, record ID, ID card or birth year…" value={q} onChange={(e) => setQ(e.target.value)} />
+        {err && <div className="kb-error">{err}</div>}
         {results.map((r) => (
-          <button key={r.id} className={'pl-row' + (r.id === p?.id ? ' active' : '')} onClick={() => setSel(r.id)}>
+          <button key={r.id} className={'pl-row' + (r.id === p?.id ? ' active' : '')} onClick={() => open(r.id)}>
             <span className="nm">{r.name}</span>
             <span className="sub">
-              <span className="mono">{r.id}</span> · {r.dob} · <span className="mono">{r.phone}</span>
+              <span className="mono">{r.code}</span> · {r.dob} · <span className="mono">{r.phone || '—'}</span>
             </span>
           </button>
         ))}
-        {q.trim() && !results.length && <p className="ai-soft" style={{ fontSize: 13, padding: 8 }}>No patient matches.</p>}
+        {searching && <p className="ai-soft" style={{ fontSize: 13, padding: 8 }}>{translate('Loading…')}</p>}
+        {q.trim() && !searching && !results.length && !err && <p className="ai-soft" style={{ fontSize: 13, padding: 8 }}>No patient matches.</p>}
         {!q.trim() && <p className="ai-soft" style={{ fontSize: 13, padding: 8 }}>Type at least part of a name, phone number or record ID.</p>}
       </div>
 
@@ -66,10 +71,10 @@ function PatientLookupDemo() {
             <div>
               <h2>{p.name}</h2>
               <div className="sub">
-                {translate(p.gender)} · {p.dob} ({ageOf(p.dob)} {translate('yrs')}) · <span className="mono">{p.id}</span> · <span className="mono">{p.phone}</span>
+                {translate(p.gender)} · {p.dob} ({ageOf(p.dob)} {translate('yrs')}) · <span className="mono">{p.code}</span> · <span className="mono">{p.phone || '—'}</span>
               </div>
             </div>
-            {today && <span className="status-chip">{translate('Today') + ': ' + translate(statusLabel(today.status))}</span>}
+            {p.pregnancy === 'yes' && <span className="badge warn">{translate('Pregnant')}</span>}
           </div>
           <PatientAlerts p={p} />
           <div className="lookup-actions">
@@ -77,18 +82,7 @@ function PatientLookupDemo() {
               <Icon name="repeat" /> Referral letter
             </button>
           </div>
-          <div className="section-label">
-            Visits <span className="itab-cnt">{past.length}</span>
-          </div>
-          {past.length ? (
-            <div className="timeline">
-              {past.map((v) => (
-                <VisitCard key={v.id + (v.day ?? '')} v={v} />
-              ))}
-            </div>
-          ) : (
-            <p className="ai-soft" style={{ fontSize: 13 }}>No earlier visits in the system.</p>
-          )}
+          <ServerHistory key={p.id} patientId={p.id} onLoaded={(h) => setLast(h.items.find((v) => v.diagnoses.length) ?? null)} />
         </div>
       ) : (
         <div className="card">
@@ -99,7 +93,7 @@ function PatientLookupDemo() {
           </div>
         </div>
       )}
-      {docs && subject && <DocumentModal subject={subject} onClose={() => setDocs(null)} />}
+      {docs && subject && <DocumentModal subject={subject} onClose={() => setDocs(false)} />}
     </div>
   )
 }

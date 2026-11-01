@@ -3,7 +3,7 @@ import Icon from '../../components/Icon'
 import { ErrorBlock, LoadingBlock } from '../../components/DataState'
 import { ticketNo } from '../../components/queuePrint'
 import { useAwaiting, fromAwaiting, listInvoices, fromServerMethod } from '../../api/billingApi'
-import { fold } from '../../api/patientStore'
+import { fold } from '../../api/patient'
 import { translate } from '../../i18n'
 import { fmt, hhmm, ymd, methodLabel, PAY_STATUS } from './shared'
 

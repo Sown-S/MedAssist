@@ -2,8 +2,6 @@ import { useEffect, useState } from 'react'
 import Modal, { ModalHeader } from './Modal'
 import { useAuth } from '../context/AuthContext'
 import { changePassword } from '../api/authApi'
-import { DEMO_MODE } from '../api/client'
-import { logEvent } from '../api/activityStore'
 import { getSettings } from '../api/settingsStore'
 
 // Đổi xong server thu hồi mọi token → về màn đăng nhập.
@@ -23,7 +21,6 @@ export default function ChangePasswordModal({ open, onClose }) {
     const res = await changePassword(me, form.old, form.np)
     setBusy(false)
     if (!res.ok) return setForm({ ...form, err: res.error })
-    if (DEMO_MODE) logEvent(me, 'auth.password_changed', { target: { kind: 'account', id: me.username } })
     signOutAfterPasswordChange()
   }
 

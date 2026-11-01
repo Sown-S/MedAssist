@@ -1,12 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import Icon from '../../components/Icon'
 import ReauthModal from '../../components/ReauthModal'
-import { Switch } from './ai/ui'
+import { Switch } from './ui'
 import { useAuth } from '../../context/AuthContext'
 import { useToast } from '../../context/ToastContext'
 import { translate } from '../../i18n'
 import { useSettings, saveSettings, saveServerSettings, loadServerSettings, getSettings, changedPaths, PRINT_DOCS, NUMBERED_DOCS, PAYMENT_METHODS, WEEKDAYS } from '../../api/settingsStore'
-import { DEMO_MODE } from '../../api/client'
 import { fetchPasswordPolicy } from '../../api/accountStore'
 import { printHeaderHtml, fmtDateTime, fmtMoney } from './inventory/shared'
 import { DeviceTab } from './settings/DeviceTab'
@@ -31,12 +30,6 @@ for (const d of NUMBERED_DOCS)
   for (const [k, l] of [['prefix', 'prefix'], ['date', 'date part'], ['digits', 'digits']]) FIELDS[`numbering.${d.key}.${k}`] = [`Numbering — ${d.label} (${l})`, 'now']
 
 const labelOf = (p) => FIELDS[p]?.[0] ?? p
-const SECURITY_EXPIRY = [
-  { key: 0, label: 'Never' },
-  { key: 90, label: 'Every 90 days' },
-  { key: 180, label: 'Every 180 days' },
-  { key: 365, label: 'Every year' }
-]
 const IDLE = [
   { key: 0, label: 'Off' },
   { key: 5, label: '5 minutes' },
@@ -45,16 +38,6 @@ const IDLE = [
   { key: 30, label: '30 minutes' },
   { key: 60, label: '60 minutes' }
 ]
-// Giá trị hiển thị trong nhật ký (cũ → mới).
-function showValue(p, v) {
-  if (p === 'clinic.logo') return v ? '(image)' : '—'
-  if (p === 'ops.sellControlled' || p === 'ops.announceName') return v ? 'Yes' : 'No'
-  if (p === 'ops.methods') return v.map((k) => PAYMENT_METHODS.find((m) => m.key === k)?.label ?? k).join(', ')
-  if (p === 'ops.workDays') return WEEKDAYS.filter((d) => v.includes(d.key)).map((d) => d.label).join(', ')
-  if (typeof v === 'boolean') return v
-  return v === '' || v == null ? '—' : v
-}
-
 function getAt(obj, path) {
   return path.split('.').reduce((o, k) => o?.[k], obj)
 }
@@ -104,9 +87,8 @@ export default function SettingsPage({ params, onNavigate, setLeaveGuard }) {
   const [draft, setDraft] = useState(saved.values)
   const [reauth, setReauth] = useState(null)
   const [policy, setPolicy] = useState(null)
-  // Chạy thật: nạp tham số đang dùng trên server rồi làm mới bản nháp.
+  // Nạp tham số đang dùng trên server rồi làm mới bản nháp.
   useEffect(() => {
-    if (DEMO_MODE) return
     loadServerSettings().then(
       () => setDraft(getSettings()),
       (e) => showToast(e.message)
@@ -142,7 +124,7 @@ export default function SettingsPage({ params, onNavigate, setLeaveGuard }) {
     // Ghi tham số lên server trước; lỗi thì không lưu gì ở máy này.
     const r = await saveServerSettings(draft)
     if (!r.ok) return showToast(translate(r.error))
-    const n = saveSettings(draft, user, labelOf, showValue)
+    const n = saveSettings(draft, user)
     showToast(n ? 'Settings saved' : 'No changes')
   }
   function save() {
@@ -282,34 +264,14 @@ export default function SettingsPage({ params, onNavigate, setLeaveGuard }) {
       {tab === 'security' && (
         <div className="card">
           <div className="set-grid">
-            {DEMO_MODE ? (
-              <>
-                <Field {...fp('security.minLength')} hint="Checked when a password is set or changed.">
-                  <input {...num('security.minLength')} min="8" max="64" />
-                </Field>
-                <Field {...fp('security.requireMix')}>
-                  <Switch checked={val('security.requireMix')} onChange={(v) => set('security.requireMix', v)} />
-                </Field>
-                <Field {...fp('security.expiryDays')} hint="When a password is older than this, the user must set a new one at sign-in.">
-                  <select value={val('security.expiryDays')} onChange={(e) => set('security.expiryDays', Number(e.target.value))}>
-                    {SECURITY_EXPIRY.map((x) => (
-                      <option key={x.key} value={x.key}>
-                        {x.label}
-                      </option>
-                    ))}
-                  </select>
-                </Field>
-              </>
-            ) : (
-              // Chạy thật: chính sách mật khẩu do server quy định — chỉ hiển thị.
-              <Field path="security.policy" wide hint="Fixed on the clinic server — shown for reference only.">
-                <div className="symptom-box" style={{ padding: '8px 11px', fontSize: 13.5 }}>
-                  {policy
-                    ? translate(`At least ${policy.minLength} characters`) + (policy.requireMix ? ' · ' + translate('letters and digits') : '')
-                    : translate('Cannot read the password policy from the server.')}
-                </div>
-              </Field>
-            )}
+            {/* Chính sách mật khẩu do server quy định — chỉ hiển thị. */}
+            <Field path="security.policy" wide hint="Fixed on the clinic server — shown for reference only.">
+              <div className="symptom-box" style={{ padding: '8px 11px', fontSize: 13.5 }}>
+                {policy
+                  ? translate(`At least ${policy.minLength} characters`) + (policy.requireMix ? ' · ' + translate('letters and digits') : '')
+                  : translate('Cannot read the password policy from the server.')}
+              </div>
+            </Field>
             <Field path="security.lock" wide hint="Fixed on the clinic server — shown for reference only. Administrators can unlock earlier in Staff accounts.">
               <div className="symptom-box" style={{ padding: '8px 11px', fontSize: 13.5 }}>
                 {policy
@@ -333,7 +295,7 @@ export default function SettingsPage({ params, onNavigate, setLeaveGuard }) {
         </div>
       )}
 
-      {tab === 'backup' && <BackupTab user={user} fp={fp} val={val} set={set} text={text} num={num} onNavigate={onNavigate} showToast={showToast} />}
+      {tab === 'backup' && <BackupTab fp={fp} num={num} onNavigate={onNavigate} />}
 
       {tab === 'connection' && <ConnectionTab onNavigate={onNavigate} />}
       {tab === 'device' && <DeviceTab draft={draft} />}

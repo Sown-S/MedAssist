@@ -3,12 +3,8 @@
 Ứng dụng **Electron + React** (JavaScript, không TypeScript, theo Proposal §10) cho 3 vai trò Lễ tân, Bác sĩ, Quản trị.
 Phụ trách: Lê Nhật Anh. Tài liệu dành cho người phát triển; hướng dẫn dùng theo vai trò ở [`docs/huong-dan-su-dung.md`](../docs/huong-dan-su-dung.md).
 
-Ứng dụng chạy được ở **hai chế độ**, chọn lúc build bằng biến `VITE_USE_MOCK`:
-
-| Chế độ | Dữ liệu | Dùng khi |
-|---|---|---|
-| **Giả lập** (mặc định) | Store trong `localStorage`, dữ liệu mẫu tự tạo theo ngày, AI giả lập đúng cấu trúc API | Phát triển giao diện không cần server, chạy test, demo nhanh |
-| **Nối server** (`VITE_USE_MOCK=false`) | FastAPI + PostgreSQL qua HTTPS; token lưu mã hóa bằng `safeStorage` | Máy dev có backend, bản cài cho phòng khám |
+Ứng dụng luôn nối server: FastAPI + PostgreSQL qua HTTPS, token lưu mã hóa bằng `safeStorage`. Không có chế độ giả lập;
+muốn xem giao diện mà không cài máy admin thì bật `deploy/docker-compose.eval.yml` (server kèm dữ liệu mẫu) và chạy `npm run eval`.
 
 Phạm vi theo **Proposal v2.0 §6.2**: không có sổ quỹ / chốt ca, nhà cung cấp & công nợ, kiểm kho / hủy thuốc, hóa đơn bán lẻ,
 bàn giao bệnh nhân, giấy nghỉ ốm, tóm tắt bệnh án, phân quyền chỉnh được, đánh giá đơn thuốc (tương tác, liều).
@@ -22,7 +18,7 @@ bàn giao bệnh nhân, giấy nghỉ ốm, tóm tắt bệnh án, phân quyền
 3. [Cấu trúc thư mục](#3-cấu-trúc-thư-mục)
 4. [Vai trò, điều hướng và các màn hình](#4-vai-trò-điều-hướng-và-các-màn-hình)
 5. [Luồng nghiệp vụ chính](#5-luồng-nghiệp-vụ-chính)
-6. [Lớp dữ liệu: giả lập và nối server](#6-lớp-dữ-liệu-giả-lập-và-nối-server)
+6. [Lớp dữ liệu](#6-lớp-dữ-liệu)
 7. [Đa ngôn ngữ (i18n)](#7-đa-ngôn-ngữ-i18n)
 8. [Quy ước giao diện](#8-quy-ước-giao-diện)
 9. [Phân quyền và nhật ký](#9-phân-quyền-và-nhật-ký)
@@ -47,7 +43,7 @@ npm run dev        # Vite dev server + cửa sổ Electron, sửa code thấy ng
 | Lệnh | Tác dụng |
 |---|---|
 | `npm run dev` | Chạy dev, có hot reload |
-| `npm test` | Bộ test nghiệp vụ trong `tests/` (Vitest, không cần server). `npm run test:watch` chạy lại khi sửa code |
+| `npm test` | Bộ test trong `tests/` (Vitest, API giả lập bằng `vi.doMock` / `tests/fakeServer.js`, không cần server). `npm run test:watch` chạy lại khi sửa code |
 | `npm run build` | Build ra `out/` (main, preload, renderer); dùng để kiểm tra cú pháp trước khi commit |
 | `npm start` | Chạy thử bản đã build trong `out/` |
 | `npm run build:win` | Build + đóng gói bản cài Windows (NSIS) vào `dist/`, kèm `certs/*.crt`. `:mac`, `:linux` tương tự |
@@ -58,30 +54,23 @@ npm run dev        # Vite dev server + cửa sổ Electron, sửa code thấy ng
 
 | Biến | Ý nghĩa |
 |---|---|
-| `VITE_USE_MOCK` | `true` (mặc định) = giả lập; `false` = nối server thật |
 | `VITE_API_BASE_URL` | Địa chỉ server **mặc định** khi máy chưa đặt. Mỗi máy đổi được lúc chạy: nút **Máy chủ** ở màn đăng nhập hoặc Cài đặt › Kết nối (lưu ở `userData/config.json`) |
 | `VITE_DEV_TOOLS` | `true` = hiện công cụ cho dev (vd giả lập mất mạng ở Tiếp đón). Để trống khi dùng thật |
 
-**Chế độ giả lập**
+**Chạy trên máy dev**
 
-- Tài khoản mặc định `admin` / `Admin@123`; lần đăng nhập đầu bắt buộc đổi mật khẩu. Tài khoản Bác sĩ, Lễ tân tạo ở **Quản trị › Tài khoản nhân viên**.
-- Thử AI lỗi: DevTools (`Ctrl+Shift+I`) → Console → `localStorage.setItem('medassist_mock_llm_down', '1')`; trích xuất báo lỗi, thẻ gợi ý chuyển *Rule-only*.
-- Đặt lại dữ liệu mẫu: DevTools → Application → Local Storage → xóa các khóa `medassist_*` → `Ctrl+R`.
-  Sao lưu / khôi phục toàn bộ ở **Quản trị › Cài đặt › Sao lưu** (file JSON có checksum).
-
-**Nối server trên máy dev**
-
-1. Chạy backend theo `server/README.md` (API ở `http://127.0.0.1:8000`, worker AI ở terminal thứ hai).
-2. `client/.env`: `VITE_USE_MOCK=false`, `VITE_API_BASE_URL=http://127.0.0.1:8000`.
+1. Chạy backend theo `server/README.md` (API ở `http://127.0.0.1:8000`, worker AI ở terminal thứ hai),
+   hoặc bật server kèm dữ liệu mẫu: `docker compose -f deploy/docker-compose.eval.yml --env-file deploy/eval.env up -d`.
+2. `client/.env`: `VITE_API_BASE_URL=http://127.0.0.1:8000`.
 3. `server/.env` cho phép nguồn của dev server: `CORS_ORIGINS=["http://localhost:5173","http://127.0.0.1:5173"]`.
 4. Đăng nhập bằng tài khoản tạo bằng `scripts.create_user` (`admin`, `bs01`, `yta01`).
 
 **Mở nhiều vai trò trên một máy (test)**: thêm tham số `--profile=<tên>` (chữ, số, gạch ngang) vào shortcut, vd
 `"…\MedAssist.exe" --profile=bacsi`. Mỗi hồ sơ có thư mục dữ liệu riêng `%APPDATA%\MedAssist-<tên>` (token, địa chỉ máy chủ,
-`localStorage`), nên lễ tân, bác sĩ, quản trị đăng nhập song song không đè phiên nhau. Không có tham số thì app dùng thư mục mặc định
+cài đặt của máy), nên lễ tân, bác sĩ, quản trị đăng nhập song song không đè phiên nhau. Không có tham số thì app dùng thư mục mặc định
 như cũ. Xóa thư mục `MedAssist-<tên>` để bỏ một hồ sơ.
 
-**Bản cài cho phòng khám**: build với `VITE_USE_MOCK=false`, có file CA trong `certs/` (xem `certs/README.md`).
+**Bản cài cho phòng khám**: `npm run build:win` với file CA trong `certs/` (xem `certs/README.md`).
 Bản đóng gói tải giao diện từ `app://medassist`, nên server phải có `CORS_ORIGINS=["app://medassist"]` (mặc định của `deploy/.env.example`)
 và chỉ nhận địa chỉ `https://` khi server không phải máy này.
 
@@ -135,7 +124,7 @@ client/
       ├─ App.jsx             Khung app: thanh trên, tab theo vai trò, Routes + RequireRole
       ├─ global.css, styles/ 01-tokens-base … 19-connection-intake: mỗi file một vùng giao diện
       ├─ api/                LỚP DỮ LIỆU (§6, §10)
-      │  ├─ client.js          apiGet / apiPost / apiRequest, ApiError, refresh token, DEMO_MODE, checkHealth
+      │  ├─ client.js          apiGet / apiPost / apiRequest, ApiError, refresh token, checkHealth
       │  ├─ serverConfig.js    Địa chỉ server của máy, tokenStore (safeStorage)
       │  ├─ connectivity.js    Hỏi /health ~3 giây một lần; mất kết nối → chỉ đọc
       │  ├─ authApi.js, accountStore.js     Đăng nhập, đổi mật khẩu, tài khoản nhân viên
@@ -147,40 +136,38 @@ client/
       │  ├─ auditApi.js, reportsApi.js      Nhật ký hoạt động, báo cáo, nhật ký AI
       │  ├─ roomStore.js       Phòng khám cố định của bác sĩ (ERD v1.9)
       │  ├─ serverDrugs.js     Danh mục thuốc + tồn kho của server cho màn kê đơn
-      │  ├─ queueStore.js      Hàng chờ trong ngày: máy trạng thái lượt khám; giả lập hoặc đồng bộ GET /queue
-      │  ├─ patientStore.js, inventoryStore.js, invoiceStore.js, settingsStore.js, catalogStore.js   Store giả lập (một số gọi server khi tắt giả lập)
-      │  ├─ symptoms.js, vitals.js, triage.js, assessmentMock.js   Triệu chứng 3 trạng thái, 8 khóa sinh hiệu, Node 1 cục bộ, AI giả lập
-      │  ├─ activityStore.js, activityMessages.js, permissionStore.js   Nhật ký giả lập, câu nhật ký Anh/Việt, quyền theo vai trò
-      │  ├─ draftStore.js, rxHistory.js, visitArchive.js, rxReviewStore.js, deviceSettings.js, backupStore.js, aiConfigStore.js
-      │  └─ rxChecks.js        KHÔNG dùng (kiểm tra tương tác thuốc, để dành hướng phát triển)
+      │  ├─ queueStore.js      Hàng chờ trong ngày: đồng bộ GET /queue, check-in, mời, nhận khám, trả về hàng chờ, cờ đỏ
+      │  ├─ inventoryStore.js  Danh mục thuốc, tồn theo lô, thẻ kho (đọc từ server)
+      │  ├─ serviceApi.js, serviceStore.js, serviceCatalogLive.js   Dịch vụ, xét nghiệm, gói khám, phiếu chỉ định
+      │  ├─ prescriptionApi.js, conditionCatalog.js   Danh sách đơn thuốc, danh mục bệnh Active (ICD-10)
+      │  ├─ symptoms.js, vitals.js, patient.js   Danh mục triệu chứng, 8 khóa sinh hiệu, tiện ích bệnh nhân (fold, ageOf)
+      │  ├─ settingsStore.js   Tham số server (GET / PUT /admin/settings) + cài đặt của máy này
+      │  └─ draftStore.js, deviceSettings.js, rxSafety.js   Phiếu khám dở trên máy, cài đặt thiết bị, thuốc N / H
       ├─ context/            AuthContext (phiên, tự đăng xuất), ToastContext
       ├─ hooks/              useApiData, useAsyncAction, useDelayedFlag
       ├─ i18n/               index.js, jsx-runtime.js, jsx-dev-runtime.js, vi.js
       ├─ components/         Dùng chung: Modal, ConfirmModal, ReauthModal, ChangePasswordModal, IntakeModal, SymptomPanel,
       │                      VitalsFields, WaitingVisitModals, StaleVisitsModal, SearchModal, RedFlagModal,
-      │                      PaymentModal (+ PaymentModalLive), DrugPicker, ICDPicker, ServerAddress, AdminSidebar,
+      │                      PaymentModal, DrugPicker, ICDPicker, ServerAddress, AdminSidebar,
       │                      RequireRole, TopActions, Icon, queuePrint.js, useCallAnnouncer.js …
       └─ pages/
          ├─ Login.jsx                  Đăng nhập, đổi mật khẩu lần đầu, chọn máy chủ
-         ├─ Reception.jsx, reception/  Dashboard, QueueView, CallPanel, BillingLiveView, InvoicesView, PrescriptionsView
-         ├─ Doctor.jsx, doctor/        DoctorHome, ConsultView, AssessmentCard, LabOrderModal, DocumentModal, RxReviewPanel,
-         │                             DrugCabinetView, PatientLookup (+ Live), ServerHistory
+         ├─ Reception.jsx, reception/  Dashboard, QueueView, CallPanel, BillingLiveView, PrescriptionsLive
+         ├─ Doctor.jsx, doctor/        DoctorHome, ConsultView, AssessmentCard, LabOrderModal, DocumentModal,
+         │                             DrugCabinetView, PatientLookup, ServerHistory
          ├─ Reports.jsx                Báo cáo vận hành (GET /reports/summary)
-         ├─ Schedule.jsx               Lịch hẹn: KHÔNG có route (ngoài phạm vi v2.0)
          ├─ Admin.jsx                  Khung Quản trị: bảng tra id trang → component (PAGES)
-         └─ admin/                     DashboardPage, PatientsPage, InvoicesPage, AIConfigPage, RoomsPage, InventoryPage,
-                                       CatalogPage, DrugCatalogPage, HistoryPage (+ AuditLogLive), StaffPage, SettingsPage, RoadmapPage
-            ├─ ai/                     Cấu hình AI bản giả lập: Rules, Tester, Review, Metrics, Settings; catalog.js, ruleEngine.js
-            ├─ knowledge/              Quản trị tri thức khi nối server: Release, Items, Sources, AiLogs (KnowledgeLive)
+         └─ admin/                     DashboardPage, RoomsPage, InventoryPage, CatalogPage, DrugCatalogPage, HistoryPage,
+                                       StaffPage, SettingsPage, RoadmapPage; ui.jsx (Switch, ConfirmDialog, Empty)
+            ├─ knowledge/              Cấu hình AI = quản trị tri thức: Release, Items, Sources, AiLogs (KnowledgeLive)
             ├─ catalogs/               CatalogDetailPage + schemas.jsx
-            └─ inventory/              Nhập lô, thẻ kho, form thuốc (Demo / Live), shared.jsx (in ấn, nhãn)
+            └─ inventory/              Nhập lô, thẻ kho, form thuốc, shared.jsx (in ấn, nhãn)
 ```
 
 **Quy tắc chia file**
 
 - **Mỗi vai trò = 1 file khung** trong `pages/`. Màn con nằm trong thư mục cùng tên viết thường, chọn bằng **query string** (`?view=queue`).
 - **Mọi đọc/ghi dữ liệu đi qua `api/*`**; trang không tự gọi `fetch` hay `localStorage`.
-- Màn có hai bản khác nhau nhiều giữa giả lập và nối server thì tách file `…Live.jsx` và chọn theo `DEMO_MODE` ở một chỗ.
 - Component dùng ở ≥ 2 nơi đưa vào `components/`; helper của một khu vực để ở `shared.js` của khu vực đó.
 - Chú thích trong code viết **tiếng Việt**; chuỗi giao diện viết **tiếng Anh** (được dịch, §7).
 
@@ -204,8 +191,8 @@ route chặn bằng `<RequireRole allow={[...]}>`. Ẩn tab chỉ để dễ dù
 |---|---|---|
 | `home` | `Dashboard` | Thẻ tổng quan (hóa đơn đã thu, đơn thuốc, hàng chờ, cờ đỏ), thao tác nhanh, bảng gọi, danh sách **chờ cấp phát & thu tiền** |
 | `queue` | `QueueView` | Hàng chờ theo 6 trạng thái; nút **Có mặt – check-in**; sửa / hủy lượt đang chờ |
-| `invoices` | `InvoicesView` / `BillingLiveView` | Hóa đơn và doanh thu theo kỳ (giả lập), hóa đơn theo ngày (nối server) |
-| `prescriptions` | `PrescriptionsView` | Đơn thuốc theo kỳ, lọc bác sĩ, trạng thái thanh toán, in danh sách |
+| `invoices` | `BillingLiveView` | Hóa đơn theo ngày |
+| `prescriptions` | `BillingLiveView` | Đơn thuốc trong ngày, chờ cấp phát / thu tiền |
 
 Phím tắt: **F2** đăng ký mới, **F3 / Ctrl+K** tra cứu. Mất kết nối → **chỉ đọc**. Đầu trang báo **lượt chưa đóng từ ngày trước** (`StaleVisitsModal`).
 
@@ -215,7 +202,7 @@ Phím tắt: **F2** đăng ký mới, **F3 / Ctrl+K** tra cứu. Mất kết n�
 |---|---|---|
 | `home` | `DoctorHome` | Chờ khám (người đã check-in trước), trong phòng tôi, đơn của tôi |
 | `consult` | `ConsultView` | Hàng đợi; **Mời bệnh nhân tiếp theo** (Alt+N); chip triệu chứng lễ tân đã xác nhận; thẻ **Gợi ý tham khảo**; SOAP; ICD-10; kê đơn (Alt+T tìm thuốc); phiếu chỉ định xét nghiệm (Alt+L); chốt đơn (Ctrl+Enter); giấy chuyển tuyến; trả về hàng chờ |
-| `prescriptions` | `PrescriptionsView` / `PrescriptionsLive` | Đơn theo kỳ, mặc định lọc theo chính bác sĩ; nối server đọc `GET /prescriptions` |
+| `prescriptions` | `PrescriptionsLive` | Đơn theo kỳ (`GET /prescriptions`), mặc định lọc theo chính bác sĩ |
 | `drugs` | `DrugCabinetView` | Tủ thuốc (chỉ xem): tồn dùng được, hạn gần nhất, giá; **+ Thêm vào đơn** |
 | `patients` | `PatientLookup` | Tra cứu bệnh nhân và hồ sơ khám cũ (EMR) |
 
@@ -224,13 +211,14 @@ Phiếu khám dở lưu xuống máy (`draftStore`, theo ngày). Đăng xuất k
 
 ### Quản trị: `pages/Admin.jsx` + `components/AdminSidebar.jsx`
 
-Trang chủ · Hồ sơ bệnh nhân (**ẩn danh**) · Hóa đơn thanh toán · **Cấu hình AI / Tri thức** · Phòng khám · **Tồn kho & hạn dùng** ·
-Quản lý danh mục · Lịch sử hoạt động · Tài khoản nhân viên · Cài đặt · Lộ trình.
+Trang chủ · **Cấu hình AI / Tri thức** · Phòng khám · **Tồn kho & hạn dùng** ·
+Quản lý danh mục · Lịch sử hoạt động · Tài khoản nhân viên · Cài đặt · Lộ trình. Quản trị không xem dữ liệu bệnh nhân và hóa đơn
+(doanh thu xem ở Báo cáo).
 Thêm trang = thêm component vào `PAGES` trong `Admin.jsx` + thêm mục vào `NAV` trong `AdminSidebar.jsx`.
 
-**Cấu hình AI** khi nối server là `knowledge/KnowledgeLive`: bản phát hành (soạn, gửi duyệt, duyệt / từ chối), danh mục mục tri thức
+**Cấu hình AI** là `knowledge/KnowledgeLive`: bản phát hành (soạn, gửi duyệt, duyệt / từ chối), danh mục mục tri thức
 (xem phiên bản, soạn nháp, xem mục phụ thuộc, **tắt khẩn cấp**), nguồn, nhật ký AI. Bác sĩ vào tab **Duyệt tri thức** chỉ thấy phần duyệt;
-không được duyệt bản mình soạn (Architecture 5.1.10). Khi giả lập, trang này là bộ quy tắc mẫu trong `admin/ai/`.
+không được duyệt bản mình soạn (Architecture 5.1.10).
 
 ---
 
@@ -272,7 +260,6 @@ không được duyệt bản mình soạn (Architecture 5.1.10). Khi giả lậ
 6. Luật cờ đỏ còn thiếu dữ liệu (`complete_now`) → mục **"Hỏi ngay"** tô vàng để lễ tân hỏi thêm.
 7. **Cờ đỏ**: chuyển viện ngay ở quầy, hoặc lưu lên đầu hàng chờ mức Cấp cứu; thẻ gợi ý AI của ca cờ đỏ là `Skipped`.
 
-Khi giả lập, bước 1 dùng từ điển đồng nghĩa (`symptoms.js`) và Node 1 chạy cục bộ (`triage.js`) với cùng logic ba trị.
 
 ### 5.3 Chốt đơn → hóa đơn → cấp phát → thu tiền
 
@@ -285,12 +272,12 @@ Khi giả lập, bước 1 dùng từ điển đồng nghĩa (`symptoms.js`) và
 4. **Mở lại đơn**: chỉ khi chưa thu tiền và chưa cấp dòng nào → hoàn kho, hủy hóa đơn chờ thu, lượt về `Examining`.
 5. Thuốc nhà thuốc không bán: không trừ kho, không lên hóa đơn, in đơn riêng.
 
-Không có giảm giá, BHYT, làm tròn. **Hóa đơn đã thu là trạng thái cuối** trên server; hủy hóa đơn đã thu chỉ có ở bản giả lập.
+Không có giảm giá, BHYT, làm tròn. **Hóa đơn đã thu là trạng thái cuối** trên server.
 
 ### 5.4 Chỉ định xét nghiệm (làm thủ công)
 
 Bác sĩ *Chỉ định xét nghiệm* → `LabOrderModal` (danh mục, gói từ server) → `POST visits/{id}/service-orders` và in phiếu; lượt vẫn `Examining`, server đánh dấu đi xét nghiệm (`lab_out_at`).
-Bệnh nhân cầm kết quả giấy về → lễ tân *Đã về – báo bác sĩ* → bác sĩ *Khám tiếp* và nhập kết quả. Phí xét nghiệm tự vào hóa đơn từ phiếu chỉ định (ERD v2.1).
+Bệnh nhân cầm kết quả giấy về → bác sĩ của lượt bấm *Khám tiếp* (`PATCH …/lab-return`) và nhập kết quả. Phí xét nghiệm tự vào hóa đơn từ phiếu chỉ định (ERD v2.1).
 
 ### 5.5 Kê đơn: KHÔNG đánh giá đơn (Proposal FR03)
 
@@ -299,16 +286,13 @@ Chốt đơn chỉ chặn khi thiếu chẩn đoán, số lượng + cách dùng
 
 ---
 
-## 6. Lớp dữ liệu: giả lập và nối server
+## 6. Lớp dữ liệu
 
-`api/client.js` đọc `VITE_USE_MOCK` một lần và xuất `DEMO_MODE`. Trang và store rẽ nhánh theo cờ này:
+Các file `*Api.js` gọi FastAPI và đổi dữ liệu server sang đúng hình dạng màn hình dùng. Các `*Store.js` giữ bản sao trong bộ nhớ
+(`useSyncExternalStore`) để nhiều màn dùng chung, ví dụ `queueStore` hỏi lại `GET /queue` vài giây một lần. Mời bệnh nhân,
+đi xét nghiệm, chuyển tuyến đều qua server (ERD v2.0), mọi máy thấy như nhau. Dữ liệu nghiệp vụ không lưu trên máy.
 
-- **Giả lập**: store đọc/ghi `localStorage`, dữ liệu mẫu tính lùi từ lúc mở app để luôn khớp "hôm nay"; `apiGet` của vài trang tĩnh trả `MOCK_ENDPOINTS` (trễ giả 300–600 ms).
-- **Nối server**: các file `*Api.js` gọi FastAPI và đổi dữ liệu server sang đúng hình dạng màn hình đang dùng, nên trang không phải viết lại.
-  `queueStore` lấy lượt khám từ `GET /queue` (polling), không tạo dữ liệu mẫu, không lưu `localStorage`.
-  Mời bệnh nhân, đi xét nghiệm, chuyển tuyến đều qua server (ERD v2.0), mọi máy thấy như nhau.
-
-**`client.js` khi nối server**
+**`client.js`**
 
 - Gửi `Authorization: Bearer …`; gặp `401` thì `POST /api/v1/auth/refresh` một lần rồi gọi lại; refresh cũng `401` → về màn đăng nhập.
   Sai mật khẩu ở `/auth/login` cũng là `401` nhưng không bị hiểu là hết phiên.
@@ -320,31 +304,29 @@ Chốt đơn chỉ chặn khi thiếu chẩn đoán, số lượng + cách dùng
 **Khuôn mẫu một store**
 
 ```js
-let state = read() ?? seed()                 // localStorage hoặc dữ liệu mẫu
-function commit(next) { state = next; localStorage.setItem(KEY, …); listeners.forEach(fn => fn()) }
+let state = { items: [] }
+function commit(next) { state = next; listeners.forEach(fn => fn()) }
 export const getX = () => state              // đọc ngoài React
 export function useX() { return useSyncExternalStore(subscribe, getX) }   // đọc trong React
-export function doSomething(args, user) { …; commit(…); logEvent(user, 'x.y', {…}) }  // ghi + nhật ký
+export const syncX = () => apiGet('/api/v1/x').then((items) => commit({ ...state, items }))
+export const doSomething = (id) => apiRequest(`/api/v1/x/${id}`, 'PATCH', {…}).then(syncX, (e) => ({ ok: false, error: e.message }))
 ```
 
-- Hàm ghi trả `{ ok, error }` khi có thể thất bại; `error` là chuỗi **tiếng Anh**, dịch khi hiển thị.
+- Hàm ghi trả `{ ok, error }` khi có thể thất bại; `error` là câu tiếng Việt của server hoặc chuỗi **tiếng Anh** của client (dịch khi hiển thị).
+- Nhật ký hoạt động do server ghi (`audit_log`); client không ghi nhật ký riêng.
 - Không xóa bản ghi nghiệp vụ: hóa đơn, phiếu và danh mục được "hủy" hoặc "ngừng dùng" kèm lý do.
-- Ngày tính theo **giờ máy** (`dayOf`, `ymd`), không theo UTC.
+- Ngày tính theo **giờ máy** (`ymd`, `todayISO`), không theo UTC.
 
 **Khóa lưu trên máy**
 
-| Khóa | Dùng ở | Ghi chú |
-|---|---|---|
-| `medassist_accounts_v1`, `medassist_audit_v2` | Giả lập | Mật khẩu băm SHA-256 (chỉ cho demo); nhật ký chỉ ghi thêm, có chuỗi băm |
-| `medassist_patients_v1`, `medassist_queue_v2`, `medassist_invoices_v1`, `medassist_inventory_v3` | Giả lập | Hàng chờ lưu theo ngày |
-| `medassist_rx_history_v1`, `medassist_visit_archive_v1`, `medassist_catalogs_v1`, `medassist_rooms_v1` | Giả lập | |
-| `medassist_settings_v1`, `medassist_counters_v1`, `medassist_ai_config_v1`, `medassist_backup_log_v1` | Giả lập | |
-| `medassist_consult_drafts_v1` | Cả hai | Phiếu khám dở của bác sĩ, chỉ giữ trong ngày |
-| `medassist_device_v1` | Cả hai | Cài đặt riêng máy: khổ giấy, bảng gọi bệnh nhân |
-| `medassist_lang` | Cả hai | `en` / `vi` |
-| `medassist_mock_llm_down` | Giả lập | `'1'` = giả lập LLM lỗi |
-| `userData/secure.json` | Nối server | Token access / refresh, mã hóa `safeStorage`, không ở `localStorage` |
-| `userData/config.json` | Cả hai | Địa chỉ server của máy |
+| Khóa | Ghi chú |
+|---|---|
+| `medassist_settings_v1` | Bản sao tham số server và cài đặt in ấn của máy |
+| `medassist_consult_drafts_v1` | Phiếu khám dở của bác sĩ, chỉ giữ trong ngày |
+| `medassist_device_v1` | Cài đặt riêng máy: khổ giấy, bảng gọi bệnh nhân |
+| `medassist_lang` | `en` / `vi` |
+| `userData/secure.json` | Token access / refresh, mã hóa `safeStorage`, không ở `localStorage` |
+| `userData/config.json` | Địa chỉ server của máy |
 
 Đổi cấu trúc dữ liệu thì **tăng hậu tố `_vN`** để bản cũ trong máy người dùng được tạo lại thay vì đọc sai cấu trúc.
 
@@ -368,7 +350,6 @@ Cơ chế:
 - Chuỗi ghép bằng template literal: `` `${n} ${translate('paid')}` ``.
 - Chuỗi truyền vào **component** (không phải thẻ HTML) rồi được render như chuỗi con của component đó, ví dụ `NavLink`. Cách xử lý: bọc chuỗi trong `<span>`.
 - Nội dung in (`printHtml`), `document.title`, `window.confirm`, giá trị `value` của ô đang sửa.
-- Câu nhật ký: dựng theo ngôn ngữ ở `api/activityMessages.js` (mỗi mã hành động trả `[en, vi]`).
 
 **Thêm chuỗi mới:** viết tiếng Anh trong JSX, rồi thêm khoá vào `VI` (theo khối chú thích chủ đề). Nên kiểm tra trùng khoá:
 `npx esbuild src/renderer/src/i18n/vi.js --log-level=warning --outfile=/tmp/vi.js` (esbuild báo `Duplicate key`).
@@ -392,13 +373,11 @@ Cơ chế:
 
 ## 9. Phân quyền và nhật ký
 
-- **Quyền cố định theo 3 vai trò** (`api/permissionStore.js`): mã quyền `<module>.<thao tác>` và quyền đặc biệt `rx.finalize`,
-  `patient.clinical`, `ai.approve`, `invoice.void`, `data.export`. Dùng: `can(user.roleKey, 'invoice.void')`.
+- **Quyền cố định theo 3 vai trò**: tab và route chọn theo `user.roleKey` (`App.jsx`, `RequireRole`).
 - **Quyền tối thiểu**: Quản trị **không xem dữ liệu bệnh nhân**, không khám, không kê đơn; Lễ tân quản lý kho cùng Quản trị; Bác sĩ chỉ xem kho.
 - Ẩn nút chỉ để dễ dùng; server kiểm tra vai trò ở từng endpoint (`require_roles`, trả 403).
-- **Nhật ký**: khi nối server, mọi thao tác ghi và mọi lần xem dữ liệu bệnh nhân do server ghi (`audit_log`, chỉ ghi thêm);
-  màn Lịch sử hoạt động đọc `GET /admin/audit-logs`. Khi giả lập, `logEvent(user, action, { target, params, before, after, level })`
-  ghi vào `activityStore`; mỗi mã `action` mới cần câu `[en, vi]` trong `activityMessages.js`.
+- **Nhật ký**: mọi thao tác ghi và mọi lần xem dữ liệu bệnh nhân do server ghi (`audit_log`, chỉ ghi thêm);
+  màn Lịch sử hoạt động đọc `GET /admin/audit-logs`. Client không ghi nhật ký riêng.
 
 ## 10. Bảng ghép API
 
@@ -428,34 +407,33 @@ Chức năng chỉ desktop làm được (máy in, file): viết ở `src/main` 
 Module AI chạy **trong backend**: Node 1 tất định chạy ngay khi xếp hàng; Node 2–4 (truy xuất, LLM xếp hạng + giải thích, kiểm tra đầu ra)
 chạy nền trong `worker`. **Client không gọi thẳng Ollama** (runtime không có xác thực, chỉ container `worker` gọi được; QA03, TC05).
 
-| Điểm tích hợp | File client | Nối server | Giả lập |
-|---|---|---|---|
-| Trích xuất triệu chứng từ lời kể | `components/SymptomPanel.jsx`, `IntakeModal.jsx` | `POST` + polling `GET visits/{id}/symptom-extraction`; trả `suggestions[{symptom_code, symptom_name, status}]`, luôn `requires_confirmation` | Từ điển đồng nghĩa trong `symptoms.js` |
-| Node 1: cờ đỏ, mức sàn, "Hỏi ngay" | `IntakeModal.jsx`, `queueStore.js` | Kết quả của `POST visits/{id}/assessment`: `priority`, `is_red_flag`, `alerts`, `complete_now` | `triage.js` |
-| Gợi ý chẩn đoán | `pages/doctor/AssessmentCard.jsx` | Polling `GET visits/{id}/assessment` tới khi khác `Pending` | `assessmentMock.js` |
-| Quyết định của bác sĩ | `ConsultView.jsx` | Gửi `assessment_id` kèm `POST visits/{id}/diagnoses` | Lưu cục bộ |
-| Quản trị tri thức | `pages/admin/knowledge/` | `knowledgeApi.js` | `pages/admin/ai/` |
-| Trạng thái AI | `admin/ai/SettingsTab.jsx`, `admin/DashboardPage.jsx` | `GET /health` | `GET /health` |
+| Điểm tích hợp | File client | API |
+|---|---|---|
+| Trích xuất triệu chứng từ lời kể | `components/SymptomPanel.jsx`, `IntakeModal.jsx` | `POST` + polling `GET visits/{id}/symptom-extraction`; trả `suggestions[{symptom_code, symptom_name, status}]`, luôn `requires_confirmation` |
+| Node 1: cờ đỏ, mức sàn, "Hỏi ngay" | `IntakeModal.jsx`, `queueStore.js` | Kết quả của `POST visits/{id}/assessment`: `priority`, `is_red_flag`, `alerts`, `complete_now` |
+| Gợi ý chẩn đoán | `pages/doctor/AssessmentCard.jsx` | Polling `GET visits/{id}/assessment` tới khi khác `Pending` |
+| Quyết định của bác sĩ | `ConsultView.jsx` | Gửi `assessment_id` kèm `POST visits/{id}/diagnoses` |
+| Quản trị tri thức | `pages/admin/knowledge/` | `knowledgeApi.js` |
+| Trạng thái AI | `admin/settings/ConnectionTab.jsx`, `admin/DashboardPage.jsx` | `GET /health` |
 
 Thẻ **Gợi ý tham khảo** theo `ai_status`: `Pending` (đang phân tích), `Ready` (`mode` `Full`: có lý do của LLM), `Degraded` (`RuleOnly`: chỉ xếp hạng theo luật),
 `Skipped` (cờ đỏ, không gợi ý). Tối đa 3 ứng viên, mỗi ứng viên có bằng chứng ủng hộ / phản bác / còn thiếu, kèm phiên bản tri thức và mô hình.
 
 ## 12. Kiểm thử
 
-`npm test` chạy bộ test nghiệp vụ trong `tests/` (Vitest + jsdom, không cần server):
+`npm test` chạy bộ test trong `tests/` (Vitest + jsdom, không cần server). API được giả lập: các test `*-live` thay
+`clinicApi` / `examApi` bằng "server" nhỏ trong bộ nhớ làm đúng luật backend (`vi.doMock`); test giao diện thay `fetch` bằng `tests/fakeServer.js`.
 
 | File | Nội dung |
 |---|---|
-| `queue.test.js` | Máy trạng thái lượt khám, check-in, mời bệnh nhân, ca cờ đỏ |
-| `labs.test.js`, `labs-live.test.js` | Đi xét nghiệm, cả khi nối server (server giả trong bộ nhớ làm đúng luật backend) |
-| `rx-safety.test.js` | Kê đơn, chốt đơn, thiếu thuốc, thuốc nhà thuốc không bán |
-| `billing.test.js` | Cấp phát, thu tiền, hóa đơn |
-| `patients.test.js` | Bệnh nhân, kiểm trùng, ô ngày sinh |
-| `accounts-rooms.test.js` | Tài khoản, phòng khám |
-| `triage-vitals-roles.test.js` | Luật cờ đỏ, sinh hiệu, phân quyền |
+| `desk-live.test.js` | Quầy và phòng khám: check-in, huỷ lượt, lượt ngày cũ, trả về hàng chờ, thu hồi đơn |
+| `invite-referral-live.test.js` | Mời bệnh nhân, chuyển tuyến, ca cờ đỏ |
+| `labs-live.test.js`, `service-orders.test.js` | Đi xét nghiệm, phiếu chỉ định, danh mục dịch vụ / xét nghiệm / gói khám |
+| `mappers.test.js`, `vitals.test.js` | Đổi dữ liệu server ↔ màn hình, sinh hiệu |
+| `ui-screens.test.jsx`, `ui-error-boundary.test.jsx` | Mọi màn chính của 3 vai trò dựng được; lưới bắt lỗi giao diện |
+| `i18n.test.js`, `profile.test.js` | Mọi chuỗi giao diện có bản dịch; tham số `--profile` |
 
-Store giả lập giữ dữ liệu trong module + `localStorage`: mỗi test gọi `fresh()` trong `tests/helpers.js` để bắt đầu từ dữ liệu mẫu sạch.
-CI trên GitHub **chưa** chạy phần client, nên trước khi commit phải tự chạy `npm test` và `npm run build`. Dự án không có cấu hình ESLint.
+CI (`.github/workflows/ci.yml`, job *Client*) chạy `npm run lint` và `npm test` cho mỗi PR; trước khi commit nên tự chạy thêm `npm run build`.
 
 ## 13. Lưu ý quan trọng và lỗi hay gặp
 
@@ -465,14 +443,13 @@ CI trên GitHub **chưa** chạy phần client, nên trước khi commit phải 
 2. **HashRouter là bắt buộc**: bản build chạy từ `app://medassist`, không có server phục vụ `/doctor`.
 3. **`main.jsx` phải import `./i18n` đầu tiên**, trước mọi component.
 4. **Không lưu chuỗi đã dịch vào dữ liệu**: lưu chuỗi tiếng Anh / mã, dịch lúc hiển thị.
-5. **Ngày theo giờ máy**: so sánh bằng chuỗi `YYYY-MM-DD` từ `dayOf()` / `ymd()`, không dùng `toISOString().slice(0,10)` (lệch UTC+7).
+5. **Ngày theo giờ máy**: so sánh bằng chuỗi `YYYY-MM-DD` từ `ymd()` / `todayISO()`, không dùng `toISOString().slice(0,10)` (lệch UTC+7).
 6. **Kho trừ một lần, lúc bác sĩ chốt đơn.** "Đã cấp" ở quầy không trừ lần nữa; mọi lần hoàn kho về **đúng lô đã trừ**.
 7. **Bác sĩ của lượt khám** lưu cả họ tên (hiển thị) và id; "Của tôi" so theo id.
 8. **Chứng chỉ máy chủ** (TC03): với máy chủ đã cấu hình, app chỉ nhận chứng chỉ có chuỗi đi đúng tới CA trong `certs/`, khớp tên máy / IP, còn hạn.
    Bản đóng gói thiếu file CA → từ chối kết nối; không bao giờ tắt kiểm tra chứng chỉ.
 9. **Lỗi CORS khi nối server lúc dev**: thêm `http://localhost:5173` vào `CORS_ORIGINS` của `server/.env`, khởi động lại uvicorn.
 10. **Đăng nhập được nhưng bị đưa về màn đổi mật khẩu**: tài khoản do Admin tạo / vừa đặt lại mật khẩu (`403 PASSWORD_CHANGE_REQUIRED`), đổi rồi đăng nhập lại.
-11. **Bản giả lập không an toàn**: mật khẩu SHA-256 trong `localStorage`, quyền và khóa tài khoản chỉ ép ở client. **Không dùng chế độ giả lập với dữ liệu bệnh nhân thật.**
 
 ## 14. Tình trạng và giới hạn đã biết
 
@@ -481,6 +458,7 @@ CI trên GitHub **chưa** chạy phần client, nên trước khi commit phải 
 - [x] Nối server: đăng nhập, bệnh nhân, hàng đợi, khám, kê đơn, cấp phát, thu tiền, EMR, phòng khám, kho, cài đặt, nhật ký, báo cáo, tri thức.
 - [x] Gợi ý AI thật qua `GET /visits/{id}/assessment`; client không gọi thẳng LLM; ghim chứng chỉ CA dự án.
 - [ ] Đóng gói: `icon` cho electron-builder, chữ ký số cho bản cài.
+- [ ] Thu hồi đơn chờ thanh toán để sửa: `queueStore.recallVisit` gọi `POST …/prescription/reopen`, giao diện chưa có nút.
 - [x] Chạy `npm run lint` và `npm test` trong CI; bản cài Windows / macOS build tự động khi đẩy tag.
 
 Giới hạn (ghi vào báo cáo đồ án):

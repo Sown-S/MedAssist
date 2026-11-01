@@ -3,26 +3,20 @@ import PatientQueueCard from '../../components/PatientQueueCard'
 import PatientAlerts from '../../components/PatientAlerts'
 import Icon from '../../components/Icon'
 import { translate } from '../../i18n'
-import { useQueue, STATUSES, ST, leftReasonLabel, minutesSince, waitingOrder, readyOrder, payStatusOf, markLabReturned, checkInVisit, atLabs, isInvited } from '../../api/queueStore'
-import { useAuth } from '../../context/AuthContext'
+import { useQueue, STATUSES, ST, leftReasonLabel, minutesSince, waitingOrder, readyOrder, checkInVisit, atLabs, isInvited } from '../../api/queueStore'
 import { useToast } from '../../context/ToastContext'
-import { useInvoices, invoiceById } from '../../api/invoiceStore'
-import { estimateTotal } from '../../api/billing'
-import { printTicket, printReceipt } from '../../components/queuePrint'
+import { printTicket } from '../../components/queuePrint'
 import CallPanel from './CallPanel'
 import { EditWaitingModal, CancelVisitModal } from '../../components/WaitingVisitModals'
-import { fmt, hhmm, dmy, methodLabel, useNow, PAY_STATUS } from './shared'
+import { hhmm, dmy, useNow } from './shared'
 import { vitalsText } from '../../api/vitals'
-import { DEMO_MODE } from '../../api/client'
 
 // Số phút chờ bắt đầu thành vàng / đỏ, theo từng chặng.
 const WAIT_LIMITS = { Waiting: [30, 60], CheckedIn: [15, 30], Examining: [30, 45], labs: [30, 60], Prescribed: [10, 20] }
 
-export default function QueueView({ readOnly, onPay, onRx }) {
+export default function QueueView({ readOnly, onPay }) {
   const { visits, redFlags } = useQueue()
-  useInvoices()
   const now = useNow()
-  const { user } = useAuth()
   const { showToast } = useToast()
   const [tab, setTab] = useState(ST.WAITING)
   const [editing, setEditing] = useState(null)
@@ -37,22 +31,19 @@ export default function QueueView({ readOnly, onPay, onRx }) {
         : byStatus(tab).sort((a, b) => ([ST.FINISHED, ST.CANCELLED].includes(tab) ? b.statusAt.localeCompare(a.statusAt) : a.statusAt.localeCompare(b.statusAt)))
   // Bác sĩ chỉ mời được người đã check-in.
   async function checkIn(v) {
-    const r = await checkInVisit(v.id, user)
+    const r = await checkInVisit(v.id)
     showToast(r.ok ? translate('Checked in — doctors can now call') + ' ' + String(v.ticket).padStart(3, '0') : translate(r.error))
   }
 
   function waitOf(v) {
     if (v.status === ST.FINISHED) return { label: translate('Done') + ' ' + hhmm(v.statusAt), level: 'ok' }
     if (v.status === ST.CANCELLED) return { label: translate('Left') + ' ' + hhmm(v.statusAt), level: 'long' }
-    if (atLabs(v) && v.labReturnedAt) return { label: translate('Back from lab') + ' ' + hhmm(v.labReturnedAt), level: 'warn' }
-    // Chạy thật: server giữ giờ đi xét nghiệm (lab_out_at).
+    // Server giữ giờ đi xét nghiệm (lab_out_at).
     if (atLabs(v)) {
       const n = minutesSince(v.labOutAt ?? v.statusAt, now)
       return { label: translate('Out for lab tests') + ' ' + n + ' ' + translate('min'), level: n >= 60 ? 'long' : 'ok' }
     }
-    if (v.status === ST.EXAMINING && v.entered === false) return { label: translate('Being called') + (v.room ? ' → ' + v.room : ''), level: 'warn' }
     if (isInvited(v)) return { label: translate('Being called') + (v.calledRoom ? ' → ' + v.calledRoom : ''), level: 'warn' }
-    if (v.absent) return { label: translate('Not here'), level: 'long' }
     const n = minutesSince(v.statusAt, now)
     const [warn, long] = WAIT_LIMITS[v.status] ?? [30, 60]
     const label = v.status === ST.EXAMINING ? `In consultation ${n} min` : `Waited ${n} min`
@@ -68,16 +59,10 @@ export default function QueueView({ readOnly, onPay, onRx }) {
       rows.push({ label: 'Vital signs', value: vitalsText(v.vitals) })
     if (v.doctor) rows.push({ label: 'Doctor', value: v.doctor + (v.room ? ' · ' + v.room : '') })
     if (v.left) rows.push({ label: 'Reason', value: translate(leftReasonLabel(v.left.reason)) + (v.left.note ? ' — ' + v.left.note : '') })
-    const ps = payStatusOf(v)
-    const inv = v.invoiceId && invoiceById(v.invoiceId)
-    if (ps === 'unpaid') rows.push({ label: 'Estimated total', value: fmt(estimateTotal(v)) })
-    if (inv && inv.status !== 'cancelled')
-      rows.push({ label: 'Invoice', value: inv.id + ' · ' + fmt(inv.total) + ' · ' + translate(methodLabel(inv.method)) + ' · ' + translate(PAY_STATUS[inv.status].label) })
     return rows
   }
 
   function actionsOf(v) {
-    const inv = v.invoiceId && invoiceById(v.invoiceId)
     if (v.status === ST.WAITING)
       return (
         <>
@@ -98,12 +83,10 @@ export default function QueueView({ readOnly, onPay, onRx }) {
     if (v.status === ST.CHECKED_IN)
       return (
         <>
-          {/* Chạy thật: sau check-in vẫn đo lại sinh hiệu / sửa triệu chứng được — luật tính lại mức ưu tiên. */}
-          {!DEMO_MODE && (
-            <button className="btn btn-ghost btn-sm" disabled={readOnly} onClick={() => setEditing(v)} title={translate('Condition worsened while waiting? Update the symptoms and vital signs — the priority is re-assessed when you save.')}>
-              <Icon name="pencil" /> Re-measure vitals
-            </button>
-          )}
+          {/* Sau check-in vẫn đo lại sinh hiệu / sửa triệu chứng được — luật tính lại mức ưu tiên. */}
+          <button className="btn btn-ghost btn-sm" disabled={readOnly} onClick={() => setEditing(v)} title={translate('Condition worsened while waiting? Update the symptoms and vital signs — the priority is re-assessed when you save.')}>
+            <Icon name="pencil" /> Re-measure vitals
+          </button>
           <button className="btn btn-ghost btn-sm" onClick={() => printTicket(v)}>
             <Icon name="printer" /> Print queue ticket
           </button>
@@ -112,38 +95,17 @@ export default function QueueView({ readOnly, onPay, onRx }) {
           </button>
         </>
       )
-    // Bản demo: báo bác sĩ phụ trách khi bệnh nhân cầm kết quả quay lại. Chạy thật: bác sĩ tự bấm Khám tiếp
-    // (server chỉ cho bác sĩ của lượt báo đã về).
-    if (atLabs(v))
-      return !DEMO_MODE || v.labReturnedAt ? null : (
-        <button className="btn btn-primary btn-sm" disabled={readOnly} onClick={() => markLabReturned(v.id)}>
-          <Icon name="flask" /> Back from lab — notify doctor
-        </button>
-      )
-    const rx = v.rx.length > 0 && (
-      <button className="btn btn-ghost btn-sm" onClick={() => onRx(v)}>
-        <Icon name="eye" /> View prescription
-      </button>
-    )
+    // Bệnh nhân đi xét nghiệm về: bác sĩ của lượt tự bấm Khám tiếp (server chỉ cho bác sĩ đó báo đã về).
+    if (atLabs(v)) return null
     if (v.status === ST.PRESCRIBED)
       return (
         <>
-          {rx}
           <button className="btn btn-primary btn-sm" disabled={readOnly} onClick={() => onPay(v)}>
             <Icon name="box" /> Dispense &amp; collect
           </button>
         </>
       )
-    if (v.status === ST.FINISHED && inv)
-      return (
-        <>
-          {rx}
-          <button className="btn btn-ghost btn-sm" onClick={() => printReceipt(inv)}>
-            <Icon name="printer" /> Reprint receipt
-          </button>
-        </>
-      )
-    return rx || null
+    return null
   }
 
   const meta = (v) => [translate(v.gender), v.age !== '' ? v.age + ' ' + translate('yrs') : null, translate(v.reason)].filter(Boolean).join(' · ')

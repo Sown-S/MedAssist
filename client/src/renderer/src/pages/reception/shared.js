@@ -47,5 +47,4 @@ export function periodRange(period, date) {
   if (period === 'date') return [date || today, date || today]
   return ['0000-00-00', '9999-99-99']
 }
-export const inRange = (day, [from, to]) => day >= from && day <= to
 export const periodLabel = (period, date) => (period === 'date' ? dmy((date || ymd(new Date())) + 'T00:00:00') : PERIODS.find((p) => p.key === period)?.label ?? '')

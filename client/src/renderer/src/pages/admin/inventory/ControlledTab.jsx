@@ -2,7 +2,7 @@ import { useState } from 'react'
 import Icon from '../../../components/Icon'
 import { translate } from '../../../i18n'
 import { stockOf } from '../../../api/inventoryStore'
-import { Empty } from '../ai/ui'
+import { Empty } from '../ui'
 import { exportCsv, fmtDate, fmtDateTime } from './shared'
 
 export function monthOptions() {

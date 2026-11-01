@@ -1,37 +1,30 @@
 import Icon from '../../components/Icon'
 import { translate } from '../../i18n'
-import { useQueue, isQueued, ST } from '../../api/queueStore'
-import { useInvoices, dayOf } from '../../api/invoiceStore'
-import { estimateTotal } from '../../api/billing'
+import { useQueue, isQueued } from '../../api/queueStore'
 import { ticketNo } from '../../components/queuePrint'
 import CallPanel from './CallPanel'
-import { fmt, dmy } from './shared'
-import { DEMO_MODE } from '../../api/client'
+import { fmt, dmy, ymd } from './shared'
 import { useAwaiting, fromAwaiting, useTodayInvoices } from '../../api/billingApi'
 import { usePrescriptions } from '../../api/prescriptionApi'
 
-// Chạy thật: lượt Prescribed không có trong GET /queue → lấy từ GET /billing/awaiting.
+// Lượt Prescribed không có trong GET /queue → lấy từ GET /billing/awaiting.
 
 export default function Dashboard({ go, readOnly, onRegister, onSearch, onPay }) {
-  const { visits, redFlags, calling } = useQueue()
-  const demoInvoices = useInvoices()
-  const awaiting = useAwaiting({ enabled: !DEMO_MODE })
-  const serverInvoices = useTodayInvoices({ enabled: !DEMO_MODE })
-  const serverRx = usePrescriptions({ enabled: !DEMO_MODE })
-  const today = dayOf(new Date().toISOString())
-  // Chạy thật: GET /billing/invoices đã lọc theo hôm nay (hoá đơn đã thu tính theo giờ thu).
-  const invoices = DEMO_MODE
-    ? demoInvoices
-    : serverInvoices.map((x) => ({ status: x.payment_status.toLowerCase(), method: x.payment_method === 'BankingTransfer' ? 'transfer' : 'cash', createdAt: x.created_at, paidAt: x.paid_at, total: Number(x.total_amount) }))
-  const todayInv = invoices.filter((x) => (DEMO_MODE ? dayOf(x.createdAt) === today : true) && x.status !== 'cancelled')
-  const unpaid = DEMO_MODE ? visits.filter((v) => v.status === ST.PRESCRIBED) : awaiting.list.map(fromAwaiting)
+  const { visits, redFlags } = useQueue()
+  const awaiting = useAwaiting()
+  const serverInvoices = useTodayInvoices()
+  const serverRx = usePrescriptions({})
+  const today = ymd(new Date())
+  // GET /billing/invoices đã lọc theo hôm nay (hoá đơn đã thu tính theo giờ thu).
+  const invoices = serverInvoices.map((x) => ({ status: x.payment_status.toLowerCase(), method: x.payment_method === 'BankingTransfer' ? 'transfer' : 'cash', createdAt: x.created_at, paidAt: x.paid_at, total: Number(x.total_amount) }))
+  const todayInv = invoices.filter((x) => x.status !== 'cancelled')
+  const unpaid = awaiting.list.map(fromAwaiting)
   const processing = todayInv.filter((x) => x.status === 'pending' && x.method === 'transfer').length
   const paid = todayInv.filter((x) => x.status === 'paid').length
   // Doanh thu theo giờ thu tiền.
-  const revenue = invoices.filter((x) => x.status === 'paid' && dayOf(x.paidAt ?? x.createdAt) === today).reduce((s, x) => s + x.total, 0)
-  const rxCount = DEMO_MODE ? visits.filter((v) => v.rx.length).length : serverRx.list.length
+  const revenue = invoices.filter((x) => x.status === 'paid' && ymd(new Date(x.paidAt ?? x.createdAt)) === today).reduce((s, x) => s + x.total, 0)
+  const rxCount = serverRx.list.length
   const waiting = visits.filter(isQueued).length
-  const cur = visits.find((v) => v.id === calling)
 
   const cards = [
     {
@@ -58,7 +51,7 @@ export default function Dashboard({ go, readOnly, onRegister, onSearch, onPay })
       tone: 'green',
       title: 'Waiting queue',
       value: waiting,
-      sub: cur ? translate('Now calling') + ' ' + ticketNo(cur.ticket) + ' — ' + cur.name : translate('Waiting for consultation'),
+      sub: translate('Waiting for consultation'),
       link: 'Click to manage the queue →'
     },
     {
@@ -130,7 +123,7 @@ export default function Dashboard({ go, readOnly, onRegister, onSearch, onPay })
                   {v.carriedFrom ? ' · ' + translate('Unpaid from') + ' ' + dmy(v.carriedFrom + 'T00:00:00') : ''}
                 </small>
               </span>
-              <span className="mono amt">{fmt(DEMO_MODE ? estimateTotal(v) : v.total)}</span>
+              <span className="mono amt">{fmt(v.total)}</span>
               <button className="btn btn-primary btn-sm" disabled={readOnly} onClick={() => onPay(v)}>
                 Dispense &amp; collect
               </button>

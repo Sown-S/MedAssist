@@ -6,16 +6,11 @@ import RedFlagModal from '../components/RedFlagModal'
 import SearchModal from '../components/SearchModal'
 import StaleVisitsModal from '../components/StaleVisitsModal'
 import Icon from '../components/Icon'
-import { useAuth } from '../context/AuthContext'
 import { useQueue, useQueueSync, syncStale, acknowledgeRedFlag } from '../api/queueStore'
-import { usePermissions, can } from '../api/permissionStore'
 import { translate } from '../i18n'
 import Dashboard from './reception/Dashboard'
 import QueueView from './reception/QueueView'
-import InvoicesView from './reception/InvoicesView'
-import PrescriptionsView, { RxDetail } from './reception/PrescriptionsView'
 import BillingLiveView from './reception/BillingLiveView'
-import { DEMO_MODE } from '../api/client'
 import { hhmm } from './reception/shared'
 import useCallAnnouncer from '../components/useCallAnnouncer'
 import { useServerOnline } from '../api/connectivity'
@@ -46,9 +41,7 @@ function useOnline() {
 }
 
 export default function Reception() {
-  const { user } = useAuth()
-  usePermissions()
-  useQueueSync() // chạy thật: hỏi lại hàng đợi vài giây một lần
+  useQueueSync() // hỏi lại hàng đợi vài giây một lần
   useEffect(() => void syncStale(), [])
   const { redFlags, stale = [] } = useQueue()
   const [staleOpen, setStaleOpen] = useState(false)
@@ -68,18 +61,13 @@ export default function Reception() {
   const [searchOpen, setSearchOpen] = useState(false)
   const [redFlag, setRedFlag] = useState(null)
   const [paying, setPaying] = useState(null)
-  const [rxOf, setRxOf] = useState(null)
   const alerts = redFlags.filter((r) => !r.ack)
-  const canVoid = can(user.roleKey, 'invoice.void')
-  const pay = (v) => {
-    setRxOf(null)
-    setPaying(v)
-  }
+  const pay = setPaying
 
   // Phím tắt: F2 đăng ký mới, F3 / Ctrl+K tra cứu.
   useEffect(() => {
     const onKey = (e) => {
-      if (intake || searchOpen || redFlag || paying || rxOf || document.querySelector('.modal-overlay')) return
+      if (intake || searchOpen || redFlag || paying || document.querySelector('.modal-overlay')) return
       if (e.key === 'F2' && !readOnly) {
         e.preventDefault()
         setIntake({ patient: null })
@@ -90,7 +78,7 @@ export default function Reception() {
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [intake, searchOpen, redFlag, paying, rxOf, readOnly])
+  }, [intake, searchOpen, redFlag, paying, readOnly])
 
   return (
     <div className="page">
@@ -184,20 +172,10 @@ export default function Reception() {
       {view === 'home' && (
         <Dashboard go={go} readOnly={readOnly} onRegister={() => setIntake({ patient: null })} onSearch={() => setSearchOpen(true)} onPay={pay} />
       )}
-      {view === 'queue' && <QueueView readOnly={readOnly} onPay={pay} onRx={setRxOf} />}
-      {/* Chạy thật: server chỉ liệt kê hoá đơn theo ngày, không theo kỳ → dùng BillingLiveView. */}
-      {view === 'invoices' &&
-        (DEMO_MODE ? (
-          <InvoicesView key={params.get('status') ?? ''} initialStatus={params.get('status') ?? ''} readOnly={readOnly} canVoid={canVoid} onPay={pay} />
-        ) : (
-          <BillingLiveView mode="invoices" readOnly={readOnly} onPay={(v) => pay({ ...v, tab: 'pay' })} />
-        ))}
-      {view === 'prescriptions' &&
-        (DEMO_MODE ? (
-          <PrescriptionsView readOnly={readOnly} onPay={pay} onRx={setRxOf} />
-        ) : (
-          <BillingLiveView mode="prescriptions" readOnly={readOnly} onPay={pay} />
-        ))}
+      {view === 'queue' && <QueueView readOnly={readOnly} onPay={pay} />}
+      {/* Server liệt kê hoá đơn theo ngày. */}
+      {view === 'invoices' && <BillingLiveView mode="invoices" readOnly={readOnly} onPay={(v) => pay({ ...v, tab: 'pay' })} />}
+      {view === 'prescriptions' && <BillingLiveView mode="prescriptions" readOnly={readOnly} onPay={pay} />}
 
       <IntakeModal open={!!intake} patient={intake?.patient ?? null} onClose={() => setIntake(null)} onRedFlag={setRedFlag} />
       <SearchModal
@@ -209,7 +187,6 @@ export default function Reception() {
           setIntake({ patient: p })
         }}
       />
-      {rxOf && <RxDetail visit={rxOf} readOnly={readOnly} onClose={() => setRxOf(null)} onPay={pay} />}
       {paying && (
         <PaymentModal key={paying.id} open initialTab={paying.tab ?? 'dispense'} onClose={() => setPaying(null)} patient={paying} />
       )}

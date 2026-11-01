@@ -2,7 +2,7 @@ import { Fragment, useMemo, useState } from 'react'
 import Icon from '../../../components/Icon'
 import { translate } from '../../../i18n'
 import { stockOf, todayISO } from '../../../api/inventoryStore'
-import { Empty } from '../ai/ui'
+import { Empty } from '../ui'
 import DrugFormModal from './DrugFormModal'
 import ReceiveModal from './ReceiveModal'
 import StockCardModal from './StockCardModal'
@@ -301,7 +301,7 @@ export function StockTab({ inv, user }) {
       </p>
 
       <DrugFormModal drug={edit} drugs={inv.drugs} user={user} onClose={() => setEdit(null)} />
-      <ReceiveModal drug={receive} drugs={inv.drugs} user={user} onClose={() => setReceive(null)} />
+      <ReceiveModal drug={receive} drugs={inv.drugs} onClose={() => setReceive(null)} />
       <StockCardModal drug={card} moves={inv.moves} onClose={() => setCard(null)} />
     </>
   )

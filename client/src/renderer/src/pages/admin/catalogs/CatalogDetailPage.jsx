@@ -1,26 +1,23 @@
-import { useRef, useState } from 'react'
+import { useState } from 'react'
 import Icon from '../../../components/Icon'
 import { translate } from '../../../i18n'
 import { useAuth } from '../../../context/AuthContext'
 import { useToast } from '../../../context/ToastContext'
-import { useCatalogs, setRowActive } from '../../../api/catalogStore'
 import { useInventory } from '../../../api/inventoryStore'
-import { ConfirmDialog, Empty } from '../ai/ui'
+import { ConfirmDialog, Empty } from '../ui'
 import { Pager, paginate, fmtDate, fmtDateTime } from '../inventory/shared'
 import { SCHEMAS, optLabel } from './schemas'
-import { isLiveCatalog, useLiveCatalog, setLiveActive } from '../../../api/serviceCatalogLive'
+import { useLiveCatalog, setLiveActive } from '../../../api/serviceCatalogLive'
 import { RowForm } from './RowForm'
-import { exportCatalog, readCatalogFile, ImportModal } from './catalogCsv'
+import { exportCatalog } from './catalogCsv'
 
 export default function CatalogDetailPage({ catalogKey, params, onNavigate }) {
   const s = SCHEMAS[catalogKey]
-  // Chạy thật: Dịch vụ, Xét nghiệm, Gói khám đọc / ghi qua server; các danh mục khác vẫn ở máy này.
-  const live = isLiveCatalog(catalogKey)
-  const lc = useLiveCatalog(live)
-  const local = useCatalogs()
-  const cats = live ? { ...local, services: lc.services, labs: lc.labs, packages: lc.packages } : local
+  // Dịch vụ, Xét nghiệm, Gói khám đọc / ghi qua server.
+  const lc = useLiveCatalog(true)
+  const cats = { services: lc.services, labs: lc.labs, packages: lc.packages }
   // Server không lưu ngày hiệu lực của giá → bỏ cột “Giá áp dụng từ”.
-  const columns = live ? s.columns.filter((c) => c.key !== 'priceHistory') : s.columns
+  const columns = s.columns.filter((c) => c.key !== 'priceHistory')
   const inv = useInventory()
   const { user } = useAuth()
   const { showToast } = useToast()
@@ -31,8 +28,6 @@ export default function CatalogDetailPage({ catalogKey, params, onNavigate }) {
   const [page, setPage] = useState(1)
   const [edit, setEdit] = useState(params?.openId ? all.find((r) => r.id === params.openId) ?? null : null)
   const [toggle, setToggle] = useState(null)
-  const [imp, setImp] = useState(null)
-  const fileRef = useRef(null)
 
   const term = q.trim().toLowerCase()
   const list = all
@@ -44,7 +39,6 @@ export default function CatalogDetailPage({ catalogKey, params, onNavigate }) {
   const lastUpdate = all.reduce((m, r) => (r.updatedAt > m ? r.updatedAt : m), '')
   const reset = (fn) => (v) => (fn(v), setPage(1))
 
-  const onFile = (e) => readCatalogFile(e, catalogKey, all, setImp)
 
   return (
     <div>
@@ -64,31 +58,6 @@ export default function CatalogDetailPage({ catalogKey, params, onNavigate }) {
         </div>
       </div>
 
-      {catalogKey === 'address' && (
-        <div className="warn-banner show caution" style={{ marginTop: 0, marginBottom: 12 }}>
-          <div className="icon">
-            <Icon name="alert" />
-          </div>
-          <div className="txt">
-            <b>Administrative units after the 2025 reorganisation</b>
-            From 01/07/2025 there are 34 province-level units and no district level. Check this list against the official resolution and import the official ward / commune list
-            before using it on patient records; old addresses on existing records are kept as entered.
-          </div>
-        </div>
-      )}
-      {catalogKey === 'icd' && (
-        <div className="warn-banner show caution" style={{ marginTop: 0, marginBottom: 12 }}>
-          <div className="icon">
-            <Icon name="help" />
-          </div>
-          <div className="txt">
-            <b>
-              <span className="mono">{all.length}</span> <span>codes — sample list of common outpatient codes</span>
-            </b>
-            Import the full ICD-10 file published by the Ministry of Health (columns code, name, nameEn, chapter). Codes not in the standard list can be added by hand and are marked “Custom”.
-          </div>
-        </div>
-      )}
 
       <div className="card">
         <div className="ai-toolbar">
@@ -118,12 +87,6 @@ export default function CatalogDetailPage({ catalogKey, params, onNavigate }) {
                 </button>
               ))}
             </div>
-            {!live && (
-              <button className="btn btn-ghost btn-sm" onClick={() => fileRef.current?.click()}>
-                <Icon name="paperclip" /> <span>Import from Excel (CSV)</span>
-              </button>
-            )}
-            <input ref={fileRef} type="file" accept=".csv,text/csv" hidden onChange={onFile} />
             <button className="btn btn-ghost btn-sm" onClick={() => exportCatalog(catalogKey, list)}>
               <Icon name="download" /> <span>Export</span>
             </button>
@@ -133,8 +96,8 @@ export default function CatalogDetailPage({ catalogKey, params, onNavigate }) {
           </div>
         </div>
 
-        {live && lc.error && <div className="warn-banner show danger">{lc.error}</div>}
-        {live && !lc.loaded ? (
+        {lc.error && <div className="warn-banner show danger">{lc.error}</div>}
+        {!lc.loaded ? (
           <p className="ai-soft">{translate('Loading the catalog…')}</p>
         ) : pg.total === 0 ? (
           <Empty title="No records match" text="Try another keyword or filter, or import the list from a file." />
@@ -193,7 +156,7 @@ export default function CatalogDetailPage({ catalogKey, params, onNavigate }) {
         </p>
       </div>
 
-      {edit && <RowForm catalogKey={catalogKey} live={live} row={edit} all={all} cats={cats} inv={inv} user={user} onClose={() => setEdit(null)} />}
+      {edit && <RowForm catalogKey={catalogKey} row={edit} all={all} cats={cats} inv={inv} user={user} onClose={() => setEdit(null)} />}
       <ConfirmDialog
         open={!!toggle}
         title={toggle ? translate(toggle.active ? 'Discontinue' : 'Re-activate') + ' · ' + toggle.code + ' ' + toggle.name : ''}
@@ -201,17 +164,14 @@ export default function CatalogDetailPage({ catalogKey, params, onNavigate }) {
         confirmLabel={toggle?.active ? 'Discontinue' : 'Re-activate'}
         danger={toggle?.active}
         requireNote={toggle?.active}
-        onConfirm={async (note) => {
-          if (live) {
-            const r = await setLiveActive(catalogKey, toggle.id, !toggle.active)
-            if (!r.ok) return showToast(translate(r.error))
-          } else setRowActive(catalogKey, toggle.id, !toggle.active, user, s.title, note)
+        onConfirm={async () => {
+          const r = await setLiveActive(catalogKey, toggle.id, !toggle.active)
+          if (!r.ok) return showToast(translate(r.error))
           showToast(toggle.active ? 'Record discontinued' : 'Record re-activated')
           setToggle(null)
         }}
         onCancel={() => setToggle(null)}
       />
-      <ImportModal catalogKey={catalogKey} imp={imp} user={user} onClose={() => setImp(null)} />
     </div>
   )
 }

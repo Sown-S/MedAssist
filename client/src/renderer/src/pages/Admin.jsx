@@ -3,9 +3,7 @@ import { useAuth } from '../context/AuthContext'
 import Modal, { ModalHeader } from '../components/Modal'
 import AdminSidebar from '../components/AdminSidebar'
 import DashboardPage from './admin/DashboardPage'
-import PatientsPage from './admin/PatientsPage'
-import InvoicesPage from './admin/InvoicesPage'
-import AIConfigPage from './admin/AIConfigPage'
+import KnowledgeLive from './admin/knowledge/KnowledgeLive'
 import InventoryPage from './admin/InventoryPage'
 import CatalogPage from './admin/CatalogPage'
 import DrugCatalogPage from './admin/DrugCatalogPage'
@@ -18,9 +16,7 @@ import RoomsPage from './admin/RoomsPage'
 
 const PAGES = {
   dash: DashboardPage,
-  patients: PatientsPage,
-  invoices: InvoicesPage,
-  ai: AIConfigPage,
+  ai: KnowledgeLive,
   inventory: InventoryPage,
   catalog: CatalogPage,
   drugs: DrugCatalogPage,
@@ -55,7 +51,7 @@ export default function Admin() {
   if (reviewer)
     return (
       <div className="page">
-        <AIConfigPage reviewOnly />
+        <KnowledgeLive reviewOnly />
       </div>
     )
 

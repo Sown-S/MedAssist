@@ -1,8 +1,6 @@
-// Đăng nhập / đăng xuất / đổi mật khẩu cho cả hai chế độ. Chạy thật: POST /auth/login lấy token, GET /auth/me lấy
-// họ tên và vai trò; khoá khi sai mật khẩu (429) và thu hồi token khi đổi mật khẩu do server làm.
-import { apiGet, apiPost, ApiError, DEMO_MODE } from './client'
+// Đăng nhập / đăng xuất / đổi mật khẩu: POST /auth/login lấy token, GET /auth/me lấy họ tên và vai trò; khoá khi sai mật khẩu (429) và thu hồi token khi đổi mật khẩu do server làm.
+import { apiGet, apiPost, ApiError } from './client'
 import { tokenStore } from './serverConfig'
-import { verifyLogin, changeOwnPassword } from './accountStore'
 
 const ROLE_OF = { Physician: 'doctor', Nurse: 'reception', Admin: 'admin' }
 
@@ -18,9 +16,8 @@ function errorText(e) {
   return e.details?.[0]?.message ?? e.message
 }
 
-// Trả về cùng dạng với verifyLogin của bản demo.
+// Trả { ok, account } hoặc { ok: false, error }.
 export async function login(username, password, roleKey) {
-  if (DEMO_MODE) return verifyLogin(username, password, roleKey)
   await tokenStore.clear()
   try {
     const t = await apiPost('/api/v1/auth/login', { username: username.trim(), password })
@@ -49,7 +46,6 @@ export async function login(username, password, roleKey) {
 }
 
 export async function logout() {
-  if (DEMO_MODE) return
   try {
     await apiPost('/api/v1/auth/logout')
   } catch {/* token hết hạn hoặc mất mạng: vẫn xoá token trên máy */}
@@ -58,7 +54,6 @@ export async function logout() {
 
 // Đổi thành công thì phiên hiện tại hết hiệu lực — nơi gọi phải đưa người dùng về màn đăng nhập.
 export async function changePassword(user, oldPassword, newPassword) {
-  if (DEMO_MODE) return changeOwnPassword(user.id, newPassword, oldPassword)
   try {
     await apiPost('/api/v1/auth/change-password', { old_password: oldPassword, new_password: newPassword })
   } catch (e) {

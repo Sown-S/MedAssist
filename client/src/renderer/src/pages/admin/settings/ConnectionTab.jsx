@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import Icon from '../../../components/Icon'
 import Button from '../../../components/Button'
-import { checkHealth, DEMO_MODE } from '../../../api/client'
+import { checkHealth } from '../../../api/client'
 import ServerAddress from '../../../components/ServerAddress'
 import { fmtDateTime } from '../inventory/shared'
 import { version } from '../../../../../../package.json'
@@ -25,9 +25,6 @@ export function ConnectionTab({ onNavigate }) {
         <div className="set-backup-head">
           <div>
             <div className="card-title">Server connection</div>
-            <div className="ai-small ai-soft">
-              {DEMO_MODE && <span className="badge warn set-inline">Demo mode — sample data, no server</span>}
-            </div>
           </div>
           <Button className="btn btn-primary btn-sm" loading={busy} onClick={test}>
             <Icon name="wifi" /> <span>{busy ? 'Checking…' : 'Test connection'}</span>
@@ -49,12 +46,6 @@ export function ConnectionTab({ onNavigate }) {
             ))}
             <div className="ai-small ai-soft" style={{ marginTop: 8 }}>
               <span>Checked at</span> <span className="mono">{fmtDateTime(health.checkedAt)}</span>
-              {health.sample && (
-                <>
-                  {' · '}
-                  <span>Sample data</span>
-                </>
-              )}
             </div>
           </>
         )}
@@ -80,7 +71,7 @@ export function ConnectionTab({ onNavigate }) {
             <Icon name="bulb" /> <span>Open AI configuration</span>
           </button>
         </div>
-        <p className="ai-soft ai-small">Rules, thresholds and drug interactions are managed on the AI configuration page.</p>
+        <p className="ai-soft ai-small">Rules and thresholds are managed on the AI configuration page.</p>
       </div>
 
       <div className="card" style={{ marginTop: 14 }}>

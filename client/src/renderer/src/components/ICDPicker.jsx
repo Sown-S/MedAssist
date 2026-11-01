@@ -1,23 +1,20 @@
 import { useState } from 'react'
 import { translate } from '../i18n'
-import { ICD10 } from '../pages/admin/ai/catalog'
-import { fold } from '../api/patientStore'
-import { DEMO_MODE } from '../api/client'
+import { fold } from '../api/patient'
 import { useConditions } from '../api/conditionCatalog'
 
-export default function ICDPicker({ value, onChange }) {
+// onPick (tuỳ chọn): gọi khi chọn một mục trong danh sách; không có thì chọn cũng đi qua onChange.
+export default function ICDPicker({ value, onChange, onPick = onChange }) {
   const [openList, setOpenList] = useState(false)
-  // Chạy với server: bệnh Active của bản tri thức (tên tiếng Việt, ICD-10); giả lập dùng danh sách mẫu.
-  const live = useConditions(!DEMO_MODE)
-  const source = DEMO_MODE ? ICD10 : live
+  // Bệnh Active của bản tri thức (tên tiếng Việt, ICD-10).
+  const source = useConditions(true)
   // Ô đang chứa đúng mục đã chọn thì hiện cả danh sách.
   const q = fold(value)
   const exact = source.some((o) => value.startsWith(o.code + ' — '))
   const options = (exact || !q ? source : source.filter((o) => fold(o.code + ' ' + o.label + ' ' + translate(o.label)).includes(q))).slice(0, 10)
 
   function pick(opt) {
-    // Giá trị ô nhập là dữ liệu (không tự dịch khi hiển thị) nên dịch ngay lúc chọn.
-    onChange(`${opt.code} — ${DEMO_MODE ? translate(opt.label) : opt.label}`)
+    onPick(`${opt.code} — ${opt.label}`)
     setOpenList(false)
   }
 

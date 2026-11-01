@@ -1,12 +1,14 @@
 import { useEffect, useRef, useState } from 'react'
 import Icon from './Icon'
 import { translate } from '../i18n'
-import { STATES, SOURCES, useSymptomCatalog, groupSymptoms, symptomName, requestExtraction, EXTRACTION_TIMEOUT_MS } from '../api/symptoms'
+import { STATES, SOURCES, useSymptomCatalog, groupSymptoms, symptomName } from '../api/symptoms'
+
+const EXTRACTION_TIMEOUT_MS = 30000
 
 // Nhập triệu chứng có cấu trúc + trích xuất từ lời kể có người xác nhận (HITL — FR12, FR14).
 // value chỉ chứa mục lễ tân đã chọn / xác nhận. ask: triệu chứng luật cờ đỏ đang thiếu → hiện “Hỏi ngay”.
 // Đề xuất của mô hình chỉ là chip chờ xác nhận; chưa xác nhận thì không được dùng.
-export default function SymptomPanel({ value, onChange, text, onText, ask = [], disabled = false, textLocked = false, onExtract = requestExtraction, onVitals }) {
+export default function SymptomPanel({ value, onChange, text, onText, ask = [], disabled = false, textLocked = false, onExtract, onVitals }) {
   const [job, setJob] = useState({ status: 'idle' })
   const [proposals, setProposals] = useState([])
   const ctrl = useRef(null)

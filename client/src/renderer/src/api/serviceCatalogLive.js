@@ -1,12 +1,8 @@
-// Danh mục Dịch vụ, Xét nghiệm, Gói khám khi chạy với server (ERD v2.1), đổi về hình dạng dòng của catalogStore
-// để CatalogDetailPage dùng chung bảng và form với bản demo. Mã và loại dịch vụ không đổi được sau khi tạo.
+// Danh mục Dịch vụ, Xét nghiệm, Gói khám (ERD v2.1), đổi về hình dạng dòng mà CatalogDetailPage / RowForm dùng.
+// Mã và loại dịch vụ không đổi được sau khi tạo.
 import { useEffect, useSyncExternalStore } from 'react'
-import { DEMO_MODE } from './client'
 import { fetchServices, fetchPackages, createService, updateService, createPackage, updatePackage, fetchPriceHistory } from './serviceApi'
 import { apiMessage } from './serviceStore'
-
-export const LIVE_CATALOGS = ['services', 'labs', 'packages']
-export const isLiveCatalog = (key) => !DEMO_MODE && LIVE_CATALOGS.includes(key)
 
 const num = (x) => (x == null ? null : Number(x))
 const fromService = (s) => ({

@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { DOC_A, DOC_B, DESK } from './helpers'
 import { VI } from '../src/renderer/src/i18n/vi.js'
 
-// Quầy và phòng khám khi nối server (VITE_USE_MOCK=false), với “server” là vài mảng trong bộ nhớ làm đúng luật backend.
+// Quầy và phòng khám khi nối server , với “server” là vài mảng trong bộ nhớ làm đúng luật backend.
 // Kiểm tra: gọi đúng API, chặn sớm khi thiếu dữ liệu, gửi lý do tiếng Việt và báo đúng câu lỗi của server.
 let server
 let stale
@@ -23,7 +23,6 @@ const reject = (message) => Promise.reject(Object.assign(new Error(message), { s
 
 beforeEach(async () => {
   localStorage.clear()
-  vi.stubEnv('VITE_USE_MOCK', 'false')
   server = [
     { id: 'w1', ticket: 1, name: 'Bệnh nhân chờ', status: 'Waiting', doctor: '', doctorId: null, room: '' },
     { id: 'e1', ticket: 2, name: 'Bệnh nhân đang khám', status: 'Examining', doctor: DOC_A.name, doctorId: DOC_A.id, room: DOC_A.room },
@@ -52,7 +51,6 @@ beforeEach(async () => {
   await load()
 })
 afterEach(() => {
-  vi.unstubAllEnvs()
   vi.doUnmock('../src/renderer/src/api/clinicApi.js')
   vi.doUnmock('../src/renderer/src/api/examApi.js')
 })
@@ -93,18 +91,18 @@ describe('Huỷ lượt đang chờ (server thật)', () => {
 
 describe('Trả bệnh nhân về hàng chờ (server thật)', () => {
   it('chỉ bác sĩ đang khám người đó mới trả được — bác sĩ khác bị chặn, không gửi request', async () => {
-    expect(queue.releaseVisit('e1', {}, DOC_B).ok).toBe(false)
+    expect(queue.releaseVisit('e1', DOC_B).ok).toBe(false)
     expect(api.releaseVisit).not.toHaveBeenCalled()
   })
 
   it('bác sĩ của lượt → PATCH release, lượt về CheckedIn và bỏ tên bác sĩ', async () => {
-    expect(await queue.releaseVisit('e1', {}, DOC_A)).toEqual({ ok: true })
+    expect(await queue.releaseVisit('e1', DOC_A)).toEqual({ ok: true })
     expect(visit('e1')).toMatchObject({ status: 'CheckedIn', doctorId: null })
   })
 
   it('server từ chối (đã có chẩn đoán) → báo đúng câu của server', async () => {
     server[1].hasDiagnosis = true
-    expect(await queue.releaseVisit('e1', {}, DOC_A)).toEqual({ ok: false, error: 'Đã có chẩn đoán, không trả về hàng chờ được' })
+    expect(await queue.releaseVisit('e1', DOC_A)).toEqual({ ok: false, error: 'Đã có chẩn đoán, không trả về hàng chờ được' })
   })
 })
 

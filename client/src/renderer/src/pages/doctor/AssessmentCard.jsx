@@ -1,28 +1,19 @@
 import { useEffect, useState } from 'react'
 import Icon from '../../components/Icon'
 import { translate } from '../../i18n'
-import { useAIConfig } from '../../api/aiConfigStore'
-import { mockAssessment } from '../../api/assessmentMock'
-import { DEMO_MODE } from '../../api/client'
 import { getAssessment, missingName } from '../../api/clinicApi'
 
 // Chưa có kết quả (đang tải, hoặc lượt chưa được đánh giá — 404).
 const EMPTY = { assessment_id: null, ai_status: 'Pending', mode: null, knowledge_release: null, model_version: null, prompt_version: null, priority: null, alerts: [], complete_now: [], candidates: [] }
 
-// Kết quả AI của lượt khám, hỏi lại mỗi 2 giây tới khi có kết quả cuối. Demo: assessmentMock;
-// chạy thật: GET /visits/{id}/assessment (404 = chưa được đánh giá).
+// Kết quả AI của lượt khám (GET /visits/{id}/assessment, 404 = chưa được đánh giá), hỏi lại mỗi 2 giây tới khi có kết quả cuối.
 export function useAssessment(visit) {
-  const ai = useAIConfig()
-  const [now, setNow] = useState(Date.now())
-  const [server, setServer] = useState(EMPTY)
-  const a = DEMO_MODE ? mockAssessment(visit, ai, now) : server
+  const [a, setA] = useState(EMPTY)
   const done = ['Ready', 'Degraded', 'Failed', 'Skipped', 'None'].includes(a.ai_status)
   useEffect(() => {
     if (done) return
-    const tick = DEMO_MODE
-      ? () => setNow(Date.now())
-      : () => getAssessment(visit.id).then((r) => setServer(r ?? { ...EMPTY, ai_status: 'None' }), () => {})
-    if (!DEMO_MODE) tick()
+    const tick = () => getAssessment(visit.id).then((r) => setA(r ?? { ...EMPTY, ai_status: 'None' }), () => {})
+    tick()
     const t = setInterval(tick, 2000)
     return () => clearInterval(t)
   }, [done, visit.id])

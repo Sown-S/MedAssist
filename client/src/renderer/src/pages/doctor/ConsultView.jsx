@@ -8,19 +8,14 @@ import Button from '../../components/Button'
 import { useAsyncAction } from '../../hooks/useAsyncAction'
 import { useToast } from '../../context/ToastContext'
 import { useAuth } from '../../context/AuthContext'
-import { logEvent } from '../../api/activityStore'
 import { translate } from '../../i18n'
-import { useQueue, waitingOrder, readyOrder, ST, inRoom, atLabs, minutesSince, finalizeVisit, labOrderSummary, labRows, isMine, recallPatient, confirmEntered, markNotPresent, syncQueue } from '../../api/queueStore'
-import { useRxHistory, RX } from '../../api/rxHistory'
-import { useVisitArchive } from '../../api/visitArchive'
-import { useRxReviews, openReviewsFor, resolveReview, verdictOf } from '../../api/rxReviewStore'
+import { useQueue, waitingOrder, readyOrder, ST, inRoom, atLabs, minutesSince, labOrderSummary, labRows, isMine, syncQueue } from '../../api/queueStore'
 import { useInventory, findDrugByName } from '../../api/inventoryStore'
 import { controlledKind, CONTROLLED_LABEL } from '../../api/rxSafety'
 import { unitLabel } from '../admin/inventory/shared'
 import { useNow, dmy, hhmm } from '../reception/shared'
 import LabOrderModal, { printLabOrder } from './LabOrderModal'
 import AssessmentCard, { useAssessment } from './AssessmentCard'
-import { DEMO_MODE } from '../../api/client'
 import { putServiceResults } from '../../api/serviceApi'
 import { useServiceOrders, toLabOrder, apiMessage } from '../../api/serviceStore'
 import CancelOrderItemModal from '../../components/CancelOrderItemModal'
@@ -32,15 +27,14 @@ import { printPrescription } from './printRx'
 import { saveDraft, deleteDraft } from '../../api/draftStore'
 import DocumentModal from './DocumentModal'
 import VitalsFields from '../../components/VitalsFields'
-import { vitalsFromForm, vitalsText, checkVitals } from '../../api/vitals'
+import { vitalsText, checkVitals } from '../../api/vitals'
 import { useTakePatient, pastVisitsOf, ReleaseModal, LeaveVisitModal, InviteBar } from './doctorShared'
-import { VisitCard } from './consult/VisitCard'
 import { ClinicalInfoEditor } from './consult/ClinicalInfoEditor'
 import { SecondaryDx } from './consult/SecondaryDx'
 import { ConfirmedSymptoms } from './consult/ConfirmedSymptoms'
 import { ReminderPanel } from './consult/ReminderPanel'
 import { ServerVisit } from './consult/ServerVisit'
-import { SLOTS, MEALS, blankDose, num, perDay, unitVi, usageOf, stockIssue, serverStockIssue, nextLineId, lineOf, serverItem, draftOf } from './consult/rxDraft'
+import { RX, SLOTS, MEALS, blankDose, num, perDay, unitVi, usageOf, serverStockIssue, nextLineId, lineOf, serverItem, draftOf } from './consult/rxDraft'
 
 // Đơn mẫu: một lần bấm thêm cả nhóm thuốc.
 const TEMPLATES = [
@@ -78,7 +72,7 @@ function readOpen() {
 }
 const GROUP_ICON = { mine: 'stethoscope', labs: 'flask', waiting: 'users', done: 'check', other: 'user' }
 
-export default function ConsultView({ visitId, onSelect, onRx }) {
+export default function ConsultView({ visitId, onSelect }) {
   const { user } = useAuth()
   const { visits } = useQueue()
   const now = useNow()
@@ -87,7 +81,6 @@ export default function ConsultView({ visitId, onSelect, onRx }) {
   const { take, next, dialog } = useTakePatient(onSelect)
   const mine = visits.filter((v) => inRoom(v) && isMine(v, user))
   const current = visits.find((v) => v.id === visitId && inRoom(v) && isMine(v, user)) ?? mine[0] ?? null
-  const ready = readyOrder(visits).length
 
   function toggle(key) {
     const nextOpen = { ...openGroups, [key]: !openGroups[key] }
@@ -125,7 +118,6 @@ export default function ConsultView({ visitId, onSelect, onRx }) {
 
   function onItem(g, v) {
     if (g.key === 'mine') return onSelect(v.id)
-    if (g.key === 'done' && v.rx.length) return onRx?.(v)
   }
 
   const rail = openGroups._rail
@@ -158,7 +150,6 @@ export default function ConsultView({ visitId, onSelect, onRx }) {
           </div>
           <InviteBar compact onStart={take} />
           {mine.length > 0 && <p className="dq-note">Finish or send the current patient for lab tests before calling the next one.</p>}
-          {DEMO_MODE && !mine.length && !ready && waitingOrder(visits).length > 0 && <p className="dq-note">Nobody is checked in yet — reception checks patients in when they are at the desk.</p>}
           {groups.map((g) => {
             const on = openGroups[g.key]
             return (
@@ -279,15 +270,10 @@ export default function ConsultView({ visitId, onSelect, onRx }) {
 function ConsultForm({ visit, user, onDone, onNext }) {
   const { showToast } = useToast()
   const inv = useInventory()
-  const srv = useServerDrugs({ enabled: !DEMO_MODE })
-  const issueOf = (it) => (DEMO_MODE ? stockIssue(it, inv) : serverStockIssue(it, srv.drugs))
-  const allHistory = useRxHistory()
+  const srv = useServerDrugs({ enabled: true })
+  const issueOf = (it) => serverStockIssue(it, srv.drugs)
   const { visits } = useQueue()
-  const archive = useVisitArchive()
-  const past = pastVisitsOf(visit.patientId, { visits, archive, history: allHistory, exclude: visit.id })
-  const reviews = useRxReviews()
-  // Đánh giá lại đơn chỉ có ở bản demo (không có API).
-  const openReviews = DEMO_MODE ? openReviewsFor(visit.patientId, reviews) : []
+  const past = pastVisitsOf(visit.patientId, { visits, exclude: visit.id })
   const [d, setD] = useState(() => draftOf(visit))
   const [tab, setTab] = useState('clin')
   const [aiDecision, setAiDecision] = useState({})
@@ -299,13 +285,11 @@ function ConsultForm({ visit, user, onDone, onNext }) {
   const [tried, setTried] = useState(false)
   const [short, setShort] = useState(null)
   const [cancelRow, setCancelRow] = useState(null)
-  // Phiếu chỉ định: demo lưu trong lượt khám; chạy thật đọc GET /visits/{id}/service-orders.
-  const so = useServiceOrders(DEMO_MODE ? null : visit.id)
-  const labOrders = DEMO_MODE ? visit.labOrders ?? [] : so.orders
+  // Phiếu chỉ định đọc từ GET /visits/{id}/service-orders.
+  const so = useServiceOrders(visit.id)
+  const labOrders = so.orders
   const resultOf = (r) => d.labResults[r.key] ?? r.result
   const conclusionOf = (o) => (d.labConclusions ?? {})[o.id] ?? o.conclusion
-  const logged = useRef(false)
-  const shown = useRef('')
 
   const set = (patch) => setD((x) => ({ ...x, ...patch }))
   const setVital = (k, v) => setD((x) => ({ ...x, vitals: { ...x.vitals, [k]: v } }))
@@ -317,44 +301,15 @@ function ConsultForm({ visit, user, onDone, onNext }) {
     const auto = daily > 0 ? { usage: usageOf(dose, line.unit), ...(num(dose.days) > 0 ? { qty: String(Math.ceil(daily * num(dose.days))) } : {}) } : {}
     setLine(line.id, { dose, ...auto })
   }
-  const firstD = useRef(d)
   useEffect(() => {
     saveDraft(visit.id, d)
-    // Bác sĩ bắt đầu ghi phiếu = bệnh nhân đã vào phòng → hết trạng thái “đang mời” ở quầy.
-    if (d !== firstD.current && visit.entered === false) confirmEntered(visit.id)
-  }, [visit.id, d, visit.entered])
-
-  const target = { kind: 'patient', id: visit.patientId, label: visit.name }
-  useEffect(() => {
-    if (logged.current) return
-    logged.current = true
-    logEvent(user, 'patient.view', { target, params: { patient: visit.name, mode: 'consultation' } })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [visit.id, d])
 
   const ai = useAssessment(visit)
-  // Ghi nhật ký “đã hiện gợi ý” mỗi khi danh sách ứng viên thay đổi.
-  const dxKey = ai.candidates.map((x) => x.condition_code).join(', ')
-  useEffect(() => {
-    if (!dxKey || dxKey === shown.current) return
-    shown.current = dxKey
-    logEvent(user, 'ai.suggestion_shown', { target, params: { patient: visit.name, suggestions: dxKey } })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dxKey])
-  function decideAi(c, decision, reason) {
-    logEvent(user, decision === 'accepted' ? 'ai.suggestion_accepted' : 'ai.suggestion_dismissed', { target, params: { patient: visit.name, code: c.condition_code, reason } })
+  function decideAi(c, decision) {
     setAiDecision((x) => ({ ...x, [c.condition_code]: decision }))
     if (decision === 'accepted') set({ diagnosis: [c.icd10_code, c.name_vi].filter(Boolean).join(' — ') })
   }
-  // So với gợi ý đứng đầu (physician_decision, matches_top_suggestion) — tính lúc chốt đơn.
-  const aiOutcome = () => {
-    const top = ai.candidates[0]
-    if (!top) return { assessmentId: ai.assessment_id, decision: 'NoSuggestion', matchesTop: null }
-    const dx = d.diagnosis.trim()
-    const same = top.icd10_code ? dx.startsWith(top.icd10_code) : dx.includes(top.name_vi)
-    return { assessmentId: ai.assessment_id, decision: same ? 'AcceptedTop' : 'ChoseOther', matchesTop: same, status: ai.ai_status }
-  }
-
   function addDrug(drug) {
     if (d.rx.some((x) => x.name === drug.name)) return showToast(translate('This drug is already on the prescription.'))
     set({ rx: [...d.rx, lineOf(drug)] })
@@ -396,7 +351,7 @@ function ConsultForm({ visit, user, onDone, onNext }) {
 
   // Ghi kết quả từng dòng và kết luận từng phiếu đã sửa. Trả false nếu lỗi.
   async function saveLabResults({ toast = false } = {}) {
-    if (DEMO_MODE || !labOrders.length) return true
+    if (!labOrders.length) return true
     const items = labOrders
       .flatMap(labRows)
       .filter((r) => !r.cancelled && r.key in d.labResults && (d.labResults[r.key] ?? '').trim() !== r.result)
@@ -460,40 +415,13 @@ function ConsultForm({ visit, user, onDone, onNext }) {
 
   function finalize(andNext = false) {
     // Mất kết nối máy chủ → không chốt, phiếu nháp vẫn giữ ở máy này.
-    if (!DEMO_MODE && !isServerOnline()) return showToast(translate('No connection to the clinic server — the visit cannot be finalized now. Your notes are kept on this computer.'))
+    if (!isServerOnline()) return showToast(translate('No connection to the clinic server — the visit cannot be finalized now. Your notes are kept on this computer.'))
     setTried(true)
     if (problem) {
       if (problem.startsWith('Enter the child') || problem.startsWith('Check the vital')) setTab('vitals')
       return showToast(translate(problem))
     }
-    if (!DEMO_MODE) return finalizeOnServer(andNext)
-    const rx = d.rx.map((l) => ({ name: l.name, qty: parseInt(l.qty), unit: l.unit, usage: l.usage.trim(), essential: l.essential, ...(perDay(l.dose) > 0 ? { dose: l.dose } : {}) }))
-    const r = finalizeVisit(
-      visit.id,
-      {
-        rx,
-        diagnosis: d.diagnosis.trim(),
-        diagnosesExtra: d.diagnosesExtra,
-        hpi: d.hpi.trim(),
-        exam: d.exam,
-        plan: d.plan,
-        followUp: d.followUp,
-        vitals: vitalsFromForm(d.vitals),
-        labResult: d.labResult.trim(),
-        labResults: d.labResults,
-        aiDecision: aiOutcome()
-      },
-      user
-    )
-    if (!r.ok) {
-      if (r.code === 'INSUFFICIENT_STOCK') setShort(r.short)
-      return showToast(translate(r.error))
-    }
-    setShort(null)
-    deleteDraft(visit.id)
-    showToast(rx.length ? 'Prescription confirmed — stock deducted, sent to reception for dispensing and payment' : 'Visit completed — sent to reception for payment')
-    onDone()
-    if (andNext) onNext?.()
+    return finalizeOnServer(andNext)
   }
   // Nút và phím tắt dùng chung một khoá — bấm liên tiếp cũng chỉ chốt một đơn.
   const [runFinalize, finalizing] = useAsyncAction(finalize)
@@ -558,39 +486,6 @@ function ConsultForm({ visit, user, onDone, onNext }) {
           <span className="status-chip">{STATUS_CHIP[visit.status]}</span>
         </div>
 
-        {visit.entered === false && (
-          <div className="calling-bar">
-            <Icon name="megaphone" />
-            <span>
-              <b>
-                {translate('The front desk is calling no.')} {String(visit.ticket).padStart(3, '0')}
-                {visit.room ? ' → ' + visit.room : ''}
-              </b>
-              <small>
-                {translate('requested at')} {hhmm(visit.calledAt ?? visit.statusAt)} · {translate('the counter calls the patient in')}
-              </small>
-            </span>
-            <button className="btn btn-ghost btn-sm" onClick={() => recallPatient(visit.id, user)} title={translate('Ask the counter to call this patient again')}>
-              <Icon name="repeat" /> Remind the counter
-            </button>
-            <button
-              className="btn btn-ghost btn-sm"
-              onClick={() => {
-                const r = markNotPresent(visit.id, user)
-                if (!r.ok) return showToast(translate(r.error))
-                showToast(translate('Moved to the end of the queue') + ' — ' + String(visit.ticket).padStart(3, '0'))
-                onDone()
-                onNext?.()
-              }}
-              title={translate('Moves this patient to the end of the queue and calls the next one')}
-            >
-              <Icon name="x" /> Not here — call next
-            </button>
-            <button className="btn btn-primary btn-sm" onClick={() => confirmEntered(visit.id)}>
-              <Icon name="check" /> Came in
-            </button>
-          </div>
-        )}
         <div className="consult-strip">
           <span>
             <small>Pulse</small>
@@ -631,29 +526,6 @@ function ConsultForm({ visit, user, onDone, onNext }) {
             </div>
           </div>
         )}
-        {openReviews.map((r) => (
-          <div key={r.id} className="warn-banner show caution" style={{ margin: '10px 0' }}>
-            <div className="icon">
-              <Icon name="clipboard" />
-            </div>
-            <div className="txt">
-              <b>
-                {translate('Prescription review') + ' · ' + dmy(r.rxAt ?? r.at)} — {translate(verdictOf(r.verdict).label)} · {r.by}
-              </b>
-              {r.note}
-              <button
-                className="btn btn-ghost btn-sm"
-                style={{ display: 'flex', marginTop: 6 }}
-                onClick={() => {
-                  resolveReview(r.id, visit.id, user)
-                  showToast('Marked as handled in this visit')
-                }}
-              >
-                <Icon name="check" /> Mark as handled
-              </button>
-            </div>
-          </div>
-        ))}
         {ai.alerts.map((f) => (
           <div key={f.rule_key} className="warn-banner show danger" style={{ margin: '10px 0' }}>
             <div className="icon">
@@ -666,7 +538,7 @@ function ConsultForm({ visit, user, onDone, onNext }) {
           </div>
         ))}
         <PatientAlerts p={visit} />
-        <ClinicalInfoEditor visit={visit} user={user} />
+        <ClinicalInfoEditor visit={visit} />
 
         <div className="itabs" style={{ marginTop: 12 }}>
           <button className={'itab' + (tab === 'clin' ? ' active' : '')} onClick={() => setTab('clin')}>
@@ -676,7 +548,7 @@ function ConsultForm({ visit, user, onDone, onNext }) {
             Vitals
           </button>
           <button className={'itab' + (tab === 'hist' ? ' active' : '')} onClick={() => setTab('hist')}>
-            History {DEMO_MODE && <span className="itab-cnt">{past.length}</span>}
+            History
           </button>
         </div>
 
@@ -732,7 +604,7 @@ function ConsultForm({ visit, user, onDone, onNext }) {
                             onChange={(e) => set({ labResults: { ...d.labResults, [r.key]: e.target.value } })}
                             placeholder="Result, e.g. 13.2 G/L (high)"
                           />
-                          {!DEMO_MODE && !r.result && !(d.labResults[r.key] ?? '').trim() && (
+                          {!r.result && !(d.labResults[r.key] ?? '').trim() && (
                             <button type="button" className="btn btn-ghost btn-sm" title={translate('The patient did not have this done')} onClick={() => setCancelRow(r)}>
                               <Icon name="x" />
                             </button>
@@ -740,36 +612,21 @@ function ConsultForm({ visit, user, onDone, onNext }) {
                         </label>
                       )
                     )}
-                    {!DEMO_MODE && (
-                      <textarea
-                        className="doc-ta"
-                        rows="2"
-                        style={{ marginTop: 6 }}
-                        value={conclusionOf(o)}
-                        onChange={(e) => set({ labConclusions: { ...d.labConclusions, [o.id]: e.target.value } })}
-                        placeholder="Conclusion of this order, e.g. Raised inflammatory markers…"
-                      />
-                    )}
-                  </div>
-                ))}
-                {DEMO_MODE ? (
-                  <>
-                    <div className="section-label">Lab conclusion</div>
                     <textarea
                       className="doc-ta"
                       rows="2"
-                      value={d.labResult}
-                      onChange={(e) => set({ labResult: e.target.value })}
-                      placeholder="Overall interpretation, e.g. Raised inflammatory markers, X-ray: right lower lobe opacity…"
+                      style={{ marginTop: 6 }}
+                      value={conclusionOf(o)}
+                      onChange={(e) => set({ labConclusions: { ...d.labConclusions, [o.id]: e.target.value } })}
+                      placeholder="Conclusion of this order, e.g. Raised inflammatory markers…"
                     />
-                  </>
-                ) : (
-                  <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 6 }}>
-                    <button className="btn btn-ghost btn-sm" onClick={() => saveLabResults({ toast: true })}>
-                      <Icon name="save" /> Save lab results
-                    </button>
                   </div>
-                )}
+                ))}
+                <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 6 }}>
+                  <button className="btn btn-ghost btn-sm" onClick={() => saveLabResults({ toast: true })}>
+                    <Icon name="save" /> Save lab results
+                  </button>
+                </div>
               </>
             )}
             {so.error && <p className="ai-soft">{so.error}</p>}
@@ -777,7 +634,7 @@ function ConsultForm({ visit, user, onDone, onNext }) {
             <div className="section-label">O — Objective · Physical examination</div>
             <textarea className="doc-ta" rows="3" value={d.exam} onChange={(e) => set({ exam: e.target.value })} placeholder="Findings on examination…" />
 
-            <AssessmentCard a={ai} decisions={aiDecision} onAccept={(c) => decideAi(c, 'accepted')} onDismiss={(c, reason) => decideAi(c, 'dismissed', reason)} />
+            <AssessmentCard a={ai} decisions={aiDecision} onAccept={(c) => decideAi(c, 'accepted')} onDismiss={(c) => decideAi(c, 'dismissed')} />
 
             <div className="section-label">
               Confirmed diagnosis (ICD-10 code) <span className="req">*</span>
@@ -831,25 +688,8 @@ function ConsultForm({ visit, user, onDone, onNext }) {
             <div className="symptom-box">{visit.history ? translate(visit.history) : translate('No chronic conditions on record.')}</div>
             <div className="section-label">Drug allergies</div>
             <div className="symptom-box">{visit.allergies ? translate(visit.allergies) : translate('No recorded drug allergies.')}</div>
-            {/* Chạy thật: lịch sử khám từ server, không tính lượt đang khám. */}
-            {!DEMO_MODE ? (
-              <ServerHistory patientId={visit.patientId} excludeVisitId={visit.id} />
-            ) : (
-              <>
-                <div className="section-label">
-                  Previous visits <span className="itab-cnt">{past.length}</span>
-                </div>
-                {past.length ? (
-                  <div className="timeline">
-                    {past.map((v) => (
-                      <VisitCard key={v.id + (v.day ?? '')} v={v} onReuse={applyLines} />
-                    ))}
-                  </div>
-                ) : (
-                  <p className="ai-soft" style={{ fontSize: 13 }}>No earlier visits in the system.</p>
-                )}
-              </>
-            )}
+            {/* Lịch sử khám từ server, không tính lượt đang khám. */}
+            <ServerHistory patientId={visit.patientId} excludeVisitId={visit.id} />
           </div>
         )}
       </div>
@@ -858,7 +698,7 @@ function ConsultForm({ visit, user, onDone, onNext }) {
         <div className="card-title" style={{ marginBottom: 8 }}>
           <Icon name="clipboard" /> Prescription <span className="cnt">{d.rx.length}</span>
         </div>
-        <DrugPicker onPick={addDrug} drugs={DEMO_MODE ? undefined : srv.drugs} inputId={DRUG_SEARCH_ID} title="Alt+T" />
+        <DrugPicker onPick={addDrug} drugs={srv.drugs} inputId={DRUG_SEARCH_ID} title="Alt+T" />
         <div className="rx-quick">
           <span className="ai-soft">Templates:</span>
           {TEMPLATES.map((t) => (
@@ -1001,9 +841,9 @@ function ConsultForm({ visit, user, onDone, onNext }) {
           <button className="btn btn-ghost btn-sm" onClick={() => setHanding(true)} title={translate('Leaving the room? Send this patient back to the waiting queue')}>
             <Icon name="repeat" /> Return to queue
           </button>
-          {/* Chạy thật: chuyển tuyến kết thúc lượt khám — in giấy và đóng lượt, không có hoá đơn. */}
-          <button className="btn btn-ghost btn-sm" onClick={() => setDocs(true)} title={translate(DEMO_MODE ? 'Referral letter' : 'Refer & end the visit')}>
-            <Icon name="printer" /> {DEMO_MODE ? 'Referral letter' : 'Refer to hospital'}
+          {/* Chuyển tuyến kết thúc lượt khám — in giấy và đóng lượt, không có hoá đơn. */}
+          <button className="btn btn-ghost btn-sm" onClick={() => setDocs(true)} title={translate('Refer & end the visit')}>
+            <Icon name="printer" /> Refer to hospital
           </button>
           <button className="btn btn-ghost btn-sm" onClick={() => setLabOpen(true)} title="Alt+L">
             <Icon name="flask" /> Order lab tests
@@ -1024,7 +864,6 @@ function ConsultForm({ visit, user, onDone, onNext }) {
         <LabOrderModal
           open
           visit={visit}
-          user={user}
           diagnosis={d.diagnosis}
           onClose={() => setLabOpen(false)}
           onSent={() => {
@@ -1036,7 +875,7 @@ function ConsultForm({ visit, user, onDone, onNext }) {
       {docs && (
         <DocumentModal
           subject={{ ...visit, ...d, rx: d.rx, labOrders }}
-          mode={DEMO_MODE ? 'print' : 'doctor'}
+          mode="doctor"
           target={{ visitId: visit.id }}
           onDone={() => {
             deleteDraft(visit.id)
@@ -1059,7 +898,6 @@ function ConsultForm({ visit, user, onDone, onNext }) {
       {leaving && (
         <LeaveVisitModal
           visit={visit}
-          draft={d}
           onClose={() => setLeaving(false)}
           onDone={() => {
             setLeaving(false)
@@ -1070,7 +908,6 @@ function ConsultForm({ visit, user, onDone, onNext }) {
       {handing && (
         <ReleaseModal
           visit={visit}
-          draft={d}
           onClose={() => setHanding(false)}
           onDone={() => {
             setHanding(false)

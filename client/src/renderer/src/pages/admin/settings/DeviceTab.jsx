@@ -1,5 +1,5 @@
 import Icon from '../../../components/Icon'
-import { Switch } from '../ai/ui'
+import { Switch } from '../ui'
 import { translate } from '../../../i18n'
 import { PAPERS, PRINT_DOCS } from '../../../api/settingsStore'
 import { useDevice, setDevice, getDevice } from '../../../api/deviceSettings'
