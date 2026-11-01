@@ -11,6 +11,7 @@ const EXTRACTION_TIMEOUT_MS = 30000
 export default function SymptomPanel({ value, onChange, text, onText, disabled = false, textLocked = false, onExtract, onVitals }) {
   const [job, setJob] = useState({ status: 'idle' })
   const [proposals, setProposals] = useState([])
+  const [unsure, setUnsure] = useState([])
   const ctrl = useRef(null)
   useEffect(() => () => ctrl.current?.abort(), [])
   const catalog = useSymptomCatalog()
@@ -34,9 +35,10 @@ export default function SymptomPanel({ value, onChange, text, onText, disabled =
     try {
       const r = await onExtract(text, { signal: c.signal })
       setProposals(r.proposals.filter((p) => !value[p.symptom_code]))
+      setUnsure(r.unsure ?? [])
       onVitals?.(r.vitalProposals ?? [])
       // Lời kể sửa sau lần đọc (hoặc server báo text_changed) → nhắc trích xuất lại.
-      setJob({ status: 'done', count: r.proposals.length, text, textChanged: !!r.textChanged })
+      setJob({ status: 'done', count: r.proposals.length + (r.unsure ?? []).length, text, textChanged: !!r.textChanged })
     } catch (e) {
       if (c.signal.aborted && e.code === 'ABORTED' && ctrl.current !== c) return
       // Lỗi của form (thiếu thông tin, hồ sơ có thể trùng), không phải lỗi AI.
@@ -59,7 +61,8 @@ export default function SymptomPanel({ value, onChange, text, onText, disabled =
   const flip = (p) => setProposals((list) => list.map((x) => (x.symptom_code === p.symptom_code ? { ...x, state: x.state === 'PRESENT' ? 'ABSENT' : 'PRESENT' } : x)))
   const drop = (p) => setProposals((list) => list.filter((x) => x.symptom_code !== p.symptom_code))
 
-  // Chỉ nhắc mã có trong danh mục đang dùng.
+  // Mục chưa rõ: hết nhắc khi lễ tân đã chọn Có / Không ở danh sách bên dưới.
+  const askAgain = job.status === 'done' ? unsure.filter((u) => !value[u.symptom_code]) : []
 
   return (
     <div className="sym-panel">
@@ -84,6 +87,11 @@ export default function SymptomPanel({ value, onChange, text, onText, disabled =
         )}
         {job.status === 'done' && !proposals.length && job.count === 0 && <span className="ai-soft">{translate('No catalog symptoms found — use the checklist below.')}</span>}
       </div>
+      {askAgain.length > 0 && (
+        <p className="sym-warn">
+          <Icon name="alert" /> {translate('Not sure — ask the patient again:')} {askAgain.map((u) => u.name || translate(symptomName(u.symptom_code))).join(', ')}
+        </p>
+      )}
 
       {proposals.length > 0 && (
         <div className="sym-proposals">

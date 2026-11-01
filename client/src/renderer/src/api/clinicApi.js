@@ -187,6 +187,8 @@ export async function extractSymptoms(visitId, { signal, timeoutMs = 30000 } = {
   return {
     status: 'Completed',
     proposals: r.suggestions.filter((s) => s.status !== 'UNKNOWN').map((s) => ({ symptom_code: s.symptom_code, state: s.status, phrase: '' })),
+    // Lời kể có nhắc nhưng chưa rõ có hay không (“chưa rõ có ho khan không”) → không thành đề xuất, chỉ nhắc hỏi lại.
+    unsure: r.suggestions.filter((s) => s.status === 'UNKNOWN').map((s) => ({ symptom_code: s.symptom_code, name: s.symptom_name })),
     // Sinh hiệu đọc được trong lời kể chỉ là đề xuất, y tá xác nhận mới điền; lời kể sửa sau lần trích xuất → nhắc chạy lại.
     vitalProposals: (r.vital_proposals ?? []).map((p) => ({ key: p.key, value: p.value, evidence: p.evidence ?? '', group: p.group ?? null })),
     textChanged: !!r.text_changed
