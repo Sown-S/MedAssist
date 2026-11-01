@@ -36,7 +36,7 @@ export default function RoomsPage({ onNavigate }) {
   }
   async function toggle(r) {
     const res = await updateRoom(r.id, { active: !r.active })
-    if (!res.ok) return showToast(translate(res.error))
+    if (!res.ok) return showToast(translate(res.error), 'error')
     showToast(r.active ? 'Room no longer in use' : 'Room back in use')
     refresh()
   }

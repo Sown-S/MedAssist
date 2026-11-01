@@ -4,7 +4,6 @@ import { useAuth } from '../../context/AuthContext'
 import { useInventory } from '../../api/inventoryStore'
 import { StockTab } from './inventory/StockTab'
 import { MovesTab } from './inventory/MovesTab'
-import { ControlledTab } from './inventory/ControlledTab'
 
 export default function InventoryPage({ onNavigate }) {
   const [tab, setTab] = useState('stock')
@@ -34,13 +33,9 @@ export default function InventoryPage({ onNavigate }) {
           <button className={'itab' + (tab === 'moves' ? ' active' : '')} onClick={() => setTab('moves')}>
             Stock movements
           </button>
-          <button className={'itab' + (tab === 'controlled' ? ' active' : '')} onClick={() => setTab('controlled')}>
-            Controlled drugs ledger
-          </button>
         </div>
         {tab === 'stock' && <StockTab inv={inv} user={user} onNavigate={onNavigate} />}
         {tab === 'moves' && <MovesTab inv={inv} />}
-        {tab === 'controlled' && <ControlledTab inv={inv} />}
       </div>
     </div>
   )

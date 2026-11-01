@@ -22,18 +22,7 @@ export const NUMBERED_DOCS = [
 ]
 export const PAYMENT_METHODS = [
   { key: 'cash', label: 'Cash' },
-  { key: 'transfer', label: 'Bank transfer' },
-  { key: 'card', label: 'Bank card' },
-  { key: 'ewallet', label: 'E-wallet' }
-]
-export const WEEKDAYS = [
-  { key: 1, label: 'Mon' },
-  { key: 2, label: 'Tue' },
-  { key: 3, label: 'Wed' },
-  { key: 4, label: 'Thu' },
-  { key: 5, label: 'Fri' },
-  { key: 6, label: 'Sat' },
-  { key: 0, label: 'Sun' }
+  { key: 'transfer', label: 'Bank transfer' }
 ]
 
 export const DEFAULT_SETTINGS = {
@@ -64,9 +53,6 @@ export const DEFAULT_SETTINGS = {
   security: { minLength: 8, requireMix: true, expiryDays: 0, maxFailed: 5, lockMinutes: 15, idleMinutes: 15 },
   backup: { enabled: true, time: '02:00', keep: 14, path: 'D:\\MedAssist\\Backup', offsite: '' },
   ops: {
-    open: '07:30',
-    close: '17:30',
-    workDays: [1, 2, 3, 4, 5, 6],
     nearDays: 90,
     // Chỉ cấp lô còn hạn > hôm nay + max(số ngày dùng, khoảng này).
     shelfBufferDays: 0,
@@ -74,12 +60,9 @@ export const DEFAULT_SETTINGS = {
     consultFee: 80000,
     rounding: 1000,
     methods: ['cash', 'transfer'],
-    // Mặc định nhà thuốc phòng khám không bán thuốc N / H: bác sĩ vẫn kê đơn riêng, bệnh nhân mua ở nhà thuốc đủ điều kiện.
-    sellControlled: false,
     // Loa ở quầy đọc kèm họ tên khi mời. Mặc định tắt, chỉ đọc số và phòng (quyền riêng tư).
     announceName: false
-  },
-  retention: { auditYears: 10, recordYears: 10 }
+  }
 }
 
 function read(key) {

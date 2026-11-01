@@ -50,7 +50,7 @@ describe('Các màn chính dựng được', () => {
   // Mỗi tab là một file riêng — bấm qua hết để chắc tab nào cũng dựng được.
   it.each([
     ['Settings', ['Printing & numbering', 'Security', 'Backup & retention', 'Connection & AI', 'This computer', 'Operations', 'Clinic']],
-    ['Stock & expiry', ['Stock movements', 'Controlled drugs ledger', 'Stock by batch']]
+    ['Stock & expiry', ['Stock movements', 'Stock by batch']]
   ])('Quản trị › %s › từng tab', async (page, tabs) => {
     renderPage(<Admin onNavigate={() => {}} />, { user: ADMIN, path: '/admin' })
     await rendered()
@@ -70,6 +70,25 @@ describe('Luồng chính trên giao diện', () => {
     await rendered()
     expect((await screen.findAllByText('Nguyễn Văn An')).length).toBeGreaterThan(0)
     await waitFor(() => expect(calls.some((c) => c.path === '/api/v1/visits/v-exam')).toBe(true))
+    // Chip triệu chứng dùng symptom_name server trả kèm, không hiện mã thô.
+    expect(await screen.findByText('Da xanh xao, vàng da')).toBeTruthy()
+    expect(screen.queryByText('anemia_pallor_jaundice')).toBeNull()
+    // "Last visit" lấy từ GET /patients/{id}/history, không chỉ hàng đợi hôm nay.
+    expect(await screen.findByText(/J02\.9 — Viêm họng cấp/)).toBeTruthy()
+  })
+
+  it('bác sĩ áp đơn mẫu → dòng thuốc lấy từ danh mục server (chốt được)', async () => {
+    await syncQueue()
+    renderPage(<Doctor />, { user: DOC_A, path: '/doctor?view=consult&visit=v-exam' })
+    await rendered()
+    const template = await screen.findByText('Pharyngitis / tonsillitis')
+    // Danh mục thuốc nạp bất đồng bộ: bấm lại tới khi có (dòng trùng không thêm lần hai).
+    await waitFor(() => {
+      fireEvent.click(template)
+      expect(screen.getByText('Amoxicilin 500 500 mg')).toBeTruthy()
+    })
+    expect(await screen.findByText('Panadol 500 mg')).toBeTruthy()
+    expect(screen.queryByText(/Not in the drug catalog/)).toBeNull()
   })
 
   it('bác sĩ thu hồi đơn còn chờ thanh toán của mình → POST …/prescription/reopen', async () => {

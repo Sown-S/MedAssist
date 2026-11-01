@@ -37,7 +37,7 @@ export default function ReceiveModal({ drug, drugs, onClose }) {
     if (errors.length) return
     // Trả Promise { ok, error } (VD số lô đã có).
     const r = await receiveStock({ drugId: f.drugId, lot: f.lot.trim().toUpperCase(), expiry: f.expiry, qty, cost })
-    if (r?.ok === false) return showToast(translate(r.error))
+    if (r?.ok === false) return showToast(translate(r.error), 'error')
     showToast('Stock received')
     onClose()
   }

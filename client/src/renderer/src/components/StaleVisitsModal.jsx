@@ -18,7 +18,7 @@ export default function StaleVisitsModal({ readOnly, onClose, onPay }) {
 
   async function close(v) {
     const r = await closeStaleVisit(v.id, { reason, note })
-    if (!r.ok) return showToast(translate(r.error))
+    if (!r.ok) return showToast(translate(r.error), 'error')
     showToast(translate('Visit closed') + ' — ' + ticketNo(v.ticket) + ' ' + v.name)
     setClosing(null)
     setNote('')

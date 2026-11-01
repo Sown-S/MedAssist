@@ -80,7 +80,7 @@ export default function BillingLiveView({ mode, readOnly, onPay }) {
                     <span className="badge muted">{translate('No prescription')}</span>
                   ) : v.pending > 0 ? (
                     <span className="badge warn">
-                      {v.pending} {translate('items waiting')}
+                      {v.pending} {translate(v.pending === 1 ? 'item waiting' : 'items waiting')}
                     </span>
                   ) : (
                     <span className="badge ok">{translate('Dispensed')}</span>

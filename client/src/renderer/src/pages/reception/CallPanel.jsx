@@ -23,11 +23,11 @@ export default function CallPanel({ readOnly }) {
 
   async function checkIn(v) {
     const r = await checkInVisit(v.id)
-    showToast(r.ok ? ticketNo(v.ticket) + ' — ' + translate('checked in') : translate(r.error))
+    showToast(r.ok ? ticketNo(v.ticket) + ' — ' + translate('checked in') : translate(r.error), r.ok ? 'ok' : 'error')
   }
   async function notHere(v) {
     const r = await dropInvite(v.id)
-    showToast(r.ok ? translate('Invitation cancelled — the patient keeps their place in the queue') + ' — ' + ticketNo(v.ticket) : translate(r.error))
+    showToast(r.ok ? translate('Invitation cancelled — the patient keeps their place in the queue') + ' — ' + ticketNo(v.ticket) : translate(r.error), r.ok ? 'ok' : 'error')
   }
 
   return (

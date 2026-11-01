@@ -27,10 +27,36 @@ const PRESCRIPTIONS = [
   { prescription_id: 'rx1', visit_id: 'v-paid-wait', visit_date: today, queue_number: 5, patient_code: 'BN000005', patient_name: 'Lê Văn Cường', physician_id: DOC_B.id, physician_name: DOC_B.name, status: 'Confirmed', confirmed_at: today, items: [{ drug_name: 'Paracetamol 500mg', unit: 'viên', quantity: 10, dosage: '1 viên', frequency: '3 lần/ngày', duration_days: 3, dispense_status: 'Pending' }], drug_total: '20000', invoice_status: 'Pending', invoice_total: '120000' }
 ]
 
+// Danh mục thuốc như server: tên thương mại khác tên hoạt chất (đơn mẫu phải tra theo hoạt chất + hàm lượng).
+const DRUGS = [
+  { drug_id: 'd-amox', generic_name: 'Amoxicilin', trade_name: 'Amoxicilin 500', strength: '500 mg', dosage_form: 'viên nang', unit: 'viên', sale_price: '1500', is_active: true },
+  { drug_id: 'd-pana', generic_name: 'Paracetamol', trade_name: 'Panadol', strength: '500 mg', dosage_form: 'viên nén', unit: 'viên', sale_price: '1000', is_active: true }
+]
+const STOCK = DRUGS.map((d) => ({ drug_id: d.drug_id, usable_quantity: 100, near_expiry_quantity: 0, expired_quantity: 0 }))
+// Bệnh nhân đang khám (p1) có một lần khám trước, kèm đơn thuốc.
+const HISTORY = {
+  patient: { patient_code: 'BN000001', full_name: 'Nguyễn Văn An', date_of_birth: '1990-05-01', gender: 'Male', medical_history: null, allergy_notes: null },
+  total: 2,
+  limit: 10,
+  offset: 0,
+  items: [
+    { visit_id: 'v-exam', visit_date: today, status: 'Examining', chief_complaint: 'Ho, sốt', triage_priority: 'Routine', is_red_flag: false, physician_name: DOC_A.name, diagnoses: [], prescription: null },
+    {
+      visit_id: 'v-old', visit_date: '2026-10-20T08:00:00Z', status: 'Finished', chief_complaint: 'Đau họng', triage_priority: 'Routine', is_red_flag: false, physician_name: DOC_A.name,
+      diagnoses: [{ diagnosis_name: 'Viêm họng cấp', icd10_code: 'J02.9', is_primary: true }],
+      prescription: { prescription_id: 'rx-old', status: 'Dispensed', confirmed_at: '2026-10-20T08:30:00Z', item_count: 1, items: [{ drug_label: 'Paracetamol 500 mg (Panadol)', quantity: 10, unit: 'viên', dosage: '1 viên', frequency: '3 lần/ngày', duration_days: 3, dispense_status: 'Dispensed' }] }
+    }
+  ]
+}
+
 const ROUTES = [
   [/^\/health$/, () => ({ status: 'healthy', database: { ok: true, detail: '' }, ai: { ok: true, detail: '' }, version: 'test' })],
   [/^\/api\/v1\/queue$/, () => QUEUE],
   [/^\/api\/v1\/prescriptions$/, () => PRESCRIPTIONS],
+  [/^\/api\/v1\/drugs$/, () => ({ items: DRUGS, total: DRUGS.length })],
+  [/^\/api\/v1\/inventory\/stock$/, () => STOCK],
+  [/^\/api\/v1\/patients\/p1\/history$/, () => HISTORY],
+  [/^\/api\/v1\/visits\/v-exam\/symptoms$/, () => [{ symptom_code: 'anemia_pallor_jaundice', symptom_name: 'Da xanh xao, vàng da', state: 'PRESENT', source: 'Form', confirmed_at: today }]],
   [/^\/api\/v1\/symptoms$/, () => [{ symptom_code: 'fever', symptom_name: 'Sốt', category: 'constitutional' }]],
   [/^\/api\/v1\/reports\/summary/, () => SUMMARY],
   [/^\/api\/v1\/auth\/password-policy$/, () => ({ min_length: 8, require_letters_and_digits: true, max_failed_attempts: 5, failed_window_minutes: 15, lock_minutes: 5 })],

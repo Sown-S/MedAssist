@@ -122,7 +122,7 @@ export default function DocumentModal({ subject, onClose, mode = 'print', target
   })
 
   async function submit() {
-    if (problem) return showToast(translate(problem))
+    if (problem) return showToast(translate(problem), 'error')
     setBusy(true)
     try {
       if (mode === 'amend') {
@@ -147,7 +147,7 @@ export default function DocumentModal({ subject, onClose, mode = 'print', target
       onDone?.()
       onClose()
     } catch (e) {
-      showToast(translate(apiMessage(e)))
+      showToast(translate(apiMessage(e)), 'error')
     } finally {
       setBusy(false)
     }
@@ -229,7 +229,7 @@ export default function DocumentModal({ subject, onClose, mode = 'print', target
             <Icon name="printer" /> Reprint
           </button>
         ) : mode === 'print' ? (
-          <button className="btn btn-primary" onClick={() => (problem ? showToast(translate(problem)) : print(user.name))}>
+          <button className="btn btn-primary" onClick={() => (problem ? showToast(translate(problem), 'error') : print(user.name))}>
             <Icon name="printer" /> Print
           </button>
         ) : (

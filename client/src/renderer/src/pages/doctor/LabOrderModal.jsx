@@ -90,7 +90,7 @@ export default function LabOrderModal({ open, visit, diagnosis, onClose, onSent 
       showToast('Lab order sent to the printer — continue when the patient brings the results back')
       onSent()
     } catch (e) {
-      showToast(translate(apiMessage(e)))
+      showToast(translate(apiMessage(e)), 'error')
     } finally {
       setSaving(false)
     }
@@ -155,7 +155,7 @@ export default function LabOrderModal({ open, visit, diagnosis, onClose, onSent 
       </div>
       <div className="modal-foot">
         <span className="ai-soft" style={{ marginRight: 'auto', alignSelf: 'center' }}>
-          {count} {translate('tests selected')}
+          {count} {translate(count === 1 ? 'test selected' : 'tests selected')}
         </span>
         <button className="btn btn-ghost" onClick={onClose}>
           Cancel

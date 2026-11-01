@@ -36,7 +36,7 @@ export default function HistoryPage() {
       const r = await exportAuditLogs(filters, format)
       showToast(r.truncated ? translate('Exported — cut at 50,000 rows; narrow the filters to get the rest') : translate('Exported'))
     } catch (e) {
-      showToast(e.message)
+      showToast(e.message, 'error')
     }
   }
   const pages = data ? Math.max(1, Math.ceil(data.total / PAGE)) : 1

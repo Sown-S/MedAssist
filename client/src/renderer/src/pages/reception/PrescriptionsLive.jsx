@@ -52,7 +52,7 @@ export default function PrescriptionsLive({ initialDoctorId = '', initialDoctorN
     const res = await recallVisit(r, user)
     setRecalling(false)
     setAsking(null)
-    if (!res.ok) return showToast(translate(res.error))
+    if (!res.ok) return showToast(translate(res.error), 'error')
     showToast('Prescription recalled — edit it in the consultation room')
     onRecalled(r.visitId)
   }

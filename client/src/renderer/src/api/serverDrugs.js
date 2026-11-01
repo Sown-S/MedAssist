@@ -66,5 +66,7 @@ const fold = (s) =>
     .replace(/đ/gi, 'd')
     .toLowerCase()
     .trim()
-// Dòng thuốc chép từ đơn cũ / đơn mẫu không có drug_id → tìm theo tên.
-export const findServerDrug = (name, drugs) => drugs.find((d) => fold(d.name) === fold(name)) ?? null
+// Dòng thuốc chép từ đơn cũ không có drug_id → tìm theo tên. Lịch sử khám / hoá đơn ghi nhãn của server:
+// "<hoạt chất> <hàm lượng>" hoặc "<hoạt chất> <hàm lượng> (<tên thương mại>)".
+const labelsOf = (d) => [d.name, `${d.ingredient} ${d.strength}`, `${d.ingredient} ${d.strength} (${d.tradeName})`]
+export const findServerDrug = (name, drugs) => drugs.find((d) => labelsOf(d).some((x) => fold(x) === fold(name))) ?? null

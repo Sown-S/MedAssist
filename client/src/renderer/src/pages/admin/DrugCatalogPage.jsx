@@ -25,7 +25,7 @@ export default function DrugCatalogPage({ params, onNavigate }) {
   const term = q.trim().toLowerCase()
   const filtered = rows.filter(({ d }) => {
     if (term && ![d.name, d.ingredient, d.atc].some((x) => (x ?? '').toLowerCase().includes(term))) return false
-    if (kind === 'essential' ? !d.essential : kind === 'controlled' ? d.group !== 'controlled' : kind !== 'all' && d.kind !== kind) return false
+    if (kind === 'essential' ? !d.essential : kind !== 'all' && d.kind !== kind) return false
     if (active !== 'all' && d.active !== (active === 'active')) return false
     return true
   })
@@ -84,7 +84,6 @@ export default function DrugCatalogPage({ params, onNavigate }) {
               <option value="drug">Drugs only</option>
               <option value="supply">Medical supplies only</option>
               <option value="essential">Essential</option>
-              <option value="controlled">Controlled</option>
             </select>
             <select className="ai-select" value={active} onChange={(e) => (setActive(e.target.value), setPage(1))}>
               <option value="active">In use</option>
@@ -204,7 +203,7 @@ export default function DrugCatalogPage({ params, onNavigate }) {
         danger={toggle?.d.active}
         onConfirm={async () => {
           const r = await setDrugActive(toggle.d.id, !toggle.d.active)
-          if (r?.ok === false) return showToast(translate(r.error))
+          if (r?.ok === false) return showToast(translate(r.error), 'error')
           showToast(toggle.d.active ? 'Drug discontinued' : 'Drug re-activated')
           setToggle(null)
         }}

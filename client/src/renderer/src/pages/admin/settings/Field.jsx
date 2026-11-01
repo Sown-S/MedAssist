@@ -39,17 +39,11 @@ export const FIELDS = {
   'backup.keep': ['Backups to keep', 'server'],
   'backup.path': ['Backup folder (on the server)', 'server'],
   'backup.offsite': ['Second copy (external drive / NAS)', 'server'],
-  'retention.auditYears': ['Keep the activity log for', 'server'],
-  'retention.recordYears': ['Keep medical records for', 'server'],
-  'ops.open': ['Opening time', 'now'],
-  'ops.close': ['Closing time', 'now'],
-  'ops.workDays': ['Working days', 'now'],
   'ops.nearDays': ['Near-expiry warning', 'now'],
   'ops.shelfBufferDays': ['Expiry safety buffer', 'now'],
   'ops.defaultThreshold': ['Default minimum stock', 'now'],
   'ops.consultFee': ['Default consultation fee', 'now'],
   'ops.methods': ['Payment methods', 'now'],
-  'ops.sellControlled': ['Pharmacy sells controlled (N/H) drugs', 'now'],
   'ops.announceName': ['Read the patient’s name aloud when calling', 'now']
 }
 
