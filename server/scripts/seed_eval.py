@@ -306,7 +306,11 @@ def seed_today(flow: Flow, cases: list[dict]) -> int:
             doctor = flow.users["bs01" if status == "Examining" else "bs02"]
             if status in ("Examining", "Prescribed", "Finished"):
                 _rule_only_now(flow, visit.visit_id)
-                flow.examine(visit, case, doctor)
+                # Lượt đang khám để trống chẩn đoán cho người kiểm thử tự nhập trên giao diện.
+                if status == "Examining":
+                    queue_service.start_exam(db, visit.visit_id, doctor)
+                else:
+                    flow.examine(visit, case, doctor)
             if status in ("Prescribed", "Finished"):
                 flow.prescribe(visit, case, doctor)
             if status == "Finished":
