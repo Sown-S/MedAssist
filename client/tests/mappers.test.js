@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { isoDob, dmyDob, maskDob, toPatient, chiefComplaintOf } from '../src/renderer/src/api/clinicApi.js'
+import { isoDob, dmyDob, maskDob, toPatient, chiefComplaintOf, toQueueVisit } from '../src/renderer/src/api/clinicApi.js'
 import { fromAwaiting, receiptOf, toServerMethod, fromServerMethod } from '../src/renderer/src/api/billingApi.js'
 import { toLabOrder } from '../src/renderer/src/api/serviceStore.js'
 
@@ -115,5 +115,18 @@ describe('Phiếu chỉ định từ server (toLabOrder)', () => {
     const [cbc, crp] = toLabOrder(order).tests
     expect(cbc.ref).toBe('4–10 G/L')
     expect(crp.ref).toBe('< 5 mg/L')
+  })
+})
+
+describe('Lượt trong hàng chờ (toQueueVisit)', () => {
+  const base = { visit_id: 'v1', queue_number: 1, patient_id: 'p1', status: 'Finished', triage_priority: 'Routine', is_red_flag: false, visit_date: '2026-11-02T01:00:00Z', checked_in_at: '2026-11-02T01:05:00Z', exam_started_at: '2026-11-02T01:30:00Z' }
+
+  it('lượt đã kết thúc: giờ trạng thái lấy finished_at, kèm outcome và người chuyển tuyến', () => {
+    const v = toQueueVisit({ ...base, finished_at: '2026-11-02T02:00:00Z', outcome: 'Referred', referred_by_role: 'Nurse' })
+    expect(v).toMatchObject({ statusAt: '2026-11-02T02:00:00Z', finishedAt: '2026-11-02T02:00:00Z', outcome: 'Referred', referredByRole: 'Nurse', redFlag: false })
+  })
+
+  it('lượt còn mở: không có finished_at → giờ bắt đầu khám, outcome rỗng', () => {
+    expect(toQueueVisit({ ...base, status: 'Examining', is_red_flag: true })).toMatchObject({ statusAt: '2026-11-02T01:30:00Z', finishedAt: null, outcome: null, referredByRole: null, redFlag: true, triage: 'emergency' })
   })
 })

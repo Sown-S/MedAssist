@@ -1,13 +1,13 @@
 import Icon from '../../components/Icon'
 import { translate } from '../../i18n'
-import { useQueue, isQueued } from '../../api/queueStore'
+import { useQueue, isQueued, isPendingFlag } from '../../api/queueStore'
 import { ticketNo } from '../../components/queuePrint'
 import CallPanel from './CallPanel'
 import { fmt, dmy, ymd } from './shared'
 import { useAwaiting, fromAwaiting, useTodayInvoices } from '../../api/billingApi'
 import { usePrescriptions } from '../../api/prescriptionApi'
 
-// Lượt Prescribed không có trong GET /queue → lấy từ GET /billing/awaiting.
+// Chờ thu tiền lấy từ GET /billing/awaiting (có hoá đơn và số tiền).
 
 export default function Dashboard({ go, readOnly, onRegister, onSearch, onPay }) {
   const { visits, redFlags } = useQueue()
@@ -60,12 +60,13 @@ export default function Dashboard({ go, readOnly, onRegister, onSearch, onPay })
       tone: 'red',
       title: 'Red-flag cases',
       value: redFlags.length,
-      // Chuyển viện do quầy quyết ngay; ca đưa lên đầu hàng chờ là khám tại phòng khám.
+      // Theo trạng thái lượt trên server: đã chuyển tuyến / đã vào khám tại phòng khám / còn chờ.
       sub:
-        `${redFlags.filter((r) => (r.doctorReview?.decision ?? r.outcome) === 'referred').length} ${translate('referred')} · ` +
-        `${redFlags.filter((r) => ['seen', 'queued'].includes(r.doctorReview?.decision ?? r.outcome)).length} ${translate('seen at the clinic')}`,
+        `${redFlags.filter((r) => r.outcome === 'referred').length} ${translate('referred')} · ` +
+        `${redFlags.filter((r) => r.outcome === 'seen').length} ${translate('seen at the clinic')} · ` +
+        `${redFlags.filter(isPendingFlag).length} ${translate('waiting for a doctor')}`,
       link: 'Click to see the cases →',
-      alert: redFlags.some((r) => r.outcome === 'queued' && !r.doctorReview)
+      alert: redFlags.some((r) => isPendingFlag(r) && !r.doctorReview)
     }
   ]
 

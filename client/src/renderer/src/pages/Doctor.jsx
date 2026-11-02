@@ -1,7 +1,7 @@
 import { useSearchParams } from 'react-router-dom'
 import Icon from '../components/Icon'
 import { useAuth } from '../context/AuthContext'
-import { useQueue, useQueueSync, isMine, reviewRedFlag, inRoom, inviteAgain, ST } from '../api/queueStore'
+import { useQueue, useQueueSync, isMine, reviewRedFlag, inRoom, inviteAgain, isPendingFlag, ST } from '../api/queueStore'
 import { useToast } from '../context/ToastContext'
 import { useTakePatient } from './doctor/doctorShared'
 import { translate } from '../i18n'
@@ -25,7 +25,7 @@ export default function Doctor() {
   useQueueSync() // hỏi lại hàng đợi vài giây một lần
   const { visits, redFlags } = useQueue()
   // Ca cờ đỏ chưa bác sĩ nào xem — hiện trên mọi màn của Bác sĩ.
-  const pendingRF = redFlags.filter((r) => !r.doctorReview)
+  const pendingRF = redFlags.filter((r) => isPendingFlag(r) && !r.doctorReview)
   const [params, setParams] = useSearchParams()
   const view = VIEWS[params.get('view')] ? params.get('view') : 'home'
   const visitId = params.get('visit')

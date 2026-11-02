@@ -6,7 +6,7 @@ import RedFlagModal from '../components/RedFlagModal'
 import SearchModal from '../components/SearchModal'
 import StaleVisitsModal from '../components/StaleVisitsModal'
 import Icon from '../components/Icon'
-import { useQueue, useQueueSync, syncStale, acknowledgeRedFlag } from '../api/queueStore'
+import { useQueue, useQueueSync, syncStale, acknowledgeRedFlag, isPendingFlag } from '../api/queueStore'
 import { translate } from '../i18n'
 import Dashboard from './reception/Dashboard'
 import QueueView from './reception/QueueView'
@@ -61,7 +61,7 @@ export default function Reception() {
   const [searchOpen, setSearchOpen] = useState(false)
   const [redFlag, setRedFlag] = useState(null)
   const [paying, setPaying] = useState(null)
-  const alerts = redFlags.filter((r) => !r.ack)
+  const alerts = redFlags.filter((r) => isPendingFlag(r) && !r.ack)
   const pay = setPaying
 
   // Phím tắt: F2 đăng ký mới, F3 / Ctrl+K tra cứu.
