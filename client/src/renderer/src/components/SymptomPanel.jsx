@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import Icon from './Icon'
 import { translate } from '../i18n'
-import { STATES, SOURCES, useSymptomCatalog, groupSymptoms, symptomName } from '../api/symptoms'
+import { STATES, SOURCES, useSymptomCatalog, groupSymptoms, symptomName, extractionStale } from '../api/symptoms'
 
 const EXTRACTION_TIMEOUT_MS = 30000
 
@@ -11,6 +11,9 @@ const EXTRACTION_TIMEOUT_MS = 30000
 export default function SymptomPanel({ value, onChange, text, onText, disabled = false, textLocked = false, onExtract, onVitals }) {
   const [job, setJob] = useState({ status: 'idle' })
   const [proposals, setProposals] = useState([])
+  const [unsure, setUnsure] = useState([])
+  // Lời kể của lần trích xuất đã có kết quả — đề xuất cũ thì khoá xác nhận.
+  const [from, setFrom] = useState(null)
   const ctrl = useRef(null)
   useEffect(() => () => ctrl.current?.abort(), [])
   const catalog = useSymptomCatalog()
@@ -34,9 +37,11 @@ export default function SymptomPanel({ value, onChange, text, onText, disabled =
     try {
       const r = await onExtract(text, { signal: c.signal })
       setProposals(r.proposals.filter((p) => !value[p.symptom_code]))
-      onVitals?.(r.vitalProposals ?? [])
-      // Lời kể sửa sau lần đọc (hoặc server báo text_changed) → nhắc trích xuất lại.
-      setJob({ status: 'done', count: r.proposals.length, text, textChanged: !!r.textChanged })
+      setUnsure(r.unsure ?? [])
+      const src = { text, textChanged: !!r.textChanged }
+      setFrom(src)
+      onVitals?.(r.vitalProposals ?? [], src)
+      setJob({ status: 'done', count: r.proposals.length + (r.unsure ?? []).length })
     } catch (e) {
       if (c.signal.aborted && e.code === 'ABORTED' && ctrl.current !== c) return
       // Lỗi của form (thiếu thông tin, hồ sơ có thể trùng), không phải lỗi AI.
@@ -46,20 +51,25 @@ export default function SymptomPanel({ value, onChange, text, onText, disabled =
       clearTimeout(timer)
     }
   }
+  // Lời kể sửa sau lần đọc (hoặc server báo text_changed) → không xác nhận được, phải trích xuất lại.
+  const stale = extractionStale(from, text)
   function accept(p) {
+    if (stale) return
     setState(p.symptom_code, p.state, 'Extracted')
     setProposals((list) => list.filter((x) => x.symptom_code !== p.symptom_code))
   }
   function acceptAll() {
+    if (stale) return
     const next = { ...value }
     for (const p of proposals) next[p.symptom_code] = { state: p.state, source: 'Extracted' }
     onChange(next)
     setProposals([])
   }
-  const flip = (p) => setProposals((list) => list.map((x) => (x.symptom_code === p.symptom_code ? { ...x, state: x.state === 'PRESENT' ? 'ABSENT' : 'PRESENT' } : x)))
+  const flip = (p) => !stale && setProposals((list) => list.map((x) => (x.symptom_code === p.symptom_code ? { ...x, state: x.state === 'PRESENT' ? 'ABSENT' : 'PRESENT' } : x)))
   const drop = (p) => setProposals((list) => list.filter((x) => x.symptom_code !== p.symptom_code))
 
-  // Chỉ nhắc mã có trong danh mục đang dùng.
+  // Mục chưa rõ: hết nhắc khi lễ tân đã chọn Có / Không ở danh sách bên dưới.
+  const askAgain = job.status === 'done' && !stale ? unsure.filter((u) => !value[u.symptom_code]) : []
 
   return (
     <div className="sym-panel">
@@ -77,30 +87,35 @@ export default function SymptomPanel({ value, onChange, text, onText, disabled =
             <Icon name="alert" /> {translate(job.timeout ? 'Extraction timed out' : 'Extraction unavailable')} — {translate('continue with the checklist below.')}
           </span>
         )}
-        {job.status === 'done' && (job.textChanged || job.text !== text) && (
+        {stale && job.status !== 'running' && (
           <span className="sym-warn">
             <Icon name="alert" /> {translate('The description changed after the last suggestion — run it again.')}
           </span>
         )}
         {job.status === 'done' && !proposals.length && job.count === 0 && <span className="ai-soft">{translate('No catalog symptoms found — use the checklist below.')}</span>}
       </div>
+      {askAgain.length > 0 && (
+        <p className="sym-warn">
+          <Icon name="alert" /> {translate('Not sure — ask the patient again:')} {askAgain.map((u) => u.name || translate(symptomName(u.symptom_code))).join(', ')}
+        </p>
+      )}
 
       {proposals.length > 0 && (
         <div className="sym-proposals">
           <div className="sym-proposals-head">
             <b>{translate('Suggested — confirm before use')}</b>
-            <button type="button" className="btn btn-primary btn-sm" disabled={disabled} onClick={acceptAll}>
+            <button type="button" className="btn btn-primary btn-sm" disabled={disabled || stale} onClick={acceptAll}>
               <Icon name="check" /> {translate('Confirm all')}
             </button>
           </div>
           <div className="sym-chips">
             {proposals.map((p) => (
               <span key={p.symptom_code} className={'sym-chip pending ' + p.state.toLowerCase()} title={p.phrase ? '“' + p.phrase + '”' : ''}>
-                <button type="button" className="sym-chip-state" disabled={disabled} onClick={() => flip(p)} title={translate('Switch Yes / No')}>
+                <button type="button" className="sym-chip-state" disabled={disabled || stale} onClick={() => flip(p)} title={translate('Switch Yes / No')}>
                   {translate(p.state === 'PRESENT' ? 'Yes' : 'No')}
                 </button>
                 <span>{translate(symptomName(p.symptom_code))}</span>
-                <button type="button" className="sym-chip-ok" disabled={disabled} onClick={() => accept(p)} title={translate('Confirm')}>
+                <button type="button" className="sym-chip-ok" disabled={disabled || stale} onClick={() => accept(p)} title={translate('Confirm')}>
                   <Icon name="check" />
                 </button>
                 <button type="button" className="sym-chip-x" disabled={disabled} onClick={() => drop(p)} title={translate('Discard')}>

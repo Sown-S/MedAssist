@@ -25,7 +25,8 @@ beforeEach(async () => {
   localStorage.clear()
   server = [
     { id: 'w1', ticket: 1, name: 'Bệnh nhân chờ', status: 'Waiting', doctor: '', doctorId: null, room: '' },
-    { id: 'e1', ticket: 2, name: 'Bệnh nhân đang khám', status: 'Examining', doctor: DOC_A.name, doctorId: DOC_A.id, room: DOC_A.room }
+    { id: 'e1', ticket: 2, name: 'Bệnh nhân đang khám', status: 'Examining', doctor: DOC_A.name, doctorId: DOC_A.id, room: DOC_A.room },
+    { id: 'p1', ticket: 3, name: 'Bệnh nhân chờ thanh toán', status: 'Prescribed', doctor: DOC_B.name, doctorId: DOC_B.id, room: DOC_B.room }
   ]
   stale = [{ id: 's1', ticket: 9, name: 'Lượt hôm qua', status: 'CheckedIn', carriedFrom: '2026-10-31' }]
   const find = (id) => server.find((v) => v.id === id)
@@ -46,8 +47,8 @@ beforeEach(async () => {
     labOut: vi.fn(async () => {}),
     labReturn: vi.fn(async () => {})
   }
-  // Như server thật: lượt Prescribed không nằm trong GET /queue; mở lại đơn thì lượt về Examining và hiện lại.
-  exam = { reopenPrescription: vi.fn(async (id) => server.push({ id, ticket: 3, name: 'Bệnh nhân chờ thanh toán', status: 'Examining', doctor: DOC_B.name, doctorId: DOC_B.id, room: DOC_B.room })) }
+  // Như server thật: mở lại đơn thì lượt Prescribed về Examining.
+  exam = { reopenPrescription: vi.fn(async (id) => (find(id).status = 'Examining')) }
   await load()
 })
 afterEach(() => {

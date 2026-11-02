@@ -458,6 +458,8 @@ export const VI = {
   'Checking…': 'Đang kiểm tra…',
   Model: 'Mô hình',
   'Test connection': 'Kiểm tra kết nối',
+  // Nút ở ô Server (màn đăng nhập); khác 'Test' = in trang thử của máy in.
+  Check: 'Kiểm tra',
   timeout: 'quá thời gian chờ',
   Document: 'Tài liệu',
   Required: 'Bắt buộc',
@@ -1557,6 +1559,7 @@ export const VI = {
   'continue with the checklist below.': 'tiếp tục với danh sách bên dưới.',
   'No catalog symptoms found — use the checklist below.': 'Không thấy triệu chứng nào trong danh mục — dùng danh sách bên dưới.',
   'Suggested — confirm before use': 'Đề xuất — cần xác nhận trước khi dùng',
+  'Not sure — ask the patient again:': 'Chưa rõ — cần hỏi lại bệnh nhân:',
   'Confirm all': 'Xác nhận tất cả',
   'Switch Yes / No': 'Đổi Có / Không',
   'Discard': 'Bỏ',
@@ -1979,6 +1982,7 @@ export const VI = {
   'Fill empty fields': 'Điền vào ô còn trống',
   'already entered — kept': 'đã nhập — giữ nguyên',
   'The description changed after the last suggestion — run it again.': 'Lời kể đã sửa sau lần gợi ý trước — hãy chạy lại.',
+  'The description changed — run the suggestion again before using these.': 'Lời kể đã sửa — hãy chạy lại gợi ý trước khi dùng các số này.',
   // Quản trị — màn chưa có dữ liệu server
   'No activity recorded yet.': 'Chưa có hoạt động nào.',
   'Automatic daily backup on the clinic server; restoring is done by the system administrator.': 'Sao lưu tự động hằng ngày trên máy chủ; khôi phục do quản trị viên thực hiện.',

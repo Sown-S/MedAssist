@@ -148,3 +148,6 @@ class QueueItem(BaseModel):
     called_by_name: str | None = None
     called_room: str | None = Field(default=None, description="Mã phòng của bác sĩ đã mời")
     called_room_name: str | None = None
+    finished_at: datetime | None = None
+    outcome: str | None = Field(default=None, description="Referred: lượt kết thúc bằng chuyển tuyến")
+    referred_by_role: str | None = Field(default=None, description="Nurse: chuyển tuyến tại quầy (ca cờ đỏ)")

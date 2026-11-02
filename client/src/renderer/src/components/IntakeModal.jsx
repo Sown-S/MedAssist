@@ -5,7 +5,7 @@ import Icon from './Icon'
 import { syncQueue } from '../api/queueStore'
 import * as clinic from '../api/clinicApi'
 import { VITAL_KEYS, checkVitals, vitalsFromForm } from '../api/vitals'
-import { toPayload } from '../api/symptoms'
+import { toPayload, extractionStale } from '../api/symptoms'
 import VitalsFields from './VitalsFields'
 import VitalProposals from './VitalProposals'
 import SymptomPanel from './SymptomPanel'
@@ -14,6 +14,9 @@ import { todayISO } from '../api/inventoryStore'
 import { translate } from '../i18n'
 import { printTicket, ticketNo } from './queuePrint'
 import PatientAlerts from './PatientAlerts'
+
+// Sinh hiệu đề xuất + lời kể của lần trích xuất ra chúng (xem extractionStale).
+const NO_VITALS = { list: [], from: null }
 
 const PHONE_RE = /^0\d{9}$/
 const DOB_RE = /^\d{1,2}\/\d{1,2}\/\d{4}$/
@@ -60,7 +63,7 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
   const [idTaken, setIdTaken] = useState(false)
   const visitRef = useRef(null)
   // Chờ y tá xác nhận, không tự điền.
-  const [vitalProps, setVitalProps] = useState([])
+  const [vitalProps, setVitalProps] = useState(NO_VITALS)
   const saved = useRef(false)
 
   useEffect(() => {
@@ -73,7 +76,7 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
     setExisting(patient)
     setVisit(null)
     setIdTaken(false)
-    setVitalProps([])
+    setVitalProps(NO_VITALS)
     visitRef.current = null
     saved.current = false
   }, [open, patient])
@@ -306,15 +309,16 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
         text={form.reason}
         onText={(t) => setForm((f) => ({ ...f, reason: t }))}
         onExtract={extract}
-        onVitals={setVitalProps}
+        onVitals={(list, from) => setVitalProps({ list, from })}
       />
 
       <div className="section-label">Vital signs</div>
       <VitalProposals
-        list={vitalProps}
+        list={vitalProps.list}
         form={form}
         onApply={(fill) => setForm((f) => ({ ...f, ...fill }))}
-        onDrop={(keys) => setVitalProps((l) => l.filter((p) => !keys.includes(p.key)))}
+        onDrop={(keys) => setVitalProps((v) => ({ ...v, list: v.list.filter((p) => !keys.includes(p.key)) }))}
+        stale={extractionStale(vitalProps.from, form.reason)}
       />
       <VitalsFields value={form} onChange={(k, v) => setForm((f) => ({ ...f, [k]: v }))} errorKeys={touched ? vit.errorKeys : new Set()} requireWeight={child} />
       <div className="form-grid intake-extra" style={{ marginTop: 10 }}>

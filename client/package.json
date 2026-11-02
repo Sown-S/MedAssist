@@ -1,6 +1,6 @@
 {
   "name": "medassist-app",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "MedAssist — Clinical Decision Support System for Outpatient Clinics (Electron + React desktop client)",
   "main": "./out/main/index.js",
   "author": "C1SE.28",

@@ -13,6 +13,8 @@ import { vitalsText } from '../../api/vitals'
 
 // Số phút chờ bắt đầu thành vàng / đỏ, theo từng chặng.
 const WAIT_LIMITS = { Waiting: [30, 60], CheckedIn: [15, 30], Examining: [30, 45], labs: [30, 60], Prescribed: [10, 20] }
+// Ca cờ đỏ theo kết quả lượt khám (outcome của liveRedFlags): [lớp badge, nhãn].
+const FLAG_BADGE = { referred: ['low', 'Transferred — doctors alerted'], seen: ['ok', 'Seen at the clinic'], queued: ['warn', 'Top of the queue (Emergency)'], left: ['warn', 'Left'] }
 
 export default function QueueView({ readOnly, onPay }) {
   const { visits, redFlags } = useQueue()
@@ -184,9 +186,7 @@ export default function QueueView({ readOnly, onPay }) {
                     {translate(r.doctorReview.decision === 'referred' ? 'Referred' : 'Seen at the clinic')} · {r.doctorReview.by}
                   </span>
                 ) : (
-                  <span className={'badge ' + (r.outcome === 'referred' ? 'low' : 'warn')}>
-                    {translate(r.outcome === 'referred' ? 'Transferred — doctors alerted' : r.outcome === 'queued' ? 'Top of the queue (Emergency)' : 'Waiting for a doctor')}
-                  </span>
+                  <span className={'badge ' + FLAG_BADGE[r.outcome][0]}>{translate(FLAG_BADGE[r.outcome][1])}</span>
                 )}
                 <span>{r.by}</span>
               </div>
