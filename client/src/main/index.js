@@ -72,9 +72,11 @@ function registerIpc() {
     return true
   })
   ipcMain.handle('config:get', () => readJson('config.json'))
-  ipcMain.handle('config:set', (_e, patch) => {
+  ipcMain.handle('config:set', async (_e, patch) => {
     const next = { ...readJson('config.json'), ...patch }
     writeJson('config.json', next)
+    // Đổi server: bỏ kết nối cũ (đã bắt tay theo địa chỉ trước) để lần gọi sau kết nối lại, không phải mở lại app.
+    if ('serverUrl' in patch) await session.defaultSession.closeAllConnections()
     return next
   })
 }
@@ -145,13 +147,16 @@ const serverHost = () => {
 }
 function pinServerCertificate() {
   session.defaultSession.setCertificateVerifyProc((req, callback) => {
-    if (req.hostname !== serverHost()) return callback(-3) // máy khác (không phải máy chủ phòng khám): kiểm tra mặc định
-    if (!PROJECT_CAS.length) return callback(app.isPackaged ? -2 : -3)
+    // Chứng chỉ do CA dự án ký thì nhận cho mọi địa chỉ: ô Server kiểm tra được địa chỉ đang gõ trước khi Lưu,
+    // trên máy chưa cài MedAssist Root CA vào Windows.
     try {
-      callback(verifyAgainstCAs(req, PROJECT_CAS) ? 0 : -2)
+      if (PROJECT_CAS.length && verifyAgainstCAs(req, PROJECT_CAS)) return callback(0)
     } catch {
-      callback(-2)
+      /* rơi xuống nhánh dưới */
     }
+    if (req.hostname !== serverHost()) return callback(-3) // máy khác (không phải máy chủ phòng khám): kiểm tra mặc định
+    // Máy chủ phòng khám mà không qua CA dự án → chặn ở bản cài (không để Windows tin thay).
+    callback(app.isPackaged || PROJECT_CAS.length ? -2 : -3)
   })
 }
 
