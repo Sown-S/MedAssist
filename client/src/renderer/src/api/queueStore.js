@@ -87,12 +87,16 @@ export function useQueueSync(ms = 3000) {
     return () => clearInterval(t)
   }, [ms])
 }
-// Ca cờ đỏ không lưu ở máy mà lấy từ hàng chờ (lượt cấp cứu đang chờ); ca đã chuyển tuyến xem ở hồ sơ bệnh án.
-// Máy chỉ giữ dấu “đã xem” của phiên này.
+// Ca cờ đỏ trong ngày không lưu ở máy mà lấy từ hàng chờ (kèm lượt đã kết thúc): lượt cờ đỏ, hoặc lễ tân chuyển
+// cấp cứu tại quầy. outcome: referred = đã chuyển tuyến, seen = khám tại phòng khám, queued = còn chờ, left = huỷ / bỏ về.
+// Thông báo chỉ hiện ca còn chờ (isPendingFlag). Máy chỉ giữ dấu “đã xem” của phiên này.
+const isRedFlag = (v) => v.redFlag || (v.outcome === 'Referred' && v.referredByRole === 'Nurse')
+const flagOutcome = (v) => (v.outcome === 'Referred' ? 'referred' : isQueued(v) ? 'queued' : v.status === ST.CANCELLED ? 'left' : 'seen')
+export const isPendingFlag = (r) => r.outcome === 'queued'
 function liveRedFlags(visits, prev = []) {
   const old = new Map(prev.map((r) => [r.id, r]))
   return visits
-    .filter((v) => isQueued(v) && v.triage === 'emergency')
+    .filter(isRedFlag)
     .map((v) => {
       const id = 'rf-' + v.id
       return {
@@ -105,7 +109,7 @@ function liveRedFlags(visits, prev = []) {
         signs: v.redFlagReason || v.reason || '',
         at: v.arrivedAt,
         by: '',
-        outcome: 'queued',
+        outcome: flagOutcome(v),
         ack: old.get(id)?.ack ?? false,
         doctorReview: old.get(id)?.doctorReview ?? null
       }
@@ -232,8 +236,8 @@ export function takeNext(user) {
   if (busy.length) return { ok: false, busy: busy[0], target: { ...busy[0], priority: false }, error: 'Finish the patient in your room first — finalize the visit or send them for lab tests.' }
   return inviteNext()
 }
-// Thu hồi đơn vừa chốt để sửa. rx là một dòng của GET /prescriptions (fromServerRx): GET /queue không có lượt Prescribed
-// nên kiểm theo dòng đơn. Server kiểm lại, hoàn kho, huỷ đơn và hoá đơn chờ thu, đưa lượt về Examining.
+// Thu hồi đơn vừa chốt để sửa. rx là một dòng của GET /prescriptions (fromServerRx) nên kiểm theo dòng đơn.
+// Server kiểm lại, hoàn kho, huỷ đơn và hoá đơn chờ thu, đưa lượt về Examining.
 // Đơn đã thu tiền / đã cấp thuốc là chứng từ: không sửa, kê đơn mới ở lần khám sau.
 export const canRecall = (rx, user) => rx.doctorId === user.id && rx.status === 'Confirmed' && rx.pay !== 'paid' && rx.rx.every((x) => x.dispense === 'Pending')
 export function recallVisit(rx, user) {

@@ -53,7 +53,8 @@ export default function SearchModal({ open, onClose, onCheckIn, readOnly }) {
   const server = useServerSearch(q, picked)
   const results = server.results
   const sel = server.detail
-  const todayOf = (p) => [...visits].reverse().find((v) => v.patientId === p.id)
+  // Hàng chờ có cả lượt đã kết thúc hôm nay → ưu tiên lượt còn mở.
+  const todayOf = (p) => visits.find((v) => v.patientId === p.id && !isClosed(v)) ?? [...visits].reverse().find((v) => v.patientId === p.id)
   const today = sel && todayOf(sel)
   const busy = today && !isClosed(today)
 

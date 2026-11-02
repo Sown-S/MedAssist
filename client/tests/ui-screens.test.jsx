@@ -100,6 +100,22 @@ describe('Luồng chính trên giao diện', () => {
     await waitFor(() => expect(calls).toContainEqual(expect.objectContaining({ method: 'POST', path: '/api/v1/visits/v-paid-wait/prescription/reopen' })))
   })
 
+  it('lễ tân thấy lượt chờ thanh toán ở Hàng chờ và ca chuyển viện tại quầy ở thẻ Ca cờ đỏ', async () => {
+    await syncQueue()
+    expect(calls).toContainEqual(expect.objectContaining({ method: 'GET', path: '/api/v1/queue?include_closed=true' }))
+    renderPage(<Reception />, { user: DESK, path: '/reception' })
+    await rendered()
+    expect(await screen.findByText(/1 referred · 0 seen at the clinic · 0 waiting for a doctor/)).toBeTruthy()
+    // Ca đã chuyển viện không hiện thông báo nổi đầu trang.
+    expect(document.querySelector('.redflag-alert')).toBeNull()
+    cleanup()
+    renderPage(<Reception />, { user: DESK, path: '/reception?view=queue' })
+    await rendered()
+    fireEvent.click(screen.getByText('Awaiting payment'))
+    expect(await screen.findByText('Lê Văn Cường')).toBeTruthy()
+    expect(screen.getByText('Transferred — doctors alerted')).toBeTruthy()
+  })
+
   it('lễ tân check-in bệnh nhân đang chờ → PATCH /visits/{id}/check-in', async () => {
     await syncQueue()
     renderPage(<Reception />, { user: DESK, path: '/reception?view=queue' })
