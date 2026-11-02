@@ -10,6 +10,10 @@ export const STATES = [
 ]
 export const SOURCES = { Form: 'Entered', Extracted: 'From description', Prompt: 'Asked (missing info)' }
 
+// Đề xuất (triệu chứng lẫn sinh hiệu) gắn với lời kể đã gửi trích xuất: `from` = { text, textChanged }.
+// Server báo text_changed hoặc lời kể trên form đã khác → kết quả cũ, không được xác nhận cho tới khi trích xuất lại.
+export const extractionStale = (from, text) => !!from && (from.textChanged || from.text !== text)
+
 // Danh mục đang dùng (GET /symptoms) — chỉ mã trong danh mục này mới gửi được lên server (mã lạ → 422 UNKNOWN_SYMPTOM).
 let snapshot = { list: [], status: 'idle' } // idle | loading | ready | failed
 const listeners = new Set()
