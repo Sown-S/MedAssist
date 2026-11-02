@@ -135,6 +135,7 @@ def test_order_results_and_invoice(client, nurse, doctor, doctor2, examining, se
     assert r.status_code == 200, r.text
     assert _lines(r.json()) == sorted([(us["name"], 150000, True), (xq["name"], 120000, True),
                                        ("Nội soi dạ dày", 500000, False)])
+    assert r.json()["unbilled_items"] == []
 
     # Quầy hủy dòng chưa làm trước khi thu tiền: hóa đơn lập lại, giữ dòng nhập tay
     r = client.post(f"/api/v1/service-order-items/{items[xq['name']]['item_id']}/cancel", headers=nurse,
@@ -162,8 +163,8 @@ def test_package_order_covers_consultation(client, nurse, doctor, examining, ser
     r = client.post(f"/api/v1/visits/{vid}/service-orders", headers=doctor, json={
         "package_id": p["package_id"], "service_ids": [cbc["service_id"], extra["service_id"]], "send_out": False})
     assert r.status_code == 201, r.text
-    assert sorted((i["item_name"], i["in_package"]) for i in r.json()["items"]) == sorted(
-        [(consult["name"], True), (cbc["name"], True), (extra["name"], False)])
+    assert sorted((i["item_name"], i["in_package"], i["group_key"]) for i in r.json()["items"]) == sorted(
+        [(consult["name"], True, "consult"), (cbc["name"], True, "hematology"), (extra["name"], False, "diagnostic")])
     assert client.get(f"/api/v1/visits/{vid}", headers=doctor).json()["lab_out_at"] is None
     invoice = _finish_exam(client, doctor, vid)
     assert _lines(invoice) == sorted([("Gói: Khám tổng quát cơ bản", 150000, True), (extra["name"], 200000, True)])

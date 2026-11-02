@@ -174,6 +174,8 @@ class ServiceOrderItemOut(BaseModel):
     result_at: datetime | None
     cancelled_at: datetime | None
     cancel_reason: str | None
+    kind: str | None = None
+    group_key: str | None = Field(None, description="Nhóm dịch vụ; consult = dịch vụ khám (vd trong gói khám)")
     unit: str | None = None
     ref_low: RefOut | None = None
     ref_high: RefOut | None = None

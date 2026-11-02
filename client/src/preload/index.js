@@ -1,8 +1,7 @@
 import { contextBridge, ipcRenderer } from 'electron'
 
-// Cầu nối an toàn giữa React và Electron: React gọi window.api.xxx(), KHÔNG truy cập Node.js trực tiếp.
-//  - secureStore: lưu token đăng nhập đã mã hoá bằng safeStorage của hệ điều hành (TC03).
-//  - config: cấu hình riêng của máy này (địa chỉ server...).
+// Cầu nối duy nhất giữa giao diện và Electron (giao diện không truy cập Node.js trực tiếp).
+// secureStore: token mã hoá bằng safeStorage của hệ điều hành; config: cấu hình riêng của máy này.
 const api = {
   secureStore: {
     get: (key) => ipcRenderer.invoke('secure:get', key),

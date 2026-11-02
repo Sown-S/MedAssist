@@ -1,0 +1,97 @@
+# Môi trường kiểm thử trên MỘT máy (Windows, macOS, Linux): CSDL + API + worker AI + dữ liệu mẫu.
+# Không dùng Caddy, chứng chỉ hay GPU; API chỉ mở ở http://127.0.0.1:8000 cho ứng dụng desktop trên chính máy này.
+# Không dùng cho phòng khám thật (mật khẩu mẫu, xem docs/huong-dan-kiem-thu.md). Chạy từ thư mục gốc repo:
+#   docker compose -f deploy/docker-compose.eval.yml --env-file deploy/eval.env up -d --build
+#   docker compose -f deploy/docker-compose.eval.yml --env-file deploy/eval.env down -v   # xóa sạch, làm lại từ đầu
+name: medassist-eval
+
+x-server-env: &server-env
+  ENVIRONMENT: prod
+  TZ: Asia/Ho_Chi_Minh
+  DATABASE_URL: postgresql+psycopg://medassist_app:${EVAL_DB_PASSWORD:-kiemthu_app}@db:5432/medassist
+  JWT_SECRET_KEY: ${EVAL_JWT_SECRET:-kiemthu-chi-dung-tren-may-nay-khong-dung-cho-phong-kham}
+  CORS_ORIGINS: '["app://medassist"]'
+  LLM_PROVIDER: ${EVAL_LLM_PROVIDER:-none}
+  OLLAMA_BASE_URL: ${EVAL_OLLAMA_URL:-http://host.docker.internal:11434}
+  OLLAMA_MODEL: ${EVAL_OLLAMA_MODEL:-hf.co/aisingapore/Gemma-SEA-LION-v3-9B-IT-GGUF:Q4_K_M}
+  OLLAMA_KEEP_ALIVE: 30m
+
+x-server: &server
+  build: ../server
+  image: medassist-server:eval
+  environment: *server-env
+  networks: [internal]
+
+services:
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${EVAL_DB_PASSWORD:-kiemthu_app}
+      POSTGRES_DB: medassist
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale-provider=icu --icu-locale=vi-VN --locale=C.UTF-8"
+      TZ: Asia/Ho_Chi_Minh
+      MEDASSIST_OWNER_PASSWORD: ${EVAL_DB_PASSWORD:-kiemthu_app}
+      MEDASSIST_APP_PASSWORD: ${EVAL_DB_PASSWORD:-kiemthu_app}
+      MEDASSIST_BACKUP_PASSWORD: ${EVAL_DB_PASSWORD:-kiemthu_app}
+    volumes:
+      - ../server/db/initdb:/docker-entrypoint-initdb.d:ro
+      - pgdata:/var/lib/postgresql/data
+    networks: [internal]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d medassist"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  migrate:
+    <<: *server
+    command: ["alembic", "upgrade", "head"]
+    environment:
+      <<: *server-env
+      MIGRATION_DATABASE_URL: postgresql+psycopg://medassist_owner:${EVAL_DB_PASSWORD:-kiemthu_app}@db:5432/medassist
+    depends_on:
+      db: {condition: service_healthy}
+    restart: "no"
+
+  # Mỗi lần bật: tài khoản, danh mục, tri thức chỉ nạp lần đầu; hàng đợi hôm nay tạo khi hôm nay chưa có lượt nào.
+  seed:
+    <<: *server
+    command: ["python", "-m", "scripts.seed_eval"]
+    environment:
+      <<: *server-env
+      EVAL_PASSWORD: ${EVAL_PASSWORD:-Kiemthu@2026}
+    volumes:
+      - ../knowledge:/knowledge:ro
+    depends_on:
+      migrate: {condition: service_completed_successfully}
+    restart: "no"
+
+  api:
+    <<: *server
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8000:8000"
+    depends_on:
+      seed: {condition: service_completed_successfully}
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=3)"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+
+  worker:
+    <<: *server
+    command: ["python", "-m", "app.worker"]
+    restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"   # Linux: gọi Ollama cài trên máy (Windows, macOS đã có sẵn)
+    depends_on:
+      seed: {condition: service_completed_successfully}
+
+networks:
+  internal:
+
+volumes:
+  pgdata:

@@ -1,9 +1,8 @@
 import { useAsyncAction } from '../hooks/useAsyncAction'
 import { useDelayedFlag } from '../hooks/useDelayedFlag'
 
-// Nút dùng cho thao tác ghi dữ liệu. onClick trả về Promise → nút tự khoá (chống bấm đúp tạo 2 hoá đơn / 2 đơn thuốc)
-// và hiện spinner nếu chờ quá 300ms. Nút submit của form: truyền loading={busy} từ trang cha.
-// className giữ nguyên như <button> thường (btn btn-primary...), mặc định type="button".
+// onClick trả về Promise → nút tự khoá (chống bấm đúp tạo hai hoá đơn / hai đơn) và hiện spinner nếu chờ quá 300 ms.
+// Nút submit của form: truyền loading từ trang cha.
 export default function Button({ onClick, loading = false, disabled = false, className = 'btn btn-primary', type = 'button', children, ...rest }) {
   const [run, running] = useAsyncAction(onClick)
   const busy = loading || running

@@ -5,11 +5,11 @@ import ChangePasswordModal from './ChangePasswordModal'
 import { useToast } from '../context/ToastContext'
 import { LANGUAGES, getLang, setLang, translate } from '../i18n'
 import { useNavigate } from 'react-router-dom'
-import { useQueue, isMine, inRoom, atLabs } from '../api/queueStore'
+import { useQueue, isMine, inRoom, atLabs, isPendingFlag } from '../api/queueStore'
 import { useInventory, stockOf } from '../api/inventoryStore'
 import { soldOutside } from '../api/rxSafety'
 
-// Thông báo tính từ dữ liệu thật (hàng chờ, kho) — khi có backend thật: GET /notifications hoặc đẩy qua WebSocket.
+// Thông báo tính tại máy từ hàng chờ và kho.
 const hm = (iso) => new Date(iso).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit', hour12: false })
 
 const HELP = {
@@ -32,7 +32,7 @@ const HELP = {
 }
 
 export default function TopActions({ user }) {
-  const [open, setOpen] = useState(null) // 'bell' | 'help' | 'settings' | 'password' | null
+  const [open, setOpen] = useState(null)
   const [unread, setUnread] = useState(true)
   const bellRef = useRef(null)
   const { redFlags, visits } = useQueue()
@@ -40,10 +40,10 @@ export default function TopActions({ user }) {
   const navigate = useNavigate()
   const doctor = user.roleKey === 'doctor'
   const consult = (id) => '/doctor?view=consult' + (id ? '&visit=' + id : '')
-  // Bác sĩ: việc cần làm ngay — luôn bật chấm đỏ cho tới khi xử lý xong.
+  // Bác sĩ: chấm đỏ luôn bật tới khi xử lý xong việc cần làm ngay.
   const live = doctor
     ? [
-        ...redFlags.filter((r) => !r.doctorReview).map((r) => ({ id: r.id, title: translate('Red-flag case') + ' — ' + r.name, note: translate(r.signs) || '—', time: hm(r.at), urgent: true, to: '/doctor' })),
+        ...redFlags.filter((r) => isPendingFlag(r) && !r.doctorReview).map((r) => ({ id: r.id, title: translate('Red-flag case') + ' — ' + r.name, note: translate(r.signs) || '—', time: hm(r.at), urgent: true, to: '/doctor' })),
         ...visits
           .filter((v) => inRoom(v) && v.returnNote && isMine(v, user))
           .map((v) => ({ id: 'rt' + v.id, title: translate('Prescription sent back') + ' — ' + v.name, note: v.returnNote.text || translate('not enough stock, please change these drugs'), time: hm(v.returnNote.at), urgent: true, to: consult(v.id) })),
@@ -52,7 +52,6 @@ export default function TopActions({ user }) {
           .map((v) => ({ id: 'lb' + v.id, title: translate('Back from lab') + ' — ' + v.name, note: translate('Results are ready — resume the visit'), time: hm(v.labReturnedAt), to: consult() }))
       ]
     : []
-  // Mọi vai trò: thuốc hết / dưới ngưỡng tồn (tính từ kho thật).
   const low = inv.drugs.filter((d) => d.active && d.kind === 'drug' && !soldOutside(d) && stockOf(d, inv.batches).statuses.some((x) => x === 'out' || x === 'low'))
   const stock = low.length
     ? [{ id: 'stock', title: low.length + ' ' + translate('drugs low or out of stock'), note: low.slice(0, 4).map((d) => d.name).join(', ') + (low.length > 4 ? '…' : ''), time: '', to: doctor ? '/doctor?view=drugs' : null }]
@@ -66,7 +65,6 @@ export default function TopActions({ user }) {
     showToast('Language updated')
   }
 
-  // Đóng danh sách thông báo khi bấm ra ngoài.
   useEffect(() => {
     if (open !== 'bell') return
     const close = (e) => !bellRef.current?.contains(e.target) && setOpen(null)

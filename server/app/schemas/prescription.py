@@ -59,3 +59,31 @@ class PrescriptionOut(BaseModel):
 
 class ReopenRequest(BaseModel):
     reason: CleanStr = Field(min_length=3, max_length=500)
+
+
+class PrescriptionListLine(BaseModel):
+    drug_name: str
+    unit: str
+    quantity: int
+    dosage: str
+    frequency: str
+    duration_days: int
+    dispense_status: str
+
+
+class PrescriptionListItem(BaseModel):
+    """Một đơn đã xác nhận trong danh sách đơn thuốc theo kỳ (màn Đơn thuốc của bác sĩ, lễ tân)."""
+    prescription_id: uuid.UUID
+    visit_id: uuid.UUID
+    visit_date: datetime
+    queue_number: int | None
+    patient_code: str
+    patient_name: str
+    physician_id: uuid.UUID
+    physician_name: str
+    status: str
+    confirmed_at: datetime
+    items: list[PrescriptionListLine]
+    drug_total: MoneyOut
+    invoice_status: str | None            # Pending / Paid; None khi hóa đơn đã hủy chưa lập lại
+    invoice_total: MoneyOut | None

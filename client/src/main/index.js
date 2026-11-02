@@ -39,10 +39,15 @@ const readJson = (name) => {
 }
 const writeJson = (name, data) => writeFileSync(fileOf(name), JSON.stringify(data), 'utf8')
 
+// Máy không có kho khoá của hệ điều hành (Linux thiếu keyring): giữ token trong bộ nhớ đến khi tắt app,
+// không ghi chữ thường xuống đĩa (TC03).
+const memoryOnly = new Map()
+
 function registerIpc() {
   ipcMain.handle('secure:get', (_e, key) => {
+    if (!safeStorage.isEncryptionAvailable()) return memoryOnly.get(key) ?? null
     const v = readJson('secure.json')[key]
-    if (!v || !safeStorage.isEncryptionAvailable()) return null
+    if (!v) return null
     try {
       return safeStorage.decryptString(Buffer.from(v, 'base64'))
     } catch {
@@ -50,22 +55,28 @@ function registerIpc() {
     }
   })
   ipcMain.handle('secure:set', (_e, key, value) => {
-    if (!safeStorage.isEncryptionAvailable()) return false
+    if (!safeStorage.isEncryptionAvailable()) {
+      memoryOnly.set(key, String(value))
+      return true
+    }
     const all = readJson('secure.json')
     all[key] = safeStorage.encryptString(String(value)).toString('base64')
     writeJson('secure.json', all)
     return true
   })
   ipcMain.handle('secure:remove', (_e, key) => {
+    memoryOnly.delete(key)
     const all = readJson('secure.json')
     delete all[key]
     writeJson('secure.json', all)
     return true
   })
   ipcMain.handle('config:get', () => readJson('config.json'))
-  ipcMain.handle('config:set', (_e, patch) => {
+  ipcMain.handle('config:set', async (_e, patch) => {
     const next = { ...readJson('config.json'), ...patch }
     writeJson('config.json', next)
+    // Đổi server: bỏ kết nối cũ (đã bắt tay theo địa chỉ trước) để lần gọi sau kết nối lại, không phải mở lại app.
+    if ('serverUrl' in patch) await session.defaultSession.closeAllConnections()
     return next
   })
 }
@@ -136,13 +147,16 @@ const serverHost = () => {
 }
 function pinServerCertificate() {
   session.defaultSession.setCertificateVerifyProc((req, callback) => {
-    if (req.hostname !== serverHost()) return callback(-3) // máy khác (không phải máy chủ phòng khám): kiểm tra mặc định
-    if (!PROJECT_CAS.length) return callback(app.isPackaged ? -2 : -3)
+    // Chứng chỉ do CA dự án ký thì nhận cho mọi địa chỉ: ô Server kiểm tra được địa chỉ đang gõ trước khi Lưu,
+    // trên máy chưa cài MedAssist Root CA vào Windows.
     try {
-      callback(verifyAgainstCAs(req, PROJECT_CAS) ? 0 : -2)
+      if (PROJECT_CAS.length && verifyAgainstCAs(req, PROJECT_CAS)) return callback(0)
     } catch {
-      callback(-2)
+      /* rơi xuống nhánh dưới */
     }
+    if (req.hostname !== serverHost()) return callback(-3) // máy khác (không phải máy chủ phòng khám): kiểm tra mặc định
+    // Máy chủ phòng khám mà không qua CA dự án → chặn ở bản cài (không để Windows tin thay).
+    callback(app.isPackaged || PROJECT_CAS.length ? -2 : -3)
   })
 }
 

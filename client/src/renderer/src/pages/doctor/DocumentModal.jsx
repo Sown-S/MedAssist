@@ -5,24 +5,19 @@ import { useAuth } from '../../context/AuthContext'
 import { useToast } from '../../context/ToastContext'
 import { translate } from '../../i18n'
 import { VI } from '../../i18n/vi'
-import { logEvent } from '../../api/activityStore'
 import { labRows, syncQueue } from '../../api/queueStore'
 import { searchFacilities, referVisit, emergencyReferral, updateReferral } from '../../api/clinicApi'
 import { apiMessage } from '../../api/serviceStore'
 import { printHtml, esc } from '../admin/inventory/shared'
 import { dmy } from '../reception/shared'
 
-// Giấy chuyển tuyến. Giấy nghỉ ốm, tóm tắt bệnh án: ngoài phạm vi (đã bỏ).
-// subject: { name, gender, age, patientId, phone, allergies, history, diagnosis, hpi, exam, labOrders, labResult, rx, signs, referral }
-// mode (backend thật, ERD v2.0 — chuyển tuyến là một cách KẾT THÚC lượt khám, lưu ở server):
-//  - 'print' (mặc định, bản demo): chỉ điền và in giấy;
-//  - 'doctor': bác sĩ chuyển lượt đang khám của mình (PATCH /visits/{id}/refer) → lượt kết thúc, không có hoá đơn;
-//  - 'desk':   lễ tân — lượt đang chờ chuyển nặng (refer) hoặc cấp cứu ngay ở quầy (POST /visits/emergency-referral);
-//  - 'amend':  bác sĩ bổ sung giấy của lượt đã chuyển (PATCH /visits/{id}/referral), in lại;
-//  - 'reprint': xem và in lại giấy đã lưu (vai trò khác bác sĩ — không sửa được).
-// target: { visitId, ensurePatient: async () => patientId, chief, vitals } — mode 'desk' / 'doctor' / 'amend'.
+// Giấy chuyển tuyến. Chuyển tuyến kết thúc lượt khám và lưu ở server (ERD v2.0). mode:
+// 'print' chỉ điền và in, không lưu · 'doctor' chuyển lượt đang khám (PATCH /visits/{id}/refer) · 'desk' lễ tân chuyển lượt
+// đang chờ hoặc cấp cứu ngay ở quầy (POST /visits/emergency-referral) · 'amend' bác sĩ bổ sung giấy đã chuyển ·
+// 'reprint' xem và in lại (không sửa được).
+// target: { visitId, ensurePatient: async () => patientId, chief, vitals }
 const REFER_REASONS = ['Beyond the clinic’s capability', 'Emergency', 'At the patient’s request']
-// Phương tiện: nhãn giao diện ↔ giá trị server.
+// Nhãn giao diện ↔ giá trị server.
 const TRANSPORTS = [
   ['Ambulance', 'Ambulance'],
   ['Family vehicle', 'Family'],
@@ -30,7 +25,7 @@ const TRANSPORTS = [
   ['Other', 'Other']
 ]
 const transportLabel = (v) => TRANSPORTS.find(([, s]) => s === v)?.[0] ?? 'Ambulance'
-// Lý do lưu ở server bằng tiếng Việt → tìm lại nhãn gốc để chọn trong danh sách.
+// Server lưu lý do bằng tiếng Việt → tìm lại nhãn gốc để chọn trong danh sách.
 const reasonLabel = (text) => REFER_REASONS.find((r) => r === text || VI[r] === text) ?? text
 
 function patientMeta(s, t) {
@@ -85,10 +80,9 @@ export default function DocumentModal({ subject, onClose, mode = 'print', target
   const reasons = REFER_REASONS.includes(ref.reason) ? REFER_REASONS : [...REFER_REASONS, ref.reason]
 
   function log() {
-    logEvent(user, 'doc.print', { target: { kind: 'patient', id: subject.patientId ?? subject.name, label: subject.name }, params: { patient: subject.name, doc: 'referral' } })
   }
 
-  // Người ký trên giấy: bác sĩ (in / chuyển từ phòng khám) hoặc người ghi nhận ở quầy.
+  // Người ký: bác sĩ, hoặc người ghi nhận ở quầy.
   function print(by = old?.referred_by_name ?? user.name, role = desk || old?.referred_by_role === 'Nurse' ? 'Recorded by' : 'Doctor') {
     printHtml(
       t('Referral letter'),
@@ -114,7 +108,7 @@ export default function DocumentModal({ subject, onClose, mode = 'print', target
       ? 'Enter where the patient is referred to and the diagnosis.'
       : null
 
-  // Giấy theo đúng trường server nhận (ReferralIn); lý do ghi tiếng Việt.
+  // Đúng các trường server nhận (ReferralIn); lý do ghi tiếng Việt.
   const body = () => ({
     ...(ref.facilityId ? { facility_id: ref.facilityId } : {}),
     facility_name: ref.to.trim(),
@@ -128,7 +122,7 @@ export default function DocumentModal({ subject, onClose, mode = 'print', target
   })
 
   async function submit() {
-    if (problem) return showToast(translate(problem))
+    if (problem) return showToast(translate(problem), 'error')
     setBusy(true)
     try {
       if (mode === 'amend') {
@@ -153,7 +147,7 @@ export default function DocumentModal({ subject, onClose, mode = 'print', target
       onDone?.()
       onClose()
     } catch (e) {
-      showToast(translate(apiMessage(e)))
+      showToast(translate(apiMessage(e)), 'error')
     } finally {
       setBusy(false)
     }
@@ -235,7 +229,7 @@ export default function DocumentModal({ subject, onClose, mode = 'print', target
             <Icon name="printer" /> Reprint
           </button>
         ) : mode === 'print' ? (
-          <button className="btn btn-primary" onClick={() => (problem ? showToast(translate(problem)) : print(user.name))}>
+          <button className="btn btn-primary" onClick={() => (problem ? showToast(translate(problem), 'error') : print(user.name))}>
             <Icon name="printer" /> Print
           </button>
         ) : (
@@ -249,7 +243,7 @@ export default function DocumentModal({ subject, onClose, mode = 'print', target
   )
 }
 
-// Ô "Nơi chuyển đến": gợi ý từ danh mục cơ sở nhận chuyển tuyến (gõ không dấu, từ 2 ký tự), vẫn nhập tự do được.
+// Gợi ý từ danh mục cơ sở nhận chuyển tuyến (gõ không dấu, từ 2 ký tự), vẫn nhập tự do được.
 function FacilityInput({ value, onChange }) {
   const [list, setList] = useState([])
   const [open, setOpen] = useState(false)

@@ -146,11 +146,12 @@ def put_visit_symptoms(visit_id: uuid.UUID, body: SymptomsPut, actor: User = Dep
 
 # ============================================================================ Hàng đợi
 @router.get("/queue", response_model=list[QueueItem])
-def queue(_: User = Depends(audit_view("visit", roles=CLINICAL_ROLES, dedupe_seconds=DEFAULT_POLL_WINDOW)),
+def queue(include_closed: bool = Query(False, description="Thêm lượt hôm nay đã chờ thu tiền, xong, hủy, chuyển tuyến"),
+          _: User = Depends(audit_view("visit", roles=CLINICAL_ROLES, dedupe_seconds=DEFAULT_POLL_WINDOW)),
           db: Session = Depends(get_db)):
     """Hàng đợi hôm nay và lượt Examining còn dở từ ngày trước: Emergency > HighPriority > Routine/chưa
     phân luồng, cùng mức thì ai vào trước xếp trước. Client hỏi lại khoảng 2 giây một lần (US10)."""
-    return queue_service.queue_today(db)
+    return queue_service.queue_today(db, include_closed)
 
 
 # ============================================================================ Lượt khám

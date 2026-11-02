@@ -1,7 +1,6 @@
-// SINH HIỆU — đúng 8 khoá chuẩn của backend (fn_vital_sign_keys() / server/app/validation/schemas/vital_signs.schema.json).
-// Gửi lên server đúng các khoá này, đơn vị hệ mét, dạng SỐ; ô không đo thì BỎ (không gửi 0 / chuỗi rỗng).
-// hard = khoảng nhập (ngoài khoảng = gõ nhầm → chặn lưu, server trả VALIDATION_ERROR);
-// soft = cảnh báo mềm UNUSUAL_VALUE (vẫn lưu được, hỏi lại). Không phải ngưỡng lâm sàng — ngưỡng lâm sàng nằm trong luật cờ đỏ.
+// Sinh hiệu: đúng các khoá chuẩn của backend (vital_signs.schema.json), đơn vị hệ mét, dạng số; ô không đo thì bỏ.
+// hard = khoảng nhập (ngoài khoảng là gõ nhầm → chặn lưu); soft = cảnh báo UNUSUAL_VALUE (vẫn lưu được).
+// Không phải ngưỡng lâm sàng — ngưỡng lâm sàng nằm trong luật cờ đỏ.
 export const VITAL_KEYS = [
   { key: 'temperature_c', label: 'Temperature', short: 'Temp', unit: '°C', decimals: 1, hard: [30, 45], soft: [34, 42], placeholder: '37.0' },
   { key: 'heart_rate_bpm', label: 'Heart rate', short: 'HR', unit: 'bpm', decimals: 0, hard: [20, 250], placeholder: '80' },
@@ -22,7 +21,6 @@ const toNum = (x) => {
   return Number.isFinite(v) ? v : null
 }
 
-// Form (chuỗi người dùng gõ) → { khoá: số } — chỉ giữ ô có giá trị.
 export function vitalsFromForm(form) {
   const out = {}
   for (const d of VITAL_KEYS) {
@@ -31,10 +29,9 @@ export function vitalsFromForm(form) {
   }
   return out
 }
-// { khoá: số } → giá trị cho các ô nhập (chuỗi).
 export const vitalsToForm = (v) => Object.fromEntries(VITAL_KEYS.map((d) => [d.key, v?.[d.key] ?? '']))
 
-// Đọc cả dữ liệu cũ của bản demo ({ pulseBp: '80 · 120/80', temp: '37.5°C', spo2, weight, rr, height }) → 8 khoá chuẩn.
+// Đọc được cả dạng cũ ({ pulseBp: '80 · 120/80', temp: '37.5°C', … }).
 export function normalizeVitals(v) {
   if (!v) return {}
   if (VITAL_KEYS.some((d) => d.key in v)) return vitalsFromForm(v)
@@ -52,7 +49,7 @@ export function normalizeVitals(v) {
   })
 }
 
-// Kiểm tra theo khoảng nhập + cảnh báo mềm. Trả { errors: [{ key, msg }], warnings: [msg] }.
+// Trả { errors: [{ key, msg }], warnings: [msg] }.
 export function checkVitals(form) {
   const errors = []
   const warnings = []
@@ -75,7 +72,6 @@ export function checkVitals(form) {
   return { errors, warnings }
 }
 
-// Hiển thị gọn: "HR 80 · BP 120/80 · 37.5°C · SpO2 98% · 60 kg".
 export function vitalsText(raw, { withWeight = true } = {}) {
   const v = normalizeVitals(raw)
   const parts = []
@@ -88,19 +84,10 @@ export function vitalsText(raw, { withWeight = true } = {}) {
   return parts.join(' · ') || '—'
 }
 
-// Đầu vào cho bộ luật (ruleEngine dùng khoá ngắn temp / hr / rr / spo2 / sbp).
-export function ruleVitals(raw) {
-  const v = normalizeVitals(raw)
-  return { temp: v.temperature_c ?? null, hr: v.heart_rate_bpm ?? null, rr: v.respiratory_rate_bpm ?? null, spo2: v.spo2_pct ?? null, sbp: v.systolic_bp_mmhg ?? null }
-}
-
-// Khoá ngắn của bộ luật → khoá chuẩn (để tô vàng ô cần đo ngay khi luật cờ đỏ còn thiếu dữ liệu).
-export const RULE_KEY_TO_VITAL = { temp: 'temperature_c', hr: 'heart_rate_bpm', rr: 'respiratory_rate_bpm', spo2: 'spo2_pct', sbp: 'systolic_bp_mmhg' }
-
-// Đề xuất sinh hiệu từ lời kể (vital_proposals, ERD v2.0) — y tá xác nhận mới điền, không ghi đè số đã nhập.
+// Đề xuất sinh hiệu từ lời kể: y tá xác nhận mới điền, không ghi đè số đã nhập.
 const filled = (form, k) => String(form[k] ?? '').trim() !== ''
 
-// Gộp tâm thu + tâm trương thành một mục; các khoá khác mỗi khoá một mục.
+// Gộp tâm thu + tâm trương thành một mục.
 export function groupProposals(list) {
   const out = []
   const bp = list.filter((p) => p.group === 'blood_pressure')
@@ -115,7 +102,7 @@ export function groupProposals(list) {
   return out
 }
 
-// Phần điền được của một mục: chỉ các ô còn trống (huyết áp: cả cặp phải trống).
+// Chỉ điền ô còn trống (huyết áp: cả cặp phải trống).
 export function applicable(item, form) {
   if (item.keys.some((k) => filled(form, k))) return {}
   return Object.fromEntries(item.keys.map((k) => [k, String(item.values[k])]))

@@ -1,6 +1,6 @@
-/* Icon dùng chung, ô select, thông báo / trợ giúp trên topbar */
+/* Icon, ô select, thông báo / trợ giúp trên topbar */
 
-/* ===== Icon đơn sắc dùng chung (components/Icon.jsx) ===== */
+/* Icon đơn sắc (components/Icon.jsx) */
 .icn{width:1.15em;height:1.15em;vertical-align:-.2em;flex-shrink:0;}
 .confirm-box .ic{color:var(--priority);}
 .redflag-box .ic{color:var(--warn);}
@@ -9,7 +9,7 @@
 .warn-banner.caution .icon{color:#FCD34D;}
 .ai-box .icon{color:var(--accent);}
 
-/* ===== Ô chọn (select) — thay mũi tên gốc của trình duyệt ===== */
+/* Ô select: thay mũi tên gốc của trình duyệt */
 select{-webkit-appearance:none;appearance:none;cursor:pointer;font-family:inherit;padding-right:32px !important;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394A3B8' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") !important;
   background-repeat:no-repeat !important;background-position:right 9px center !important;background-size:16px !important;}
@@ -17,7 +17,7 @@ select:focus{outline:none;border-color:var(--accent);}
 select option{background:var(--solid);color:var(--ink);}
 .report-toolbar select{min-width:150px;padding-top:9px;padding-bottom:9px;border-radius:10px;font-size:14px;font-weight:600;}
 
-/* ===== Topbar: thông báo / trợ giúp / cài đặt ===== */
+/* Topbar: thông báo / trợ giúp / cài đặt */
 .notif-wrap{position:relative;}
 .notif-panel{position:absolute;right:0;top:calc(100% + 10px);width:330px;background:var(--solid);border:1px solid var(--border);border-radius:14px;box-shadow:0 24px 60px -18px rgba(0,0,0,.7);z-index:80;overflow:hidden;}
 .notif-head{padding:12px 14px;font-size:14px;font-weight:700;border-bottom:1px solid var(--border);}

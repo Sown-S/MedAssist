@@ -1,12 +1,10 @@
 import { useEffect, useMemo, useRef } from 'react'
 import { useQueue, invitesOf } from '../api/queueStore'
-import { DEMO_MODE } from '../api/client'
 
-// Báo ở quầy Lễ tân: mỗi khi bác sĩ báo sẵn sàng nhận người tiếp (queueStore.calls), máy quầy phát tiếng "ding"
-// để lễ tân nhìn màn hình và GỌI MIỆNG bệnh nhân vào đúng phòng. Không còn loa đọc số tự động.
-// Gắn ở cấp trang Tiếp đón nên đang ở màn nào cũng nghe. Chỉ báo lần gọi phát sinh SAU khi mở trang (không báo lại lịch sử).
+// Máy quầy phát tiếng “ding” mỗi lần bác sĩ mời bệnh nhân, để lễ tân gọi bệnh nhân vào đúng phòng.
+// Gắn ở cấp trang Tiếp đón nên ở màn nào cũng nghe; chỉ báo lần gọi phát sinh sau khi mở trang.
 
-// "P.101" → "phòng 101" — câu gợi ý để lễ tân đọc khi gọi.
+// “P.101” → “phòng 101”
 const roomWords = (room) => (room ? 'phòng ' + room.replace(/^p(hòng)?\.?\s*/i, '') : 'phòng khám')
 export const callText = (c) => `Mời số ${String(c.ticket).padStart(3, '0')} vào ${roomWords(c.room)}`
 
@@ -23,20 +21,17 @@ function ding() {
     o.start()
     o.stop(ctx.currentTime + 0.65)
     setTimeout(() => ctx.close(), 900)
-  } catch {
-    /* máy không phát được âm thanh — chỉ hiện trên màn hình */
-  }
+  } catch {/* máy không phát được âm thanh — chỉ hiện trên màn hình */}
 }
 
-// Backend thật: lời mời nằm ở GET /queue (called_at) — mỗi called_at mới (mời / gọi lại) giữa hai lần tải là một lần báo.
+// Mỗi called_at mới (mời / gọi lại) giữa hai lần tải là một lần báo.
 const liveCalls = (visits) => invitesOf(visits).map((v) => ({ id: v.id + '@' + v.calledAt }))
 
 export default function useCallAnnouncer() {
-  const { calls: localCalls = [], visits } = useQueue()
-  const calls = useMemo(() => (DEMO_MODE ? localCalls : liveCalls(visits)), [localCalls, visits])
+  const { visits } = useQueue()
+  const calls = useMemo(() => liveCalls(visits), [visits])
   const seen = useRef(null)
   useEffect(() => {
-    // Lần đầu: ghi nhận các lần gọi đã có, không báo lại.
     if (seen.current === null) {
       seen.current = new Set(calls.map((c) => c.id))
       return

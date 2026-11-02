@@ -1,16 +1,17 @@
 """Chẩn đoán (US02) và kê đơn (US03): Physician đang khám lượt đó thao tác; Physician, Nurse xem."""
+import datetime
 import uuid
 
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 
-from app.core.audit_view import CLINICAL_ROLES, audit_view
+from app.core.audit_view import CLINICAL_ROLES, DEFAULT_POLL_WINDOW, audit_view
 from app.core.auth import require_roles
 from app.core.database import get_db
 from app.models import User
 from app.schemas.diagnosis import DiagnosisCreate, DiagnosisOut, DiagnosisUpdate
 from app.schemas.invoice import InvoiceOut
-from app.schemas.prescription import PrescriptionDraft, PrescriptionOut, ReopenRequest
+from app.schemas.prescription import PrescriptionDraft, PrescriptionListItem, PrescriptionOut, ReopenRequest
 from app.services import invoice_service, prescription_service as rx
 
 router = APIRouter(tags=["prescription"])
@@ -99,3 +100,13 @@ def reopen(visit_id: uuid.UUID, body: ReopenRequest, actor: User = Depends(_phys
     """Mở lại đơn (chưa cấp thuốc, chưa thu tiền): hoàn kho, hủy đơn và hóa đơn, lượt khám về Examining."""
     rx.reopen(db, visit_id, body.reason, actor)
     db.commit()
+
+
+@router.get("/prescriptions", response_model=list[PrescriptionListItem])
+def list_prescriptions(date_from: datetime.date | None = None, date_to: datetime.date | None = None,
+                       physician_id: uuid.UUID | None = None,
+                       _: User = Depends(audit_view("prescription", roles=CLINICAL_ROLES,
+                                                    dedupe_seconds=DEFAULT_POLL_WINDOW)),
+                       db: Session = Depends(get_db)):
+    """Đơn đã xác nhận theo ngày xác nhận (mặc định hôm nay), lọc theo bác sĩ; tối đa 500 đơn."""
+    return rx.list_confirmed(db, date_from, date_to, physician_id)

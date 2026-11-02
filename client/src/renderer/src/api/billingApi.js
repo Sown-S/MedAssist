@@ -1,16 +1,13 @@
-// Lời gọi API cấp phát thuốc và thu tiền ở quầy (chỉ dùng khi tắt giả lập).
-// Server: server/app/routers/billing_router.py — Nurse thao tác; kho đã trừ lúc bác sĩ xác nhận đơn.
-//  - "Đã cấp" chỉ ghi nhận; "Bỏ qua" (bắt buộc lý do) hoàn kho + lập lại hóa đơn Pending.
-//  - Sửa hóa đơn Pending (phí khám, dòng cận lâm sàng nhập tay) = hủy và lập lại (mã mới).
-//  - Thu tiền: Pending -> Paid (Tiền mặt / Chuyển khoản). Đã thu tiền VÀ cấp phát xong -> lượt khám Finished.
+// Cấp phát thuốc và thu tiền ở quầy (billing_router). Kho đã trừ lúc bác sĩ xác nhận đơn: “Đã cấp” chỉ ghi nhận,
+// “Bỏ qua” hoàn kho và lập lại hoá đơn; sửa hoá đơn Pending = huỷ và lập lại mã mới.
+// Đã thu tiền và cấp phát xong thì lượt khám chuyển Finished.
 import { useEffect, useState } from 'react'
 import { apiGet, apiPost, apiRequest, ApiError } from './client'
 
 const V1 = '/api/v1'
 
 export const getAwaiting = () => apiGet(`${V1}/billing/awaiting`)
-// Lịch sử hóa đơn của một ngày (yyyy-mm-dd, bỏ trống = hôm nay), có patient_name, queue_number.
-// Hóa đơn bị hủy do sửa (lập lại mã mới) chỉ trả khi includeCancelled.
+// Hoá đơn của một ngày (bỏ trống = hôm nay). Hoá đơn bị huỷ do sửa chỉ trả khi includeCancelled.
 export const listInvoices = (date, includeCancelled = false) =>
   apiGet(`${V1}/billing/invoices?${new URLSearchParams({ ...(date ? { date } : {}), include_cancelled: includeCancelled })}`)
 export async function getInvoice(visitId) {
@@ -22,18 +19,16 @@ export async function getInvoice(visitId) {
   }
 }
 export const getPrintData = (visitId) => apiGet(`${V1}/visits/${visitId}/invoice/print`)
-// consultation_fee / paraclinical_items: bỏ trống (undefined) = giữ nguyên.
+// consultation_fee / paraclinical_items bỏ trống = giữ nguyên.
 export const editInvoice = (visitId, body) => apiRequest(`${V1}/visits/${visitId}/invoice`, 'PATCH', body)
 export const payInvoice = (visitId, method) => apiPost(`${V1}/visits/${visitId}/invoice/pay`, { payment_method: method })
 export const dispenseItem = (itemId, action, skipReason) =>
   apiRequest(`${V1}/prescription-items/${itemId}/dispense`, 'PATCH', { action, ...(action === 'Skipped' ? { skip_reason: skipReason } : {}) })
 export const dispenseAll = (visitId) => apiPost(`${V1}/visits/${visitId}/dispense-all`, {})
 
-// Phương thức thanh toán: client 'cash' | 'transfer' ↔ server 'Cash' | 'BankingTransfer'.
 export const toServerMethod = (m) => (m === 'transfer' ? 'BankingTransfer' : 'Cash')
 export const fromServerMethod = (m) => (m === 'BankingTransfer' ? 'transfer' : 'cash')
 
-// Hóa đơn server → hình dạng printReceipt (components/queuePrint.js) đang dùng.
 export function receiptOf(inv, { name, ticket, byName }) {
   return {
     id: inv.invoice_code,
@@ -49,7 +44,6 @@ export function receiptOf(inv, { name, ticket, byName }) {
   }
 }
 
-// Một dòng GET /billing/awaiting → dạng lượt khám mà PaymentModal và các danh sách ở quầy dùng.
 export const fromAwaiting = (a) => ({
   id: a.visit_id,
   ticket: a.queue_number,
@@ -62,7 +56,7 @@ export const fromAwaiting = (a) => ({
   pending: a.pending_items
 })
 
-// Danh sách chờ cấp phát / thu tiền (lượt Prescribed, cũ nhất trước) — hỏi lại định kỳ như hàng đợi.
+// Lượt chờ cấp phát / thu tiền, cũ nhất trước; hỏi lại định kỳ như hàng đợi.
 export function useAwaiting({ enabled = true, ms = 4000 } = {}) {
   const [list, setList] = useState([])
   const [loaded, setLoaded] = useState(false)
@@ -84,4 +78,21 @@ export function useAwaiting({ enabled = true, ms = 4000 } = {}) {
     }
   }, [enabled, ms, tick])
   return { list, loaded, error, reload: () => setTick((n) => n + 1) }
+}
+
+// Hoá đơn hôm nay (không gồm hoá đơn huỷ) cho thẻ tổng quan của Lễ tân.
+export function useTodayInvoices({ enabled = true, ms = 10000 } = {}) {
+  const [list, setList] = useState([])
+  useEffect(() => {
+    if (!enabled) return
+    let alive = true
+    const load = () => listInvoices().then((x) => alive && setList(x), () => {})
+    load()
+    const t = setInterval(load, ms)
+    return () => {
+      alive = false
+      clearInterval(t)
+    }
+  }, [enabled, ms])
+  return list
 }

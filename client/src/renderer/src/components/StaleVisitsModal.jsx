@@ -1,37 +1,32 @@
 import { useState } from 'react'
 import Modal, { ModalHeader } from './Modal'
 import Icon from './Icon'
-import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
 import { translate } from '../i18n'
-import { useQueue, closeStaleVisit, reopenStaleForPayment, STALE_REASONS, STATUSES, ST, statusLabel } from '../api/queueStore'
-import { estimateTotal } from '../api/billing'
+import { useQueue, closeStaleVisit, STALE_REASONS, ST, statusLabel } from '../api/queueStore'
 import { ticketNo } from './queuePrint'
-import { fmt, dmy } from '../pages/reception/shared'
+import { dmy } from '../pages/reception/shared'
 
-// Lượt chưa đóng từ những ngày trước (backend: GET /visits/stale) — Lễ tân xử lý đầu ngày:
-//  - bệnh nhân quay lại trả tiền → "Thu tiền" (lượt về hàng chờ hôm nay ở bước Chờ thanh toán);
-//  - còn lại → "Đóng lượt" kèm lý do (POST /visits/stale/cancel). Còn lượt chưa đóng thì bệnh nhân chưa tiếp đón lại được.
+// Lượt chưa đóng từ những ngày trước — Lễ tân xử lý đầu ngày: bệnh nhân quay lại trả tiền → Thu tiền;
+// còn lại → Đóng lượt kèm lý do. Còn lượt chưa đóng thì bệnh nhân chưa tiếp đón lại được.
 export default function StaleVisitsModal({ readOnly, onClose, onPay }) {
-  const { user } = useAuth()
   const { showToast } = useToast()
   const { stale = [] } = useQueue()
-  const [closing, setClosing] = useState(null) // id lượt đang chọn lý do
+  const [closing, setClosing] = useState(null)
   const [reason, setReason] = useState('left_waiting')
   const [note, setNote] = useState('')
 
   async function close(v) {
-    const r = await closeStaleVisit(v.id, { reason, note }, user)
-    if (!r.ok) return showToast(translate(r.error))
+    const r = await closeStaleVisit(v.id, { reason, note })
+    if (!r.ok) return showToast(translate(r.error), 'error')
     showToast(translate('Visit closed') + ' — ' + ticketNo(v.ticket) + ' ' + v.name)
     setClosing(null)
     setNote('')
   }
+  // Hoá đơn của lượt cũ vẫn nằm trên server: mở thẳng màn thu tiền.
   function collect(v) {
-    const r = reopenStaleForPayment(v.id, user)
-    if (!r.ok) return showToast(translate(r.error))
     onClose()
-    onPay(r.visit)
+    onPay(v)
   }
 
   return (
@@ -50,7 +45,6 @@ export default function StaleVisitsModal({ readOnly, onClose, onPay }) {
                 <small>
                   {dmy(v.carriedFrom + 'T00:00:00')} · {translate(statusLabel(v.status))}
                   {v.doctor ? ' · ' + v.doctor : ''}
-                  {v.status === ST.PRESCRIBED ? ' · ' + translate('Estimated total') + ' ' + fmt(estimateTotal(v)) : ''}
                 </small>
               </span>
               {v.status === ST.PRESCRIBED && (

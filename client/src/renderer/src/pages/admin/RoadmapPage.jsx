@@ -1,12 +1,16 @@
-// Trang này CHỦ ĐÍCH tồn tại để tự vẽ ranh giới phạm vi cho hội đồng — mỗi mục ở đây khớp
-// với đúng danh sách "Out-of-scope" trong Proposal (mục 6.2), tránh bị hỏi "sao không làm X".
+// Danh sách “ngoài phạm vi” của Proposal (mục 6.2) và các mục Architecture ghi vào lộ trình, để làm rõ ranh giới dự án.
 import Icon from '../../components/Icon'
 
 const ITEMS = [
   {
+    icon: 'alert',
+    title: 'Drug interaction and dose checking',
+    desc: 'Checking each prescription for drug–drug interactions, cross-allergies, contraindications with chronic conditions and dose limits, against a pharmacist-reviewed interaction catalog — the current version only shows a read-only allergy / chronic-condition reminder; the doctor reviews the prescription.'
+  },
+  {
     icon: 'stethoscope',
     title: 'Full health insurance integration',
-    desc: 'Online insurance card lookup through the national social insurance assessment portal, with automatic in-network/out-of-network classification — the current mock UI only supports entering the card number and covered amount manually.'
+    desc: 'Online insurance card lookup through the national social insurance assessment portal, with automatic in-network/out-of-network classification — the current version does not handle health insurance.'
   },
   {
     icon: 'wifi',

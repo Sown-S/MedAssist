@@ -1,12 +1,6 @@
-// Báo cáo vận hành cho Admin: GET /api/v1/reports/summary?date_from&date_to (server/app/routers — Sơn).
-// Server trả SỐ THÔ, client tự định dạng tiền và phần trăm:
-//   visits:  { total, by_status: { Waiting, CheckedIn, Examining, Prescribed, Finished, Cancelled }, red_flags }
-//   revenue: { invoices_paid, total, consultation, paraclinical, drug, by_day: [{ date, total }] } — theo ngày thu tiền
-//   ai:      { assessments: { total, full, rule_only, failed, skipped, pending, avg_latency_ms },
-//              decisions: { accepted_top, chose_other, no_suggestion, acceptance_rate (0–1, null khi chưa có ca) },
-//              extractions: { total, completed, failed } }
-// Không có Precision / Recall / F1: phòng khám không có nhãn đúng — các chỉ số đó đo trên testset v1.0 (evaluation/).
-// Chỉ số tổng hợp, không có dữ liệu bệnh nhân → Admin xem được.
+// Báo cáo vận hành (GET /reports/summary). Server trả số thô, client tự định dạng tiền và phần trăm.
+// Không có Precision / Recall: phòng khám không có nhãn đúng — các chỉ số đó đo trên bộ test trong evaluation/.
+// Chỉ số tổng hợp, không có dữ liệu bệnh nhân nên Admin xem được.
 import { apiGet } from './client'
 
 const p2 = (n) => String(n).padStart(2, '0')
@@ -18,7 +12,7 @@ export const PERIODS = [
   { key: 'month', label: 'This month' }
 ]
 
-// Khoảng ngày [từ, đến] theo giờ máy. 'week' bắt đầu từ thứ Hai; '7d' = 7 ngày gần nhất (biểu đồ trang chủ).
+// Khoảng [từ, đến] theo giờ máy. 'week' bắt đầu từ thứ Hai; '7d' = 7 ngày gần nhất.
 export function rangeOf(period) {
   const now = new Date()
   const from = new Date(now)
@@ -30,9 +24,7 @@ export function rangeOf(period) {
 
 export const reportPath = ([from, to]) => `/api/v1/reports/summary?date_from=${from}&date_to=${to}`
 
-// Nhật ký AI (Admin): GET /api/v1/admin/ai-logs — mới nhất trước, trả { total, limit, offset, items }.
-// Mỗi dòng chỉ có metadata (trạng thái, mode, mức ưu tiên, mã bệnh gợi ý, model, độ trễ, quyết định của bác sĩ);
-// không có bệnh nhân, triệu chứng hay đầu ra thô của LLM. filters: { from, to, run_type, status, mode } (rỗng = bỏ qua).
+// Nhật ký AI (GET /admin/ai-logs): chỉ có metadata, không có bệnh nhân, triệu chứng hay đầu ra thô của LLM.
 export const AI_RUN_TYPES = ['Assessment', 'Extraction']
 export const AI_STATUSES = ['Queued', 'Running', 'Completed', 'Degraded', 'Failed', 'Skipped']
 export const AI_MODES = ['Full', 'RuleOnly']
@@ -47,7 +39,7 @@ export function listAiLogs(filters, limit, offset) {
 export const vnd = (n) => Math.round(Number(n) || 0).toLocaleString('vi-VN') + 'đ'
 export const percent = (rate) => (rate == null ? '—' : Math.round(rate * 100) + '%')
 
-// Doanh thu từng ngày trong khoảng, ngày không có hóa đơn đã thu = 0 (server chỉ trả ngày có tiền).
+// Server chỉ trả ngày có tiền → điền 0 cho ngày trống.
 export function fillDays(byDay = [], [from, to]) {
   const amt = Object.fromEntries(byDay.map((d) => [d.date, Number(d.total) || 0]))
   const out = []

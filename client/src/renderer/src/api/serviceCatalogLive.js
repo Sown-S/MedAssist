@@ -1,13 +1,8 @@
-// Danh mục Dịch vụ, Xét nghiệm, Gói khám ở màn Quản trị khi chạy với server (ERD v2.1). Dữ liệu đổi về đúng hình dạng
-// dòng của catalogStore (code, name, group, price, low/high, items[{ ref, qty }]…) để CatalogDetailPage dùng chung bảng,
-// form và cột hiển thị với bản demo. Server tự ghi nhật ký; mã và loại dịch vụ không đổi được sau khi tạo.
+// Danh mục Dịch vụ, Xét nghiệm, Gói khám (ERD v2.1), đổi về hình dạng dòng mà CatalogDetailPage / RowForm dùng.
+// Mã và loại dịch vụ không đổi được sau khi tạo.
 import { useEffect, useSyncExternalStore } from 'react'
-import { DEMO_MODE } from './client'
 import { fetchServices, fetchPackages, createService, updateService, createPackage, updatePackage, fetchPriceHistory } from './serviceApi'
 import { apiMessage } from './serviceStore'
-
-export const LIVE_CATALOGS = ['services', 'labs', 'packages']
-export const isLiveCatalog = (key) => !DEMO_MODE && LIVE_CATALOGS.includes(key)
 
 const num = (x) => (x == null ? null : Number(x))
 const fromService = (s) => ({
@@ -70,7 +65,7 @@ export function useLiveCatalog(enabled) {
   return useSyncExternalStore(subscribe, () => state)
 }
 
-// Dòng form → body PATCH / POST (không gửi code, kind khi sửa — server không cho đổi).
+// Không gửi code, kind khi sửa — server không cho đổi.
 const bodyOf = (key, d) => ({
   name: d.name,
   group_key: d.group,
@@ -83,7 +78,6 @@ const idOfRef = (ref) => {
   return (kind === 'lab' ? state.labs : state.services).find((r) => r.code === code)?.id
 }
 
-// Lưu một dòng (thêm khi chưa có id). Trả { ok } | { ok: false, error }.
 export async function saveLiveRow(key, d) {
   try {
     if (key === 'packages') {
@@ -111,5 +105,5 @@ export async function setLiveActive(key, id, active) {
   }
 }
 
-// Lịch sử giá (từ nhật ký server), mới nhất trước: [{ price, old_price, changed_at, changed_by_name }].
+// Lấy từ nhật ký server, mới nhất trước.
 export const livePriceHistory = (id) => fetchPriceHistory(id)
