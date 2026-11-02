@@ -458,6 +458,8 @@ export const VI = {
   'Checking…': 'Đang kiểm tra…',
   Model: 'Mô hình',
   'Test connection': 'Kiểm tra kết nối',
+  // Nút ở ô Server (màn đăng nhập); khác 'Test' = in trang thử của máy in.
+  Check: 'Kiểm tra',
   timeout: 'quá thời gian chờ',
   Document: 'Tài liệu',
   Required: 'Bắt buộc',

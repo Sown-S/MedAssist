@@ -56,7 +56,7 @@ export default function ServerAddress({ onSaved, onClose }) {
           />
         </span>
         <Button className="btn btn-ghost btn-sm" loading={status.state === 'checking'} onClick={test} title={translate('Test connection')}>
-          {translate('Test')}
+          {translate('Check')}
         </Button>
         <button type="button" className="btn btn-primary btn-sm" disabled={normalizeUrl(value) === current} onClick={save}>
           {translate('Save')}
