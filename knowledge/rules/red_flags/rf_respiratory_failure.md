@@ -8,8 +8,8 @@ resulting_priority: Emergency
 source_key: moh_qd_1327_2014
 source_edition: Quyết định số 1327/QĐ-BYT
 reason_text: 'CẤP CỨU: Dấu hiệu suy hô hấp cấp (khó thở nặng, SpO2 < 92% hoặc nhịp
-  thở vượt ngưỡng theo lứa tuổi tại QĐ 1327/QĐ-BYT: nhũ nhi <1 tuổi >=50; trẻ nhỏ
-  1-12 tuổi >=40; trẻ lớn & người lớn >=30 lần/phút).'
+  thở vượt ngưỡng tại QĐ 1327/QĐ-BYT: dưới 1 tuổi >=50; từ đủ 1 tuổi đến dưới 12 tuổi
+  >=40; từ đủ 12 tuổi trở lên >=30 lần/phút).'
 condition_logic:
   op: OR
   args:
@@ -57,4 +57,4 @@ condition_logic:
 ---
 
 # Cờ đỏ: Suy hô hấp cấp (SpO2 < 92% hoặc thở nhanh vượt ngưỡng theo lứa tuổi)
-CẤP CỨU: Dấu hiệu suy hô hấp cấp (khó thở nặng, SpO2 < 92% hoặc nhịp thở vượt ngưỡng theo lứa tuổi tại QĐ 1327/QĐ-BYT: nhũ nhi <1 tuổi >=50; trẻ nhỏ 1-12 tuổi >=40; trẻ lớn & người lớn >=30 lần/phút).
+CẤP CỨU: Dấu hiệu suy hô hấp cấp (khó thở nặng, SpO2 < 92% hoặc nhịp thở vượt ngưỡng tại QĐ 1327/QĐ-BYT: dưới 1 tuổi >=50; từ đủ 1 tuổi đến dưới 12 tuổi >=40; từ đủ 12 tuổi trở lên >=30 lần/phút).
