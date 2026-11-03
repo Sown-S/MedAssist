@@ -124,4 +124,17 @@ describe('Luồng chính trên giao diện', () => {
     fireEvent.click(await screen.findByText('Mark present — check in'))
     await waitFor(() => expect(calls).toContainEqual(expect.objectContaining({ method: 'PATCH', path: '/api/v1/visits/v-wait/check-in' })))
   })
+
+  it('lượt đang tiếp đón hiện mờ ở Hàng chờ, nhãn “Intake in progress…”, không có nút check-in, không tính vào số chờ', async () => {
+    await syncQueue()
+    renderPage(<Reception />, { user: DESK, path: '/reception?view=queue' })
+    await rendered()
+    const card = (await screen.findByText('Phạm Văn Dũng')).closest('.p-card')
+    expect(card.classList.contains('dimmed')).toBe(true)
+    expect(card.textContent).toContain('Intake in progress…')
+    expect(card.textContent).not.toContain('Mark present')
+    expect(screen.getByText('Waiting', { selector: '.itab span' }).nextElementSibling.textContent).toBe('1')
+    // Không lên khung gọi bệnh nhân.
+    expect(document.querySelector('.call-panel').textContent).not.toContain('003')
+  })
 })
