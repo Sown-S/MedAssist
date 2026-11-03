@@ -2,14 +2,14 @@
 schema: okf_triage_rule_v1
 rule_key: rf_respiratory_failure
 rule_name: 'Cờ đỏ: Suy hô hấp cấp (SpO2 < 92% hoặc thở nhanh vượt ngưỡng theo lứa
-  tuổi/cân nặng)'
+  tuổi)'
 rule_type: RED_FLAG
 resulting_priority: Emergency
 source_key: moh_qd_1327_2014
 source_edition: Quyết định số 1327/QĐ-BYT
 reason_text: 'CẤP CỨU: Dấu hiệu suy hô hấp cấp (khó thở nặng, SpO2 < 92% hoặc nhịp
-  thở vượt ngưỡng cấp cứu theo lứa tuổi tại Phụ lục QĐ 1327/QĐ-BYT: nhũ nhi < 1 tuổi
-  >= 50, trẻ nhỏ 1-5 tuổi >= 40, trẻ lớn & người lớn >= 30 lần/phút).'
+  thở vượt ngưỡng theo lứa tuổi tại QĐ 1327/QĐ-BYT: nhũ nhi <1 tuổi >=50; trẻ nhỏ
+  1-12 tuổi >=40; trẻ lớn & người lớn >=30 lần/phút).'
 condition_logic:
   op: OR
   args:
@@ -22,39 +22,39 @@ condition_logic:
     value: 92
   - op: AND
     args:
-    - type: vital
-      vital: weight_kg
+    - type: age
+      unit: years
       cmp: '>='
-      value: 25
+      value: 12
     - type: vital
       vital: respiratory_rate_bpm
       cmp: '>='
       value: 30
   - op: AND
     args:
-    - type: vital
-      vital: weight_kg
+    - type: age
+      unit: years
       cmp: '>='
-      value: 10
-    - type: vital
-      vital: weight_kg
+      value: 1
+    - type: age
+      unit: years
       cmp: <
-      value: 25
+      value: 12
     - type: vital
       vital: respiratory_rate_bpm
       cmp: '>='
       value: 40
   - op: AND
     args:
-    - type: vital
-      vital: weight_kg
+    - type: age
+      unit: years
       cmp: <
-      value: 10
+      value: 1
     - type: vital
       vital: respiratory_rate_bpm
       cmp: '>='
       value: 50
 ---
 
-# Cờ đỏ: Suy hô hấp cấp (SpO2 < 92% hoặc thở nhanh vượt ngưỡng theo lứa tuổi/cân nặng)
-CẤP CỨU: Dấu hiệu suy hô hấp cấp (khó thở nặng, SpO2 < 92% hoặc nhịp thở vượt ngưỡng cấp cứu theo lứa tuổi tại Phụ lục QĐ 1327/QĐ-BYT: nhũ nhi < 1 tuổi >= 50, trẻ nhỏ 1-5 tuổi >= 40, trẻ lớn & người lớn >= 30 lần/phút).
+# Cờ đỏ: Suy hô hấp cấp (SpO2 < 92% hoặc thở nhanh vượt ngưỡng theo lứa tuổi)
+CẤP CỨU: Dấu hiệu suy hô hấp cấp (khó thở nặng, SpO2 < 92% hoặc nhịp thở vượt ngưỡng theo lứa tuổi tại QĐ 1327/QĐ-BYT: nhũ nhi <1 tuổi >=50; trẻ nhỏ 1-12 tuổi >=40; trẻ lớn & người lớn >=30 lần/phút).
