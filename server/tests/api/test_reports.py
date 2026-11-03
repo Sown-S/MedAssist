@@ -9,6 +9,7 @@ from app.core.config import settings
 from app.core.database import SessionLocal
 from app.models import AiAssessmentLog
 from app.services import health_service
+from tests.api.intake import save_intake
 
 PAST = datetime.date(2020, 1, 15)
 
@@ -69,6 +70,17 @@ def test_summary_defaults_to_today(client, admin, today):
     assert s["date_from"] == s["date_to"] == today.isoformat()
     assert set(s["visits"]["by_status"]) == {"Waiting", "CheckedIn", "Examining", "Prescribed", "Finished",
                                             "Cancelled"}
+
+
+def test_summary_skips_unsaved_intake(client, admin, nurse):
+    pid = client.post("/api/v1/patients", headers=nurse, json={
+        "full_name": f"Báo Cáo {uuid.uuid4().hex[:6]}", "date_of_birth": "1990-01-01", "gender": "Male"}).json()["patient_id"]
+    before = _summary(client, admin)["visits"]
+    vid = client.post("/api/v1/visits", headers=nurse, json={"patient_id": pid, "chief_complaint": "Sốt"}).json()["visit_id"]
+    assert _summary(client, admin)["visits"] == before
+    save_intake(vid)
+    after = _summary(client, admin)["visits"]
+    assert after["by_status"]["Waiting"] == before["by_status"]["Waiting"] + 1 and after["total"] == before["total"] + 1
 
 
 def test_summary_counts_paid_revenue_and_visits(client, admin, nurse, prescribed):
@@ -153,7 +165,8 @@ def no_stuck(monkeypatch):
 
 def test_health_ai_disabled(client, monkeypatch, fresh_health, no_stuck):
     monkeypatch.setattr(settings, "LLM_PROVIDER", "none")
-    assert client.get("/health").json()["ai"]["ok"] is False
+    ai = client.get("/health").json()["ai"]
+    assert ai["ok"] is False and ai["reason"] == "disabled"
 
 
 def test_health_ai_ollama(client, monkeypatch, fresh_health, no_stuck):
@@ -172,9 +185,23 @@ def test_health_ai_ollama(client, monkeypatch, fresh_health, no_stuck):
         return _Resp()
 
     monkeypatch.setattr(health_service.httpx, "get", _get)
-    assert client.get("/health").json()["ai"] == {"ok": True, "detail": "Ollama sẵn sàng"}
+    assert client.get("/health").json()["ai"] == {"ok": True, "detail": "Ollama sẵn sàng", "reason": None}
     client.get("/health")
     assert len(calls) == 1 and calls[0].endswith("/api/tags")
+
+
+def test_health_ai_ollama_without_model(client, monkeypatch, fresh_health, no_stuck):
+    monkeypatch.setattr(settings, "LLM_PROVIDER", "ollama")
+
+    class _Resp:
+        def raise_for_status(self):
+            pass
+
+        def json(self):
+            return {"models": [{"name": "model-khac"}]}
+
+    monkeypatch.setattr(health_service.httpx, "get", lambda url, timeout: _Resp())
+    assert client.get("/health").json()["ai"]["reason"] == "no_model"
 
 
 def test_health_ai_ollama_down_still_200(client, monkeypatch, fresh_health, no_stuck):
@@ -185,7 +212,8 @@ def test_health_ai_ollama_down_still_200(client, monkeypatch, fresh_health, no_s
 
     monkeypatch.setattr(health_service.httpx, "get", _boom)
     r = client.get("/health")
-    assert r.status_code == 200 and r.json()["ai"] == {"ok": False, "detail": "Không kết nối được Ollama"}
+    assert r.status_code == 200 and r.json()["ai"] == {"ok": False, "detail": "Không kết nối được Ollama",
+                                                    "reason": "unreachable"}
     assert "refused" not in r.text
 
 
@@ -194,7 +222,8 @@ def test_health_ai_stuck_queue(client, monkeypatch, fresh_health, examining):
     old = datetime.datetime.now(datetime.UTC) - datetime.timedelta(seconds=settings.AI_ASSESSMENT_TIMEOUT_SECONDS + 60)
     aid = _run(examining(), status="Queued", queued_at=old)
     try:
-        assert client.get("/health").json()["ai"] == {"ok": False, "detail": "Worker AI không xử lý hàng đợi"}
+        assert client.get("/health").json()["ai"] == {"ok": False, "detail": "Worker AI không xử lý hàng đợi",
+                                                      "reason": "worker_stopped"}
     finally:
         with SessionLocal() as db:
             db.execute(update(AiAssessmentLog).where(AiAssessmentLog.assessment_id == aid)

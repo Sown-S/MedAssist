@@ -78,6 +78,6 @@ def health_check(db: Session = Depends(get_db)):
         logger.exception("Health check: không kết nối được DB")
         return JSONResponse(status_code=503, content={
             "status": "unhealthy", "database": {"ok": False, "detail": "Không kết nối được CSDL"},
-            "ai": {"ok": None, "detail": ""}, "version": settings.VERSION})
+            "ai": {"ok": None, "detail": "", "reason": None}, "version": settings.VERSION})
     return {"status": "healthy", "database": {"ok": True, "detail": ""}, "ai": health_service.ai_status(db),
             "version": settings.VERSION}
