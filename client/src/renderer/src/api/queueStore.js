@@ -23,7 +23,9 @@ const LEGACY = { waiting: ST.WAITING, in_exam: ST.EXAMINING, labs: ST.EXAMINING,
 export const normStatus = (k) => LEGACY[k] ?? k
 export const inRoom = (v) => v.status === ST.EXAMINING && !v.labOut
 export const atLabs = (v) => v.status === ST.EXAMINING && !!v.labOut
-export const isQueued = (v) => v.status === ST.WAITING || v.status === ST.CHECKED_IN
+// Lượt đang tiếp đón (chưa Lưu & cấp số) chưa thuộc hàng chờ: không gọi, không mời, không tính vào số người chờ.
+export const isIntakeOpen = (v) => v.status === ST.WAITING && v.intakeSaved === false
+export const isQueued = (v) => (v.status === ST.WAITING && !isIntakeOpen(v)) || v.status === ST.CHECKED_IN
 export const LEFT_REASONS = [
   { key: 'left_exam', label: 'Left during the consultation' },
   { key: 'no_return', label: 'Did not come back from lab tests' },

@@ -1589,6 +1589,7 @@ export const VI = {
   'The patient is at the desk and it is nearly their turn': 'Bệnh nhân đang ở quầy và sắp tới lượt',
   'Checked in — doctors can now call': 'Đã check-in — bác sĩ có thể mời số',
   'Not checked in': 'Chưa check-in',
+  'Intake in progress…': 'Đang tiếp đón…',
   'Nobody checked in yet': 'Chưa ai check-in',
   'This patient has not been checked in yet — ask reception to check them in when they are at the desk.': 'Bệnh nhân này chưa check-in — nhờ lễ tân check-in khi bệnh nhân có mặt ở quầy.',
   'Not checked in yet — reception checks the patient in when they are at the desk.': 'Chưa check-in — lễ tân check-in khi bệnh nhân có mặt ở quầy.',

@@ -214,6 +214,8 @@ export function toQueueVisit(q) {
     age: ageFrom(q.date_of_birth),
     reason: q.chief_complaint,
     status: q.status,
+    // false: lễ tân đang tiếp đón, chưa Lưu & cấp số — server chặn check-in / mời (409 INTAKE_NOT_SAVED).
+    intakeSaved: q.intake_saved !== false,
     triage,
     redFlag: !!q.is_red_flag,
     priority: triage !== 'routine',
