@@ -42,7 +42,7 @@ def get_visit(db: Session, visit_id: uuid.UUID) -> Visit:
     return visit
 
 
-def _intake_saved(visit_id=None):
+def intake_saved(visit_id=None):
     """Lễ tân đã bấm Lưu & cấp số: lượt đã có lần đánh giá (POST /visits/{id}/assessment)."""
     return exists().where(AiAssessmentLog.visit_id == (Visit.visit_id if visit_id is None else visit_id),
                           AiAssessmentLog.run_type == "Assessment")
@@ -51,7 +51,7 @@ def _intake_saved(visit_id=None):
 def _require_intake_saved(db: Session, visit_id: uuid.UUID) -> None:
     # Trích xuất từ lời kể tạo lượt Waiting trước khi lưu; chưa lưu thì chưa có phân luồng / đánh giá.
     status = db.scalar(select(Visit.status).where(Visit.visit_id == visit_id))
-    if status in QUEUE_STATUSES and not db.scalar(select(_intake_saved(visit_id))):
+    if status in QUEUE_STATUSES and not db.scalar(select(intake_saved(visit_id))):
         raise AppError(409, "INTAKE_NOT_SAVED", "Lễ tân đang tiếp đón, chưa lưu và cấp số cho lượt này")
 
 
@@ -339,7 +339,7 @@ def call_next(db: Session, actor: User) -> Visit:
                        [{"visit_id": str(active)}])
     visit = db.scalar(
         select(Visit).where(Visit.queue_date == func.current_date(), Visit.status.in_(QUEUE_STATUSES),
-                            Visit.physician_id.is_(None), Visit.called_at.is_(None), _intake_saved())
+                            Visit.physician_id.is_(None), Visit.called_at.is_(None), intake_saved())
         .order_by(_PRIORITY_RANK.desc(), Visit.visit_date, Visit.queue_number)
         .limit(1).with_for_update(skip_locked=True))
     if visit is None:
@@ -386,7 +386,7 @@ def _queue_rows(db: Session, *where, order_by=None) -> list[dict]:
     caller, caller_room = aliased(User), aliased(Room)
     rows = db.execute(
         select(Visit, Patient.full_name, Patient.date_of_birth, Patient.gender, User.full_name, Room.code, Room.name,
-               caller.full_name, caller_room.code, caller_room.name, _intake_saved())
+               caller.full_name, caller_room.code, caller_room.name, intake_saved())
         .join(Patient, Patient.patient_id == Visit.patient_id)
         .outerjoin(User, User.user_id == Visit.physician_id)
         .outerjoin(Room, Room.room_id == User.room_id)
