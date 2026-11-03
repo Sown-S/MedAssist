@@ -22,7 +22,7 @@ beforeEach(async () => {
   localStorage.clear()
   current = DOC_A
   const row = (id, ticket, status, extra = {}) => ({ id, ticket, name: 'Bệnh nhân ' + ticket, status, triage: 'routine', doctor: '', doctorId: null, room: '', labOut: false, calledAt: null, calledById: null, calledByName: '', calledRoom: '', ...extra })
-  server = [row('v1', 1, 'CheckedIn'), row('v2', 2, 'Waiting'), row('v3', 3, 'Waiting', { triage: 'emergency', redFlagReason: 'Đau ngực dữ dội' })]
+  server = [row('v1', 1, 'CheckedIn'), row('v2', 2, 'Waiting'), row('v3', 3, 'Waiting', { triage: 'emergency', redFlag: true, redFlagReason: 'Đau ngực dữ dội' })]
   const find = (id) => server.find((v) => v.id === id)
   const queued = (v) => ['Waiting', 'CheckedIn'].includes(v.status) && !v.doctorId
   const active = () => server.find((v) => queued(v) && v.calledById === current.id)
@@ -132,7 +132,7 @@ describe('Ca cờ đỏ khi chạy với server thật', () => {
     expect(Object.keys(localStorage).filter((k) => k.includes('queue'))).toEqual([])
   })
 
-  it('bác sĩ "Bỏ qua" vẫn giữ sau khi đồng bộ; lượt rời hàng chờ thì hết cảnh báo', async () => {
+  it('bác sĩ "Bỏ qua" vẫn giữ sau khi đồng bộ; lượt rời hàng chờ thì hết cảnh báo nhưng vẫn tính là ca cờ đỏ', async () => {
     const [rf] = queue.getQueue().redFlags
     queue.reviewRedFlag(rf.id, 'seen', DOC_A)
     await queue.syncQueue()
@@ -140,7 +140,48 @@ describe('Ca cờ đỏ khi chạy với server thật', () => {
     expect(visit('v3').status).toBe('Waiting') // không tự đóng lượt ở máy
     server[2].status = 'Finished'
     await queue.syncQueue()
-    expect(queue.getQueue().redFlags).toHaveLength(0)
+    expect(queue.getQueue().redFlags).toMatchObject([{ visitId: 'v3', outcome: 'seen' }])
+    expect(queue.getQueue().redFlags.filter(queue.isPendingFlag)).toHaveLength(0)
+  })
+
+  it('ca trong ngày: chuyển viện / khám tại phòng khám / còn chờ / bỏ về theo trạng thái lượt', async () => {
+    server[0] = { ...server[0], status: 'Prescribed', redFlag: true }
+    server.push(
+      { id: 'n1', ticket: 4, name: 'Chuyển tại quầy', status: 'Finished', triage: 'routine', redFlag: false, outcome: 'Referred', referredByRole: 'Nurse' },
+      { id: 'd1', ticket: 5, name: 'Bác sĩ chuyển tuyến', status: 'Finished', triage: 'routine', redFlag: false, outcome: 'Referred', referredByRole: 'Doctor' },
+      { id: 'd2', ticket: 6, name: 'Cờ đỏ, bác sĩ chuyển tuyến', status: 'Finished', triage: 'emergency', redFlag: true, outcome: 'Referred', referredByRole: 'Doctor' },
+      { id: 'c1', ticket: 7, name: 'Cờ đỏ, bỏ về', status: 'Cancelled', triage: 'emergency', redFlag: true },
+      { id: 'h1', ticket: 8, name: 'Cấp cứu, không cờ đỏ', status: 'Waiting', triage: 'emergency', redFlag: false }
+    )
+    await queue.syncQueue()
+    const by = Object.fromEntries(queue.getQueue().redFlags.map((r) => [r.visitId, r.outcome]))
+    expect(by).toEqual({ v1: 'seen', v3: 'queued', n1: 'referred', d2: 'referred', c1: 'left' })
+    expect(queue.getQueue().redFlags.filter(queue.isPendingFlag).map((r) => r.visitId)).toEqual(['v3'])
+  })
+})
+
+describe('Hàng chờ có cả lượt đã kết thúc trong ngày', () => {
+  beforeEach(async () => {
+    server.push(
+      { id: 'x1', ticket: 4, name: 'Chờ thanh toán', status: 'Prescribed', triage: 'emergency', doctor: DOC_A.name, doctorId: DOC_A.id, room: DOC_A.room, calledAt: '2026-10-31T08:00:00Z', calledById: DOC_A.id },
+      { id: 'x2', ticket: 5, name: 'Đã xong', status: 'Finished', triage: 'routine', doctor: DOC_A.name, doctorId: DOC_A.id, room: DOC_A.room },
+      { id: 'x3', ticket: 6, name: 'Đã huỷ', status: 'Cancelled', triage: 'routine', calledAt: '2026-10-31T08:00:00Z', calledById: DOC_A.id }
+    )
+    await queue.syncQueue()
+  })
+
+  it('không tính vào người chờ, lời mời hay phòng khám của bác sĩ', () => {
+    expect(queue.waitingOrder().map((v) => v.id)).toEqual(['v3', 'v1', 'v2'])
+    expect(queue.readyOrder().map((v) => v.id)).toEqual(['v1'])
+    expect(queue.invitesOf()).toHaveLength(0)
+    expect(queue.myInvite(DOC_A)).toBeNull()
+    expect(queue.inRoomOf(DOC_A)).toHaveLength(0)
+  })
+
+  it('gọi bệnh nhân tiếp theo không bị lượt đã kết thúc chặn; lượt đã kết thúc không nhận lại được', async () => {
+    expect((await queue.takeNext(DOC_A)).invited.id).toBe('v3')
+    expect(queue.takePatient('x2', DOC_A).ok).toBe(false)
+    expect(queue.takePatient('x3', DOC_A).ok).toBe(false)
   })
 })
 

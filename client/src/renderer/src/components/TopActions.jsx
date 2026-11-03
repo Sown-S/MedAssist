@@ -5,7 +5,7 @@ import ChangePasswordModal from './ChangePasswordModal'
 import { useToast } from '../context/ToastContext'
 import { LANGUAGES, getLang, setLang, translate } from '../i18n'
 import { useNavigate } from 'react-router-dom'
-import { useQueue, isMine, inRoom, atLabs } from '../api/queueStore'
+import { useQueue, isMine, inRoom, atLabs, isPendingFlag } from '../api/queueStore'
 import { useInventory, stockOf } from '../api/inventoryStore'
 import { soldOutside } from '../api/rxSafety'
 
@@ -43,7 +43,7 @@ export default function TopActions({ user }) {
   // Bác sĩ: chấm đỏ luôn bật tới khi xử lý xong việc cần làm ngay.
   const live = doctor
     ? [
-        ...redFlags.filter((r) => !r.doctorReview).map((r) => ({ id: r.id, title: translate('Red-flag case') + ' — ' + r.name, note: translate(r.signs) || '—', time: hm(r.at), urgent: true, to: '/doctor' })),
+        ...redFlags.filter((r) => isPendingFlag(r) && !r.doctorReview).map((r) => ({ id: r.id, title: translate('Red-flag case') + ' — ' + r.name, note: translate(r.signs) || '—', time: hm(r.at), urgent: true, to: '/doctor' })),
         ...visits
           .filter((v) => inRoom(v) && v.returnNote && isMine(v, user))
           .map((v) => ({ id: 'rt' + v.id, title: translate('Prescription sent back') + ' — ' + v.name, note: v.returnNote.text || translate('not enough stock, please change these drugs'), time: hm(v.returnNote.at), urgent: true, to: consult(v.id) })),

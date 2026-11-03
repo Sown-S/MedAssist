@@ -215,12 +215,17 @@ export function toQueueVisit(q) {
     reason: q.chief_complaint,
     status: q.status,
     triage,
+    redFlag: !!q.is_red_flag,
     priority: triage !== 'routine',
     redFlagReason: q.red_flag_reason,
     aiStatus: q.ai_status,
     arrivedAt: q.visit_date,
     checkedInAt: q.checked_in_at,
-    statusAt: q.exam_started_at ?? q.checked_in_at ?? q.visit_date,
+    statusAt: q.finished_at ?? q.exam_started_at ?? q.checked_in_at ?? q.visit_date,
+    finishedAt: q.finished_at ?? null,
+    // Referred: lượt kết thúc bằng chuyển tuyến; referredByRole Nurse = lễ tân chuyển cấp cứu tại quầy.
+    outcome: q.outcome ?? null,
+    referredByRole: q.referred_by_role ?? null,
     doctor: q.physician_name ?? '',
     doctorId: q.physician_id,
     // Lượt khám không lưu phòng riêng: lấy phòng của bác sĩ đang khám (rỗng khi chưa ai nhận).
@@ -239,7 +244,8 @@ export function toQueueVisit(q) {
     fromServer: true
   }
 }
-export const fetchQueue = async () => (await apiGet(`${V1}/queue`)).map(toQueueVisit)
+// Kèm lượt hôm nay đã kết thúc (Prescribed / Finished / Cancelled) cho các tab của Hàng chờ và thẻ Ca cờ đỏ.
+export const fetchQueue = async () => (await apiGet(`${V1}/queue?include_closed=true`)).map(toQueueVisit)
 export const fetchStale = async () => (await apiGet(`${V1}/visits/stale`)).map((q) => ({ ...toQueueVisit(q), carriedFrom: q.queue_date }))
 export const cancelStale = (ids, reason) => apiPost(`${V1}/visits/stale/cancel`, { visit_ids: ids, reason })
 

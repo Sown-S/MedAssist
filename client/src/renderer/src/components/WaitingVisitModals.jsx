@@ -13,12 +13,14 @@ import VitalsFields from './VitalsFields'
 import VitalProposals from './VitalProposals'
 import SymptomPanel from './SymptomPanel'
 import { normalizeVitals, vitalsToForm, vitalsFromForm } from '../api/vitals'
-import { toPayload } from '../api/symptoms'
+import { toPayload, extractionStale } from '../api/symptoms'
 import DocumentModal from '../pages/doctor/DocumentModal'
 
 // Quầy xử lý lượt đang chờ: sửa lượt khi bệnh nhân chuyển nặng (luật chạy lại, chỉ nâng mức) hoặc huỷ lượt (lưu lý do).
 
 const LEVEL_LABEL = { high: 'High priority', emergency: 'Emergency' }
+// Sinh hiệu đề xuất + lời kể của lần trích xuất ra chúng (xem extractionStale).
+const NO_VITALS = { list: [], from: null }
 const symMap = (list) => Object.fromEntries((list ?? []).map((x) => [x.symptom_code, { state: x.state, source: x.source }]))
 
 export function EditWaitingModal({ visit, onClose }) {
@@ -35,7 +37,7 @@ export function EditWaitingModal({ visit, onClose }) {
   const [busy, setBusy] = useState(false)
   // Chuyển nặng lúc chờ → lễ tân chuyển tuyến lượt này (PATCH /visits/{id}/refer).
   const [referring, setReferring] = useState(false)
-  const [vitalProps, setVitalProps] = useState([])
+  const [vitalProps, setVitalProps] = useState(NO_VITALS)
   const textLocked = visit.status !== ST.WAITING
   useEffect(() => {
     Promise.all([apiGet('/api/v1/visits/' + visit.id), clinic.getVisitSymptoms(visit.id)])
@@ -99,14 +101,15 @@ export function EditWaitingModal({ visit, onClose }) {
           onText={(t) => setF((x) => ({ ...x, reason: t }))}
           textLocked={textLocked}
           onExtract={extract}
-          onVitals={setVitalProps}
+          onVitals={(list, from) => setVitalProps({ list, from })}
         />
         <div className="section-label">Vital signs</div>
         <VitalProposals
-          list={vitalProps}
+          list={vitalProps.list}
           form={f}
           onApply={(fill) => setF((x) => ({ ...x, ...fill }))}
-          onDrop={(keys) => setVitalProps((l) => l.filter((p) => !keys.includes(p.key)))}
+          onDrop={(keys) => setVitalProps((v) => ({ ...v, list: v.list.filter((p) => !keys.includes(p.key)) }))}
+          stale={extractionStale(vitalProps.from, f.reason)}
         />
         <VitalsFields value={f} onChange={(k, v) => setF((x) => ({ ...x, [k]: v }))} errorKeys={tried ? vit.errorKeys : new Set()} />
         <p className="ai-soft" style={{ fontSize: 12.5, margin: '6px 0 0' }}>

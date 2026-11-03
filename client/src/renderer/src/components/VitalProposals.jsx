@@ -3,17 +3,23 @@ import { translate } from '../i18n'
 import { vitalDef, groupProposals, applicable } from '../api/vitals'
 
 // Sinh hiệu server đọc được trong lời kể chỉ là đề xuất: y tá xác nhận mới điền. Không bao giờ ghi đè số đã nhập;
-// huyết áp đi theo cặp.
+// huyết áp đi theo cặp. Lời kể đã sửa sau lần trích xuất (stale) → khoá xác nhận cho tới khi trích xuất lại.
 const text = (item) =>
   item.bp
     ? `${translate('Blood pressure')} ${item.values.systolic_bp_mmhg ?? '?'}/${item.values.diastolic_bp_mmhg ?? '?'} mmHg`
     : `${translate(vitalDef(item.keys[0])?.label ?? item.keys[0])} ${item.values[item.keys[0]]} ${translate(vitalDef(item.keys[0])?.unit ?? '')}`
 
-export default function VitalProposals({ list, form, onApply, onDrop, disabled = false }) {
+export default function VitalProposals({ list, form, onApply, onDrop, disabled = false, stale = false }) {
   if (!list?.length) return null
   const items = groupProposals(list)
   const open = items.filter((i) => Object.keys(applicable(i, form)).length)
+  function apply(fill, keys) {
+    if (stale) return
+    onApply(fill)
+    onDrop(keys)
+  }
   function applyAll() {
+    if (stale) return
     onApply(Object.assign({}, ...open.map((i) => applicable(i, form))))
     onDrop(items.flatMap((i) => i.keys))
   }
@@ -22,11 +28,16 @@ export default function VitalProposals({ list, form, onApply, onDrop, disabled =
       <div className="sym-proposals-head">
         <b>{translate('Vital signs from the description — confirm before use')}</b>
         {open.length > 0 && (
-          <button type="button" className="btn btn-primary btn-sm" disabled={disabled} onClick={applyAll}>
+          <button type="button" className="btn btn-primary btn-sm" disabled={disabled || stale} onClick={applyAll}>
             <Icon name="check" /> {translate('Fill empty fields')}
           </button>
         )}
       </div>
+      {stale && (
+        <p className="sym-warn">
+          <Icon name="alert" /> {translate('The description changed — run the suggestion again before using these.')}
+        </p>
+      )}
       <div className="sym-chips">
         {items.map((i) => {
           const fill = applicable(i, form)
@@ -42,11 +53,8 @@ export default function VitalProposals({ list, form, onApply, onDrop, disabled =
                 <button
                   type="button"
                   className="sym-chip-ok"
-                  disabled={disabled}
-                  onClick={() => {
-                    onApply(fill)
-                    onDrop(i.keys)
-                  }}
+                  disabled={disabled || stale}
+                  onClick={() => apply(fill, i.keys)}
                   title={translate('Confirm')}
                 >
                   <Icon name="check" />
