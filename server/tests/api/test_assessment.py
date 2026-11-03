@@ -70,8 +70,13 @@ def test_post_queues_repeatable_assessment_and_get_polls_latest(
     admin = login("admin")
     visit_id = _visit(client, nurse, vital_signs={"spo2_pct": 98})
 
+    def queued():
+        return next(q for q in client.get("/api/v1/queue", headers=nurse).json() if q["visit_id"] == visit_id)
+
+    assert queued()["intake_saved"] is False
     first = client.post(f"/api/v1/visits/{visit_id}/assessment", headers=nurse)
     assert first.status_code == 202, first.text
+    assert queued()["intake_saved"] is True                 # Lưu & cấp số xong mới check-in được
     assert first.json() == {
         "assessment_id": first.json()["assessment_id"],
         "ai_status": "Pending",

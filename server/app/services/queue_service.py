@@ -17,11 +17,11 @@
 import datetime
 import uuid
 
-from sqlalchemy import case, func, or_, select, text, update
+from sqlalchemy import case, exists, func, or_, select, text, update
 from sqlalchemy.orm import Session, aliased
 
 from app.exceptions import AppError, NotFoundError
-from app.models import Diagnosis, Patient, Prescription, ReferralFacility, Room, User, Visit
+from app.models import AiAssessmentLog, Diagnosis, Patient, Prescription, ReferralFacility, Room, User, Visit
 from app.schemas.visit import EmergencyReferralCreate, ReferralIn, ReferralUpdate, VisitCreate, VisitUpdate
 from app.services import audit_service as audit
 
@@ -40,6 +40,19 @@ def get_visit(db: Session, visit_id: uuid.UUID) -> Visit:
     if visit is None:
         raise NotFoundError("Không tìm thấy lượt khám")
     return visit
+
+
+def _intake_saved(visit_id=None):
+    """Lễ tân đã bấm Lưu & cấp số: lượt đã có lần đánh giá (POST /visits/{id}/assessment)."""
+    return exists().where(AiAssessmentLog.visit_id == (Visit.visit_id if visit_id is None else visit_id),
+                          AiAssessmentLog.run_type == "Assessment")
+
+
+def _require_intake_saved(db: Session, visit_id: uuid.UUID) -> None:
+    # Trích xuất từ lời kể tạo lượt Waiting trước khi lưu; chưa lưu thì chưa có phân luồng / đánh giá.
+    status = db.scalar(select(Visit.status).where(Visit.visit_id == visit_id))
+    if status in QUEUE_STATUSES and not db.scalar(select(_intake_saved(visit_id))):
+        raise AppError(409, "INTAKE_NOT_SAVED", "Lễ tân đang tiếp đón, chưa lưu và cấp số cho lượt này")
 
 
 def _transition(db: Session, visit_id: uuid.UUID, actor: User, *, from_status: tuple[str, ...],
@@ -125,6 +138,7 @@ def update_visit(db: Session, visit_id: uuid.UUID, data: VisitUpdate, actor: Use
 
 # ---------------------------------------------------------------------------- chuyển trạng thái (API)
 def check_in(db: Session, visit_id: uuid.UUID, actor: User) -> Visit:
+    _require_intake_saved(db, visit_id)
     return _transition(db, visit_id, actor, from_status=("Waiting",), to_status="CheckedIn",
                        values={"checked_in_at": func.now()},
                        extra_where=(Visit.queue_date == func.current_date(),))
@@ -325,7 +339,7 @@ def call_next(db: Session, actor: User) -> Visit:
                        [{"visit_id": str(active)}])
     visit = db.scalar(
         select(Visit).where(Visit.queue_date == func.current_date(), Visit.status.in_(QUEUE_STATUSES),
-                            Visit.physician_id.is_(None), Visit.called_at.is_(None))
+                            Visit.physician_id.is_(None), Visit.called_at.is_(None), _intake_saved())
         .order_by(_PRIORITY_RANK.desc(), Visit.visit_date, Visit.queue_number)
         .limit(1).with_for_update(skip_locked=True))
     if visit is None:
@@ -342,6 +356,7 @@ def call(db: Session, visit_id: uuid.UUID, actor: User) -> Visit:
         raise AppError(409, "INVALID_TRANSITION", "Bệnh nhân không còn chờ khám", [{"current": visit.status}])
     if visit.called_by not in (None, actor.user_id):
         raise AppError(409, "CALLED_BY_OTHER", "Bác sĩ khác đang mời bệnh nhân này")
+    _require_intake_saved(db, visit_id)
     active = _active_call(db, actor)
     if active and active != visit_id:
         raise AppError(409, "ACTIVE_CALL", "Bạn đang mời một bệnh nhân chưa vào phòng",
@@ -371,7 +386,7 @@ def _queue_rows(db: Session, *where, order_by=None) -> list[dict]:
     caller, caller_room = aliased(User), aliased(Room)
     rows = db.execute(
         select(Visit, Patient.full_name, Patient.date_of_birth, Patient.gender, User.full_name, Room.code, Room.name,
-               caller.full_name, caller_room.code, caller_room.name)
+               caller.full_name, caller_room.code, caller_room.name, _intake_saved())
         .join(Patient, Patient.patient_id == Visit.patient_id)
         .outerjoin(User, User.user_id == Visit.physician_id)
         .outerjoin(Room, Room.room_id == User.room_id)
@@ -387,8 +402,8 @@ def _queue_rows(db: Session, *where, order_by=None) -> list[dict]:
              "referred_by_role": (v.referral or {}).get("referred_by_role"),
              "patient_name": name, "date_of_birth": dob, "gender": gender, "physician_name": physician,
              "room": room, "room_name": room_name, "called_by_name": caller_name,
-             "called_room": c_room, "called_room_name": c_room_name}
-            for v, name, dob, gender, physician, room, room_name, caller_name, c_room, c_room_name in rows]
+             "called_room": c_room, "called_room_name": c_room_name, "intake_saved": saved}
+            for v, name, dob, gender, physician, room, room_name, caller_name, c_room, c_room_name, saved in rows]
 
 
 def queue_today(db: Session, include_closed: bool = False) -> list[dict]:

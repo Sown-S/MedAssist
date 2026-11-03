@@ -27,7 +27,7 @@ import json
 import uuid
 from typing import Any
 
-from sqlalchemy import case, func, select, text, update
+from sqlalchemy import and_, case, func, or_, select, text, tuple_, update
 from sqlalchemy.orm import Session
 
 from app.ai.extraction.vital_extractor import extract_vitals
@@ -336,4 +336,16 @@ def get_latest_extraction(db: Session, visit_id: uuid.UUID, reader: KnowledgeRea
     # Lần chạy cũ không có hash: coi như đã đổi để giao diện yêu cầu trích xuất lại
     changed = snapshot.get("text_sha256") != _text_hash(visit.free_text_description)
     return {"extraction_id": run.assessment_id, "status": run.status, "suggestions": suggestions,
-            "vital_proposals": vitals, "text_changed": changed, "completed_at": run.completed_at}
+            "vital_proposals": vitals, "text_changed": changed, "completed_at": run.completed_at,
+            "queue_ahead": _queue_ahead(db, run)}
+
+
+def _queue_ahead(db: Session, run: AiAssessmentLog) -> int | None:
+    """Việc worker làm trước lần trích xuất đang chờ: việc đang chạy + trích xuất xếp trước (claim_next)."""
+    if run.status != "Queued":
+        return 0 if run.status == "Running" else None
+    earlier = (tuple_(AiAssessmentLog.queued_at, AiAssessmentLog.assessment_id)
+               < tuple_(run.queued_at, run.assessment_id))
+    return db.scalar(select(func.count()).select_from(AiAssessmentLog).where(or_(
+        AiAssessmentLog.status == "Running",
+        and_(AiAssessmentLog.status == "Queued", AiAssessmentLog.run_type == "Extraction", earlier))))
