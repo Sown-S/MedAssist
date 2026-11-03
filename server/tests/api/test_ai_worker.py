@@ -440,6 +440,18 @@ def test_extraction_api_then_worker_returns_suggestions_only(client, nurse, text
     assert client.get(f"/api/v1/visits/{vid}/symptoms", headers=nurse).json() == []
 
 
+def test_extraction_reports_queue_ahead(client, nurse, text_visit):
+    a, b = text_visit(), text_visit()
+    ahead_a = client.post(f"/api/v1/visits/{a}/symptom-extraction", headers=nurse).json()["queue_ahead"]
+    ahead_b = client.post(f"/api/v1/visits/{b}/symptom-extraction", headers=nurse).json()["queue_ahead"]
+    assert isinstance(ahead_a, int) and ahead_b == ahead_a + 1
+
+    assert _process(FakeLLMClient(), "fake") is True
+    done = client.get(f"/api/v1/visits/{a}/symptom-extraction", headers=nurse).json()
+    assert done["status"] == "Completed" and done["queue_ahead"] is None
+    assert client.get(f"/api/v1/visits/{b}/symptom-extraction", headers=nurse).json()["queue_ahead"] == ahead_a
+
+
 def test_extraction_masks_patient_identifiers(client, nurse, text_visit):
     vid = text_visit()
     with SessionLocal() as db:

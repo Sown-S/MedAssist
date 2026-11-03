@@ -151,3 +151,4 @@ class QueueItem(BaseModel):
     finished_at: datetime | None = None
     outcome: str | None = Field(default=None, description="Referred: lượt kết thúc bằng chuyển tuyến")
     referred_by_role: str | None = Field(default=None, description="Nurse: chuyển tuyến tại quầy (ca cờ đỏ)")
+    intake_saved: bool = Field(description="False: lễ tân chưa Lưu & cấp số, chưa check-in / mời khám được")
