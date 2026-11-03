@@ -106,6 +106,8 @@ def test_no_suggestion(client, doctor, examining, conditions, ai_run, top, statu
 
 def test_no_ai_run_at_all(client, doctor, examining, conditions):
     vid = examining()
+    with engine.begin() as conn:      # chỉ còn lần trích xuất, không có lần đánh giá nào
+        conn.execute(text("UPDATE ai_assessment_log SET run_type = 'Extraction' WHERE visit_id = :v"), {"v": vid})
     dx = _dx(client, doctor, vid, condition_code=CODES[0])
     assert dx["assessment_id"] is None and dx["matches_top_suggestion"] is None
 

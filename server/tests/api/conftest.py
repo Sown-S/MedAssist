@@ -8,6 +8,7 @@ from sqlalchemy import text
 from app.core.database import SessionLocal, engine
 from app.core.security import hash_password
 from app.models import User
+from tests.api.intake import save_intake
 
 
 @pytest.fixture
@@ -51,6 +52,7 @@ def examining(client, nurse, doctor, billing_settings):
             "full_name": f"Kê Đơn {uuid.uuid4().hex[:8]}", "date_of_birth": "1980-01-01", "gender": "Male",
             **patient_over}).json()["patient_id"]
         vid = client.post("/api/v1/visits", headers=nurse, json={"patient_id": pid, "chief_complaint": "Ho"}).json()["visit_id"]
+        save_intake(vid)
         assert client.patch(f"/api/v1/visits/{vid}/check-in", headers=nurse).status_code == 200
         assert client.patch(f"/api/v1/visits/{vid}/start-exam", headers=doctor).status_code == 200
         return vid

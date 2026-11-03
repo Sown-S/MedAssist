@@ -6,6 +6,7 @@ from sqlalchemy import text
 
 from app.core.database import SessionLocal, engine
 from app.models import ReferralFacility
+from tests.api.intake import save_intake
 
 REFERRAL = {"facility_name": "Bệnh viện Đa khoa Quảng Ngãi", "reason": "Vượt khả năng chuyên môn",
             "transport": "Ambulance", "condition": "Mất ý thức"}
@@ -138,9 +139,22 @@ def test_lab_out_shows_in_queue_and_clears_on_release(client, nurse, doctor, doc
 
 
 # ---------------------------------------------------------------------------- mời vào phòng
+def test_unsaved_intake_cannot_be_checked_in_or_called(client, nurse, doctor, patient, users, empty_queue):
+    vid = client.post("/api/v1/visits", headers=nurse, json={"patient_id": patient(), "chief_complaint": "Sốt"}).json()["visit_id"]
+    assert _queue_item(client, nurse, vid)["intake_saved"] is False
+    assert client.patch(f"/api/v1/visits/{vid}/check-in", headers=nurse).json()["error"]["code"] == "INTAKE_NOT_SAVED"
+    assert client.post(f"/api/v1/visits/{vid}/call", headers=doctor).json()["error"]["code"] == "INTAKE_NOT_SAVED"
+    assert client.post("/api/v1/queue/call-next", headers=doctor).json()["error"]["code"] == "QUEUE_EMPTY"
+
+    save_intake(vid)
+    assert _queue_item(client, nurse, vid)["intake_saved"] is True
+    assert client.patch(f"/api/v1/visits/{vid}/check-in", headers=nurse).status_code == 200
+
+
 def test_call_next_flow(client, nurse, doctor, doctor2, patient, users, empty_queue):
     a = client.post("/api/v1/visits", headers=nurse, json={"patient_id": patient(), "chief_complaint": "A"}).json()["visit_id"]
     b = client.post("/api/v1/visits", headers=nurse, json={"patient_id": patient(), "chief_complaint": "B"}).json()["visit_id"]
+    save_intake(a, b)
 
     r = client.post("/api/v1/queue/call-next", headers=doctor)
     assert r.status_code == 200 and r.json()["visit_id"] == a
