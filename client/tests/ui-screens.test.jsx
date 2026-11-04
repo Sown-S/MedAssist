@@ -100,6 +100,18 @@ describe('Luồng chính trên giao diện', () => {
     await waitFor(() => expect(calls).toContainEqual(expect.objectContaining({ method: 'POST', path: '/api/v1/visits/v-paid-wait/prescription/reopen' })))
   })
 
+  it('bệnh nhân đi xét nghiệm chỉ hiện ở màn Khám của bác sĩ đã chỉ định', async () => {
+    await syncQueue()
+    renderPage(<Doctor />, { user: DOC_B, path: '/doctor?view=consult' })
+    await rendered()
+    expect(await screen.findByText('Hoàng Thị Em')).toBeTruthy()
+    cleanup()
+    renderPage(<Doctor />, { user: DOC_A, path: '/doctor?view=consult&visit=v-exam' })
+    await rendered()
+    await screen.findAllByText('Nguyễn Văn An')
+    expect(screen.queryByText('Hoàng Thị Em')).toBeNull()
+  })
+
   it('lễ tân thấy lượt chờ thanh toán ở Hàng chờ và ca chuyển viện tại quầy ở thẻ Ca cờ đỏ', async () => {
     await syncQueue()
     expect(calls).toContainEqual(expect.objectContaining({ method: 'GET', path: '/api/v1/queue?include_closed=true' }))
@@ -123,5 +135,18 @@ describe('Luồng chính trên giao diện', () => {
     fireEvent.click(await screen.findByText('Trần Thị Bình'))
     fireEvent.click(await screen.findByText('Mark present — check in'))
     await waitFor(() => expect(calls).toContainEqual(expect.objectContaining({ method: 'PATCH', path: '/api/v1/visits/v-wait/check-in' })))
+  })
+
+  it('lượt đang tiếp đón hiện mờ ở Hàng chờ, nhãn “Intake in progress…”, không có nút check-in, không tính vào số chờ', async () => {
+    await syncQueue()
+    renderPage(<Reception />, { user: DESK, path: '/reception?view=queue' })
+    await rendered()
+    const card = (await screen.findByText('Phạm Văn Dũng')).closest('.p-card')
+    expect(card.classList.contains('dimmed')).toBe(true)
+    expect(card.textContent).toContain('Intake in progress…')
+    expect(card.textContent).not.toContain('Mark present')
+    expect(screen.getByText('Waiting', { selector: '.itab span' }).nextElementSibling.textContent).toBe('1')
+    // Không lên khung gọi bệnh nhân.
+    expect(document.querySelector('.call-panel').textContent).not.toContain('003')
   })
 })

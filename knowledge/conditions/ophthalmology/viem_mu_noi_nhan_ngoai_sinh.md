@@ -2,28 +2,53 @@
 schema: okf_condition_v1
 condition_code: viem_mu_noi_nhan_ngoai_sinh
 name_vi: Viêm mủ nội nhãn ngoại sinh
-name_en: Viêm mủ nội nhãn ngoại sinh
+name_en: Exogenous endophthalmitis
 icd10_code: H44.1
 disease_group: ophthalmology
 description: Viêm mủ nội nhãn được dùng trong lâm sàng để chỉ tình trạng viêm của
-  các thành phần trong nhãn cầu đặc trƣng bởi sự xâm nhập của bạch cầu đa nhân trung
-  tính gây hoại tử mủ do các tác nhân gây bệnh vào mắt sau chấn thương mắt hoặc.
+  các thành phần trong nhãn cầu đặc trưng bởi sự xâm nhập của bạch cầu đa nhân trung
+  tính gây hoại tử mủ do các tác nhân gây bệnh vào mắt sau chấn thương mắt hoặc sau
+  phẫu thuật mắt.
 relations:
+- symptom_code: ocular_pain_photophobia_tearing
+  polarity: SUPPORTS
+  weight: 0.98
+  is_key: true
+  source_key: moh_qd_40_2015
+  source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: corneal_ulcer_hypopyon_keratitis
   polarity: SUPPORTS
   weight: 0.98
   is_key: true
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
-- symptom_code: ocular_pain_photophobia_tearing
+- symptom_code: endophthalmitis_vitreous_pus_loss_reflex
   polarity: SUPPORTS
-  weight: 0.96
+  weight: 0.98
   is_key: true
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: visual_acuity_decreased_blur
   polarity: SUPPORTS
-  weight: 0.94
+  weight: 0.97
+  is_key: true
+  source_key: moh_qd_40_2015
+  source_edition: Quyết định số 40/QĐ-BYT
+- symptom_code: anterior_uveitis_keratic_precipitates
+  polarity: SUPPORTS
+  weight: 0.97
+  is_key: true
+  source_key: moh_qd_40_2015
+  source_edition: Quyết định số 40/QĐ-BYT
+- symptom_code: orbital_cellulitis_chemosis_proptosis
+  polarity: SUPPORTS
+  weight: 0.92
+  is_key: true
+  source_key: moh_qd_40_2015
+  source_edition: Quyết định số 40/QĐ-BYT
+- symptom_code: bacterial_corneal_ulcer_stromal_abscess
+  polarity: SUPPORTS
+  weight: 0.92
   is_key: true
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
@@ -35,13 +60,37 @@ relations:
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: nausea_vomiting_diarrhea
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.85
   is_key: true
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: conjunctivitis_uveitis_red_eye
   polarity: SUPPORTS
   weight: 0.8
+  is_key: false
+  source_key: moh_qd_40_2015
+  source_edition: Quyết định số 40/QĐ-BYT
+- symptom_code: blepharospasm_eyelid_edema
+  polarity: SUPPORTS
+  weight: 0.8
+  is_key: false
+  source_key: moh_qd_40_2015
+  source_edition: Quyết định số 40/QĐ-BYT
+- symptom_code: fever_low_grade
+  polarity: SUPPORTS
+  weight: 0.72
+  is_key: false
+  source_key: moh_qd_40_2015
+  source_edition: Quyết định số 40/QĐ-BYT
+- symptom_code: headache_dull
+  polarity: SUPPORTS
+  weight: 0.72
+  is_key: false
+  source_key: moh_qd_40_2015
+  source_edition: Quyết định số 40/QĐ-BYT
+- symptom_code: fatigue_malaise
+  polarity: SUPPORTS
+  weight: 0.68
   is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
@@ -54,6 +103,10 @@ excerpts:
 ---
 
 ## excerpt: viem_mu_noi_nhan_ngoai_sinh_chan_doan
+- Chẩn đoán xác định
+- Căn cứ vào khám lâm sàng, kết quả xét nghiệm vi sinh và kết quả siêu âm
+- như : đau nhức mắt, giảm thị lực, giác mạc phù đục, tiền phòng có mủ hoặc
+- Tyndall (+) ánh đồng tử kém hồng (vàng hoặc xám), dịch kính vẩn đục, kết quả
 - Thể cấp tính: bệnh thường biểu hiện sau chấn thương hay sau phẫu thuật
 - trong tuần đầu. Các triệu chứng thường rầm rộ.
 - Cơ năng: phản ứng viêm biểu hiện:
@@ -62,3 +115,11 @@ excerpts:
 - Đỏ: Mi và kết mạc đỏ rực lên.
 - Đau nhức mắt, buồn nôn, có thể kèm nhức đầu.
 - Nhìn mờ, sợ ánh sáng.
+- Thực thể: Nguyên tắc khám từ trước ra sau (trên sinh hiển vi).
+- Phản ứng thể mi (+).
+- Nhãn áp có thể cao.
+- Hai mi sưng nề, bóng đỏ. Nhãn cầu có thể lồi.
+- Kết mạc cương tụ toàn bộ (cả hệ thống nông và sâu)
+- Giác mạc phù, có tủa sau giác mạc, có thể có áp xe giác mạc.
+- Tiền phòng: Tyndall (+), có thể có ngấn mủ tiền phòng.
+- Đồng tử thường dính, kém giãn, có thể thấy màng xuất tiết diện đồng tử.

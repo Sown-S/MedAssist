@@ -102,3 +102,4 @@ class ExtractionOut(BaseModel):
     vital_proposals: list[VitalProposalOut] = []
     text_changed: bool = Field(False, description="Lời kể đã sửa sau lần trích xuất: yêu cầu trích xuất lại")
     completed_at: datetime | None
+    queue_ahead: int | None = Field(None, description="Số việc AI làm trước lần trích xuất này (Queued); 0 khi đang chạy")

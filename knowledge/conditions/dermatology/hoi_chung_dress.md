@@ -5,31 +5,32 @@ name_vi: Hội chứng DRESS
 name_en: The Drug Reaction with Eosinophilia and Systemic Symptoms
 icd10_code: L27.0
 disease_group: dermatology
-description: Hội chứng DRESS là một phản ứng hiếm gặp do thuốc đặc trƣng bởi tăng
+description: Hội chứng DRESS là một phản ứng hiếm gặp do thuốc đặc trưng bởi tăng
   bạch cầu ái toan và tổn thương nội tạng. Các biểu hiện bệnh thường khởi đầu chậm
-  2-6 tuần sau khi bắt đầu điều trị.
+  2-6 tuần sau khi bắt đầu điều trị thuốc và có thể tái phát nhiều lần, rất lâu sau
+  khi ngừng thuốc. Bệnh có thể nguy hiểm, đe dọa tính mạng.
 relations:
-- symptom_code: lymphadenopathy_splenomegaly
+- symptom_code: dress_syndrome_facial_edema_eosinophilia
   polarity: SUPPORTS
-  weight: 0.82
-  is_key: false
+  weight: 0.98
+  is_key: true
+  source_key: moh_qd_75_2015
+  source_edition: Quyết định số 75/QĐ-BYT
+- symptom_code: fever_high
+  polarity: SUPPORTS
+  weight: 0.96
+  is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: maculopapular_rash
   polarity: SUPPORTS
-  weight: 0.82
+  weight: 0.96
   is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: pruritus_intense_skin_itch
+- symptom_code: lymphadenopathy_splenomegaly
   polarity: SUPPORTS
-  weight: 0.78
-  is_key: false
-  source_key: moh_qd_75_2015
-  source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: scaly_plaque_hyperkeratosis
-  polarity: SUPPORTS
-  weight: 0.75
+  weight: 0.8
   is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
@@ -42,9 +43,9 @@ excerpts:
 ---
 
 ## excerpt: hoi_chung_dress_chan_doan
-- a) Tiêu chuẩn chẩn đoán
-- Có nhiều tiêu chuẩn đƣa ra để đánh giá nguy cơ mắc hội chứng DRESS.
-- Tuy nhiên, tiêu chuẩn của Kardaun và cộng sự đƣa ra khá đầy đủ và được sử dụng
+- Tiêu chuẩn chẩn đoán
+- Có nhiều tiêu chuẩn đưa ra để đánh giá nguy cơ mắc hội chứng DRESS.
+- Tuy nhiên, tiêu chuẩn của Kardaun và cộng sự đưa ra khá đầy đủ và được sử dụng
 - Sốt ≥ 38,5 độ C
 - Lympho không điển hình
 - Huyết thanh virút viêm gan A, B, C;

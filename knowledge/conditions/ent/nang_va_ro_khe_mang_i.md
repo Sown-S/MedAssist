@@ -2,15 +2,21 @@
 schema: okf_condition_v1
 condition_code: nang_va_ro_khe_mang_i
 name_vi: Nang và rò khe mang I
-name_en: Nang và rò khe mang I
+name_en: First branchial cleft cyst and fistula
 icd10_code: Q18.0
 disease_group: ent
 description: Là một dị tật bẩm sinh tương đối hiếm gặp, do sự phát triển bất thường
   của khe mang I, thuộc vùng mang, trong quá trình phát triển phôi thai.
 relations:
+- symptom_code: branchial_cleft_piriform_fistula
+  polarity: SUPPORTS
+  weight: 0.96
+  is_key: true
+  source_key: moh_qd_5643_2015
+  source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: head_neck_mass_fistula_trauma
   polarity: SUPPORTS
-  weight: 0.94
+  weight: 0.95
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
@@ -20,16 +26,22 @@ relations:
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: sore_throat_dysphagia
+- symptom_code: otomycosis_fungal_debris
   polarity: SUPPORTS
-  weight: 0.78
+  weight: 0.92
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: nasal_obstruction_stuffiness
+- symptom_code: thyroglossal_duct_cyst_elevation
   polarity: SUPPORTS
-  weight: 0.75
-  is_key: false
+  weight: 0.92
+  is_key: true
+  source_key: moh_qd_5643_2015
+  source_edition: Quyết định số 5643/QĐ-BYT
+- symptom_code: salivary_thyroid_gland_nodule
+  polarity: SUPPORTS
+  weight: 0.92
+  is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 excerpts:
@@ -41,5 +53,8 @@ excerpts:
 ---
 
 ## excerpt: nang_va_ro_khe_mang_i_chan_doan
+- Đặc điểm lâm sàng
+- Trên lâm sàng dị tật thường được chẩn đoán khi phát hiện thấy lỗ rò. Trong
+- Đặc điểm cận lâm sàng
 - Chụp ống rò có bơm thuốc cản quang cho thấy ống rò chạy từ ngoài da đi qua nhu
 - trong nếp lằn cổ cho đến nang hoặc miệng lỗ rò. Đường rạch này cho phép bộc lộ, bảo

@@ -6,6 +6,7 @@ from sqlalchemy import text
 
 from app.core.database import SessionLocal, engine
 from app.models import Visit
+from tests.api.intake import save_intake
 
 
 @pytest.fixture
@@ -37,8 +38,12 @@ def patient_id(client, nurse):
 
 
 def _visit(client, nurse, patient_id, **over):
-    return client.post("/api/v1/visits", headers=nurse, json={"patient_id": patient_id,
-                                                              "chief_complaint": "Sốt, ho", **over})
+    """Lượt đã Lưu & cấp số (check-in / mời được)."""
+    r = client.post("/api/v1/visits", headers=nurse, json={"patient_id": patient_id,
+                                                           "chief_complaint": "Sốt, ho", **over})
+    if r.status_code == 201:
+        save_intake(r.json()["visit_id"])
+    return r
 
 
 def test_create_visit_with_vitals_and_warnings(client, nurse, patient_id, logs):

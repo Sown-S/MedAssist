@@ -6,6 +6,7 @@ import pytest
 from app.core.database import SessionLocal
 from app.core.security import hash_password
 from app.models import User
+from tests.api.intake import save_intake
 
 
 def _code():
@@ -115,6 +116,7 @@ def test_queue_and_me_show_physician_room(client, admin, nurse, make_room, physi
     pid = client.post("/api/v1/patients", headers=nurse, json={
         "full_name": f"Phòng {uuid.uuid4().hex[:6]}", "date_of_birth": "1990-01-01", "gender": "Female"}).json()["patient_id"]
     vid = client.post("/api/v1/visits", headers=nurse, json={"patient_id": pid, "chief_complaint": "Sốt"}).json()["visit_id"]
+    save_intake(vid)
     assert client.post("/api/v1/visits", headers=nurse,
                        json={"patient_id": pid, "chief_complaint": "Sốt", "department_id": room["room_id"]}).status_code == 422
     client.patch(f"/api/v1/visits/{vid}/check-in", headers=nurse)

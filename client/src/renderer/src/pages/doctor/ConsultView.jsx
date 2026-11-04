@@ -106,7 +106,8 @@ export default function ConsultView({ visitId, onSelect }) {
 
   const groups = [
     { key: 'mine', title: 'In my room', list: mine },
-    { key: 'labs', title: 'Out for lab tests', list: visits.filter(atLabs) },
+    // Chỉ người mình chỉ định — bệnh nhân vẫn thuộc bác sĩ đó trong lúc đi xét nghiệm, bác sĩ khác không nhận được.
+    { key: 'labs', title: 'Out for lab tests', list: visits.filter((v) => atLabs(v) && isMine(v, user)) },
     // Người đã check-in (mời được) đứng trước người chưa check-in.
     { key: 'waiting', title: 'Waiting', list: [...readyOrder(visits), ...waitingOrder(visits).filter((v) => v.status === ST.WAITING)] },
     {

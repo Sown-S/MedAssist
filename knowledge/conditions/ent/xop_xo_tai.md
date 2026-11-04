@@ -2,22 +2,52 @@
 schema: okf_condition_v1
 condition_code: xop_xo_tai
 name_vi: Xốp xơ tai
-name_en: Xốp xơ tai
+name_en: Otosclerosis
 icd10_code: H80.9
 disease_group: ent
 description: Xốp xơ tai là một bệnh chuyển hóa xương gây ra cứng khớp xương con hay
   gặp nhất là cứng khớp đế xương bàn đạp - cửa sổ tròn, thường do di truyền với gen
   trội, có biểu hiện về lâm sàng là điếc dẫn truyền hay điếc hỗn hợp.
 relations:
-- symptom_code: hearing_loss_deafness
+- symptom_code: tympanic_membrane_lesion
   polarity: SUPPORTS
   weight: 0.98
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: tympanic_membrane_lesion
+- symptom_code: hearing_loss_deafness
   polarity: SUPPORTS
-  weight: 0.98
+  weight: 0.92
+  is_key: true
+  source_key: moh_qd_5643_2015
+  source_edition: Quyết định số 5643/QĐ-BYT
+- symptom_code: conductive_hearing_loss
+  polarity: SUPPORTS
+  weight: 0.92
+  is_key: true
+  source_key: moh_qd_5643_2015
+  source_edition: Quyết định số 5643/QĐ-BYT
+- symptom_code: tympanic_marginal_attic_perforation
+  polarity: SUPPORTS
+  weight: 0.92
+  is_key: true
+  source_key: moh_qd_5643_2015
+  source_edition: Quyết định số 5643/QĐ-BYT
+- symptom_code: fetid_cholesteatoma_otorrhea
+  polarity: SUPPORTS
+  weight: 0.92
+  is_key: true
+  source_key: moh_qd_5643_2015
+  source_edition: Quyết định số 5643/QĐ-BYT
+- symptom_code: spontaneous_nystagmus_vestibular
+  polarity: SUPPORTS
+  weight: 0.91
+  is_key: true
+  source_key: moh_qd_5643_2015
+  source_edition: Quyết định số 5643/QĐ-BYT
+- symptom_code: mixed_hearing_loss
+  polarity: SUPPORTS
+  weight: 0.9
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
@@ -39,6 +69,12 @@ relations:
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
+- symptom_code: vocal_abuse_phonotrauma_strain
+  polarity: SUPPORTS
+  weight: 0.8
+  is_key: false
+  source_key: moh_qd_5643_2015
+  source_edition: Quyết định số 5643/QĐ-BYT
 excerpts:
 - excerpt_key: xop_xo_tai_chan_doan
   title: Tiêu chuẩn chẩn đoán lâm sàng Xốp xơ tai
@@ -56,3 +92,7 @@ excerpts:
 - Triệu chứng thực thể:
 - Soi tai: nhằm loại trừ các bệnh lý khác: viêm tai giữa thanh dịch, xơ hóa
 - màng nhĩ, thủng màng nhĩ, cholesteatoma hay túi lõm thượng nhĩ, hở bẩm sinh ống
+- án khuyên trên. Các dấu hiệu của xốp xơ tai:
+- Màng nhĩ trong giới hạn bình thường.
+- Schwartze: 10%.
+- Soi tai với ống bơm áp lực: Đánh giá sự cố định của xương búa.

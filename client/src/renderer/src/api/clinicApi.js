@@ -170,18 +170,25 @@ export const missingName = (x) => {
   return VITAL_KEYS.find((d) => d.key === key)?.label ?? key
 }
 
-// Trích xuất triệu chứng từ lời kể: lượt phải còn Waiting và đã lưu lời kể; hỏi lại khoảng 2 giây một lần tới timeoutMs.
-// Failed → lỗi AI_UNAVAILABLE.
-export async function extractSymptoms(visitId, { signal, timeoutMs = 30000 } = {}) {
-  let r = await apiPost(`${V1}/visits/${visitId}/symptom-extraction`)
+// Trích xuất triệu chứng từ lời kể: lượt phải còn Waiting và đã lưu lời kể; hỏi lại khoảng 2 giây một lần.
+// Server tự kết thúc lượt sau 30 giây tính từ POST (kể cả lúc xếp hàng); client chờ tối đa timeoutMs rồi báo TIMEOUT.
+// onProgress({ status, queueAhead }) sau mỗi lần server trả lời — giao diện lấy bước đang chạy từ đây.
+// Failed / Skipped → lỗi AI_UNAVAILABLE.
+const aborted = () => Object.assign(new Error('aborted'), { code: 'ABORTED' })
+export async function extractSymptoms(visitId, { signal, timeoutMs = 35000, onProgress } = {}) {
   const until = Date.now() + timeoutMs
+  let r = await apiPost(`${V1}/visits/${visitId}/symptom-extraction`)
+  const report = () => onProgress?.({ status: r.status, queueAhead: r.queue_ahead ?? null })
+  report()
   while (['Queued', 'Running'].includes(r.status)) {
-    if (Date.now() > until) throw Object.assign(new Error('timeout'), { code: 'ABORTED' })
+    if (signal?.aborted) throw aborted()
+    if (Date.now() > until) throw Object.assign(new Error('timeout'), { code: 'TIMEOUT' })
     await new Promise((ok, fail) => {
       const t = setTimeout(ok, 2000)
-      signal?.addEventListener('abort', () => (clearTimeout(t), fail(Object.assign(new Error('aborted'), { code: 'ABORTED' }))))
+      signal?.addEventListener('abort', () => (clearTimeout(t), fail(aborted())), { once: true })
     })
     r = await apiGet(`${V1}/visits/${visitId}/symptom-extraction`)
+    report()
   }
   if (r.status !== 'Completed') throw Object.assign(new Error('Extraction unavailable'), { code: 'AI_UNAVAILABLE' })
   return {
@@ -214,6 +221,8 @@ export function toQueueVisit(q) {
     age: ageFrom(q.date_of_birth),
     reason: q.chief_complaint,
     status: q.status,
+    // false: lễ tân đang tiếp đón, chưa Lưu & cấp số — server chặn check-in / mời (409 INTAKE_NOT_SAVED).
+    intakeSaved: q.intake_saved !== false,
     triage,
     redFlag: !!q.is_red_flag,
     priority: triage !== 'routine',

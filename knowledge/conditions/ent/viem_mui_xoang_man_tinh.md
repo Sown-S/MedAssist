@@ -2,47 +2,65 @@
 schema: okf_condition_v1
 condition_code: viem_mui_xoang_man_tinh
 name_vi: Viêm mũi xoang mạn tính
-name_en: Viêm mũi xoang mạn tính
+name_en: Chronic rhinosinusitis
 icd10_code: J32.9
 disease_group: ent
 description: 'Viêm mũi xoang mạn tính là viêm niêm mạc mũi xoang với các triệu chứng:
   đau nhức âm ỉ vùng mặt, ngạt mũi, giảm ngửi, ho, khịt khạc đờm, soi mũi thấy khe
   giữa, đôi khi cả khe trên có mủ. Người bệnh có thể bị sốt, kém tập trung, người
-  mệt mỏi. Các.'
+  mệt mỏi. Các triệu chứng này kéo dài trên 12 tuần.'
 relations:
-- symptom_code: facial_sinus_pain_anosmia
-  polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
-  source_key: moh_qd_5643_2015
-  source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: nasal_polyp_sinonasal_mass
-  polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
-  source_key: moh_qd_5643_2015
-  source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: nasal_obstruction_stuffiness
-  polarity: SUPPORTS
-  weight: 0.94
-  is_key: true
-  source_key: moh_qd_5643_2015
-  source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: cough_productive_sputum
+- symptom_code: middle_meatus_mucopurulent_discharge
   polarity: SUPPORTS
   weight: 0.92
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
+- symptom_code: nasal_obstruction_stuffiness
+  polarity: SUPPORTS
+  weight: 0.9
+  is_key: true
+  source_key: moh_qd_5643_2015
+  source_edition: Quyết định số 5643/QĐ-BYT
+- symptom_code: facial_sinus_pain_anosmia
+  polarity: SUPPORTS
+  weight: 0.9
+  is_key: true
+  source_key: moh_qd_5643_2015
+  source_edition: Quyết định số 5643/QĐ-BYT
+- symptom_code: nasal_polyp_sinonasal_mass
+  polarity: SUPPORTS
+  weight: 0.8
+  is_key: false
+  source_key: moh_qd_5643_2015
+  source_edition: Quyết định số 5643/QĐ-BYT
+- symptom_code: cough_productive_sputum
+  polarity: SUPPORTS
+  weight: 0.8
+  is_key: false
+  source_key: moh_qd_5643_2015
+  source_edition: Quyết định số 5643/QĐ-BYT
+- symptom_code: nasal_septal_deviation_spur
+  polarity: SUPPORTS
+  weight: 0.8
+  is_key: false
+  source_key: moh_qd_5643_2015
+  source_edition: Quyết định số 5643/QĐ-BYT
+- symptom_code: adenoid_facies_mouth_breathing
+  polarity: SUPPORTS
+  weight: 0.8
+  is_key: false
+  source_key: moh_qd_5643_2015
+  source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: headache_dull
   polarity: SUPPORTS
-  weight: 0.75
+  weight: 0.72
   is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: fatigue_malaise
   polarity: SUPPORTS
-  weight: 0.7
+  weight: 0.68
   is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
@@ -55,6 +73,7 @@ excerpts:
 ---
 
 ## excerpt: viem_mui_xoang_man_tinh_chan_doan
+- Lâm sàng
 - Triệu chứng cơ năng:
 - Ngạt tắc mũi thường xuyên.
 - Xì mũi hoặc khịt khạc mủ nhày hay mủ đặc thường xuyên.
@@ -63,3 +82,6 @@ excerpts:
 - Kèm theo bệnh nhân có thể bị đau đầu, ho, mệt mỏi, hơi thở hôi.
 - Triệu chứng thực thể: soi mũi thấy:
 - Dịch mủ nhầy hoặc mủ đặc ở khe giữa, đôi khi khe trên.
+- Niêm mạc hốc mũi viêm phù nề hoặc thoái hoái thành polyp.
+- Có thể thấy các cấu trúc giải phẫu bất thường như: vẹo lệch vách ngăn,
+- Các triệu chứng trên kéo dài trên 12 tuần.

@@ -7,7 +7,9 @@ icd10_code: Q81.9
 disease_group: dermatology
 description: Là nhóm bệnh do rối loạn gen, hiếm gặp, tỷ lệ 19,6/1 triệu trẻ mới đẻ
   ở Mỹ. Tất cả nhóm bệnh ly thượng bì bọng nước bẩm sinh có biểu hiện chung là sự
-  hình thành bọng nước sau những sang chấn nhẹ trên da và niêm mạc. Mức độ.
+  hình thành bọng nước sau những sang chấn nhẹ trên da và niêm mạc. Mức độ nặng của
+  bệnh, độ sâu của bọng nước lại khác nhau tùy thuộc vào thương tổn ở mức phân tử.
+  Có nhiều thể lâm sàng khác nhau đều có quá trình lành sẹo khác nhau.
 relations:
 - symptom_code: vesicular_blister_rash
   polarity: SUPPORTS
@@ -15,27 +17,63 @@ relations:
   is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: fungal_ringworm_nail_hair_lesion
+- symptom_code: pemphigus_flaccid_bulla_nikolsky_pos
   polarity: SUPPORTS
-  weight: 0.94
+  weight: 0.98
+  is_key: true
+  source_key: moh_qd_75_2015
+  source_edition: Quyết định số 75/QĐ-BYT
+- symptom_code: epidermolysis_bullosa_mechanobullous
+  polarity: SUPPORTS
+  weight: 0.98
+  is_key: true
+  source_key: moh_qd_75_2015
+  source_edition: Quyết định số 75/QĐ-BYT
+- symptom_code: bullous_pemphigoid_tense_bulla
+  polarity: SUPPORTS
+  weight: 0.97
+  is_key: true
+  source_key: moh_qd_75_2015
+  source_edition: Quyết định số 75/QĐ-BYT
+- symptom_code: basal_cell_carcinoma_pearly_telangiectasia
+  polarity: SUPPORTS
+  weight: 0.97
+  is_key: true
+  source_key: moh_qd_75_2015
+  source_edition: Quyết định số 75/QĐ-BYT
+- symptom_code: tinea_capitis_kerion_alopecia
+  polarity: SUPPORTS
+  weight: 0.96
+  is_key: true
+  source_key: moh_qd_75_2015
+  source_edition: Quyết định số 75/QĐ-BYT
+- symptom_code: prurigo_nodularis_excoriated_papules
+  polarity: SUPPORTS
+  weight: 0.96
   is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: verrucous_papule_nodule_ulcer
   polarity: SUPPORTS
-  weight: 0.92
+  weight: 0.95
+  is_key: true
+  source_key: moh_qd_75_2015
+  source_edition: Quyết định số 75/QĐ-BYT
+- symptom_code: fungal_ringworm_nail_hair_lesion
+  polarity: SUPPORTS
+  weight: 0.95
+  is_key: true
+  source_key: moh_qd_75_2015
+  source_edition: Quyết định số 75/QĐ-BYT
+- symptom_code: sore_throat_dysphagia
+  polarity: SUPPORTS
+  weight: 0.95
   is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: anemia_pallor_jaundice
   polarity: SUPPORTS
-  weight: 0.82
-  is_key: false
-  source_key: moh_qd_75_2015
-  source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: sore_throat_dysphagia
-  polarity: SUPPORTS
-  weight: 0.75
+  weight: 0.76
   is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
@@ -48,6 +86,7 @@ excerpts:
 ---
 
 ## excerpt: ly_thuong_bi_bong_nuoc_bam_sinh_chan_doan
+- Chẩn đoán xác định
 - Ly thượng bì bọng nước đơn giản
 - Bọng nước nằm trong thượng bì.
 - Chủ yếu là do đột biến gen mã hoá keratin nhưng kiểu hình giữa các thể lại
@@ -56,3 +95,14 @@ excerpts:
 - ly thượng bì bọng nước thể khu trú (Weber-Cockayne).
 - Ly thượng bì bọng nước đơn giản lan toả (Koebner)
 - Là thể lan toả nhưng nhẹ nhất, di truyền trội.
+- Xảy ra ở 1/500.000 trẻ mới sinh.
+- Trẻ bị bệnh ngay trong hoặc sau đẻ.
+- Vài tháng sau bệnh sẽ nhẹ dần rồi tái phát lúc trẻ biết bò hoặc muộn hơn.
+- Biểu hiện: xuất hiện các mụn nước, bọng nước, hạt sừng trên phần khớp
+- Nhiều người bệnh có bọng nước lâu lành và lan toả.
+- Dấu hiệu Nikolsky âm tính.
+- Thường không để lại sẹo sâu.
+- Móng, răng và niêm mạc thường không có tổn thương hoặc ít và nhẹ hơn
+- Tổn thương nặng hơn vào mùa hè, nhẹ về mùa đông.
+- Di truyền trội trên nhiễm sắc thể thường do đột biến gen keratin gây thiếu
+- hụt các sợi trung gian làm cho tế bào đáy ở thượng bì mỏng manh dễ tổn thương và
