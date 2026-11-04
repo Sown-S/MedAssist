@@ -9,6 +9,11 @@
 .alert-row{display:flex;align-items:center;gap:12px;width:100%;padding:10px 8px;border:none;border-bottom:1px solid var(--border);border-radius:9px;background:none;color:var(--ink-soft);font-family:inherit;font-size:16px;text-align:left;cursor:pointer;}
 .alert-row:last-child,.status-row:last-child{border-bottom:none;}
 .alert-row:hover{background:var(--surface-hover);}
+/* Hộp thoại đăng xuất của bác sĩ: mỗi ca còn dở một dòng, kèm nút xử lý */
+.signout-row{display:flex;align-items:center;gap:12px;padding:10px 8px;border-bottom:1px solid var(--border);color:var(--ink-soft);font-size:16px;}
+.signout-row:last-child{border-bottom:none;}
+.signout-row .alert-txt{flex:1;min-width:0;}
+.signout-row .btn{flex-shrink:0;}
 .alert-ic{display:flex;font-size:19px;}
 .alert-ic.critical{color:#FCA5A5;}
 .alert-ic.warning{color:#FCD34D;}

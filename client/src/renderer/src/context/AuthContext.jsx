@@ -3,6 +3,7 @@ import { ROLES } from '../api/accountStore'
 import * as authApi from '../api/authApi'
 import { setSessionExpiredHandler, setPasswordChangeRequiredHandler } from '../api/client'
 import { getSettings } from '../api/settingsStore'
+import { claimDrafts, clearDrafts } from '../api/draftStore'
 
 const AuthContext = createContext(null)
 
@@ -35,14 +36,18 @@ export function AuthProvider({ children }) {
   }
   function startSession(account) {
     setNotice('')
+    claimDrafts(account.id)
     setUser(toSessionUser(account))
   }
+  // Tự đăng xuất / hết phiên / bắt đổi mật khẩu: giữ bản nháp phiếu khám để đăng nhập lại là khám tiếp.
   function endSession(notice = '') {
     authApi.logout()
     setNotice(notice)
     setUser(null)
   }
+  // Đăng xuất chủ động: bác sĩ đã xong mọi ca (App chặn khi còn ca) → xoá bản nháp trên máy.
   function logout() {
+    clearDrafts()
     endSession()
   }
   function signOutAfterPasswordChange() {
