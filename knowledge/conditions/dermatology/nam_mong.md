@@ -6,31 +6,44 @@ name_en: Onychomycosis
 icd10_code: B35.1
 disease_group: dermatology
 description: Là bệnh viêm móng thường gặp, tiến triển âm thầm, mãn tính. Ở châu Âu,
-  ƣớc tính khoảng 2-6% dân số mắc bệnh nấm móng. Bệnh do nhiều chủng nấm gây nên và
-  có thương tổn lâm sàng đa dạng. Việc.
+  ước tính khoảng 2-6% dân số mắc bệnh nấm móng. Bệnh do nhiều chủng nấm gây nên và
+  có thương tổn lâm sàng đa dạng. Việc chẩn đoán dựa vào biểu hiện lâm sàng và xét
+  nghiệm tìm nấm.
 relations:
+- symptom_code: onychomycosis_subungual_hyperkeratosis
+  polarity: SUPPORTS
+  weight: 0.98
+  is_key: true
+  source_key: moh_qd_75_2015
+  source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: fungal_ringworm_nail_hair_lesion
   polarity: SUPPORTS
   weight: 0.96
   is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: maculopapular_rash
+- symptom_code: pityriasis_versicolor_hypo_hyper_macules
   polarity: SUPPORTS
-  weight: 0.82
+  weight: 0.92
   is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: pruritus_intense_skin_itch
+- symptom_code: dermatophytosis_annular_active_border
   polarity: SUPPORTS
-  weight: 0.78
-  is_key: false
+  weight: 0.92
+  is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: scaly_plaque_hyperkeratosis
+- symptom_code: vulvovaginal_oral_candidiasis_curd
   polarity: SUPPORTS
-  weight: 0.75
-  is_key: false
+  weight: 0.92
+  is_key: true
+  source_key: moh_qd_75_2015
+  source_edition: Quyết định số 75/QĐ-BYT
+- symptom_code: atopic_dermatitis_flexural_eczema
+  polarity: SUPPORTS
+  weight: 0.92
+  is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 excerpts:
@@ -42,11 +55,23 @@ excerpts:
 ---
 
 ## excerpt: nam_mong_chan_doan
+- Chẩn đoán xác định
+- Dựa vào lâm sàng đa dạng.
+- Cận lâm sàng.
+- Biểu hiện lâm sàng: tùy từng vị trí thâm nhập của vi nấm mà biểu hiện lâm
 - Tổn thương ở phần bên và phần xa dưới móng (DLSO: Distal and lateral
 - Là dạng lâm sàng thường gặp nhất.
 - Tổn thường bắt đầu ở phía xa bờ bên của móng.
 - Tăng sừng hóa dưới móng tiến triển tăng dần theo trục của móng làm phá
 - Móng trở nên đục, trắng và mủn.
-- Xen kẽ với các những vùng sừng hóa là những vùng tách móng, là nơi cƣ
+- Xen kẽ với các những vùng sừng hóa là những vùng tách móng, là nơi cư
 - Màu sắc của móng thay đổi: trắng, vàng cam.
 - Tổn thương ở bề mặt móng:
+- Trên bề mặt móng có đốm hoặc khía trắng (SWO: Supperficial white
+- Là dạng đặc trưng của nhiễm dermatophyte do Trichophyton
+- Thể này thường gặp ở những người suy giảm miễn dịch (ghép tạng, dùng
+- Tổn thương ở gốc móng (PSO: Proximal subungual onychomycosis) và
+- viêm quanh móng (perionyxis):
+- Viêm nếp da phía gốc móng và nhất là nếp gấp sau.
+- Bản móng xuất hiện các đường rãnh ngắn, gần nhau, song song, sắp xếp
+- Loạn dưỡng toàn móng (TDO: Total dystrophic onychomycosis):

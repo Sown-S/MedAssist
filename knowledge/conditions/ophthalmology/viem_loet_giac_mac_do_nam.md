@@ -2,15 +2,15 @@
 schema: okf_condition_v1
 condition_code: viem_loet_giac_mac_do_nam
 name_vi: Viêm loét giác mạc do nấm
-name_en: Viêm loét giác mạc do nấm
+name_en: Fungal keratitis
 icd10_code: B49.0
 disease_group: ophthalmology
-description: Loét giác mạc do nấm là hiện tƣợng mất tổ chức giác mạc do hoại tử, gây
+description: Loét giác mạc do nấm là hiện tượng mất tổ chức giác mạc do hoại tử, gây
   ra bởi một quá trình viêm trên giác mạc do nấm, là một nguyên nhân gây mù loà.
 relations:
-- symptom_code: ocular_pain_photophobia_tearing
+- symptom_code: fungal_corneal_ulcer_feathery_satellite
   polarity: SUPPORTS
-  weight: 0.98
+  weight: 0.97
   is_key: true
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
@@ -32,6 +32,12 @@ relations:
   is_key: true
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
+- symptom_code: ocular_pain_photophobia_tearing
+  polarity: SUPPORTS
+  weight: 0.9
+  is_key: true
+  source_key: moh_qd_40_2015
+  source_edition: Quyết định số 40/QĐ-BYT
 excerpts:
 - excerpt_key: viem_loet_giac_mac_do_nam_chan_doan
   title: Tiêu chuẩn chẩn đoán lâm sàng Viêm loét giác mạc do nấm
@@ -47,5 +53,12 @@ excerpts:
 - Triệu chứng thực thể
 - Kết mạc cương tụ rìa.
 - Trên giác mạc có một ổ loét ranh giới rõ, bờ gọn thường có hình tròn
+- hoặc hình bầu dục. Đáy ổ loét thường phủ một lớp hoại tử dày, đóng thành vảy gồ
+- ao, bề mặt vảy khô ráp và khó bóc.
 - Xung quanh ổ loét có thẩm lậu, mặt sau giác mạc ở vị trí ổ loét có thể có
 - Tiền phòng có thể có ngấn mủ. Mủ thường xuất hiện rồi mất đi, xuất
+- Mống mắt cũng có thể phù nề, mất sắc bóng. Đồng tử thường co nhỏ, có
+- Cận lâm sàng
+- Bệnh phẩm: là chất nạo ổ loét.
+- Soi tươi, soi trực tiếp: thấy có nấm.
+- Nuôi cấy trên trường Sabouraud có đường: xác định được loại nấm gây bệnh.

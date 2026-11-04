@@ -11,7 +11,37 @@ description: Nhọt là tình trạng viêm cấp tính gây hoại tử nang l�
 relations:
 - symptom_code: pustular_furuncle_folliculitis
   polarity: SUPPORTS
-  weight: 0.98
+  weight: 0.97
+  is_key: true
+  source_key: moh_qd_75_2015
+  source_edition: Quyết định số 75/QĐ-BYT
+- symptom_code: acne_comedones_nodulocystic
+  polarity: SUPPORTS
+  weight: 0.92
+  is_key: true
+  source_key: moh_qd_75_2015
+  source_edition: Quyết định số 75/QĐ-BYT
+- symptom_code: atopic_dermatitis_flexural_eczema
+  polarity: SUPPORTS
+  weight: 0.92
+  is_key: true
+  source_key: moh_qd_75_2015
+  source_edition: Quyết định số 75/QĐ-BYT
+- symptom_code: sjs_ten_epidermal_necrolysis_mucosal
+  polarity: SUPPORTS
+  weight: 0.92
+  is_key: true
+  source_key: moh_qd_75_2015
+  source_edition: Quyết định số 75/QĐ-BYT
+- symptom_code: seborrheic_dermatitis_greasy_scales
+  polarity: SUPPORTS
+  weight: 0.92
+  is_key: true
+  source_key: moh_qd_75_2015
+  source_edition: Quyết định số 75/QĐ-BYT
+- symptom_code: syringoma_periorbital_flesh_papules
+  polarity: SUPPORTS
+  weight: 0.92
   is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
@@ -23,14 +53,8 @@ relations:
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: fatigue_malaise
   polarity: SUPPORTS
-  weight: 0.7
+  weight: 0.68
   is_key: false
-  source_key: moh_qd_75_2015
-  source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: maculopapular_rash
-  polarity: SUPPORTS
-  weight: 0.82
-  is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 excerpts:
@@ -46,7 +70,7 @@ excerpts:
 - mủ. Đau nhức là triệu chứng cơ năng thường gặp, nhất là khi nhọt khu trú ở mũi,
 - thương có thể ít hoặc nhiều, kèm theo các triệu chứng toàn thân như sốt, mệt mỏi,
 - Biến chứng nhiễm khuẩn huyết có thể gặp, nhất là ở những người suy dinh
-- dưỡng. Nhọt ở vùng môi trên, ở má có thể dẫn đến viêm tĩnh mạch xoang hang và
+- ưỡng. Nhọt ở vùng môi trên, ở má có thể dẫn đến viêm tĩnh mạch xoang hang và
 - Nhọt cụm còn gọi là nhọt bầy hay hậu bối gồm một số nhọt xếp thành đám.
 - Chẩn đoán chủ yếu dựa vào lâm sàng. Ở giai đoạn sớm cần chẩn đoán phân
-- biệt với viêm nang lông, herpes da lan tỏa, trứng cá và viêm tuyến mồ hôi mủ.
+- iệt với viêm nang lông, herpes da lan tỏa, trứng cá và viêm tuyến mồ hôi mủ.

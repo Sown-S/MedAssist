@@ -2,22 +2,34 @@
 schema: okf_condition_v1
 condition_code: u_lanh_tinh_mui_xoang
 name_vi: U lành tính mũi xoang
-name_en: U lành tính mũi xoang
+name_en: Benign sinonasal tumor
 icd10_code: D14.2
 disease_group: ent
 description: Là u lành rất thường gặp, có thể đơn thuần ở hốc mũi, có thể trong các
   xoang mặt hay cả ở mũi và xoang. Polyp mũi thực ra không phải là khối u mà là thoái
-  hoá cục bộ của niêm mạc.
+  hoá cục bộ của niêm mạc mũi hay xoang mà chủ yếu là lớp tổ chức đệm.
 relations:
-- symptom_code: nasal_polyp_sinonasal_mass
+- symptom_code: nasal_obstruction_stuffiness
   polarity: SUPPORTS
-  weight: 0.97
+  weight: 0.92
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: nasal_obstruction_stuffiness
+- symptom_code: nasal_polyp_sinonasal_mass
   polarity: SUPPORTS
-  weight: 0.96
+  weight: 0.92
+  is_key: true
+  source_key: moh_qd_5643_2015
+  source_edition: Quyết định số 5643/QĐ-BYT
+- symptom_code: middle_meatus_mucopurulent_discharge
+  polarity: SUPPORTS
+  weight: 0.92
+  is_key: true
+  source_key: moh_qd_5643_2015
+  source_edition: Quyết định số 5643/QĐ-BYT
+- symptom_code: juvenile_nasopharyngeal_angiofibroma
+  polarity: SUPPORTS
+  weight: 0.92
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
@@ -27,15 +39,21 @@ relations:
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: rhinorrhea_nasal_congestion
+- symptom_code: nasal_septal_deviation_spur
   polarity: SUPPORTS
-  weight: 0.88
+  weight: 0.89
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: epistaxis_nasal_bleeding
   polarity: SUPPORTS
   weight: 0.88
+  is_key: true
+  source_key: moh_qd_5643_2015
+  source_edition: Quyết định số 5643/QĐ-BYT
+- symptom_code: rhinorrhea_nasal_congestion
+  polarity: SUPPORTS
+  weight: 0.86
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
@@ -48,11 +66,13 @@ excerpts:
 ---
 
 ## excerpt: u_lanh_tinh_mui_xoang_chan_doan
+- Lâm sàng
 - Polyp phát triển chậm, do ngày càng to ra, choán dần hốc mũi nên gây triệu chứng
-- chính là ngạt, tắc mũi. Ngạt mũi ngày càng tăng dần đưa tới tắc mũi. Nếu polyp ở cả hai
+- hính là ngạt, tắc mũi. Ngạt mũi ngày càng tăng dần đưa tới tắc mũi. Nếu polyp ở cả hai
 - Có thể chảy nước mũi trong khi thay đổi thời tiết như trong viêm mũi dị ứng hoặc
-- chảy mũi đặc, đau nhức vùng xoang khi do viêm xoang.
+- hảy mũi đặc, đau nhức vùng xoang khi do viêm xoang.
 - Nếu do viêm xoang, thấy quanh các khối polyp có nhiều mủ bám nhưng mặt
 - Polyp đơn độc Kallian: chỉ có một khối polyp duy nhất mọc từ xoang hàm ra,
 - triệu chứng duy nhất là ngạt tắc mũi một bên.
 - Polyp chảy máu: thường có chân bám ở vách ngăn, vùng điểm mạch Kisselbach
+- Bệnh Woaker: polyp có trong xoang sàng cả hai bên, gây biến dạng xương

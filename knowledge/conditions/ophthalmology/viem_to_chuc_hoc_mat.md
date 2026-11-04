@@ -2,16 +2,27 @@
 schema: okf_condition_v1
 condition_code: viem_to_chuc_hoc_mat
 name_vi: Viêm tổ chức hốc mắt
-name_en: Viêm tổ chức hốc mắt
+name_en: Orbital cellulitis
 icd10_code: H05.0
 disease_group: ophthalmology
 description: Viêm tổ chức hốc mắt là viêm của phần mô mềm trong hốc mắt. Viêm tổ chức
-  hốc mắt gặp ở cả trẻ em và người lớn. Ở trẻ em dưới 5 tuổi thì hay phối hợp với
-  viêm đường hô hấp trên. Ở trẻ em trên 5 tuổi hay phối hợp với viêm xoang. Ở.
+  hốc mắt gặp ở cả trẻ em và người lớn.
 relations:
 - symptom_code: diplopia_strabismus_proptosis
   polarity: SUPPORTS
   weight: 0.98
+  is_key: true
+  source_key: moh_qd_40_2015
+  source_edition: Quyết định số 40/QĐ-BYT
+- symptom_code: orbital_cellulitis_chemosis_proptosis
+  polarity: SUPPORTS
+  weight: 0.98
+  is_key: true
+  source_key: moh_qd_40_2015
+  source_edition: Quyết định số 40/QĐ-BYT
+- symptom_code: optic_neuritis_rapd_retrobulbar_pain
+  polarity: SUPPORTS
+  weight: 0.97
   is_key: true
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
@@ -21,27 +32,45 @@ relations:
   is_key: true
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
+- symptom_code: skin_cellulitis_pus_abscess
+  polarity: SUPPORTS
+  weight: 0.95
+  is_key: true
+  source_key: moh_qd_40_2015
+  source_edition: Quyết định số 40/QĐ-BYT
+- symptom_code: blepharospasm_eyelid_edema
+  polarity: SUPPORTS
+  weight: 0.95
+  is_key: true
+  source_key: moh_qd_40_2015
+  source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: visual_acuity_decreased_blur
   polarity: SUPPORTS
   weight: 0.92
   is_key: true
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
-- symptom_code: skin_cellulitis_pus_abscess
+- symptom_code: conjunctival_ciliary_injection_discharge
   polarity: SUPPORTS
-  weight: 0.9
+  weight: 0.92
+  is_key: true
+  source_key: moh_qd_40_2015
+  source_edition: Quyết định số 40/QĐ-BYT
+- symptom_code: ocular_motility_cranial_nerve_palsy
+  polarity: SUPPORTS
+  weight: 0.92
   is_key: true
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: headache_dull
   polarity: SUPPORTS
-  weight: 0.75
+  weight: 0.72
   is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: fatigue_malaise
   polarity: SUPPORTS
-  weight: 0.7
+  weight: 0.68
   is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
@@ -54,6 +83,17 @@ excerpts:
 ---
 
 ## excerpt: viem_to_chuc_hoc_mat_chan_doan
+- Chẩn đoán xác định
+- Dựa vào triệu chứng lâm sàng
+- Đau đầu, đau quanh mắt, đau khi liếc mắt
+- Phù mi và kết mạc
+- Hạn chế vận nhãn
+- Viêm hắc mạc hoặc viêm thị thần kinh, phù gai
+- Tăng nhãn áp do chèn ép
+- Dựa vào triệu chứng cận lâm sàng
+- CT thấy hình ảnh viêm xoang, hình ảnh ổ áp xe hay dị vật
+- Siêu âm có hình ảnh viền dịch quanh nhãn cầu
+- Công thức máu: bạch cầu đa nhân trung tính cao.
 - Xuất hiện đau đột ngột, đau ở vùng hốc mắt
 - Đau khi vận động nhãn cầu, liếc mắt…
 - Xung huyết kết mạc
@@ -62,3 +102,4 @@ excerpts:
 - Hạn chế vận nhãn hoặc liệt vận nhãn
 - Giảm thị lực nhiều mức độ khác nhau
 - Nếu viêm gần đỉnh hốc mắt có thể có giảm thị lực trầm trọng
+- Có thể có viêm hắc mạc hoặc viêm thị thần kinh

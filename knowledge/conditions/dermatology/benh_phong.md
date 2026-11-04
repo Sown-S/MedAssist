@@ -7,29 +7,30 @@ icd10_code: A30.9
 disease_group: dermatology
 description: Bệnh phong là bệnh nhiễm trùng kinh diễn do trực khuẩn Mycobacterium
   leprae (M. leprae) gây nên. Bệnh có thể gây các tàn tật nếu không được phát hiện
-  và điều trị kịp thời.
+  và điều trị kịp thời. Chính những tàn tật này làm cho người bệnh bị xa lánh, kỳ
+  thị. Ngày nay, bệnh phong sẽ được chữa khỏi hoàn toàn bằng đa hóa trị liệu.
 relations:
-- symptom_code: maculopapular_rash
+- symptom_code: leprosy_anesthetic_hypopigmented_nerve
   polarity: SUPPORTS
-  weight: 0.82
+  weight: 0.98
   is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: pruritus_intense_skin_itch
+- symptom_code: maculopapular_rash
   polarity: SUPPORTS
-  weight: 0.78
-  is_key: false
+  weight: 0.95
+  is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: scaly_plaque_hyperkeratosis
+- symptom_code: limb_numbness_paresthesia_tingling
   polarity: SUPPORTS
-  weight: 0.75
-  is_key: false
+  weight: 0.95
+  is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: fatigue_malaise
+- symptom_code: epidemiological_exposure_vector_travel
   polarity: SUPPORTS
-  weight: 0.65
+  weight: 0.76
   is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
@@ -42,6 +43,7 @@ excerpts:
 ---
 
 ## excerpt: benh_phong_chan_doan
+- Chẩn đoán xác định
 - Thời kỳ ủ bệnh: rất khó xác định. Thời kỳ ủ bệnh của bệnh phong rất lâu:
 - Thương tổn da
 - Thương tổn thần kinh
@@ -50,3 +52,14 @@ excerpts:
 - . Viêm các dây thần kinh ngoại biên bị viêm có thể gây liệt, tàn tật.
 - . Các dây thần kinh hay bị viêm: trụ, cổ nông, hông khoeo ngoài, giữa và
 - Rối loạn bài tiết: da khô, bóng mỡ do không bài tiết mồ hôi.
+- Rối loạn dinh dưỡng
+- . Loét ổ gà.
+- Rối loạn vận động
+- . Đây là hậu quả của viêm dây thần kinh không được phát hiện và điều trị kịp
+- Các tổn thương khác
+- . Viêm mũi có thể gây xẹp mũi, viêm họng, thanh quản, viêm giác mạc, mống
+- . Viêm tinh hoàn do phản ứng phong.
+- . Một số cơ quan như gan, lách, hạch,…có thể tìm thấy M. leprae, song không
+- Cận lâm sàng
+- Tìm trực khuẩn phong tại tổn thương bằng rạch da hoặc sinh thiết: nhuộm
+- Mô bệnh học: tùy từng giai đoạn bệnh mà biểu hiện trên mô bệnh học khác

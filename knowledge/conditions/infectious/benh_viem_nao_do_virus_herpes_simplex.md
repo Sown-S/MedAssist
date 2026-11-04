@@ -2,35 +2,41 @@
 schema: okf_condition_v1
 condition_code: benh_viem_nao_do_virus_herpes_simplex
 name_vi: Bệnh viêm não do virus herpes simplex
-name_en: Bệnh viêm não do virus herpes simplex
+name_en: Herpes simplex encephalitis
 icd10_code: B00.4
 disease_group: infectious
 description: Viêm não do virus Herpes là bệnh nhiễm trùng thần kinh cấp tính, xuất
   hiện tản phát không mang tính chất mùa. Virus Herpes xâm nhập vào hệ thần kinh trung
   ương, gây hoại tử nhu mô não kèm xuất huyết. Bệnh thường khởi phát cấp tính. Biểu
-  hiện.
+  hiện bằng sốt, rối loạn ý thức, diễn biến nặng và có nguy cơ gây tử vong cao.
 relations:
-- symptom_code: meningeal_neck_stiffness_kernig
+- symptom_code: herpes_encephalitis_temporal_seizure
   polarity: SUPPORTS
   weight: 0.98
   is_key: true
   source_key: moh_qd_5642_2015
   source_edition: Quyết định số 5642/QĐ-BYT
-- symptom_code: headache_dull
+- symptom_code: eosinophilic_meningitis_paresthesia_headache
   polarity: SUPPORTS
-  weight: 0.75
-  is_key: false
-  source_key: moh_qd_5642_2015
-  source_edition: Quyết định số 5642/QĐ-BYT
-- symptom_code: fever_high
-  polarity: SUPPORTS
-  weight: 0.85
+  weight: 0.98
   is_key: true
   source_key: moh_qd_5642_2015
   source_edition: Quyết định số 5642/QĐ-BYT
-- symptom_code: fatigue_malaise
+- symptom_code: meningeal_neck_stiffness_kernig
   polarity: SUPPORTS
-  weight: 0.75
+  weight: 0.92
+  is_key: true
+  source_key: moh_qd_5642_2015
+  source_edition: Quyết định số 5642/QĐ-BYT
+- symptom_code: encephalopathy_delirium_convulsion
+  polarity: SUPPORTS
+  weight: 0.91
+  is_key: true
+  source_key: moh_qd_5642_2015
+  source_edition: Quyết định số 5642/QĐ-BYT
+- symptom_code: headache_dull
+  polarity: SUPPORTS
+  weight: 0.72
   is_key: false
   source_key: moh_qd_5642_2015
   source_edition: Quyết định số 5642/QĐ-BYT
@@ -43,11 +49,10 @@ excerpts:
 ---
 
 ## excerpt: benh_viem_nao_do_virus_herpes_simplex_chan_doan
+- Cần nghĩ tới viêm não do HSV ở bất cứ người bệnh có biểu hiện viêm não cấp
+- Chẩn đoán xác định viêm não do HSV: xét nghiệm PCR ADN HSV dịch não tủy.
+- Lâm sàng
 - Khởi phát đột ngột;
 - Sốt, đau đầu; dấu hiệu thần kinh khu trú gợi ý tổn thương thùy thái dương và
 - mất trí nhớ; các biểu hiện tổn thương não khác như: co giật, hôn mê, v.v…
 - Viêm não có thể đi kèm với viêm màng não và người bệnh có các biểu hiện
-- Công thức máu: không có biến đổi đặc hiệu.
-- Dịch não tủy: protein thường tăng nhẹ < 1 g/l; bạch cầu tăng (10-200 tế
-- Chẩn đoán hình ảnh: tổn thương não có thể phát hiện sau khởi phát triệu chứng
-- đầu của bệnh. Tổn thương gợi ý viêm não do HSV bao gồm giảm tín hiệu thì T1 và
