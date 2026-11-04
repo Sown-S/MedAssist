@@ -5,13 +5,16 @@ import { Switch } from './ui'
 import { useAuth } from '../../context/AuthContext'
 import { useToast } from '../../context/ToastContext'
 import { translate } from '../../i18n'
-import { useSettings, saveSettings, saveServerSettings, loadServerSettings, getSettings, changedPaths, PRINT_DOCS, NUMBERED_DOCS, PAYMENT_METHODS } from '../../api/settingsStore'
+import { useSettings, saveSettings, saveServerSettings, loadServerSettings, getSettings, changedPaths, PRINT_DOCS, NUMBERED_DOCS } from '../../api/settingsStore'
 import { fetchPasswordPolicy } from '../../api/accountStore'
-import { printHeaderHtml, fmtDateTime, fmtMoney } from './inventory/shared'
+import { printHeaderHtml, fmtDateTime } from './inventory/shared'
 import { DeviceTab } from './settings/DeviceTab'
 import { FIELDS, Field } from './settings/Field'
 import { BackupTab } from './settings/BackupTab'
 import { ConnectionTab } from './settings/ConnectionTab'
+import { ClinicTab } from './settings/ClinicTab'
+import { OpsTab } from './settings/OpsTab'
+import { IDLE, getAt, setAt, validate } from './settings/settingsForm'
 
 const TABS = [
   { key: 'clinic', label: 'Clinic' },
@@ -30,51 +33,6 @@ for (const d of NUMBERED_DOCS)
   for (const [k, l] of [['prefix', 'prefix'], ['date', 'date part'], ['digits', 'digits']]) FIELDS[`numbering.${d.key}.${k}`] = [`Numbering — ${d.label} (${l})`, 'now']
 
 const labelOf = (p) => FIELDS[p]?.[0] ?? p
-const IDLE = [
-  { key: 0, label: 'Off' },
-  { key: 5, label: '5 minutes' },
-  { key: 10, label: '10 minutes' },
-  { key: 15, label: '15 minutes' },
-  { key: 30, label: '30 minutes' },
-  { key: 60, label: '60 minutes' }
-]
-function getAt(obj, path) {
-  return path.split('.').reduce((o, k) => o?.[k], obj)
-}
-function setAt(obj, path, value) {
-  const [k, ...rest] = path.split('.')
-  return { ...obj, [k]: rest.length ? setAt(obj[k], rest.join('.'), value) : value }
-}
-
-function validate(d) {
-  const e = {}
-  const int = (v) => Number.isInteger(Number(v)) && String(v).trim() !== ''
-  if (!d.clinic.name.trim()) e['clinic.name'] = 'Enter the clinic name — it is printed on every document.'
-  if (d.clinic.email && !/^\S+@\S+\.\S+$/.test(d.clinic.email)) e['clinic.email'] = 'Invalid email address.'
-  if (d.clinic.taxCode && !/^\d{10}(-\d{3})?$/.test(d.clinic.taxCode)) e['clinic.taxCode'] = 'A tax code has 10 digits (or 10 digits + "-" + 3 digits for a branch).'
-  for (const doc of NUMBERED_DOCS) {
-    const r = d.numbering[doc.key]
-    if (!/^[A-Z0-9]{0,6}$/.test(r.prefix)) e[`numbering.${doc.key}.prefix`] = 'Use up to 6 capital letters or digits.'
-    if (!int(r.digits) || r.digits < 2 || r.digits > 6) e[`numbering.${doc.key}.digits`] = 'Between 2 and 6.'
-  }
-  const prefixes = NUMBERED_DOCS.map((x) => d.numbering[x.key].prefix).filter(Boolean)
-  NUMBERED_DOCS.forEach((x) => {
-    const p = d.numbering[x.key].prefix
-    if (p && prefixes.filter((y) => y === p).length > 1) e[`numbering.${x.key}.prefix`] = 'Each document type needs its own prefix.'
-  })
-  if (!int(d.numbering.queueStart) || d.numbering.queueStart < 0) e['numbering.queueStart'] = 'Enter a whole number.'
-  if (!int(d.security.minLength) || d.security.minLength < 8 || d.security.minLength > 64) e['security.minLength'] = 'Between 8 and 64 characters.'
-  if (!int(d.security.maxFailed) || d.security.maxFailed < 3 || d.security.maxFailed > 20) e['security.maxFailed'] = 'Between 3 and 20 attempts.'
-  if (!int(d.security.lockMinutes) || d.security.lockMinutes < 1 || d.security.lockMinutes > 1440) e['security.lockMinutes'] = 'Between 1 and 1440 minutes.'
-  if (!int(d.backup.keep) || d.backup.keep < 1 || d.backup.keep > 365) e['backup.keep'] = 'Between 1 and 365.'
-  if (d.backup.enabled && !d.backup.path.trim()) e['backup.path'] = 'Enter the folder where backups are stored.'
-  if (!int(d.ops.defaultThreshold) || d.ops.defaultThreshold < 0) e['ops.defaultThreshold'] = 'Enter a whole number.'
-  if (!int(d.ops.shelfBufferDays ?? 0) || (d.ops.shelfBufferDays ?? 0) < 0 || (d.ops.shelfBufferDays ?? 0) > 365) e['ops.shelfBufferDays'] = 'Enter 0–365 days.'
-  if (!int(d.ops.consultFee) || d.ops.consultFee < 0) e['ops.consultFee'] = 'Enter an amount in đồng.'
-  if (!d.ops.methods.length) e['ops.methods'] = 'Enable at least one payment method.'
-  return e
-}
-
 export default function SettingsPage({ params, onNavigate, setLeaveGuard }) {
   const { user } = useAuth()
   const { showToast } = useToast()
@@ -113,6 +71,7 @@ export default function SettingsPage({ params, onNavigate, setLeaveGuard }) {
   const fp = (p) => ({ path: p, changed: changed.has(p), error: errors[p] })
   const text = (p, extra = {}) => ({ value: val(p) ?? '', onChange: (e) => set(p, e.target.value), ...extra })
   const num = (p) => ({ type: 'number', value: val(p), onChange: (e) => set(p, e.target.value === '' ? '' : Number(e.target.value)) })
+  const form = { fp, text, num, val, set }
   const tabChanged = (k) => [...changed].some((p) => TAB_OF(p) === k)
 
   async function doSave() {
@@ -127,17 +86,6 @@ export default function SettingsPage({ params, onNavigate, setLeaveGuard }) {
     if (errCount) return showToast('Fix the highlighted fields before saving', 'error')
     if ([...changed].some((p) => p.startsWith('security.') || p.startsWith('backup.'))) return setReauth(true)
     doSave()
-  }
-
-  function onLogo(e) {
-    const f = e.target.files?.[0]
-    e.target.value = ''
-    if (!f) return
-    if (!/^image\/(png|jpeg|svg\+xml|webp)$/.test(f.type)) return showToast('Choose a PNG, JPG, SVG or WebP image', 'error')
-    if (f.size > 300 * 1024) return showToast('The logo must be smaller than 300 KB', 'error')
-    const r = new FileReader()
-    r.onload = () => set('clinic.logo', r.result)
-    r.readAsDataURL(f)
   }
 
   return (
@@ -165,57 +113,7 @@ export default function SettingsPage({ params, onNavigate, setLeaveGuard }) {
         ))}
       </div>
 
-      {tab === 'clinic' && (
-        <div className="card">
-          <p className="ai-soft ai-small set-intro">Printed on prescriptions, invoices and reports.</p>
-          <div className="set-grid">
-            <Field {...fp('clinic.name')} wide>
-              <input {...text('clinic.name')} placeholder="e.g. Phòng khám Đa khoa An Bình" />
-            </Field>
-            <Field {...fp('clinic.address')} wide>
-              <input {...text('clinic.address')} />
-            </Field>
-            <Field {...fp('clinic.phone')}>
-              <input {...text('clinic.phone', { inputMode: 'tel' })} />
-            </Field>
-            <Field {...fp('clinic.email')}>
-              <input {...text('clinic.email', { type: 'email' })} />
-            </Field>
-            <Field {...fp('clinic.taxCode')}>
-              <input {...text('clinic.taxCode', { inputMode: 'numeric' })} />
-            </Field>
-            <Field {...fp('clinic.licenseNo')}>
-              <input {...text('clinic.licenseNo')} />
-            </Field>
-            <Field {...fp('clinic.licenseDate')}>
-              <input {...text('clinic.licenseDate', { type: 'date' })} />
-            </Field>
-            <Field {...fp('clinic.licenseIssuer')}>
-              <input {...text('clinic.licenseIssuer')} placeholder="e.g. Sở Y tế Đà Nẵng" />
-            </Field>
-            <Field {...fp('clinic.director')}>
-              <input {...text('clinic.director')} />
-            </Field>
-            <Field {...fp('clinic.directorLicense')}>
-              <input {...text('clinic.directorLicense')} />
-            </Field>
-            <Field {...fp('clinic.logo')} wide hint="PNG, JPG, SVG or WebP, under 300 KB.">
-              <div className="set-logo">
-                {val('clinic.logo') ? <img src={val('clinic.logo')} alt="" /> : <span className="ai-soft ai-small">No logo</span>}
-                <label className="btn btn-ghost btn-sm">
-                  <Icon name="paperclip" /> <span>Choose image</span>
-                  <input type="file" accept="image/png,image/jpeg,image/svg+xml,image/webp" hidden onChange={onLogo} />
-                </label>
-                {val('clinic.logo') && (
-                  <button type="button" className="btn btn-ghost btn-sm" onClick={() => set('clinic.logo', '')}>
-                    Remove
-                  </button>
-                )}
-              </div>
-            </Field>
-          </div>
-        </div>
-      )}
+      {tab === 'clinic' && <ClinicTab form={form} />}
 
       {tab === 'print' && (
         <>
@@ -296,50 +194,7 @@ export default function SettingsPage({ params, onNavigate, setLeaveGuard }) {
       {tab === 'connection' && <ConnectionTab onNavigate={onNavigate} />}
       {tab === 'device' && <DeviceTab draft={draft} />}
 
-      {tab === 'ops' && (
-        <div className="card">
-          <div className="section-label" style={{ marginTop: 0 }}>
-            Inventory
-          </div>
-          <div className="set-grid">
-            <Field {...fp('ops.nearDays')} hint="Batches expiring within this period are flagged on Home and in Stock & expiry.">
-              <div className="ai-seg">
-                {[30, 60, 90].map((n) => (
-                  <button key={n} type="button" className={val('ops.nearDays') === n ? 'active' : ''} onClick={() => set('ops.nearDays', n)}>
-                    {n} <span>days</span>
-                  </button>
-                ))}
-              </div>
-            </Field>
-            <Field {...fp('ops.shelfBufferDays')} hint="When a prescription is confirmed, only batches that stay valid until today + the course length (or this many days, whichever is longer) are used.">
-              <input {...num('ops.shelfBufferDays')} min="0" max="365" />
-            </Field>
-            <Field {...fp('ops.defaultThreshold')} hint="Pre-filled when a new drug is added; each drug can still have its own threshold.">
-              <input {...num('ops.defaultThreshold')} min="0" />
-            </Field>
-          </div>
-
-          <div className="section-label">Payments</div>
-          <div className="set-grid">
-            <Field {...fp('ops.consultFee')} hint={fmtMoney(Number(val('ops.consultFee')) || 0)}>
-              <input {...num('ops.consultFee')} min="0" step="1000" />
-            </Field>
-            <Field {...fp('ops.methods')} wide>
-              <div className="set-checks">
-                {PAYMENT_METHODS.map((m) => {
-                  const on = val('ops.methods').includes(m.key)
-                  return (
-                    <label key={m.key}>
-                      <input type="checkbox" checked={on} onChange={() => set('ops.methods', on ? val('ops.methods').filter((x) => x !== m.key) : [...val('ops.methods'), m.key])} />{' '}
-                      <span>{m.label}</span>
-                    </label>
-                  )
-                })}
-              </div>
-            </Field>
-          </div>
-        </div>
-      )}
+      {tab === 'ops' && <OpsTab form={form} />}
 
       {(dirty || errCount > 0) && tab !== 'connection' && (
         <div className="set-savebar">
