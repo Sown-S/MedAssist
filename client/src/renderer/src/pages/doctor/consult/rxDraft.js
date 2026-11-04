@@ -47,6 +47,9 @@ export const blankDose = () => ({ m: '', n: '', a: '', e: '', days: '', meal: 'a
 
 export const num = (x) => parseFloat(String(x ?? '').replace(',', '.')) || 0
 
+// Trẻ dưới 12 tuổi: liều tính theo cân nặng → bắt buộc có cân nặng mới chốt đơn.
+export const isChild = (v) => v.age !== '' && v.age != null && Number(v.age) < 12
+
 export const perDay = (dose) => SLOTS.reduce((s, [k]) => s + num(dose?.[k]), 0)
 
 export const unitVi = (unit) => (VI[unitLabel(unit)] ?? unitLabel(unit)).toLowerCase()

@@ -69,8 +69,31 @@ const ROUTES = [
   [/^\/api\/v1\/auth\/password-policy$/, () => ({ min_length: 8, require_letters_and_digits: true, max_failed_attempts: 5, failed_window_minutes: 15, lock_minutes: 5 })],
   [/^\/api\/v1\/patients\/[^/?]+$/, (path) => PATIENT(path.split('/').pop())],
   [/^\/api\/v1\/visits\/[^/?]+$/, () => ({ free_text_description: 'Ho, sốt 2 ngày', chief_complaint: 'Ho, sốt', vital_signs: {} })],
+  // Lượt chỉ dùng cho test màn Cấp phát & thu tiền (không có trong hàng đợi): một dòng thuốc chờ cấp, hoá đơn chờ thu.
+  [/^\/api\/v1\/visits\/v-pay\/prescription$/, () => PAY_RX],
+  [/^\/api\/v1\/visits\/v-pay\/invoice$/, () => PAY_INVOICE],
   [/^\/api\/v1\/visits\/[^/]+\/(assessment|prescription)$/, () => ({ status: 404, body: { error: { code: 'NOT_FOUND', message: 'Không tìm thấy' } } })]
 ]
+
+const PAY_RX = {
+  prescription_id: 'rx-pay',
+  status: 'Confirmed',
+  patient_context: { allergy_notes: null },
+  items: [{ item_id: 'pi1', drug_name: 'Paracetamol 500mg', dosage: '1 viên', frequency: '3 lần/ngày', duration_days: 3, quantity: 9, unit: 'viên', dispense_status: 'Pending' }]
+}
+const PAY_INVOICE = {
+  invoice_code: 'HD-PAY',
+  payment_status: 'Pending',
+  consultation_fee: '30000',
+  paraclinical_fee: '0',
+  drug_fee: '9000',
+  total_amount: '39000',
+  unbilled_items: [],
+  items: [
+    { invoice_item_id: 'ii1', item_type: 'Consultation', item_name: 'Khám bệnh', quantity: 1, unit_price: '30000', subtotal: '30000' },
+    { invoice_item_id: 'ii2', item_type: 'Drug', item_name: 'Paracetamol 500mg', quantity: 9, unit_price: '1000', subtotal: '9000' }
+  ]
+}
 
 export const calls = []
 

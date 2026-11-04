@@ -4,6 +4,7 @@ import { renderPage } from './render.jsx'
 import Reception from '../src/renderer/src/pages/Reception.jsx'
 import Doctor from '../src/renderer/src/pages/Doctor.jsx'
 import Admin from '../src/renderer/src/pages/Admin.jsx'
+import PaymentModal from '../src/renderer/src/components/PaymentModal.jsx'
 import { syncQueue } from '../src/renderer/src/api/queueStore.js'
 import { DOC_A, DOC_B, DESK, ADMIN } from './helpers'
 import { installFakeServer, resetCalls, calls } from './fakeServer'
@@ -148,5 +149,23 @@ describe('Luồng chính trên giao diện', () => {
     expect(screen.getByText('Waiting', { selector: '.itab span' }).nextElementSibling.textContent).toBe('1')
     // Không lên khung gọi bệnh nhân.
     expect(document.querySelector('.call-panel').textContent).not.toContain('003')
+  })
+})
+
+describe('Cấp phát & thu tiền (PaymentModal)', () => {
+  it('hai tab dựng được; đổi tab không mất phần đang nhập dở', async () => {
+    renderPage(<PaymentModal open onClose={() => {}} patient={{ id: 'v-pay', name: 'Lê Văn Cường', ticket: 7 }} />, { user: DESK, path: '/reception' })
+    expect(await screen.findByText('Paracetamol 500mg', { selector: '.disp-table b' })).toBeTruthy()
+    expect(screen.getByText('Dispensed', { selector: 'button, button *' })).toBeTruthy()
+    fireEvent.click(screen.getByText('Invoice & payment'))
+    expect(screen.getByText('Collect payment')).toBeTruthy()
+    expect(screen.getByText('HD-PAY', { exact: false })).toBeTruthy()
+    // Phí khám lấy từ hoá đơn; gõ dở một dịch vụ ngoài danh mục rồi đổi tab qua lại.
+    expect(document.querySelector('.svc-fee input').value).toBe('30000')
+    const name = screen.getByPlaceholderText('Other service, e.g. ultrasound at partner clinic')
+    fireEvent.change(name, { target: { value: 'Siêu âm' } })
+    fireEvent.click(screen.getByText('Dispensing'))
+    fireEvent.click(screen.getByText('Invoice & payment'))
+    expect(screen.getByPlaceholderText('Other service, e.g. ultrasound at partner clinic').value).toBe('Siêu âm')
   })
 })

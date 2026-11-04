@@ -1,53 +1,18 @@
 import { useEffect, useMemo, useState } from 'react'
-import Modal, { ModalHeader } from '../../components/Modal'
+import Modal from '../../components/Modal'
 import ReauthModal from '../../components/ReauthModal'
 import ChangePasswordModal from '../../components/ChangePasswordModal'
 import Icon from '../../components/Icon'
-import Button from '../../components/Button'
 import { LoadingBlock, ErrorBlock } from '../../components/DataState'
 import { useToast } from '../../context/ToastContext'
 import { useAuth } from '../../context/AuthContext'
-import {
-  ROLES,
-  maxFailed,
-  hasDefaultName,
-  listAccounts,
-  createAccount,
-  updateAccount,
-  setActive,
-  resetPassword,
-  unlockAccount
-} from '../../api/accountStore'
+import { ROLES, hasDefaultName, listAccounts, createAccount, updateAccount, setActive, resetPassword, unlockAccount } from '../../api/accountStore'
 import { listRooms, examRooms } from '../../api/roomStore'
-import { fmtDate, fmtDateTime } from './inventory/shared'
-import { translate } from '../../i18n'
-
-const EMPTY = { fullName: '', username: '', roleKey: 'doctor', phone: '', staffCode: '', roomId: null, licenseNo: '' }
-// Không đăng nhập quá số ngày này → coi là tài khoản bỏ không, nên xem xét vô hiệu hoá.
-const IDLE_DAYS = 30
-
-const daysSince = (iso) => (iso ? Math.floor((Date.now() - new Date(iso).getTime()) / 86400000) : null)
-const isIdle = (a) => a.active && (a.lastLoginAt ? daysSince(a.lastLoginAt) >= IDLE_DAYS : daysSince(a.createdAt) >= IDLE_DAYS)
-
-const STATUS_FILTERS = [
-  { key: 'all', label: 'All' },
-  { key: 'active', label: 'Active' },
-  { key: 'pending', label: 'Password change pending' },
-  { key: 'locked', label: 'Locked' },
-  { key: 'idle', label: 'Unused' },
-  { key: 'disabled', label: 'Disabled' }
-]
-function matchStatus(a, f) {
-  if (f === 'active') return a.active && !a.locked
-  if (f === 'pending') return a.mustChange
-  if (f === 'locked') return a.locked
-  if (f === 'idle') return isIdle(a)
-  if (f === 'disabled') return !a.active
-  return true
-}
-
-// Nhãn tiếng Anh, dịch khi hiển thị nhật ký.
-const FIELD_LABELS = { fullName: 'Full name', staffCode: 'Staff code', phone: 'Phone', roomId: 'Consultation room', licenseNo: 'Practising licence no.' }
+import { EMPTY, FIELD_LABELS, isIdle, matchStatus } from './staff/staffShared'
+import StaffSummary from './staff/StaffSummary'
+import StaffTable from './staff/StaffTable'
+import AccountFormModal from './staff/AccountFormModal'
+import SecretPanel from './staff/SecretPanel'
 
 export default function StaffPage() {
   const { showToast } = useToast()
@@ -66,7 +31,6 @@ export default function StaffPage() {
   const [reauth, setReauth] = useState(null)
   const [secret, setSecret] = useState(null) // mật khẩu tạm, chỉ hiện một lần
   const [ownPw, setOwnPw] = useState(false)
-  const [confirm, setConfirm] = useState(null)
 
   async function refresh() {
     try {
@@ -240,261 +204,27 @@ export default function StaffPage() {
             </div>
           )}
 
-          <div className="ai-summary">
-            {Object.entries(ROLES).map(([k, r]) => (
-              <button key={k} className={'stat-card ai-sum-card' + (roleFilter === k ? ' staff-sum-on' : '')} onClick={() => setRoleFilter(roleFilter === k ? 'all' : k)}>
-                <div className="dot" />
-                <div>
-                  <div className="val">{counts[k].total}</div>
-                  <div className="lbl">{r.label}</div>
-                  <div className="ai-small ai-soft">
-                    <span className="mono">{counts[k].active}</span> <span>active</span>
-                  </div>
-                </div>
-              </button>
-            ))}
-            <button className={'stat-card ai-sum-card' + (statusFilter === 'pending' ? ' staff-sum-on' : '')} onClick={() => setStatusFilter(statusFilter === 'pending' ? 'all' : 'pending')}>
-              <div className={'dot ' + (counts.pending ? 'amber' : '')} />
-              <div>
-                <div className="val">{counts.pending}</div>
-                <div className="lbl">Password change pending</div>
-              </div>
-            </button>
-            <button className={'stat-card ai-sum-card' + (statusFilter === 'locked' ? ' staff-sum-on' : '')} onClick={() => setStatusFilter(statusFilter === 'locked' ? 'all' : 'locked')}>
-              <div className={'dot ' + (counts.locked ? 'red' : '')} />
-              <div>
-                <div className="val">{counts.locked}</div>
-                <div className="lbl">Locked</div>
-              </div>
-            </button>
-            <button className={'stat-card ai-sum-card' + (statusFilter === 'idle' ? ' staff-sum-on' : '')} onClick={() => setStatusFilter(statusFilter === 'idle' ? 'all' : 'idle')}>
-              <div className={'dot ' + (counts.idle ? 'amber' : '')} />
-              <div>
-                <div className="val">{counts.idle}</div>
-                <div className="lbl">
-                  <span>No sign-in for</span> <span className="mono">{IDLE_DAYS}</span> <span>days</span>
-                </div>
-              </div>
-            </button>
-          </div>
+          <StaffSummary counts={counts} roleFilter={roleFilter} setRoleFilter={setRoleFilter} statusFilter={statusFilter} setStatusFilter={setStatusFilter} />
 
-          <div className="card">
-            <div className="ai-toolbar">
-              <div className="ai-search">
-                <Icon name="search" />
-                <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search name, username, staff code, phone…" />
-              </div>
-              <div className="ai-toolbar-right">
-                <select className="ai-select" value={roleFilter} onChange={(e) => setRoleFilter(e.target.value)}>
-                  <option value="all">All roles</option>
-                  {Object.entries(ROLES).map(([k, r]) => (
-                    <option key={k} value={k}>
-                      {r.label}
-                    </option>
-                  ))}
-                </select>
-                <div className="ai-seg">
-                  {STATUS_FILTERS.map((f) => (
-                    <button key={f.key} className={statusFilter === f.key ? 'active' : ''} onClick={() => setStatusFilter(f.key)}>
-                      {f.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {rows.length === 0 ? (
-              <p className="ai-soft">No accounts match.</p>
-            ) : (
-              <div className="ai-table-wrap">
-                <table className="dt staff-table">
-                  <thead>
-                    <tr>
-                      <th>Staff code</th>
-                      <th>Full name</th>
-                      <th>Username</th>
-                      <th>Role</th>
-                      <th>Phone</th>
-                      <th>Status</th>
-                      <th>Last sign-in</th>
-                      <th>Created</th>
-                      <th></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {rows.map((a) => {
-                      const self = a.id === me.id
-                      const idle = isIdle(a)
-                      return (
-                        <tr key={a.id} className={a.active ? '' : 'ai-dim'}>
-                          <td className="mono">{a.staffCode || '—'}</td>
-                          <td>
-                            <b>{a.fullName}</b> {self && <span className="badge ok">You</span>}
-                            {hasDefaultName(a) && <div className="ai-small sp-warn">Default name — change to a real person</div>}
-                            {a.fullName.trim().toLowerCase() === a.username.toLowerCase() && (
-                              <div className="ai-small sp-warn">Name is the same as the username — enter the real full name</div>
-                            )}
-                            {a.roleKey === 'doctor' && (
-                              <div className="ai-small ai-soft">
-                                {a.roomName ? <span>{a.roomName}</span> : <span className="sp-warn">No room</span>}
-                                {' · '}
-                                {a.licenseNo ? (
-                                  <>
-                                    <span>Licence</span> <span className="mono">{a.licenseNo}</span>
-                                  </>
-                                ) : (
-                                  <span className="sp-warn">No licence no.</span>
-                                )}
-                              </div>
-                            )}
-                          </td>
-                          <td className="mono">{a.username}</td>
-                          <td>{ROLES[a.roleKey].label}</td>
-                          <td className="mono">{a.phone || '—'}</td>
-                          <td>
-                            <div className="staff-badges">
-                              {!a.active ? <span className="badge muted">Disabled</span> : a.locked ? <span className="badge low" title={translate('Unlocks by itself at') + ' ' + fmtDateTime(a.lockedUntil)}>Locked</span> : <span className="badge ok">Active</span>}
-                              {a.mustChange && <span className="badge warn">Password change pending</span>}
-                              {a.active && !a.locked && a.failedAttempts > 0 && (
-                                <span className="ai-small sp-warn">
-                                  <span className="mono">
-                                    {a.failedAttempts}/{maxFailed()}
-                                  </span>{' '}
-                                  <span>failed sign-ins</span>
-                                </span>
-                              )}
-                            </div>
-                          </td>
-                          <td className="ai-small">
-                            {a.lastLoginAt ? <span className="mono">{fmtDateTime(a.lastLoginAt)}</span> : <span className="ai-soft">Never signed in</span>}
-                            {idle && <div className="sp-warn">Unused</div>}
-                          </td>
-                          <td className="ai-small">
-                            <span className="mono">{fmtDate(a.createdAt)}</span>
-                            {a.createdBy && (
-                              <div className="ai-soft">
-                                <span>by</span> {a.createdBy}
-                              </div>
-                            )}
-                          </td>
-                          <td>
-                            <div className="staff-actions">
-                              <button className="btn btn-ghost btn-sm" onClick={() => openEdit(a)}>
-                                Edit
-                              </button>
-                              {self ? (
-                                <button className="btn btn-ghost btn-sm" onClick={() => setOwnPw(true)}>
-                                  Change password
-                                </button>
-                              ) : (
-                                <>
-                                  {a.locked && (
-                                    <button className="btn btn-primary btn-sm" onClick={() => unlock(a)}>
-                                      Unlock
-                                    </button>
-                                  )}
-                                  <button className="btn btn-ghost btn-sm" onClick={() => askReset(a)}>
-                                    Reset password
-                                  </button>
-                                  <button className="btn btn-ghost btn-sm" onClick={() => toggle(a)}>
-                                    {a.active ? 'Disable' : 'Enable'}
-                                  </button>
-                                </>
-                              )}
-                            </div>
-                          </td>
-                        </tr>
-                      )
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </div>
+          <StaffTable
+            rows={rows}
+            me={me}
+            q={q}
+            setQ={setQ}
+            roleFilter={roleFilter}
+            setRoleFilter={setRoleFilter}
+            statusFilter={statusFilter}
+            setStatusFilter={setStatusFilter}
+            onEdit={openEdit}
+            onOwnPw={() => setOwnPw(true)}
+            onUnlock={unlock}
+            onReset={askReset}
+            onToggle={toggle}
+          />
         </>
       )}
 
-      <Modal open={!!form} onClose={() => setForm(null)}>
-        {form && (
-          <form onSubmit={submitForm}>
-            <ModalHeader title={editing ? `Edit account — ${editing.username}` : 'New account'} onClose={() => setForm(null)} />
-            <div className="modal-body">
-              {formErr && <div className="login-err show">{formErr}</div>}
-              <div className="form-grid cols-2">
-                <div className="field">
-                  <label>Full name</label>
-                  <input value={form.fullName} autoFocus onChange={(e) => setForm({ ...form, fullName: e.target.value })} />
-                </div>
-                <div className="field">
-                  <label>Username</label>
-                  <input value={form.username} disabled={!!editing} onChange={(e) => setForm({ ...form, username: e.target.value })} />
-                </div>
-                <div className="field">
-                  <label>Role</label>
-                  <select value={form.roleKey} disabled={editing?.id === me.id} onChange={(e) => setForm({ ...form, roleKey: e.target.value })}>
-                    {Object.entries(ROLES).map(([k, r]) => (
-                      <option key={k} value={k}>
-                        {r.label}
-                        {k === 'admin' && !editing ? ' (secondary admin)' : ''}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div className="field">
-                  <label>Phone</label>
-                  <input value={form.phone} inputMode="tel" onChange={(e) => setForm({ ...form, phone: e.target.value })} />
-                </div>
-                {editing && (
-                  <div className="field">
-                    <label>Staff code</label>
-                    <input value={form.staffCode} onChange={(e) => setForm({ ...form, staffCode: e.target.value })} />
-                  </div>
-                )}
-                {form.roleKey === 'doctor' && (
-                  <>
-                    <div className="field">
-                      <label>Consultation room</label>
-                      <select value={form.roomId ?? ''} onChange={(e) => setForm({ ...form, roomId: e.target.value || null })}>
-                        <option value="">— Not assigned —</option>
-                        {rooms.map((r) => {
-                          // Phòng đã có bác sĩ khác → không chọn được (server: 409 ROOM_TAKEN)
-                          const taken = r.physician && r.physician.id !== form.id
-                          return (
-                            <option key={r.id} value={r.id} disabled={!!taken}>
-                              {r.name}
-                              {taken ? ' — ' + r.physician.name : ''}
-                            </option>
-                          )
-                        })}
-                      </select>
-                    </div>
-                    <div className="field">
-                      <label>Practising licence no.</label>
-                      <input value={form.licenseNo} onChange={(e) => setForm({ ...form, licenseNo: e.target.value })} placeholder="Printed on prescriptions" />
-                    </div>
-                  </>
-                )}
-              </div>
-              {editing?.id === me.id && <p className="login-note">You cannot change your own role — ask another administrator.</p>}
-              {editing && form.roleKey !== editing.roleKey && (
-                <p className="login-note sp-warn">
-                  <span>Role change:</span> <span>{ROLES[editing.roleKey].label}</span> → <span>{ROLES[form.roleKey].label}</span>.{' '}
-                  <span>You will be asked for your password.</span>
-                </p>
-              )}
-              {!editing && <p className="login-note">A temporary password is generated after you create the account — it is shown once so you can send it to the staff member.</p>}
-            </div>
-            <div className="modal-foot">
-              <button type="button" className="btn btn-ghost" onClick={() => setForm(null)}>
-                Cancel
-              </button>
-              <button type="submit" className="btn btn-primary">
-                {editing ? 'Save' : 'Create account'}
-              </button>
-            </div>
-          </form>
-        )}
-      </Modal>
+      <AccountFormModal form={form} setForm={setForm} editing={editing} me={me} rooms={rooms} formErr={formErr} onSubmit={submitForm} />
 
       <ReauthModal open={!!reauth} title={reauth?.title ?? ''} confirmLabel={reauth?.confirmLabel} danger={reauth?.danger} onClose={() => setReauth(null)} onConfirm={() => reauth.run()}>
         {reauth && <p className="ai-soft">{reauth.message}</p>}
@@ -507,66 +237,6 @@ export default function StaffPage() {
 
       <ChangePasswordModal open={ownPw} onClose={() => setOwnPw(false)} />
 
-      <Modal open={!!confirm} onClose={() => setConfirm(null)}>
-        {confirm && (
-          <>
-            <ModalHeader title={confirm.title} onClose={() => setConfirm(null)} />
-            <div className="modal-body">
-              <p className="ai-soft">{confirm.message}</p>
-            </div>
-            <div className="modal-foot">
-              <button className="btn btn-ghost" onClick={() => setConfirm(null)}>
-                Cancel
-              </button>
-              <Button className="btn btn-danger" onClick={confirm.run}>
-                {confirm.confirmLabel}
-              </Button>
-            </div>
-          </>
-        )}
-      </Modal>
     </div>
-  )
-}
-
-function SecretPanel({ secret, onClose }) {
-  const [copied, setCopied] = useState(false)
-  const { account: a, password } = secret
-  async function copy() {
-    try {
-      await navigator.clipboard.writeText(`${a.username}\n${password}`)
-      setCopied(true)
-    } catch {
-      setCopied(false)
-    }
-  }
-  return (
-    <>
-      <ModalHeader title={secret.reset ? 'New temporary password' : 'Account created'} onClose={onClose} />
-      <div className="modal-body">
-        <p className="ai-soft">
-          <span>Send these sign-in details to</span> <b>{a.fullName}</b> <span>through a private channel. They must change the password at first sign-in.</span>
-        </p>
-        <div className="staff-secret">
-          <div>
-            <div className="ai-small ai-soft">Username</div>
-            <div className="mono">{a.username}</div>
-          </div>
-          <div>
-            <div className="ai-small ai-soft">Temporary password</div>
-            <div className="mono staff-secret-pw">{password}</div>
-          </div>
-          <button type="button" className="btn btn-ghost btn-sm" onClick={copy}>
-            <Icon name={copied ? 'check' : 'clipboard'} /> <span>{copied ? 'Copied' : 'Copy'}</span>
-          </button>
-        </div>
-        <p className="login-note sp-warn">This password is shown only once. After you close this window it cannot be displayed again — only reset.</p>
-      </div>
-      <div className="modal-foot">
-        <button className="btn btn-primary" onClick={onClose}>
-          Done
-        </button>
-      </div>
-    </>
   )
 }
