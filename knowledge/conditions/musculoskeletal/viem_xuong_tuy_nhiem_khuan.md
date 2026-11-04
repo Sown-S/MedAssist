@@ -2,20 +2,26 @@
 schema: okf_condition_v1
 condition_code: viem_xuong_tuy_nhiem_khuan
 name_vi: Viêm xương tủy nhiễm khuẩn
-name_en: Viêm xương tủy nhiễm khuẩn
+name_en: Infectious osteomyelitis
 icd10_code: M86.9
 disease_group: musculoskeletal
 description: Viêm xương tủy (Osteomyelitis), hay còn gọi là cốt tủy viêm, là một bệnh
   nhiễm trùng của xương (vỏ hoặc tủy xương), có thể là cấp tính hoặc mạn tính, do
   nhiều loại vi sinh vật gây nên, nhưng thường gặp nhất là vi khuẩn.
 relations:
-- symptom_code: skin_cellulitis_pus_abscess
+- symptom_code: osteomyelitis_bone_tenderness_fistula
+  polarity: SUPPORTS
+  weight: 0.98
+  is_key: true
+  source_key: moh_qd_361_2014
+  source_edition: Quyết định số 361/QĐ-BYT
+- symptom_code: bone_pain_fracture_lesion
   polarity: SUPPORTS
   weight: 0.92
   is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: bone_pain_fracture_lesion
+- symptom_code: pyomyositis_psoas_muscle_abscess
   polarity: SUPPORTS
   weight: 0.92
   is_key: true
@@ -27,15 +33,21 @@ relations:
   is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
+- symptom_code: skin_cellulitis_pus_abscess
+  polarity: SUPPORTS
+  weight: 0.9
+  is_key: true
+  source_key: moh_qd_361_2014
+  source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: chills_rigors
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.75
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: fatigue_malaise
   polarity: SUPPORTS
-  weight: 0.7
+  weight: 0.68
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
@@ -48,6 +60,7 @@ excerpts:
 ---
 
 ## excerpt: viem_xuong_tuy_nhiem_khuan_chan_doan
+- Lâm sàng
 - Viêm xương tủy đường máu: biểu hiện hội chứng viêm (sốt, rét run, mệt
 - mỏi…). Biểu hiện đau không rõ ràng, thường chỉ thấy hơi sưng nề tại vùng đau. Muộn
 - hơn thấy có khối sưng, nóng, đỏ, đau rõ, giống như một viêm cơ, vùng khớp lân cận

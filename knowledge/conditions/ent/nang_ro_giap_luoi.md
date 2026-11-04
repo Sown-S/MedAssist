@@ -2,7 +2,7 @@
 schema: okf_condition_v1
 condition_code: nang_ro_giap_luoi
 name_vi: Nang rò giáp lưỡi
-name_en: Nang rò giáp lưỡi
+name_en: Thyroglossal duct cyst and fistula
 icd10_code: Q89.2
 disease_group: ent
 description: Là một dị tật bẩm sinh vùng cổ giữa thường gặp nhất, liên quan đến sự
@@ -10,26 +10,20 @@ description: Là một dị tật bẩm sinh vùng cổ giữa thường gặp n
 relations:
 - symptom_code: head_neck_mass_fistula_trauma
   polarity: SUPPORTS
-  weight: 0.96
+  weight: 0.98
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: sore_throat_dysphagia
+- symptom_code: thyroglossal_duct_cyst_elevation
   polarity: SUPPORTS
-  weight: 0.78
+  weight: 0.98
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: nasal_obstruction_stuffiness
+- symptom_code: skin_cellulitis_pus_abscess
   polarity: SUPPORTS
-  weight: 0.75
-  is_key: false
-  source_key: moh_qd_5643_2015
-  source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: headache_dull
-  polarity: SUPPORTS
-  weight: 0.7
-  is_key: false
+  weight: 0.9
+  is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 excerpts:
@@ -41,7 +35,5 @@ excerpts:
 ---
 
 ## excerpt: nang_ro_giap_luoi_chan_doan
+- Lâm sàng
 - Nhiều tác giả cho rằng u nang và rò giáp-lưỡi có khả năng ung thư hoá.
-- sau xương móng, từ đó giúp ta có định hướng đúng cho phẫu thuật.
-- Siêu âm: Siêu âm cho phép ta xác định được vị trí của khối u, sự liên quan của nó
-- với các cơ quan bộ phận xung quanh và cho biết đó là u đặc hay nang.
