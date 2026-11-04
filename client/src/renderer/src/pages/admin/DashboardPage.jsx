@@ -13,6 +13,9 @@ import { rangeOf, reportPath, fillDays, vnd, percent } from '../../api/reportsAp
 import { translate } from '../../i18n'
 import { fmtDateTime } from './inventory/shared'
 
+// by_status chỉ có trạng thái đang có lượt (hôm nay chưa ai check-in thì không có khoá CheckedIn) → thiếu là 0.
+export const countOf = (byStatus, ...keys) => keys.reduce((n, k) => n + (Number(byStatus?.[k]) || 0), 0)
+
 // Cảnh báo kho tính theo lô: lô đã hết hạn tách riêng với lô sắp hết hạn.
 // failed: đăng nhập thất bại 24 giờ qua trên server, gộp thành một cảnh báo.
 function buildAlerts(inv, accounts, failed = []) {
@@ -169,8 +172,8 @@ export default function DashboardPage({ onNavigate }) {
         <>
           <div className="stat-bar">
             <StatCard value={summary?.visits.total ?? NA} label="Visits today" />
-            <StatCard value={byStatus ? byStatus.Waiting + byStatus.CheckedIn : NA} label="Waiting for consultation" />
-            <StatCard value={byStatus?.Prescribed ?? NA} label="Awaiting payment" />
+            <StatCard value={byStatus ? countOf(byStatus, 'Waiting', 'CheckedIn') : NA} label="Waiting for consultation" />
+            <StatCard value={byStatus ? countOf(byStatus, 'Prescribed') : NA} label="Awaiting payment" />
             <StatCard value={summary ? vnd(summary.revenue.total) : NA} label="Today's revenue" />
             <StatCard value={summary?.visits.red_flags ?? NA} label="Red-flag referrals" />
           </div>

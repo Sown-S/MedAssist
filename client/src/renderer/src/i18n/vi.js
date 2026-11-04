@@ -972,10 +972,19 @@ export const VI = {
   'Your consultation room': 'Phòng khám của bạn',
   'Reception cannot direct patients to you until you have a room.': 'Lễ tân chưa hướng được bệnh nhân tới bạn khi bạn chưa có phòng.',
   'No room assigned — ask an administrator': 'Chưa được gán phòng — liên hệ quản trị viên',
-  'Patients still with you': 'Bệnh nhân còn đang khám',
-  'Finalize these visits, or use “Return to queue” so another doctor can take them, before signing out.':
-    'Hoàn tất các lượt khám này, hoặc bấm “Trả về hàng chờ” để bác sĩ khác nhận, trước khi đăng xuất.',
-  'Sign out anyway': 'Vẫn đăng xuất',
+  'Finish your visits before signing out': 'Hoàn tất các lượt khám trước khi đăng xuất',
+  'You still have patients you took. Finalize each visit, return the patient to the queue, or close the visit if the patient left — then you can sign out.':
+    'Bạn còn bệnh nhân đã nhận. Hoàn tất từng lượt khám, trả bệnh nhân về hàng chờ, hoặc đóng lượt nếu bệnh nhân đã bỏ về — sau đó mới đăng xuất được.',
+  'All your visits are finished. Your unsaved notes on this computer will be deleted when you sign out.':
+    'Bạn đã hoàn tất mọi lượt khám. Bản nháp phiếu khám trên máy này sẽ bị xoá khi đăng xuất.',
+  'Did not come back': 'Không quay lại',
+  'Open visit': 'Mở lượt khám',
+  'Finish your visits first': 'Hãy hoàn tất các lượt khám trước',
+  'The server is responding slowly — still waiting…': 'Máy chủ phản hồi chậm — đang chờ…',
+  'Your last action is still being processed. If there is no answer after 45 seconds it stops and you can try again.':
+    'Thao tác vừa rồi vẫn đang được xử lý. Nếu sau 45 giây chưa có phản hồi, thao tác sẽ dừng và bạn có thể thử lại.',
+  'The server did not respond within 45 seconds — check the connection and try again.':
+    'Máy chủ không phản hồi trong 45 giây — kiểm tra kết nối rồi thử lại.',
   'Password rules': 'Quy tắc mật khẩu',
   'Fixed on the clinic server — shown for reference only.': 'Cố định trên server phòng khám — chỉ hiển thị để tham khảo.',
   'letters and digits': 'có cả chữ và số',
