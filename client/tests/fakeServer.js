@@ -103,15 +103,21 @@ async function respond(url, init = {}) {
   calls.push({ method, path: pathname + search, body: init.body ? JSON.parse(init.body) : undefined })
   let body = method === 'GET' ? (search.includes('limit=') ? { items: [], total: 0 } : []) : {}
   let status = 200
-  if (method === 'GET') {
-    const hit = ROUTES.find(([re]) => re.test(pathname))
-    if (hit) {
-      const r = hit[1](pathname)
-      if (r?.status && r.body) ({ status, body } = r)
-      else body = r
-    }
+  // Route khai báo không có method là GET.
+  const hit = ROUTES.find(([re, , m = 'GET']) => m === method && re.test(pathname))
+  if (hit) {
+    const r = hit[1](pathname)
+    if (r?.status && r.body) ({ status, body } = r)
+    else body = r
   }
   return new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } })
+}
+
+// Test đổi tạm câu trả lời của một endpoint (VD /health hỏng); hàm ném lỗi = mất mạng. Gọi hàm trả về để bỏ.
+export function overrideRoute(re, fn, method = 'GET') {
+  const route = [re, fn, method]
+  ROUTES.unshift(route)
+  return () => ROUTES.splice(ROUTES.indexOf(route), 1)
 }
 
 export function resetCalls() {
