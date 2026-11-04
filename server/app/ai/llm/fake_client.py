@@ -81,7 +81,11 @@ def _status(text: str, name: str) -> str | None:
 def _extraction(payload: dict[str, Any]) -> dict[str, Any]:
     text = _fold(payload.get("text", ""))
     symptoms = []
-    for row in payload.get("catalogue", []):
+    catalogue = payload.get("catalogue", [])
+    if isinstance(catalogue, dict):
+        catalogue = [{"symptom_code": code, "symptom_name": name}
+                     for code, name in catalogue.items()]
+    for row in catalogue:
         name = _fold(row["symptom_name"]).strip()
         status = _status(text, name) if name else None
         if status is not None:
