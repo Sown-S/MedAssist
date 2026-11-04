@@ -2,11 +2,12 @@ import { useState } from 'react'
 import Icon from './Icon'
 
 // wait = { label, level: 'ok' | 'warn' | 'long' }; badges: nhãn bên phải; extra: nội dung chèn trên các dòng chi tiết.
-export default function PatientQueueCard({ ticket, name, meta, time, wait, priority, badges, extra, details, actions }) {
+// dimmed: lượt chưa thao tác được (VD đang tiếp đón).
+export default function PatientQueueCard({ ticket, name, meta, time, wait, priority, badges, extra, details, actions, dimmed }) {
   const [open, setOpen] = useState(false)
 
   return (
-    <div className={'p-card' + (open ? ' open' : '')} onClick={() => setOpen((v) => !v)}>
+    <div className={'p-card' + (open ? ' open' : '') + (dimmed ? ' dimmed' : '')} onClick={() => setOpen((v) => !v)}>
       <div className="p-head">
         {ticket != null && <span className="p-ticket">{String(ticket).padStart(3, '0')}</span>}
         <div className="p-info">

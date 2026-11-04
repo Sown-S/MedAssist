@@ -166,11 +166,11 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
     return !!existing || !invalid
   }
   // Server trích xuất từ free_text_description nên phải có lượt khám đã lưu lời kể.
-  async function extract(text, { signal }) {
+  async function extract(text, opts) {
     if (!checkForm()) throw Object.assign(new Error('form'), { code: 'FORM' })
     const v = await ensureVisit()
     if (!v) throw Object.assign(new Error('duplicate'), { code: 'FORM' })
-    return clinic.extractSymptoms(v.visit_id, { signal })
+    return clinic.extractSymptoms(v.visit_id, opts)
   }
   async function handleSave(force = false) {
     if (!checkForm()) return

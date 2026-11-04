@@ -3,11 +3,12 @@ của lần chạy AI; không trả visit_id, input_features, llm_output_raw."""
 import datetime
 from typing import Any
 
-from sqlalchemy import Date, Select, cast, func, select
+from sqlalchemy import Date, Select, and_, cast, func, or_, select
 from sqlalchemy.orm import Session
 
 from app.exceptions import AppError
 from app.models import AiAssessmentLog, Invoice, KnowledgeRelease, Visit
+from app.services import queue_service
 
 MAX_RANGE_DAYS = 366
 VISIT_STATUSES = ("Waiting", "CheckedIn", "Examining", "Prescribed", "Finished", "Cancelled")
@@ -27,7 +28,8 @@ def date_range(db: Session, date_from: datetime.date | None,
 
 
 def _visits(db: Session, d1: datetime.date, d2: datetime.date) -> dict:
-    in_range = Visit.queue_date.between(d1, d2)
+    # Lượt lễ tân chưa Lưu & cấp số chưa phải người chờ khám.
+    in_range = and_(Visit.queue_date.between(d1, d2), or_(Visit.status != "Waiting", queue_service.intake_saved()))
     by_status = dict.fromkeys(VISIT_STATUSES, 0)
     by_status.update(db.execute(select(Visit.status, func.count()).where(in_range).group_by(Visit.status)).all())
     red = db.scalar(select(func.count()).select_from(Visit).where(in_range, Visit.is_red_flag))

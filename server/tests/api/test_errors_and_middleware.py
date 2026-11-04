@@ -164,7 +164,7 @@ def test_health_ok_and_minimal(client, monkeypatch):
     r = client.get("/health")
     assert r.status_code == 200 and r.json() == {
         "status": "healthy", "database": {"ok": True, "detail": ""},
-        "ai": {"ok": True, "detail": "LLM giả lập"}, "version": settings.VERSION}
+        "ai": {"ok": True, "detail": "LLM giả lập", "reason": None}, "version": settings.VERSION}
 
 
 def test_health_503_when_db_down(client):

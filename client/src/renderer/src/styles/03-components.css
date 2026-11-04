@@ -20,6 +20,7 @@
 .p-card.open .chevron{transform:rotate(90deg);}
 .p-detail{max-height:0;overflow:hidden;transition:max-height .25s ease;background:rgba(0,0,0,.15);}
 .p-card.open .p-detail{max-height:220px;}
+.p-card.dimmed{opacity:.55;}
 .p-detail-in{padding:12px 13px 14px;border-top:1px solid var(--border);font-size:13.5px;display:flex;flex-direction:column;gap:6px;}
 .p-detail-in .row{display:flex;justify-content:space-between;color:var(--ink-soft);}
 .p-detail-in .row b{color:var(--ink);font-weight:600;}
