@@ -1,7 +1,8 @@
 import { describe, it, expect, beforeAll, beforeEach, afterEach, afterAll, vi } from 'vitest'
 import { screen, cleanup, fireEvent, waitFor } from '@testing-library/react'
 import { renderPage } from './render.jsx'
-import ReleaseTab, { ReviewPanel } from '../src/renderer/src/pages/admin/knowledge/ReleaseTab.jsx'
+import ReleaseTab from '../src/renderer/src/pages/admin/knowledge/ReleaseTab.jsx'
+import { ReviewPanel } from '../src/renderer/src/pages/admin/knowledge/ReviewPanel.jsx'
 import { ADMIN, DOC_A } from './helpers'
 import { installFakeServer, resetCalls, calls, overrideRoute } from './fakeServer'
 
