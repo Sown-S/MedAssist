@@ -100,6 +100,18 @@ describe('Luồng chính trên giao diện', () => {
     await waitFor(() => expect(calls).toContainEqual(expect.objectContaining({ method: 'POST', path: '/api/v1/visits/v-paid-wait/prescription/reopen' })))
   })
 
+  it('bệnh nhân đi xét nghiệm chỉ hiện ở màn Khám của bác sĩ đã chỉ định', async () => {
+    await syncQueue()
+    renderPage(<Doctor />, { user: DOC_B, path: '/doctor?view=consult' })
+    await rendered()
+    expect(await screen.findByText('Hoàng Thị Em')).toBeTruthy()
+    cleanup()
+    renderPage(<Doctor />, { user: DOC_A, path: '/doctor?view=consult&visit=v-exam' })
+    await rendered()
+    await screen.findAllByText('Nguyễn Văn An')
+    expect(screen.queryByText('Hoàng Thị Em')).toBeNull()
+  })
+
   it('lễ tân thấy lượt chờ thanh toán ở Hàng chờ và ca chuyển viện tại quầy ở thẻ Ca cờ đỏ', async () => {
     await syncQueue()
     expect(calls).toContainEqual(expect.objectContaining({ method: 'GET', path: '/api/v1/queue?include_closed=true' }))
