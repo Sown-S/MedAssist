@@ -49,7 +49,7 @@ function Harness({ onExtract, vitals = {} }) {
 const syms = () => JSON.parse(screen.getByTestId('syms').textContent)
 const form = () => JSON.parse(screen.getByTestId('form').textContent)
 const typeText = (t) => fireEvent.change(screen.getByRole('textbox'), { target: { value: t } })
-const runExtract = () => fireEvent.click(screen.getByText('Suggest symptoms from description'))
+const runExtract = () => fireEvent.click(screen.getByText('Read description & suggest'))
 const confirmAll = () => screen.getByText('Confirm all').closest('button')
 const fillAll = () => screen.getByText('Fill empty fields').closest('button')
 

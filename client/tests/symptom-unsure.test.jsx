@@ -13,7 +13,7 @@ const unsureOnly = { proposals: [], unsure: [{ symptom_code: 'cough_dry', name: 
 
 function panel(value = {}) {
   render(<SymptomPanel value={value} onChange={() => {}} text="Chưa rõ có ho khan hay không" onText={() => {}} onExtract={async () => unsureOnly} />)
-  fireEvent.click(screen.getByText('Suggest symptoms from description'))
+  fireEvent.click(screen.getByText('Read description & suggest'))
 }
 
 describe('Trích xuất có triệu chứng chưa rõ', () => {
@@ -25,7 +25,7 @@ describe('Trích xuất có triệu chứng chưa rõ', () => {
 
   it('lễ tân đã chọn Có / Không cho mục đó → không nhắc nữa', async () => {
     panel({ cough_dry: { state: 'ABSENT', source: 'Form' } })
-    await screen.findByText('Suggest symptoms from description')
+    await screen.findByText('Read description & suggest')
     await new Promise((ok) => setTimeout(ok, 0))
     expect(screen.queryByText(/ask the patient again/)).toBeNull()
   })
