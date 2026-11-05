@@ -1,8 +1,5 @@
 """KNOWLEDGE_EPOCH — một dòng duy nhất; số hiệu tăng trong CÙNG transaction với mọi thay đổi
 bảng tri thức (do trigger). Knowledge Reader so epoch để làm mới cache. App chỉ SELECT, UPDATE.
-
-Sinh từ lược đồ do Alembic 0001 tạo (medassist_schema_v1_8.sql) rồi biên tập; phải khớp
-bảng thật — kiểm tra bằng `alembic check` / tests/test_db_guards.py.
 """
 import datetime
 

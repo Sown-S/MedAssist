@@ -87,7 +87,7 @@ class BatchCreate(BaseModel):
 
 
 class BatchTopUp(BaseModel):
-    """Nhập thêm vào lô đã có (cùng số lô, cùng hạn) = Adjustment dương (quy ước ERD v1.8)."""
+    """Nhập thêm vào lô đã có (cùng số lô, cùng hạn) = Adjustment dương (quy ước ERD §2.17)."""
     model_config = ConfigDict(extra="forbid")
     quantity: int = Field(gt=0, le=10_000_000)
     note: CleanStr | None = Field(default=None, max_length=500)

@@ -14,7 +14,7 @@ def _dx(client, doctor, vid, name, **over):
     return r.json()
 
 
-# ---------------------------------------------------------------------------- chẩn đoán
+# --- Chẩn đoán ------------------------------------------------------------------------------------
 def test_diagnosis_on_missing_or_not_examining_visit(client, nurse, doctor, examining):
     assert client.post(f"/api/v1/visits/{uuid.uuid4()}/diagnoses", headers=doctor,
                        json={"diagnosis_name": "X"}).status_code == 404
@@ -74,7 +74,7 @@ def test_missing_diagnosis(client, doctor):
                         json={"clinical_notes": "x"}).status_code == 404
 
 
-# ---------------------------------------------------------------------------- đơn thuốc
+# --- Đơn thuốc ------------------------------------------------------------------------------------
 def test_confirmed_prescription_cannot_be_replaced(client, doctor, drug, examining):
     did, _ = drug({30: 50})
     vid = examining()

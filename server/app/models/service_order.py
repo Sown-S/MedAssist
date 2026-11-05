@@ -1,5 +1,5 @@
 """SERVICE_ORDER, SERVICE_ORDER_ITEM — phiếu chỉ định cận lâm sàng của lượt khám và kết quả từng dòng
-(ERD v2.1 mục 2.10b). Hủy dòng bằng status, không xóa."""
+(ERD §2.10b). Hủy dòng bằng status, không xóa."""
 import decimal
 import uuid
 from datetime import datetime

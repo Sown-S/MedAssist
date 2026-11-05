@@ -1,8 +1,5 @@
-"""SYSTEM_SETTING — ERD v1.8 mục 2.22. Tham số vận hành do Admin chỉnh (khóa-giá trị JSONB);
+"""SYSTEM_SETTING (ERD §2.22). Tham số vận hành do Admin chỉnh (khóa-giá trị JSONB);
 giá trị được kiểm tra kiểu ở lớp validation trước khi lưu, mỗi thay đổi ghi AUDIT_LOG.
-
-Sinh từ lược đồ do Alembic 0001 tạo (medassist_schema_v1_8.sql) rồi biên tập; phải khớp
-bảng thật — kiểm tra bằng `alembic check` / tests/test_db_guards.py.
 """
 import datetime
 import uuid

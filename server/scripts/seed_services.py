@@ -1,9 +1,6 @@
-"""Nạp danh mục dịch vụ, xét nghiệm và gói khám ban đầu từ server/data/services.csv, service_packages.csv.
-
-Giá trong file là giá mẫu chép từ danh mục mẫu của client; Admin sửa giá thật trên màn danh mục.
-Chỉ tạo mã chưa có, không ghi đè dòng đã có (giữ giá Admin đã sửa). Ghi nhật ký bằng tài khoản 'system'.
-Chạy trong server/:
-    python -m scripts.seed_services
+"""Nạp danh mục dịch vụ, xét nghiệm, gói khám ban đầu từ server/data/services.csv, service_packages.csv.
+Giá mẫu chép từ client, Admin sửa giá thật; chỉ tạo mã chưa có, không ghi đè. Tài khoản 'system'.
+Cách chạy: server/README.md mục 2.7.
 """
 import argparse
 import csv

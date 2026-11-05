@@ -20,7 +20,6 @@ _write_drug = require_roles("Admin", "Nurse", audit_entity="drug")
 _write_batch = require_roles("Admin", "Nurse", audit_entity="inventory_batch")
 
 
-# ============================================================================ Thuốc
 @router.get("/drugs", response_model=Page[DrugOut])
 def list_drugs(q: str | None = Query(None, min_length=1, max_length=100, description="Tên hoạt chất hoặc thương mại, không dấu được"),
                active_only: bool = True, limit: int = Query(50, ge=1, le=200), offset: int = Query(0, ge=0),
@@ -49,7 +48,6 @@ def update_drug(drug_id: uuid.UUID, body: DrugUpdate, actor: User = Depends(_wri
     return drug
 
 
-# ============================================================================ Tồn kho
 @router.get("/inventory/stock", response_model=list[DrugStockOut])
 def stock(q: str | None = Query(None, max_length=100), low_only: bool = False,
           _: User = Depends(_read), db: Session = Depends(get_db)):
@@ -67,11 +65,10 @@ def alerts(_: User = Depends(require_roles("Admin", "Nurse", audit_entity="inven
 @router.get("/inventory/reconciliation")
 def reconciliation(_: User = Depends(require_roles("Admin", audit_entity="inventory_batch")),
                    db: Session = Depends(get_db)) -> list[dict]:
-    """Lô lệch sổ cái — luôn phải là danh sách rỗng."""
+    """Lô lệch sổ cái; luôn phải là danh sách rỗng."""
     return inv.reconciliation(db)
 
 
-# ============================================================================ Lô
 @router.get("/inventory/batches", response_model=list[BatchOut])
 def list_batches(drug_id: uuid.UUID | None = None, status: BatchStatus | None = None,
                  include_depleted: bool = False, _: User = Depends(_read), db: Session = Depends(get_db)):

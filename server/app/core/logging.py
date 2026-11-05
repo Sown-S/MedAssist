@@ -1,7 +1,6 @@
-"""Cấu hình log thống nhất cho api (và worker sau này), kèm request_id của request hiện tại.
-
-Không log dữ liệu bệnh nhân, mật khẩu, token. Log chỉ ghi: method, đường dẫn mẫu, mã trạng thái,
-thời gian xử lý, request_id, user_id (nếu có).
+"""Cấu hình log thống nhất cho api và worker, kèm request_id của request hiện tại.
+Không log dữ liệu bệnh nhân, mật khẩu, token; chỉ method, đường dẫn mẫu, mã trạng thái, thời gian,
+request_id, user_id (nếu có).
 """
 import logging
 import logging.config

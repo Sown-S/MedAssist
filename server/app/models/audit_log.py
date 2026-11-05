@@ -1,4 +1,4 @@
-"""AUDIT_LOG — ERD v1.8 mục 2.21. Chỉ-thêm: trigger chặn UPDATE/DELETE/TRUNCATE,
+"""AUDIT_LOG (ERD §2.21). Chỉ-thêm: trigger chặn UPDATE/DELETE/TRUNCATE,
 medassist_app không có quyền UPDATE/DELETE. Ứng dụng CHỈ được INSERT.
 """
 import uuid
@@ -25,7 +25,7 @@ class AuditLog(Base):
             "'EXPORT','APPROVE','REJECT','RETIRE','AI_ASSESSMENT')",
             name="audit_log_action_type_check",
         ),
-        # v1.8: có người thực hiện, trừ LOGIN_FAILED (khi đó phải có tên đã nhập)
+        # Có người thực hiện, trừ LOGIN_FAILED (khi đó phải có tên đã nhập)
         CheckConstraint(
             "user_id IS NOT NULL OR (action_type = 'LOGIN_FAILED' AND attempted_username IS NOT NULL)",
             name="chk_audit_log_actor",

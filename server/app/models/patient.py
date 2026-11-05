@@ -1,8 +1,5 @@
 """PATIENT — hành chính, tiền sử bệnh, dị ứng. Tìm không dấu qua idx_patient_name_trgm:
 WHERE lower(f_unaccent(full_name)) LIKE '%' || lower(f_unaccent(:q)) || '%'.
-
-Sinh từ lược đồ do Alembic 0001 tạo (medassist_schema_v1_8.sql) rồi biên tập; phải khớp
-bảng thật — kiểm tra bằng `alembic check` / tests/test_db_guards.py.
 """
 import datetime
 import uuid

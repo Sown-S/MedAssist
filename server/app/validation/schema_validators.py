@@ -1,15 +1,6 @@
-"""Kiểm tra định dạng / schema dùng chung. Hiện có: sinh hiệu (visit.vital_signs).
-
-Dùng trong schema request:
-    from app.validation.schema_validators import VitalSigns
-    class VisitCreate(BaseModel):
-        vital_signs: VitalSigns | None = None
-
-    # sau khi nhận: cảnh báo mềm để trả kèm phản hồi
-    warnings = vital_sign_warnings(body.vital_signs)
-
-Lưu vào DB: body.vital_signs.to_db()  -> dict chỉ gồm khóa có giá trị (khóa thiếu = UNKNOWN,
-không bao giờ điền mặc định).
+"""Kiểm tra định dạng dùng chung: sinh hiệu (visit.vital_signs, kiểu ``VitalSigns`` trong schema request).
+Lưu DB bằng ``to_db()``: chỉ khóa có giá trị (khóa thiếu = UNKNOWN, không điền mặc định).
+Cảnh báo mềm trả kèm phản hồi: ``vital_sign_warnings()``.
 """
 import json
 from functools import lru_cache

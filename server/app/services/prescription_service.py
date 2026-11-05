@@ -1,13 +1,6 @@
-"""Chẩn đoán (US02) và kê đơn (US03) — lượt 6b.
-
-Luồng: Examining -> chẩn đoán (lưu = xác nhận) -> đơn nháp (ghi đè được) -> XÁC NHẬN: chọn lô FEFO,
-trừ kho qua sổ cái, đơn Confirmed, lượt khám Prescribed, hóa đơn Pending — tất cả MỘT transaction.
-Không kê đơn: 'Hoàn tất khám' -> Prescribed + hóa đơn chỉ có phí khám.
-Mở lại đơn (chưa cấp thuốc, chưa thu tiền): hoàn kho, hủy đơn + hóa đơn, lượt khám về Examining.
-
-App không có quyền DELETE: đơn nháp sửa = hủy đơn nháp cũ + tạo đơn mới; chẩn đoán rút lại =
-confirmed_by_physician = FALSE (không còn tính là chẩn đoán đã xác nhận).
-Nhật ký chỉ ghi tên trường / số lượng, không ghi tên bệnh hay tên thuốc (dữ liệu sức khỏe).
+"""Chẩn đoán (US02) và kê đơn (US03). Xác nhận đơn (trừ kho FEFO, Prescribed, hóa đơn) trong một transaction.
+Không DELETE: sửa đơn nháp = hủy và tạo mới; rút chẩn đoán = bỏ xác nhận. Nhật ký không ghi tên bệnh, tên thuốc.
+Chi tiết: docs/thiet-ke-backend.md §5.1.
 """
 import datetime
 import uuid
@@ -25,7 +18,7 @@ from app.services import ai_decision_service as ai_decision
 from app.services import inventory_service, invoice_service, queue_service
 
 
-# ============================================================================ kiểm tra chung
+# --- Kiểm tra chung -------------------------------------------------------------------------------
 def _examining_visit(db: Session, visit_id: uuid.UUID, actor: User, *, lock: bool = True) -> Visit:
     stmt = select(Visit).where(Visit.visit_id == visit_id)
     visit = db.scalar(stmt.with_for_update() if lock else stmt)
@@ -39,7 +32,7 @@ def _examining_visit(db: Session, visit_id: uuid.UUID, actor: User, *, lock: boo
     return visit
 
 
-# ============================================================================ chẩn đoán
+# --- Chẩn đoán ------------------------------------------------------------------------------------
 def list_diagnoses(db: Session, visit_id: uuid.UUID) -> list[Diagnosis]:
     queue_service.get_visit(db, visit_id)
     return list(db.scalars(select(Diagnosis).where(Diagnosis.visit_id == visit_id)
@@ -147,7 +140,7 @@ def retract_diagnosis(db: Session, diagnosis_id: uuid.UUID, actor: User) -> Diag
     return dx
 
 
-# ============================================================================ đơn thuốc
+# --- Đơn thuốc ------------------------------------------------------------------------------------
 def _active_rx(db: Session, visit_id: uuid.UUID, *, lock: bool = False) -> Prescription | None:
     stmt = select(Prescription).where(Prescription.visit_id == visit_id, Prescription.status != "Cancelled")
     return db.scalar(stmt.with_for_update() if lock else stmt)
@@ -264,7 +257,7 @@ def discard_draft(db: Session, visit_id: uuid.UUID, actor: User) -> None:
 
 
 def reopen(db: Session, visit_id: uuid.UUID, reason: str, actor: User) -> None:
-    """Prescribed -> Examining: chỉ khi CHƯA cấp thuốc nào và hóa đơn CHƯA thu tiền."""
+    """Prescribed -> Examining: chỉ khi chưa cấp thuốc nào và hóa đơn chưa thu tiền."""
     visit = db.scalar(select(Visit).where(Visit.visit_id == visit_id).with_for_update())
     if visit is None:
         raise NotFoundError("Không tìm thấy lượt khám")

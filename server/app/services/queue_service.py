@@ -1,18 +1,6 @@
-"""Lượt khám và hàng đợi (US10, FR10) — máy trạng thái của VISIT (ERD v1.8 mục 2.10).
-
-    Waiting --check_in--> CheckedIn --start_exam--> Examining --mark_prescribed--> Prescribed
-                                                         |                              |
-                                        release (về CheckedIn)              mark_finished --> Finished
-    Cancelled: Nurse khi Waiting/CheckedIn; Physician khi Examining của chính mình;
-               (bước 5) Nurse khi Prescribed nếu chưa cấp thuốc và chưa thu tiền.
-    Chuyển tuyến (ERD v2.0): Finished + outcome = Referred, từ Examining (Physician của lượt)
-               hoặc Waiting/CheckedIn (Nurse); không qua Prescribed, không có hóa đơn.
-
-* Mỗi lần chuyển là MỘT câu UPDATE có điều kiện (WHERE status = ...): hai người bấm cùng lúc thì
-  chỉ một người thắng, người kia nhận 409 — không cần khóa ở tầng ứng dụng.
-* mark_prescribed / mark_finished là hàm NỘI BỘ: service đơn thuốc và hóa đơn (bước 5) gọi,
-  cùng transaction với việc xác nhận đơn / thu tiền. Không có API gọi thẳng.
-* Mọi lần chuyển ghi AUDIT_LOG UPDATE (trạng thái cũ -> mới) trong cùng transaction.
+"""Lượt khám và hàng đợi (US10, FR10): máy trạng thái của VISIT (ERD §2.10, §4).
+Mỗi lần chuyển là một câu UPDATE có điều kiện (ai bấm sau nhận 409) và ghi audit_log cùng transaction.
+Sơ đồ trạng thái, ai được hủy, chuyển tuyến: docs/thiet-ke-backend.md §4.
 """
 import datetime
 import uuid
@@ -80,7 +68,7 @@ def _transition(db: Session, visit_id: uuid.UUID, actor: User, *, from_status: t
     return visit
 
 
-# ---------------------------------------------------------------------------- tạo / sửa
+# --- Tạo, sửa -------------------------------------------------------------------------------------
 def create_visit(db: Session, data: VisitCreate, actor: User) -> Visit:
     if db.get(Patient, data.patient_id) is None:
         raise NotFoundError("Không tìm thấy bệnh nhân")
@@ -136,7 +124,7 @@ def update_visit(db: Session, visit_id: uuid.UUID, data: VisitUpdate, actor: Use
     return visit
 
 
-# ---------------------------------------------------------------------------- chuyển trạng thái (API)
+# --- Chuyển trạng thái (API) ----------------------------------------------------------------------
 def check_in(db: Session, visit_id: uuid.UUID, actor: User) -> Visit:
     _require_intake_saved(db, visit_id)
     return _transition(db, visit_id, actor, from_status=("Waiting",), to_status="CheckedIn",
@@ -178,7 +166,7 @@ def cancel(db: Session, visit_id: uuid.UUID, reason: str, actor: User) -> Visit:
                        audit_extra={"reason": reason})
 
 
-# ---------------------------------------------------------------------------- hàm nội bộ cho bước 5
+# --- Hàm nội bộ: service đơn thuốc, hóa đơn gọi trong cùng transaction ----------------------------
 def mark_prescribed(db: Session, visit_id: uuid.UUID, actor: User) -> Visit:
     """Examining -> Prescribed. Gọi khi: đơn thuốc được xác nhận (đã trừ kho), HOẶC bác sĩ bấm
     'Hoàn tất khám' không kê đơn (Prescribed = khám xong, chờ thu tiền). Cần >= 1 chẩn đoán đã
@@ -206,13 +194,13 @@ def reopen_exam(db: Session, visit_id: uuid.UUID, actor: User) -> Visit:
 
 
 def mark_finished(db: Session, visit_id: uuid.UUID, actor: User) -> Visit:
-    """Prescribed -> Finished. Service hóa đơn (bước 5) gọi khi hóa đơn đã Paid VÀ mọi dòng thuốc
-    đã Dispensed/Skipped — điều kiện đó do service hóa đơn kiểm tra trong cùng transaction."""
+    """Prescribed -> Finished. Service hóa đơn gọi khi hóa đơn đã Paid và mọi dòng thuốc đã
+    Dispensed/Skipped; điều kiện đó do service hóa đơn kiểm tra trong cùng transaction."""
     return _transition(db, visit_id, actor, from_status=("Prescribed",), to_status="Finished",
                        values={"finished_at": func.now()})
 
 
-# ---------------------------------------------------------------------------- chuyển tuyến (ERD v2.0)
+# --- Chuyển tuyến (ERD §4.3) ----------------------------------------------------------------------
 def _check_facility(db: Session, facility_id: uuid.UUID | None) -> None:
     if facility_id is None:
         return
@@ -291,7 +279,7 @@ def search_facilities(db: Session, q: str, limit: int) -> list[ReferralFacility]
         .order_by(func.similarity(key, term).desc(), ReferralFacility.name).limit(limit)))
 
 
-# ---------------------------------------------------------------------------- xét nghiệm, mời vào phòng
+# --- Xét nghiệm, mời vào phòng --------------------------------------------------------------------
 def own_examining(db: Session, visit_id: uuid.UUID, actor: User) -> Visit:
     visit = db.scalar(select(Visit).where(Visit.visit_id == visit_id).with_for_update())
     if visit is None:
@@ -381,7 +369,7 @@ def cancel_call(db: Session, visit_id: uuid.UUID, actor: User) -> Visit:
     return visit
 
 
-# ---------------------------------------------------------------------------- truy vấn
+# --- Truy vấn -------------------------------------------------------------------------------------
 def _queue_rows(db: Session, *where, order_by=None) -> list[dict]:
     caller, caller_room = aliased(User), aliased(Room)
     rows = db.execute(

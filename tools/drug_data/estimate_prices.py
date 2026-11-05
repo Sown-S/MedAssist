@@ -1,16 +1,6 @@
-"""Ước tính giá bán cho thuốc CHƯA có giá trong server/data/drugs.csv (dùng khi không tra được giá web).
-
-    python -m drug_data.estimate_prices              # điền sale_price còn trống
-    python -m drug_data.estimate_prices --with-batch # + giá nhập, lô ban đầu để demo cấp phát được
-    python -m drug_data.estimate_prices --dry-run    # chỉ in, không ghi
-
-Quy tắc (theo thứ tự, dừng ở quy tắc đầu tiên áp dụng được):
-  1. cung-hoat-chat : thuốc CÙNG hoạt chất, CÙNG dạng bào chế đã có giá -> lấy giá thuốc có hàm lượng gần nhất,
-                      điều chỉnh theo tỉ lệ hàm lượng (giới hạn 0,5–2 lần).
-  2. trung-vi-nhom  : giá trung vị các thuốc cùng nhóm (drug_class) và cùng đơn vị bán.
-  3. trung-vi-don-vi: giá trung vị các thuốc cùng đơn vị bán (viên, gói, chai...).
-Giá làm tròn 100 đ. Không ghi đè giá đã có. Cột price_source ghi 'uoc-tinh:<quy tắc>' — giá tra được
-sau đó (fetch_prices apply) sẽ ghi đè. Chỉ ĐỌC/GHI drugs.csv, không truy cập mạng.
+"""Ước tính giá bán cho thuốc chưa có giá trong server/data/drugs.csv: cùng hoạt chất (hệ số hàm lượng 0,5–2)
+-> trung vị nhóm -> trung vị đơn vị; làm tròn 100 đ, không ghi đè giá đã có, giá tra được sau đó ghi đè.
+Chỉ đọc/ghi drugs.csv, không truy cập mạng. Cách chạy: tools/drug_data/README.md.
 """
 import argparse
 import statistics

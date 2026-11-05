@@ -1,8 +1,4 @@
-"""STOCK_MOVEMENT — sổ cái biến động tồn kho, CHỈ THÊM (medassist_app không có UPDATE/DELETE).
-
-Sinh từ lược đồ do Alembic 0001 tạo (medassist_schema_v1_8.sql) rồi biên tập; phải khớp
-bảng thật — kiểm tra bằng `alembic check` / tests/test_db_guards.py.
-"""
+"""STOCK_MOVEMENT — sổ cái biến động tồn kho, CHỈ THÊM (medassist_app không có UPDATE/DELETE)."""
 import datetime
 import uuid
 

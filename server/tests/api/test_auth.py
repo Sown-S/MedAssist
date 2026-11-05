@@ -37,7 +37,7 @@ def test_login_success_logs_login(client, users, logs):
 
 
 @pytest.mark.parametrize("username, password, reason, has_user_id", [
-    ("bs", "sai-mat-khau", "bad_password", True),       # tài khoản có thật: vẫn ghi user_id (ERD v1.8)
+    ("bs", "sai-mat-khau", "bad_password", True),       # tài khoản có thật: vẫn ghi user_id (ERD §2.21)
     ("khong_ton_tai", "x", "unknown_user", False),      # không tồn tại: user_id NULL
     ("khoa", "Matkhau123", "inactive", True),            # đúng mật khẩu nhưng bị khóa
     ("system", "!disabled-no-login", "bad_password", True),

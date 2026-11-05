@@ -1,8 +1,4 @@
-"""DIAGNOSIS — chẩn đoán bác sĩ xác nhận; gắn lần chạy Assessment của chính lượt khám (FK kép).
-
-Sinh từ lược đồ do Alembic 0001 tạo (medassist_schema_v1_8.sql) rồi biên tập; phải khớp
-bảng thật — kiểm tra bằng `alembic check` / tests/test_db_guards.py.
-"""
+"""DIAGNOSIS — chẩn đoán bác sĩ xác nhận; gắn lần chạy Assessment của chính lượt khám (FK kép)."""
 import datetime
 import uuid
 

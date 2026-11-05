@@ -112,9 +112,7 @@ def html_js_data(path: Path, cfg: dict) -> list[dict]:
 
 def html_list(path: Path, cfg: dict) -> list[dict]:
     """Danh sách trong khối `khoi` (class), chia mục La Mã; chỉ đọc mục có tên chứa một chuỗi trong `muc` (nếu khai).
-
-Vị trí ghi cả tên mục vì nguồn HCM đánh trùng số mục.
-"""
+    Vị trí ghi cả tên mục vì nguồn HCM đánh trùng số mục."""
     from bs4 import BeautifulSoup
     soup = BeautifulSoup(path.read_text(encoding="utf-8", errors="ignore"), "html.parser")
     lines = [clean(s) for s in soup.find(class_=cfg["khoi"]).get_text("\n").split("\n")]

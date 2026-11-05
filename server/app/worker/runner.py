@@ -1,10 +1,6 @@
-"""Vòng lặp worker: lấy việc (SKIP LOCKED + lease), chạy pipeline đánh giá hoặc trích xuất triệu
-chứng của Huy, ghi kết quả; sweeper định kỳ thu hồi lease quá hạn. Hàng đợi LLM mặc định 1 ca:
-mỗi worker xử lý tuần tự từng việc, Extraction được lấy trước Assessment.
-
-Ngân sách thời gian tính từ lúc xếp hàng (queued_at), tối đa AI_ASSESSMENT_TIMEOUT_SECONDS — chờ
-trong hàng đợi lâu thì phần LLM còn ít thời gian hơn, quá hạn thì trả Degraded/RuleOnly.
-Trích xuất dùng ngân sách riêng EXTRACTION_TIMEOUT_SECONDS; hết giờ hay lỗi LLM thì trả danh sách rỗng.
+"""Vòng lặp worker: lấy việc (SKIP LOCKED + lease), chạy pipeline đánh giá hoặc trích xuất, ghi kết quả;
+sweeper định kỳ thu hồi lease quá hạn. Ngân sách thời gian tính từ queued_at.
+Chi tiết: docs/thiet-ke-backend.md §2.
 """
 import asyncio
 import datetime

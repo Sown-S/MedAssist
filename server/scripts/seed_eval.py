@@ -1,10 +1,6 @@
 """Dữ liệu cho môi trường kiểm thử (deploy/docker-compose.eval.yml): tài khoản, danh mục, tri thức, bệnh nhân,
-lượt khám các ngày trước và hàng đợi hôm nay. Chạy lại an toàn: phần nào đã có thì bỏ qua.
-
-Chạy trong container api (service seed của compose eval tự chạy mỗi lần bật):
-    python -m scripts.seed_eval
-    python -m scripts.seed_eval --skip-knowledge    # tri thức đã nạp bằng import_okf
-Mật khẩu chung của các tài khoản lấy từ biến EVAL_PASSWORD. Không dùng cho phòng khám thật.
+lượt khám các ngày trước và hàng đợi hôm nay. Chạy lại an toàn; mật khẩu chung lấy từ EVAL_PASSWORD.
+Không dùng cho phòng khám thật. Cách chạy: server/README.md mục 6.
 """
 import argparse
 import asyncio
@@ -74,7 +70,7 @@ def _phone(i: int) -> str:
     return f"09{(35_000_000 + i * 7_919) % 100_000_000:08d}"
 
 
-# ------------------------------------------------------------------------------------------- nền
+# --- Nền ------------------------------------------------------------------------------------------
 def seed_accounts(db, password: str) -> dict[str, User]:
     pw_hash = hash_password(password)
     rooms = {r.code: r.room_id for r in db.scalars(select(Room))}
@@ -131,7 +127,7 @@ def seed_stock_alerts(db, today: datetime.date) -> None:
     db.commit()
 
 
-# ------------------------------------------------------------------------------------- lượt khám
+# --- Lượt khám ------------------------------------------------------------------------------------
 class Flow:
     def __init__(self, db, users: dict[str, User], reader):
         self.db, self.users, self.reader = db, users, reader
@@ -196,7 +192,7 @@ class Flow:
             diagnosis=case["visit"]["chief_complaint"][:500], transport="Family"), doctor)
 
 
-# --------------------------------------------------------------------------------- dời ngày cũ
+# --- Dời ngày cũ ----------------------------------------------------------------------------------
 # Mốc lệch thêm (phút) sau giờ tiếp đón, để một lượt khám cũ trông như diễn ra trong khoảng 1 giờ.
 _EXTRA = {
     ("visit", "checked_in_at"): 5, ("visit", "exam_started_at"): 20, ("visit", "finished_at"): 50,
@@ -320,7 +316,7 @@ def seed_today(flow: Flow, cases: list[dict]) -> int:
     return n
 
 
-# ------------------------------------------------------------------------------------------ main
+# --- Main -----------------------------------------------------------------------------------------
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description="Nạp dữ liệu môi trường kiểm thử MedAssist")
     ap.add_argument("--cases", type=Path, default=DEFAULT_CASES)

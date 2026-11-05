@@ -1,4 +1,4 @@
-"""USERS — ERD v1.9 mục 2.1. Bảng do Alembic 0001 tạo; model phải khớp từng cột."""
+"""USERS (ERD §2.1)."""
 import uuid
 from datetime import datetime
 

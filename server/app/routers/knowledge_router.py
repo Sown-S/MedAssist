@@ -1,7 +1,6 @@
-"""API quản trị tri thức (US11): /api/v1/admin/knowledge/...
-
-Vai trò: chỉ Admin soạn nháp, gửi duyệt, tắt khẩn cấp, thêm nguồn; chỉ Physician (khác người soạn) duyệt /
-từ chối; cả hai được xem. Nội dung tri thức không phải dữ liệu bệnh nhân nên nhật ký ghi được mã mục.
+"""API quản trị tri thức (US11): /api/v1/admin/knowledge/... Admin soạn nháp, gửi duyệt, tắt khẩn cấp, thêm nguồn;
+Physician (khác người soạn) duyệt, từ chối; cả hai được xem.
+Tri thức không phải dữ liệu bệnh nhân nên nhật ký ghi được mã mục.
 """
 import uuid
 
@@ -28,7 +27,7 @@ def _detail(db: Session, rel) -> dict:
     return {**ReleaseOut.model_validate(rel).model_dump(), "changes": ks.release_changes(db, rel)}
 
 
-# ============================================================================ bản phát hành
+# --- Bản phát hành --------------------------------------------------------------------------------
 @router.get("/releases", response_model=list[ReleaseOut])
 def list_releases(_: User = Depends(_viewer), db: Session = Depends(get_db)):
     return ks.list_releases(db)
@@ -71,7 +70,7 @@ def reject_release(release_id: uuid.UUID, body: ReviewNote, actor: User = Depend
     return _detail(db, rel)
 
 
-# ============================================================================ nguồn
+# --- Nguồn ----------------------------------------------------------------------------------------
 @router.get("/sources", response_model=list[SourceOut])
 def list_sources(_: User = Depends(_viewer), db: Session = Depends(get_db)):
     return ks.list_sources(db)
@@ -84,7 +83,7 @@ def create_source(body: SourceCreate, actor: User = Depends(_admin), db: Session
     return src
 
 
-# ============================================================================ soạn nháp từng loại
+# --- Soạn nháp từng loại --------------------------------------------------------------------------
 def _put(kind: str, key: str, body, actor: User, db: Session) -> dict:
     out = ks.put_draft(db, kind, key, body, actor)
     db.commit()
@@ -118,7 +117,7 @@ def put_rule(rule_key: str, body: RuleDraft, actor: User = Depends(_admin), db: 
     return _put("rules", rule_key, body, actor, db)
 
 
-# ============================================================================ đọc, bỏ nháp, tắt khẩn cấp (mọi loại)
+# --- Đọc, bỏ nháp, tắt khẩn cấp (mọi loại) --------------------------------------------------------
 @router.get("/{kind}", response_model=Page[ItemOut])
 def list_items(kind: Kind, status: ItemStatus | None = Query(None), q: str | None = Query(None, max_length=80),
                limit: int = Query(50, ge=1, le=200), offset: int = Query(0, ge=0),

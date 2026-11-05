@@ -1,22 +1,5 @@
-"""Nạp tri thức OKF (Markdown + YAML front matter, thư mục ``knowledge/`` của Tuấn) vào CSDL.
-
-Chạy trong server/:
-    python -m scripts.import_okf --dry-run                      # chỉ kiểm tra + báo thay đổi, không ghi
-    python -m scripts.import_okf                                # tạo bản phát hành Draft
-    python -m scripts.import_okf --submit                       # tạo và gửi duyệt (PendingApproval)
-    python -m scripts.import_okf --approve-as bs                # tạo và kích hoạt ngay (máy dev / demo)
-Tùy chọn: --dir <thư mục OKF> (mặc định ../knowledge), --as <username Admin soạn> (mặc định tài khoản
-'system'), --retire-missing (mục đang Active mà không còn trong thư mục -> Retired/Deactivated khi kích hoạt).
-
-Quy tắc (đặc tả knowledge/_spec/okf_format.md + quyết định 18/10):
-- Nhận diện file theo trường ``schema``; tài liệu (``okf_spec_v1``, ``okf_review_log_v1``) và thư mục
-  ``exports/`` bị bỏ qua.
-- Nguồn tra theo khóa tự nhiên (organization, edition); ``source_key`` chỉ dùng để liên kết trong thư mục.
-- condition_logic kiểm theo đặc tả chung (app.validation.knowledge_validators) VÀ chạy thử bằng chính
-  bộ đánh giá của pipeline (app.ai.rules.condition_evaluator) để chắc chắn luật dùng được.
-- Chỉ mục mới hoặc có nội dung khác bản Active mới tạo phiên bản mới (version + 1); mục không đổi giữ nguyên.
-- Kích hoạt trong MỘT transaction: bản cũ -> Retired(Superseded), bản mới -> Active, epoch tự tăng
-  (trigger); trigger toàn vẹn kiểm tập Active khép kín lúc COMMIT.
+"""Nạp tri thức OKF (Markdown + YAML front matter, thư mục ``knowledge/``) vào CSDL thành một bản phát hành.
+Cách chạy: server/README.md mục 2.7b. Quy tắc đọc thư mục, so sánh, kích hoạt: docs/thiet-ke-backend.md §6.3.
 """
 import argparse
 import datetime
@@ -45,7 +28,7 @@ DEFAULT_DIR = Path(__file__).resolve().parents[2] / "knowledge"
 _FRONT = re.compile(r"^---\n(.*?)\n---\n?(.*)$", re.S)
 
 
-# ============================================================================ định dạng file
+# --- Định dạng file -------------------------------------------------------------------------------
 class _Strict(BaseModel):
     model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
 
@@ -129,7 +112,7 @@ _MODELS = {"okf_release_v1": ReleaseFile, "okf_source_v1": SourceFile, "okf_symp
 _IGNORED_SCHEMAS = {"okf_spec_v1", "okf_review_log_v1"}
 
 
-# ============================================================================ đọc + kiểm tra thư mục
+# --- Đọc, kiểm tra thư mục ------------------------------------------------------------------------
 @dataclass
 class Vault:
     root: Path
@@ -277,7 +260,7 @@ def _cross_check(v: Vault) -> None:
             v.errors.append(f"{r.rule_key}: bộ đánh giá luật không đọc được condition_logic: {e}")
 
 
-# ============================================================================ so với CSDL
+# --- So với CSDL ----------------------------------------------------------------------------------
 ITEM_TYPES = ("symptom", "condition", "relation", "excerpt", "rule")
 
 
@@ -382,7 +365,7 @@ def make_plan(db: Session, v: Vault) -> Plan:
     return plan
 
 
-# ============================================================================ ghi vào CSDL
+# --- Ghi vào CSDL ---------------------------------------------------------------------------------
 class ImportError_(Exception):
     pass
 
@@ -409,7 +392,7 @@ def apply_plan(db: Session, v: Vault, plan: Plan, *, drafter: User, approver: Us
     if db.scalar(select(KnowledgeRelease.release_id).where(KnowledgeRelease.label == v.release.label)):
         raise ImportError_(f"Nhãn '{v.release.label}' đã dùng; đổi label trong _release.md cho bản mới")
 
-    # Khi duyệt ngay: ghi như một bản chờ duyệt rồi kích hoạt bằng CHÍNH hàm của API quản trị tri thức
+    # Khi duyệt ngay: ghi như một bản chờ duyệt rồi kích hoạt bằng chính hàm của API quản trị tri thức
     status = "PendingApproval" if (submit or approver) else "Draft"
     now = func.now()
     rel = KnowledgeRelease(label=v.release.label, description=v.release.description, status=status,
@@ -462,7 +445,7 @@ def apply_plan(db: Session, v: Vault, plan: Plan, *, drafter: User, approver: Us
     return rel
 
 
-# ============================================================================ dòng lệnh
+# --- Dòng lệnh ------------------------------------------------------------------------------------
 def _report(v: Vault, plan: Plan) -> None:
     print(f"Thư mục: {v.root}")
     print(f"  {len(v.symptoms)} triệu chứng, {len(v.conditions)} bệnh, "

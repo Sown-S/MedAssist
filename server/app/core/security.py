@@ -1,8 +1,6 @@
-"""Băm mật khẩu (Argon2id) và JWT access token ngắn hạn.
-
-Dấu mật khẩu (claim "pwd"): mỗi token mang HMAC-SHA256(JWT_SECRET_KEY, password_hash) rút gọn.
-Đổi mật khẩu hoặc Admin đặt lại mật khẩu thì password_hash đổi, nên mọi token cũ (access lẫn
-refresh) bị từ chối ngay ở lần dùng kế tiếp — không cần thêm cột hay bảng nào (giữ ERD v1.8).
+"""Băm mật khẩu (Argon2id) và JWT ngắn hạn.
+Mỗi token mang dấu mật khẩu (claim "pwd" = HMAC-SHA256 rút gọn của password_hash): đổi hoặc đặt lại
+mật khẩu thì mọi token cũ (access lẫn refresh) bị từ chối ngay, không cần thêm cột hay bảng.
 """
 import hashlib
 import hmac

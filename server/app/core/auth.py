@@ -1,8 +1,5 @@
-"""Xác thực (JWT Bearer) và phân quyền theo vai trò (RBAC) — thực thi ở server.
-
-Dùng trong router:
-    current_user: User = Depends(get_current_user)
-    _: User = Depends(require_roles("Admin"))
+"""Xác thực (JWT Bearer) và phân quyền theo vai trò (RBAC), thực thi ở server.
+Dùng trong router: ``Depends(get_current_user)``, ``Depends(require_roles("Admin"))``.
 """
 import uuid
 from collections.abc import Callable
@@ -66,7 +63,7 @@ _METHOD_ACTION = {"GET": "VIEW", "HEAD": "VIEW", "POST": "CREATE", "PUT": "UPDAT
 
 def record_denied(request: Request, user: User, entity: str,
                   entity_id: uuid.UUID | None = None) -> None:
-    """Ghi lượt truy cập bị từ chối vì sai vai trò (Architecture v1.7, kịch bản bảo mật)."""
+    """Ghi lượt truy cập bị từ chối vì sai vai trò (Architecture: kịch bản bảo mật)."""
     audit.record_now(
         action=_METHOD_ACTION.get(request.method, "VIEW"),
         entity=entity,

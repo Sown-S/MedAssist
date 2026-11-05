@@ -1,5 +1,4 @@
-"""Phiếu chỉ định cận lâm sàng và kết quả (ERD v2.1 mục 4.4).
-
+"""Phiếu chỉ định cận lâm sàng và kết quả (ERD §2.10b, §4.4).
 Bác sĩ chỉ định trong lúc khám (lượt Examining của mình), ghi kết quả khi bệnh nhân quay lại.
 Hóa đơn lập lúc kết thúc khám tự lấy dòng từ các chỉ định còn hiệu lực (invoice_service).
 """
@@ -169,13 +168,10 @@ def cancel_item(db: Session, item_id: uuid.UUID, reason: str, actor: User) -> Se
     return item
 
 
-# ---------------------------------------------------------------------------- dùng cho hóa đơn
+# --- Dùng cho hóa đơn -----------------------------------------------------------------------------
 def billable(db: Session, visit_id: uuid.UUID) -> tuple[list[dict], str | None]:
-    """Dòng cận lâm sàng tự động và tên gói đã gồm phí khám (nếu có).
-
-    Gói tính một dòng theo giá gói khi còn ít nhất một dòng trong gói chưa hủy; dòng trong gói không tính riêng.
-    Dòng ngoài danh mục (không giá) không tính, quầy thêm tay.
-    """
+    """Dòng cận lâm sàng tự động và tên gói đã gồm phí khám (nếu có). Gói tính một dòng theo giá gói khi còn
+    ít nhất một dòng trong gói chưa hủy; dòng trong gói không tính riêng. Dòng ngoài danh mục quầy thêm tay."""
     orders = list(db.scalars(select(ServiceOrder).where(ServiceOrder.visit_id == visit_id)
                              .order_by(ServiceOrder.ordered_at, ServiceOrder.order_id)))
     if not orders:

@@ -59,7 +59,7 @@ class ParaclinicalLine(BaseModel):
 
 
 class InvoiceEdit(BaseModel):
-    """Bỏ trống một trường = giữ nguyên. paraclinical_items = danh sách MỚI thay toàn bộ dòng nhập tay
+    """Bỏ trống một trường = giữ nguyên. paraclinical_items = danh sách mới thay toàn bộ dòng nhập tay
     (dòng từ phiếu chỉ định không nằm trong danh sách này). consultation_service_id: đổi dịch vụ khám
     (tên và giá theo danh mục, consultation_fee nếu gửi kèm thì ghi đè giá)."""
     model_config = ConfigDict(extra="forbid")

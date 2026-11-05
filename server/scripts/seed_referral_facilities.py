@@ -1,9 +1,6 @@
-"""Nạp danh mục cơ sở nhận chuyển tuyến từ server/data/hospitals.csv (tạo bằng tools/hospital_data).
-
+"""Nạp danh mục cơ sở nhận chuyển tuyến từ server/data/hospitals.csv (tạo bằng tools/hospital_data), tài khoản 'system'.
 Định danh theo tỉnh + tên không dấu (uq_referral_facility_identity): chạy lại thì cập nhật, không tạo trùng.
-Ghi nhật ký bằng tài khoản 'system'. Chạy trong server/:
-    python -m scripts.seed_referral_facilities
-    python -m scripts.seed_referral_facilities --deactivate-others   # ngừng dùng cơ sở không còn trong file
+Cách chạy: server/README.md mục 6.
 """
 import argparse
 import csv

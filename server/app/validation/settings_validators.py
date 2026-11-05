@@ -1,7 +1,6 @@
-"""Kiểm tra kiểu giá trị SYSTEM_SETTING trước khi lưu (ERD v1.8 mục 2.22).
-
-Mỗi khóa có một model Pydantic bọc trường `value`. Khóa lạ bị từ chối: thêm khóa mới = thêm vào
-SETTINGS ở đây (kèm mặc định) trong cùng PR với chỗ code đọc khóa đó.
+"""Kiểm tra kiểu giá trị SYSTEM_SETTING trước khi lưu (ERD §2.22).
+Mỗi khóa có một model Pydantic bọc trường `value`; khóa lạ bị từ chối. Thêm khóa mới = thêm vào
+SETTINGS (kèm mặc định) trong cùng PR với chỗ code đọc khóa đó.
 """
 from typing import Any
 
@@ -71,5 +70,5 @@ def validate_setting(key: str, value: Any) -> Any:
 
 
 def default_settings() -> dict[str, Any]:
-    """Giá trị mặc định cho script seed (Sprint 3)."""
+    """Giá trị mặc định cho script seed."""
     return {k: validate_setting(k, d) for k, (_, d, _) in SETTINGS.items()}

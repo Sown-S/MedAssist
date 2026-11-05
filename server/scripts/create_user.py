@@ -1,9 +1,5 @@
-"""Tạo tài khoản nhân viên từ dòng lệnh (dùng để tạo Admin đầu tiên).
-
-Chạy trong server/:
-    python -m scripts.create_user --username admin --full-name "Quản trị viên" --role Admin
-Mật khẩu nhập ẩn (không hiện, không lưu vào lịch sử lệnh). Dòng audit ghi người thực hiện
-là tài khoản 'system', vì script không có người đăng nhập.
+"""Tạo tài khoản nhân viên từ dòng lệnh (tạo Admin đầu tiên). Cách chạy: server/README.md mục 2.6.
+Mật khẩu nhập ẩn, không lưu vào lịch sử lệnh; dòng audit ghi người thực hiện là tài khoản 'system'.
 """
 import argparse
 import getpass

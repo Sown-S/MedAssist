@@ -1,11 +1,6 @@
-"""Ghi AUDIT_LOG (US09, FR09) — cửa vào duy nhất để thêm dòng nhật ký.
-
-Nguyên tắc:
-  * record() chỉ db.add + flush, KHÔNG commit: dòng log nằm cùng transaction với thao tác
-    nghiệp vụ, nên cùng thành công hoặc cùng rollback.
-  * Ngoại lệ: LOGIN_FAILED — router đăng nhập phải commit dòng log dù đăng nhập thất bại.
-  * Chỉ lưu trường thay đổi (diff_values) và luôn che trường nhạy cảm.
-  * Không bao giờ UPDATE/DELETE: DB đã chặn bằng trigger + GRANT.
+"""Ghi AUDIT_LOG (US09, FR09): cửa vào duy nhất để thêm dòng nhật ký.
+record() chỉ flush, không commit (cùng transaction với nghiệp vụ); VIEW và lượt bị từ chối dùng record_now().
+Chi tiết: docs/thiet-ke-backend.md §1.
 """
 import uuid
 from collections.abc import Iterable, Mapping
@@ -99,10 +94,8 @@ def record(
     db.flush()   # lỗi ràng buộc (nếu có) nổ ra ngay tại đây, không đợi tới commit
     return entry
 
-# ---------------------------------------------------------------------------
-# Ghi ngay bằng session riêng — cho VIEW và lượt bị từ chối (request GET không commit,
-# request bị 403 không bao giờ tới service).
-# ---------------------------------------------------------------------------
+# Ghi ngay bằng session riêng cho VIEW và lượt bị từ chối: request GET không commit,
+# request bị 403 không bao giờ tới service.
 def record_now(**kwargs: Any) -> None:
     """Ghi một dòng và commit ngay trong session riêng. Lỗi thì ném ra (fail closed:
     không ghi được nhật ký thì không cho truy cập dữ liệu bệnh nhân)."""
@@ -115,10 +108,7 @@ def record_now(**kwargs: Any) -> None:
 
 class _ViewDeduper:
     """Gộp VIEW lặp lại của endpoint polling: một dòng / người / đối tượng / cửa sổ thời gian.
-
-    Lưu trong bộ nhớ của tiến trình (không truy vấn DB). Nhiều tiến trình thì có thể trùng
-    một dòng ở mỗi tiến trình — chấp nhận được.
-    """
+    Lưu trong bộ nhớ tiến trình; nhiều tiến trình thì mỗi tiến trình có thể trùng một dòng, chấp nhận được."""
 
     def __init__(self) -> None:
         import threading

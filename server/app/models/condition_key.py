@@ -1,8 +1,4 @@
-"""CONDITION_KEY — định danh ổn định của mã bệnh (v1.8). Chỉ thêm, không sửa.
-
-Sinh từ lược đồ do Alembic 0001 tạo (medassist_schema_v1_8.sql) rồi biên tập; phải khớp
-bảng thật — kiểm tra bằng `alembic check` / tests/test_db_guards.py.
-"""
+"""CONDITION_KEY — định danh ổn định của mã bệnh. Chỉ thêm, không sửa."""
 import datetime
 
 from sqlalchemy import CheckConstraint, DateTime, PrimaryKeyConstraint, String, text

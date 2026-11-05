@@ -1,12 +1,6 @@
-"""Danh mục thuốc và kho (US05, FR05).
-
-Nguyên tắc (ERD v1.8 mục kho):
-  * Sổ cái stock_movement là nguồn sự thật: mọi thay đổi tồn = INSERT một dòng sổ cái; trigger
-    trg_stock_movement_apply cộng vào lô. KHÔNG bao giờ UPDATE inventory_batch.remaining_quantity
-    (trg_inventory_batch_guard chặn). Tồn âm bị CHECK chặn -> cả transaction rollback.
-  * Không xóa thuốc / lô: ngừng dùng thuốc bằng is_active = false.
-  * Sổ cái đã có performed_by, thời điểm, lý do -> không ghi thêm audit_log cho từng biến động;
-    audit_log ghi thay đổi danh mục thuốc và việc tạo lô.
+"""Danh mục thuốc và kho (US05, FR05, ERD §5).
+Sổ cái stock_movement là nguồn sự thật: chỉ INSERT sổ cái, không UPDATE remaining_quantity. Không xóa thuốc, lô.
+Chi tiết: docs/thiet-ke-backend.md §5.2.
 """
 import uuid
 from datetime import date, timedelta
@@ -23,7 +17,7 @@ _DRUG_FIELDS = ["generic_name", "trade_name", "strength", "dosage_form", "unit",
                 "reorder_level", "drug_class", "active_ingredient_code", "is_active"]
 
 
-# ============================================================================ Thuốc
+# --- Thuốc ----------------------------------------------------------------------------------------
 def _identity_conflict(db: Session, generic, trade, strength, form, exclude: uuid.UUID | None = None):
     stmt = select(Drug.drug_id).where(
         func.lower(Drug.generic_name) == generic.lower(), func.lower(Drug.trade_name) == trade.lower(),
@@ -92,7 +86,7 @@ def update_drug(db: Session, drug_id: uuid.UUID, data: DrugUpdate, actor: User) 
     return drug
 
 
-# ============================================================================ Lô và sổ cái
+# --- Lô và sổ cái ---------------------------------------------------------------------------------
 _BATCH_STATUS_SQL = text("""
     SELECT b.batch_id, b.drug_id, b.batch_number, b.expiry_date, b.manufacturing_date,
            b.initial_quantity, b.remaining_quantity, b.import_price, b.created_at,
@@ -198,7 +192,7 @@ def movements(db: Session, batch_id: uuid.UUID) -> list[StockMovement]:
                            .order_by(StockMovement.created_at, StockMovement.movement_id)))
 
 
-# ============================================================================ Tồn kho và cảnh báo
+# --- Tồn kho và cảnh báo --------------------------------------------------------------------------
 def stock(db: Session, *, q: str | None, low_only: bool) -> list[dict]:
     cond, params = [], {}
     if q:
@@ -219,7 +213,7 @@ def alerts(db: Session) -> dict:
 
 
 def reconciliation(db: Session) -> list[dict]:
-    """Lô lệch sổ cái. Luôn phải rỗng; khác rỗng = lỗi nghiêm trọng, báo Sơn."""
+    """Lô lệch sổ cái. Luôn phải rỗng; khác rỗng là lỗi nghiêm trọng."""
     return [dict(r) for r in db.execute(text("SELECT * FROM v_inventory_reconciliation")).mappings()]
 
 
@@ -227,7 +221,7 @@ def today(db: Session) -> date:
     return db.scalar(select(func.current_date()))
 
 
-# ============================================================================ FEFO cho đơn thuốc (lượt 6b)
+# --- FEFO cho đơn thuốc ---------------------------------------------------------------------------
 def _min_shelf_days(db: Session) -> int:
     from app.services.settings_service import get_value
     return int(get_value(db, "inventory.min_remaining_shelf_days"))
@@ -242,13 +236,9 @@ def eligible_quantity(db: Session, drug_id: uuid.UUID, duration_days: int) -> in
 
 
 def allocate_fefo(db: Session, items) -> tuple[list[tuple], list[dict]]:
-    """Chọn lô cho từng dòng đơn theo FEFO (hạn gần nhất trước; cùng hạn thì lô nhập trước).
-
-    Khóa các lô đủ điều kiện (FOR UPDATE) theo thứ tự drug_id -> hạn -> batch_id để hai đơn xác nhận
-    cùng lúc không tranh nhau lô (không deadlock). Trả (phân bổ, thiếu):
-      phân bổ = [(item, batch_id, số lượng)], thiếu = [{item_id, ..., reason}] — rỗng nếu đủ hết.
-    Nhiều dòng cùng một thuốc được tính dồn trên cùng các lô.
-    """
+    """Chọn lô cho từng dòng đơn theo FEFO; khóa lô theo thứ tự drug_id -> hạn -> batch_id để không deadlock.
+    Trả (phân bổ, thiếu): [(item, batch_id, số lượng)], [{item_id, ..., reason}] (rỗng nếu đủ hết).
+    Chi tiết: docs/thiet-ke-backend.md §5.2."""
     shelf = _min_shelf_days(db)
     day0 = today(db)
     allocations, shortages = [], []

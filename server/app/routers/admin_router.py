@@ -1,4 +1,4 @@
-"""Quản trị: tài khoản (US07) và nhật ký (US09) — chỉ Admin. Kho, hóa đơn, báo cáo thêm ở bước 5."""
+"""Quản trị: tài khoản (US07), nhật ký (US09), tham số vận hành. Chỉ Admin."""
 import csv
 import io
 import json
@@ -174,9 +174,7 @@ def export_audit_logs(
     return Response(content=content, media_type=media_type, headers=headers)
 
 
-# ---------------------------------------------------------------------------
-# Tài khoản người dùng (US07)
-# ---------------------------------------------------------------------------
+# --- Tài khoản người dùng (US07) ------------------------------------------------------------------
 _admin_users = require_roles("Admin", audit_entity="users")
 
 
@@ -224,9 +222,7 @@ def unlock_user(user_id: uuid.UUID, actor: User = Depends(_admin_users), db: Ses
     return user_service.to_out(db, [user])[0]
 
 
-# ---------------------------------------------------------------------------
-# Tham số vận hành (SYSTEM_SETTING) — Admin chỉnh, không cần khởi động lại
-# ---------------------------------------------------------------------------
+# --- Tham số vận hành (SYSTEM_SETTING): Admin chỉnh, không cần khởi động lại ----------------------
 _admin_settings = require_roles("Admin", audit_entity="system_setting")
 
 

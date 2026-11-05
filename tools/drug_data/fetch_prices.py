@@ -1,26 +1,6 @@
-"""Tham khảo giá bán lẻ công khai (Nhà thuốc Long Châu, Pharmacity) cho data/drugs.csv — BÁN TỰ ĐỘNG.
-
-Chạy trong tools/:
-    python -m drug_data.fetch_prices refresh                 # CÁCH DÙNG CHÍNH: đọc giá từ product_url dán tay
-    python -m drug_data.fetch_prices search [--auto] [--only-missing] [--limit 20]   # xem TRẠNG THÁI bên dưới
-
-TRẠNG THÁI (18/10/2026, đã thử trên trang thật): 'search' KHÔNG tìm được sản phẩm —
-  * Long Châu: robots.txt không cho công cụ tự động truy cập trang tìm kiếm (/tim-kiem) -> script dừng đúng quy định.
-  * Pharmacity: trang tìm kiếm chỉ là khung Next.js, kết quả tải bằng JavaScript sau khi mở trang -> HTML thô
-    không có sản phẩm. Không gọi API nội bộ, không dùng trình duyệt tự động (quyết định của nhóm).
-  => Thuốc chưa có giá: python -m drug_data.estimate_prices. Cần giá thật cho thuốc nào: mở trang sản phẩm trên
-     trình duyệt, dán đường dẫn vào cột product_url của output/price_review.csv (thêm dòng: generic_name,
-     trade_name, strength như drugs.csv), chạy 'refresh', duyệt (cột duyet = x), rồi 'apply'.
-    python -m drug_data.fetch_prices apply                   # ghi các dòng đã duyệt (cột duyet = x) vào drugs.csv
-
---auto: giá có ĐỘ TIN CẬY CAO được ghi thẳng vào server/data/drugs.csv (duyet = auto); còn lại vào
-output/price_review.csv để duyệt tay. Độ tin cậy cao = tên thuốc + hàm lượng khớp tên sản phẩm, quy được ra
-giá/đơn vị, giá đọc từ JSON-LD hoặc thẻ meta, và nếu cả hai trang có giá thì chênh lệch <= 30%.
-
-Nguyên tắc thu thập: chỉ đọc giá hiển thị công khai; đọc robots.txt và DỪNG với trang không cho phép;
-User-Agent khai báo rõ (không giả trình duyệt); giãn cách mặc định 3 giây/lần; lưu mọi trang đã tải
-(data/sources/prices/cache) làm minh chứng. Đọc điều khoản sử dụng của từng trang trước khi chạy.
-Giao diện các trang có thể thay đổi: SITES bên dưới là cấu hình mặc định, sửa được qua tham số dòng lệnh.
+"""Tham khảo giá bán lẻ công khai (Long Châu, Pharmacity) cho server/data/drugs.csv, bán tự động.
+Tôn trọng robots.txt, User-Agent rõ ràng, giãn cách 3 giây, lưu mọi trang đã tải làm minh chứng.
+Cách chạy, trạng thái, tiêu chí --auto: tools/drug_data/README.md mục "Giá tham khảo".
 """
 import argparse
 import hashlib
@@ -57,7 +37,7 @@ REVIEW_FIELDS = ["duyet", "gia_ban_duyet", "generic_name", "trade_name", "streng
 PRODUCTS_PER_QUERY = 3
 
 
-# ============================================================================ HTTP lịch sự
+# --- HTTP lịch sự ---------------------------------------------------------------------------------
 class PoliteClient:
     def __init__(self, client, contact: str, delay: float):
         self.client, self.delay, self._last = client, delay, 0.0
@@ -110,7 +90,7 @@ def _now() -> str:
     return datetime.now(timezone.utc).isoformat(timespec="seconds")
 
 
-# ============================================================================ đọc trang sản phẩm
+# --- Đọc trang sản phẩm ---------------------------------------------------------------------------
 def _walk(obj):
     if isinstance(obj, dict):
         yield obj
@@ -209,7 +189,7 @@ def match_score(drug: dict, product_name: str) -> tuple[int, list[str]]:
     return score, notes
 
 
-# ============================================================================ search / refresh / apply
+# --- search / refresh / apply ---------------------------------------------------------------------
 def _query(drug: dict) -> str:
     trade = drug["trade_name"]
     generic_like = strip_accents(trade).startswith(strip_accents(drug["generic_name"].split()[0]))
@@ -352,7 +332,7 @@ def apply(review: list[dict], fields: list[str], drugs: list[dict]) -> tuple[lis
     return fields, updated, problems
 
 
-# ============================================================================ CLI
+# --- CLI ------------------------------------------------------------------------------------------
 def _contact(args) -> str:
     if args.contact:
         return args.contact

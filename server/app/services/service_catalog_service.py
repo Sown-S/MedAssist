@@ -1,4 +1,4 @@
-"""Danh mục dịch vụ, xét nghiệm và gói khám (ERD v2.1). Admin sửa; mọi vai trò đọc để chỉ định và thu tiền."""
+"""Danh mục dịch vụ, xét nghiệm và gói khám (ERD §2.18a, §2.18b). Admin sửa; mọi vai trò đọc để chỉ định và thu tiền."""
 import uuid
 
 from sqlalchemy import func, or_, select
@@ -83,7 +83,7 @@ def price_history(db: Session, service_id: uuid.UUID) -> list[dict]:
              "changed_at": log.created_at, "changed_by_name": name} for log, name in rows]
 
 
-# ---------------------------------------------------------------------------- gói khám
+# --- Gói khám -------------------------------------------------------------------------------------
 def _package_items(db: Session, items: list) -> list[dict]:
     """Gộp dòng trùng, kiểm dịch vụ còn dùng; lưu dạng JSONB [{service_id, quantity}]."""
     merged: dict[uuid.UUID, int] = {}

@@ -25,7 +25,7 @@ def _remaining(client, nurse, batch_id):
     return client.get(f"/api/v1/inventory/batches/{batch_id}", headers=nurse).json()["remaining_quantity"]
 
 
-# ---------------------------------------------------------------------------- chẩn đoán
+# --- Chẩn đoán ------------------------------------------------------------------------------------
 def test_diagnosis_primary_rules(client, doctor, examining, logs):
     vid = examining()
     first = _dx(client, doctor, vid, is_primary=False).json()
@@ -60,7 +60,7 @@ def test_diagnosis_validation_and_permissions(client, doctor, doctor2, nurse, ex
     assert _dx(client, nurse, vid).status_code == 403
 
 
-# ---------------------------------------------------------------------------- đơn nháp
+# --- Đơn nháp -------------------------------------------------------------------------------------
 def test_draft_shows_context_and_stock(client, doctor, nurse, examining, drug):
     vid = examining(medical_history={"chronic_conditions": ["Tăng huyết áp"], "is_pregnant": True},
                     allergy_notes="Dị ứng penicillin", gender="Female")
@@ -95,7 +95,7 @@ def test_draft_replace_keeps_history_and_validation(client, doctor, examining, d
     assert client.get(f"/api/v1/visits/{vid}/prescription", headers=doctor).json()["status"] is None
 
 
-# ---------------------------------------------------------------------------- xác nhận
+# --- Xác nhận -------------------------------------------------------------------------------------
 def test_confirm_requires_diagnosis_and_touches_no_stock(client, doctor, nurse, examining, drug):
     vid = examining()
     did, b = drug({60: 30})
@@ -174,7 +174,7 @@ def test_concurrent_confirms_do_not_oversell(client, doctor, nurse, examining, d
     assert _remaining(client, nurse, b[300]) == 2
 
 
-# ---------------------------------------------------------------------------- hoàn tất khám / mở lại
+# --- Hoàn tất khám / mở lại -----------------------------------------------------------------------
 def test_complete_exam_without_prescription(client, doctor, examining, drug):
     vid = examining()
     assert client.post(f"/api/v1/visits/{vid}/complete-exam", headers=doctor).json()["error"]["code"] == "DIAGNOSIS_REQUIRED"
@@ -219,7 +219,7 @@ def test_reopen_blocked_after_dispensing(client, doctor, examining, drug):
     _dx(client, doctor, vid)
     client.put(f"/api/v1/visits/{vid}/prescription", headers=doctor, json={"items": [_item(did, 2)]})
     client.post(f"/api/v1/visits/{vid}/prescription/confirm", headers=doctor)
-    with engine.begin() as conn:           # giả lập y tá đã cấp phát (API cấp phát ở lượt 6c)
+    with engine.begin() as conn:           # giả lập y tá đã cấp phát
         conn.execute(text("""UPDATE prescription_item SET dispense_status='Dispensed', dispensed_at=now()
                               WHERE prescription_id = (SELECT prescription_id FROM prescription
                                                        WHERE visit_id=:v AND status='Confirmed')"""), {"v": vid})

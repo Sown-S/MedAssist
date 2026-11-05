@@ -1,4 +1,4 @@
-"""Tham số vận hành SYSTEM_SETTING (ERD v1.8 mục 2.22): Admin chỉnh, không cần redeploy.
+"""Tham số vận hành SYSTEM_SETTING (ERD §2.22): Admin chỉnh, không cần redeploy.
 Khóa chưa có dòng trong DB -> dùng mặc định trong code (settings_validators.SETTINGS)."""
 from typing import Any
 

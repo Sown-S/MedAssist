@@ -1,4 +1,4 @@
-"""Phòng khám, phòng xét nghiệm (ERD v1.9 mục 2.1a). Mỗi phòng khám tối đa một bác sĩ đang hoạt động."""
+"""Phòng khám, phòng xét nghiệm (ERD §2.1a). Mỗi phòng khám tối đa một bác sĩ đang hoạt động."""
 import uuid
 
 from sqlalchemy import func, select

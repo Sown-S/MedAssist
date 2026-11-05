@@ -1,13 +1,6 @@
 """Knowledge Reader đọc tập tri thức Active từ PostgreSQL (cài đặt ``app.ai.interfaces.KnowledgeReader``).
-
-ERD v1.8 mục KNOWLEDGE_EPOCH: đọc ``epoch`` cùng TOÀN BỘ dòng Active trong một snapshot
-(REPEATABLE READ), cache theo epoch. Đầu mỗi lần đánh giá chỉ cần một câu ``SELECT epoch``; khác
-epoch đã cache thì nạp lại. Epoch đã commit luôn khớp dữ liệu đã commit, nên cách này đúng cho
-mọi tiến trình (api, worker) mà không cần tín hiệu invalidate — tắt khẩn cấp có hiệu lực ngay ở
-lần đánh giá kế tiếp của worker.
-
-Dữ liệu trả về là dict/list thuần (deep copy mỗi lần gọi), không phải model SQLAlchemy, đúng hợp
-đồng mà pipeline của Huy dùng. Mapping chốt ngày 18/10 (card worker AI).
+Cache theo knowledge_epoch, nạp trong một snapshot REPEATABLE READ; trả dict/list thuần (deep copy).
+Chi tiết: docs/thiet-ke-backend.md §6.2.
 """
 import threading
 from copy import deepcopy
@@ -35,7 +28,7 @@ def _float(value) -> float:
 
 
 def load_snapshot(bind: Engine) -> KnowledgeSnapshot:
-    """Đọc epoch + toàn bộ dòng Active trong MỘT transaction REPEATABLE READ, chỉ đọc."""
+    """Đọc epoch + toàn bộ dòng Active trong một transaction REPEATABLE READ, chỉ đọc."""
     with bind.connect().execution_options(isolation_level="REPEATABLE READ") as conn:
         with conn.begin():
             epoch = conn.execute(select(KnowledgeEpoch.epoch)).scalar_one_or_none() or 0
@@ -97,7 +90,7 @@ def load_snapshot(bind: Engine) -> KnowledgeSnapshot:
 
 class DbKnowledgeReader:
     """Reader dùng chung trong một tiến trình. Gọi ``refresh()`` ở đầu mỗi lần đánh giá để bảo đảm
-    cả lần chạy dùng MỘT snapshot nhất quán (các hàm active_* không tự nạp lại giữa chừng)."""
+    cả lần chạy dùng một snapshot nhất quán (các hàm active_* không tự nạp lại giữa chừng)."""
 
     def __init__(self, bind: Engine | None = None) -> None:
         self._bind = bind or default_engine
@@ -119,7 +112,7 @@ class DbKnowledgeReader:
     def _snap(self) -> KnowledgeSnapshot:
         return self._snapshot if self._snapshot is not None else self.refresh()
 
-    # ---- interface KnowledgeReader -------------------------------------------------------
+    # Interface KnowledgeReader
     def active_release(self) -> dict[str, Any]:
         return deepcopy(self._snap().release)
 

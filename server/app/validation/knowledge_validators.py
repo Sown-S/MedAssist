@@ -1,6 +1,6 @@
-"""Kiểm tra tri thức OKF: định dạng slug (khớp CHECK của CSDL), tồn tại ở bản Active, và cấu trúc
-cây ``condition_logic`` của luật (đặc tả chung chốt 18/10, dùng chung cho script nạp OKF và API quản
-trị tri thức; khớp ``app/ai/rules/condition_evaluator.py``).
+"""Kiểm tra tri thức OKF: slug (khớp CHECK của CSDL), tồn tại ở bản Active, cây ``condition_logic`` của luật
+theo knowledge/_spec/okf_format.md. Dùng chung cho script nạp OKF và API quản trị tri thức;
+khớp ``app/ai/rules/condition_evaluator.py``.
 """
 import re
 import math
@@ -14,7 +14,7 @@ from sqlalchemy.orm import Session
 from app.exceptions import AppError
 from app.models import Condition, Symptom
 
-SLUG_RE = re.compile(r"^[a-z0-9]+(_[a-z0-9]+)*$")      # = chk_*_format trong medassist_schema_v1_8.sql
+SLUG_RE = re.compile(r"^[a-z0-9]+(_[a-z0-9]+)*$")      # = CHECK chk_*_format của CSDL
 SYMPTOM_CODE_MAX = 50                                   # symptom_key.symptom_code VARCHAR(50)
 CONDITION_CODE_MAX = 80                                 # condition_key.condition_code VARCHAR(80)
 SLUG_KEY_MAX = 80                                       # rule_key, excerpt_key VARCHAR(80)
@@ -80,7 +80,7 @@ def active_condition_codes(db: Session, codes: Iterable[str]) -> set[str]:
     return found
 
 
-# ============================================================================ condition_logic
+# --- condition_logic ------------------------------------------------------------------------------
 # Nhóm:  {"op": "AND"|"OR", "args": [nút, ...]}   — không có NOT (phủ định dùng state ABSENT)
 # Lá:    {"type": "symptom", "symptom_code": ..., "state": "PRESENT"|"ABSENT"}
 #        {"type": "vital", "vital": <khóa trong fn_vital_sign_keys()>, "cmp": ..., "value": số}

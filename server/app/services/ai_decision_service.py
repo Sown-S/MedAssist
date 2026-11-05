@@ -1,19 +1,6 @@
-"""Nối chẩn đoán của bác sĩ với lần chạy AI mà bác sĩ đã xem (FR02, ERD v1.8 điểm 9).
-
-Nguồn gốc là ``diagnosis.matches_top_suggestion``; ``ai_assessment_log.physician_decision`` là bản
-ghi kèm, luôn được ghi trong CÙNG transaction với thay đổi chẩn đoán chính. View
-``v_ai_decision_reconciliation`` phải luôn rỗng:
-
-    matches_top_suggestion  TRUE  -> AcceptedTop
-                            FALSE -> ChoseOther
-                            NULL  -> NoSuggestion
-
-Quy tắc (phương án duyệt 18/10):
-- Client gửi kèm ``assessment_id`` của kết quả đang hiển thị (không bắt buộc). Lần chạy phải thuộc
-  đúng lượt khám và là ``Assessment`` (khóa ngoại kép ``fk_diagnosis_assessment`` cũng ép điều này).
-- Không gửi: lấy lần chạy ``Assessment`` mới nhất mà bác sĩ đã có thể nhìn thấy kết quả.
-- So sánh tại thời điểm xác nhận với gợi ý đứng đầu ``candidates[0].condition_code``. Thứ hạng thay
-  đổi sau đó (LLM xong muộn) không làm đổi quyết định đã ghi.
+"""Nối chẩn đoán của bác sĩ với lần chạy AI mà bác sĩ đã xem (FR02, ERD §2.13).
+Nguồn gốc là diagnosis.matches_top_suggestion; physician_decision ghi kèm trong cùng transaction.
+Quy tắc chọn lần chạy và so khớp: docs/thiet-ke-backend.md §3.
 """
 import uuid
 
@@ -69,11 +56,8 @@ def match_top(run: AiAssessmentLog | None, condition_code: str | None) -> bool |
 
 def sync_decision(db: Session, visit_id: uuid.UUID, actor: User) -> None:
     """Ghi lại ``physician_decision`` cho mọi lần chạy AI mà chẩn đoán của lượt khám trỏ tới.
-
-    Gọi sau MỌI thay đổi chẩn đoán chính (thêm, đổi chính, rút lại), trước commit:
-    - lần chạy của chẩn đoán chính đã xác nhận: ghi quyết định theo matches_top_suggestion;
-    - các lần chạy còn lại (của chẩn đoán phụ / đã rút lại): xóa quyết định cũ.
-    """
+    Gọi sau mọi thay đổi chẩn đoán chính (thêm, đổi chính, rút lại), trước commit. Lần chạy không còn
+    gắn chẩn đoán chính đã xác nhận thì bị xóa quyết định cũ."""
     db.flush()
     rows = db.execute(select(Diagnosis.assessment_id, Diagnosis.is_primary, Diagnosis.confirmed_by_physician,
                              Diagnosis.matches_top_suggestion)

@@ -1,19 +1,6 @@
-"""Danh mục thuốc thiết yếu — Thông tư 19/2018/TT-BYT, Phụ lục I (nguồn: Cơ sở dữ liệu quốc gia về VBPL).
-
-Chạy trong tools/. Đường dẫn nguồn ở config.toml. vbpl.vn chặn công cụ tự động, nên cách chắc chắn là tải
-file bằng nút "Tải về" trên trình duyệt rồi thả vào inbox/. Đọc thẳng .docx/.html; .doc Word 97-2003 tự chuyển
-bằng Word (hoặc LibreOffice); .pdf chỉ lưu làm minh chứng.
-
-    python -m drug_data.tt19_catalog run            # cả chuỗi dưới đây (đường dẫn đọc từ config.toml)
-    python -m drug_data.tt19_catalog fetch          # lưu minh chứng: file trong inbox/ hoặc tải theo config.toml
-    python -m drug_data.tt19_catalog extract        # trích Phụ lục I -> output/tt19_2018_phu_luc_1.csv
-    python -m drug_data.tt19_catalog check          # đối chiếu server/data/drugs.csv với Phụ lục I
-    python -m drug_data.tt19_catalog candidates     # thuốc ngoại trú chưa có -> output/drug_candidates.csv
-    python -m drug_data.tt19_catalog merge [--auto] # gộp dòng chon = x (--auto: + mọi ứng viên đủ thông tin)
-
-Công cụ chỉ GHI vào server/data/drugs.csv; không import gì từ server/app.
-
-Văn bản quy phạm pháp luật không thuộc đối tượng bảo hộ quyền tác giả (Luật SHTT, Điều 15).
+"""Danh mục thuốc thiết yếu: Thông tư 19/2018/TT-BYT, Phụ lục I (nguồn: CSDL quốc gia về VBPL). Chỉ ghi drugs.csv,
+không import từ server/app. Văn bản QPPL không thuộc đối tượng bảo hộ quyền tác giả (Luật SHTT, Điều 15).
+Cách chạy (tải tay vào inbox/, lệnh run, fetch, extract, check, candidates, merge): tools/drug_data/README.md.
 """
 import argparse
 import csv
@@ -45,7 +32,7 @@ USER_AGENT = "MedAssist-C1SE28/0.1 (do an tot nghiep; thu thap van ban phap luat
 APPENDIX_FIELDS = ["stt", "nhom", "nhom_con", "ten_thuoc", "duong_dung", "dang_bao_che", "ham_luong", "dau_sao"]
 
 
-# ============================================================================ cấu hình
+# --- Cấu hình -------------------------------------------------------------------------------------
 def load_config() -> dict:
     """config.toml (commit) + config.local.toml (KHÔNG commit, ghi đè từng khóa: email cá nhân...)."""
     import tomllib
@@ -61,7 +48,7 @@ def load_config() -> dict:
     return cfg
 
 
-# ============================================================================ tiện ích chung
+# --- Tiện ích chung -------------------------------------------------------------------------------
 def _clean(text: str) -> str:
     return re.sub(r"\s+", " ", (text or "").replace("\u00a0", " ")).strip()
 
@@ -102,7 +89,7 @@ def write_csv(path: Path, fields: list[str], rows: list[dict], *, excel: bool = 
         w.writerows(rows)
 
 
-# ============================================================================ fetch (nhận file tải tay)
+# --- fetch (nhận file tải tay) --------------------------------------------------------------------
 SUPPORTED = (".html", ".htm", ".docx", ".doc")
 
 
@@ -247,7 +234,7 @@ def _download(client, url: str, dest: Path) -> dict:
             "last_modified": r.headers.get("last-modified")}
 
 
-# ============================================================================ extract
+# --- extract --------------------------------------------------------------------------------------
 _ROMAN = re.compile(r"^[IVXL]+\.\s")
 _SUB = re.compile(r"^(\d+|[a-zđ])\.\s|^♦")
 
@@ -418,7 +405,7 @@ def cmd_extract(args) -> int:
     return 0
 
 
-# ============================================================================ check
+# --- check ----------------------------------------------------------------------------------------
 _STT_RE = re.compile(r"Phụ lục I, STT (\d+)")
 
 
@@ -507,7 +494,7 @@ def cmd_check(args) -> int:
     return 1 if counts["FAIL"] else 0
 
 
-# ============================================================================ candidates / merge
+# --- candidates / merge ---------------------------------------------------------------------------
 OUTPATIENT_ROUTES = ("uong", "dung ngoai", "nho mat", "nho mui", "nho tai", "xit mui", "tra mat",
                      "duong ho hap", "truc trang", "dung tai cho", "dat duoi luoi")
 EXCLUDED_GROUPS = ("gay me", "giai doc", "ung thu", "parkinson", "che pham mau", "chan doan", "sinh pham",
@@ -620,7 +607,7 @@ def cmd_merge(args) -> int:
     return 0
 
 
-# ============================================================================ CLI
+# --- CLI ------------------------------------------------------------------------------------------
 def main(argv=None) -> int:
     p = argparse.ArgumentParser(description="Danh mục thuốc thiết yếu TT 19/2018/TT-BYT")
     sub = p.add_subparsers(dest="cmd", required=True)

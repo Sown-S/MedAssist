@@ -1,10 +1,6 @@
-"""Hạ tầng pytest — chạy trên database RIÊNG `medassist_test`, dựng lại mỗi lần chạy.
-
-* URL test lấy từ DATABASE_URL / MIGRATION_DATABASE_URL trong server/.env, chỉ đổi tên
-  database thành medassist_test (cùng vai trò, cùng mật khẩu). Có thể ghi đè bằng
-  TEST_DATABASE_URL / TEST_MIGRATION_DATABASE_URL.
-* Phải đặt biến môi trường TRƯỚC khi import app (settings và engine tạo lúc import).
-* Từ chối chạy nếu database không phải medassist_test: downgrade base xóa sạch dữ liệu.
+"""Hạ tầng pytest: database riêng `medassist_test`, dựng lại mỗi lần chạy; từ chối database khác (downgrade xóa sạch).
+URL lấy từ server/.env, chỉ đổi tên database; ghi đè bằng TEST_DATABASE_URL, TEST_MIGRATION_DATABASE_URL.
+Biến môi trường phải đặt trước khi import app: settings và engine tạo lúc import.
 """
 import os
 import uuid
@@ -40,7 +36,7 @@ os.environ.setdefault("JWT_SECRET_KEY", "test-only-secret-key-at-least-32-charac
 # không khóa lẫn nhau; test giới hạn đăng nhập tự hạ ngưỡng bằng monkeypatch.
 os.environ["LOGIN_MAX_FAILURES_PER_IP"] = "100000"
 
-# ---- từ đây mới được import app ----------------------------------------------------
+# --- Từ đây mới được import app -------------------------------------------------------------------
 import pytest  # noqa: E402
 from alembic import command  # noqa: E402
 from alembic.config import Config  # noqa: E402
@@ -60,7 +56,7 @@ from app.services import audit_service as audit  # noqa: E402
 PASSWORD = "Matkhau123"
 
 
-# ---- Route giả: thay cho router Patient / Visit / Drug chưa viết (bước 4) -----------
+# --- Route giả: test audit_view, require_roles độc lập với router thật ----------------------------
 _test_router = APIRouter(prefix="/_test", tags=["_test"])
 
 
@@ -96,7 +92,7 @@ def _fake_create_drug(_: User = Depends(require_roles("Admin", audit_entity="dru
 app.include_router(_test_router, prefix="/api/v1")
 
 
-# ---- Fixture -----------------------------------------------------------------------
+# --- Fixture --------------------------------------------------------------------------------------
 @pytest.fixture(scope="session", autouse=True)
 def _fresh_schema():
     """Dựng lại lược đồ bằng chính Alembic: kiểm tra luôn 0001/0002 chạy được từ đầu."""

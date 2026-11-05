@@ -21,7 +21,6 @@ _physician_rx = require_roles("Physician", audit_entity="prescription")
 _view_visit = audit_view("visit", roles=CLINICAL_ROLES, id_param="visit_id")
 
 
-# ============================================================================ Chẩn đoán
 @router.get("/visits/{visit_id}/diagnoses", response_model=list[DiagnosisOut])
 def list_diagnoses(visit_id: uuid.UUID, _: User = Depends(_view_visit), db: Session = Depends(get_db)):
     return rx.list_diagnoses(db, visit_id)
@@ -54,7 +53,6 @@ def retract_diagnosis(diagnosis_id: uuid.UUID, actor: User = Depends(_physician_
     return dx
 
 
-# ============================================================================ Đơn thuốc
 @router.get("/visits/{visit_id}/prescription", response_model=PrescriptionOut)
 def get_prescription(visit_id: uuid.UUID, _: User = Depends(_view_visit), db: Session = Depends(get_db)):
     """Đơn hiện tại (nháp hoặc đã xác nhận) + khung nhắc bệnh nền / dị ứng (chỉ đọc)."""
@@ -88,7 +86,7 @@ def confirm(visit_id: uuid.UUID, actor: User = Depends(_physician_rx), db: Sessi
 
 @router.post("/visits/{visit_id}/complete-exam", response_model=InvoiceOut)
 def complete_exam(visit_id: uuid.UUID, actor: User = Depends(_physician_rx), db: Session = Depends(get_db)):
-    """Hoàn tất khám KHÔNG kê đơn: lượt khám -> Prescribed (chờ thu tiền), hóa đơn chỉ có phí khám."""
+    """Hoàn tất khám không kê đơn: lượt khám -> Prescribed (chờ thu tiền), hóa đơn chỉ có phí khám."""
     invoice = rx.complete_without_prescription(db, visit_id, actor)
     db.commit()
     return invoice_service.to_out(db, invoice)

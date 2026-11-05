@@ -1,11 +1,6 @@
-"""Định dạng lỗi thống nhất cho mọi API (tiếng Việt, có mã lỗi để client xử lý).
+"""Định dạng lỗi thống nhất cho mọi API: {"error": {code, message, details, request_id}}, thông báo tiếng Việt.
 
-    {"error": {"code": "VALIDATION_ERROR", "message": "Dữ liệu không hợp lệ",
-               "details": [{"field": "vital_signs.spo2_pct", "in": "body", "message": "..."}],
-               "request_id": "3f2a..."}}
-
-Nguyên tắc: KHÔNG trả chi tiết nội bộ (câu SQL, tên bảng, traceback) ra client; lỗi 500 chỉ
-có request_id để tra log server.
+Không trả chi tiết nội bộ (câu SQL, tên bảng, traceback); lỗi 500 chỉ có request_id để tra log server.
 """
 from typing import Any
 
@@ -59,7 +54,7 @@ def _body(status_code: int, code: str, message: str, details=None, headers=None)
     return JSONResponse(status_code=status_code, content={"error": error}, headers=headers)
 
 
-# ---- Thông báo tiếng Việt cho lỗi kiểm tra của Pydantic ------------------------------
+# --- Thông báo tiếng Việt cho lỗi kiểm tra của Pydantic -------------------------------------------
 def _num(value: Any) -> Any:
     """100.0 -> 100 cho dễ đọc."""
     return int(value) if isinstance(value, float) and value.is_integer() else value
@@ -129,7 +124,7 @@ def _validation_details(errors) -> list[dict[str, Any]]:
     return details
 
 
-# ---- Lỗi ràng buộc CSDL -> lỗi nghiệp vụ dễ hiểu ---------------------------------------
+# --- Lỗi ràng buộc CSDL -> lỗi nghiệp vụ dễ hiểu --------------------------------------------------
 _SQLSTATE = {
     "23505": (409, "CONFLICT", "Dữ liệu đã tồn tại hoặc trùng lặp"),
     "23503": (409, "INVALID_REFERENCE", "Dữ liệu tham chiếu không tồn tại hoặc đang được sử dụng"),

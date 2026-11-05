@@ -1,7 +1,7 @@
 ﻿# Tạo CA của dự án (lần đầu) và chứng chỉ máy chủ cho Caddy. Khóa riêng nằm trong deploy/certs, KHÔNG commit.
 # Dùng: .\deploy\scripts\new-certs.ps1 -HostName 192.168.1.10            (IP máy admin)
 #       .\deploy\scripts\new-certs.ps1 -HostName 192.168.1.10,may-admin  (nhiều IP / tên máy)
-# Chứng chỉ công khai của CA (certs/medassist-root-ca.crt) chép sang client/certs qua PR, Anh duyệt.
+# Chứng chỉ công khai của CA (certs/medassist-root-ca.crt) chép sang client/certs qua PR, người phụ trách client duyệt.
 param(
     [Parameter(Mandatory)] [string[]] $HostName,
     [int] $ServerDays = 825

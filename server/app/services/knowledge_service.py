@@ -1,15 +1,6 @@
-"""Quản trị tri thức (US11, FR11; ERD v1.8 mục 2.3, 9): bản phát hành Draft → PendingApproval → Active.
-
-- Chỉ Admin soạn; chỉ Physician (khác người soạn) duyệt / từ chối. Mỗi lúc tối đa MỘT bản đang mở
-  (uq_release_single_open).
-- Soạn từng mục trong bản nháp đang mở: lần sửa đầu tạo dòng phiên bản mới (version + 1, status Draft);
-  sửa tiếp thì cập nhật chính dòng nháp đó. Phiên bản cũ luôn được giữ.
-- Duyệt = MỘT transaction (``activate_release``, dùng chung với scripts/import_okf.py): bản Active cũ của
-  từng mã -> Retired(Superseded), bản mới -> Active; epoch tự tăng (trigger 7); trigger toàn vẹn kiểm tập
-  Active khép kín lúc COMMIT (``commit_knowledge`` đổi lỗi đó thành 409 dễ đọc).
-- Tắt khẩn cấp (Admin, không cần duyệt): mục Active -> Retired(Deactivated) kèm TẮT DÂY CHUYỀN các mục phụ
-  thuộc trong cùng transaction; client phải gửi lại đúng danh sách phụ thuộc vừa xem trước. Bật lại = soạn
-  phiên bản mới trong một bản phát hành và chờ duyệt.
+"""Quản trị tri thức (US11, FR11, ERD §3): bản phát hành Draft -> PendingApproval -> Active.
+Admin soạn, Physician khác người soạn duyệt; duyệt và tắt khẩn cấp (tắt dây chuyền) đều trong một transaction.
+Chi tiết: docs/thiet-ke-backend.md §6.1.
 """
 import uuid
 from decimal import Decimal
@@ -44,7 +35,7 @@ ORDER = ("symptoms", "conditions", "relations", "excerpts", "rules")       # kh�
 OPEN_STATUSES = ("Draft", "PendingApproval")
 
 
-# ============================================================================ tiện ích
+# --- Tiện ích -------------------------------------------------------------------------------------
 def _model(kind: str):
     if kind not in KINDS:
         raise NotFoundError("Loại tri thức không hợp lệ")
@@ -96,7 +87,7 @@ def commit_knowledge(db: Session) -> None:
         raise
 
 
-# ============================================================================ bản phát hành
+# --- Bản phát hành --------------------------------------------------------------------------------
 def open_release(db: Session, *, lock: bool = False) -> KnowledgeRelease | None:
     stmt = select(KnowledgeRelease).where(KnowledgeRelease.status.in_(OPEN_STATUSES))
     return db.scalar(stmt.with_for_update() if lock else stmt)
@@ -221,7 +212,7 @@ def reject_release(db: Session, release_id: uuid.UUID, note: str, actor: User) -
     return rel
 
 
-# ============================================================================ đọc mục
+# --- Đọc mục --------------------------------------------------------------------------------------
 def list_items(db: Session, kind: str, *, status: str | None, q: str | None, limit: int, offset: int):
     model, keycols, _, _ = _model(kind)
     stmt = select(model, KnowledgeRelease.label).join(KnowledgeRelease,
@@ -246,7 +237,7 @@ def item_history(db: Session, kind: str, key: str) -> list[dict[str, Any]]:
     return [item_out(kind, row, label) for row, label in rows]
 
 
-# ============================================================================ soạn nháp
+# --- Soạn nháp ------------------------------------------------------------------------------------
 def _check_key(kind: str, key: str, data) -> None:
     parts = key.split("/")
     limits = {"symptoms": (SYMPTOM_CODE_MAX,), "conditions": (CONDITION_CODE_MAX,),
@@ -359,7 +350,7 @@ def drop_draft(db: Session, kind: str, key: str, actor: User) -> None:
                  new_values={"key": key, "dropped_from_draft": rel.label})
 
 
-# ============================================================================ tắt khẩn cấp
+# --- Tắt khẩn cấp ---------------------------------------------------------------------------------
 def _active_row(db: Session, kind: str, key: str):
     model = _model(kind)[0]
     row = db.scalar(select(model).where(*_where_key(kind, key), model.status == "Active").with_for_update())
@@ -406,7 +397,7 @@ def deactivate(db: Session, kind: str, key: str, data: DeactivateRequest, actor:
     return deps
 
 
-# ============================================================================ nguồn
+# --- Nguồn ----------------------------------------------------------------------------------------
 def list_sources(db: Session) -> list[KnowledgeSource]:
     return list(db.scalars(select(KnowledgeSource).order_by(KnowledgeSource.organization, KnowledgeSource.edition)))
 

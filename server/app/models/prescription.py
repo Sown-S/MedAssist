@@ -1,8 +1,4 @@
-"""PRESCRIPTION — đơn thuốc; tối đa một đơn chưa hủy mỗi lượt khám.
-
-Sinh từ lược đồ do Alembic 0001 tạo (medassist_schema_v1_8.sql) rồi biên tập; phải khớp
-bảng thật — kiểm tra bằng `alembic check` / tests/test_db_guards.py.
-"""
+"""PRESCRIPTION — đơn thuốc; tối đa một đơn chưa hủy mỗi lượt khám."""
 import datetime
 import uuid
 

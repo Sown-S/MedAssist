@@ -1,4 +1,4 @@
-"""REFERRAL_FACILITY — danh mục cơ sở nhận chuyển tuyến (ERD v2.0 mục 2.10a).
+"""REFERRAL_FACILITY — danh mục cơ sở nhận chuyển tuyến (ERD §2.10a).
 Nạp bằng scripts.seed_referral_facilities từ server/data/hospitals.csv; không xóa, ngừng dùng bằng is_active."""
 import uuid
 from datetime import datetime

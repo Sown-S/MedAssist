@@ -1,9 +1,5 @@
-"""Bệnh nhân (US04, FR04): tạo, sửa, tìm. Không xóa bệnh nhân (giữ hồ sơ bệnh án).
-
-Nhật ký: dòng CREATE/UPDATE của bệnh nhân chỉ ghi TÊN trường thay đổi, không ghi giá trị —
-Admin xem được audit_log nhưng không được xem dữ liệu bệnh nhân (tối thiểu hóa, Nghị định 13).
-
-Phần cuối file: tra cứu nhanh, lịch sử khám và xem lại một lượt khám (US04).
+"""Bệnh nhân (US04, FR04): tạo, sửa, tìm, tra cứu nhanh, lịch sử khám, xem lại một lượt khám.
+Không xóa bệnh nhân. Nhật ký chỉ ghi tên trường thay đổi, không ghi giá trị (tối thiểu hóa, Nghị định 13).
 """
 import re
 import uuid
@@ -115,13 +111,7 @@ def search_patients(db: Session, *, q: str | None, phone: str | None, id_number:
     return total or 0, list(rows)
 
 
-# ============================================================================ Tra cứu nhanh (US04)
-# Một ô tìm kiếm cho quầy tiếp đón: hệ thống tự đoán người dùng gõ gì.
-#   BN-3F2A9C1B / 3f2a9c1b / UUID đầy đủ  -> mã bệnh nhân
-#   12 hoặc 9 chữ số                       -> CCCD / CMND
-#   10 chữ số bắt đầu 0, hoặc +84...       -> số điện thoại
-#   4 chữ số (1890..năm nay)               -> năm sinh
-#   chữ (+ năm sinh ở cuối, tùy chọn)      -> họ tên không dấu (+ năm sinh)
+# --- Tra cứu nhanh (US04): quy tắc đoán loại chuỗi ở docs/thiet-ke-backend.md §8 ------------------
 _CODE_RE = re.compile(r"^(?:BN-?)?([0-9a-f]{8})$", re.IGNORECASE)
 _DIGIT_NOISE = re.compile(r"[\s.\-()]")
 _TRAILING_YEAR = re.compile(r"^(.*\S)\s+(\d{4})$")
@@ -211,7 +201,7 @@ def quick_lookup(db: Session, term: str, *, limit: int, offset: int) -> tuple[di
     return interpretation, total, items
 
 
-# ============================================================================ Lịch sử khám (US04)
+# --- Lịch sử khám (US04) --------------------------------------------------------------------------
 def _user_names(db: Session, ids: set) -> dict:
     ids = {i for i in ids if i}
     if not ids:

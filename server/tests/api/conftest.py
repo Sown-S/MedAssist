@@ -96,7 +96,7 @@ def prescribed(client, doctor, examining):
 
 
 
-# ---- Tri thức Active dùng cho test triệu chứng / worker AI -------------------------------------
+# --- Tri thức Active dùng cho test triệu chứng / worker AI ----------------------------------------
 WK_SYMPTOMS = {"wk_fever_high": "Sốt cao", "wk_cough_dry": "Ho khan", "wk_sore_throat": "Đau họng",
                "wk_joint_pain": "Đau khớp"}
 WK_CONDITIONS = {

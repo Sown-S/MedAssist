@@ -1,4 +1,4 @@
-"""scripts/fetch_prices.py: đọc giá (JSON-LD/meta), quy cách, robots.txt, luồng search -> duyệt -> apply.
+"""drug_data/fetch_prices.py: đọc giá (JSON-LD/meta), quy cách, robots.txt, luồng search -> duyệt -> apply.
 Dùng httpx.MockTransport — không truy cập mạng."""
 from decimal import Decimal
 

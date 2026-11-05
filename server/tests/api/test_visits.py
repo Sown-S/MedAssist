@@ -150,7 +150,7 @@ def test_queue_order_priority_then_fifo(client, nurse, doctor):
         "full_name": f"Thứ Tự {uuid.uuid4().hex[:8]}", "date_of_birth": "1990-01-01", "gender": "Male"}).json()["patient_id"]
         for _ in range(3)]
     vids = [_visit(client, nurse, p).json()["visit_id"] for p in pids]
-    with engine.begin() as conn:      # giả lập Node 1 nâng mức lượt thứ ba (bước 5 / Sprint 3)
+    with engine.begin() as conn:      # giả lập Node 1 nâng mức lượt thứ ba
         conn.execute(text("UPDATE visit SET triage_priority='HighPriority' WHERE visit_id = :v"), {"v": vids[2]})
     queue = client.get("/api/v1/queue", headers=doctor).json()
     order = [q["visit_id"] for q in queue if q["visit_id"] in vids]

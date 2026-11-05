@@ -82,7 +82,7 @@ def _epoch():
         return conn.execute(text("SELECT epoch FROM knowledge_epoch")).scalar()
 
 
-# ---------------------------------------------------------------------------- vòng đời đầy đủ
+# --- Vòng đời đầy đủ ------------------------------------------------------------------------------
 def test_full_lifecycle(client, admin, doctor, tag, source_id, since):
     rid = _release(client, admin)
     s1, s2, c = _draft_set(client, admin, tag, source_id)
@@ -122,7 +122,7 @@ def test_roles(client, admin, doctor, login, tag, source_id):
         "title": "x", "organization": "y", "edition": "z"}).status_code == 403
 
 
-# ---------------------------------------------------------------------------- sửa, từ chối, phiên bản
+# --- Sửa, từ chối, phiên bản ----------------------------------------------------------------------
 def test_edit_reject_and_versions(client, admin, doctor, tag, source_id):
     rid = _release(client, admin)
     s1, s2, c = _draft_set(client, admin, tag, source_id)
@@ -170,7 +170,7 @@ def test_drop_draft(client, admin, tag):
     assert client.delete(f"{BASE}/symptoms/ka_d_{tag}/draft", headers=admin).status_code == 404
 
 
-# ---------------------------------------------------------------------------- kiểm tra dữ liệu
+# --- Kiểm tra dữ liệu -----------------------------------------------------------------------------
 def test_validation(client, admin, tag, source_id):
     r = client.put(f"{BASE}/symptoms/ka_{tag}", headers=admin, json={"symptom_name": "x"})
     assert r.status_code == 409 and r.json()["error"]["code"] == "NO_OPEN_RELEASE"
@@ -214,7 +214,7 @@ def test_duplicate_source_and_label(client, admin, source_id, wk_knowledge):
     assert r.status_code == 409 and r.json()["error"]["code"] == "DUPLICATE_LABEL"
 
 
-# ---------------------------------------------------------------------------- tắt khẩn cấp
+# --- Tắt khẩn cấp ---------------------------------------------------------------------------------
 def test_deactivate_cascades(client, admin, doctor, tag, source_id, since):
     rid = _release(client, admin)
     s1, s2, c = _draft_set(client, admin, tag, source_id)
