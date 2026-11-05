@@ -2,6 +2,7 @@
 Mỗi khóa có một model Pydantic bọc trường `value`; khóa lạ bị từ chối. Thêm khóa mới = thêm vào
 SETTINGS (kèm mặc định) trong cùng PR với chỗ code đọc khóa đó.
 """
+
 from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
@@ -29,24 +30,35 @@ class _ClinicProfile(BaseModel):
 
 
 class _ConsultationFee(BaseModel):
-    value: int = Field(ge=0, le=100_000_000, strict=True)     # VNĐ, số nguyên
+    value: int = Field(ge=0, le=100_000_000, strict=True)  # VNĐ, số nguyên
 
 
 class _ConsultationServiceCode(BaseModel):
-    value: str = Field(max_length=20, pattern=r"^[A-Za-z0-9_-]*$")      # rỗng = dùng phí khám mặc định
+    value: str = Field(max_length=20, pattern=r"^[A-Za-z0-9_-]*$")  # rỗng = dùng phí khám mặc định
 
 
 SETTINGS: dict[str, tuple[type[BaseModel], Any, str]] = {
-    "inventory.near_expiry_days": (_NearExpiryDays, 90,
-                                   "Lô còn hạn nhưng hết hạn trong N ngày thì cảnh báo NearExpiry"),
-    "inventory.min_remaining_shelf_days": (_MinRemainingShelfDays, 0,
-                                           "Số ngày hạn tối thiểu còn lại sau khi dùng hết liệu trình"),
-    "clinic.profile": (_ClinicProfile, {"name": "Phòng khám", "address": "", "phone": ""},
-                       "Thông tin in trên hóa đơn/phiếu khám"),
+    "inventory.near_expiry_days": (
+        _NearExpiryDays,
+        90,
+        "Lô còn hạn nhưng hết hạn trong N ngày thì cảnh báo NearExpiry",
+    ),
+    "inventory.min_remaining_shelf_days": (
+        _MinRemainingShelfDays,
+        0,
+        "Số ngày hạn tối thiểu còn lại sau khi dùng hết liệu trình",
+    ),
+    "clinic.profile": (
+        _ClinicProfile,
+        {"name": "Phòng khám", "address": "", "phone": ""},
+        "Thông tin in trên hóa đơn/phiếu khám",
+    ),
     "billing.default_consultation_fee": (_ConsultationFee, 0, "Phí khám mặc định (VNĐ)"),
-    "billing.consultation_service_code": (_ConsultationServiceCode, "DV01",
-                                          "Mã dịch vụ khám trong danh mục làm dòng phí khám; rỗng hoặc ngừng dùng "
-                                          "thì dùng phí khám mặc định"),
+    "billing.consultation_service_code": (
+        _ConsultationServiceCode,
+        "DV01",
+        "Mã dịch vụ khám trong danh mục làm dòng phí khám; rỗng hoặc ngừng dùng thì dùng phí khám mặc định",
+    ),
 }
 
 
@@ -54,13 +66,18 @@ def validate_setting(key: str, value: Any) -> Any:
     """Trả giá trị đã chuẩn hóa (để lưu JSONB) hoặc ném AppError 422 có details tiếng Việt."""
     entry = SETTINGS.get(key)
     if entry is None:
-        raise AppError(422, "UNKNOWN_SETTING", f"Không có tham số '{key}'",
-                       [{"field": "setting_key", "message": "Khóa không được hỗ trợ"}])
+        raise AppError(
+            422,
+            "UNKNOWN_SETTING",
+            f"Không có tham số '{key}'",
+            [{"field": "setting_key", "message": "Khóa không được hỗ trợ"}],
+        )
     model = entry[0]
     try:
         parsed = model.model_validate({"value": value})
     except ValidationError as exc:
-        from app.exceptions import _validation_details   # dùng chung bộ dịch thông báo
+        from app.exceptions import _validation_details  # dùng chung bộ dịch thông báo
+
         details = _validation_details(exc.errors())
         for d in details:
             d["field"] = d["field"].replace("value", key, 1)

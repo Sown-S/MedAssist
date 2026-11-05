@@ -2,6 +2,7 @@
 sweeper định kỳ thu hồi lease quá hạn. Ngân sách thời gian tính từ queued_at.
 Chi tiết: docs/thiet-ke-backend.md §2.
 """
+
 import asyncio
 import datetime
 import logging
@@ -38,10 +39,16 @@ def make_llm_client():
         return DisabledLLMClient(), None
     if settings.LLM_PROVIDER == "fake":
         from app.ai.llm.fake_client import FAKE_MODEL_NAME, FakeLLMClient
+
         return FakeLLMClient(), FAKE_MODEL_NAME
     from app.ai.llm.client import LLMClient
-    return (LLMClient(model=settings.OLLAMA_MODEL, base_url=settings.OLLAMA_BASE_URL,
-                      keep_alive=settings.OLLAMA_KEEP_ALIVE), settings.OLLAMA_MODEL)
+
+    return (
+        LLMClient(
+            model=settings.OLLAMA_MODEL, base_url=settings.OLLAMA_BASE_URL, keep_alive=settings.OLLAMA_KEEP_ALIVE
+        ),
+        settings.OLLAMA_MODEL,
+    )
 
 
 def _remaining_budget(queued_at: datetime.datetime, limit: float | None = None) -> float:
@@ -55,24 +62,41 @@ def _remaining_budget(queued_at: datetime.datetime, limit: float | None = None) 
 
 
 def _known_identifiers(patient: Patient) -> list[str]:
-    values = [patient.full_name, patient.phone, patient.id_number, patient.address,
-              patient.date_of_birth.isoformat() if patient.date_of_birth else None]
+    values = [
+        patient.full_name,
+        patient.phone,
+        patient.id_number,
+        patient.address,
+        patient.date_of_birth.isoformat() if patient.date_of_birth else None,
+    ]
     return [v for v in values if isinstance(v, str) and v.strip()]
 
 
-async def _process_extraction(assessment_id, visit_id, queued_at, reader: DbKnowledgeReader, llm_client,
-                              model_name: str | None, session_factory: Callable[[], Session]) -> None:
+async def _process_extraction(
+    assessment_id,
+    visit_id,
+    queued_at,
+    reader: DbKnowledgeReader,
+    llm_client,
+    model_name: str | None,
+    session_factory: Callable[[], Session],
+) -> None:
     started = time.monotonic()
     try:
         reader.refresh()
-        with session_factory() as rdb:                    # validator Active chỉ đọc
+        with session_factory() as rdb:  # validator Active chỉ đọc
             visit = rdb.get(Visit, visit_id)
             patient = rdb.get(Patient, visit.patient_id)
             gate = run_node1({"input_features": q.build_input_features(rdb, visit)}, reader)
             suggestions = await feature_extractor.extract_symptoms(
-                visit.free_text_description or "", reader, llm_client, rdb, gate_state=gate,
+                visit.free_text_description or "",
+                reader,
+                llm_client,
+                rdb,
+                gate_state=gate,
                 identifiers=_known_identifiers(patient),
-                timeout_seconds=_remaining_budget(queued_at, feature_extractor.EXTRACTION_TIMEOUT_SECONDS))
+                timeout_seconds=_remaining_budget(queued_at, feature_extractor.EXTRACTION_TIMEOUT_SECONDS),
+            )
             rdb.rollback()
     except asyncio.CancelledError:
         raise
@@ -83,14 +107,20 @@ async def _process_extraction(assessment_id, visit_id, queued_at, reader: DbKnow
             wdb.commit()
         return
     with session_factory() as wdb:
-        q.write_extraction(wdb, assessment_id, list(suggestions), model_name=model_name,
-                           prompt_version=feature_extractor.EXTRACTION_PROMPT_VERSION,
-                           latency_total_ms=int((time.monotonic() - started) * 1000))
+        q.write_extraction(
+            wdb,
+            assessment_id,
+            list(suggestions),
+            model_name=model_name,
+            prompt_version=feature_extractor.EXTRACTION_PROMPT_VERSION,
+            latency_total_ms=int((time.monotonic() - started) * 1000),
+        )
         wdb.commit()
 
 
-async def process_one(reader: DbKnowledgeReader, llm_client, model_name: str | None,
-                      session_factory: Callable[[], Session] = SessionLocal) -> bool:
+async def process_one(
+    reader: DbKnowledgeReader, llm_client, model_name: str | None, session_factory: Callable[[], Session] = SessionLocal
+) -> bool:
     """Xử lý tối đa một việc. Trả False khi hàng đợi rỗng."""
     with session_factory() as db:
         run = q.claim_next(db)
@@ -103,8 +133,7 @@ async def process_one(reader: DbKnowledgeReader, llm_client, model_name: str | N
         db.commit()
 
     if run_type == "Extraction":
-        await _process_extraction(assessment_id, visit_id, queued_at, reader, llm_client, model_name,
-                                  session_factory)
+        await _process_extraction(assessment_id, visit_id, queued_at, reader, llm_client, model_name, session_factory)
         return True
 
     started = time.monotonic()
@@ -117,16 +146,21 @@ async def process_one(reader: DbKnowledgeReader, llm_client, model_name: str | N
             wdb.commit()
 
     try:
-        reader.refresh()                                  # một snapshot nhất quán cho cả lần chạy
-        with session_factory() as rdb:                    # Node 4 chỉ đọc (kiểm mã Active)
+        reader.refresh()  # một snapshot nhất quán cho cả lần chạy
+        with session_factory() as rdb:  # Node 4 chỉ đọc (kiểm mã Active)
             async with assessment_test_mode(assessment_id, attempt_count, session_factory):
-                final = await run_pipeline({"input_features": features}, reader, llm_client, rdb,
-                                           timeout_seconds=_remaining_budget(queued_at),
-                                           on_preliminary=on_preliminary)
+                final = await run_pipeline(
+                    {"input_features": features},
+                    reader,
+                    llm_client,
+                    rdb,
+                    timeout_seconds=_remaining_budget(queued_at),
+                    on_preliminary=on_preliminary,
+                )
             rdb.rollback()
     except asyncio.CancelledError:
-        raise                                             # để lease hết hạn, sweeper thu hồi
-    except Exception as exc:                              # lỗi hạ tầng / lập trình -> Failed
+        raise  # để lease hết hạn, sweeper thu hồi
+    except Exception as exc:  # lỗi hạ tầng / lập trình -> Failed
         log.exception("Đánh giá AI lỗi: %s", assessment_id)
         with session_factory() as wdb:
             q.write_failure(wdb, assessment_id, type(exc).__name__)
@@ -136,11 +170,17 @@ async def process_one(reader: DbKnowledgeReader, llm_client, model_name: str | N
     ended = time.monotonic()
     prelim = marks.get("preliminary")
     with session_factory() as wdb:
-        q.write_result(wdb, assessment_id, dict(final), reader=reader, model_name=model_name,
-                       prompt_version=REASONING_PROMPT_VERSION,
-                       latency_phase1_ms=int((prelim - started) * 1000) if prelim else None,
-                       latency_llm_ms=int((ended - prelim) * 1000) if prelim and final.get("mode") == "Full" else None,
-                       latency_total_ms=int((ended - started) * 1000))
+        q.write_result(
+            wdb,
+            assessment_id,
+            dict(final),
+            reader=reader,
+            model_name=model_name,
+            prompt_version=REASONING_PROMPT_VERSION,
+            latency_phase1_ms=int((prelim - started) * 1000) if prelim else None,
+            latency_llm_ms=int((ended - prelim) * 1000) if prelim and final.get("mode") == "Full" else None,
+            latency_total_ms=int((ended - started) * 1000),
+        )
         wdb.commit()
     return True
 
@@ -166,7 +206,7 @@ async def run_forever(stop: asyncio.Event | None = None) -> None:
             next_sweep = time.monotonic() + settings.WORKER_SWEEP_SECONDS
         try:
             worked = await process_one(reader, llm_client, model_name)
-        except Exception:                                 # DB tạm mất: không để worker chết
+        except Exception:  # DB tạm mất: không để worker chết
             log.exception("Vòng lặp worker lỗi, thử lại sau")
             worked = False
         if not worked:

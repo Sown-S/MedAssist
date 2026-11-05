@@ -2,6 +2,7 @@
 Physician nhận khám, trả lại, hủy lượt đang khám của mình; Admin không truy cập.
 Mọi GET dữ liệu bệnh nhân ghi VIEW (audit_view); hàng đợi gộp 1 dòng / 5 phút.
 """
+
 import uuid
 
 from fastapi import APIRouter, Depends, Query
@@ -12,12 +13,22 @@ from app.core.auth import require_roles
 from app.core.database import get_db
 from app.models import User
 from app.schemas.common import Page, PhoneVN
-from app.schemas.visit_symptom import SymptomCatalogItem, SymptomsPut, VisitSymptomOut
 from app.schemas.emr import PatientHistory, PatientLookupResult, VisitRecord
 from app.schemas.patient import IdNumber, PatientCreate, PatientOut, PatientSummary, PatientUpdate
-from app.schemas.visit import (BulkCancelRequest, CancelRequest, EmergencyReferralCreate, QueueItem,
-                               ReferralFacilityOut, ReferralIn, ReferralUpdate, VisitCreate, VisitOut,
-                               VisitUpdate, VisitWithWarnings)
+from app.schemas.visit import (
+    BulkCancelRequest,
+    CancelRequest,
+    EmergencyReferralCreate,
+    QueueItem,
+    ReferralFacilityOut,
+    ReferralIn,
+    ReferralUpdate,
+    VisitCreate,
+    VisitOut,
+    VisitUpdate,
+    VisitWithWarnings,
+)
+from app.schemas.visit_symptom import SymptomCatalogItem, SymptomsPut, VisitSymptomOut
 from app.services import emr_service, queue_service, symptom_service
 from app.validation.schema_validators import vital_sign_warnings
 
@@ -39,26 +50,35 @@ def _with_warnings(visit) -> VisitWithWarnings:
 # --- Bệnh nhân ------------------------------------------------------------------------------------
 @router.get("/patients", response_model=Page[PatientSummary])
 def search_patients(
-    q: str | None = Query(None, min_length=1, max_length=100, description="Một phần họ tên, gõ có dấu hay không dấu đều được"),
-    phone: PhoneVN | None = Query(None), id_number: IdNumber | None = Query(None),
+    q: str | None = Query(
+        None, min_length=1, max_length=100, description="Một phần họ tên, gõ có dấu hay không dấu đều được"
+    ),
+    phone: PhoneVN | None = Query(None),
+    id_number: IdNumber | None = Query(None),
     code: str | None = Query(None, pattern=r"^(?:[Bb][Nn]-?)?[0-9A-Fa-f]{8}$", description="Mã BN, vd BN-3F2A9C1B"),
     birth_year: int | None = Query(None, ge=1890, le=2100, description="Năm sinh"),
-    limit: int = Query(20, ge=1, le=100), offset: int = Query(0, ge=0),
-    _: User = Depends(audit_view("patient", roles=CLINICAL_ROLES)), db: Session = Depends(get_db),
+    limit: int = Query(20, ge=1, le=100),
+    offset: int = Query(0, ge=0),
+    _: User = Depends(audit_view("patient", roles=CLINICAL_ROLES)),
+    db: Session = Depends(get_db),
 ):
     """Tìm có điều kiện (AND). Ô tìm kiếm duy nhất ở quầy: dùng /patients/lookup."""
     code_hex = code[-8:].lower() if code else None
-    total, rows = emr_service.search_patients(db, q=q, phone=phone, id_number=id_number, code=code_hex,
-                                              birth_year=birth_year, limit=limit, offset=offset)
+    total, rows = emr_service.search_patients(
+        db, q=q, phone=phone, id_number=id_number, code=code_hex, birth_year=birth_year, limit=limit, offset=offset
+    )
     return Page[PatientSummary](total=total, limit=limit, offset=offset, items=rows)
 
 
 @router.get("/patients/lookup", response_model=PatientLookupResult)
 def lookup_patients(
-    term: str = Query(..., min_length=1, max_length=120,
-                      description="Mã BN, SĐT, CCCD/CMND, năm sinh, họ tên, hoặc họ tên + năm sinh"),
-    limit: int = Query(10, ge=1, le=50), offset: int = Query(0, ge=0),
-    _: User = Depends(audit_view("patient", roles=CLINICAL_ROLES)), db: Session = Depends(get_db),
+    term: str = Query(
+        ..., min_length=1, max_length=120, description="Mã BN, SĐT, CCCD/CMND, năm sinh, họ tên, hoặc họ tên + năm sinh"
+    ),
+    limit: int = Query(10, ge=1, le=50),
+    offset: int = Query(0, ge=0),
+    _: User = Depends(audit_view("patient", roles=CLINICAL_ROLES)),
+    db: Session = Depends(get_db),
 ):
     """Tra cứu nhanh một ô (US04). Nhật ký VIEW chỉ ghi tên tham số, không ghi nội dung tìm."""
     interpreted, total, items = emr_service.quick_lookup(db, term, limit=limit, offset=offset)
@@ -73,15 +93,18 @@ def create_patient(body: PatientCreate, actor: User = Depends(_nurse_patient), d
 
 
 @router.get("/patients/{patient_id}", response_model=PatientOut)
-def get_patient(patient_id: uuid.UUID,
-                _: User = Depends(audit_view("patient", roles=CLINICAL_ROLES, id_param="patient_id")),
-                db: Session = Depends(get_db)):
+def get_patient(
+    patient_id: uuid.UUID,
+    _: User = Depends(audit_view("patient", roles=CLINICAL_ROLES, id_param="patient_id")),
+    db: Session = Depends(get_db),
+):
     return emr_service.get_patient(db, patient_id)
 
 
 @router.patch("/patients/{patient_id}", response_model=PatientOut)
-def update_patient(patient_id: uuid.UUID, body: PatientUpdate, actor: User = Depends(_nurse_patient),
-                   db: Session = Depends(get_db)):
+def update_patient(
+    patient_id: uuid.UUID, body: PatientUpdate, actor: User = Depends(_nurse_patient), db: Session = Depends(get_db)
+):
     patient = emr_service.update_patient(db, patient_id, body, actor)
     db.commit()
     db.refresh(patient)
@@ -89,9 +112,13 @@ def update_patient(patient_id: uuid.UUID, body: PatientUpdate, actor: User = Dep
 
 
 @router.get("/patients/{patient_id}/visits", response_model=Page[VisitOut])
-def patient_visits(patient_id: uuid.UUID, limit: int = Query(20, ge=1, le=100), offset: int = Query(0, ge=0),
-                   _: User = Depends(audit_view("patient", roles=CLINICAL_ROLES, id_param="patient_id")),
-                   db: Session = Depends(get_db)):
+def patient_visits(
+    patient_id: uuid.UUID,
+    limit: int = Query(20, ge=1, le=100),
+    offset: int = Query(0, ge=0),
+    _: User = Depends(audit_view("patient", roles=CLINICAL_ROLES, id_param="patient_id")),
+    db: Session = Depends(get_db),
+):
     """Lịch sử khám, mới nhất trước (US04)."""
     emr_service.get_patient(db, patient_id)
     total, rows = queue_service.patient_history(db, patient_id, limit, offset)
@@ -99,19 +126,24 @@ def patient_visits(patient_id: uuid.UUID, limit: int = Query(20, ge=1, le=100), 
 
 
 @router.get("/patients/{patient_id}/history", response_model=PatientHistory)
-def patient_history(patient_id: uuid.UUID, limit: int = Query(20, ge=1, le=100), offset: int = Query(0, ge=0),
-                    include_cancelled: bool = Query(False, description="Hiện cả lượt khám đã hủy"),
-                    _: User = Depends(audit_view("patient", roles=CLINICAL_ROLES, id_param="patient_id")),
-                    db: Session = Depends(get_db)):
+def patient_history(
+    patient_id: uuid.UUID,
+    limit: int = Query(20, ge=1, le=100),
+    offset: int = Query(0, ge=0),
+    include_cancelled: bool = Query(False, description="Hiện cả lượt khám đã hủy"),
+    _: User = Depends(audit_view("patient", roles=CLINICAL_ROLES, id_param="patient_id")),
+    db: Session = Depends(get_db),
+):
     """Hồ sơ bệnh án (US04): mới nhất trước; mỗi lượt có chẩn đoán đã xác nhận và tóm tắt đơn thuốc."""
-    return emr_service.patient_history(db, patient_id, limit=limit, offset=offset,
-                                       include_cancelled=include_cancelled)
+    return emr_service.patient_history(db, patient_id, limit=limit, offset=offset, include_cancelled=include_cancelled)
 
 
 @router.get("/visits/{visit_id}/record", response_model=VisitRecord)
-def visit_record(visit_id: uuid.UUID,
-                 _: User = Depends(audit_view("visit", roles=CLINICAL_ROLES, id_param="visit_id")),
-                 db: Session = Depends(get_db)):
+def visit_record(
+    visit_id: uuid.UUID,
+    _: User = Depends(audit_view("visit", roles=CLINICAL_ROLES, id_param="visit_id")),
+    db: Session = Depends(get_db),
+):
     """Xem lại đầy đủ một lượt khám (kể cả lượt cũ): sinh hiệu, chẩn đoán, đơn thuốc, hóa đơn."""
     return emr_service.visit_record(db, visit_id)
 
@@ -124,16 +156,19 @@ def symptom_catalog(_: User = Depends(require_roles(*CLINICAL_ROLES)), db: Sessi
 
 
 @router.get("/visits/{visit_id}/symptoms", response_model=list[VisitSymptomOut])
-def visit_symptoms(visit_id: uuid.UUID,
-                   _: User = Depends(audit_view("visit", roles=CLINICAL_ROLES, id_param="visit_id")),
-                   db: Session = Depends(get_db)):
+def visit_symptoms(
+    visit_id: uuid.UUID,
+    _: User = Depends(audit_view("visit", roles=CLINICAL_ROLES, id_param="visit_id")),
+    db: Session = Depends(get_db),
+):
     """Triệu chứng đã xác nhận của lượt khám (PRESENT trước, rồi ABSENT, UNKNOWN)."""
     return symptom_service.list_symptoms(db, visit_id)
 
 
 @router.put("/visits/{visit_id}/symptoms", response_model=list[VisitSymptomOut])
-def put_visit_symptoms(visit_id: uuid.UUID, body: SymptomsPut, actor: User = Depends(_clinical_visit),
-                       db: Session = Depends(get_db)):
+def put_visit_symptoms(
+    visit_id: uuid.UUID, body: SymptomsPut, actor: User = Depends(_clinical_visit), db: Session = Depends(get_db)
+):
     """Y tá (hoặc bác sĩ khi đang khám) xác nhận trạng thái có / không / chưa rõ cho từng triệu chứng.
     Thay toàn bộ danh sách; mã bị bỏ khỏi danh sách thành UNKNOWN. Chỉ mã đang Active.
     Sau khi lưu, client gọi POST /visits/{id}/assessment để chạy lại AI."""
@@ -144,9 +179,11 @@ def put_visit_symptoms(visit_id: uuid.UUID, body: SymptomsPut, actor: User = Dep
 
 # --- Hàng đợi -------------------------------------------------------------------------------------
 @router.get("/queue", response_model=list[QueueItem])
-def queue(include_closed: bool = Query(False, description="Thêm lượt hôm nay đã chờ thu tiền, xong, hủy, chuyển tuyến"),
-          _: User = Depends(audit_view("visit", roles=CLINICAL_ROLES, dedupe_seconds=DEFAULT_POLL_WINDOW)),
-          db: Session = Depends(get_db)):
+def queue(
+    include_closed: bool = Query(False, description="Thêm lượt hôm nay đã chờ thu tiền, xong, hủy, chuyển tuyến"),
+    _: User = Depends(audit_view("visit", roles=CLINICAL_ROLES, dedupe_seconds=DEFAULT_POLL_WINDOW)),
+    db: Session = Depends(get_db),
+):
     """Hàng đợi hôm nay và lượt Examining còn dở từ ngày trước: Emergency > HighPriority > Routine/chưa
     phân luồng, cùng mức thì ai vào trước xếp trước. Client hỏi lại khoảng 2 giây một lần (US10)."""
     return queue_service.queue_today(db, include_closed)
@@ -174,15 +211,18 @@ def cancel_stale(body: BulkCancelRequest, actor: User = Depends(_nurse_visit), d
 
 
 @router.get("/visits/{visit_id}", response_model=VisitWithWarnings)
-def get_visit(visit_id: uuid.UUID,
-              _: User = Depends(audit_view("visit", roles=CLINICAL_ROLES, id_param="visit_id")),
-              db: Session = Depends(get_db)):
+def get_visit(
+    visit_id: uuid.UUID,
+    _: User = Depends(audit_view("visit", roles=CLINICAL_ROLES, id_param="visit_id")),
+    db: Session = Depends(get_db),
+):
     return _with_warnings(queue_service.get_visit(db, visit_id))
 
 
 @router.patch("/visits/{visit_id}", response_model=VisitWithWarnings)
-def update_visit(visit_id: uuid.UUID, body: VisitUpdate, actor: User = Depends(_nurse_visit),
-                 db: Session = Depends(get_db)):
+def update_visit(
+    visit_id: uuid.UUID, body: VisitUpdate, actor: User = Depends(_nurse_visit), db: Session = Depends(get_db)
+):
     visit = queue_service.update_visit(db, visit_id, body, actor)
     db.commit()
     return _with_warnings(visit)
@@ -210,8 +250,9 @@ def release(visit_id: uuid.UUID, actor: User = Depends(_physician_visit), db: Se
 
 
 @router.patch("/visits/{visit_id}/cancel", response_model=VisitOut)
-def cancel(visit_id: uuid.UUID, body: CancelRequest, actor: User = Depends(_clinical_visit),
-           db: Session = Depends(get_db)):
+def cancel(
+    visit_id: uuid.UUID, body: CancelRequest, actor: User = Depends(_clinical_visit), db: Session = Depends(get_db)
+):
     visit = queue_service.cancel(db, visit_id, body.reason, actor)
     db.commit()
     return visit
@@ -221,14 +262,15 @@ def cancel(visit_id: uuid.UUID, body: CancelRequest, actor: User = Depends(_clin
 @router.get("/referral-facilities", response_model=list[ReferralFacilityOut])
 def search_referral_facilities(
     q: str = Query(..., min_length=2, max_length=100, description="Một phần tên (có dấu hay không) hoặc mã KCB"),
-    limit: int = Query(10, ge=1, le=50), _: User = Depends(_clinical), db: Session = Depends(get_db),
+    limit: int = Query(10, ge=1, le=50),
+    _: User = Depends(_clinical),
+    db: Session = Depends(get_db),
 ):
     return queue_service.search_facilities(db, q, limit)
 
 
 @router.patch("/visits/{visit_id}/refer", response_model=VisitOut)
-def refer(visit_id: uuid.UUID, body: ReferralIn, actor: User = Depends(_clinical_visit),
-          db: Session = Depends(get_db)):
+def refer(visit_id: uuid.UUID, body: ReferralIn, actor: User = Depends(_clinical_visit), db: Session = Depends(get_db)):
     """Physician: lượt đang khám của mình. Nurse: lượt đang chờ chuyển nặng. Lượt kết thúc, không hóa đơn."""
     visit = queue_service.refer(db, visit_id, body, actor)
     db.commit()
@@ -236,16 +278,18 @@ def refer(visit_id: uuid.UUID, body: ReferralIn, actor: User = Depends(_clinical
 
 
 @router.post("/visits/emergency-referral", response_model=VisitOut, status_code=201)
-def emergency_referral(body: EmergencyReferralCreate, actor: User = Depends(_nurse_visit),
-                       db: Session = Depends(get_db)):
+def emergency_referral(
+    body: EmergencyReferralCreate, actor: User = Depends(_nurse_visit), db: Session = Depends(get_db)
+):
     visit = queue_service.emergency_referral(db, body, actor)
     db.commit()
     return visit
 
 
 @router.patch("/visits/{visit_id}/referral", response_model=VisitOut)
-def update_referral(visit_id: uuid.UUID, body: ReferralUpdate, actor: User = Depends(_physician_visit),
-                    db: Session = Depends(get_db)):
+def update_referral(
+    visit_id: uuid.UUID, body: ReferralUpdate, actor: User = Depends(_physician_visit), db: Session = Depends(get_db)
+):
     """Bác sĩ bổ sung giấy chuyển tuyến của lượt đã chuyển (kể cả lượt lễ tân chuyển ở quầy)."""
     visit = queue_service.update_referral(db, visit_id, body, actor)
     db.commit()

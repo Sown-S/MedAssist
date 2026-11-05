@@ -2,6 +2,7 @@
 Giá mẫu chép từ client, Admin sửa giá thật; chỉ tạo mã chưa có, không ghi đè. Tài khoản 'system'.
 Cách chạy: server/README.md mục 2.7.
 """
+
 import argparse
 import csv
 import sys
@@ -30,10 +31,20 @@ def _services(path: Path) -> list[dict]:
     for n, r in enumerate(rows, start=2):
         if not r["code"].strip() or not r["name"].strip() or r["kind"] not in SERVICE_KINDS:
             raise SystemExit(f"{path.name} dòng {n}: thiếu mã/tên hoặc kind không phải {'/'.join(SERVICE_KINDS)}")
-        out.append({"code": r["code"].strip(), "name": r["name"].strip(), "kind": r["kind"],
-                    "group_key": r["group_key"].strip(), "unit": r["unit"].strip() or None,
-                    "price": Decimal(r["price"]), "ref_low": _num(r["ref_low"]), "ref_high": _num(r["ref_high"]),
-                    "ref_text": r["ref_text"].strip() or None, "sample": r["sample"].strip() or None})
+        out.append(
+            {
+                "code": r["code"].strip(),
+                "name": r["name"].strip(),
+                "kind": r["kind"],
+                "group_key": r["group_key"].strip(),
+                "unit": r["unit"].strip() or None,
+                "price": Decimal(r["price"]),
+                "ref_low": _num(r["ref_low"]),
+                "ref_high": _num(r["ref_high"]),
+                "ref_text": r["ref_text"].strip() or None,
+                "sample": r["sample"].strip() or None,
+            }
+        )
     return out
 
 
@@ -48,8 +59,14 @@ def seed(services_file: Path = DATA / "services.csv", packages_file: Path = DATA
             service = Service(**row)
             db.add(service)
             db.flush()
-            audit.record(db, action="CREATE", entity="service", entity_id=service.service_id,
-                         actor_id=SYSTEM_USER_ID, new_values=row)
+            audit.record(
+                db,
+                action="CREATE",
+                entity="service",
+                entity_id=service.service_id,
+                actor_id=SYSTEM_USER_ID,
+                new_values=row,
+            )
             stats["services"] += 1
         ids = dict(db.execute(select(Service.code, Service.service_id)).all())
         have = set(db.scalars(select(ServicePackage.code)))
@@ -67,9 +84,14 @@ def seed(services_file: Path = DATA / "services.csv", packages_file: Path = DATA
                 package = ServicePackage(code=r["code"], name=r["name"], price=Decimal(r["price"]), items=items)
                 db.add(package)
                 db.flush()
-                audit.record(db, action="CREATE", entity="service_package", entity_id=package.package_id,
-                             actor_id=SYSTEM_USER_ID, new_values={"code": package.code, "price": package.price,
-                                                                  "items": items})
+                audit.record(
+                    db,
+                    action="CREATE",
+                    entity="service_package",
+                    entity_id=package.package_id,
+                    actor_id=SYSTEM_USER_ID,
+                    new_values={"code": package.code, "price": package.price, "items": items},
+                )
                 stats["packages"] += 1
         db.commit()
     return stats

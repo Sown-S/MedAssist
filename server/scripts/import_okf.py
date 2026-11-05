@@ -1,6 +1,7 @@
 """Nạp tri thức OKF (Markdown + YAML front matter, thư mục ``knowledge/``) vào CSDL thành một bản phát hành.
 Cách chạy: server/README.md mục 2.7b. Quy tắc đọc thư mục, so sánh, kích hoạt: docs/thiet-ke-backend.md §6.3.
 """
+
 import argparse
 import datetime
 import re
@@ -15,14 +16,28 @@ from pydantic import BaseModel, ConfigDict, Field, ValidationError, model_valida
 from sqlalchemy import func, select, update
 from sqlalchemy.orm import Session
 
-from app.models import (Condition, ConditionSymptom, GuidelineExcerpt, KnowledgeRelease, KnowledgeSource, Symptom,
-                        TriageRule, User)
-from app.models.user import SYSTEM_USER_ID
 from app.exceptions import AppError
+from app.models import (
+    Condition,
+    ConditionSymptom,
+    GuidelineExcerpt,
+    KnowledgeRelease,
+    KnowledgeSource,
+    Symptom,
+    TriageRule,
+    User,
+)
+from app.models.user import SYSTEM_USER_ID
 from app.services import audit_service as audit
 from app.services import knowledge_service
-from app.validation.knowledge_validators import (ConditionCode, ExcerptKey, SymptomCode, check_rule_key,
-                                                 condition_logic_errors, logic_symptom_codes)
+from app.validation.knowledge_validators import (
+    ConditionCode,
+    ExcerptKey,
+    SymptomCode,
+    check_rule_key,
+    condition_logic_errors,
+    logic_symptom_codes,
+)
 
 DEFAULT_DIR = Path(__file__).resolve().parents[2] / "knowledge"
 _FRONT = re.compile(r"^---\n(.*?)\n---\n?(.*)$", re.S)
@@ -64,13 +79,13 @@ class SymptomCatalogFile(_Strict):
 
 class _Sourced(_Strict):
     source_key: str
-    source_edition: str | None = None          # tùy chọn: nếu có phải khớp edition của nguồn
+    source_edition: str | None = None  # tùy chọn: nếu có phải khớp edition của nguồn
 
 
 class RelationItem(_Sourced):
     symptom_code: SymptomCode
     polarity: Literal["SUPPORTS", "CONTRADICTS"]
-    weight: Decimal = Field(ge=0, le=1, max_digits=3, decimal_places=2)   # DECIMAL(3,2)
+    weight: Decimal = Field(ge=0, le=1, max_digits=3, decimal_places=2)  # DECIMAL(3,2)
     is_key: bool = False
 
 
@@ -84,7 +99,7 @@ class ConditionFile(_Strict):
     schema_: Literal["okf_condition_v1"] = Field(alias="schema")
     condition_code: ConditionCode
     name_vi: str = Field(min_length=1, max_length=200)
-    name_en: str | None = None                 # chỉ để đọc, không có cột trong CSDL
+    name_en: str | None = None  # chỉ để đọc, không có cột trong CSDL
     icd10_code: str | None = Field(default=None, max_length=10)
     disease_group: str | None = Field(default=None, max_length=100)
     description: str | None = None
@@ -107,8 +122,13 @@ class RuleFile(_Sourced):
         return self
 
 
-_MODELS = {"okf_release_v1": ReleaseFile, "okf_source_v1": SourceFile, "okf_symptom_catalog_v1": SymptomCatalogFile,
-           "okf_condition_v1": ConditionFile, "okf_triage_rule_v1": RuleFile}
+_MODELS = {
+    "okf_release_v1": ReleaseFile,
+    "okf_source_v1": SourceFile,
+    "okf_symptom_catalog_v1": SymptomCatalogFile,
+    "okf_condition_v1": ConditionFile,
+    "okf_triage_rule_v1": RuleFile,
+}
 _IGNORED_SCHEMAS = {"okf_spec_v1", "okf_review_log_v1"}
 
 
@@ -224,6 +244,7 @@ def _register(v: Vault, path: Path, obj: BaseModel, body: str) -> None:
 
 def _cross_check(v: Vault) -> None:
     from app.ai.rules.condition_evaluator import ConditionFormatError, evaluate_condition
+
     if v.release is None:
         v.errors.append("Thiếu _release.md")
     if not v.symptoms:
@@ -254,7 +275,7 @@ def _cross_check(v: Vault) -> None:
         source_ok(r.rule_key, r)
         for code in sorted(logic_symptom_codes(r.condition_logic) - set(v.symptoms)):
             v.errors.append(f"{r.rule_key}: condition_logic dùng triệu chứng không có trong catalog: {code}")
-        try:                                             # chạy thử bằng bộ đánh giá của pipeline
+        try:  # chạy thử bằng bộ đánh giá của pipeline
             evaluate_condition(r.condition_logic, {"symptoms": {}, "vital_signs": {}})
         except ConditionFormatError as e:
             v.errors.append(f"{r.rule_key}: bộ đánh giá luật không đọc được condition_logic: {e}")
@@ -266,9 +287,9 @@ ITEM_TYPES = ("symptom", "condition", "relation", "excerpt", "rule")
 
 @dataclass
 class Change:
-    kind: str                  # symptom | condition | relation | excerpt | rule
+    kind: str  # symptom | condition | relation | excerpt | rule
     key: str
-    action: str                # new | changed
+    action: str  # new | changed
     values: dict[str, Any]
 
 
@@ -276,7 +297,7 @@ class Change:
 class Plan:
     changes: list[Change] = field(default_factory=list)
     unchanged: dict[str, int] = field(default_factory=lambda: dict.fromkeys(ITEM_TYPES, 0))
-    missing: list[tuple[str, str]] = field(default_factory=list)       # đang Active, không còn trong thư mục
+    missing: list[tuple[str, str]] = field(default_factory=list)  # đang Active, không còn trong thư mục
     new_sources: list[SourceFile] = field(default_factory=list)
 
     def count(self, action: str) -> dict[str, int]:
@@ -291,8 +312,11 @@ def _source_ids(db: Session, v: Vault) -> tuple[dict[str, Any], list[SourceFile]
     """source_key -> source_id (hoặc chính SourceFile nếu chưa có trong DB)."""
     out, new = {}, []
     for key, s in v.sources.items():
-        sid = db.scalar(select(KnowledgeSource.source_id).where(KnowledgeSource.organization == s.organization,
-                                                                KnowledgeSource.edition == s.edition))
+        sid = db.scalar(
+            select(KnowledgeSource.source_id).where(
+                KnowledgeSource.organization == s.organization, KnowledgeSource.edition == s.edition
+            )
+        )
         if sid is None:
             new.append(s)
             out[key] = s
@@ -301,9 +325,13 @@ def _source_ids(db: Session, v: Vault) -> tuple[dict[str, Any], list[SourceFile]
     return out, new
 
 
-_MODEL = {"symptom": (Symptom, ("symptom_code",)), "condition": (Condition, ("condition_code",)),
-          "relation": (ConditionSymptom, ("condition_code", "symptom_code")),
-          "excerpt": (GuidelineExcerpt, ("excerpt_key",)), "rule": (TriageRule, ("rule_key",))}
+_MODEL = {
+    "symptom": (Symptom, ("symptom_code",)),
+    "condition": (Condition, ("condition_code",)),
+    "relation": (ConditionSymptom, ("condition_code", "symptom_code")),
+    "excerpt": (GuidelineExcerpt, ("excerpt_key",)),
+    "rule": (TriageRule, ("rule_key",)),
+}
 
 
 def _key_of(kind: str, row) -> str:
@@ -322,25 +350,47 @@ def desired_items(v: Vault, sids: dict[str, Any]) -> dict[str, dict[str, dict[st
     """Giá trị mong muốn của từng mục theo thư mục OKF, theo đúng tên cột CSDL."""
     items: dict[str, dict[str, dict[str, Any]]] = {k: {} for k in ITEM_TYPES}
     for s in v.symptoms.values():
-        items["symptom"][s.symptom_code] = {"symptom_code": s.symptom_code, "symptom_name": s.symptom_name,
-                                            "category": s.category}
+        items["symptom"][s.symptom_code] = {
+            "symptom_code": s.symptom_code,
+            "symptom_name": s.symptom_name,
+            "category": s.category,
+        }
     for c in v.conditions.values():
-        items["condition"][c.condition_code] = {"condition_code": c.condition_code, "name_vi": c.name_vi,
-                                                "icd10_code": c.icd10_code, "disease_group": c.disease_group,
-                                                "description": c.description}
+        items["condition"][c.condition_code] = {
+            "condition_code": c.condition_code,
+            "name_vi": c.name_vi,
+            "icd10_code": c.icd10_code,
+            "disease_group": c.disease_group,
+            "description": c.description,
+        }
         for r in c.relations:
             items["relation"][f"{c.condition_code}/{r.symptom_code}"] = {
-                "condition_code": c.condition_code, "symptom_code": r.symptom_code, "polarity": r.polarity,
-                "weight": r.weight, "is_key": r.is_key, "source_id": sids[r.source_key]}
+                "condition_code": c.condition_code,
+                "symptom_code": r.symptom_code,
+                "polarity": r.polarity,
+                "weight": r.weight,
+                "is_key": r.is_key,
+                "source_id": sids[r.source_key],
+            }
         for e in c.excerpts:
             items["excerpt"][e.excerpt_key] = {
-                "excerpt_key": e.excerpt_key, "condition_code": c.condition_code, "title": e.title,
-                "content": v.excerpt_content[e.excerpt_key], "source_id": sids[e.source_key],
-                "source_locator": e.source_locator}
+                "excerpt_key": e.excerpt_key,
+                "condition_code": c.condition_code,
+                "title": e.title,
+                "content": v.excerpt_content[e.excerpt_key],
+                "source_id": sids[e.source_key],
+                "source_locator": e.source_locator,
+            }
     for r in v.rules.values():
-        items["rule"][r.rule_key] = {"rule_key": r.rule_key, "rule_name": r.rule_name, "rule_type": r.rule_type,
-                                     "condition_logic": r.condition_logic, "resulting_priority": r.resulting_priority,
-                                     "reason_text": r.reason_text, "source_id": sids[r.source_key]}
+        items["rule"][r.rule_key] = {
+            "rule_key": r.rule_key,
+            "rule_name": r.rule_name,
+            "rule_type": r.rule_type,
+            "condition_logic": r.condition_logic,
+            "resulting_priority": r.resulting_priority,
+            "reason_text": r.reason_text,
+            "source_id": sids[r.source_key],
+        }
     return items
 
 
@@ -354,11 +404,12 @@ def make_plan(db: Session, v: Vault) -> Plan:
             row = active.pop(key, None)
             if row is None:
                 plan.changes.append(Change(kind, key, "new", values))
-            elif any(_norm(getattr(row, col)) != _norm(val) for col, val in values.items()
-                     if not isinstance(val, SourceFile)):
+            elif any(
+                _norm(getattr(row, col)) != _norm(val) for col, val in values.items() if not isinstance(val, SourceFile)
+            ):
                 plan.changes.append(Change(kind, key, "changed", values))
             elif any(isinstance(val, SourceFile) for val in values.values()):
-                plan.changes.append(Change(kind, key, "changed", values))     # đổi sang nguồn mới
+                plan.changes.append(Change(kind, key, "changed", values))  # đổi sang nguồn mới
             else:
                 plan.unchanged[kind] += 1
         plan.missing.extend((kind, key) for key in sorted(active))
@@ -381,8 +432,16 @@ def _user(db: Session, username: str | None, role: str | None) -> User:
     return user
 
 
-def apply_plan(db: Session, v: Vault, plan: Plan, *, drafter: User, approver: User | None = None,
-               submit: bool = False, retire_missing: bool = False) -> KnowledgeRelease:
+def apply_plan(
+    db: Session,
+    v: Vault,
+    plan: Plan,
+    *,
+    drafter: User,
+    approver: User | None = None,
+    submit: bool = False,
+    retire_missing: bool = False,
+) -> KnowledgeRelease:
     """Ghi bản phát hành + các phiên bản mới. Không commit (bên gọi commit; trigger toàn vẹn chạy lúc đó)."""
     if approver is not None and approver.user_id == drafter.user_id:
         raise ImportError_("Người duyệt phải khác người soạn")
@@ -395,27 +454,44 @@ def apply_plan(db: Session, v: Vault, plan: Plan, *, drafter: User, approver: Us
     # Khi duyệt ngay: ghi như một bản chờ duyệt rồi kích hoạt bằng chính hàm của API quản trị tri thức
     status = "PendingApproval" if (submit or approver) else "Draft"
     now = func.now()
-    rel = KnowledgeRelease(label=v.release.label, description=v.release.description, status=status,
-                           created_by=drafter.user_id, submitted_at=now if status == "PendingApproval" else None)
+    rel = KnowledgeRelease(
+        label=v.release.label,
+        description=v.release.description,
+        status=status,
+        created_by=drafter.user_id,
+        submitted_at=now if status == "PendingApproval" else None,
+    )
     db.add(rel)
     created_sources = {}
     for s in plan.new_sources:
-        src = KnowledgeSource(title=s.title, organization=s.organization, publication_date=s.publication_date,
-                              edition=s.edition, url=s.url, accessed_date=s.accessed_date,
-                              license_note=s.license_note, created_by=drafter.user_id)
+        src = KnowledgeSource(
+            title=s.title,
+            organization=s.organization,
+            publication_date=s.publication_date,
+            edition=s.edition,
+            url=s.url,
+            accessed_date=s.accessed_date,
+            license_note=s.license_note,
+            created_by=drafter.user_id,
+        )
         db.add(src)
         created_sources[id(s)] = src
     db.flush()
 
-    for kind in ITEM_TYPES:                               # khóa (symptom/condition) trước quan hệ
+    for kind in ITEM_TYPES:  # khóa (symptom/condition) trước quan hệ
         model, keycols = _MODEL[kind]
         for ch in (c for c in plan.changes if c.kind == kind):
-            values = {k: (created_sources[id(val)].source_id if isinstance(val, SourceFile) else val)
-                      for k, val in ch.values.items()}
+            values = {
+                k: (created_sources[id(val)].source_id if isinstance(val, SourceFile) else val)
+                for k, val in ch.values.items()
+            }
             where = [getattr(model, col) == values[col] for col in keycols]
             latest = db.scalar(select(func.max(model.version)).where(*where)) or 0
-            db.add(model(**values, version=latest + 1, status=status, release_id=rel.release_id,
-                         created_by=drafter.user_id))
+            db.add(
+                model(
+                    **values, version=latest + 1, status=status, release_id=rel.release_id, created_by=drafter.user_id
+                )
+            )
         db.flush()
 
     if approver:
@@ -429,48 +505,74 @@ def apply_plan(db: Session, v: Vault, plan: Plan, *, drafter: User, approver: Us
         for kind, key in plan.missing:
             model, keycols = _MODEL[kind]
             where = [getattr(model, col) == part for col, part in zip(keycols, key.split("/"))]
-            retired += db.execute(update(model).where(*where, model.status == "Active")
-                                  .values(status="Retired", retired_by=approver.user_id, retired_at=now,
-                                          retired_reason="Deactivated")).rowcount
+            retired += db.execute(
+                update(model)
+                .where(*where, model.status == "Active")
+                .values(status="Retired", retired_by=approver.user_id, retired_at=now, retired_reason="Deactivated")
+            ).rowcount
         db.flush()
 
-    audit.record(db, action="CREATE", entity="knowledge_release", entity_id=rel.release_id,
-                 actor_id=drafter.user_id,
-                 new_values={"label": rel.label, "status": status, "source": "scripts.import_okf",
-                             "new": plan.count("new"), "changed": plan.count("changed"),
-                             "new_sources": len(plan.new_sources), "retired_missing": retired})
+    audit.record(
+        db,
+        action="CREATE",
+        entity="knowledge_release",
+        entity_id=rel.release_id,
+        actor_id=drafter.user_id,
+        new_values={
+            "label": rel.label,
+            "status": status,
+            "source": "scripts.import_okf",
+            "new": plan.count("new"),
+            "changed": plan.count("changed"),
+            "new_sources": len(plan.new_sources),
+            "retired_missing": retired,
+        },
+    )
     if approver:
-        audit.record(db, action="UPDATE", entity="knowledge_release", entity_id=rel.release_id,
-                     actor_id=approver.user_id, new_values={"status": "Active", "approved": True})
+        audit.record(
+            db,
+            action="UPDATE",
+            entity="knowledge_release",
+            entity_id=rel.release_id,
+            actor_id=approver.user_id,
+            new_values={"status": "Active", "approved": True},
+        )
     return rel
 
 
 # --- Dòng lệnh ------------------------------------------------------------------------------------
 def _report(v: Vault, plan: Plan) -> None:
     print(f"Thư mục: {v.root}")
-    print(f"  {len(v.symptoms)} triệu chứng, {len(v.conditions)} bệnh, "
-          f"{sum(len(c.relations) for c in v.conditions.values())} quan hệ, {len(v.excerpt_content)} trích dẫn, "
-          f"{len(v.rules)} luật, {len(v.sources)} nguồn")
+    print(
+        f"  {len(v.symptoms)} triệu chứng, {len(v.conditions)} bệnh, "
+        f"{sum(len(c.relations) for c in v.conditions.values())} quan hệ, {len(v.excerpt_content)} trích dẫn, "
+        f"{len(v.rules)} luật, {len(v.sources)} nguồn"
+    )
     new, changed = plan.count("new"), plan.count("changed")
     for kind in ITEM_TYPES:
         print(f"  {kind:10} mới {new[kind]:3}  đổi {changed[kind]:3}  giữ nguyên {plan.unchanged[kind]:3}")
     if plan.new_sources:
         print(f"  Nguồn mới: {', '.join(s.source_key for s in plan.new_sources)}")
     if plan.missing:
-        print(f"  Đang Active nhưng không còn trong thư mục ({len(plan.missing)}): "
-              + ", ".join(f"{k}:{key}" for k, key in plan.missing[:10]) + (" ..." if len(plan.missing) > 10 else ""))
+        print(
+            f"  Đang Active nhưng không còn trong thư mục ({len(plan.missing)}): "
+            + ", ".join(f"{k}:{key}" for k, key in plan.missing[:10])
+            + (" ..." if len(plan.missing) > 10 else "")
+        )
 
 
 def main(argv: list[str] | None = None) -> int:
     from app.core.database import SessionLocal
+
     p = argparse.ArgumentParser(description="Nạp tri thức OKF vào CSDL MedAssist")
     p.add_argument("--dir", type=Path, default=DEFAULT_DIR)
     p.add_argument("--dry-run", action="store_true", help="Chỉ kiểm tra và báo thay đổi")
     p.add_argument("--submit", action="store_true", help="Gửi duyệt ngay (PendingApproval)")
     p.add_argument("--approve-as", metavar="USERNAME", help="Bác sĩ duyệt và kích hoạt ngay (máy dev/demo)")
     p.add_argument("--as", dest="drafter", metavar="USERNAME", help="Admin soạn (mặc định tài khoản system)")
-    p.add_argument("--retire-missing", action="store_true",
-                   help="Khi kích hoạt: mục Active không còn trong thư mục -> Retired")
+    p.add_argument(
+        "--retire-missing", action="store_true", help="Khi kích hoạt: mục Active không còn trong thư mục -> Retired"
+    )
     args = p.parse_args(argv)
 
     vault = load_vault(args.dir.resolve())
@@ -492,14 +594,21 @@ def main(argv: list[str] | None = None) -> int:
         try:
             drafter = _user(db, args.drafter, "Admin" if args.drafter else None)
             approver = _user(db, args.approve_as, "Physician") if args.approve_as else None
-            rel = apply_plan(db, vault, plan, drafter=drafter, approver=approver, submit=args.submit,
-                             retire_missing=args.retire_missing)
-            db.commit()                                    # trigger toàn vẹn kiểm tập Active ở đây
+            rel = apply_plan(
+                db,
+                vault,
+                plan,
+                drafter=drafter,
+                approver=approver,
+                submit=args.submit,
+                retire_missing=args.retire_missing,
+            )
+            db.commit()  # trigger toàn vẹn kiểm tập Active ở đây
         except ImportError_ as e:
             db.rollback()
             print(f"Không nạp: {e}", file=sys.stderr)
             return 1
-        except Exception as e:                             # vd trigger toàn vẹn từ chối
+        except Exception as e:  # vd trigger toàn vẹn từ chối
             db.rollback()
             print(f"CSDL từ chối: {getattr(e, 'orig', e)}", file=sys.stderr)
             return 1

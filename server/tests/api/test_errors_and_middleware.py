@@ -1,4 +1,5 @@
 """Định dạng lỗi thống nhất, X-Request-ID, CORS, cấu hình prod (lượt 4b)."""
+
 import uuid
 
 import pytest
@@ -42,13 +43,14 @@ def _app_error():
 
 @_err_router.get("/boom")
 def _boom():
-    raise RuntimeError("SELECT * FROM patient WHERE secret = 'lo'")   # không được lộ ra client
+    raise RuntimeError("SELECT * FROM patient WHERE secret = 'lo'")  # không được lộ ra client
 
 
 @_err_router.post("/fk")
 def _fk():
     from app.core.database import SessionLocal
     from app.models import Visit
+
     with SessionLocal() as db:
         db.add(Visit(patient_id=uuid.uuid4(), nurse_id=uuid.uuid4(), chief_complaint="x"))
         db.commit()
@@ -58,24 +60,29 @@ app.include_router(_err_router, prefix="/api/v1")
 
 
 def test_validation_error_vietnamese_with_field_paths(client):
-    r = client.post("/api/v1/_test/errors/validate",
-                    json={"full_name": "", "gender": "Nam", "vital_signs": {"spo2_pct": 120}})
+    r = client.post(
+        "/api/v1/_test/errors/validate", json={"full_name": "", "gender": "Nam", "vital_signs": {"spo2_pct": 120}}
+    )
     assert r.status_code == 422
     err = r.json()["error"]
     assert err["code"] == "VALIDATION_ERROR" and err["message"] == "Dữ liệu không hợp lệ"
     by_field = {d["field"]: d for d in err["details"]}
     assert by_field["full_name"]["message"] == "Không được để trống"
     assert by_field["gender"]["message"] == "Sai định dạng"
-    assert by_field["vital_signs.spo2_pct"] == {"field": "vital_signs.spo2_pct", "in": "body",
-                                                 "message": "Phải nhỏ hơn hoặc bằng 100"}
+    assert by_field["vital_signs.spo2_pct"] == {
+        "field": "vital_signs.spo2_pct",
+        "in": "body",
+        "message": "Phải nhỏ hơn hoặc bằng 100",
+    }
     assert err["request_id"] == r.headers["x-request-id"]
 
 
 def test_missing_body_and_bad_json(client):
     r = client.post("/api/v1/_test/errors/validate", json={})
     assert {d["message"] for d in r.json()["error"]["details"]} == {"Thiếu trường bắt buộc"}
-    r = client.post("/api/v1/_test/errors/validate", content=b"{khong-phai-json",
-                    headers={"Content-Type": "application/json"})
+    r = client.post(
+        "/api/v1/_test/errors/validate", content=b"{khong-phai-json", headers={"Content-Type": "application/json"}
+    )
     assert r.status_code == 422 and r.json()["error"]["details"][0]["message"] == "JSON không hợp lệ"
 
 
@@ -102,7 +109,7 @@ def test_http_errors_from_framework(client, login):
     assert r.status_code == 405 and r.json()["error"]["code"] == "METHOD_NOT_ALLOWED"
     r = client.get("/api/v1/auth/me")
     assert r.status_code == 401 and r.json()["error"]["code"] == "UNAUTHORIZED"
-    assert r.headers["www-authenticate"] == "Bearer"           # header của 401 vẫn giữ
+    assert r.headers["www-authenticate"] == "Bearer"  # header của 401 vẫn giữ
     r = client.get("/api/v1/admin/audit-logs", headers=login("bs"))
     assert r.status_code == 403 and r.json()["error"]["code"] == "FORBIDDEN"
 
@@ -112,8 +119,9 @@ def test_integrity_error_mapped_without_leaking_sql(client):
     assert r.status_code == 409
     err = r.json()["error"]
     assert err["code"] == "INVALID_REFERENCE"
-    assert err["details"] == [{"constraint": "visit_nurse_id_fkey"}] or \
-           err["details"] == [{"constraint": "visit_patient_id_fkey"}]
+    assert err["details"] == [{"constraint": "visit_nurse_id_fkey"}] or err["details"] == [
+        {"constraint": "visit_patient_id_fkey"}
+    ]
     assert "INSERT" not in r.text and "psycopg" not in r.text
 
 
@@ -130,25 +138,37 @@ def test_request_id_generated_or_reused(client):
     r = client.get("/health")
     rid = r.headers["x-request-id"]
     assert len(rid) == 32
-    assert client.get("/health", headers={"X-Request-ID": "client-abc-12345"}).headers["x-request-id"] == "client-abc-12345"
+    assert (
+        client.get("/health", headers={"X-Request-ID": "client-abc-12345"}).headers["x-request-id"]
+        == "client-abc-12345"
+    )
     bad = client.get("/health", headers={"X-Request-ID": "x\r\nSet-Cookie: a=b"}).headers["x-request-id"]
-    assert bad != "x\r\nSet-Cookie: a=b" and len(bad) == 32    # id lạ bị thay
+    assert bad != "x\r\nSet-Cookie: a=b" and len(bad) == 32  # id lạ bị thay
 
 
 def test_cors_allows_only_configured_origins(client):
-    ok = client.options("/api/v1/auth/login", headers={
-        "Origin": "http://localhost:5173", "Access-Control-Request-Method": "POST",
-        "Access-Control-Request-Headers": "content-type,authorization"})
+    ok = client.options(
+        "/api/v1/auth/login",
+        headers={
+            "Origin": "http://localhost:5173",
+            "Access-Control-Request-Method": "POST",
+            "Access-Control-Request-Headers": "content-type,authorization",
+        },
+    )
     assert ok.status_code == 200 and ok.headers["access-control-allow-origin"] == "http://localhost:5173"
     assert "access-control-allow-credentials" not in ok.headers
-    evil = client.options("/api/v1/auth/login", headers={
-        "Origin": "http://evil.example", "Access-Control-Request-Method": "POST"})
+    evil = client.options(
+        "/api/v1/auth/login", headers={"Origin": "http://evil.example", "Access-Control-Request-Method": "POST"}
+    )
     assert "access-control-allow-origin" not in evil.headers
 
 
 def test_prod_settings_guard():
-    base = {"DATABASE_URL": "postgresql+psycopg://medassist_app:x@h/medassist",
-            "JWT_SECRET_KEY": "k" * 40, "ENVIRONMENT": "prod"}
+    base = {
+        "DATABASE_URL": "postgresql+psycopg://medassist_app:x@h/medassist",
+        "JWT_SECRET_KEY": "k" * 40,
+        "ENVIRONMENT": "prod",
+    }
     with pytest.raises(ValidationError, match="CORS_ORIGINS"):
         Settings(_env_file=None, **base, CORS_ORIGINS=["*"])
     with pytest.raises(ValidationError, match="DB_ECHO"):
@@ -159,12 +179,16 @@ def test_prod_settings_guard():
 def test_health_ok_and_minimal(client, monkeypatch):
     from app.core.config import settings
     from app.services import health_service
+
     monkeypatch.setattr(settings, "LLM_PROVIDER", "fake")
     monkeypatch.setattr(health_service, "_stuck_queue", lambda _db: False)
     r = client.get("/health")
     assert r.status_code == 200 and r.json() == {
-        "status": "healthy", "database": {"ok": True, "detail": ""},
-        "ai": {"ok": True, "detail": "LLM giả lập", "reason": None}, "version": settings.VERSION}
+        "status": "healthy",
+        "database": {"ok": True, "detail": ""},
+        "ai": {"ok": True, "detail": "LLM giả lập", "reason": None},
+        "version": settings.VERSION,
+    }
 
 
 def test_health_503_when_db_down(client):

@@ -1,7 +1,9 @@
 """Quản trị: tài khoản (US07), nhật ký (US09), tham số vận hành. Chỉ Admin."""
+
 import csv
 import io
 import json
+import uuid
 from datetime import datetime, timedelta, timezone
 from typing import Literal
 
@@ -12,8 +14,6 @@ from openpyxl.styles import Font
 from sqlalchemy import Select, func, or_, select
 from sqlalchemy.orm import Session
 
-import uuid
-
 from app.core.audit_view import audit_view
 from app.core.auth import require_roles
 from app.core.database import get_db
@@ -22,10 +22,10 @@ from app.models.audit_log import AuditLog
 from app.models.user import User
 from app.schemas.audit_log import AuditLogFilter, AuditLogOut, AuditLogPage
 from app.schemas.common import Page
+from app.schemas.inventory import SettingOut, SettingUpdate
 from app.schemas.user import PasswordReset, Role, UserCreate, UserOut, UserUpdate
 from app.services import audit_service as audit
 from app.services import settings_service, user_service
-from app.schemas.inventory import SettingOut, SettingUpdate
 
 router = APIRouter(prefix="/admin", tags=["admin"])
 
@@ -35,8 +35,7 @@ EXPORT_MAX_ROWS = 50_000
 
 def _filtered(f: AuditLogFilter) -> Select:
     if f.created_from and f.created_to and f.created_from > f.created_to:
-        raise HTTPException(status_code=422,
-                            detail="created_from phải trước created_to")
+        raise HTTPException(status_code=422, detail="created_from phải trước created_to")
     stmt = select(AuditLog, User.username).outerjoin(User, AuditLog.user_id == User.user_id)
     if f.user_id:
         stmt = stmt.where(AuditLog.user_id == f.user_id)
@@ -56,8 +55,9 @@ def _filtered(f: AuditLogFilter) -> Select:
 
 
 def _to_out(row: AuditLog, username: str | None) -> AuditLogOut:
-    return AuditLogOut.model_validate({**{c: getattr(row, c) for c in AuditLogOut.model_fields
-                                          if c != "username"}, "username": username})
+    return AuditLogOut.model_validate(
+        {**{c: getattr(row, c) for c in AuditLogOut.model_fields if c != "username"}, "username": username}
+    )
 
 
 @router.get("/audit-logs", response_model=AuditLogPage)
@@ -73,24 +73,39 @@ def list_audit_logs(
     rows = db.execute(
         stmt.order_by(AuditLog.created_at.desc(), AuditLog.log_id.desc()).limit(limit).offset(offset)
     ).all()
-    return AuditLogPage(total=total or 0, limit=limit, offset=offset,
-                        items=[_to_out(r, u) for r, u in rows])
+    return AuditLogPage(total=total or 0, limit=limit, offset=offset, items=[_to_out(r, u) for r, u in rows])
 
 
-_EXPORT_COLUMNS = ["created_at", "action_type", "username", "attempted_username", "target_entity",
-                   "entity_id", "old_values", "new_values", "ip_address", "user_agent", "log_id"]
-_VN_TZ = timezone(timedelta(hours=7))   # Việt Nam không có giờ mùa hè; không cần gói tzdata trên Windows
+_EXPORT_COLUMNS = [
+    "created_at",
+    "action_type",
+    "username",
+    "attempted_username",
+    "target_entity",
+    "entity_id",
+    "old_values",
+    "new_values",
+    "ip_address",
+    "user_agent",
+    "log_id",
+]
+_VN_TZ = timezone(timedelta(hours=7))  # Việt Nam không có giờ mùa hè; không cần gói tzdata trên Windows
 _FORMULA_PREFIXES = ("=", "+", "-", "@", "\t", "\r")
 
 
 def _export_values(log: AuditLog, username: str | None) -> list:
     return [
-        log.created_at.astimezone(_VN_TZ).replace(tzinfo=None),   # Excel không nhận múi giờ
-        log.action_type, username or "", log.attempted_username or "", log.target_entity,
+        log.created_at.astimezone(_VN_TZ).replace(tzinfo=None),  # Excel không nhận múi giờ
+        log.action_type,
+        username or "",
+        log.attempted_username or "",
+        log.target_entity,
         str(log.entity_id) if log.entity_id else "",
         json.dumps(log.old_values, ensure_ascii=False) if log.old_values else "",
         json.dumps(log.new_values, ensure_ascii=False) if log.new_values else "",
-        log.ip_address or "", log.user_agent or "", str(log.log_id),
+        log.ip_address or "",
+        log.user_agent or "",
+        str(log.log_id),
     ]
 
 
@@ -122,7 +137,7 @@ def _build_xlsx(rows) -> bytes:
             if isinstance(value, datetime):
                 cell.number_format = "yyyy-mm-dd hh:mm:ss"
             elif isinstance(value, str):
-                cell.data_type = "s"   # luôn là chữ: openpyxl không biến "=..." thành công thức
+                cell.data_type = "s"  # luôn là chữ: openpyxl không biến "=..." thành công thức
             out.append(cell)
         ws.append(out)
 
@@ -137,7 +152,7 @@ def _build_csv(rows) -> bytes:
     writer.writerow(_EXPORT_COLUMNS)
     for log, username in rows:
         writer.writerow([_csv_safe(v) for v in _export_values(log, username)])
-    return buf.getvalue().encode("utf-8-sig")   # có BOM cho Excel
+    return buf.getvalue().encode("utf-8-sig")  # có BOM cho Excel
 
 
 @router.get("/audit-logs/export")
@@ -155,10 +170,20 @@ def export_audit_logs(
     rows = rows[:EXPORT_MAX_ROWS]
 
     # Việc xuất cũng được ghi lại (US09: xem và xuất chỉ Admin, có dấu vết)
-    audit.record(db, action="EXPORT", entity="audit_log", actor_id=user.user_id,
-                 new_values={"filters": f.model_dump(mode="json", exclude_none=True),
-                             "format": format, "rows": len(rows), "truncated": truncated},
-                 ip_address=client_ip(request), user_agent=user_agent(request))
+    audit.record(
+        db,
+        action="EXPORT",
+        entity="audit_log",
+        actor_id=user.user_id,
+        new_values={
+            "filters": f.model_dump(mode="json", exclude_none=True),
+            "format": format,
+            "rows": len(rows),
+            "truncated": truncated,
+        },
+        ip_address=client_ip(request),
+        user_agent=user_agent(request),
+    )
     db.commit()
 
     stamp = datetime.now(_VN_TZ).strftime("%Y%m%d_%H%M%S")
@@ -179,10 +204,15 @@ _admin_users = require_roles("Admin", audit_entity="users")
 
 
 @router.get("/users", response_model=Page[UserOut])
-def list_users(role: Role | None = None, is_active: bool | None = None,
-               q: str | None = Query(None, max_length=50, description="Tìm theo tên đăng nhập hoặc họ tên (không dấu)"),
-               limit: int = Query(50, ge=1, le=200), offset: int = Query(0, ge=0),
-               _: User = Depends(_admin_users), db: Session = Depends(get_db)):
+def list_users(
+    role: Role | None = None,
+    is_active: bool | None = None,
+    q: str | None = Query(None, max_length=50, description="Tìm theo tên đăng nhập hoặc họ tên (không dấu)"),
+    limit: int = Query(50, ge=1, le=200),
+    offset: int = Query(0, ge=0),
+    _: User = Depends(_admin_users),
+    db: Session = Depends(get_db),
+):
     total, rows = user_service.list_users(db, role=role, is_active=is_active, q=q, limit=limit, offset=offset)
     return Page[UserOut](total=total, limit=limit, offset=offset, items=user_service.to_out(db, rows))
 
@@ -200,16 +230,18 @@ def create_user(body: UserCreate, actor: User = Depends(_admin_users), db: Sessi
 
 
 @router.patch("/users/{user_id}", response_model=UserOut)
-def update_user(user_id: uuid.UUID, body: UserUpdate, actor: User = Depends(_admin_users),
-                db: Session = Depends(get_db)):
+def update_user(
+    user_id: uuid.UUID, body: UserUpdate, actor: User = Depends(_admin_users), db: Session = Depends(get_db)
+):
     user = user_service.update_user(db, user_id, body, actor)
     db.commit()
     return user_service.to_out(db, [user])[0]
 
 
 @router.post("/users/{user_id}/reset-password", status_code=204)
-def reset_password(user_id: uuid.UUID, body: PasswordReset, actor: User = Depends(_admin_users),
-                   db: Session = Depends(get_db)) -> None:
+def reset_password(
+    user_id: uuid.UUID, body: PasswordReset, actor: User = Depends(_admin_users), db: Session = Depends(get_db)
+) -> None:
     user_service.reset_password(db, user_id, body.new_password, actor)
     db.commit()
 
@@ -232,8 +264,9 @@ def list_settings(_: User = Depends(_admin_settings), db: Session = Depends(get_
 
 
 @router.put("/settings/{setting_key}", response_model=SettingOut)
-def update_setting(setting_key: str, body: SettingUpdate, actor: User = Depends(_admin_settings),
-                   db: Session = Depends(get_db)):
+def update_setting(
+    setting_key: str, body: SettingUpdate, actor: User = Depends(_admin_settings), db: Session = Depends(get_db)
+):
     out = settings_service.update_setting(db, setting_key, body.value, actor)
     db.commit()
     return out

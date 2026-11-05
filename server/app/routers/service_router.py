@@ -2,6 +2,7 @@
 Chỉ định, ghi kết quả: bác sĩ đang khám lượt đó. Hủy dòng: bác sĩ khi đang khám, lễ tân khi lượt chờ thu tiền.
 Xem phiếu: bác sĩ, lễ tân (ghi VIEW).
 """
+
 import uuid
 from typing import Literal
 
@@ -12,9 +13,20 @@ from app.core.audit_view import CLINICAL_ROLES, audit_view
 from app.core.auth import require_roles
 from app.core.database import get_db
 from app.models import User
-from app.schemas.service import (CancelItemRequest, PackageCreate, PackageOut, PackageUpdate, PriceChange,
-                                 ResultsPut, ServiceCreate, ServiceOrderCreate, ServiceOrderItemOut, ServiceOrderOut,
-                                 ServiceOut, ServiceUpdate)
+from app.schemas.service import (
+    CancelItemRequest,
+    PackageCreate,
+    PackageOut,
+    PackageUpdate,
+    PriceChange,
+    ResultsPut,
+    ServiceCreate,
+    ServiceOrderCreate,
+    ServiceOrderItemOut,
+    ServiceOrderOut,
+    ServiceOut,
+    ServiceUpdate,
+)
 from app.services import service_catalog_service as catalog
 from app.services import service_order_service as orders
 
@@ -28,8 +40,13 @@ _cancel_item = require_roles("Physician", "Nurse", audit_entity="service_order_i
 
 
 @router.get("/services", response_model=list[ServiceOut])
-def list_services(kind: Literal["Service", "Lab"] | None = None, q: str | None = Query(None, max_length=100),
-                  include_inactive: bool = False, _: User = Depends(_read), db: Session = Depends(get_db)):
+def list_services(
+    kind: Literal["Service", "Lab"] | None = None,
+    q: str | None = Query(None, max_length=100),
+    include_inactive: bool = False,
+    _: User = Depends(_read),
+    db: Session = Depends(get_db),
+):
     return catalog.list_services(db, kind, q, include_inactive)
 
 
@@ -42,8 +59,9 @@ def create_service(body: ServiceCreate, actor: User = Depends(_admin_service), d
 
 
 @router.patch("/admin/services/{service_id}", response_model=ServiceOut)
-def update_service(service_id: uuid.UUID, body: ServiceUpdate, actor: User = Depends(_admin_service),
-                   db: Session = Depends(get_db)):
+def update_service(
+    service_id: uuid.UUID, body: ServiceUpdate, actor: User = Depends(_admin_service), db: Session = Depends(get_db)
+):
     service = catalog.update_service(db, service_id, body, actor)
     db.commit()
     return service
@@ -67,16 +85,21 @@ def create_package(body: PackageCreate, actor: User = Depends(_admin_package), d
 
 
 @router.patch("/admin/service-packages/{package_id}", response_model=PackageOut)
-def update_package(package_id: uuid.UUID, body: PackageUpdate, actor: User = Depends(_admin_package),
-                   db: Session = Depends(get_db)):
+def update_package(
+    package_id: uuid.UUID, body: PackageUpdate, actor: User = Depends(_admin_package), db: Session = Depends(get_db)
+):
     package = catalog.update_package(db, package_id, body, actor)
     db.commit()
     return catalog.package_out(db, [package])[0]
 
 
 @router.post("/visits/{visit_id}/service-orders", response_model=ServiceOrderOut, status_code=201)
-def create_order(visit_id: uuid.UUID, body: ServiceOrderCreate, actor: User = Depends(_physician_order),
-                 db: Session = Depends(get_db)):
+def create_order(
+    visit_id: uuid.UUID,
+    body: ServiceOrderCreate,
+    actor: User = Depends(_physician_order),
+    db: Session = Depends(get_db),
+):
     """Lập phiếu chỉ định; mặc định đánh dấu luôn bệnh nhân đi xét nghiệm (như PATCH lab-out)."""
     order = orders.create_order(db, visit_id, body, actor)
     db.commit()
@@ -84,15 +107,18 @@ def create_order(visit_id: uuid.UUID, body: ServiceOrderCreate, actor: User = De
 
 
 @router.get("/visits/{visit_id}/service-orders", response_model=list[ServiceOrderOut])
-def list_orders(visit_id: uuid.UUID,
-                _: User = Depends(audit_view("visit", roles=CLINICAL_ROLES, id_param="visit_id")),
-                db: Session = Depends(get_db)):
+def list_orders(
+    visit_id: uuid.UUID,
+    _: User = Depends(audit_view("visit", roles=CLINICAL_ROLES, id_param="visit_id")),
+    db: Session = Depends(get_db),
+):
     return orders.list_orders(db, visit_id)
 
 
 @router.put("/visits/{visit_id}/service-orders/results", response_model=list[ServiceOrderOut])
-def put_results(visit_id: uuid.UUID, body: ResultsPut, actor: User = Depends(_physician_order),
-                db: Session = Depends(get_db)):
+def put_results(
+    visit_id: uuid.UUID, body: ResultsPut, actor: User = Depends(_physician_order), db: Session = Depends(get_db)
+):
     """Ghi kết quả từng dòng và kết luận của phiếu; gửi chuỗi rỗng để xóa."""
     result = orders.put_results(db, visit_id, body, actor)
     db.commit()
@@ -100,8 +126,9 @@ def put_results(visit_id: uuid.UUID, body: ResultsPut, actor: User = Depends(_ph
 
 
 @router.post("/service-order-items/{item_id}/cancel", response_model=ServiceOrderItemOut)
-def cancel_item(item_id: uuid.UUID, body: CancelItemRequest, actor: User = Depends(_cancel_item),
-                db: Session = Depends(get_db)):
+def cancel_item(
+    item_id: uuid.UUID, body: CancelItemRequest, actor: User = Depends(_cancel_item), db: Session = Depends(get_db)
+):
     item = orders.cancel_item(db, item_id, body.reason, actor)
     db.commit()
     return item

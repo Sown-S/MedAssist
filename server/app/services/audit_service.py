@@ -2,6 +2,7 @@
 record() chỉ flush, không commit (cùng transaction với nghiệp vụ); VIEW và lượt bị từ chối dùng record_now().
 Chi tiết: docs/thiet-ke-backend.md §1.
 """
+
 import uuid
 from collections.abc import Iterable, Mapping
 from datetime import date, datetime
@@ -15,8 +16,9 @@ from sqlalchemy.orm import Session
 from app.models.audit_log import ACTION_TYPES, AuditLog
 
 MASK = "***"
-SENSITIVE_KEYS = frozenset({"password", "password_hash", "new_password", "old_password",
-                            "access_token", "refresh_token", "token"})
+SENSITIVE_KEYS = frozenset(
+    {"password", "password_hash", "new_password", "old_password", "access_token", "refresh_token", "token"}
+)
 _MAX_USER_AGENT = 255
 _MAX_IP = 45
 
@@ -91,15 +93,16 @@ def record(
         user_agent=user_agent[:_MAX_USER_AGENT] if user_agent else None,
     )
     db.add(entry)
-    db.flush()   # lỗi ràng buộc (nếu có) nổ ra ngay tại đây, không đợi tới commit
+    db.flush()  # lỗi ràng buộc (nếu có) nổ ra ngay tại đây, không đợi tới commit
     return entry
+
 
 # Ghi ngay bằng session riêng cho VIEW và lượt bị từ chối: request GET không commit,
 # request bị 403 không bao giờ tới service.
 def record_now(**kwargs: Any) -> None:
     """Ghi một dòng và commit ngay trong session riêng. Lỗi thì ném ra (fail closed:
     không ghi được nhật ký thì không cho truy cập dữ liệu bệnh nhân)."""
-    from app.core.database import SessionLocal   # import muộn: tránh vòng import khi test
+    from app.core.database import SessionLocal  # import muộn: tránh vòng import khi test
 
     with SessionLocal() as db:
         record(db, **kwargs)
@@ -112,18 +115,20 @@ class _ViewDeduper:
 
     def __init__(self) -> None:
         import threading
+
         self._seen: dict[tuple, float] = {}
         self._lock = threading.Lock()
 
     def should_log(self, key: tuple, window_seconds: int) -> bool:
         import time
+
         now = time.monotonic()
         with self._lock:
             last = self._seen.get(key)
             if last is not None and now - last < window_seconds:
                 return False
             self._seen[key] = now
-            if len(self._seen) > 10_000:   # dọn mục cũ, giữ bộ nhớ nhỏ
+            if len(self._seen) > 10_000:  # dọn mục cũ, giữ bộ nhớ nhỏ
                 cutoff = now - 3600
                 self._seen = {k: t for k, t in self._seen.items() if t >= cutoff}
             return True

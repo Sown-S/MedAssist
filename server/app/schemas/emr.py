@@ -1,6 +1,7 @@
 """Hồ sơ bệnh án điện tử (US04, FR04): tra cứu nhanh, lịch sử khám, xem lại một lượt khám cũ.
 Mã BN (``patient_code``) tính từ patient_id, không lưu thành cột; in trên phiếu khám để tra lại.
 """
+
 import uuid
 from datetime import date, datetime
 from typing import Literal
@@ -30,6 +31,7 @@ LookupKind = Literal["patient_code", "id_number", "phone", "birth_year", "name",
 
 class LookupInterpretation(BaseModel):
     """Hệ thống hiểu ô tìm kiếm là gì, để giao diện hiện 'Đang tìm theo SĐT' v.v."""
+
     kind: LookupKind
     name: str | None = None
     birth_year: int | None = None
@@ -62,7 +64,7 @@ class HistoryDiagnosis(BaseModel):
 
 
 class HistoryDrugLine(BaseModel):
-    drug_label: str            # "Paracetamol 500 mg (Panadol)"
+    drug_label: str  # "Paracetamol 500 mg (Panadol)"
     quantity: int
     unit: str
     dosage: str
@@ -81,6 +83,7 @@ class HistoryPrescription(BaseModel):
 
 class VisitHistoryItem(BaseModel):
     """Một dòng lịch sử (US04): ngày, chẩn đoán đã xác nhận, tóm tắt đơn thuốc."""
+
     visit_id: uuid.UUID
     visit_date: datetime
     status: str
@@ -119,7 +122,7 @@ class RecordDiagnosis(BaseModel):
     icd10_code: str | None
     condition_code: str | None
     is_primary: bool
-    confirmed_by_physician: bool          # False = đã rút lại (giao diện gạch ngang)
+    confirmed_by_physician: bool  # False = đã rút lại (giao diện gạch ngang)
     clinical_notes: str | None
     confirmed_at: datetime | None
 

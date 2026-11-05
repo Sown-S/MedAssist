@@ -1,6 +1,7 @@
 """Giới hạn đăng nhập sai, tính từ các dòng LOGIN_FAILED trong audit_log (không cần bảng mới).
 Khóa theo tên đăng nhập và theo IP; lượt bị chặn không được đếm. Quy tắc: docs/thiet-ke-backend.md §7.
 """
+
 import math
 from datetime import datetime, timedelta
 
@@ -27,12 +28,21 @@ _RELEASE_KEYS = ("unlocked", "password_reset_by_admin")
 
 def _count_since(db: Session, user_id, window_start: datetime) -> datetime:
     """Mốc bắt đầu đếm lần sai của một tài khoản: sau lần đăng nhập thành công hoặc lần Admin mở khóa gần nhất."""
-    marks = db.execute(select(
-        select(func.max(AuditLog.created_at)).where(AuditLog.action_type == "LOGIN", AuditLog.user_id == user_id)
-        .scalar_subquery(),
-        select(func.max(AuditLog.created_at)).where(
-            AuditLog.action_type == "UPDATE", AuditLog.target_entity == "users", AuditLog.entity_id == user_id,
-            or_(*(AuditLog.new_values.has_key(k) for k in _RELEASE_KEYS))).scalar_subquery())).one()
+    marks = db.execute(
+        select(
+            select(func.max(AuditLog.created_at))
+            .where(AuditLog.action_type == "LOGIN", AuditLog.user_id == user_id)
+            .scalar_subquery(),
+            select(func.max(AuditLog.created_at))
+            .where(
+                AuditLog.action_type == "UPDATE",
+                AuditLog.target_entity == "users",
+                AuditLog.entity_id == user_id,
+                or_(*(AuditLog.new_values.has_key(k) for k in _RELEASE_KEYS)),
+            )
+            .scalar_subquery(),
+        )
+    ).one()
     return max([window_start, *(m for m in marks if m is not None)])
 
 

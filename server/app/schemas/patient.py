@@ -14,6 +14,8 @@ def patient_code(patient_id: uuid.UUID) -> str:
     """Mã BN = "BN-" + 8 ký tự hex đầu của patient_id, viết hoa (vd BN-3F2A9C1B). In trên phiếu khám
     để tra cứu nhanh; không lưu thành cột. Tìm bằng tiền tố của patient_id."""
     return "BN-" + patient_id.hex[:8].upper()
+
+
 MAX_AGE_YEARS = 130
 
 
@@ -39,9 +41,11 @@ IdNumber = Annotated[str, BeforeValidator(_empty_to_none), AfterValidator(_id_nu
 
 class MedicalHistory(BaseModel):
     """patient.medical_history (JSONB). Bệnh nền dùng cho phần nhắc khi kê đơn (US03, chỉ đọc)."""
+
     model_config = ConfigDict(extra="forbid")
     chronic_conditions: list[Annotated[CleanStr, Field(min_length=1, max_length=100)]] = Field(
-        default_factory=list, max_length=30, description="Bệnh nền, vd 'Tăng huyết áp'")
+        default_factory=list, max_length=30, description="Bệnh nền, vd 'Tăng huyết áp'"
+    )
     notes: str | None = Field(default=None, max_length=2000)
     is_pregnant: bool | None = Field(default=None, description="None = chưa hỏi")
 
@@ -60,7 +64,8 @@ class PatientCreate(_PatientFields):
     date_of_birth: DateOfBirth
     gender: Gender
     confirm_duplicate: bool = Field(
-        default=False, description="Gửi lại với true sau khi đã kiểm tra danh sách có thể trùng (409)")
+        default=False, description="Gửi lại với true sau khi đã kiểm tra danh sách có thể trùng (409)"
+    )
 
 
 class PatientUpdate(_PatientFields):
@@ -91,6 +96,7 @@ class PatientOut(BaseModel):
 
 class PatientSummary(BaseModel):
     """Dòng trong kết quả tìm kiếm / danh sách có thể trùng."""
+
     model_config = ConfigDict(from_attributes=True)
     patient_id: uuid.UUID
     full_name: str

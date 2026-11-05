@@ -2,6 +2,7 @@
 Ghi trước handler bằng session riêng, commit ngay: có cả lượt 404 và lượt sai vai trò (403).
 Cách dùng, gộp dòng của endpoint polling: docs/thiet-ke-backend.md §1.
 """
+
 import uuid
 from collections.abc import Callable
 
@@ -15,7 +16,7 @@ from app.services import audit_service as audit
 # Vai trò được xem dữ liệu bệnh nhân. Admin không thuộc nhóm này (chỉ xem nhật ký, kho, báo cáo).
 CLINICAL_ROLES: tuple[str, ...] = ("Physician", "Nurse")
 
-DEFAULT_POLL_WINDOW = 300   # giây
+DEFAULT_POLL_WINDOW = 300  # giây
 
 
 def audit_view(
@@ -36,12 +37,13 @@ def audit_view(
             try:
                 entity_id = uuid.UUID(str(raw_id))
             except ValueError:
-                entity_id = None     # route sẽ tự trả 422; vẫn ghi lại lượt thử
+                entity_id = None  # route sẽ tự trả 422; vẫn ghi lại lượt thử
 
         if user.role not in roles:
             record_denied(request, user, entity, entity_id)
-            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
-                                detail="Bạn không có quyền thực hiện thao tác này")
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN, detail="Bạn không có quyền thực hiện thao tác này"
+            )
 
         path = path_template(request)
         if dedupe_seconds > 0:

@@ -2,6 +2,7 @@
 Admin soạn, Physician khác người soạn duyệt; duyệt và tắt khẩn cấp (tắt dây chuyền) đều trong một transaction.
 Chi tiết: docs/thiet-ke-backend.md §6.1.
 """
+
 import uuid
 from decimal import Decimal
 from typing import Any
@@ -11,27 +12,56 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.exceptions import AppError, NotFoundError
-from app.models import (Condition, ConditionSymptom, GuidelineExcerpt, KnowledgeRelease, KnowledgeSource, Symptom,
-                        TriageRule, User)
+from app.models import (
+    Condition,
+    ConditionSymptom,
+    GuidelineExcerpt,
+    KnowledgeRelease,
+    KnowledgeSource,
+    Symptom,
+    TriageRule,
+    User,
+)
 from app.schemas.knowledge import DRAFT_SCHEMAS, DeactivateRequest, ReleaseCreate, SourceCreate
 from app.services import audit_service as audit
-from app.validation.knowledge_validators import (CONDITION_CODE_MAX, SLUG_KEY_MAX, SLUG_RE, SYMPTOM_CODE_MAX,
-                                                 check_rule_key, logic_symptom_codes)
+from app.validation.knowledge_validators import (
+    CONDITION_CODE_MAX,
+    SLUG_KEY_MAX,
+    SLUG_RE,
+    SYMPTOM_CODE_MAX,
+    check_rule_key,
+    logic_symptom_codes,
+)
 
 # kind -> (model, cột khóa, cột nội dung, tên bảng cho nhật ký)
 KINDS: dict[str, tuple[Any, tuple[str, ...], tuple[str, ...], str]] = {
     "symptoms": (Symptom, ("symptom_code",), ("symptom_name", "category"), "symptom"),
-    "conditions": (Condition, ("condition_code",), ("name_vi", "icd10_code", "disease_group", "description"),
-                   "condition"),
-    "relations": (ConditionSymptom, ("condition_code", "symptom_code"), ("polarity", "weight", "is_key", "source_id"),
-                  "condition_symptom"),
-    "excerpts": (GuidelineExcerpt, ("excerpt_key",),
-                 ("condition_code", "title", "content", "source_id", "source_locator"), "guideline_excerpt"),
-    "rules": (TriageRule, ("rule_key",),
-              ("rule_name", "rule_type", "resulting_priority", "reason_text", "condition_logic", "source_id"),
-              "triage_rule"),
+    "conditions": (
+        Condition,
+        ("condition_code",),
+        ("name_vi", "icd10_code", "disease_group", "description"),
+        "condition",
+    ),
+    "relations": (
+        ConditionSymptom,
+        ("condition_code", "symptom_code"),
+        ("polarity", "weight", "is_key", "source_id"),
+        "condition_symptom",
+    ),
+    "excerpts": (
+        GuidelineExcerpt,
+        ("excerpt_key",),
+        ("condition_code", "title", "content", "source_id", "source_locator"),
+        "guideline_excerpt",
+    ),
+    "rules": (
+        TriageRule,
+        ("rule_key",),
+        ("rule_name", "rule_type", "resulting_priority", "reason_text", "condition_logic", "source_id"),
+        "triage_rule",
+    ),
 }
-ORDER = ("symptoms", "conditions", "relations", "excerpts", "rules")       # khóa trước, quan hệ sau
+ORDER = ("symptoms", "conditions", "relations", "excerpts", "rules")  # khóa trước, quan hệ sau
 OPEN_STATUSES = ("Draft", "PendingApproval")
 
 
@@ -68,9 +98,18 @@ def values_of(kind: str, row) -> dict[str, Any]:
 
 
 def item_out(kind: str, row, label: str | None = None) -> dict[str, Any]:
-    return {"kind": kind, "key": key_of(kind, row), "version": row.version, "status": row.status,
-            "release_id": row.release_id, "release_label": label, "created_at": row.created_at,
-            "retired_at": row.retired_at, "retired_reason": row.retired_reason, "values": values_of(kind, row)}
+    return {
+        "kind": kind,
+        "key": key_of(kind, row),
+        "version": row.version,
+        "status": row.status,
+        "release_id": row.release_id,
+        "release_label": label,
+        "created_at": row.created_at,
+        "retired_at": row.retired_at,
+        "retired_reason": row.retired_reason,
+        "values": values_of(kind, row),
+    }
 
 
 def commit_knowledge(db: Session) -> None:
@@ -81,9 +120,12 @@ def commit_knowledge(db: Session) -> None:
         db.rollback()
         msg = str(getattr(exc.orig, "diag", None) and exc.orig.diag.message_primary or exc.orig)
         if "khép kín" in msg:
-            raise AppError(409, "KNOWLEDGE_INTEGRITY",
-                           "Tập tri thức Active sẽ không khép kín: còn mục đang dùng mã bị tắt hoặc chưa được duyệt",
-                           [{"message": msg}]) from None
+            raise AppError(
+                409,
+                "KNOWLEDGE_INTEGRITY",
+                "Tập tri thức Active sẽ không khép kín: còn mục đang dùng mã bị tắt hoặc chưa được duyệt",
+                [{"message": msg}],
+            ) from None
         raise
 
 
@@ -108,16 +150,25 @@ def list_releases(db: Session) -> list[KnowledgeRelease]:
 def create_release(db: Session, data: ReleaseCreate, actor: User) -> KnowledgeRelease:
     current = open_release(db)
     if current is not None:
-        raise AppError(409, "RELEASE_ALREADY_OPEN", "Đang có bản phát hành mở; duyệt hoặc từ chối trước",
-                       [{"release_id": str(current.release_id), "label": current.label, "status": current.status}])
+        raise AppError(
+            409,
+            "RELEASE_ALREADY_OPEN",
+            "Đang có bản phát hành mở; duyệt hoặc từ chối trước",
+            [{"release_id": str(current.release_id), "label": current.label, "status": current.status}],
+        )
     if db.scalar(select(KnowledgeRelease.release_id).where(KnowledgeRelease.label == data.label)):
-        raise AppError(409, "DUPLICATE_LABEL", "Nhãn phiên bản đã dùng",
-                       [{"field": "label", "in": "body"}])
+        raise AppError(409, "DUPLICATE_LABEL", "Nhãn phiên bản đã dùng", [{"field": "label", "in": "body"}])
     rel = KnowledgeRelease(label=data.label, description=data.description, status="Draft", created_by=actor.user_id)
     db.add(rel)
     db.flush()
-    audit.record(db, action="CREATE", entity="knowledge_release", entity_id=rel.release_id, actor_id=actor.user_id,
-                 new_values={"label": rel.label})
+    audit.record(
+        db,
+        action="CREATE",
+        entity="knowledge_release",
+        entity_id=rel.release_id,
+        actor_id=actor.user_id,
+        new_values={"label": rel.label},
+    )
     return rel
 
 
@@ -125,17 +176,28 @@ def release_changes(db: Session, rel: KnowledgeRelease) -> list[dict[str, Any]]:
     out = []
     for kind in ORDER:
         model = KINDS[kind][0]
-        for row in db.scalars(select(model).where(model.release_id == rel.release_id,
-                                                  or_(model.status != "Retired",
-                                                      model.retired_reason == "Superseded"))
-                              .order_by(*[getattr(model, c) for c in KINDS[kind][1]])):
+        for row in db.scalars(
+            select(model)
+            .where(
+                model.release_id == rel.release_id, or_(model.status != "Retired", model.retired_reason == "Superseded")
+            )
+            .order_by(*[getattr(model, c) for c in KINDS[kind][1]])
+        ):
             active = None
             if rel.status in OPEN_STATUSES:
                 act = db.scalar(select(model).where(*_where_key(kind, key_of(kind, row)), model.status == "Active"))
                 active = values_of(kind, act) if act is not None else None
-            out.append({"kind": kind, "key": key_of(kind, row), "version": row.version, "status": row.status,
-                        "action": "new" if row.version == 1 else "changed",
-                        "values": values_of(kind, row), "active_values": active})
+            out.append(
+                {
+                    "kind": kind,
+                    "key": key_of(kind, row),
+                    "version": row.version,
+                    "status": row.status,
+                    "action": "new" if row.version == 1 else "changed",
+                    "values": values_of(kind, row),
+                    "active_values": active,
+                }
+            )
     return out
 
 
@@ -151,14 +213,23 @@ def submit_release(db: Session, release_id: uuid.UUID, actor: User) -> Knowledge
     total = 0
     for kind in ORDER:
         model = KINDS[kind][0]
-        total += db.execute(update(model).where(model.release_id == rel.release_id, model.status == "Draft")
-                            .values(status="PendingApproval")).rowcount
+        total += db.execute(
+            update(model)
+            .where(model.release_id == rel.release_id, model.status == "Draft")
+            .values(status="PendingApproval")
+        ).rowcount
     if total == 0:
         raise AppError(409, "RELEASE_EMPTY", "Bản phát hành chưa có thay đổi nào")
     rel.status, rel.submitted_at, rel.review_note = "PendingApproval", func.now(), None
     db.flush()
-    audit.record(db, action="UPDATE", entity="knowledge_release", entity_id=rel.release_id, actor_id=actor.user_id,
-                 new_values={"status": "PendingApproval", "items": total})
+    audit.record(
+        db,
+        action="UPDATE",
+        entity="knowledge_release",
+        entity_id=rel.release_id,
+        actor_id=actor.user_id,
+        new_values={"status": "PendingApproval", "items": total},
+    )
     return rel
 
 
@@ -171,10 +242,12 @@ def activate_release(db: Session, rel: KnowledgeRelease, approver: User) -> dict
     for kind in ORDER:
         model = KINDS[kind][0]
         rows = _release_rows(db, rel, kind)
-        for row in rows:                               # bản Active cũ rời trước (uq_*_active)
-            db.execute(update(model).where(*_where_key(kind, key_of(kind, row)), model.status == "Active")
-                       .values(status="Retired", retired_by=approver.user_id, retired_at=now,
-                               retired_reason="Superseded"))
+        for row in rows:  # bản Active cũ rời trước (uq_*_active)
+            db.execute(
+                update(model)
+                .where(*_where_key(kind, key_of(kind, row)), model.status == "Active")
+                .values(status="Retired", retired_by=approver.user_id, retired_at=now, retired_reason="Superseded")
+            )
         for row in rows:
             row.status = "Active"
         counts[kind] = len(rows)
@@ -190,8 +263,14 @@ def approve_release(db: Session, release_id: uuid.UUID, actor: User) -> Knowledg
     if rel.status != "PendingApproval":
         raise AppError(409, "RELEASE_NOT_PENDING", "Chỉ duyệt được bản đang chờ duyệt", [{"current": rel.status}])
     counts = activate_release(db, rel, actor)
-    audit.record(db, action="APPROVE", entity="knowledge_release", entity_id=rel.release_id, actor_id=actor.user_id,
-                 new_values={"label": rel.label, "activated": counts})
+    audit.record(
+        db,
+        action="APPROVE",
+        entity="knowledge_release",
+        entity_id=rel.release_id,
+        actor_id=actor.user_id,
+        new_values={"label": rel.label, "activated": counts},
+    )
     return rel
 
 
@@ -203,35 +282,47 @@ def reject_release(db: Session, release_id: uuid.UUID, note: str, actor: User) -
         raise AppError(409, "APPROVER_IS_AUTHOR", "Người duyệt phải khác người soạn")
     for kind in ORDER:
         model = KINDS[kind][0]
-        db.execute(update(model).where(model.release_id == rel.release_id, model.status == "PendingApproval")
-                   .values(status="Draft"))
+        db.execute(
+            update(model)
+            .where(model.release_id == rel.release_id, model.status == "PendingApproval")
+            .values(status="Draft")
+        )
     rel.status, rel.review_note = "Draft", note
     db.flush()
-    audit.record(db, action="REJECT", entity="knowledge_release", entity_id=rel.release_id, actor_id=actor.user_id,
-                 new_values={"label": rel.label})
+    audit.record(
+        db,
+        action="REJECT",
+        entity="knowledge_release",
+        entity_id=rel.release_id,
+        actor_id=actor.user_id,
+        new_values={"label": rel.label},
+    )
     return rel
 
 
 # --- Đọc mục --------------------------------------------------------------------------------------
 def list_items(db: Session, kind: str, *, status: str | None, q: str | None, limit: int, offset: int):
     model, keycols, _, _ = _model(kind)
-    stmt = select(model, KnowledgeRelease.label).join(KnowledgeRelease,
-                                                      KnowledgeRelease.release_id == model.release_id)
+    stmt = select(model, KnowledgeRelease.label).join(KnowledgeRelease, KnowledgeRelease.release_id == model.release_id)
     if status:
         stmt = stmt.where(model.status == status)
     if q:
         stmt = stmt.where(or_(*[cast(getattr(model, c), String).ilike(f"%{q}%") for c in keycols]))
     total = db.scalar(select(func.count()).select_from(stmt.subquery())) or 0
-    rows = db.execute(stmt.order_by(*[getattr(model, c) for c in keycols], model.version.desc())
-                      .limit(limit).offset(offset)).all()
+    rows = db.execute(
+        stmt.order_by(*[getattr(model, c) for c in keycols], model.version.desc()).limit(limit).offset(offset)
+    ).all()
     return total, [item_out(kind, row, label) for row, label in rows]
 
 
 def item_history(db: Session, kind: str, key: str) -> list[dict[str, Any]]:
     model = _model(kind)[0]
-    rows = db.execute(select(model, KnowledgeRelease.label)
-                      .join(KnowledgeRelease, KnowledgeRelease.release_id == model.release_id)
-                      .where(*_where_key(kind, key)).order_by(model.version.desc())).all()
+    rows = db.execute(
+        select(model, KnowledgeRelease.label)
+        .join(KnowledgeRelease, KnowledgeRelease.release_id == model.release_id)
+        .where(*_where_key(kind, key))
+        .order_by(model.version.desc())
+    ).all()
     if not rows:
         raise NotFoundError("Không tìm thấy mục tri thức")
     return [item_out(kind, row, label) for row, label in rows]
@@ -240,12 +331,20 @@ def item_history(db: Session, kind: str, key: str) -> list[dict[str, Any]]:
 # --- Soạn nháp ------------------------------------------------------------------------------------
 def _check_key(kind: str, key: str, data) -> None:
     parts = key.split("/")
-    limits = {"symptoms": (SYMPTOM_CODE_MAX,), "conditions": (CONDITION_CODE_MAX,),
-              "relations": (CONDITION_CODE_MAX, SYMPTOM_CODE_MAX), "excerpts": (SLUG_KEY_MAX,),
-              "rules": (SLUG_KEY_MAX,)}[kind]
+    limits = {
+        "symptoms": (SYMPTOM_CODE_MAX,),
+        "conditions": (CONDITION_CODE_MAX,),
+        "relations": (CONDITION_CODE_MAX, SYMPTOM_CODE_MAX),
+        "excerpts": (SLUG_KEY_MAX,),
+        "rules": (SLUG_KEY_MAX,),
+    }[kind]
     if len(parts) != len(limits) or any(not SLUG_RE.match(p) or len(p) > n for p, n in zip(parts, limits)):
-        raise AppError(422, "INVALID_KEY", "Mã chỉ gồm chữ thường không dấu, số và dấu gạch dưới",
-                       [{"field": "key", "in": "path", "value": key}])
+        raise AppError(
+            422,
+            "INVALID_KEY",
+            "Mã chỉ gồm chữ thường không dấu, số và dấu gạch dưới",
+            [{"field": "key", "in": "path", "value": key}],
+        )
     if kind == "rules":
         try:
             check_rule_key(key, data.rule_type)
@@ -259,24 +358,34 @@ def _available(db: Session, rel: KnowledgeRelease, kind: str, codes: set[str]) -
         return set()
     model, keycols, _, _ = KINDS[kind]
     col = getattr(model, keycols[0])
-    return set(db.scalars(select(col).where(col.in_(codes), or_(model.status == "Active",
-                                                                 (model.release_id == rel.release_id)
-                                                                 & model.status.in_(OPEN_STATUSES)))))
+    return set(
+        db.scalars(
+            select(col).where(
+                col.in_(codes),
+                or_(model.status == "Active", (model.release_id == rel.release_id) & model.status.in_(OPEN_STATUSES)),
+            )
+        )
+    )
 
 
 def _require(db, rel, kind: str, codes: set[str], field: str) -> None:
     missing = sorted(codes - _available(db, rel, kind, codes))
     if missing:
-        raise AppError(422, "UNKNOWN_CODE", "Mã chưa có trong tri thức Active hoặc bản nháp này",
-                       [{"field": field, "value": c} for c in missing])
+        raise AppError(
+            422,
+            "UNKNOWN_CODE",
+            "Mã chưa có trong tri thức Active hoặc bản nháp này",
+            [{"field": field, "value": c} for c in missing],
+        )
 
 
 def _cross_check(db: Session, rel: KnowledgeRelease, kind: str, key: str, values: dict[str, Any]) -> None:
     if "source_id" in values:
         src = db.get(KnowledgeSource, values["source_id"])
         if src is None or not src.is_active:
-            raise AppError(422, "UNKNOWN_SOURCE", "Nguồn không tồn tại hoặc đã ngừng dùng",
-                           [{"field": "source_id", "in": "body"}])
+            raise AppError(
+                422, "UNKNOWN_SOURCE", "Nguồn không tồn tại hoặc đã ngừng dùng", [{"field": "source_id", "in": "body"}]
+            )
     if kind == "relations":
         cond, sym = key.split("/")
         _require(db, rel, "conditions", {cond}, "condition_code")
@@ -297,23 +406,28 @@ def put_draft(db: Session, kind: str, key: str, data, actor: User) -> dict[str, 
     if rel is None:
         raise AppError(409, "NO_OPEN_RELEASE", "Chưa có bản phát hành đang soạn; tạo bản mới trước")
     if rel.status != "Draft":
-        raise AppError(409, "RELEASE_LOCKED", "Bản phát hành đang chờ duyệt, không sửa được",
-                       [{"release_id": str(rel.release_id), "label": rel.label}])
+        raise AppError(
+            409,
+            "RELEASE_LOCKED",
+            "Bản phát hành đang chờ duyệt, không sửa được",
+            [{"release_id": str(rel.release_id), "label": rel.label}],
+        )
     values = {c: getattr(data, c) for c in cols}
     _cross_check(db, rel, kind, key, values)
 
     where = _where_key(kind, key)
-    draft = db.scalar(select(model).where(*where, model.release_id == rel.release_id, model.status == "Draft")
-                      .with_for_update())
+    draft = db.scalar(
+        select(model).where(*where, model.release_id == rel.release_id, model.status == "Draft").with_for_update()
+    )
     active = db.scalar(select(model).where(*where, model.status == "Active"))
-    if draft is None and active is not None and all(
-            _plain(getattr(active, c)) == _plain(v) for c, v in values.items()):
+    if draft is None and active is not None and all(_plain(getattr(active, c)) == _plain(v) for c, v in values.items()):
         raise AppError(422, "NO_CHANGE", "Nội dung giống bản đang dùng, không cần tạo phiên bản mới")
     if draft is None:
         latest = db.scalar(select(func.max(model.version)).where(*where)) or 0
         keyvals = dict(zip(keycols, key.split("/")))
-        draft = model(**keyvals, **values, version=latest + 1, status="Draft", release_id=rel.release_id,
-                      created_by=actor.user_id)
+        draft = model(
+            **keyvals, **values, version=latest + 1, status="Draft", release_id=rel.release_id, created_by=actor.user_id
+        )
         db.add(draft)
         action = "CREATE"
     else:
@@ -321,8 +435,14 @@ def put_draft(db: Session, kind: str, key: str, data, actor: User) -> dict[str, 
             setattr(draft, c, v)
         action = "UPDATE"
     db.flush()
-    audit.record(db, action=action, entity=table, entity_id=_row_id(draft), actor_id=actor.user_id,
-                 new_values={"key": key, "version": draft.version, "release": rel.label})
+    audit.record(
+        db,
+        action=action,
+        entity=table,
+        entity_id=_row_id(draft),
+        actor_id=actor.user_id,
+        new_values={"key": key, "version": draft.version, "release": rel.label},
+    )
     return item_out(kind, draft, rel.label)
 
 
@@ -339,15 +459,26 @@ def drop_draft(db: Session, kind: str, key: str, actor: User) -> None:
     rel = open_release(db, lock=True)
     if rel is None or rel.status != "Draft":
         raise AppError(409, "NO_OPEN_RELEASE", "Không có bản phát hành đang soạn")
-    draft = db.scalar(select(model).where(*_where_key(kind, key), model.release_id == rel.release_id,
-                                          model.status == "Draft"))
+    draft = db.scalar(
+        select(model).where(*_where_key(kind, key), model.release_id == rel.release_id, model.status == "Draft")
+    )
     if draft is None:
         raise NotFoundError("Mục này không có trong bản nháp")
     draft.status, draft.retired_by, draft.retired_at, draft.retired_reason = (
-        "Retired", actor.user_id, func.now(), "Deactivated")
+        "Retired",
+        actor.user_id,
+        func.now(),
+        "Deactivated",
+    )
     db.flush()
-    audit.record(db, action="UPDATE", entity=table, entity_id=_row_id(draft), actor_id=actor.user_id,
-                 new_values={"key": key, "dropped_from_draft": rel.label})
+    audit.record(
+        db,
+        action="UPDATE",
+        entity=table,
+        entity_id=_row_id(draft),
+        actor_id=actor.user_id,
+        new_values={"key": key, "dropped_from_draft": rel.label},
+    )
 
 
 # --- Tắt khẩn cấp ---------------------------------------------------------------------------------
@@ -364,36 +495,70 @@ def dependents(db: Session, kind: str, key: str) -> list[dict[str, str]]:
     _active_row(db, kind, key)
     out: list[dict[str, str]] = []
     if kind == "symptoms":
-        out += [{"kind": "relations", "key": key_of("relations", r)} for r in db.scalars(
-            select(ConditionSymptom).where(ConditionSymptom.symptom_code == key, ConditionSymptom.status == "Active"))]
-        rows = db.execute(text("SELECT rule_key FROM triage_rule WHERE status = 'Active' AND "
-                               "jsonb_path_exists(condition_logic, '$.**.symptom_code ? (@ == $c)', "
-                               "jsonb_build_object('c', CAST(:c AS text)))"), {"c": key}).scalars()
+        out += [
+            {"kind": "relations", "key": key_of("relations", r)}
+            for r in db.scalars(
+                select(ConditionSymptom).where(
+                    ConditionSymptom.symptom_code == key, ConditionSymptom.status == "Active"
+                )
+            )
+        ]
+        rows = db.execute(
+            text(
+                "SELECT rule_key FROM triage_rule WHERE status = 'Active' AND "
+                "jsonb_path_exists(condition_logic, '$.**.symptom_code ? (@ == $c)', "
+                "jsonb_build_object('c', CAST(:c AS text)))"
+            ),
+            {"c": key},
+        ).scalars()
         out += [{"kind": "rules", "key": k} for k in rows]
     elif kind == "conditions":
-        out += [{"kind": "relations", "key": key_of("relations", r)} for r in db.scalars(
-            select(ConditionSymptom).where(ConditionSymptom.condition_code == key, ConditionSymptom.status == "Active"))]
-        out += [{"kind": "excerpts", "key": e} for e in db.scalars(
-            select(GuidelineExcerpt.excerpt_key).where(GuidelineExcerpt.condition_code == key,
-                                                       GuidelineExcerpt.status == "Active"))]
+        out += [
+            {"kind": "relations", "key": key_of("relations", r)}
+            for r in db.scalars(
+                select(ConditionSymptom).where(
+                    ConditionSymptom.condition_code == key, ConditionSymptom.status == "Active"
+                )
+            )
+        ]
+        out += [
+            {"kind": "excerpts", "key": e}
+            for e in db.scalars(
+                select(GuidelineExcerpt.excerpt_key).where(
+                    GuidelineExcerpt.condition_code == key, GuidelineExcerpt.status == "Active"
+                )
+            )
+        ]
     return sorted(out, key=lambda d: (ORDER.index(d["kind"]), d["key"]))
 
 
 def deactivate(db: Session, kind: str, key: str, data: DeactivateRequest, actor: User) -> list[dict[str, str]]:
     deps = dependents(db, kind, key)
-    sent = sorted(({"kind": d.kind, "key": d.key} for d in data.confirm_dependents),
-                  key=lambda d: (ORDER.index(d["kind"]), d["key"]))
+    sent = sorted(
+        ({"kind": d.kind, "key": d.key} for d in data.confirm_dependents),
+        key=lambda d: (ORDER.index(d["kind"]), d["key"]),
+    )
     if sent != deps:
-        raise AppError(409, "DEPENDENTS_CHANGED",
-                       "Danh sách mục bị tắt theo đã thay đổi; xem lại và xác nhận lại", deps)
+        raise AppError(
+            409, "DEPENDENTS_CHANGED", "Danh sách mục bị tắt theo đã thay đổi; xem lại và xác nhận lại", deps
+        )
     now = func.now()
     for d in [{"kind": kind, "key": key}, *deps]:
         model = KINDS[d["kind"]][0]
-        db.execute(update(model).where(*_where_key(d["kind"], d["key"]), model.status == "Active")
-                   .values(status="Retired", retired_by=actor.user_id, retired_at=now, retired_reason="Deactivated"))
+        db.execute(
+            update(model)
+            .where(*_where_key(d["kind"], d["key"]), model.status == "Active")
+            .values(status="Retired", retired_by=actor.user_id, retired_at=now, retired_reason="Deactivated")
+        )
     db.flush()
-    audit.record(db, action="RETIRE", entity=KINDS[kind][3], entity_id=None, actor_id=actor.user_id,
-                 new_values={"key": key, "reason": data.reason, "cascade": deps})
+    audit.record(
+        db,
+        action="RETIRE",
+        entity=KINDS[kind][3],
+        entity_id=None,
+        actor_id=actor.user_id,
+        new_values={"key": key, "reason": data.reason, "cascade": deps},
+    )
     return deps
 
 
@@ -403,13 +568,23 @@ def list_sources(db: Session) -> list[KnowledgeSource]:
 
 
 def create_source(db: Session, data: SourceCreate, actor: User) -> KnowledgeSource:
-    if db.scalar(select(KnowledgeSource.source_id).where(KnowledgeSource.organization == data.organization,
-                                                         KnowledgeSource.edition == data.edition)):
-        raise AppError(409, "DUPLICATE_SOURCE", "Đã có nguồn cùng tổ chức và số hiệu văn bản",
-                       [{"field": "edition", "in": "body"}])
+    if db.scalar(
+        select(KnowledgeSource.source_id).where(
+            KnowledgeSource.organization == data.organization, KnowledgeSource.edition == data.edition
+        )
+    ):
+        raise AppError(
+            409, "DUPLICATE_SOURCE", "Đã có nguồn cùng tổ chức và số hiệu văn bản", [{"field": "edition", "in": "body"}]
+        )
     src = KnowledgeSource(**data.model_dump(), created_by=actor.user_id)
     db.add(src)
     db.flush()
-    audit.record(db, action="CREATE", entity="knowledge_source", entity_id=src.source_id, actor_id=actor.user_id,
-                 new_values={"organization": src.organization, "edition": src.edition})
+    audit.record(
+        db,
+        action="CREATE",
+        entity="knowledge_source",
+        entity_id=src.source_id,
+        actor_id=actor.user_id,
+        new_values={"organization": src.organization, "edition": src.edition},
+    )
     return src

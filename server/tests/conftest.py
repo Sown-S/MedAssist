@@ -2,6 +2,7 @@
 URL lấy từ server/.env, chỉ đổi tên database; ghi đè bằng TEST_DATABASE_URL, TEST_MIGRATION_DATABASE_URL.
 Biến môi trường phải đặt trước khi import app: settings và engine tạo lúc import.
 """
+
 import os
 import uuid
 from pathlib import Path
@@ -23,8 +24,10 @@ def _test_url(explicit_key: str, base_key: str) -> str:
             raise RuntimeError(f"Thiếu {base_key} trong server/.env")
         raw = make_url(base).set(database=TEST_DB).render_as_string(hide_password=False)
     if make_url(raw).database != TEST_DB:
-        raise RuntimeError(f"{explicit_key} phải trỏ tới database '{TEST_DB}' (đang là "
-                           f"'{make_url(raw).database}'). Test xóa sạch DB, không chạy trên DB dev.")
+        raise RuntimeError(
+            f"{explicit_key} phải trỏ tới database '{TEST_DB}' (đang là "
+            f"'{make_url(raw).database}'). Test xóa sạch DB, không chạy trên DB dev."
+        )
     return raw
 
 
@@ -61,9 +64,9 @@ _test_router = APIRouter(prefix="/_test", tags=["_test"])
 
 
 @_test_router.get("/patients/{patient_id}")
-def _fake_get_patient(patient_id: uuid.UUID,
-                      _: User = Depends(audit_view("patient", roles=CLINICAL_ROLES,
-                                                   id_param="patient_id"))):
+def _fake_get_patient(
+    patient_id: uuid.UUID, _: User = Depends(audit_view("patient", roles=CLINICAL_ROLES, id_param="patient_id"))
+):
     return {"patient_id": str(patient_id)}
 
 
@@ -78,9 +81,10 @@ def _fake_queue(_: User = Depends(audit_view("visit", roles=CLINICAL_ROLES, dedu
 
 
 @_test_router.get("/visits/{visit_id}/ai-status")
-def _fake_ai_status(visit_id: uuid.UUID,
-                    _: User = Depends(audit_view("visit", roles=CLINICAL_ROLES,
-                                                 id_param="visit_id", dedupe_seconds=300))):
+def _fake_ai_status(
+    visit_id: uuid.UUID,
+    _: User = Depends(audit_view("visit", roles=CLINICAL_ROLES, id_param="visit_id", dedupe_seconds=300)),
+):
     return {"status": "Queued"}
 
 
@@ -112,8 +116,13 @@ def users(_fresh_schema) -> dict[str, User]:
     out = {}
     with SessionLocal() as db:
         for username, role in specs.items():
-            u = User(username=username, password_hash=hash_password(PASSWORD),
-                     full_name=f"Test {username}", role=role, is_active=(username != "khoa"))
+            u = User(
+                username=username,
+                password_hash=hash_password(PASSWORD),
+                full_name=f"Test {username}",
+                role=role,
+                is_active=(username != "khoa"),
+            )
             db.add(u)
             out[username] = u
         db.commit()
@@ -137,6 +146,7 @@ def login(client):
         r = client.post("/api/v1/auth/login", json={"username": username, "password": password})
         assert r.status_code == 200, r.text
         return {"Authorization": f"Bearer {r.json()['access_token']}"}
+
     return _login
 
 
@@ -150,6 +160,7 @@ def since():
 @pytest.fixture
 def logs(since):
     """logs(action=..., entity=...) -> các dòng AUDIT_LOG tạo từ đầu test, cũ trước mới sau."""
+
     def _logs(**filters) -> list[AuditLog]:
         with SessionLocal() as db:
             stmt = select(AuditLog).where(AuditLog.created_at >= since)
@@ -157,6 +168,7 @@ def logs(since):
                 column = {"action": AuditLog.action_type, "entity": AuditLog.target_entity}.get(key)
                 stmt = stmt.where((column if column is not None else getattr(AuditLog, key)) == value)
             return list(db.scalars(stmt.order_by(AuditLog.created_at, AuditLog.log_id)))
+
     return _logs
 
 

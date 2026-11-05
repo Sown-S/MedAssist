@@ -1,4 +1,5 @@
 """Danh mục dịch vụ, xét nghiệm và gói khám (ERD §2.18a, §2.18b). Admin sửa; mọi vai trò đọc để chỉ định và thu tiền."""
+
 import uuid
 
 from sqlalchemy import func, or_, select
@@ -35,8 +36,12 @@ def _get(db: Session, service_id: uuid.UUID, *, lock: bool = False) -> Service:
 
 def _check_range(low, high) -> None:
     if low is not None and high is not None and low > high:
-        raise AppError(422, "VALIDATION_ERROR", "Dữ liệu không hợp lệ",
-                       [{"field": "ref_low", "in": "body", "message": "Giá trị dưới phải nhỏ hơn hoặc bằng giá trị trên"}])
+        raise AppError(
+            422,
+            "VALIDATION_ERROR",
+            "Dữ liệu không hợp lệ",
+            [{"field": "ref_low", "in": "body", "message": "Giá trị dưới phải nhỏ hơn hoặc bằng giá trị trên"}],
+        )
 
 
 def create_service(db: Session, data: ServiceCreate, actor: User) -> Service:
@@ -45,8 +50,14 @@ def create_service(db: Session, data: ServiceCreate, actor: User) -> Service:
     service = Service(**data.model_dump())
     db.add(service)
     db.flush()
-    audit.record(db, action="CREATE", entity="service", entity_id=service.service_id, actor_id=actor.user_id,
-                 new_values={f: getattr(service, f) for f in _FIELDS})
+    audit.record(
+        db,
+        action="CREATE",
+        entity="service",
+        entity_id=service.service_id,
+        actor_id=actor.user_id,
+        new_values={f: getattr(service, f) for f in _FIELDS},
+    )
     return service
 
 
@@ -55,8 +66,12 @@ def update_service(db: Session, service_id: uuid.UUID, data: ServiceUpdate, acto
     changes = data.model_dump(exclude_unset=True)
     for f in _REQUIRED:
         if f in changes and changes[f] is None:
-            raise AppError(422, "VALIDATION_ERROR", "Dữ liệu không hợp lệ",
-                           [{"field": f, "in": "body", "message": "Không được để trống"}])
+            raise AppError(
+                422,
+                "VALIDATION_ERROR",
+                "Dữ liệu không hợp lệ",
+                [{"field": f, "in": "body", "message": "Không được để trống"}],
+            )
     _check_range(changes.get("ref_low", service.ref_low), changes.get("ref_high", service.ref_high))
     old = audit.snapshot(service, changes.keys())
     for k, v in changes.items():
@@ -64,8 +79,15 @@ def update_service(db: Session, service_id: uuid.UUID, data: ServiceUpdate, acto
     old_diff, new_diff = audit.diff_values(old, {k: getattr(service, k) for k in changes})
     if new_diff:
         service.updated_at = func.now()
-        audit.record(db, action="UPDATE", entity="service", entity_id=service.service_id, actor_id=actor.user_id,
-                     old_values=old_diff, new_values=new_diff)
+        audit.record(
+            db,
+            action="UPDATE",
+            entity="service",
+            entity_id=service.service_id,
+            actor_id=actor.user_id,
+            old_values=old_diff,
+            new_values=new_diff,
+        )
     db.flush()
     db.refresh(service)
     return service
@@ -75,12 +97,25 @@ def price_history(db: Session, service_id: uuid.UUID) -> list[dict]:
     """Lịch sử giá suy từ audit_log (CREATE và các UPDATE có đổi giá), mới nhất trước."""
     _get(db, service_id)
     rows = db.execute(
-        select(AuditLog, User.full_name).outerjoin(User, User.user_id == AuditLog.user_id)
-        .where(AuditLog.target_entity == "service", AuditLog.entity_id == service_id,
-               AuditLog.action_type.in_(("CREATE", "UPDATE")), AuditLog.new_values.has_key("price"))
-        .order_by(AuditLog.created_at.desc(), AuditLog.log_id)).all()
-    return [{"price": log.new_values["price"], "old_price": (log.old_values or {}).get("price"),
-             "changed_at": log.created_at, "changed_by_name": name} for log, name in rows]
+        select(AuditLog, User.full_name)
+        .outerjoin(User, User.user_id == AuditLog.user_id)
+        .where(
+            AuditLog.target_entity == "service",
+            AuditLog.entity_id == service_id,
+            AuditLog.action_type.in_(("CREATE", "UPDATE")),
+            AuditLog.new_values.has_key("price"),
+        )
+        .order_by(AuditLog.created_at.desc(), AuditLog.log_id)
+    ).all()
+    return [
+        {
+            "price": log.new_values["price"],
+            "old_price": (log.old_values or {}).get("price"),
+            "changed_at": log.created_at,
+            "changed_by_name": name,
+        }
+        for log, name in rows
+    ]
 
 
 # --- Gói khám -------------------------------------------------------------------------------------
@@ -89,12 +124,14 @@ def _package_items(db: Session, items: list) -> list[dict]:
     merged: dict[uuid.UUID, int] = {}
     for it in items:
         merged[it.service_id] = merged.get(it.service_id, 0) + it.quantity
-    found = set(db.scalars(select(Service.service_id).where(Service.service_id.in_(merged),
-                                                            Service.is_active.is_(True))))
+    found = set(
+        db.scalars(select(Service.service_id).where(Service.service_id.in_(merged), Service.is_active.is_(True)))
+    )
     missing = [str(s) for s in merged if s not in found]
     if missing:
-        raise AppError(422, "INVALID_SERVICE", "Có dịch vụ không tồn tại hoặc đã ngừng dùng",
-                       [{"service_id": s} for s in missing])
+        raise AppError(
+            422, "INVALID_SERVICE", "Có dịch vụ không tồn tại hoặc đã ngừng dùng", [{"service_id": s} for s in missing]
+        )
     return [{"service_id": str(s), "quantity": q} for s, q in merged.items()]
 
 
@@ -107,10 +144,27 @@ def package_out(db: Session, packages: list[ServicePackage]) -> list[dict]:
         for i in p.items:
             s = services.get(uuid.UUID(i["service_id"]))
             if s is not None:
-                items.append({"service_id": s.service_id, "code": s.code, "name": s.name, "kind": s.kind,
-                              "quantity": i["quantity"], "is_active": s.is_active})
-        out.append({"package_id": p.package_id, "code": p.code, "name": p.name, "price": p.price,
-                    "is_active": p.is_active, "items": items, "updated_at": p.updated_at})
+                items.append(
+                    {
+                        "service_id": s.service_id,
+                        "code": s.code,
+                        "name": s.name,
+                        "kind": s.kind,
+                        "quantity": i["quantity"],
+                        "is_active": s.is_active,
+                    }
+                )
+        out.append(
+            {
+                "package_id": p.package_id,
+                "code": p.code,
+                "name": p.name,
+                "price": p.price,
+                "is_active": p.is_active,
+                "items": items,
+                "updated_at": p.updated_at,
+            }
+        )
     return out
 
 
@@ -135,9 +189,14 @@ def create_package(db: Session, data: PackageCreate, actor: User) -> ServicePack
     package = ServicePackage(code=data.code, name=data.name, price=data.price, items=_package_items(db, data.items))
     db.add(package)
     db.flush()
-    audit.record(db, action="CREATE", entity="service_package", entity_id=package.package_id,
-                 actor_id=actor.user_id, new_values={"code": package.code, "name": package.name,
-                                                     "price": package.price, "items": package.items})
+    audit.record(
+        db,
+        action="CREATE",
+        entity="service_package",
+        entity_id=package.package_id,
+        actor_id=actor.user_id,
+        new_values={"code": package.code, "name": package.name, "price": package.price, "items": package.items},
+    )
     db.refresh(package)
     return package
 
@@ -147,8 +206,12 @@ def update_package(db: Session, package_id: uuid.UUID, data: PackageUpdate, acto
     changes = data.model_dump(exclude_unset=True)
     for f in ("name", "price", "items", "is_active"):
         if f in changes and changes[f] is None:
-            raise AppError(422, "VALIDATION_ERROR", "Dữ liệu không hợp lệ",
-                           [{"field": f, "in": "body", "message": "Không được để trống"}])
+            raise AppError(
+                422,
+                "VALIDATION_ERROR",
+                "Dữ liệu không hợp lệ",
+                [{"field": f, "in": "body", "message": "Không được để trống"}],
+            )
     if "items" in changes:
         changes["items"] = _package_items(db, data.items)
     old = audit.snapshot(package, changes.keys())
@@ -157,8 +220,15 @@ def update_package(db: Session, package_id: uuid.UUID, data: PackageUpdate, acto
     old_diff, new_diff = audit.diff_values(old, {k: getattr(package, k) for k in changes})
     if new_diff:
         package.updated_at = func.now()
-        audit.record(db, action="UPDATE", entity="service_package", entity_id=package.package_id,
-                     actor_id=actor.user_id, old_values=old_diff, new_values=new_diff)
+        audit.record(
+            db,
+            action="UPDATE",
+            entity="service_package",
+            entity_id=package.package_id,
+            actor_id=actor.user_id,
+            old_values=old_diff,
+            new_values=new_diff,
+        )
     db.flush()
     db.refresh(package)
     return package

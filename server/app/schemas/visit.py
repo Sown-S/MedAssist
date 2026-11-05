@@ -20,6 +20,7 @@ class VisitCreate(BaseModel):
 
 class VisitUpdate(BaseModel):
     """Waiting: sửa mọi trường. CheckedIn: chỉ sửa vital_signs."""
+
     model_config = ConfigDict(extra="forbid")
     chief_complaint: CleanStr | None = Field(default=None, min_length=1, max_length=2000)
     vital_signs: VitalSigns | None = None
@@ -39,6 +40,7 @@ Transport = Literal["Ambulance", "Family", "Self", "Other"]
 
 class ReferralIn(BaseModel):
     """Thông tin giấy chuyển tuyến. facility_name bắt buộc; facility_id khi chọn từ danh mục."""
+
     model_config = ConfigDict(extra="forbid")
     facility_id: uuid.UUID | None = None
     facility_name: CleanStr = Field(min_length=2, max_length=255)
@@ -53,6 +55,7 @@ class ReferralIn(BaseModel):
 
 class ReferralUpdate(BaseModel):
     """Bác sĩ bổ sung giấy chuyển tuyến sau khi lễ tân đã chuyển bệnh nhân đi."""
+
     model_config = ConfigDict(extra="forbid")
     facility_id: uuid.UUID | None = None
     facility_name: CleanStr | None = Field(default=None, min_length=2, max_length=255)
@@ -66,6 +69,7 @@ class ReferralUpdate(BaseModel):
 
 class EmergencyReferralCreate(BaseModel):
     """Cấp cứu ở quầy: tạo lượt khám và chuyển tuyến ngay, bệnh nhân không vào hàng đợi."""
+
     model_config = ConfigDict(extra="forbid")
     patient_id: uuid.UUID
     chief_complaint: CleanStr = Field(min_length=1, max_length=2000)
@@ -121,6 +125,7 @@ class VisitWithWarnings(VisitOut):
 
 class QueueItem(BaseModel):
     """Một dòng hàng đợi (US10): đủ để hiển thị, không gồm sinh hiệu chi tiết."""
+
     visit_id: uuid.UUID
     queue_date: date
     queue_number: int | None

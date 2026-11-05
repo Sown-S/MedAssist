@@ -2,6 +2,7 @@
 Nguồn gốc là diagnosis.matches_top_suggestion; physician_decision ghi kèm trong cùng transaction.
 Quy tắc chọn lần chạy và so khớp: docs/thiet-ke-backend.md §3.
 """
+
 import uuid
 
 from sqlalchemy import func, or_, select, update
@@ -17,23 +18,34 @@ _VISIBLE_STATUSES = ("Completed", "Degraded", "Skipped")
 DECISION_BY_MATCH = {True: "AcceptedTop", False: "ChoseOther", None: "NoSuggestion"}
 
 
-def resolve_assessment(db: Session, visit_id: uuid.UUID,
-                       assessment_id: uuid.UUID | None) -> AiAssessmentLog | None:
+def resolve_assessment(db: Session, visit_id: uuid.UUID, assessment_id: uuid.UUID | None) -> AiAssessmentLog | None:
     """Lần chạy AI gắn với chẩn đoán sắp lưu, hoặc None nếu lượt khám chưa có lần chạy nào."""
     if assessment_id is not None:
         run = db.get(AiAssessmentLog, assessment_id)
         if run is None or run.visit_id != visit_id or run.run_type != "Assessment":
-            raise AppError(422, "ASSESSMENT_NOT_FOR_VISIT",
-                           "Kết quả AI không thuộc lượt khám này",
-                           [{"field": "assessment_id", "in": "body",
-                             "message": "Không tồn tại, thuộc lượt khám khác, hoặc không phải lần đánh giá"}])
+            raise AppError(
+                422,
+                "ASSESSMENT_NOT_FOR_VISIT",
+                "Kết quả AI không thuộc lượt khám này",
+                [
+                    {
+                        "field": "assessment_id",
+                        "in": "body",
+                        "message": "Không tồn tại, thuộc lượt khám khác, hoặc không phải lần đánh giá",
+                    }
+                ],
+            )
         return run
     return db.scalar(
         select(AiAssessmentLog)
-        .where(AiAssessmentLog.visit_id == visit_id, AiAssessmentLog.run_type == "Assessment",
-               or_(AiAssessmentLog.candidates.is_not(None), AiAssessmentLog.status.in_(_VISIBLE_STATUSES)))
+        .where(
+            AiAssessmentLog.visit_id == visit_id,
+            AiAssessmentLog.run_type == "Assessment",
+            or_(AiAssessmentLog.candidates.is_not(None), AiAssessmentLog.status.in_(_VISIBLE_STATUSES)),
+        )
         .order_by(AiAssessmentLog.queued_at.desc(), AiAssessmentLog.assessment_id.desc())
-        .limit(1))
+        .limit(1)
+    )
 
 
 def top_suggestion(run: AiAssessmentLog | None) -> str | None:
@@ -59,9 +71,14 @@ def sync_decision(db: Session, visit_id: uuid.UUID, actor: User) -> None:
     Gọi sau mọi thay đổi chẩn đoán chính (thêm, đổi chính, rút lại), trước commit. Lần chạy không còn
     gắn chẩn đoán chính đã xác nhận thì bị xóa quyết định cũ."""
     db.flush()
-    rows = db.execute(select(Diagnosis.assessment_id, Diagnosis.is_primary, Diagnosis.confirmed_by_physician,
-                             Diagnosis.matches_top_suggestion)
-                      .where(Diagnosis.visit_id == visit_id, Diagnosis.assessment_id.is_not(None))).all()
+    rows = db.execute(
+        select(
+            Diagnosis.assessment_id,
+            Diagnosis.is_primary,
+            Diagnosis.confirmed_by_physician,
+            Diagnosis.matches_top_suggestion,
+        ).where(Diagnosis.visit_id == visit_id, Diagnosis.assessment_id.is_not(None))
+    ).all()
     if not rows:
         return
     decided: dict[uuid.UUID, str] = {}
@@ -71,13 +88,18 @@ def sync_decision(db: Session, visit_id: uuid.UUID, actor: User) -> None:
     referenced = {r.assessment_id for r in rows}
 
     for assessment_id, decision in decided.items():
-        db.execute(update(AiAssessmentLog)
-                   .where(AiAssessmentLog.assessment_id == assessment_id,
-                          AiAssessmentLog.physician_decision.is_distinct_from(decision))
-                   .values(physician_decision=decision, decided_by=actor.user_id, decided_at=func.now()))
+        db.execute(
+            update(AiAssessmentLog)
+            .where(
+                AiAssessmentLog.assessment_id == assessment_id,
+                AiAssessmentLog.physician_decision.is_distinct_from(decision),
+            )
+            .values(physician_decision=decision, decided_by=actor.user_id, decided_at=func.now())
+        )
     stale = referenced - set(decided)
     if stale:
-        db.execute(update(AiAssessmentLog)
-                   .where(AiAssessmentLog.assessment_id.in_(stale),
-                          AiAssessmentLog.physician_decision.is_not(None))
-                   .values(physician_decision=None, decided_by=None, decided_at=None))
+        db.execute(
+            update(AiAssessmentLog)
+            .where(AiAssessmentLog.assessment_id.in_(stale), AiAssessmentLog.physician_decision.is_not(None))
+            .values(physician_decision=None, decided_by=None, decided_at=None)
+        )
