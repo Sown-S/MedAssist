@@ -1,11 +1,11 @@
 """Ghi VIEW theo route, gộp polling, ghi lượt bị từ chối (US04, US09)."""
+
 import uuid
 
 
 def test_view_patient_logged_with_entity_and_query_keys_only(client, users, login, logs):
     pid = uuid.uuid4()
-    r = client.get(f"/api/v1/_test/patients/{pid}", params={"q": "Nguyễn Văn A", "phone": "0905"},
-                   headers=login("bs"))
+    r = client.get(f"/api/v1/_test/patients/{pid}", params={"q": "Nguyễn Văn A", "phone": "0905"}, headers=login("bs"))
     assert r.status_code == 200
 
     (row,) = logs(action="VIEW", entity="patient")
@@ -35,8 +35,13 @@ def test_admin_cannot_view_patient_and_denial_is_logged(client, users, login, lo
 
     (row,) = logs(action="VIEW", entity="patient")
     assert row.user_id == users["admin"].user_id and row.entity_id == pid
-    assert row.new_values == {"result": "denied", "status": 403, "role": "Admin", "method": "GET",
-                              "path": "/api/v1/_test/patients/{patient_id}"}
+    assert row.new_values == {
+        "result": "denied",
+        "status": 403,
+        "role": "Admin",
+        "method": "GET",
+        "path": "/api/v1/_test/patients/{patient_id}",
+    }
 
 
 def test_no_token_means_401_and_no_log(client, users, logs):
@@ -48,7 +53,7 @@ def test_polling_is_deduplicated_per_user_and_entity(client, users, login, logs)
     nurse, doctor = login("yta"), login("bs")
     for _ in range(5):
         client.get("/api/v1/_test/queue", headers=nurse)
-    client.get("/api/v1/_test/queue", headers=doctor)            # người khác: dòng riêng
+    client.get("/api/v1/_test/queue", headers=doctor)  # người khác: dòng riêng
 
     rows = logs(action="VIEW", entity="visit")
     assert len(rows) == 2
@@ -76,7 +81,7 @@ def test_require_roles_logs_denied_write_with_method_action(client, users, login
     (row,) = logs(entity="drug")
     assert row.action_type == "CREATE" and row.new_values["result"] == "denied"
     assert client.post("/api/v1/_test/drugs", headers=login("admin")).status_code == 200
-    assert len(logs(entity="drug")) == 1                        # thành công: không ghi ở tầng này
+    assert len(logs(entity="drug")) == 1  # thành công: không ghi ở tầng này
 
 
 def test_spoofed_forwarded_for_is_ignored(client, users, login, logs):

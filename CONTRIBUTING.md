@@ -61,6 +61,7 @@ Chạy kiểm tra của phần mình đã sửa:
 | Sửa ở | Lệnh | CI có chạy lại không |
 |---|---|---|
 | `server/` | `cd server; python -m pytest` (cần PostgreSQL trong Docker, xem `server/README.md` mục 5) | Có, kèm độ phủ ≥ 90% |
+| `server/`, `tools/` (Python) | Ở gốc repo: `ruff format server tools; ruff check --fix server tools` (`pip install ruff==0.17.2`) | Có, sai định dạng là CI đỏ |
 | Model hoặc migration | `python -m alembic upgrade head; python -m alembic check` | Có |
 | `client/` | `cd client; npm run lint; npm test; npm run build` | Có lint + test (build phải tự chạy) |
 | `tools/` | `cd tools; python -m pytest` | Có |
@@ -93,14 +94,16 @@ Code tự nói "làm gì", chú thích chỉ nói "tại sao".
 Nên viết:
 - Lý do của một quyết định không hiển nhiên: ràng buộc nghiệp vụ, bảo mật, hiệu năng.
   VD: `# Tắt /docs khi prod: không lộ danh sách endpoint trong LAN phòng khám.`
-- Tham chiếu tài liệu thay cho giải thích dài: `# AI-12`, `# Architecture v1.7 §4`.
+- Tham chiếu tài liệu thay cho giải thích dài, không ghi số phiên bản tài liệu: `# AI-12`, `# US04`, `# ERD §2.10`.
 - Cảnh báo bẫy: thứ tự bắt buộc, side effect, giới hạn đã biết.
 - Docstring tối đa 3 dòng cho module/hàm public: mục đích và ràng buộc quan trọng.
+  Mô tả luồng dài (máy trạng thái, hàng đợi, quy tắc nghiệp vụ) đưa vào `docs/thiet-ke-backend.md`, docstring trỏ về mục.
+- Chia nhóm trong file dài (trên khoảng 150 dòng) bằng một dòng `# --- Tiêu đề ---...` dài 100 cột; file ngắn không chia.
 
 Không viết:
 - Diễn giải lại code: `# Tạo biến đếm`, `# Gọi hàm lưu DB`, `# Trả về kết quả`.
 - Đánh số "Bước 1/2/3" cho code tuyến tính khi tên hàm đã rõ.
-- Lịch sử thay đổi (`# New:`, `# Fixed:`, tên người sửa): để trong commit message.
+- Lịch sử thay đổi (`# New:`, `# Fixed:`, tên người sửa), mốc nội bộ (ngày chốt, "bước 5", sprint): để trong commit message.
 - Code bị comment-out: xóa đi, Git đã lưu.
 - Docstring liệt kê lại tham số khi type hint đã đủ.
 - TODO không có mã task: viết `# TODO(MA-123): ...` hoặc không viết.

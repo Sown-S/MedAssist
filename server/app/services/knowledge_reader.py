@@ -2,6 +2,7 @@
 Cache theo knowledge_epoch, nạp trong một snapshot REPEATABLE READ; trả dict/list thuần (deep copy).
 Chi tiết: docs/thiet-ke-backend.md §6.2.
 """
+
 import threading
 from copy import deepcopy
 from dataclasses import dataclass
@@ -10,8 +11,16 @@ from typing import Any
 from sqlalchemy import Engine, select
 
 from app.core.database import engine as default_engine
-from app.models import (Condition, ConditionSymptom, GuidelineExcerpt, KnowledgeEpoch, KnowledgeRelease,
-                        KnowledgeSource, Symptom, TriageRule)
+from app.models import (
+    Condition,
+    ConditionSymptom,
+    GuidelineExcerpt,
+    KnowledgeEpoch,
+    KnowledgeRelease,
+    KnowledgeSource,
+    Symptom,
+    TriageRule,
+)
 
 
 @dataclass(frozen=True)
@@ -36,55 +45,110 @@ def load_snapshot(bind: Engine) -> KnowledgeSnapshot:
             rel = conn.execute(
                 select(KnowledgeRelease.release_id, KnowledgeRelease.label, KnowledgeRelease.approved_at)
                 .where(KnowledgeRelease.status == "Active")
-                .order_by(KnowledgeRelease.approved_at.desc().nulls_last()).limit(1)).first()
-            release = {"release_id": str(rel.release_id) if rel else None,
-                       "label": rel.label if rel else None,
-                       "approved_at": rel.approved_at.isoformat() if rel and rel.approved_at else None,
-                       "epoch": int(epoch)}
+                .order_by(KnowledgeRelease.approved_at.desc().nulls_last())
+                .limit(1)
+            ).first()
+            release = {
+                "release_id": str(rel.release_id) if rel else None,
+                "label": rel.label if rel else None,
+                "approved_at": rel.approved_at.isoformat() if rel and rel.approved_at else None,
+                "epoch": int(epoch),
+            }
 
-            symptoms = [{"symptom_code": r.symptom_code, "symptom_name": r.symptom_name, "category": r.category}
-                        for r in conn.execute(select(Symptom.symptom_code, Symptom.symptom_name, Symptom.category)
-                                              .where(Symptom.status == "Active")
-                                              .order_by(Symptom.symptom_code))]
+            symptoms = [
+                {"symptom_code": r.symptom_code, "symptom_name": r.symptom_name, "category": r.category}
+                for r in conn.execute(
+                    select(Symptom.symptom_code, Symptom.symptom_name, Symptom.category)
+                    .where(Symptom.status == "Active")
+                    .order_by(Symptom.symptom_code)
+                )
+            ]
 
-            rules = [{"triage_rule_id": str(r.triage_rule_id), "rule_key": r.rule_key, "version": r.version,
-                      "rule_type": r.rule_type, "resulting_priority": r.resulting_priority,
-                      "reason_text": r.reason_text, "condition_logic": r.condition_logic}
-                     for r in conn.execute(
-                         select(TriageRule.triage_rule_id, TriageRule.rule_key, TriageRule.version,
-                                TriageRule.rule_type, TriageRule.resulting_priority, TriageRule.reason_text,
-                                TriageRule.condition_logic)
-                         .where(TriageRule.status == "Active").order_by(TriageRule.rule_key))]
+            rules = [
+                {
+                    "triage_rule_id": str(r.triage_rule_id),
+                    "rule_key": r.rule_key,
+                    "version": r.version,
+                    "rule_type": r.rule_type,
+                    "resulting_priority": r.resulting_priority,
+                    "reason_text": r.reason_text,
+                    "condition_logic": r.condition_logic,
+                }
+                for r in conn.execute(
+                    select(
+                        TriageRule.triage_rule_id,
+                        TriageRule.rule_key,
+                        TriageRule.version,
+                        TriageRule.rule_type,
+                        TriageRule.resulting_priority,
+                        TriageRule.reason_text,
+                        TriageRule.condition_logic,
+                    )
+                    .where(TriageRule.status == "Active")
+                    .order_by(TriageRule.rule_key)
+                )
+            ]
 
             relations: dict[str, list[dict[str, Any]]] = {}
-            for r in conn.execute(select(ConditionSymptom.condition_code, ConditionSymptom.symptom_code,
-                                         ConditionSymptom.polarity, ConditionSymptom.weight,
-                                         ConditionSymptom.is_key)
-                                  .where(ConditionSymptom.status == "Active")
-                                  .order_by(ConditionSymptom.condition_code, ConditionSymptom.symptom_code)):
+            for r in conn.execute(
+                select(
+                    ConditionSymptom.condition_code,
+                    ConditionSymptom.symptom_code,
+                    ConditionSymptom.polarity,
+                    ConditionSymptom.weight,
+                    ConditionSymptom.is_key,
+                )
+                .where(ConditionSymptom.status == "Active")
+                .order_by(ConditionSymptom.condition_code, ConditionSymptom.symptom_code)
+            ):
                 relations.setdefault(r.condition_code, []).append(
-                    {"symptom_code": r.symptom_code, "polarity": r.polarity, "weight": _float(r.weight),
-                     "is_key": bool(r.is_key)})
+                    {
+                        "symptom_code": r.symptom_code,
+                        "polarity": r.polarity,
+                        "weight": _float(r.weight),
+                        "is_key": bool(r.is_key),
+                    }
+                )
 
             guidelines: dict[str, list[dict[str, Any]]] = {}
-            for r in conn.execute(select(GuidelineExcerpt.condition_code, GuidelineExcerpt.excerpt_key,
-                                         GuidelineExcerpt.title, GuidelineExcerpt.content,
-                                         GuidelineExcerpt.source_locator, KnowledgeSource.title.label("source_title"))
-                                  .join(KnowledgeSource, KnowledgeSource.source_id == GuidelineExcerpt.source_id)
-                                  .where(GuidelineExcerpt.status == "Active")
-                                  .order_by(GuidelineExcerpt.condition_code, GuidelineExcerpt.excerpt_key)):
+            for r in conn.execute(
+                select(
+                    GuidelineExcerpt.condition_code,
+                    GuidelineExcerpt.excerpt_key,
+                    GuidelineExcerpt.title,
+                    GuidelineExcerpt.content,
+                    GuidelineExcerpt.source_locator,
+                    KnowledgeSource.title.label("source_title"),
+                )
+                .join(KnowledgeSource, KnowledgeSource.source_id == GuidelineExcerpt.source_id)
+                .where(GuidelineExcerpt.status == "Active")
+                .order_by(GuidelineExcerpt.condition_code, GuidelineExcerpt.excerpt_key)
+            ):
                 guidelines.setdefault(r.condition_code, []).append(
-                    {"excerpt_key": r.excerpt_key, "title": r.title, "content": r.content,
-                     "source_title": r.source_title, "source_locator": r.source_locator})
+                    {
+                        "excerpt_key": r.excerpt_key,
+                        "title": r.title,
+                        "content": r.content,
+                        "source_title": r.source_title,
+                        "source_locator": r.source_locator,
+                    }
+                )
 
-            conditions = [{"condition_code": r.condition_code, "name_vi": r.name_vi, "icd10_code": r.icd10_code,
-                           "disease_group": r.disease_group,
-                           "symptoms": relations.get(r.condition_code, []),
-                           "guidelines": guidelines.get(r.condition_code, [])}
-                          for r in conn.execute(select(Condition.condition_code, Condition.name_vi,
-                                                       Condition.icd10_code, Condition.disease_group)
-                                                .where(Condition.status == "Active")
-                                                .order_by(Condition.condition_code))]
+            conditions = [
+                {
+                    "condition_code": r.condition_code,
+                    "name_vi": r.name_vi,
+                    "icd10_code": r.icd10_code,
+                    "disease_group": r.disease_group,
+                    "symptoms": relations.get(r.condition_code, []),
+                    "guidelines": guidelines.get(r.condition_code, []),
+                }
+                for r in conn.execute(
+                    select(Condition.condition_code, Condition.name_vi, Condition.icd10_code, Condition.disease_group)
+                    .where(Condition.status == "Active")
+                    .order_by(Condition.condition_code)
+                )
+            ]
     return KnowledgeSnapshot(int(epoch), release, rules, conditions, symptoms)
 
 

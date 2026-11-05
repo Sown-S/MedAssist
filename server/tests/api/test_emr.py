@@ -1,10 +1,11 @@
 """EMR (US04): tra cứu nhanh, lịch sử khám (chẩn đoán + tóm tắt đơn), xem lại một lượt khám, audit."""
+
 import uuid
 
 import pytest
 
-from app.services.emr_service import interpret_term
 from app.exceptions import AppError
+from app.services.emr_service import interpret_term
 
 
 # --- Tiện ích -------------------------------------------------------------------------------------
@@ -35,27 +36,35 @@ def _pay(client, nurse, vid):
 @pytest.fixture
 def patient(client, nurse):
     def _make(**over):
-        body = {"full_name": f"Trần Văn Bình {uuid.uuid4().hex[:6]}", "date_of_birth": "1985-06-02",
-                "gender": "Male", **over}
+        body = {
+            "full_name": f"Trần Văn Bình {uuid.uuid4().hex[:6]}",
+            "date_of_birth": "1985-06-02",
+            "gender": "Male",
+            **over,
+        }
         r = client.post("/api/v1/patients", headers=nurse, json={**body, "confirm_duplicate": True})
         assert r.status_code == 201, r.text
         return r.json()
+
     return _make
 
 
 # --- Hiểu ô tìm kiếm (unit) -----------------------------------------------------------------------
-@pytest.mark.parametrize("term, expected", [
-    ("BN-3F2A9C1B", {"kind": "patient_code", "value": "3f2a9c1b"}),
-    ("bn3f2a9c1b", {"kind": "patient_code", "value": "3f2a9c1b"}),
-    ("3f2a9c1b", {"kind": "patient_code", "value": "3f2a9c1b"}),
-    ("048090001234", {"kind": "id_number", "value": "048090001234"}),
-    ("123456789", {"kind": "id_number", "value": "123456789"}),
-    ("0905 123 456", {"kind": "phone", "value": "0905123456"}),
-    ("+84905123456", {"kind": "phone", "value": "0905123456"}),
-    ("1985", {"kind": "birth_year", "birth_year": 1985}),
-    ("nguyen van a", {"kind": "name", "name": "nguyen van a"}),
-    ("Nguyễn  Văn A 1985", {"kind": "name_birth_year", "name": "Nguyễn Văn A", "birth_year": 1985}),
-])
+@pytest.mark.parametrize(
+    "term, expected",
+    [
+        ("BN-3F2A9C1B", {"kind": "patient_code", "value": "3f2a9c1b"}),
+        ("bn3f2a9c1b", {"kind": "patient_code", "value": "3f2a9c1b"}),
+        ("3f2a9c1b", {"kind": "patient_code", "value": "3f2a9c1b"}),
+        ("048090001234", {"kind": "id_number", "value": "048090001234"}),
+        ("123456789", {"kind": "id_number", "value": "123456789"}),
+        ("0905 123 456", {"kind": "phone", "value": "0905123456"}),
+        ("+84905123456", {"kind": "phone", "value": "0905123456"}),
+        ("1985", {"kind": "birth_year", "birth_year": 1985}),
+        ("nguyen van a", {"kind": "name", "name": "nguyen van a"}),
+        ("Nguyễn  Văn A 1985", {"kind": "name_birth_year", "name": "Nguyễn Văn A", "birth_year": 1985}),
+    ],
+)
 def test_interpret_term(term, expected):
     assert interpret_term(term) == expected
 
@@ -187,8 +196,9 @@ def test_history_pagination_and_404(client, doctor, examining, nurse):
     _pay(client, nurse, vid)
     _cancel(client, nurse, _new_visit(client, nurse, pid))
     _new_visit(client, nurse, pid)
-    page = client.get(f"/api/v1/patients/{pid}/history", headers=doctor,
-                      params={"limit": 2, "offset": 2, "include_cancelled": True}).json()
+    page = client.get(
+        f"/api/v1/patients/{pid}/history", headers=doctor, params={"limit": 2, "offset": 2, "include_cancelled": True}
+    ).json()
     assert page["total"] == 3 and len(page["items"]) == 1 and page["items"][0]["visit_id"] == vid
     assert client.get(f"/api/v1/patients/{uuid.uuid4()}/history", headers=doctor).status_code == 404
 
@@ -196,8 +206,15 @@ def test_history_pagination_and_404(client, doctor, examining, nurse):
 def test_history_draft_prescription_not_shown(client, doctor, drug, examining, nurse):
     did, _ = drug({30: 20})
     vid = examining()
-    client.put(f"/api/v1/visits/{vid}/prescription", headers=doctor, json={"items": [
-        {"drug_id": did, "dosage": "1 viên", "frequency": "2 lần/ngày", "duration_days": 3, "quantity": 6}]})
+    client.put(
+        f"/api/v1/visits/{vid}/prescription",
+        headers=doctor,
+        json={
+            "items": [
+                {"drug_id": did, "dosage": "1 viên", "frequency": "2 lần/ngày", "duration_days": 3, "quantity": 6}
+            ]
+        },
+    )
     pid = client.get(f"/api/v1/visits/{vid}", headers=nurse).json()["patient_id"]
     item = client.get(f"/api/v1/patients/{pid}/history", headers=doctor).json()["items"][0]
     assert item["prescription"] is None

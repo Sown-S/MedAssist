@@ -2,6 +2,7 @@
 Sổ cái stock_movement là nguồn sự thật: chỉ INSERT sổ cái, không UPDATE remaining_quantity. Không xóa thuốc, lô.
 Chi tiết: docs/thiet-ke-backend.md §5.2.
 """
+
 import uuid
 from datetime import date, timedelta
 
@@ -13,22 +14,38 @@ from app.models import Drug, InventoryBatch, StockMovement, User
 from app.schemas.inventory import AdjustmentCreate, BatchCreate, BatchTopUp, DrugCreate, DrugUpdate
 from app.services import audit_service as audit
 
-_DRUG_FIELDS = ["generic_name", "trade_name", "strength", "dosage_form", "unit", "sale_price",
-                "reorder_level", "drug_class", "active_ingredient_code", "is_active"]
+_DRUG_FIELDS = [
+    "generic_name",
+    "trade_name",
+    "strength",
+    "dosage_form",
+    "unit",
+    "sale_price",
+    "reorder_level",
+    "drug_class",
+    "active_ingredient_code",
+    "is_active",
+]
 
 
 # --- Thuốc ----------------------------------------------------------------------------------------
 def _identity_conflict(db: Session, generic, trade, strength, form, exclude: uuid.UUID | None = None):
     stmt = select(Drug.drug_id).where(
-        func.lower(Drug.generic_name) == generic.lower(), func.lower(Drug.trade_name) == trade.lower(),
-        func.lower(Drug.strength) == strength.lower(), func.lower(Drug.dosage_form) == form.lower())
+        func.lower(Drug.generic_name) == generic.lower(),
+        func.lower(Drug.trade_name) == trade.lower(),
+        func.lower(Drug.strength) == strength.lower(),
+        func.lower(Drug.dosage_form) == form.lower(),
+    )
     if exclude:
         stmt = stmt.where(Drug.drug_id != exclude)
     existing = db.scalar(stmt)
     if existing:
-        raise AppError(409, "DUPLICATE_DRUG",
-                       "Đã có thuốc cùng hoạt chất, tên thương mại, hàm lượng và dạng bào chế",
-                       [{"drug_id": str(existing)}])
+        raise AppError(
+            409,
+            "DUPLICATE_DRUG",
+            "Đã có thuốc cùng hoạt chất, tên thương mại, hàm lượng và dạng bào chế",
+            [{"drug_id": str(existing)}],
+        )
 
 
 def get_drug(db: Session, drug_id: uuid.UUID) -> Drug:
@@ -45,8 +62,10 @@ def list_drugs(db: Session, *, q: str | None, active_only: bool, limit: int, off
     if q:
         like = "%" + q.lower().replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_") + "%"
         key = lambda col: func.lower(func.f_unaccent(col))  # noqa: E731
-        stmt = stmt.where(key(Drug.generic_name).like(func.f_unaccent(like), escape="\\")
-                          | key(Drug.trade_name).like(func.f_unaccent(like), escape="\\"))
+        stmt = stmt.where(
+            key(Drug.generic_name).like(func.f_unaccent(like), escape="\\")
+            | key(Drug.trade_name).like(func.f_unaccent(like), escape="\\")
+        )
     total = db.scalar(select(func.count()).select_from(stmt.subquery()))
     rows = db.scalars(stmt.order_by(Drug.generic_name, Drug.strength).limit(limit).offset(offset)).all()
     return total or 0, list(rows)
@@ -57,8 +76,14 @@ def create_drug(db: Session, data: DrugCreate, actor: User) -> Drug:
     drug = Drug(**data.model_dump())
     db.add(drug)
     db.flush()
-    audit.record(db, action="CREATE", entity="drug", entity_id=drug.drug_id, actor_id=actor.user_id,
-                 new_values={f: getattr(drug, f) for f in _DRUG_FIELDS})
+    audit.record(
+        db,
+        action="CREATE",
+        entity="drug",
+        entity_id=drug.drug_id,
+        actor_id=actor.user_id,
+        new_values={f: getattr(drug, f) for f in _DRUG_FIELDS},
+    )
     return drug
 
 
@@ -67,22 +92,42 @@ def update_drug(db: Session, drug_id: uuid.UUID, data: DrugUpdate, actor: User) 
     if drug is None:
         raise NotFoundError("Không tìm thấy thuốc")
     changes = data.model_dump(exclude_unset=True)
-    for required in ("generic_name", "trade_name", "strength", "dosage_form", "unit", "sale_price",
-                     "reorder_level", "is_active"):
+    for required in (
+        "generic_name",
+        "trade_name",
+        "strength",
+        "dosage_form",
+        "unit",
+        "sale_price",
+        "reorder_level",
+        "is_active",
+    ):
         if required in changes and changes[required] is None:
-            raise AppError(422, "VALIDATION_ERROR", "Dữ liệu không hợp lệ",
-                           [{"field": required, "in": "body", "message": "Không được để trống"}])
+            raise AppError(
+                422,
+                "VALIDATION_ERROR",
+                "Dữ liệu không hợp lệ",
+                [{"field": required, "in": "body", "message": "Không được để trống"}],
+            )
     merged = {k: changes.get(k, getattr(drug, k)) for k in ("generic_name", "trade_name", "strength", "dosage_form")}
     if any(k in changes for k in merged):
-        _identity_conflict(db, merged["generic_name"], merged["trade_name"], merged["strength"],
-                           merged["dosage_form"], exclude=drug_id)
+        _identity_conflict(
+            db, merged["generic_name"], merged["trade_name"], merged["strength"], merged["dosage_form"], exclude=drug_id
+        )
     old = audit.snapshot(drug, changes.keys())
     for k, v in changes.items():
         setattr(drug, k, v)
     old_diff, new_diff = audit.diff_values(old, {k: getattr(drug, k) for k in changes})
     if new_diff:
-        audit.record(db, action="UPDATE", entity="drug", entity_id=drug.drug_id, actor_id=actor.user_id,
-                     old_values=old_diff, new_values=new_diff)
+        audit.record(
+            db,
+            action="UPDATE",
+            entity="drug",
+            entity_id=drug.drug_id,
+            actor_id=actor.user_id,
+            old_values=old_diff,
+            new_values=new_diff,
+        )
     return drug
 
 
@@ -134,21 +179,44 @@ def create_batch(db: Session, data: BatchCreate, actor: User) -> dict:
         errors.append({"field": "manufacturing_date", "in": "body", "message": "Ngày sản xuất phải trước hạn dùng"})
     if errors:
         raise AppError(422, "VALIDATION_ERROR", "Dữ liệu không hợp lệ", errors)
-    existing = db.scalar(select(InventoryBatch.batch_id).where(
-        InventoryBatch.drug_id == data.drug_id, InventoryBatch.batch_number == data.batch_number))
+    existing = db.scalar(
+        select(InventoryBatch.batch_id).where(
+            InventoryBatch.drug_id == data.drug_id, InventoryBatch.batch_number == data.batch_number
+        )
+    )
     if existing:
-        raise AppError(409, "BATCH_EXISTS", "Số lô này đã có. Nhập thêm vào lô cũ bằng chức năng 'Nhập thêm'",
-                       [{"batch_id": str(existing)}])
-    batch = InventoryBatch(drug_id=data.drug_id, created_by=actor.user_id, batch_number=data.batch_number,
-                           expiry_date=data.expiry_date, manufacturing_date=data.manufacturing_date,
-                           initial_quantity=data.quantity, remaining_quantity=data.quantity,
-                           import_price=data.import_price)
+        raise AppError(
+            409,
+            "BATCH_EXISTS",
+            "Số lô này đã có. Nhập thêm vào lô cũ bằng chức năng 'Nhập thêm'",
+            [{"batch_id": str(existing)}],
+        )
+    batch = InventoryBatch(
+        drug_id=data.drug_id,
+        created_by=actor.user_id,
+        batch_number=data.batch_number,
+        expiry_date=data.expiry_date,
+        manufacturing_date=data.manufacturing_date,
+        initial_quantity=data.quantity,
+        remaining_quantity=data.quantity,
+        import_price=data.import_price,
+    )
     db.add(batch)
     db.flush()
-    audit.record(db, action="CREATE", entity="inventory_batch", entity_id=batch.batch_id, actor_id=actor.user_id,
-                 new_values={"drug_id": str(batch.drug_id), "batch_number": batch.batch_number,
-                             "expiry_date": batch.expiry_date, "quantity": batch.initial_quantity,
-                             "import_price": batch.import_price})
+    audit.record(
+        db,
+        action="CREATE",
+        entity="inventory_batch",
+        entity_id=batch.batch_id,
+        actor_id=actor.user_id,
+        new_values={
+            "drug_id": str(batch.drug_id),
+            "batch_number": batch.batch_number,
+            "expiry_date": batch.expiry_date,
+            "quantity": batch.initial_quantity,
+            "import_price": batch.import_price,
+        },
+    )
     return get_batch(db, batch.batch_id)
 
 
@@ -162,34 +230,66 @@ def _lock_batch(db: Session, batch_id: uuid.UUID) -> InventoryBatch:
 def top_up(db: Session, batch_id: uuid.UUID, data: BatchTopUp, actor: User) -> dict:
     batch = _lock_batch(db, batch_id)
     note = "Nhập thêm cùng lô" + (f": {data.note}" if data.note else "")
-    db.add(StockMovement(batch_id=batch.batch_id, performed_by=actor.user_id, movement_type="Adjustment",
-                         quantity_change=data.quantity, reason_code="Other", note=note))
+    db.add(
+        StockMovement(
+            batch_id=batch.batch_id,
+            performed_by=actor.user_id,
+            movement_type="Adjustment",
+            quantity_change=data.quantity,
+            reason_code="Other",
+            note=note,
+        )
+    )
     db.flush()
     return get_batch(db, batch_id)
 
 
 def adjust(db: Session, batch_id: uuid.UUID, data: AdjustmentCreate, actor: User) -> dict:
     if data.quantity_change == 0:
-        raise AppError(422, "VALIDATION_ERROR", "Dữ liệu không hợp lệ",
-                       [{"field": "quantity_change", "in": "body", "message": "Phải khác 0"}])
+        raise AppError(
+            422,
+            "VALIDATION_ERROR",
+            "Dữ liệu không hợp lệ",
+            [{"field": "quantity_change", "in": "body", "message": "Phải khác 0"}],
+        )
     if data.reason_code == "Other" and not data.note:
-        raise AppError(422, "VALIDATION_ERROR", "Dữ liệu không hợp lệ",
-                       [{"field": "note", "in": "body", "message": "Lý do 'Khác' phải có ghi chú"}])
+        raise AppError(
+            422,
+            "VALIDATION_ERROR",
+            "Dữ liệu không hợp lệ",
+            [{"field": "note", "in": "body", "message": "Lý do 'Khác' phải có ghi chú"}],
+        )
     batch = _lock_batch(db, batch_id)
     if batch.remaining_quantity + data.quantity_change < 0:
-        raise AppError(409, "INSUFFICIENT_STOCK",
-                       f"Lô chỉ còn {batch.remaining_quantity}, không giảm được {-data.quantity_change}",
-                       [{"remaining_quantity": batch.remaining_quantity}])
-    db.add(StockMovement(batch_id=batch.batch_id, performed_by=actor.user_id, movement_type="Adjustment",
-                         quantity_change=data.quantity_change, reason_code=data.reason_code, note=data.note))
+        raise AppError(
+            409,
+            "INSUFFICIENT_STOCK",
+            f"Lô chỉ còn {batch.remaining_quantity}, không giảm được {-data.quantity_change}",
+            [{"remaining_quantity": batch.remaining_quantity}],
+        )
+    db.add(
+        StockMovement(
+            batch_id=batch.batch_id,
+            performed_by=actor.user_id,
+            movement_type="Adjustment",
+            quantity_change=data.quantity_change,
+            reason_code=data.reason_code,
+            note=data.note,
+        )
+    )
     db.flush()
     return get_batch(db, batch_id)
 
 
 def movements(db: Session, batch_id: uuid.UUID) -> list[StockMovement]:
     get_batch(db, batch_id)
-    return list(db.scalars(select(StockMovement).where(StockMovement.batch_id == batch_id)
-                           .order_by(StockMovement.created_at, StockMovement.movement_id)))
+    return list(
+        db.scalars(
+            select(StockMovement)
+            .where(StockMovement.batch_id == batch_id)
+            .order_by(StockMovement.created_at, StockMovement.movement_id)
+        )
+    )
 
 
 # --- Tồn kho và cảnh báo --------------------------------------------------------------------------
@@ -200,7 +300,11 @@ def stock(db: Session, *, q: str | None, low_only: bool) -> list[dict]:
         params["q"] = q
     if low_only:
         cond.append("is_low_stock")
-    sql = "SELECT * FROM v_drug_stock" + (" WHERE " + " AND ".join(cond) if cond else "") + " ORDER BY generic_name, strength"
+    sql = (
+        "SELECT * FROM v_drug_stock"
+        + (" WHERE " + " AND ".join(cond) if cond else "")
+        + " ORDER BY generic_name, strength"
+    )
     return [dict(r) for r in db.execute(text(sql), params).mappings()]
 
 
@@ -224,15 +328,23 @@ def today(db: Session) -> date:
 # --- FEFO cho đơn thuốc ---------------------------------------------------------------------------
 def _min_shelf_days(db: Session) -> int:
     from app.services.settings_service import get_value
+
     return int(get_value(db, "inventory.min_remaining_shelf_days"))
 
 
 def eligible_quantity(db: Session, drug_id: uuid.UUID, duration_days: int) -> int:
     """Tồn của các lô còn hạn qua hết liệu trình (+ inventory.min_remaining_shelf_days). Không khóa."""
     cutoff = today(db) + timedelta(days=duration_days + _min_shelf_days(db))
-    return db.scalar(select(func.coalesce(func.sum(InventoryBatch.remaining_quantity), 0)).where(
-        InventoryBatch.drug_id == drug_id, InventoryBatch.remaining_quantity > 0,
-        InventoryBatch.expiry_date > cutoff)) or 0
+    return (
+        db.scalar(
+            select(func.coalesce(func.sum(InventoryBatch.remaining_quantity), 0)).where(
+                InventoryBatch.drug_id == drug_id,
+                InventoryBatch.remaining_quantity > 0,
+                InventoryBatch.expiry_date > cutoff,
+            )
+        )
+        or 0
+    )
 
 
 def allocate_fefo(db: Session, items) -> tuple[list[tuple], list[dict]]:
@@ -242,14 +354,19 @@ def allocate_fefo(db: Session, items) -> tuple[list[tuple], list[dict]]:
     shelf = _min_shelf_days(db)
     day0 = today(db)
     allocations, shortages = [], []
-    taken: dict[uuid.UUID, int] = {}                     # batch_id -> đã phân bổ trong đơn này
+    taken: dict[uuid.UUID, int] = {}  # batch_id -> đã phân bổ trong đơn này
     for item in sorted(items, key=lambda i: (str(i.drug_id), i.duration_days)):
         cutoff = day0 + timedelta(days=item.duration_days + shelf)
-        batches = db.scalars(select(InventoryBatch).where(
-            InventoryBatch.drug_id == item.drug_id, InventoryBatch.remaining_quantity > 0,
-            InventoryBatch.expiry_date > cutoff)
+        batches = db.scalars(
+            select(InventoryBatch)
+            .where(
+                InventoryBatch.drug_id == item.drug_id,
+                InventoryBatch.remaining_quantity > 0,
+                InventoryBatch.expiry_date > cutoff,
+            )
             .order_by(InventoryBatch.expiry_date, InventoryBatch.created_at, InventoryBatch.batch_id)
-            .with_for_update()).all()
+            .with_for_update()
+        ).all()
         need, picks = item.quantity, []
         for b in batches:
             free = b.remaining_quantity - taken.get(b.batch_id, 0)
@@ -262,16 +379,30 @@ def allocate_fefo(db: Session, items) -> tuple[list[tuple], list[dict]]:
             if need == 0:
                 break
         if need > 0:
-            usable = db.scalar(select(func.coalesce(func.sum(InventoryBatch.remaining_quantity), 0)).where(
-                InventoryBatch.drug_id == item.drug_id, InventoryBatch.expiry_date > day0)) or 0
+            usable = (
+                db.scalar(
+                    select(func.coalesce(func.sum(InventoryBatch.remaining_quantity), 0)).where(
+                        InventoryBatch.drug_id == item.drug_id, InventoryBatch.expiry_date > day0
+                    )
+                )
+                or 0
+            )
             eligible = item.quantity - need
-            shortages.append({
-                "item_id": str(item.item_id), "drug_id": str(item.drug_id), "needed": item.quantity,
-                "available_for_course": eligible, "available_total": int(usable),
-                "reason": "EXPIRES_BEFORE_COURSE_END" if usable >= item.quantity else "OUT_OF_STOCK",
-                "message": ("Còn hàng nhưng lô hết hạn trước khi dùng xong liệu trình"
-                            if usable >= item.quantity else "Không đủ hàng trong kho"),
-            })
+            shortages.append(
+                {
+                    "item_id": str(item.item_id),
+                    "drug_id": str(item.drug_id),
+                    "needed": item.quantity,
+                    "available_for_course": eligible,
+                    "available_total": int(usable),
+                    "reason": "EXPIRES_BEFORE_COURSE_END" if usable >= item.quantity else "OUT_OF_STOCK",
+                    "message": (
+                        "Còn hàng nhưng lô hết hạn trước khi dùng xong liệu trình"
+                        if usable >= item.quantity
+                        else "Không đủ hàng trong kho"
+                    ),
+                }
+            )
         else:
             allocations.extend(picks)
     return allocations, shortages
@@ -279,22 +410,38 @@ def allocate_fefo(db: Session, items) -> tuple[list[tuple], list[dict]]:
 
 def deduct(db: Session, allocations, actor: User) -> None:
     for item, batch_id, qty in allocations:
-        db.add(StockMovement(batch_id=batch_id, performed_by=actor.user_id, movement_type="Deduct",
-                             quantity_change=-qty, prescription_item_id=item.item_id))
+        db.add(
+            StockMovement(
+                batch_id=batch_id,
+                performed_by=actor.user_id,
+                movement_type="Deduct",
+                quantity_change=-qty,
+                prescription_item_id=item.item_id,
+            )
+        )
     db.flush()
 
 
 def restore_item(db: Session, item_id: uuid.UUID, actor: User, note: str) -> int:
     """Hoàn lại đúng các lô đã trừ cho một dòng đơn (đọc từ sổ cái). Trả tổng số lượng hoàn."""
-    rows = db.execute(select(StockMovement.batch_id, func.sum(StockMovement.quantity_change))
-                      .where(StockMovement.prescription_item_id == item_id,
-                             StockMovement.movement_type.in_(("Deduct", "Restore")))
-                      .group_by(StockMovement.batch_id)).all()
+    rows = db.execute(
+        select(StockMovement.batch_id, func.sum(StockMovement.quantity_change))
+        .where(StockMovement.prescription_item_id == item_id, StockMovement.movement_type.in_(("Deduct", "Restore")))
+        .group_by(StockMovement.batch_id)
+    ).all()
     total = 0
     for batch_id, net in rows:
         if net < 0:
-            db.add(StockMovement(batch_id=batch_id, performed_by=actor.user_id, movement_type="Restore",
-                                 quantity_change=-net, prescription_item_id=item_id, note=note))
+            db.add(
+                StockMovement(
+                    batch_id=batch_id,
+                    performed_by=actor.user_id,
+                    movement_type="Restore",
+                    quantity_change=-net,
+                    prescription_item_id=item_id,
+                    note=note,
+                )
+            )
             total += -net
     db.flush()
     return total

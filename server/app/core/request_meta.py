@@ -1,4 +1,5 @@
 """IP và user-agent của request, dùng cho AUDIT_LOG."""
+
 import ipaddress
 from functools import lru_cache
 
@@ -36,6 +37,7 @@ def client_ip(request: Request) -> str | None:
 def user_agent(request: Request) -> str | None:
     ua = request.headers.get("user-agent")
     return ua[:255] if ua else None
+
 
 def path_template(request: Request) -> str:
     """Đường dẫn đầy đủ với tham số đường dẫn thay bằng tên, vd /api/v1/patients/{patient_id}.

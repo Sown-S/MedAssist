@@ -1,4 +1,5 @@
 """Trạng thái AI cho /health. AI lỗi vẫn trả 200: hệ thống còn xếp hạng theo luật (RuleOnly)."""
+
 import datetime
 import threading
 import time
@@ -30,8 +31,11 @@ def _check_ollama() -> tuple[bool, str, str | None]:
         r = httpx.get(f"{settings.OLLAMA_BASE_URL.rstrip('/')}/api/tags", timeout=OLLAMA_TIMEOUT_SECONDS)
         r.raise_for_status()
         names = {m.get("name") or m.get("model") for m in r.json().get("models", [])}
-        result = ((True, "Ollama sẵn sàng", None) if settings.OLLAMA_MODEL in names
-                  else (False, "Ollama chưa có model", "no_model"))
+        result = (
+            (True, "Ollama sẵn sàng", None)
+            if settings.OLLAMA_MODEL in names
+            else (False, "Ollama chưa có model", "no_model")
+        )
     except Exception:
         logger.warning("Health check: không gọi được Ollama", exc_info=True)
         result = (False, "Không kết nối được Ollama", "unreachable")
@@ -50,7 +54,8 @@ def _stuck_queue(db: Session) -> bool:
 
 
 def ai_status(db: Session) -> dict:
-    """reason (khi ok = false): disabled | unreachable | no_model | worker_stopped — client dựa vào mã, không dò detail."""
+    """reason (khi ok = false): disabled | unreachable | no_model | worker_stopped.
+    Client dựa vào mã, không dò detail."""
     if settings.LLM_PROVIDER == "none":
         ok, detail, reason = False, "LLM đang tắt, chỉ xếp hạng theo luật", "disabled"
     elif settings.LLM_PROVIDER == "fake":

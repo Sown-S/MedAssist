@@ -1,4 +1,5 @@
 """USERS (ERD §2.1)."""
+
 import uuid
 from datetime import datetime
 
@@ -17,7 +18,9 @@ class User(Base):
     __table_args__ = (
         CheckConstraint("role IN ('Physician','Nurse','Admin')", name="users_role_check"),
         UniqueConstraint("staff_code", name="uq_users_staff_code"),
-        Index("uq_users_active_room", "room_id", unique=True, postgresql_where=text("is_active AND room_id IS NOT NULL")),
+        Index(
+            "uq_users_active_room", "room_id", unique=True, postgresql_where=text("is_active AND room_id IS NOT NULL")
+        ),
     )
 
     user_id: Mapped[uuid.UUID] = mapped_column(primary_key=True, server_default=text("gen_random_uuid()"))

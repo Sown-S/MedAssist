@@ -1,4 +1,5 @@
 """API quản trị tri thức (US11, FR11): Admin soạn bản nháp, Bác sĩ duyệt bản phát hành, Admin tắt khẩn cấp."""
+
 import uuid
 from datetime import date, datetime
 from decimal import Decimal
@@ -46,7 +47,7 @@ class ReleaseChange(BaseModel):
     version: int
     status: str
     values: dict[str, Any]
-    active_values: dict[str, Any] | None = None       # bản Active hiện tại để giao diện so sánh
+    active_values: dict[str, Any] | None = None  # bản Active hiện tại để giao diện so sánh
 
 
 class ReleaseDetail(ReleaseOut):
@@ -98,9 +99,13 @@ class RuleDraft(BaseModel):
         return {"RED_FLAG": "Emergency", "PRIORITY_FLOOR": "HighPriority"}[self.rule_type]
 
 
-DRAFT_SCHEMAS: dict[str, type[BaseModel]] = {"symptoms": SymptomDraft, "conditions": ConditionDraft,
-                                             "relations": RelationDraft, "excerpts": ExcerptDraft,
-                                             "rules": RuleDraft}
+DRAFT_SCHEMAS: dict[str, type[BaseModel]] = {
+    "symptoms": SymptomDraft,
+    "conditions": ConditionDraft,
+    "relations": RelationDraft,
+    "excerpts": ExcerptDraft,
+    "rules": RuleDraft,
+}
 
 
 class ItemOut(BaseModel):
@@ -133,7 +138,10 @@ class DeactivateRequest(BaseModel):
     reason: CleanStr = Field(min_length=3, max_length=500)
     confirm_dependents: list[Dependent] = Field(
         default_factory=list,
-        description="Gửi lại đúng danh sách mục phụ thuộc vừa xem trước; lệch (do có thay đổi giữa chừng) thì bị từ chối")
+        description=(
+            "Gửi lại đúng danh sách mục phụ thuộc vừa xem trước; lệch (do có thay đổi giữa chừng) thì bị từ chối"
+        ),
+    )
 
 
 # --- Nguồn ----------------------------------------------------------------------------------------

@@ -9,9 +9,19 @@ from app.core.database import get_db
 from app.core.logging import get_logger, setup_logging
 from app.core.middleware import RequestContextMiddleware
 from app.exceptions import register_exception_handlers
-from app.routers import (admin_router, auth_router, billing_router, clinic_router, inventory_router, knowledge_router,
-                         prescription_router, assessment_router, report_router, room_router,
-                         service_router)
+from app.routers import (
+    admin_router,
+    assessment_router,
+    auth_router,
+    billing_router,
+    clinic_router,
+    inventory_router,
+    knowledge_router,
+    prescription_router,
+    report_router,
+    room_router,
+    service_router,
+)
 from app.services import health_service
 
 setup_logging(settings.LOG_LEVEL)
@@ -31,7 +41,7 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.CORS_ORIGINS,
-    allow_credentials=False,          # Bearer token, không dùng cookie
+    allow_credentials=False,  # Bearer token, không dùng cookie
     allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE"],
     allow_headers=["Authorization", "Content-Type", "X-Request-ID"],
     expose_headers=["X-Request-ID", "Content-Disposition", "X-Export-Truncated"],
@@ -52,6 +62,7 @@ app.include_router(report_router.router, prefix="/api/v1")
 app.include_router(room_router.router, prefix="/api/v1")
 app.include_router(service_router.router, prefix="/api/v1")
 
+
 @app.get("/")
 def read_root():
     return {
@@ -71,8 +82,18 @@ def health_check(db: Session = Depends(get_db)):
         db.execute(text("SELECT 1"))
     except Exception:
         logger.exception("Health check: không kết nối được DB")
-        return JSONResponse(status_code=503, content={
-            "status": "unhealthy", "database": {"ok": False, "detail": "Không kết nối được CSDL"},
-            "ai": {"ok": None, "detail": "", "reason": None}, "version": settings.VERSION})
-    return {"status": "healthy", "database": {"ok": True, "detail": ""}, "ai": health_service.ai_status(db),
-            "version": settings.VERSION}
+        return JSONResponse(
+            status_code=503,
+            content={
+                "status": "unhealthy",
+                "database": {"ok": False, "detail": "Không kết nối được CSDL"},
+                "ai": {"ok": None, "detail": "", "reason": None},
+                "version": settings.VERSION,
+            },
+        )
+    return {
+        "status": "healthy",
+        "database": {"ok": True, "detail": ""},
+        "ai": health_service.ai_status(db),
+        "version": settings.VERSION,
+    }

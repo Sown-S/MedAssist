@@ -1,6 +1,7 @@
 """scripts/import_okf.py và hàm kiểm tra condition_logic dùng chung.
 Phần ghi DB chạy trong transaction rồi ROLLBACK; ``SET CONSTRAINTS ALL IMMEDIATE`` ép trigger toàn vẹn chạy trước đó.
 """
+
 import shutil
 from pathlib import Path
 
@@ -16,30 +17,46 @@ OFFICIAL = okf.DEFAULT_DIR
 
 
 # --- condition_logic ------------------------------------------------------------------------------
-@pytest.mark.parametrize("logic", [
-    {"type": "symptom", "symptom_code": "fever_high", "state": "PRESENT"},
-    {"op": "OR", "args": [{"type": "vital", "vital": "spo2_pct", "cmp": "<", "value": 92},
-                          {"op": "AND", "args": [{"type": "age", "unit": "months", "cmp": "<", "value": 2},
-                                                 {"type": "vital", "vital": "temperature_c", "cmp": ">=", "value": 38}]}]},
-])
+@pytest.mark.parametrize(
+    "logic",
+    [
+        {"type": "symptom", "symptom_code": "fever_high", "state": "PRESENT"},
+        {
+            "op": "OR",
+            "args": [
+                {"type": "vital", "vital": "spo2_pct", "cmp": "<", "value": 92},
+                {
+                    "op": "AND",
+                    "args": [
+                        {"type": "age", "unit": "months", "cmp": "<", "value": 2},
+                        {"type": "vital", "vital": "temperature_c", "cmp": ">=", "value": 38},
+                    ],
+                },
+            ],
+        },
+    ],
+)
 def test_logic_valid(logic):
     assert condition_logic_errors(logic) == []
 
 
-@pytest.mark.parametrize("logic, path", [
-    ({"op": "NOT", "args": [{"type": "symptom", "symptom_code": "a", "state": "PRESENT"}]}, "$.op"),
-    ({"op": "AND", "args": []}, "$.args"),
-    ({"op": "AND", "conditions": [{"type": "symptom", "symptom_code": "a", "state": "PRESENT"}]}, "$"),
-    ({"type": "symptom", "code": "a", "status": "PRESENT"}, "$"),                 # định dạng cũ
-    ({"type": "symptom", "symptom_code": "Sot-Cao", "state": "PRESENT"}, "$.symptom_code"),
-    ({"type": "symptom", "symptom_code": "a", "state": "UNKNOWN"}, "$.state"),
-    ({"type": "vital", "vital": "spo2", "cmp": "<", "value": 92}, "$.vital"),
-    ({"type": "vital", "vital": "spo2_pct", "cmp": "lt", "value": 92}, "$.cmp"),
-    ({"type": "vital", "vital": "spo2_pct", "cmp": "<", "value": "92"}, "$.value"),
-    ({"type": "age", "unit": "days", "cmp": "<", "value": 2}, "$.unit"),
-    ({"type": "lab", "value": 1}, "$.type"),
-    ("chuỗi", "$"),
-])
+@pytest.mark.parametrize(
+    "logic, path",
+    [
+        ({"op": "NOT", "args": [{"type": "symptom", "symptom_code": "a", "state": "PRESENT"}]}, "$.op"),
+        ({"op": "AND", "args": []}, "$.args"),
+        ({"op": "AND", "conditions": [{"type": "symptom", "symptom_code": "a", "state": "PRESENT"}]}, "$"),
+        ({"type": "symptom", "code": "a", "status": "PRESENT"}, "$"),  # định dạng cũ
+        ({"type": "symptom", "symptom_code": "Sot-Cao", "state": "PRESENT"}, "$.symptom_code"),
+        ({"type": "symptom", "symptom_code": "a", "state": "UNKNOWN"}, "$.state"),
+        ({"type": "vital", "vital": "spo2", "cmp": "<", "value": 92}, "$.vital"),
+        ({"type": "vital", "vital": "spo2_pct", "cmp": "lt", "value": 92}, "$.cmp"),
+        ({"type": "vital", "vital": "spo2_pct", "cmp": "<", "value": "92"}, "$.value"),
+        ({"type": "age", "unit": "days", "cmp": "<", "value": 2}, "$.unit"),
+        ({"type": "lab", "value": 1}, "$.type"),
+        ("chuỗi", "$"),
+    ],
+)
 def test_logic_invalid(logic, path):
     errors = condition_logic_errors(logic)
     assert errors and path in [e["path"] for e in errors], errors
@@ -53,8 +70,13 @@ def test_logic_depth_limit():
 
 
 def test_logic_symptom_codes_any_depth():
-    logic = {"op": "OR", "args": [{"type": "symptom", "symptom_code": "a", "state": "PRESENT"},
-                                  {"op": "AND", "args": [{"type": "symptom", "symptom_code": "b", "state": "ABSENT"}]}]}
+    logic = {
+        "op": "OR",
+        "args": [
+            {"type": "symptom", "symptom_code": "a", "state": "PRESENT"},
+            {"op": "AND", "args": [{"type": "symptom", "symptom_code": "b", "state": "ABSENT"}]},
+        ],
+    }
     assert logic_symptom_codes(logic) == {"a", "b"}
 
 
@@ -64,7 +86,7 @@ def test_official_vault_is_valid():
     assert v.errors == []
     assert v.release.label and len(v.conditions) >= 15 and len(v.rules) >= 1 and len(v.symptoms) >= 20
     groups = {c.disease_group for c in v.conditions.values()}
-    assert len(groups) >= 3                                  # phạm vi Proposal: 3–4 nhóm bệnh
+    assert len(groups) >= 3  # phạm vi Proposal: 3–4 nhóm bệnh
 
 
 # --- Lỗi trong thư mục ----------------------------------------------------------------------------
@@ -90,13 +112,16 @@ def test_errors_are_reported(vault_copy):
     _edit(rule, "state: PRESENT", "state: MAYBE")
     _edit(rule, "vital: spo2_pct", "vital: spo2")
     cond = _first(vault_copy, "conditions/*/*.md")
-    first_symptom = next(line.split(":")[-1].strip() for line in cond.read_text(encoding="utf-8").splitlines()
-                         if line.startswith("- symptom_code:"))
+    first_symptom = next(
+        line.split(":")[-1].strip()
+        for line in cond.read_text(encoding="utf-8").splitlines()
+        if line.startswith("- symptom_code:")
+    )
     _edit(cond, f"- symptom_code: {first_symptom}", "- symptom_code: khong_co_trong_catalog")
     (vault_copy / "rules/red_flags/rf_respiratory_failure.md").rename(vault_copy / "rules/red_flags/rf_doi_ten.md")
     (vault_copy / "rules/red_flags/la.md").write_text("---\nschema: okf_unknown_v9\n---\n", encoding="utf-8")
     (vault_copy / "exports").mkdir(exist_ok=True)
-    (vault_copy / "exports/bao_cao.md").write_text("không có front matter", encoding="utf-8")   # bị bỏ qua
+    (vault_copy / "exports/bao_cao.md").write_text("không có front matter", encoding="utf-8")  # bị bỏ qua
 
     errors = "\n".join(okf.load_vault(vault_copy).errors)
     assert "state: Chỉ nhận PRESENT hoặc ABSENT" in errors
@@ -108,8 +133,9 @@ def test_errors_are_reported(vault_copy):
 
 
 def test_document_schemas_are_ignored(vault_copy):
-    (vault_copy / "_spec/bien_ban.md").write_text("---\nschema: okf_review_log_v1\nlabel: X\n---\n# Biên bản\n",
-                                                  encoding="utf-8")
+    (vault_copy / "_spec/bien_ban.md").write_text(
+        "---\nschema: okf_review_log_v1\nlabel: X\n---\n# Biên bản\n", encoding="utf-8"
+    )
     assert okf.load_vault(vault_copy).errors == []
 
 
@@ -142,7 +168,7 @@ def _active(db, model):
 
 
 def _check_integrity(db):
-    db.execute(text("SET CONSTRAINTS ALL IMMEDIATE"))         # chạy trigger toàn vẹn ngay
+    db.execute(text("SET CONSTRAINTS ALL IMMEDIATE"))  # chạy trigger toàn vẹn ngay
     assert db.execute(text("SELECT count(*) FROM v_knowledge_integrity_issues")).scalar() == 0
 
 
@@ -155,9 +181,11 @@ def test_import_and_activate(db):
     assert rel.status == "Active" and rel.approved_by == _u(db, "bs").user_id
     assert _active(db, Condition) - before[Condition] == len(v.conditions)
     assert _active(db, TriageRule) - before[TriageRule] == len(v.rules)
-    assert _active(db, ConditionSymptom) - before[ConditionSymptom] == sum(len(c.relations) for c in v.conditions.values())
+    assert _active(db, ConditionSymptom) - before[ConditionSymptom] == sum(
+        len(c.relations) for c in v.conditions.values()
+    )
 
-    again = okf.make_plan(db, v)                               # chạy lại: không có gì đổi
+    again = okf.make_plan(db, v)  # chạy lại: không có gì đổi
     assert again.changes == [] and again.new_sources == []
 
 
@@ -173,10 +201,15 @@ def test_changed_item_gets_new_version(db, vault_copy):
     assert [(c.kind, c.key, c.action) for c in plan.changes] == [("rule", "rf_respiratory_failure", "changed")]
     okf.apply_plan(db, second, plan, drafter=_u(db, "admin"), approver=_u(db, "bs"))
     _check_integrity(db)
-    rows = db.execute(select(TriageRule.version, TriageRule.status, TriageRule.retired_reason)
-                      .where(TriageRule.rule_key == "rf_respiratory_failure").order_by(TriageRule.version)).all()
-    assert [tuple(r) for r in rows][-2:] == [(rows[-2].version, "Retired", "Superseded"),
-                                             (rows[-2].version + 1, "Active", None)]
+    rows = db.execute(
+        select(TriageRule.version, TriageRule.status, TriageRule.retired_reason)
+        .where(TriageRule.rule_key == "rf_respiratory_failure")
+        .order_by(TriageRule.version)
+    ).all()
+    assert [tuple(r) for r in rows][-2:] == [
+        (rows[-2].version, "Retired", "Superseded"),
+        (rows[-2].version + 1, "Active", None),
+    ]
 
 
 def test_retire_missing(db, vault_copy):
@@ -189,8 +222,10 @@ def test_retire_missing(db, vault_copy):
     assert ("rule", "rf_seizures") in plan.missing and plan.changes == []
     okf.apply_plan(db, second, plan, drafter=_u(db, "admin"), approver=_u(db, "bs"), retire_missing=True)
     _check_integrity(db)
-    assert db.scalar(select(TriageRule.status).where(TriageRule.rule_key == "rf_seizures",
-                                                     TriageRule.status == "Active")) is None
+    assert (
+        db.scalar(select(TriageRule.status).where(TriageRule.rule_key == "rf_seizures", TriageRule.status == "Active"))
+        is None
+    )
 
 
 def test_draft_and_guards(db):
@@ -201,8 +236,11 @@ def test_draft_and_guards(db):
     rel = okf.apply_plan(db, v, plan, drafter=_u(db, "admin"), submit=True)
     db.flush()
     assert rel.status == "PendingApproval" and rel.approved_by is None
-    assert db.scalar(select(func.count()).select_from(Condition)
-                     .where(Condition.release_id == rel.release_id, Condition.status == "PendingApproval")) == len(v.conditions)
+    assert db.scalar(
+        select(func.count())
+        .select_from(Condition)
+        .where(Condition.release_id == rel.release_id, Condition.status == "PendingApproval")
+    ) == len(v.conditions)
     with pytest.raises(okf.ImportError_, match="Đang có bản phát hành mở"):
         okf.apply_plan(db, v, plan, drafter=_u(db, "admin"))
 
@@ -221,4 +259,6 @@ def test_cli_rejects_wrong_roles(capsys, users):
     assert okf.main(["--dir", str(OFFICIAL), "--approve-as", "admin"]) == 1
     assert "phải có vai trò Physician" in capsys.readouterr().err
     with SessionLocal() as s:
-        assert s.scalar(select(KnowledgeRelease).where(KnowledgeRelease.status.in_(["Draft", "PendingApproval"]))) is None
+        assert (
+            s.scalar(select(KnowledgeRelease).where(KnowledgeRelease.status.in_(["Draft", "PendingApproval"]))) is None
+        )

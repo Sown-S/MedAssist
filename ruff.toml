@@ -1,0 +1,23 @@
+# Ruff cho phần Python của Sơn (server/, tools/). Phần AI và migration đã merge không qua ruff.
+line-length = 120
+target-version = "py312"
+extend-exclude = [
+    "client",
+    "knowledge",
+    "evaluation",
+    "server/app/ai",
+    "server/tests/unit/ai",
+    "server/alembic/versions",
+    "**/venv",
+    "**/.venv",
+]
+
+[lint]
+select = ["E", "F", "W", "I"]
+
+[lint.per-file-ignores]
+# CheckConstraint sinh từ lược đồ: chuỗi SQL dài, không tách được
+"server/app/models/*.py" = ["E501"]
+
+[lint.isort]
+known-first-party = ["app", "scripts", "drug_data", "hospital_data"]

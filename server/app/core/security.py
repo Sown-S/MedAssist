@@ -2,6 +2,7 @@
 Mỗi token mang dấu mật khẩu (claim "pwd" = HMAC-SHA256 rút gọn của password_hash): đổi hoặc đặt lại
 mật khẩu thì mọi token cũ (access lẫn refresh) bị từ chối ngay, không cần thêm cột hay bảng.
 """
+
 import hashlib
 import hmac
 import uuid
@@ -13,7 +14,7 @@ from argon2.exceptions import InvalidHashError, VerificationError, VerifyMismatc
 
 from app.core.config import settings
 
-_hasher = PasswordHasher()   # tham số mặc định của argon2-cffi (Argon2id, RFC 9106 low-memory)
+_hasher = PasswordHasher()  # tham số mặc định của argon2-cffi (Argon2id, RFC 9106 low-memory)
 
 # Băm sẵn một mật khẩu giả: khi username không tồn tại vẫn tốn đúng một lần verify,
 # để thời gian phản hồi không tiết lộ username nào có thật.
@@ -43,7 +44,7 @@ def verify_password(password: str, password_hash: str) -> bool:
     try:
         return _hasher.verify(password_hash, password)
     except InvalidHashError:
-        burn_verify_time(password)   # hash hỏng/vô hiệu vẫn tốn thời gian như bình thường
+        burn_verify_time(password)  # hash hỏng/vô hiệu vẫn tốn thời gian như bình thường
         return False
     except (VerifyMismatchError, VerificationError):
         return False
@@ -67,12 +68,11 @@ def stamp_matches(payload: dict, password_hash: str) -> bool:
     return hmac.compare_digest(str(payload.get("pwd", "")), password_stamp(password_hash))
 
 
-def _create_token(user_id: uuid.UUID, role: str, password_hash: str, token_type: str,
-                  lifetime: timedelta) -> str:
+def _create_token(user_id: uuid.UUID, role: str, password_hash: str, token_type: str, lifetime: timedelta) -> str:
     now = datetime.now(UTC)
     payload = {
         "sub": str(user_id),
-        "role": role,            # chỉ để client hiển thị; server luôn đọc role từ DB
+        "role": role,  # chỉ để client hiển thị; server luôn đọc role từ DB
         "type": token_type,
         "pwd": password_stamp(password_hash),
         "iat": now,

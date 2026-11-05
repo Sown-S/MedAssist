@@ -7,14 +7,16 @@ from pydantic import AfterValidator, BaseModel, ConfigDict, Field, PlainSerializ
 
 from app.schemas.common import CleanStr
 
+
 def _to_number(v: Decimal) -> int | float:
     """Tiền ra JSON dạng số: 1500.00 -> 1500 (VNĐ), 1500.50 -> 1500.5."""
     return int(v) if v == v.to_integral_value() else float(v)
 
 
 # Vào: tối đa 12 chữ số, 2 chữ số thập phân, chuẩn hóa về 2 chữ số (khớp DECIMAL(12,2)). Ra: số JSON.
-Money = Annotated[Decimal, Field(ge=0, max_digits=12, decimal_places=2),
-                  AfterValidator(lambda v: v.quantize(Decimal("0.01")))]
+Money = Annotated[
+    Decimal, Field(ge=0, max_digits=12, decimal_places=2), AfterValidator(lambda v: v.quantize(Decimal("0.01")))
+]
 MoneyOut = Annotated[Decimal, PlainSerializer(_to_number, return_type=int | float)]
 ReasonCode = Literal["Expired", "Damaged", "Lost", "CountCorrection", "Other"]
 BatchStatus = Literal["Usable", "NearExpiry", "Expired", "Depleted"]
@@ -64,6 +66,7 @@ class DrugOut(BaseModel):
 
 class DrugStockOut(BaseModel):
     """Một dòng v_drug_stock: tồn dùng được / sắp hết hạn / đã hết hạn, cờ tồn thấp."""
+
     drug_id: uuid.UUID
     generic_name: str
     strength: str
@@ -88,6 +91,7 @@ class BatchCreate(BaseModel):
 
 class BatchTopUp(BaseModel):
     """Nhập thêm vào lô đã có (cùng số lô, cùng hạn) = Adjustment dương (quy ước ERD §2.17)."""
+
     model_config = ConfigDict(extra="forbid")
     quantity: int = Field(gt=0, le=10_000_000)
     note: CleanStr | None = Field(default=None, max_length=500)
@@ -95,7 +99,9 @@ class BatchTopUp(BaseModel):
 
 class AdjustmentCreate(BaseModel):
     model_config = ConfigDict(extra="forbid")
-    quantity_change: int = Field(ge=-10_000_000, le=10_000_000, description="Âm = giảm (hủy, mất), dương = tăng (kiểm kê thừa)")
+    quantity_change: int = Field(
+        ge=-10_000_000, le=10_000_000, description="Âm = giảm (hủy, mất), dương = tăng (kiểm kê thừa)"
+    )
     reason_code: ReasonCode
     note: CleanStr | None = Field(default=None, max_length=500)
 

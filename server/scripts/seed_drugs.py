@@ -1,6 +1,7 @@
 """Nạp danh mục thuốc (và lô "SEED-<mã>" cho mỗi thuốc) từ server/data/drugs.csv qua inventory_service.
 Tài khoản 'system'; chạy lại an toàn: thuốc, lô đã có thì bỏ qua. Cách chạy: server/README.md mục 6.
 """
+
 import argparse
 import csv
 import sys
@@ -18,16 +19,27 @@ from app.schemas.inventory import BatchCreate, DrugCreate, DrugUpdate
 from app.services import inventory_service
 
 DEFAULT_FILE = Path(__file__).resolve().parents[1] / "data" / "drugs.csv"
-_DRUG_FIELDS = ("generic_name", "trade_name", "strength", "dosage_form", "unit", "sale_price",
-                "reorder_level", "drug_class")
+_DRUG_FIELDS = (
+    "generic_name",
+    "trade_name",
+    "strength",
+    "dosage_form",
+    "unit",
+    "sale_price",
+    "reorder_level",
+    "drug_class",
+)
 
 
 def _find(db, row) -> Drug | None:
-    return db.scalar(select(Drug).where(
-        func.lower(Drug.generic_name) == row["generic_name"].strip().lower(),
-        func.lower(Drug.trade_name) == row["trade_name"].strip().lower(),
-        func.lower(Drug.strength) == row["strength"].strip().lower(),
-        func.lower(Drug.dosage_form) == row["dosage_form"].strip().lower()))
+    return db.scalar(
+        select(Drug).where(
+            func.lower(Drug.generic_name) == row["generic_name"].strip().lower(),
+            func.lower(Drug.trade_name) == row["trade_name"].strip().lower(),
+            func.lower(Drug.strength) == row["strength"].strip().lower(),
+            func.lower(Drug.dosage_form) == row["dosage_form"].strip().lower(),
+        )
+    )
 
 
 def seed(path: Path = DEFAULT_FILE, with_batches: bool = True, deactivate_others: bool = False) -> dict:
@@ -38,7 +50,7 @@ def seed(path: Path = DEFAULT_FILE, with_batches: bool = True, deactivate_others
         system = db.get(User, SYSTEM_USER_ID)
         today = inventory_service.today(db)
         in_file: set = set()
-        for n, row in enumerate(rows, start=2):           # dòng 1 là tiêu đề
+        for n, row in enumerate(rows, start=2):  # dòng 1 là tiêu đề
             try:
                 if not (row.get("sale_price") or "").strip():
                     # CSDL bắt buộc giá bán (sale_price NOT NULL): chờ có giá (tools/drug_data/fetch_prices) rồi nạp
@@ -52,15 +64,29 @@ def seed(path: Path = DEFAULT_FILE, with_batches: bool = True, deactivate_others
                 else:
                     stats["drugs_existing"] += 1
                 in_file.add(drug.drug_id)
-                if with_batches and int(row.get("batch_quantity") or 0) > 0 and (row.get("import_price") or "").strip() \
-                        and (row.get("shelf_life_days") or "").strip():
+                if (
+                    with_batches
+                    and int(row.get("batch_quantity") or 0) > 0
+                    and (row.get("import_price") or "").strip()
+                    and (row.get("shelf_life_days") or "").strip()
+                ):
                     batch_no = f"SEED-{str(drug.drug_id)[:8].upper()}"
-                    if not db.scalar(select(InventoryBatch.batch_id).where(
-                            InventoryBatch.drug_id == drug.drug_id, InventoryBatch.batch_number == batch_no)):
-                        inventory_service.create_batch(db, BatchCreate(
-                            drug_id=drug.drug_id, batch_number=batch_no,
-                            expiry_date=today + timedelta(days=int(row["shelf_life_days"])),
-                            quantity=int(row["batch_quantity"]), import_price=Decimal(row["import_price"])), system)
+                    if not db.scalar(
+                        select(InventoryBatch.batch_id).where(
+                            InventoryBatch.drug_id == drug.drug_id, InventoryBatch.batch_number == batch_no
+                        )
+                    ):
+                        inventory_service.create_batch(
+                            db,
+                            BatchCreate(
+                                drug_id=drug.drug_id,
+                                batch_number=batch_no,
+                                expiry_date=today + timedelta(days=int(row["shelf_life_days"])),
+                                quantity=int(row["batch_quantity"]),
+                                import_price=Decimal(row["import_price"]),
+                            ),
+                            system,
+                        )
                         stats["batches_created"] += 1
             except (AppError, ValueError) as exc:
                 db.rollback()
@@ -78,13 +104,18 @@ def main() -> int:
     p = argparse.ArgumentParser(description="Nạp danh mục thuốc")
     p.add_argument("--file", type=Path, default=DEFAULT_FILE)
     p.add_argument("--no-batches", action="store_true", help="Chỉ nạp danh mục, không tạo lô")
-    p.add_argument("--deactivate-others", action="store_true",
-                   help="Ngừng dùng (is_active = false) các thuốc đang dùng nhưng không có trong file")
+    p.add_argument(
+        "--deactivate-others",
+        action="store_true",
+        help="Ngừng dùng (is_active = false) các thuốc đang dùng nhưng không có trong file",
+    )
     args = p.parse_args()
     stats = seed(args.file, with_batches=not args.no_batches, deactivate_others=args.deactivate_others)
-    print(f"Thuốc mới: {stats['drugs_created']}, đã có: {stats['drugs_existing']}, "
-          f"lô mới: {stats['batches_created']}, ngừng dùng: {stats['deactivated']}, "
-          f"bỏ qua vì chưa có giá: {len(stats['no_price'])}")
+    print(
+        f"Thuốc mới: {stats['drugs_created']}, đã có: {stats['drugs_existing']}, "
+        f"lô mới: {stats['batches_created']}, ngừng dùng: {stats['deactivated']}, "
+        f"bỏ qua vì chưa có giá: {len(stats['no_price'])}"
+    )
     for name in stats["no_price"]:
         print(f"  chưa có giá: {name}")
     return 0

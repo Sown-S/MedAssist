@@ -2,8 +2,9 @@
 theo knowledge/_spec/okf_format.md. Dùng chung cho script nạp OKF và API quản trị tri thức;
 khớp ``app/ai/rules/condition_evaluator.py``.
 """
-import re
+
 import math
+import re
 from collections.abc import Iterable
 from typing import Annotated, Any
 
@@ -14,10 +15,10 @@ from sqlalchemy.orm import Session
 from app.exceptions import AppError
 from app.models import Condition, Symptom
 
-SLUG_RE = re.compile(r"^[a-z0-9]+(_[a-z0-9]+)*$")      # = CHECK chk_*_format của CSDL
-SYMPTOM_CODE_MAX = 50                                   # symptom_key.symptom_code VARCHAR(50)
-CONDITION_CODE_MAX = 80                                 # condition_key.condition_code VARCHAR(80)
-SLUG_KEY_MAX = 80                                       # rule_key, excerpt_key VARCHAR(80)
+SLUG_RE = re.compile(r"^[a-z0-9]+(_[a-z0-9]+)*$")  # = CHECK chk_*_format của CSDL
+SYMPTOM_CODE_MAX = 50  # symptom_key.symptom_code VARCHAR(50)
+CONDITION_CODE_MAX = 80  # condition_key.condition_code VARCHAR(80)
+SLUG_KEY_MAX = 80  # rule_key, excerpt_key VARCHAR(80)
 RULE_PREFIX = {"RED_FLAG": "rf_", "PRIORITY_FLOOR": "pf_"}
 
 
@@ -26,9 +27,9 @@ def _slug_checker(label: str, max_len: int):
         if len(v) > max_len:
             raise ValueError(f"{label} tối đa {max_len} ký tự")
         if not SLUG_RE.match(v):
-            raise ValueError(f"{label} chỉ gồm chữ thường không dấu, số và dấu gạch dưới "
-                             f"giữa các từ (vd fever_high)")
+            raise ValueError(f"{label} chỉ gồm chữ thường không dấu, số và dấu gạch dưới giữa các từ (vd fever_high)")
         return v
+
     return check
 
 
@@ -54,14 +55,16 @@ def active_symptoms(db: Session, codes: Iterable[str]) -> dict[str, Symptom]:
     wanted = list(dict.fromkeys(codes))
     if not wanted:
         return {}
-    rows = db.scalars(select(Symptom).where(Symptom.symptom_code.in_(wanted),
-                                            Symptom.status == "Active")).all()
+    rows = db.scalars(select(Symptom).where(Symptom.symptom_code.in_(wanted), Symptom.status == "Active")).all()
     found = {s.symptom_code: s for s in rows}
     missing = [c for c in wanted if c not in found]
     if missing:
-        raise AppError(422, "UNKNOWN_SYMPTOM", "Có mã triệu chứng không có trong danh mục đang dùng",
-                       [{"field": "symptom_code", "value": c,
-                         "message": "Không có hoặc đã ngừng dùng"} for c in missing])
+        raise AppError(
+            422,
+            "UNKNOWN_SYMPTOM",
+            "Có mã triệu chứng không có trong danh mục đang dùng",
+            [{"field": "symptom_code", "value": c, "message": "Không có hoặc đã ngừng dùng"} for c in missing],
+        )
     return found
 
 
@@ -70,13 +73,19 @@ def active_condition_codes(db: Session, codes: Iterable[str]) -> set[str]:
     wanted = list(dict.fromkeys(codes))
     if not wanted:
         return set()
-    found = set(db.scalars(select(Condition.condition_code).where(
-        Condition.condition_code.in_(wanted), Condition.status == "Active")).all())
+    found = set(
+        db.scalars(
+            select(Condition.condition_code).where(Condition.condition_code.in_(wanted), Condition.status == "Active")
+        ).all()
+    )
     missing = [c for c in wanted if c not in found]
     if missing:
-        raise AppError(422, "UNKNOWN_CONDITION", "Có mã bệnh không có trong danh sách đang dùng",
-                       [{"field": "condition_code", "value": c,
-                         "message": "Không có hoặc đã ngừng dùng"} for c in missing])
+        raise AppError(
+            422,
+            "UNKNOWN_CONDITION",
+            "Có mã bệnh không có trong danh sách đang dùng",
+            [{"field": "condition_code", "value": c, "message": "Không có hoặc đã ngừng dùng"} for c in missing],
+        )
     return found
 
 
@@ -88,15 +97,18 @@ def active_condition_codes(db: Session, codes: Iterable[str]) -> set[str]:
 # Gốc được phép là một lá; lồng tối đa MAX_LOGIC_DEPTH tầng; args không rỗng.
 MAX_LOGIC_DEPTH = 5
 LOGIC_CMPS = ("<", "<=", ">", ">=", "==")
-_LEAF_KEYS = {"symptom": {"type", "symptom_code", "state"},
-              "vital": {"type", "vital", "cmp", "value"},
-              "age": {"type", "unit", "cmp", "value"}}
+_LEAF_KEYS = {
+    "symptom": {"type", "symptom_code", "state"},
+    "vital": {"type", "vital", "cmp", "value"},
+    "age": {"type", "unit", "cmp", "value"},
+}
 
 
 def condition_logic_errors(logic: Any) -> list[dict[str, str]]:
     """Trả danh sách lỗi [{path, message}] (rỗng = hợp lệ). Không truy cập DB: việc mã triệu chứng
     có trong danh mục Active được kiểm riêng (``logic_symptom_codes`` + ``active_symptoms``)."""
     from app.validation.schema_validators import vital_sign_keys
+
     vitals = set(vital_sign_keys())
     errors: list[dict[str, str]] = []
 
@@ -169,6 +181,7 @@ def logic_symptom_codes(logic: Any) -> set[str]:
         elif isinstance(node, list):
             for v in node:
                 walk(v)
+
     walk(logic)
     return found
 

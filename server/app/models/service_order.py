@@ -1,10 +1,23 @@
 """SERVICE_ORDER, SERVICE_ORDER_ITEM — phiếu chỉ định cận lâm sàng của lượt khám và kết quả từng dòng
 (ERD §2.10b). Hủy dòng bằng status, không xóa."""
+
 import decimal
 import uuid
 from datetime import datetime
 
-from sqlalchemy import Boolean, CheckConstraint, DateTime, ForeignKeyConstraint, Index, Integer, Numeric, String, Text, Uuid, text
+from sqlalchemy import (
+    Boolean,
+    CheckConstraint,
+    DateTime,
+    ForeignKeyConstraint,
+    Index,
+    Integer,
+    Numeric,
+    String,
+    Text,
+    Uuid,
+    text,
+)
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.core.database import Base
@@ -16,8 +29,10 @@ class ServiceOrder(Base):
         ForeignKeyConstraint(["visit_id"], ["visit.visit_id"], name="service_order_visit_id_fkey"),
         ForeignKeyConstraint(["ordered_by"], ["users.user_id"], name="service_order_ordered_by_fkey"),
         ForeignKeyConstraint(["package_id"], ["service_package.package_id"], name="fk_service_order_package"),
-        CheckConstraint("(package_id IS NULL) = (package_name IS NULL) AND (package_id IS NULL) = (package_price IS NULL)",
-                        name="chk_service_order_package"),
+        CheckConstraint(
+            "(package_id IS NULL) = (package_name IS NULL) AND (package_id IS NULL) = (package_price IS NULL)",
+            name="chk_service_order_package",
+        ),
         CheckConstraint("package_price IS NULL OR package_price >= 0", name="service_order_package_price_check"),
         Index("idx_service_order_visit", "visit_id", "ordered_at"),
     )
@@ -43,14 +58,21 @@ class ServiceOrderItem(Base):
         ForeignKeyConstraint(["cancelled_by"], ["users.user_id"], name="service_order_item_cancelled_by_fkey"),
         CheckConstraint("quantity > 0", name="service_order_item_quantity_check"),
         CheckConstraint("status IN ('Ordered','Cancelled')", name="chk_service_order_item_status"),
-        CheckConstraint("(service_id IS NULL) = (unit_price IS NULL) AND (service_id IS NOT NULL OR NOT in_package) "
-                        "AND (unit_price IS NULL OR unit_price >= 0)", name="chk_service_order_item_price"),
-        CheckConstraint("(result IS NULL) = (result_at IS NULL) AND (result IS NULL) = (result_by IS NULL)",
-                        name="chk_service_order_item_result"),
-        CheckConstraint("(status = 'Cancelled') = (cancelled_at IS NOT NULL) "
-                        "AND (status = 'Cancelled') = (cancelled_by IS NOT NULL) "
-                        "AND (status = 'Cancelled') = (cancel_reason IS NOT NULL)",
-                        name="chk_service_order_item_cancel"),
+        CheckConstraint(
+            "(service_id IS NULL) = (unit_price IS NULL) AND (service_id IS NOT NULL OR NOT in_package) "
+            "AND (unit_price IS NULL OR unit_price >= 0)",
+            name="chk_service_order_item_price",
+        ),
+        CheckConstraint(
+            "(result IS NULL) = (result_at IS NULL) AND (result IS NULL) = (result_by IS NULL)",
+            name="chk_service_order_item_result",
+        ),
+        CheckConstraint(
+            "(status = 'Cancelled') = (cancelled_at IS NOT NULL) "
+            "AND (status = 'Cancelled') = (cancelled_by IS NOT NULL) "
+            "AND (status = 'Cancelled') = (cancel_reason IS NOT NULL)",
+            name="chk_service_order_item_cancel",
+        ),
         Index("idx_service_order_item_order", "order_id"),
     )
 
