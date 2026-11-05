@@ -1,8 +1,6 @@
-"""Toàn bộ 31 model theo ERD v2.1 — import ở đây để Alembic autogenerate thấy đủ bảng.
-
-Model phải khớp lược đồ do revision 0001 (medassist_schema_v1_8.sql) tạo.
-Kiểm tra: `alembic check` -> "No new upgrade operations detected"; test_db_guards.py.
-Bảng do Alembic tạo: KHÔNG gọi Base.metadata.create_all().
+"""Toàn bộ model, import ở đây để Alembic autogenerate thấy đủ bảng. Bảng do Alembic tạo, không gọi create_all().
+Model sinh từ lược đồ (revision 0001 + các revision sau) rồi biên tập, phải khớp bảng thật:
+kiểm bằng `alembic check` và tests/unit/test_db_guards.py.
 """
 from app.core.database import Base  # noqa: F401
 

@@ -1,7 +1,5 @@
-"""scripts/import_okf.py + hàm kiểm tra condition_logic dùng chung.
-
-Phần ghi DB chạy trong một transaction rồi ROLLBACK (không để lại tri thức trong medassist_test);
-``SET CONSTRAINTS ALL IMMEDIATE`` ép trigger toàn vẹn chạy ngay trước khi rollback.
+"""scripts/import_okf.py và hàm kiểm tra condition_logic dùng chung.
+Phần ghi DB chạy trong transaction rồi ROLLBACK; ``SET CONSTRAINTS ALL IMMEDIATE`` ép trigger toàn vẹn chạy trước đó.
 """
 import shutil
 from pathlib import Path
@@ -17,7 +15,7 @@ from scripts import import_okf as okf
 OFFICIAL = okf.DEFAULT_DIR
 
 
-# ---------------------------------------------------------------------------- condition_logic
+# --- condition_logic ------------------------------------------------------------------------------
 @pytest.mark.parametrize("logic", [
     {"type": "symptom", "symptom_code": "fever_high", "state": "PRESENT"},
     {"op": "OR", "args": [{"type": "vital", "vital": "spo2_pct", "cmp": "<", "value": 92},
@@ -32,7 +30,7 @@ def test_logic_valid(logic):
     ({"op": "NOT", "args": [{"type": "symptom", "symptom_code": "a", "state": "PRESENT"}]}, "$.op"),
     ({"op": "AND", "args": []}, "$.args"),
     ({"op": "AND", "conditions": [{"type": "symptom", "symptom_code": "a", "state": "PRESENT"}]}, "$"),
-    ({"type": "symptom", "code": "a", "status": "PRESENT"}, "$"),                 # định dạng cũ của Huy
+    ({"type": "symptom", "code": "a", "status": "PRESENT"}, "$"),                 # định dạng cũ
     ({"type": "symptom", "symptom_code": "Sot-Cao", "state": "PRESENT"}, "$.symptom_code"),
     ({"type": "symptom", "symptom_code": "a", "state": "UNKNOWN"}, "$.state"),
     ({"type": "vital", "vital": "spo2", "cmp": "<", "value": 92}, "$.vital"),
@@ -60,7 +58,7 @@ def test_logic_symptom_codes_any_depth():
     assert logic_symptom_codes(logic) == {"a", "b"}
 
 
-# ---------------------------------------------------------------------------- thư mục OKF chính thức
+# --- Thư mục OKF chính thức -----------------------------------------------------------------------
 def test_official_vault_is_valid():
     v = okf.load_vault(OFFICIAL)
     assert v.errors == []
@@ -69,7 +67,7 @@ def test_official_vault_is_valid():
     assert len(groups) >= 3                                  # phạm vi Proposal: 3–4 nhóm bệnh
 
 
-# ---------------------------------------------------------------------------- lỗi trong thư mục
+# --- Lỗi trong thư mục ----------------------------------------------------------------------------
 @pytest.fixture
 def vault_copy(tmp_path):
     dst = tmp_path / "knowledge"
@@ -124,7 +122,7 @@ def test_rule_prefix_and_source_edition(vault_copy):
     assert "khác edition của nguồn" in errors
 
 
-# ---------------------------------------------------------------------------- ghi DB (rollback)
+# --- Ghi DB (rollback) ----------------------------------------------------------------------------
 @pytest.fixture
 def db(users):
     session = SessionLocal()
@@ -209,7 +207,7 @@ def test_draft_and_guards(db):
         okf.apply_plan(db, v, plan, drafter=_u(db, "admin"))
 
 
-# ---------------------------------------------------------------------------- dòng lệnh
+# --- Dòng lệnh ------------------------------------------------------------------------------------
 def test_cli_dry_run_and_errors(vault_copy, capsys, users):
     assert okf.main(["--dir", str(OFFICIAL), "--dry-run"]) == 0
     out = capsys.readouterr().out

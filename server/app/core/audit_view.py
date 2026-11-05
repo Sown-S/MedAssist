@@ -1,18 +1,6 @@
-"""Dependency ghi VIEW cho mọi GET dữ liệu bệnh nhân (US04, US09) — phần "Audit Middleware"
-của Architecture v1.7, gắn theo route.
-
-Dùng trong router:
-    @router.get("/patients/{patient_id}")
-    def get_patient(patient_id: uuid.UUID,
-                    user: User = Depends(audit_view("patient", roles=CLINICAL_ROLES,
-                                                    id_param="patient_id"))):
-        ...
-
-    # Endpoint polling (hàng đợi, trạng thái AI): gộp 1 dòng / người / đối tượng / 5 phút
-    Depends(audit_view("visit", roles=CLINICAL_ROLES, dedupe_seconds=300))
-
-Dòng VIEW được ghi TRƯỚC khi handler chạy, bằng session riêng và commit ngay, nên có cả
-lượt xem không thành công (404). Sai vai trò: ghi lượt bị từ chối rồi trả 403.
+"""Dependency ghi VIEW cho mọi GET dữ liệu bệnh nhân (US04, US09), gắn theo route.
+Ghi trước handler bằng session riêng, commit ngay: có cả lượt 404 và lượt sai vai trò (403).
+Cách dùng, gộp dòng của endpoint polling: docs/thiet-ke-backend.md §1.
 """
 import uuid
 from collections.abc import Callable

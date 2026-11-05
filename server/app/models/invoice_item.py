@@ -1,8 +1,4 @@
-"""INVOICE_ITEM — dòng hóa đơn: Drug / Paraclinical (nhập tay hoặc từ phiếu chỉ định) / Consultation.
-
-Sinh từ lược đồ do Alembic 0001 tạo (medassist_schema_v1_8.sql) rồi biên tập; phải khớp
-bảng thật — kiểm tra bằng `alembic check` / tests/test_db_guards.py.
-"""
+"""INVOICE_ITEM — dòng hóa đơn: Drug / Paraclinical (nhập tay hoặc từ phiếu chỉ định) / Consultation."""
 import decimal
 import uuid
 

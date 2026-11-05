@@ -1,4 +1,4 @@
-"""Danh mục dịch vụ, gói khám, phiếu chỉ định cận lâm sàng và hóa đơn tự lấy dòng chỉ định (ERD v2.1)."""
+"""Danh mục dịch vụ, gói khám, phiếu chỉ định cận lâm sàng và hóa đơn tự lấy dòng chỉ định (ERD §4.4)."""
 import uuid
 
 import pytest
@@ -46,7 +46,7 @@ def _lines(invoice, kind="Paraclinical"):
                   for i in invoice["items"] if i["item_type"] == kind)
 
 
-# ---------------------------------------------------------------------------- danh mục
+# --- Danh mục -------------------------------------------------------------------------------------
 def test_admin_manages_catalog_and_price_history(client, admin, nurse, service, logs):
     s = service(name="Siêu âm tuyến giáp", price=120000)
     dup = client.post("/api/v1/admin/services", headers=admin, json={
@@ -91,7 +91,7 @@ def test_package_requires_active_services(client, admin, service, package):
     assert any(not i["is_active"] for i in listed["items"])
 
 
-# ---------------------------------------------------------------------------- chỉ định, kết quả, hóa đơn
+# --- Chỉ định, kết quả, hóa đơn -------------------------------------------------------------------
 def test_order_results_and_invoice(client, nurse, doctor, doctor2, examining, service, logs):
     us, xq, ecg = service(), service(name="X-quang ngực", kind="Lab", group="imaging", price=120000), \
         service(name="Điện tim", price=80000)

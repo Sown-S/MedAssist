@@ -17,7 +17,7 @@ from app.services.knowledge_reader import DbKnowledgeReader
 from app.worker import runner
 
 
-# ---------------------------------------------------------------------------- tiện ích
+# --- Tiện ích -------------------------------------------------------------------------------------
 @pytest.fixture
 def make_visit(client, nurse):
     """Lượt khám đã xác nhận triệu chứng. Trả visit_id."""
@@ -90,7 +90,7 @@ def _process(llm=None, model="test-model"):
     return asyncio.run(runner.process_one(DbKnowledgeReader(), llm or runner.DisabledLLMClient(), model))
 
 
-# ---------------------------------------------------------------------------- Knowledge Reader
+# --- Knowledge Reader -----------------------------------------------------------------------------
 def test_reader_mapping(wk_knowledge):
     reader = DbKnowledgeReader()
     reader.refresh()
@@ -121,7 +121,7 @@ def test_reader_reloads_when_epoch_changes(wk_knowledge, owner_engine):
     assert second is not first and second.epoch == first.epoch + 1
 
 
-# ---------------------------------------------------------------------------- xếp hàng
+# --- Xếp hàng -------------------------------------------------------------------------------------
 def test_enqueue_snapshots_features(make_visit, nurse_user):
     vid = make_visit({"wk_fever_high": "PRESENT", "wk_cough_dry": "ABSENT"}, dob="2024-01-15",
                      vitals={"temperature_c": 39.2, "heart_rate_bpm": 120})
@@ -153,7 +153,7 @@ def test_enqueue_closed_visit(client, nurse, make_visit, nurse_user):
     assert getattr(exc.value, "code", None) == "VISIT_CLOSED"
 
 
-# ---------------------------------------------------------------------------- worker
+# --- Worker ---------------------------------------------------------------------------------------
 def test_worker_empty_queue():
     assert _process() is False
 
@@ -280,7 +280,7 @@ def test_skip_locked_two_workers_do_not_share(make_visit, nurse_user):
         s1.close(), s2.close()
 
 
-# ---------------------------------------------------------------------------- sweeper
+# --- Sweeper --------------------------------------------------------------------------------------
 def _expire_lease(aid, attempts):
     with SessionLocal() as db:
         db.execute(update(AiAssessmentLog).where(AiAssessmentLog.assessment_id == aid)
@@ -303,7 +303,7 @@ def test_sweeper_requeues_then_fails(make_visit, nurse_user):
     assert _visit(vid).ai_status == "Failed"
 
 
-# ---------------------------------------------------------------------------- cờ đỏ (Node 1 đồng bộ)
+# --- Cờ đỏ (Node 1 đồng bộ) -----------------------------------------------------------------------
 def test_red_flag_applied_synchronously(make_visit, nurse_user, users):
     with SessionLocal() as db:
         rel_id = db.scalar(text("SELECT release_id FROM knowledge_release WHERE label = 'TEST-WK'"))
@@ -332,7 +332,7 @@ def test_red_flag_applied_synchronously(make_visit, nurse_user, users):
             db.commit()
 
 
-# ---------------------------------------------------------------------------- vòng lặp worker
+# --- Vòng lặp worker ------------------------------------------------------------------------------
 def test_make_llm_client(monkeypatch):
     from app.core.config import settings
     monkeypatch.setattr(settings, "LLM_PROVIDER", "none")
@@ -388,7 +388,7 @@ def test_run_forever_survives_db_errors(monkeypatch):
     assert calls["n"] >= 2                                     # vẫn tiếp tục vòng lặp sau lỗi
 
 
-# ---------------------------------------------------------------------------- trích xuất triệu chứng
+# --- Trích xuất triệu chứng -----------------------------------------------------------------------
 NOTE = "Sốt cao 2 ngày, không ho khan, chưa rõ đau họng."
 
 

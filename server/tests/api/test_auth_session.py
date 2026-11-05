@@ -1,4 +1,4 @@
-"""Refresh token, giới hạn đăng nhập sai, tự đổi mật khẩu (bước 4)."""
+"""Refresh token, giới hạn đăng nhập sai, tự đổi mật khẩu."""
 import uuid
 
 import pytest
@@ -121,7 +121,7 @@ def test_change_own_password(client, fresh_user, logs):
     assert row.new_values == {"password_changed": True} and "MatkhauMoi1" not in str(row.new_values)
 
 
-# ---- Dấu mật khẩu: đổi / đặt lại mật khẩu thu hồi mọi token cũ ----------------------------
+# --- Dấu mật khẩu: đổi / đặt lại mật khẩu thu hồi mọi token cũ ------------------------------------
 def _bearer(token):
     return {"Authorization": f"Bearer {token}"}
 
@@ -166,7 +166,7 @@ def test_password_stamp_does_not_expose_hash(fresh_user):
     assert len(payload["pwd"]) == 16 and payload["pwd"] not in fresh_user.password_hash
 
 
-# ---- Mật khẩu do Admin đặt: phải đổi trước khi dùng API khác ----------------------------
+# --- Mật khẩu do Admin đặt: phải đổi trước khi dùng API khác --------------------------------------
 def test_admin_set_password_must_be_changed_before_other_api(client, users, login):
     admin = login("admin")
     username = f"nv_{uuid.uuid4().hex[:8]}"

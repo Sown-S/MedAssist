@@ -1,6 +1,5 @@
 """Xác nhận triệu chứng của lượt khám (HITL). Chỉ nhận mã đang Active; ghi đúng dòng phiên bản
 (symptom_id) đang dùng, nhờ FK kép visit_symptom -> symptom (symptom_id, symptom_code).
-
 Nhật ký: chỉ ghi số lượng theo trạng thái, không ghi mã triệu chứng (dữ liệu lâm sàng)."""
 import uuid
 from collections import Counter

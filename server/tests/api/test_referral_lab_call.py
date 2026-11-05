@@ -1,4 +1,4 @@
-"""Chuyển tuyến, đi xét nghiệm, mời bệnh nhân vào phòng (ERD v2.0)."""
+"""Chuyển tuyến, đi xét nghiệm, mời bệnh nhân vào phòng (ERD §4.3)."""
 import uuid
 
 import pytest
@@ -43,7 +43,7 @@ def _queue_item(client, headers, vid):
     return next((q for q in client.get("/api/v1/queue", headers=headers).json() if q["visit_id"] == vid), None)
 
 
-# ---------------------------------------------------------------------------- chuyển tuyến
+# --- Chuyển tuyến ---------------------------------------------------------------------------------
 def test_physician_refers_examining_visit(client, nurse, doctor, doctor2, examining, drug, facility, logs):
     vid = examining()
     did, _ = drug({60: 20})
@@ -125,7 +125,7 @@ def test_facility_search(client, nurse, login, facility):
     assert client.get("/api/v1/referral-facilities", headers=login("admin"), params={"q": "quang"}).status_code == 403
 
 
-# ---------------------------------------------------------------------------- xét nghiệm
+# --- Xét nghiệm -----------------------------------------------------------------------------------
 def test_lab_out_shows_in_queue_and_clears_on_release(client, nurse, doctor, doctor2, examining):
     vid = examining()
     assert client.patch(f"/api/v1/visits/{vid}/lab-out", headers=doctor2).status_code == 409
@@ -138,7 +138,7 @@ def test_lab_out_shows_in_queue_and_clears_on_release(client, nurse, doctor, doc
     assert r.status_code == 200 and r.json()["lab_out_at"] is None
 
 
-# ---------------------------------------------------------------------------- mời vào phòng
+# --- Mời vào phòng --------------------------------------------------------------------------------
 def test_unsaved_intake_cannot_be_checked_in_or_called(client, nurse, doctor, patient, users, empty_queue):
     vid = client.post("/api/v1/visits", headers=nurse, json={"patient_id": patient(), "chief_complaint": "Sốt"}).json()["visit_id"]
     assert _queue_item(client, nurse, vid)["intake_saved"] is False

@@ -1,4 +1,4 @@
-"""Ghi VIEW theo route, gộp polling, ghi lượt bị từ chối (US04, US09, Architecture v1.7)."""
+"""Ghi VIEW theo route, gộp polling, ghi lượt bị từ chối (US04, US09)."""
 import uuid
 
 

@@ -1,11 +1,6 @@
-"""Cấp phát thuốc và thu tiền (US03, US06) — lượt 6c. Nurse thao tác khi lượt khám ở Prescribed.
-
-  * Cấp phát từng dòng: Dispensed, hoặc Skipped (bắt buộc lý do) -> hoàn kho đúng các lô đã trừ và
-    LẬP LẠI hóa đơn Pending (bỏ dòng thuốc đó). Sau khi đã thu tiền: chỉ được Dispensed.
-  * Sửa hóa đơn Pending (phí khám, dòng cận lâm sàng nhập tay) = hủy và lập lại.
-  * Thu tiền: Pending -> Paid (Tiền mặt / Chuyển khoản). Paid là chốt cuối.
-  * Lượt khám tự Finished khi hóa đơn Paid VÀ không còn dòng thuốc Pending (đơn -> Dispensed).
-  * Hủy lượt khám ở Prescribed (bệnh nhân bỏ về): chỉ khi chưa cấp thuốc nào, chưa thu tiền.
+"""Cấp phát thuốc và thu tiền (US03, US06). Nurse thao tác khi lượt khám ở Prescribed.
+Bỏ qua thuốc hoặc sửa hóa đơn Pending thì lập lại hóa đơn; Paid là chốt cuối.
+Chi tiết: docs/thiet-ke-backend.md §5.3.
 """
 import datetime
 import uuid
@@ -57,7 +52,7 @@ def _maybe_finish(db: Session, visit: Visit, actor: User) -> bool:
     return True
 
 
-# ---------------------------------------------------------------------------- cấp phát
+# --- Cấp phát -------------------------------------------------------------------------------------
 def dispense_item(db: Session, item_id: uuid.UUID, action: str, skip_reason: str | None, actor: User) -> bool:
     item = db.scalar(select(PrescriptionItem).where(PrescriptionItem.item_id == item_id).with_for_update())
     if item is None:
@@ -107,7 +102,7 @@ def dispense_all(db: Session, visit_id: uuid.UUID, actor: User) -> bool:
     return finished
 
 
-# ---------------------------------------------------------------------------- hóa đơn
+# --- Hóa đơn --------------------------------------------------------------------------------------
 def edit_invoice(db: Session, visit_id: uuid.UUID, consultation_fee: Decimal | None,
                  paraclinical: list[dict] | None, actor: User,
                  consultation_service_id: uuid.UUID | None = None) -> Invoice:
@@ -147,7 +142,7 @@ def pay(db: Session, visit_id: uuid.UUID, method: str, actor: User) -> tuple[Inv
     return invoice, _maybe_finish(db, visit, actor)
 
 
-# ---------------------------------------------------------------------------- hủy lượt khám ở Prescribed
+# --- Hủy lượt khám ở Prescribed -------------------------------------------------------------------
 def cancel_prescribed(db: Session, visit_id: uuid.UUID, reason: str, actor: User) -> Visit:
     """Bệnh nhân bỏ về: chưa cấp thuốc nào, chưa thu tiền -> hoàn kho, hủy đơn, hủy hóa đơn, hủy lượt."""
     _prescribed_visit(db, visit_id)
@@ -173,7 +168,7 @@ def cancel_prescribed(db: Session, visit_id: uuid.UUID, reason: str, actor: User
     return queue_service.cancel_from_prescribed(db, visit_id, reason, actor)
 
 
-# ---------------------------------------------------------------------------- danh sách chờ thu tiền, in phiếu
+# --- Danh sách chờ thu tiền, in phiếu -------------------------------------------------------------
 def awaiting_payment(db: Session) -> list[dict]:
     rows = db.execute(
         select(Visit, Patient.full_name, Invoice)

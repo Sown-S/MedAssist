@@ -1,8 +1,4 @@
-"""DRUG — danh mục thuốc (US05). Trùng định danh chặn bằng uq_drug_identity (không phân biệt hoa thường).
-
-Sinh từ lược đồ do Alembic 0001 tạo (medassist_schema_v1_8.sql) rồi biên tập; phải khớp
-bảng thật — kiểm tra bằng `alembic check` / tests/test_db_guards.py.
-"""
+"""DRUG — danh mục thuốc (US05). Trùng định danh chặn bằng uq_drug_identity (không phân biệt hoa thường)."""
 import decimal
 import uuid
 

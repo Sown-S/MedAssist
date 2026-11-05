@@ -1,8 +1,5 @@
 """TRIAGE_RULE — luật RED_FLAG (rf_) / PRIORITY_FLOOR (pf_); condition_logic là cây AND/OR
-theo đặc tả OKF (validator ở Sprint 3).
-
-Sinh từ lược đồ do Alembic 0001 tạo (medassist_schema_v1_8.sql) rồi biên tập; phải khớp
-bảng thật — kiểm tra bằng `alembic check` / tests/test_db_guards.py.
+theo knowledge/_spec/okf_format.md (kiểm ở app.validation.knowledge_validators).
 """
 import datetime
 import uuid

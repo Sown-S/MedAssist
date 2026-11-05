@@ -1,8 +1,4 @@
-"""KNOWLEDGE_SOURCE — nguồn tri thức (WHO, Bộ Y tế...), mọi dòng tri thức đều dẫn nguồn.
-
-Sinh từ lược đồ do Alembic 0001 tạo (medassist_schema_v1_8.sql) rồi biên tập; phải khớp
-bảng thật — kiểm tra bằng `alembic check` / tests/test_db_guards.py.
-"""
+"""KNOWLEDGE_SOURCE — nguồn tri thức (WHO, Bộ Y tế...), mọi dòng tri thức đều dẫn nguồn."""
 import datetime
 import uuid
 

@@ -35,6 +35,8 @@ Sao chép địa chỉ liên kết) thì điền vào `tai_truc_tiep`, script s�
 # 1+2. Minh chứng nguồn, trích Phụ lục I, đối chiếu, tự thêm thuốc — MỘT lệnh (file nguồn ở inbox/)
 python -m drug_data.tt19_catalog run            # = fetch, extract, check (dừng nếu FAIL), candidates, merge --auto
 #    muốn tự chọn thuốc: 'run --no-merge', ghi x ở cột chon trong output/drug_candidates.csv, rồi 'merge'
+#    từng bước: fetch (minh chứng) -> extract (output/tt19_2018_phu_luc_1.csv) -> check (đối chiếu drugs.csv)
+#               -> candidates (output/drug_candidates.csv) -> merge [--auto]
 
 # 3. Giá: thuốc chưa có giá -> ước tính (tra giá web tự động KHÔNG dùng được, xem "Giá tham khảo" bên dưới)
 #    quy tắc: cùng hoạt chất -> trung vị nhóm -> trung vị đơn vị; làm tròn 100 đ
@@ -68,6 +70,15 @@ Cách làm hiện tại:
   `output/price_review.csv` (generic_name, trade_name, strength giống drugs.csv + `product_url`), chạy
   `python -m drug_data.fetch_prices refresh`, kiểm tra, ghi `x` ở cột `duyet`, rồi `apply`. Script vẫn đọc
   `robots.txt` trước khi tải trang sản phẩm; giá thật ghi đè giá ước tính, trang được lưu ở `sources/prices/approved/`.
+
+Nguyên tắc thu thập của `fetch_prices`: chỉ đọc giá hiển thị công khai; đọc `robots.txt` và dừng với trang không cho
+phép; User-Agent khai báo rõ (không giả trình duyệt); giãn cách mặc định 3 giây/lần; lưu mọi trang đã tải
+(`sources/prices/cache`) làm minh chứng. Đọc điều khoản sử dụng của từng trang trước khi chạy. Giao diện các trang có
+thể thay đổi: `SITES` trong script là cấu hình mặc định, sửa được qua tham số dòng lệnh.
+
+`search --auto`: giá có độ tin cậy cao được ghi thẳng vào `server/data/drugs.csv` (`duyet = auto`), còn lại vào
+`output/price_review.csv` để duyệt tay. Độ tin cậy cao = tên thuốc + hàm lượng khớp tên sản phẩm, quy được ra
+giá/đơn vị, giá đọc từ JSON-LD hoặc thẻ meta, và nếu cả hai trang có giá thì chênh lệch không quá 30%.
 
 ## Thư mục
 

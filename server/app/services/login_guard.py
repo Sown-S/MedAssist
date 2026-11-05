@@ -1,12 +1,5 @@
 """Giới hạn đăng nhập sai, tính từ các dòng LOGIN_FAILED trong audit_log (không cần bảng mới).
-
-Quy tắc (cấu hình trong .env):
-  * Theo tên đăng nhập: LOGIN_MAX_FAILURES_PER_USER lần sai trong LOGIN_WINDOW_MINUTES phút
-    (chỉ đếm sau lần đăng nhập thành công gần nhất) -> khóa LOGIN_LOCK_MINUTES phút kể từ lần sai cuối.
-  * Theo IP: LOGIN_MAX_FAILURES_PER_IP lần (chặn dò nhiều tên khác nhau từ một máy).
-  * Lượt bị chặn vẫn ghi LOGIN_FAILED (reason "locked") nhưng KHÔNG được đếm, để thời gian
-    khóa không bị kéo dài mãi.
-  * Admin mở khóa hoặc đặt lại mật khẩu thì chỉ đếm lần sai sau mốc đó (dòng UPDATE users trong audit_log).
+Khóa theo tên đăng nhập và theo IP; lượt bị chặn không được đếm. Quy tắc: docs/thiet-ke-backend.md §7.
 """
 import math
 from datetime import datetime, timedelta

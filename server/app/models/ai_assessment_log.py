@@ -1,9 +1,4 @@
-"""AI_ASSESSMENT_LOG — nhật ký AI và hàng đợi worker bền vững (Queued, lease). App không DELETE.
-Huy đồng thiết kế; đổi cột qua migration do Sơn duyệt.
-
-Sinh từ lược đồ do Alembic 0001 tạo (medassist_schema_v1_8.sql) rồi biên tập; phải khớp
-bảng thật — kiểm tra bằng `alembic check` / tests/test_db_guards.py.
-"""
+"""AI_ASSESSMENT_LOG — nhật ký AI và hàng đợi worker bền vững (Queued, lease). App không DELETE."""
 import datetime
 import uuid
 from typing import Any

@@ -1,4 +1,4 @@
-"""ROOM — phòng khám và phòng xét nghiệm (ERD v1.9 mục 2.1a). Không xóa: ngừng dùng bằng is_active."""
+"""ROOM — phòng khám và phòng xét nghiệm (ERD §2.1a). Không xóa: ngừng dùng bằng is_active."""
 import uuid
 from datetime import datetime
 

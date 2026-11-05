@@ -1,4 +1,4 @@
-"""Xác thực tài khoản (US07, FR07) — ghi LOGIN, LOGIN_FAILED, LOGOUT vào AUDIT_LOG (US09)."""
+"""Xác thực tài khoản (US07, FR07); ghi LOGIN, LOGIN_FAILED, LOGOUT vào AUDIT_LOG (US09)."""
 import uuid
 
 import jwt

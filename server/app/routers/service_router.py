@@ -1,7 +1,6 @@
-"""Danh mục dịch vụ, gói khám (Admin sửa, mọi vai trò đọc) và phiếu chỉ định cận lâm sàng (ERD v2.1).
-
-Chỉ định và ghi kết quả: bác sĩ đang khám lượt đó. Hủy dòng chỉ định: bác sĩ khi đang khám, lễ tân khi
-lượt đang chờ thu tiền (hóa đơn lập lại). Xem phiếu: bác sĩ, lễ tân (ghi VIEW).
+"""Danh mục dịch vụ, gói khám (Admin sửa, mọi vai trò đọc) và phiếu chỉ định cận lâm sàng (ERD §4.4).
+Chỉ định, ghi kết quả: bác sĩ đang khám lượt đó. Hủy dòng: bác sĩ khi đang khám, lễ tân khi lượt chờ thu tiền.
+Xem phiếu: bác sĩ, lễ tân (ghi VIEW).
 """
 import uuid
 from typing import Literal
@@ -28,7 +27,6 @@ _physician_order = require_roles("Physician", audit_entity="service_order")
 _cancel_item = require_roles("Physician", "Nurse", audit_entity="service_order_item")
 
 
-# ============================================================================ danh mục dịch vụ
 @router.get("/services", response_model=list[ServiceOut])
 def list_services(kind: Literal["Service", "Lab"] | None = None, q: str | None = Query(None, max_length=100),
                   include_inactive: bool = False, _: User = Depends(_read), db: Session = Depends(get_db)):
@@ -56,7 +54,6 @@ def price_history(service_id: uuid.UUID, _: User = Depends(_admin_service), db: 
     return catalog.price_history(db, service_id)
 
 
-# ============================================================================ gói khám
 @router.get("/service-packages", response_model=list[PackageOut])
 def list_packages(include_inactive: bool = False, _: User = Depends(_read), db: Session = Depends(get_db)):
     return catalog.list_packages(db, include_inactive)
@@ -77,7 +74,6 @@ def update_package(package_id: uuid.UUID, body: PackageUpdate, actor: User = Dep
     return catalog.package_out(db, [package])[0]
 
 
-# ============================================================================ phiếu chỉ định
 @router.post("/visits/{visit_id}/service-orders", response_model=ServiceOrderOut, status_code=201)
 def create_order(visit_id: uuid.UUID, body: ServiceOrderCreate, actor: User = Depends(_physician_order),
                  db: Session = Depends(get_db)):

@@ -1,7 +1,5 @@
-"""Tạo danh mục cơ sở nhận chuyển tuyến từ văn bản của Bộ Y tế và Sở Y tế (xem README.md).
-
-    python -m hospital_data.build            # đọc sources/, ghi manifest.json và output/hospital_candidates.csv
-    python -m hospital_data.build export     # dòng có 'x' ở cột chon -> server/data/hospitals.csv
+"""Tạo danh mục cơ sở nhận chuyển tuyến từ văn bản của Bộ Y tế và Sở Y tế. Cách chạy: tools/hospital_data/README.md.
+``build``: sources/ -> manifest.json, output/hospital_candidates.csv; ``build export`` -> server/data/hospitals.csv.
 """
 import argparse
 import csv
@@ -190,10 +188,8 @@ def _flag_near_duplicates(rows: list[dict]) -> None:
 
 
 def apply_review(rows: list[dict], path: Path = REVIEW) -> list[str]:
-    """Áp quyết định đã duyệt (duyet.csv) để chạy lại build không mất công duyệt.
-
-    hanh_dong: giu | bo; ten_moi, dia_chi ('-' = xóa), so_huu ghi đè khi có. Khớp theo tỉnh + tên không dấu.
-    """
+    """Áp quyết định đã duyệt (duyet.csv) để chạy lại build không mất công duyệt. Khớp theo tỉnh + tên không dấu.
+    hanh_dong: giu | bo; ten_moi, dia_chi ('-' = xóa), so_huu ghi đè khi có."""
     if not path.exists():
         return []
     with open(path, encoding="utf-8-sig", newline="") as f:

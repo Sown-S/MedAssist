@@ -1,7 +1,5 @@
 """Nối chẩn đoán với lần chạy AI (FR02): assessment_id, matches_top_suggestion, physician_decision
-ghi cùng transaction, v_ai_decision_reconciliation luôn rỗng.
-
-Worker chưa ghi nhật ký AI, nên test chèn sẵn dòng ai_assessment_log giả lập.
+ghi cùng transaction, v_ai_decision_reconciliation luôn rỗng. Test chèn sẵn dòng ai_assessment_log, không chạy worker.
 """
 import datetime
 import uuid
@@ -70,7 +68,7 @@ def _dx(client, doctor, vid, **body):
     return r.json()
 
 
-# ---------------------------------------------------------------------------- tính khớp gợi ý
+# --- Tính khớp gợi ý ------------------------------------------------------------------------------
 def test_accept_top_suggestion(client, doctor, examining, conditions, ai_run):
     vid = examining()
     aid = ai_run(vid, top=[CODES[0], CODES[1]])
@@ -112,7 +110,7 @@ def test_no_ai_run_at_all(client, doctor, examining, conditions):
     assert dx["assessment_id"] is None and dx["matches_top_suggestion"] is None
 
 
-# ---------------------------------------------------------------------------- chọn lần chạy
+# --- Chọn lần chạy --------------------------------------------------------------------------------
 def test_server_picks_latest_visible_run(client, doctor, examining, conditions, ai_run):
     vid = examining()
     ai_run(vid, top=[CODES[1]], queued_offset_s=-60)                       # lần cũ
@@ -153,7 +151,7 @@ def test_assessment_must_belong_to_visit(client, doctor, examining, conditions, 
     assert r.status_code == 422 and r.json()["error"]["code"] == "ASSESSMENT_NOT_FOR_VISIT"
 
 
-# ---------------------------------------------------------------------------- đồng bộ khi chẩn đoán chính đổi
+# --- Đồng bộ khi chẩn đoán chính đổi --------------------------------------------------------------
 def test_decision_follows_primary_changes(client, doctor, examining, conditions, ai_run):
     vid = examining()
     aid = ai_run(vid, top=[CODES[0]])

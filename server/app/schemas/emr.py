@@ -1,7 +1,5 @@
 """Hồ sơ bệnh án điện tử (US04, FR04): tra cứu nhanh, lịch sử khám, xem lại một lượt khám cũ.
-
-Mã bệnh nhân (mã BN) = "BN-" + 8 ký tự hex đầu của patient_id, viết hoa (vd BN-3F2A9C1B).
-Không thêm cột vào CSDL (giữ ERD v1.8); mã này in trên phiếu khám để tra lại.
+Mã BN (``patient_code``) tính từ patient_id, không lưu thành cột; in trên phiếu khám để tra lại.
 """
 import uuid
 from datetime import date, datetime
@@ -26,12 +24,12 @@ class _WithPatientCode(BaseModel):
         return patient_code(self.patient_id)
 
 
-# ============================================================================ Tra cứu nhanh
+# --- Tra cứu nhanh --------------------------------------------------------------------------------
 LookupKind = Literal["patient_code", "id_number", "phone", "birth_year", "name", "name_birth_year"]
 
 
 class LookupInterpretation(BaseModel):
-    """Hệ thống hiểu ô tìm kiếm là gì — để giao diện hiện 'Đang tìm theo SĐT' v.v."""
+    """Hệ thống hiểu ô tìm kiếm là gì, để giao diện hiện 'Đang tìm theo SĐT' v.v."""
     kind: LookupKind
     name: str | None = None
     birth_year: int | None = None
@@ -56,7 +54,7 @@ class PatientLookupResult(BaseModel):
     items: list[PatientLookupItem]
 
 
-# ============================================================================ Lịch sử khám
+# --- Lịch sử khám ---------------------------------------------------------------------------------
 class HistoryDiagnosis(BaseModel):
     diagnosis_name: str
     icd10_code: str | None
@@ -113,7 +111,7 @@ class PatientHistory(BaseModel):
     items: list[VisitHistoryItem]
 
 
-# ============================================================================ Chi tiết một lượt khám
+# --- Chi tiết một lượt khám -----------------------------------------------------------------------
 class RecordDiagnosis(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     diagnosis_id: uuid.UUID

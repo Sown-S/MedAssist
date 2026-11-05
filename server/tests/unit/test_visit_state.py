@@ -1,4 +1,4 @@
-"""Hàm nội bộ mark_prescribed / mark_finished (bước 5 gọi) — điều kiện chuyển trạng thái."""
+"""Hàm nội bộ mark_prescribed / mark_finished (service đơn thuốc, hóa đơn gọi): điều kiện chuyển trạng thái."""
 import datetime
 import uuid
 

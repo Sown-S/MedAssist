@@ -1,25 +1,6 @@
-"""Hàng đợi đánh giá AI trên PostgreSQL (Kế hoạch v7, Sprint 3) — phần của Sơn.
-
-Luồng:
-1. ``enqueue_assessment()`` — API POST /visits/{id}/assessment gọi trong transaction của request.
-   - Chụp đặc trưng đầu vào ĐÃ XÁC NHẬN (visit_symptom + sinh hiệu + tuổi) vào ``input_features``.
-   - Chạy Node 1 (cổng cờ đỏ) ĐỒNG BỘ: cờ đỏ phải hiện ngay cả khi worker hay LLM đang chết.
-     Cờ đỏ -> lần chạy kết thúc luôn (Skipped/RuleOnly), không xếp hàng.
-   - Không cờ đỏ -> trạng thái Queued; các lần Queued cũ của cùng lượt khám bị thay thế.
-2. Worker (``app.worker``): ``claim_next()`` lấy việc bằng ``FOR UPDATE SKIP LOCKED`` + lease;
-   ``sweep_expired()`` thu hồi lease quá hạn (worker chết giữa chừng).
-3. Worker ghi gợi ý sơ bộ (``write_preliminary``) rồi kết quả cuối (``write_result``) hoặc lỗi
-   (``write_failure``). Chỉ lần chạy MỚI NHẤT của lượt khám được cập nhật lượt khám.
-4. Trích xuất triệu chứng (FR12): ``enqueue_extraction()`` xếp hàng ``run_type='Extraction'``, worker
-   lấy trước Assessment (y tá đang chờ, ngân sách 30 giây), ghi gợi ý bằng ``write_extraction()``.
-   Gợi ý chỉ nằm trong nhật ký AI; y tá xác nhận qua PUT /visits/{id}/symptoms. Không đổi visit.ai_status.
-
-Ánh xạ trạng thái (chốt 18/10): Completed -> visit Ready / log Completed; Preliminary -> visit
-Preliminary / log Running; Degraded, Skipped giữ nguyên; lỗi hạ tầng -> Failed.
-
-Nhật ký AI không chứa thông tin định danh: input_features chỉ có mã triệu chứng, sinh hiệu, tuổi.
-rule_hits luôn có dạng {"hits": [...], "complete_now": [{symptom_code, symptom_name}]} ở cả lúc xếp
-hàng và lúc worker ghi kết quả, để polling không mất danh sách "cần bổ sung ngay".
+"""Hàng đợi đánh giá AI và trích xuất triệu chứng trên PostgreSQL (bảng ai_assessment_log).
+Node 1 (cờ đỏ) chạy đồng bộ khi xếp hàng; worker lấy việc bằng SKIP LOCKED + lease, ghi kết quả lũy tiến.
+Luồng, ánh xạ trạng thái, dạng rule_hits: docs/thiet-ke-backend.md §2.
 """
 import datetime
 import hashlib
@@ -44,7 +25,7 @@ ASSESSABLE_STATUSES = ("Waiting", "CheckedIn", "Examining")
 _VISIT_STATUS = {"Completed": "Ready", "Degraded": "Degraded", "Skipped": "Skipped"}
 
 
-# ============================================================================ đặc trưng đầu vào
+# --- Đặc trưng đầu vào ----------------------------------------------------------------------------
 def _age(dob: datetime.date, on: datetime.date) -> tuple[int, int]:
     months = (on.year - dob.year) * 12 + (on.month - dob.month) - (1 if on.day < dob.day else 0)
     months = max(months, 0)
@@ -52,7 +33,7 @@ def _age(dob: datetime.date, on: datetime.date) -> tuple[int, int]:
 
 
 def build_input_features(db: Session, visit: Visit) -> dict[str, Any]:
-    """Đặc trưng ĐÃ XÁC NHẬN, không có thông tin định danh (ERD: ai_assessment_log.input_features)."""
+    """Đặc trưng ĐÃ XÁC NHẬN, không có thông tin định danh (ERD §2.12: input_features)."""
     symptoms = dict(db.execute(select(VisitSymptom.symptom_code, VisitSymptom.state)
                                .where(VisitSymptom.visit_id == visit.visit_id)
                                .order_by(VisitSymptom.symptom_code)).all())
@@ -62,7 +43,7 @@ def build_input_features(db: Session, visit: Visit) -> dict[str, Any]:
             "age_years": age_years, "age_months": age_months}
 
 
-# ============================================================================ cờ đỏ / mức ưu tiên
+# --- Cờ đỏ, mức ưu tiên ---------------------------------------------------------------------------
 def _enrich_hits(hits: list[dict], rules: list[dict]) -> list[dict]:
     """Bổ sung rule_type và triage_rule_id (cần cho FK visit.red_flag_rule_id) vào từng luật khớp."""
     by_key = {(r["rule_key"], r["version"]): r for r in rules}
@@ -89,7 +70,7 @@ def _uuid(value: Any) -> uuid.UUID | None:
 
 def _apply_triage(visit: Visit, *, is_red_flag: bool, hits: list[dict], priority_rule: str,
                   priority_final: str) -> None:
-    """Ghi cờ đỏ + hai mức ưu tiên vào lượt khám trong MỘT lần gán (các CHECK của visit kiểm cả bộ)."""
+    """Ghi cờ đỏ + hai mức ưu tiên vào lượt khám trong một lần gán (các CHECK của visit kiểm cả bộ)."""
     red = next((h for h in hits if h.get("rule_type") == "RED_FLAG"), None) if is_red_flag else None
     if is_red_flag and (red is None or not red.get("triage_rule_id")):
         raise RuntimeError("Cờ đỏ nhưng không xác định được luật RED_FLAG đã khớp")
@@ -102,7 +83,7 @@ def _apply_triage(visit: Visit, *, is_red_flag: bool, hits: list[dict], priority
     visit.updated_at = func.now()
 
 
-# ============================================================================ 1. xếp hàng
+# --- Xếp hàng -------------------------------------------------------------------------------------
 def enqueue_assessment(db: Session, visit_id: uuid.UUID, actor: User,
                        reader: KnowledgeReader) -> AiAssessmentLog:
     """Tạo một lần đánh giá cho lượt khám. Bên gọi commit. Trả dòng nhật ký (Queued hoặc Skipped)."""
@@ -180,7 +161,7 @@ def enqueue_extraction(db: Session, visit_id: uuid.UUID, actor: User) -> AiAsses
     return run
 
 
-# ============================================================================ 2. worker lấy việc
+# --- Worker lấy việc ------------------------------------------------------------------------------
 def claim_next(db: Session) -> AiAssessmentLog | None:
     """Lấy một việc Queued, Extraction trước rồi FIFO; khóa bằng SKIP LOCKED để nhiều worker không
     tranh nhau. Bên gọi commit ngay để lease có hiệu lực với worker khác."""
@@ -215,7 +196,7 @@ def sweep_expired(db: Session) -> dict[str, int]:
     return {"requeued": requeued, "failed": failed}
 
 
-# ============================================================================ 3. ghi kết quả
+# --- Ghi kết quả ----------------------------------------------------------------------------------
 def _is_latest(db: Session, run: AiAssessmentLog) -> bool:
     latest = db.scalar(select(AiAssessmentLog.assessment_id)
                        .where(AiAssessmentLog.visit_id == run.visit_id, AiAssessmentLog.run_type == "Assessment",
@@ -226,7 +207,7 @@ def _is_latest(db: Session, run: AiAssessmentLog) -> bool:
 
 
 def _open_visit_for(db: Session, run: AiAssessmentLog) -> Visit | None:
-    """Lượt khám cần cập nhật theo lần chạy này: chỉ khi còn mở VÀ đây là lần chạy mới nhất."""
+    """Lượt khám cần cập nhật theo lần chạy này: chỉ khi còn mở và đây là lần chạy mới nhất."""
     visit = db.scalar(select(Visit).where(Visit.visit_id == run.visit_id).with_for_update())
     if visit is None or visit.status not in ASSESSABLE_STATUSES or not _is_latest(db, run):
         return None
@@ -315,7 +296,7 @@ def write_extraction(db: Session, assessment_id: uuid.UUID, suggestions: list[di
     db.flush()
 
 
-# ============================================================================ 4. polling trích xuất
+# --- Polling trích xuất ---------------------------------------------------------------------------
 def get_latest_extraction(db: Session, visit_id: uuid.UUID, reader: KnowledgeReader) -> dict[str, Any] | None:
     get_visit(db, visit_id)
     run = db.scalar(select(AiAssessmentLog)

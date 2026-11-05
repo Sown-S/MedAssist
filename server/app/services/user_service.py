@@ -18,7 +18,7 @@ _COLUMNS = ("user_id", "username", "full_name", "role", "email", "phone", "is_ac
 
 
 def to_out(db: Session, users: list[User]) -> list[dict]:
-    """Thêm các trường tính từ audit_log và mã, tên phòng (ERD v1.9 mục 2.1: không lưu thành cột)."""
+    """Thêm các trường tính từ audit_log và mã, tên phòng (ERD §2.1: không lưu thành cột)."""
     ids = [u.user_id for u in users]
     if not ids:
         return []

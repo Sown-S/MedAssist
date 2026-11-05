@@ -1,4 +1,4 @@
-"""Phòng khám, phòng xét nghiệm và phòng của bác sĩ (ERD v1.9, Alembic 0006)."""
+"""Phòng khám, phòng xét nghiệm và phòng của bác sĩ (ERD §2.1a, Alembic 0006)."""
 import uuid
 
 import pytest

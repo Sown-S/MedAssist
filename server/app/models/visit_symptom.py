@@ -1,8 +1,4 @@
-"""VISIT_SYMPTOM — triệu chứng tri-state (PRESENT/ABSENT/UNKNOWN) đã được Nurse xác nhận.
-
-Sinh từ lược đồ do Alembic 0001 tạo (medassist_schema_v1_8.sql) rồi biên tập; phải khớp
-bảng thật — kiểm tra bằng `alembic check` / tests/test_db_guards.py.
-"""
+"""VISIT_SYMPTOM — triệu chứng tri-state (PRESENT/ABSENT/UNKNOWN) đã được Nurse xác nhận."""
 import datetime
 import uuid
 

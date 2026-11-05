@@ -1,4 +1,4 @@
-"""Danh mục dịch vụ, gói khám, phiếu chỉ định cận lâm sàng (ERD v2.1)."""
+"""Danh mục dịch vụ, gói khám, phiếu chỉ định cận lâm sàng (ERD §2.18a, §2.18b, §2.10b)."""
 import uuid
 from datetime import datetime
 from decimal import Decimal
@@ -118,7 +118,7 @@ class PackageOut(BaseModel):
     updated_at: datetime
 
 
-# ---------------------------------------------------------------------------- phiếu chỉ định
+# --- Phiếu chỉ định -------------------------------------------------------------------------------
 class ServiceOrderCreate(BaseModel):
     """Chọn từ danh mục (service_ids), một gói (package_id) và/hoặc gõ tên ngoài danh mục (other_items)."""
     model_config = ConfigDict(extra="forbid")

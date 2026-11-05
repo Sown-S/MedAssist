@@ -1,4 +1,4 @@
-"""Hồ sơ nhân viên, chính sách mật khẩu, khóa và mở khóa tài khoản (ERD v1.9, Alembic 0005)."""
+"""Hồ sơ nhân viên, chính sách mật khẩu, khóa và mở khóa tài khoản (ERD §2.1, Alembic 0005)."""
 import uuid
 
 import pytest

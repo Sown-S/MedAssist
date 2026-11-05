@@ -7,7 +7,7 @@ from app.services.emr_service import interpret_term
 from app.exceptions import AppError
 
 
-# ---------------------------------------------------------------------------- tiện ích
+# --- Tiện ích -------------------------------------------------------------------------------------
 def _uniq_phone():
     return "09" + f"{uuid.uuid4().int % 10**8:08d}"
 
@@ -43,7 +43,7 @@ def patient(client, nurse):
     return _make
 
 
-# ---------------------------------------------------------------------------- hiểu ô tìm kiếm (unit)
+# --- Hiểu ô tìm kiếm (unit) -----------------------------------------------------------------------
 @pytest.mark.parametrize("term, expected", [
     ("BN-3F2A9C1B", {"kind": "patient_code", "value": "3f2a9c1b"}),
     ("bn3f2a9c1b", {"kind": "patient_code", "value": "3f2a9c1b"}),
@@ -66,7 +66,7 @@ def test_interpret_term_rejects(term):
         interpret_term(term)
 
 
-# ---------------------------------------------------------------------------- tra cứu nhanh (API)
+# --- Tra cứu nhanh (API) --------------------------------------------------------------------------
 def test_patient_code_returned_everywhere(client, nurse, patient):
     p = patient()
     assert p["patient_code"] == "BN-" + uuid.UUID(p["patient_id"]).hex[:8].upper()
@@ -135,7 +135,7 @@ def test_admin_cannot_lookup(client, login):
     assert r.status_code == 403
 
 
-# ---------------------------------------------------------------------------- lịch sử khám
+# --- Lịch sử khám ---------------------------------------------------------------------------------
 def test_history_shows_confirmed_diagnoses_and_prescription(client, nurse, doctor, drug, prescribed):
     did, _ = drug({30: 50}, price=1500)
     vid, _ = prescribed([(did, 10)])
@@ -214,7 +214,7 @@ def test_history_audit_view(client, doctor, examining, nurse, logs):
     assert rows and rows[-1].new_values["path"].endswith("/history")
 
 
-# ---------------------------------------------------------------------------- xem lại một lượt khám
+# --- Xem lại một lượt khám ------------------------------------------------------------------------
 def test_visit_record_full(client, nurse, doctor, drug, prescribed):
     did, _ = drug({30: 50}, price=2000)
     vid, invoice = prescribed([(did, 4)])

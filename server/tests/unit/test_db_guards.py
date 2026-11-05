@@ -1,5 +1,5 @@
 """Bảo vệ ở mức CSDL: audit_log chỉ-thêm (trigger + GRANT), app không tạo được bảng,
-model khớp lược đồ do Alembic tạo (ERD v1.8 mục 6)."""
+model khớp lược đồ do Alembic tạo (ERD §6)."""
 from pathlib import Path
 
 import pytest
@@ -31,7 +31,7 @@ def test_app_role_cannot_modify_protected_objects(users, sql):
 def test_trigger_blocks_even_the_owner(owner_engine, users, sql):
     with owner_engine.connect() as conn, pytest.raises(DBAPIError) as exc:
         conn.execute(text(sql))
-    assert exc.value.orig.sqlstate == "23514"                  # trigger append-only (ERD v1.8)
+    assert exc.value.orig.sqlstate == "23514"                  # trigger append-only (ERD §6.1)
 
 
 def test_actor_check_constraint(users):
@@ -47,7 +47,7 @@ def test_models_match_migrated_schema(users):
 
 
 def test_every_table_has_a_model(users):
-    """Đủ 31 model (ERD v2.1): bảng nào thêm bằng migration cũng phải có model tương ứng."""
+    """Đủ model cho mọi bảng: bảng nào thêm bằng migration cũng phải có model tương ứng."""
     from sqlalchemy import inspect
 
     from app.models import Base

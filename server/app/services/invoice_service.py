@@ -1,10 +1,6 @@
-"""Hóa đơn (US06). Lượt 6b: tự tạo hóa đơn Pending khi lượt khám sang Prescribed, hủy khi mở lại đơn.
-Lượt 6c: sửa phí khám / dòng nhập tay, lập lại khi bỏ qua thuốc, thu tiền, Finished.
-ERD v2.1: dòng cận lâm sàng lấy từ phiếu chỉ định, phí khám lấy từ danh mục dịch vụ.
-
-Bất biến do CSDL giữ: total = 3 khoản phí; mỗi khoản phí = tổng các dòng cùng loại (constraint trigger,
-kiểm ở cuối transaction); dòng thuốc thuộc đơn của CÙNG lượt khám; tối đa một hóa đơn chưa hủy / lượt.
-Không xóa dòng hóa đơn (app không có quyền DELETE): sửa = hủy hóa đơn rồi lập hóa đơn mới.
+"""Hóa đơn (US06, ERD §2.19, §4.4): tự tạo khi lượt khám sang Prescribed, sửa, lập lại, thu tiền.
+Sửa hóa đơn = hủy rồi lập mới (app không có quyền DELETE); bất biến về phí do CSDL giữ.
+Chi tiết: docs/thiet-ke-backend.md §5.4.
 """
 import uuid
 from decimal import Decimal
@@ -121,7 +117,7 @@ def current_for_visit(db: Session, visit_id: uuid.UUID) -> Invoice:
     return invoice
 
 
-# ============================================================================ Lượt 6c: sửa, lập lại, thu tiền
+# --- Sửa, lập lại, thu tiền -----------------------------------------------------------------------
 def _paraclinical_lines(db: Session, invoice: Invoice) -> list[dict]:
     """Chỉ dòng nhập tay; dòng từ phiếu chỉ định được lập lại theo chỉ định còn hiệu lực."""
     return [dict(item_type="Paraclinical", item_name=i.item_name, quantity=i.quantity, unit_price=i.unit_price,

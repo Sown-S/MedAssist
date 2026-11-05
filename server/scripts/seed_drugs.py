@@ -1,14 +1,5 @@
-"""Nạp danh mục thuốc (và một lô cho mỗi thuốc) từ server/data/drugs.csv — xem server/data/README.md.
-
-Dùng cho máy dev, demo, và (với --no-batches) khi cài máy admin. Chạy lại nhiều lần an toàn:
-thuốc đã có (cùng hoạt chất + tên thương mại + hàm lượng + dạng bào chế) thì bỏ qua; lô "SEED-<mã>"
-chỉ tạo khi thuốc chưa có lô đó. Đi qua inventory_service (kiểm tra, ghi nhật ký) bằng tài khoản 'system'.
-
-Chạy trong server/:
-    python -m scripts.seed_drugs                 # thuốc + lô
-    python -m scripts.seed_drugs --no-batches    # chỉ danh mục (máy admin khi cài đặt)
-    python -m scripts.seed_drugs --file data/khac.csv
-    python -m scripts.seed_drugs --deactivate-others   # ngừng dùng thuốc đang dùng nhưng KHÔNG có trong file
+"""Nạp danh mục thuốc (và lô "SEED-<mã>" cho mỗi thuốc) từ server/data/drugs.csv qua inventory_service.
+Tài khoản 'system'; chạy lại an toàn: thuốc, lô đã có thì bỏ qua. Cách chạy: server/README.md mục 6.
 """
 import argparse
 import csv

@@ -1,8 +1,5 @@
 """VISIT — lượt khám = mục hàng đợi; sinh hiệu (chỉ khóa chuẩn), ưu tiên tách luật/AI, ai_status.
 red_flag_rule_type là cột sinh tự động (Computed): không gán giá trị.
-
-Sinh từ lược đồ do Alembic 0001 tạo (medassist_schema_v1_8.sql) rồi biên tập; phải khớp
-bảng thật — kiểm tra bằng `alembic check` / tests/test_db_guards.py.
 """
 import datetime
 import uuid

@@ -1,8 +1,5 @@
-"""SYMPTOM_KEY — định danh ổn định của mã triệu chứng (v1.8). Chỉ thêm, không sửa:
+"""SYMPTOM_KEY — định danh ổn định của mã triệu chứng. Chỉ thêm, không sửa:
 medassist_app chỉ có SELECT, INSERT. Trigger tự đăng ký mã khi INSERT symptom.
-
-Sinh từ lược đồ do Alembic 0001 tạo (medassist_schema_v1_8.sql) rồi biên tập; phải khớp
-bảng thật — kiểm tra bằng `alembic check` / tests/test_db_guards.py.
 """
 import datetime
 

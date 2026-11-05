@@ -11,7 +11,7 @@ from app.exceptions import AppError, NotFoundError
 from app.main import app
 
 
-# ---- route giả để sinh từng loại lỗi --------------------------------------------------
+# --- Route giả để sinh từng loại lỗi --------------------------------------------------------------
 class _Vitals(BaseModel):
     spo2_pct: float = Field(ge=50, le=100)
 

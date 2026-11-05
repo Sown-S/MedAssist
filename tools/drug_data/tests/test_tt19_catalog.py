@@ -1,4 +1,4 @@
-"""scripts/tt19_catalog.py: trích Phụ lục I, đối chiếu drugs.csv, ứng viên, gộp. Không truy cập mạng."""
+"""drug_data/tt19_catalog.py: trích Phụ lục I, đối chiếu drugs.csv, ứng viên, gộp. Không truy cập mạng."""
 import csv
 
 import pytest

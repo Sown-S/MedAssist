@@ -1,8 +1,4 @@
-"""SYMPTOM — danh mục triệu chứng, phiên bản theo dòng (một dòng Active mỗi mã).
-
-Sinh từ lược đồ do Alembic 0001 tạo (medassist_schema_v1_8.sql) rồi biên tập; phải khớp
-bảng thật — kiểm tra bằng `alembic check` / tests/test_db_guards.py.
-"""
+"""SYMPTOM — danh mục triệu chứng, phiên bản theo dòng (một dòng Active mỗi mã)."""
 import datetime
 import uuid
 

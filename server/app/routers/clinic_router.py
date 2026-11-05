@@ -1,7 +1,5 @@
-"""Lâm sàng: bệnh nhân (EMR, US04), lượt khám và hàng đợi (US10).
-
-Quyền: Nurse tạo/sửa bệnh nhân và lượt khám, check-in, hủy khi chưa khám; Physician nhận khám,
-trả lại, hủy lượt đang khám của mình; cả hai xem dữ liệu. Admin không truy cập (tài liệu).
+"""Lâm sàng: bệnh nhân (EMR, US04), lượt khám và hàng đợi (US10). Nurse tiếp đón, check-in, hủy khi chưa khám;
+Physician nhận khám, trả lại, hủy lượt đang khám của mình; Admin không truy cập.
 Mọi GET dữ liệu bệnh nhân ghi VIEW (audit_view); hàng đợi gộp 1 dòng / 5 phút.
 """
 import uuid
@@ -38,7 +36,7 @@ def _with_warnings(visit) -> VisitWithWarnings:
     return out
 
 
-# ============================================================================ Bệnh nhân
+# --- Bệnh nhân ------------------------------------------------------------------------------------
 @router.get("/patients", response_model=Page[PatientSummary])
 def search_patients(
     q: str | None = Query(None, min_length=1, max_length=100, description="Một phần họ tên, gõ có dấu hay không dấu đều được"),
@@ -118,7 +116,7 @@ def visit_record(visit_id: uuid.UUID,
     return emr_service.visit_record(db, visit_id)
 
 
-# ============================================================================ Triệu chứng đã xác nhận (HITL)
+# --- Triệu chứng đã xác nhận (HITL) ---------------------------------------------------------------
 @router.get("/symptoms", response_model=list[SymptomCatalogItem])
 def symptom_catalog(_: User = Depends(require_roles(*CLINICAL_ROLES)), db: Session = Depends(get_db)):
     """Danh mục triệu chứng đang Active. Không ghi VIEW: không phải dữ liệu bệnh nhân."""
@@ -136,7 +134,7 @@ def visit_symptoms(visit_id: uuid.UUID,
 @router.put("/visits/{visit_id}/symptoms", response_model=list[VisitSymptomOut])
 def put_visit_symptoms(visit_id: uuid.UUID, body: SymptomsPut, actor: User = Depends(_clinical_visit),
                        db: Session = Depends(get_db)):
-    """Y tá (hoặc bác sĩ khi đang khám) xác nhận trạng thái CÓ / KHÔNG / CHƯA RÕ cho từng triệu chứng.
+    """Y tá (hoặc bác sĩ khi đang khám) xác nhận trạng thái có / không / chưa rõ cho từng triệu chứng.
     Thay toàn bộ danh sách; mã bị bỏ khỏi danh sách thành UNKNOWN. Chỉ mã đang Active.
     Sau khi lưu, client gọi POST /visits/{id}/assessment để chạy lại AI."""
     rows = symptom_service.put_symptoms(db, visit_id, body, actor)
@@ -144,7 +142,7 @@ def put_visit_symptoms(visit_id: uuid.UUID, body: SymptomsPut, actor: User = Dep
     return rows
 
 
-# ============================================================================ Hàng đợi
+# --- Hàng đợi -------------------------------------------------------------------------------------
 @router.get("/queue", response_model=list[QueueItem])
 def queue(include_closed: bool = Query(False, description="Thêm lượt hôm nay đã chờ thu tiền, xong, hủy, chuyển tuyến"),
           _: User = Depends(audit_view("visit", roles=CLINICAL_ROLES, dedupe_seconds=DEFAULT_POLL_WINDOW)),
@@ -154,7 +152,7 @@ def queue(include_closed: bool = Query(False, description="Thêm lượt hôm na
     return queue_service.queue_today(db, include_closed)
 
 
-# ============================================================================ Lượt khám
+# --- Lượt khám ------------------------------------------------------------------------------------
 @router.post("/visits", response_model=VisitWithWarnings, status_code=201)
 def create_visit(body: VisitCreate, actor: User = Depends(_nurse_visit), db: Session = Depends(get_db)):
     visit = queue_service.create_visit(db, body, actor)
@@ -219,7 +217,7 @@ def cancel(visit_id: uuid.UUID, body: CancelRequest, actor: User = Depends(_clin
     return visit
 
 
-# ============================================================================ Chuyển tuyến (ERD v2.0)
+# --- Chuyển tuyến (ERD §4.3) ----------------------------------------------------------------------
 @router.get("/referral-facilities", response_model=list[ReferralFacilityOut])
 def search_referral_facilities(
     q: str = Query(..., min_length=2, max_length=100, description="Một phần tên (có dấu hay không) hoặc mã KCB"),
@@ -254,7 +252,7 @@ def update_referral(visit_id: uuid.UUID, body: ReferralUpdate, actor: User = Dep
     return visit
 
 
-# ============================================================================ Xét nghiệm, mời vào phòng
+# --- Xét nghiệm, mời vào phòng --------------------------------------------------------------------
 @router.patch("/visits/{visit_id}/lab-out", response_model=VisitOut)
 def lab_out(visit_id: uuid.UUID, actor: User = Depends(_physician_visit), db: Session = Depends(get_db)):
     visit = queue_service.set_lab_out(db, visit_id, True, actor)

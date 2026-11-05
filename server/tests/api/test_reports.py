@@ -59,7 +59,7 @@ def past_runs(examining):
     return vid
 
 
-# ---------------------------------------------------------------------------- /reports/summary
+# --- /reports/summary -----------------------------------------------------------------------------
 def test_summary_admin_only(client, nurse, doctor):
     for h in (nurse, doctor):
         assert client.get("/api/v1/reports/summary", headers=h).status_code == 403
@@ -120,7 +120,7 @@ def test_summary_invalid_range(client, admin, params):
     assert r.status_code == 422 and r.json()["error"]["code"] == "INVALID_DATE_RANGE"
 
 
-# ---------------------------------------------------------------------------- /admin/ai-logs
+# --- /admin/ai-logs -------------------------------------------------------------------------------
 def test_ai_logs_metadata_only(client, admin, past_runs):
     r = client.get("/api/v1/admin/ai-logs", headers=admin,
                    params={"date_from": PAST.isoformat(), "date_to": PAST.isoformat()})
@@ -149,7 +149,7 @@ def test_ai_logs_admin_only(client, nurse, doctor):
         assert client.get("/api/v1/admin/ai-logs", headers=h).status_code == 403
 
 
-# ---------------------------------------------------------------------------- /health: AI
+# --- /health: AI ----------------------------------------------------------------------------------
 @pytest.fixture
 def fresh_health():
     health_service.reset_cache()
@@ -231,7 +231,7 @@ def test_health_ai_stuck_queue(client, monkeypatch, fresh_health, examining):
             db.commit()
 
 
-# ---------------------------------------------------------------------------- /billing/invoices
+# --- /billing/invoices ----------------------------------------------------------------------------
 def test_invoice_history_today(client, nurse, prescribed):
     vid, _ = prescribed([])
     assert client.patch(f"/api/v1/visits/{vid}/invoice", headers=nurse,

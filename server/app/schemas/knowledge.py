@@ -13,7 +13,7 @@ Kind = Literal["symptoms", "conditions", "relations", "excerpts", "rules"]
 ItemStatus = Literal["Draft", "PendingApproval", "Active", "Retired"]
 
 
-# ============================================================================ bản phát hành
+# --- Bản phát hành --------------------------------------------------------------------------------
 class ReleaseCreate(BaseModel):
     model_config = ConfigDict(extra="forbid")
     label: CleanStr = Field(min_length=1, max_length=30, description="Nhãn phiên bản, vd KB-2026.02")
@@ -53,7 +53,7 @@ class ReleaseDetail(ReleaseOut):
     changes: list[ReleaseChange] = []
 
 
-# ============================================================================ nội dung từng loại
+# --- Nội dung từng loại ---------------------------------------------------------------------------
 class SymptomDraft(BaseModel):
     model_config = ConfigDict(extra="forbid")
     symptom_name: CleanStr = Field(min_length=1, max_length=150)
@@ -116,7 +116,7 @@ class ItemOut(BaseModel):
     values: dict[str, Any]
 
 
-# ============================================================================ tắt khẩn cấp
+# --- Tắt khẩn cấp ---------------------------------------------------------------------------------
 class Dependent(BaseModel):
     kind: Kind
     key: str
@@ -136,7 +136,7 @@ class DeactivateRequest(BaseModel):
         description="Gửi lại đúng danh sách mục phụ thuộc vừa xem trước; lệch (do có thay đổi giữa chừng) thì bị từ chối")
 
 
-# ============================================================================ nguồn
+# --- Nguồn ----------------------------------------------------------------------------------------
 class SourceCreate(BaseModel):
     model_config = ConfigDict(extra="forbid")
     title: CleanStr = Field(min_length=1, max_length=255)

@@ -40,7 +40,7 @@ class PrescriptionItemOut(BaseModel):
 
 
 class PatientContext(BaseModel):
-    """Khung nhắc khi kê đơn — CHỈ ĐỌC. Hệ thống KHÔNG kiểm tra tương tác thuốc."""
+    """Khung nhắc khi kê đơn, chỉ đọc. Hệ thống không kiểm tra tương tác thuốc."""
     chronic_conditions: list[str] = []
     medical_notes: str | None = None
     is_pregnant: bool | None = None

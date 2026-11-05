@@ -1,4 +1,4 @@
-"""Phòng khám, phòng xét nghiệm (ERD v1.9). Mọi vai trò xem; Admin thêm, sửa, ngừng dùng."""
+"""Phòng khám, phòng xét nghiệm (ERD §2.1a). Mọi vai trò xem; Admin thêm, sửa, ngừng dùng."""
 import uuid
 
 from fastapi import APIRouter, Depends, Query

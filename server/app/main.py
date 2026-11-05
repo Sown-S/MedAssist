@@ -17,8 +17,7 @@ from app.services import health_service
 setup_logging(settings.LOG_LEVEL)
 logger = get_logger("main")
 
-# 1. Khởi tạo ứng dụng. Khi chạy thật (prod) tắt /docs, /redoc, /openapi.json:
-#    không công khai danh sách endpoint trong mạng LAN phòng khám.
+# Tắt /docs, /redoc, /openapi.json khi prod: không công khai danh sách endpoint trong LAN phòng khám.
 app = FastAPI(
     title=settings.PROJECT_NAME,
     version=settings.VERSION,
@@ -28,8 +27,7 @@ app = FastAPI(
     openapi_url=None if settings.is_prod else "/openapi.json",
 )
 
-# 2. Middleware. Thứ tự thêm = ngược thứ tự chạy: RequestContext bọc ngoài cùng, nên cả
-#    phản hồi CORS cũng có X-Request-ID.
+# Thứ tự thêm ngược thứ tự chạy: RequestContext bọc ngoài cùng nên phản hồi CORS cũng có X-Request-ID.
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.CORS_ORIGINS,
@@ -40,10 +38,8 @@ app.add_middleware(
 )
 app.add_middleware(RequestContextMiddleware)
 
-# 3. Định dạng lỗi thống nhất
 register_exception_handlers(app)
 
-# 4. Router nghiệp vụ, tiền tố /api/v1 (Architecture v1.7)
 app.include_router(auth_router.router, prefix="/api/v1")
 app.include_router(admin_router.router, prefix="/api/v1")
 app.include_router(clinic_router.router, prefix="/api/v1")
@@ -56,7 +52,6 @@ app.include_router(report_router.router, prefix="/api/v1")
 app.include_router(room_router.router, prefix="/api/v1")
 app.include_router(service_router.router, prefix="/api/v1")
 
-# 5. Route trang chủ
 @app.get("/")
 def read_root():
     return {
@@ -67,9 +62,9 @@ def read_root():
     }
 
 
-# 6. Kiểm tra sức khỏe. Dùng cho healthcheck của Docker Compose và ô Trạng thái hệ thống ở client.
-#    503 chỉ khi CSDL không trả lời; AI lỗi vẫn 200 vì còn xếp hạng theo luật.
-#    Không trả tên hệ quản trị CSDL hay chi tiết lỗi (chỉ ghi ra log server).
+# Healthcheck của Docker Compose và ô Trạng thái hệ thống ở client.
+# 503 chỉ khi CSDL không trả lời; AI lỗi vẫn 200 vì còn xếp hạng theo luật.
+# Không trả tên hệ quản trị CSDL hay chi tiết lỗi (chỉ ghi log server).
 @app.get("/health")
 def health_check(db: Session = Depends(get_db)):
     try:

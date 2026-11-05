@@ -12,7 +12,7 @@ Gender = Literal["Male", "Female", "Other"]
 
 def patient_code(patient_id: uuid.UUID) -> str:
     """Mã BN = "BN-" + 8 ký tự hex đầu của patient_id, viết hoa (vd BN-3F2A9C1B). In trên phiếu khám
-    để tra cứu nhanh; không lưu thành cột (giữ ERD v1.8). Tìm bằng tiền tố của patient_id."""
+    để tra cứu nhanh; không lưu thành cột. Tìm bằng tiền tố của patient_id."""
     return "BN-" + patient_id.hex[:8].upper()
 MAX_AGE_YEARS = 130
 

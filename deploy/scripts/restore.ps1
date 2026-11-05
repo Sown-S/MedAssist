@@ -1,4 +1,4 @@
-﻿# Khôi phục CSDL từ một bản sao lưu theo Architecture v1.9 §5.4.1: khôi phục vào CSDL mới, kiểm quyền,
+﻿# Khôi phục CSDL từ một bản sao lưu theo Architecture §5.4.1: khôi phục vào CSDL mới, kiểm quyền,
 # rồi mới đổi tên thay CSDL đang chạy. Không dùng pg_restore --clean trên CSDL đang chạy vì lệnh đó cấp lại
 # UPDATE cho medassist_app trên audit_log và stock_movement (bảng chỉ ghi thêm).
 # Dùng: .\deploy\scripts\restore.ps1 -File deploy\backups\medassist_20261020_2200.dump

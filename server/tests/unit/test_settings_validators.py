@@ -1,4 +1,4 @@
-"""Kiểu giá trị SYSTEM_SETTING (ERD v1.8 mục 2.22)."""
+"""Kiểu giá trị SYSTEM_SETTING (ERD §2.22)."""
 import pytest
 
 from app.exceptions import AppError

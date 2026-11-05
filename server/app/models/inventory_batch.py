@@ -1,8 +1,5 @@
 """INVENTORY_BATCH — lô thuốc (FEFO, hạn dùng). remaining_quantity do trigger sổ cái cập nhật:
 KHÔNG sửa tay (trg_inventory_batch_guard chặn).
-
-Sinh từ lược đồ do Alembic 0001 tạo (medassist_schema_v1_8.sql) rồi biên tập; phải khớp
-bảng thật — kiểm tra bằng `alembic check` / tests/test_db_guards.py.
 """
 import datetime
 import decimal

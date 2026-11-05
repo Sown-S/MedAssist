@@ -1,7 +1,5 @@
-"""Alembic env — MedAssist.
-
-Chạy bằng medassist_owner qua MIGRATION_DATABASE_URL (ERD v1.8 mục 6.2).
-KHÔNG dùng DATABASE_URL (medassist_app): app không có quyền tạo bảng.
+"""Alembic env: chạy bằng medassist_owner qua MIGRATION_DATABASE_URL (ERD §6.2).
+Không dùng DATABASE_URL (medassist_app): app không có quyền tạo bảng.
 """
 from logging.config import fileConfig
 
@@ -29,7 +27,7 @@ VIEWS = {
 
 
 def include_object(obj, name, type_, reflected, compare_to):
-    # Đủ 25 model (ERD v1.8): mọi bảng đều được so. Bảng có trong DB mà thiếu model sẽ hiện
+    # Có model cho mọi bảng nên mọi bảng đều được so. Bảng có trong DB mà thiếu model sẽ hiện
     # thành drop_table trong `alembic check` -> biết ngay để viết model, KHÔNG được tự xóa bảng.
     if type_ == "table" and (name in VIEWS or name == "alembic_version"):
         return False
