@@ -5,7 +5,6 @@ import { translate } from '../../i18n'
 import { useQueue, waitingOrder, minutesSince, isMine, inRoom, atLabs, ST, readyOrder } from '../../api/queueStore'
 import { usePrescriptions } from '../../api/prescriptionApi'
 import { useInventory, stockOf } from '../../api/inventoryStore'
-import { soldOutside } from '../../api/rxSafety'
 import { useNow, ymd, periodRange, dmy, hhmm } from '../reception/shared'
 import { useTakePatient, pastVisitsOf, InviteBar } from './doctorShared'
 import { WaitingModal, LabListModal, no, waitTone } from './DoctorHomeModals'
@@ -31,7 +30,7 @@ export default function DoctorHome({ go }) {
   // GET /queue không trả lượt đã khám xong, nên đếm đơn đã xác nhận hôm nay từ GET /prescriptions.
   const rxToday = serverWeek.list.filter((r) => ymd(new Date(r.at)) === today)
   const recent = serverWeek.list.map((r) => ({ ...r, day: ymd(new Date(r.at)), rxAt: r.at }))
-  const lowStock = inv.drugs.filter((d) => d.active && d.kind === 'drug' && !soldOutside(d) && stockOf(d, inv.batches).statuses.some((s) => s === 'out' || s === 'low')).length
+  const lowStock = inv.drugs.filter((d) => d.active && d.kind === 'drug' && stockOf(d, inv.batches).statuses.some((s) => s === 'out' || s === 'low')).length
 
   const cards = [
     {

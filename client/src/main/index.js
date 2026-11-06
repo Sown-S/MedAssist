@@ -95,7 +95,7 @@ function createWindow() {
       // Quy định v5 §3: renderer không chạm Node.js; mọi việc của desktop đi qua preload (window.api).
       contextIsolation: true,
       nodeIntegration: false,
-      sandbox: false
+      sandbox: true
     }
   })
 
@@ -103,9 +103,9 @@ function createWindow() {
     mainWindow.show()
   })
 
-  // Mở link ngoài (nếu có) bằng trình duyệt mặc định, không mở trong app
+  // Chỉ mở link https: bằng trình duyệt mặc định, không mở cửa sổ mới trong app
   mainWindow.webContents.setWindowOpenHandler((details) => {
-    shell.openExternal(details.url)
+    if (/^https:\/\//i.test(details.url)) shell.openExternal(details.url)
     return { action: 'deny' }
   })
 

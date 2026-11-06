@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { changePassword } from "../api/authApi";
-import { getSettings } from "../api/settingsStore";
+import { usePasswordMinLength } from "../api/accountStore";
 import { LANGUAGES, getLang, setLang } from "../i18n";
 import ServerAddress from "../components/ServerAddress";
 import AppIcon from "../components/Icon";
@@ -26,6 +26,7 @@ export default function Login() {
   const [pending, setPending] = useState(null);
   const [np, setNp] = useState("");
   const [np2, setNp2] = useState("");
+  const minLength = usePasswordMinLength();
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -174,7 +175,7 @@ export default function Login() {
           ) : (
             <form onSubmit={handleChange}>
               <div className="login-field">
-                <label>{`New password (at least ${getSettings().security.minLength} characters)`}</label>
+                <label>{`New password (at least ${minLength} characters)`}</label>
                 <div className="input-ic">
                   <span>
                     <Icon>{ICONS.lock}</Icon>

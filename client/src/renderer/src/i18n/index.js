@@ -8,11 +8,12 @@ export const LANGUAGES = [
   { code: 'vi', name: 'Tiếng Việt' }
 ]
 
+// Mặc định tiếng Việt; tiếng Anh chỉ khi người dùng đã chọn trên máy này.
 function readSaved() {
   try {
-    return localStorage.getItem(KEY) === 'vi' ? 'vi' : 'en'
+    return localStorage.getItem(KEY) === 'en' ? 'en' : 'vi'
   } catch {
-    return 'en'
+    return 'vi'
   }
 }
 

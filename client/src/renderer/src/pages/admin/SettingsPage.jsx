@@ -5,7 +5,7 @@ import { Switch } from './ui'
 import { useAuth } from '../../context/AuthContext'
 import { useToast } from '../../context/ToastContext'
 import { translate } from '../../i18n'
-import { useSettings, saveSettings, saveServerSettings, loadServerSettings, getSettings, changedPaths, PRINT_DOCS, NUMBERED_DOCS } from '../../api/settingsStore'
+import { useSettings, saveSettings, saveServerSettings, loadServerSettings, getSettings, changedPaths, PRINT_DOCS } from '../../api/settingsStore'
 import { fetchPasswordPolicy } from '../../api/accountStore'
 import { printHeaderHtml, fmtDateTime } from './inventory/shared'
 import { DeviceTab } from './settings/DeviceTab'
@@ -26,11 +26,9 @@ const TABS = [
   { key: 'ops', label: 'Operations' }
 ]
 // Tab “Kết nối & AI” chỉ hiển thị trạng thái, không có giá trị lưu.
-const TAB_OF = (path) => (path.startsWith('numbering') ? 'print' : path.split('.')[0])
+const TAB_OF = (path) => path.split('.')[0]
 
 for (const d of PRINT_DOCS) FIELDS['print.papers.' + d.key] = [`Paper size — ${d.label}`, 'now']
-for (const d of NUMBERED_DOCS)
-  for (const [k, l] of [['prefix', 'prefix'], ['date', 'date part'], ['digits', 'digits']]) FIELDS[`numbering.${d.key}.${k}`] = [`Numbering — ${d.label} (${l})`, 'now']
 
 const labelOf = (p) => FIELDS[p]?.[0] ?? p
 export default function SettingsPage({ params, onNavigate, setLeaveGuard }) {
@@ -84,7 +82,7 @@ export default function SettingsPage({ params, onNavigate, setLeaveGuard }) {
   }
   function save() {
     if (errCount) return showToast('Fix the highlighted fields before saving', 'error')
-    if ([...changed].some((p) => p.startsWith('security.') || p.startsWith('backup.'))) return setReauth(true)
+    if ([...changed].some((p) => p.startsWith('security.'))) return setReauth(true)
     doSave()
   }
 
@@ -218,7 +216,7 @@ export default function SettingsPage({ params, onNavigate, setLeaveGuard }) {
         </div>
       )}
 
-      <ReauthModal open={!!reauth} title="Save security & backup settings" confirmLabel="Save" onClose={() => setReauth(null)} onConfirm={doSave}>
+      <ReauthModal open={!!reauth} title="Save security settings" confirmLabel="Save" onClose={() => setReauth(null)} onConfirm={doSave}>
         <p className="ai-soft">These settings protect patient data. Confirm with your password.</p>
         <ul className="perm-diff">
           {[...changed].map((p) => (
