@@ -15,6 +15,15 @@ class ClinicProfile(BaseModel):
     name: str = Field(min_length=1, max_length=200)
     address: str = Field(default="", max_length=255)
     phone: str = Field(default="", max_length=20)
+    email: str = Field(default="", max_length=100)
+    tax_code: str = Field(default="", max_length=20, pattern=r"^[0-9-]*$")
+    license_no: str = Field(default="", max_length=50)
+    license_date: str = Field(default="", max_length=20)
+    license_issuer: str = Field(default="", max_length=200)
+    director: str = Field(default="", max_length=100)
+    director_license: str = Field(default="", max_length=50)
+    # Logo in trên phiếu: data URL ảnh nhỏ, giới hạn để dòng JSONB không phình
+    logo: str = Field(default="", max_length=300_000, pattern=r"^(data:image/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+)?$")
 
 
 class _NearExpiryDays(BaseModel):
@@ -31,6 +40,10 @@ class _ClinicProfile(BaseModel):
 
 class _ConsultationFee(BaseModel):
     value: int = Field(ge=0, le=100_000_000, strict=True)  # VNĐ, số nguyên
+
+
+class _IdleLogoutMinutes(BaseModel):
+    value: int = Field(ge=0, le=480, strict=True)  # 0 = không tự đăng xuất
 
 
 class _ConsultationServiceCode(BaseModel):
@@ -58,6 +71,11 @@ SETTINGS: dict[str, tuple[type[BaseModel], Any, str]] = {
         _ConsultationServiceCode,
         "DV01",
         "Mã dịch vụ khám trong danh mục làm dòng phí khám; rỗng hoặc ngừng dùng thì dùng phí khám mặc định",
+    ),
+    "security.idle_logout_minutes": (
+        _IdleLogoutMinutes,
+        15,
+        "Số phút không thao tác thì client tự đăng xuất; 0 = tắt",
     ),
 }
 

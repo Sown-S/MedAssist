@@ -10,9 +10,22 @@ def test_defaults_are_valid_and_cover_all_keys():
     assert default_settings() == {
         "inventory.near_expiry_days": 90,
         "inventory.min_remaining_shelf_days": 0,
-        "clinic.profile": {"name": "Phòng khám", "address": "", "phone": ""},
+        "clinic.profile": {
+            "name": "Phòng khám",
+            "address": "",
+            "phone": "",
+            "email": "",
+            "tax_code": "",
+            "license_no": "",
+            "license_date": "",
+            "license_issuer": "",
+            "director": "",
+            "director_license": "",
+            "logo": "",
+        },
         "billing.default_consultation_fee": 0,
         "billing.consultation_service_code": "DV01",
+        "security.idle_logout_minutes": 15,
     }
 
 
@@ -25,8 +38,22 @@ def test_defaults_are_valid_and_cover_all_keys():
         (
             "clinic.profile",
             {"name": "  PK Hòa Khánh ", "phone": "0236"},
-            {"name": "PK Hòa Khánh", "address": "", "phone": "0236"},
+            {
+                "name": "PK Hòa Khánh",
+                "address": "",
+                "phone": "0236",
+                "email": "",
+                "tax_code": "",
+                "license_no": "",
+                "license_date": "",
+                "license_issuer": "",
+                "director": "",
+                "director_license": "",
+                "logo": "",
+            },
         ),
+        ("security.idle_logout_minutes", 0, 0),
+        ("security.idle_logout_minutes", 480, 480),
     ],
 )
 def test_valid_values(key, value, expected):
@@ -44,6 +71,12 @@ def test_valid_values(key, value, expected):
         ("billing.default_consultation_fee", True),
         ("clinic.profile", {"address": "x"}),
         ("clinic.profile", {"name": "A", "logo": "x"}),
+        ("clinic.profile", {"name": "A", "logo": "data:image/svg+xml;base64,PHN2Zz4="}),
+        ("clinic.profile", {"name": "A", "tax_code": "MST 0401"}),
+        ("clinic.profile", {"name": "A", "fax": "0236"}),
+        ("security.idle_logout_minutes", -1),
+        ("security.idle_logout_minutes", 481),
+        ("security.idle_logout_minutes", "15"),
         ("clinic.profile", "PK A"),
         ("billing.consultation_service_code", "DV 01"),
         ("billing.consultation_service_code", 1),

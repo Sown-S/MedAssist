@@ -23,9 +23,17 @@ from app.core.security import (
 )
 from app.exceptions import AppError
 from app.models.user import User
-from app.schemas.auth import ChangePasswordRequest, LoginRequest, PasswordPolicy, RefreshRequest, TokenResponse, UserMe
+from app.schemas.auth import (
+    ChangePasswordRequest,
+    ClientConfig,
+    LoginRequest,
+    PasswordPolicy,
+    RefreshRequest,
+    TokenResponse,
+    UserMe,
+)
 from app.services import audit_service as audit
-from app.services import user_service
+from app.services import settings_service, user_service
 from app.services.login_guard import check_login_allowed
 
 router = APIRouter(prefix="/auth", tags=["auth"])
@@ -125,6 +133,15 @@ def logout(
         user_agent=user_agent(request),
     )
     db.commit()
+
+
+@router.get("/client-config", response_model=ClientConfig)
+def client_config(db: Session = Depends(get_db)) -> ClientConfig:
+    """Không cần đăng nhập: màn đăng nhập hiện tên, logo phòng khám. Chỉ thông tin công khai in trên phiếu."""
+    return ClientConfig(
+        clinic=settings_service.get_value(db, "clinic.profile"),
+        idle_logout_minutes=settings_service.get_value(db, "security.idle_logout_minutes"),
+    )
 
 
 @router.get("/password-policy", response_model=PasswordPolicy)
