@@ -142,7 +142,7 @@ client/
       │  ├─ prescriptionApi.js, conditionCatalog.js   Danh sách đơn thuốc, danh mục bệnh Active (ICD-10)
       │  ├─ symptoms.js, vitals.js, patient.js   Danh mục triệu chứng, 8 khóa sinh hiệu, tiện ích bệnh nhân (fold, ageOf)
       │  ├─ settingsStore.js   Tham số server (GET / PUT /admin/settings) + cài đặt của máy này
-      │  └─ draftStore.js, deviceSettings.js, rxSafety.js   Phiếu khám dở trên máy, cài đặt thiết bị, thuốc N / H
+      │  └─ draftStore.js, deviceSettings.js   Phiếu khám dở trên máy, cài đặt thiết bị
       ├─ context/            AuthContext (phiên, tự đăng xuất), ToastContext
       ├─ hooks/              useApiData, useAsyncAction, useDelayedFlag
       ├─ i18n/               index.js, jsx-runtime.js, jsx-dev-runtime.js, vi.js
@@ -344,6 +344,7 @@ Cơ chế:
    - `VI`: khoá = **đúng chuỗi tiếng Anh** (đã bỏ khoảng trắng 2 đầu).
    - `PATTERNS`: chuỗi có biến, viết dạng `[/^Waited (\d+) min$/, 'Đã chờ $1 phút']`.
 4. Đổi ngôn ngữ thì đổi `key` của Shell, toàn bộ giao diện dựng lại mà vẫn giữ phiên đăng nhập.
+5. Mặc định **tiếng Việt**; tiếng Anh là tùy chọn, lưu riêng từng máy (`localStorage` khoá `medassist_lang`). Test chọn sẵn tiếng Anh trong `tests/setup.js`.
 
 **Những chỗ KHÔNG tự dịch, phải gọi `translate()` thủ công:**
 

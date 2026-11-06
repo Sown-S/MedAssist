@@ -1,8 +1,6 @@
 import Icon from '../../../components/Icon'
 import DrugPicker from '../../../components/DrugPicker'
 import { translate } from '../../../i18n'
-import { findDrugByName } from '../../../api/inventoryStore'
-import { controlledKind, CONTROLLED_LABEL } from '../../../api/rxSafety'
 import { unitLabel } from '../../admin/inventory/shared'
 import { dmy } from '../../reception/shared'
 import { SLOTS, MEALS, perDay, unitVi } from './rxDraft'
@@ -29,7 +27,7 @@ export const DRUG_SEARCH_ID = 'consult-drug-search'
 
 // Phần kê đơn: tìm thuốc, đơn mẫu, lặp đơn gần nhất, từng dòng thuốc (liều theo buổi → số lượng + cách dùng),
 // cảnh báo tồn kho và chặn chốt khi thiếu thuốc.
-export default function RxEditor({ rx, tried, invDrugs, srvDrugs, issueOf, issues, short, last, setLine, setDose, onAdd, onTemplate, onRepeat, onRemove }) {
+export default function RxEditor({ rx, tried, srvDrugs, issueOf, issues, short, last, setLine, setDose, onAdd, onTemplate, onRepeat, onRemove }) {
   return (
     <>
       <div className="card-title" style={{ marginBottom: 8 }}>
@@ -63,11 +61,6 @@ export default function RxEditor({ rx, tried, invDrugs, srvDrugs, issueOf, issue
               <div className={'rx-line' + (bad ? ' bad' : '')} key={it.id}>
                 <div className="rx-line-top">
                   <b>{it.name}</b>
-                  {controlledKind(findDrugByName(it.name, invDrugs)) && (
-                    <span className="badge low" title={translate('Printed on a separate prescription')}>
-                      {translate(CONTROLLED_LABEL[controlledKind(findDrugByName(it.name, invDrugs))])}
-                    </span>
-                  )}
                   <label className="rx-ess" title={translate('Reception warns the patient if they decide not to buy this drug')}>
                     <input type="checkbox" checked={it.essential} onChange={() => setLine(it.id, { essential: !it.essential })} /> <span>Must buy — warn reception</span>
                   </label>

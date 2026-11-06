@@ -183,7 +183,6 @@ export default function ConsultForm({ visit, user, onDone, onNext }) {
         <RxEditor
           rx={d.rx}
           tried={tried}
-          invDrugs={inv.drugs}
           srvDrugs={srv.drugs}
           issueOf={issueOf}
           issues={issues}
