@@ -16,10 +16,6 @@ export const PRINT_DOCS = [
   { key: 'invoice', label: 'Invoice / payment receipt' },
   { key: 'other', label: 'Other documents & reports' }
 ]
-// date: phần ngày trong số → quyết định chu kỳ làm mới số.
-export const NUMBERED_DOCS = [
-  { key: 'invoice', label: 'Invoice' }
-]
 export const PAYMENT_METHODS = [
   { key: 'cash', label: 'Cash' },
   { key: 'transfer', label: 'Bank transfer' }
@@ -45,13 +41,8 @@ export const DEFAULT_SETTINGS = {
     header: '',
     footer: 'Thank you and wish you good health!'
   },
-  numbering: {
-    invoice: { prefix: 'HD', date: 'yymmdd', digits: 4 },
-    queueResetAt: '00:00',
-    queueStart: 1
-  },
-  security: { minLength: 8, requireMix: true, expiryDays: 0, maxFailed: 5, lockMinutes: 15, idleMinutes: 15 },
-  backup: { enabled: true, time: '02:00', keep: 14, path: 'D:\\MedAssist\\Backup', offsite: '' },
+  // Chính sách mật khẩu và khoá đăng nhập do server quy định (GET /auth/password-policy).
+  security: { idleMinutes: 15 },
   ops: {
     nearDays: 90,
     // Chỉ cấp lô còn hạn > hôm nay + max(số ngày dùng, khoảng này).
@@ -157,15 +148,4 @@ export function saveSettings(draft, user) {
   write(KEY, state)
   listeners.forEach((fn) => fn())
   return paths.length
-}
-
-function datePart(kind, d) {
-  const y = String(d.getFullYear()).slice(2)
-  const m = String(d.getMonth() + 1).padStart(2, '0')
-  const day = String(d.getDate()).padStart(2, '0')
-  return { yymmdd: y + m + day, yymm: y + m, yy: y, none: '' }[kind] ?? ''
-}
-export function formatNumber(rule, seq, d = new Date()) {
-  const parts = [rule.prefix, datePart(rule.date, d), String(seq).padStart(rule.digits, '0')].filter(Boolean)
-  return parts.join('-')
 }

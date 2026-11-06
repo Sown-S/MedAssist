@@ -1,5 +1,5 @@
 // Tài khoản nhân viên qua /auth và /admin/users — khoá tài khoản, phiên và mật khẩu đều do server kiểm.
-import { getSettings } from './settingsStore'
+import { useEffect, useState } from 'react'
 import { apiGet, apiPost, apiRequest, ApiError } from './client'
 
 // Server giữ hồ sơ nhân viên và khoá tạm (locked_until). Chưa có hết hạn mật khẩu hay đăng xuất cưỡng bức;
@@ -73,6 +73,15 @@ export async function fetchPasswordPolicy() {
   }
 }
 
+// Độ dài tối thiểu hiện ở nhãn ô mật khẩu mới; chưa đọc được chính sách thì dùng mức của server (8).
+export function usePasswordMinLength() {
+  const [n, setN] = useState(8)
+  useEffect(() => {
+    fetchPasswordPolicy().then((p) => p && setN(p.minLength))
+  }, [])
+  return n
+}
+
 export const ROLES = {
   doctor: { label: 'Doctor', home: '/doctor' },
   reception: { label: 'Receptionist', home: '/reception' },
@@ -86,9 +95,10 @@ export const maxFailed = () => 5
 export const hasDefaultName = (a) => a.fullName === 'System Administrator'
 
 // Mật khẩu tạm do hệ thống sinh; admin chỉ xem một lần sau khi tạo / đặt lại.
-export function genPassword() {
+export async function genPassword() {
   const c = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789'
-  const r = crypto.getRandomValues(new Uint32Array(Math.max(10, getSettings().security.minLength)))
+  const min = (await fetchPasswordPolicy())?.minLength ?? 8
+  const r = crypto.getRandomValues(new Uint32Array(Math.max(10, min)))
   return Array.from(r, (n) => c[n % c.length]).join('') + '#1'
 }
 
@@ -113,7 +123,7 @@ export async function createAccount({ username, fullName, roleKey, phone = '', s
   if (sameAsUsername(fullName, u)) return { ok: false, error: NAME_IS_USERNAME }
   if (!ROLES[roleKey]) return { ok: false, error: 'Invalid role.' }
   // Mật khẩu tạm sinh ở máy này, gửi một lần qua HTTPS; server băm Argon2id.
-  const password = genPassword()
+  const password = await genPassword()
   return live(async () => {
     const r = await apiPost('/api/v1/admin/users', {
       username: u.toLowerCase(),
@@ -143,7 +153,7 @@ export const setActive = (id, active) => live(async () => (await patchLive(id, {
 export const unlockAccount = (id) => live(async () => ({ ok: true, account: fromServer(await apiPost(`/api/v1/admin/users/${id}/unlock`)) }))
 
 // Sinh mật khẩu tạm mới, buộc đổi ở lần đăng nhập tới; server mở khoá và thu hồi mọi token cũ.
-export function resetPassword(id) {
-  const password = genPassword()
+export async function resetPassword(id) {
+  const password = await genPassword()
   return live(async () => (await apiPost(`/api/v1/admin/users/${id}/reset-password`, { new_password: password }), { ok: true, password }))
 }
