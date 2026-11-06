@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import { readFileSync, readdirSync, statSync } from 'fs'
 import { join, relative, resolve } from 'path'
 import * as espree from 'espree'
@@ -117,5 +117,26 @@ describe('Bản dịch tiếng Việt (vi.js)', () => {
         if (ONLY_IN[text] && !ONLY_IN[text].some((dir) => rel.startsWith(dir))) wrong.push(`${rel}:${line}  "${text}" → "${VI[text]}"`)
     }
     expect(wrong, 'Dùng cụm tiếng Anh rõ nghĩa hơn cho ngữ cảnh này').toEqual([])
+  })
+})
+
+describe('Ngôn ngữ mặc định', () => {
+  async function freshLang(saved) {
+    delete globalThis.__medassistI18n
+    if (saved) localStorage.setItem('medassist_lang', saved)
+    else localStorage.removeItem('medassist_lang')
+    vi.resetModules()
+    const { getLang } = await import('../src/renderer/src/i18n/index.js')
+    return getLang()
+  }
+
+  it('máy chưa chọn ngôn ngữ mở lên tiếng Việt, đã chọn tiếng Anh thì giữ', async () => {
+    try {
+      expect(await freshLang(null)).toBe('vi')
+      expect(await freshLang('en')).toBe('en')
+    } finally {
+      localStorage.setItem('medassist_lang', 'en')
+      delete globalThis.__medassistI18n
+    }
   })
 })
