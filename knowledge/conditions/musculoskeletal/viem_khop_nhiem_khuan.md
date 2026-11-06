@@ -9,27 +9,45 @@ description: Viêm khớp nhiễm khuẩn hay viêm khớp sinh mủ (pyogenic/ 
   là viêm khớp do vi khuẩn sinh mủ không đặc hiệu (không phải do lao, phong, nấm,
   ký sinh trùng hay virus) gây nên.
 relations:
+- symptom_code: septic_arthritis_purulent_synovial_fluid
+  polarity: SUPPORTS
+  weight: 0.98
+  is_key: true
+  source_key: moh_qd_361_2014
+  source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: myalgia_arthralgia
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.95
+  is_key: true
+  source_key: moh_qd_361_2014
+  source_edition: Quyết định số 361/QĐ-BYT
+- symptom_code: maculopapular_rash
+  polarity: SUPPORTS
+  weight: 0.9
+  is_key: true
+  source_key: moh_qd_361_2014
+  source_edition: Quyết định số 361/QĐ-BYT
+- symptom_code: skin_cellulitis_pus_abscess
+  polarity: SUPPORTS
+  weight: 0.9
+  is_key: true
+  source_key: moh_qd_361_2014
+  source_edition: Quyết định số 361/QĐ-BYT
+- symptom_code: joint_swelling_warmth_redness_effusion
+  polarity: SUPPORTS
+  weight: 0.9
+  is_key: true
+  source_key: moh_qd_361_2014
+  source_edition: Quyết định số 361/QĐ-BYT
+- symptom_code: joint_range_of_motion_limitation
+  polarity: SUPPORTS
+  weight: 0.88
   is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: chills_rigors
   polarity: SUPPORTS
-  weight: 0.8
-  is_key: false
-  source_key: moh_qd_361_2014
-  source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: fatigue_malaise
-  polarity: SUPPORTS
-  weight: 0.7
-  is_key: false
-  source_key: moh_qd_361_2014
-  source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: fever_low_grade
-  polarity: SUPPORTS
-  weight: 0.65
+  weight: 0.75
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
@@ -42,6 +60,13 @@ excerpts:
 ---
 
 ## excerpt: viem_khop_nhiem_khuan_chan_doan
+- Khi có ít nhất một trong hai tiêu chuẩn:
+- Xét nghiệm dịch khớp có mủ (bạch cầu đa nhân trung tính thoái hóa hoặc tế
+- Cấy máu hoặc dịch khớp dương tính với vi khuẩn.
+- Kết hợp với ít nhất một trong hai tiêu chuẩn:
+- Lâm sàng viêm khớp điển hình.
+- Dấu hiệu Xquang viêm khớp điển hình: hình ảnh soi gương.
+- Lâm sàng
 - Thường xảy ra cấp tính, gồm hai bệnh cảnh viêm khớp nhiễm khuẩn không phải
 - Viêm khớp nhiễm khuẩn không do lậu cầu: thường xảy ra ở một khớp đơn
 - Triệu chứng tại khớp: sưng nóng đỏ đau, có thể tràn dịch khớp, co cơ, hạn chế
@@ -50,3 +75,6 @@ excerpts:
 - Hội chứng nhiễm khuẩn lậu cầu phát tán: sốt, rét run, ban đỏ và mụn mủ
 - ngoài da cùng các triệu chứng viêm khớp, triệu chứng tại bộ phận sinh dục như đái buốt,
 - đái rắt, đái máu- mủ… Viêm nhiều khớp nhỏ có tính chất di chuyển kèm viêm bao hoạt
+- Viêm khớp thực sự do lậu cầu: thường tổn thương một khớp đơn độc như háng,
+- gối, cổ tay, cổ chân với triệu chứng sưng nóng đỏ đau, có thể tràn dịch khớp. Có thể
+- kèm theo viêm nhiễm ở đường tiết niệu, sinh dục như đái buốt, đái rắt, đái máu - mủ…

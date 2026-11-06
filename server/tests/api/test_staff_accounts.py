@@ -1,4 +1,5 @@
-"""Hồ sơ nhân viên, chính sách mật khẩu, khóa và mở khóa tài khoản (ERD v1.9, Alembic 0005)."""
+"""Hồ sơ nhân viên, chính sách mật khẩu, khóa và mở khóa tài khoản (ERD §2.1, Alembic 0005)."""
+
 import uuid
 
 import pytest
@@ -11,8 +12,14 @@ def admin(login):
 
 def test_user_profile_fields(client, admin):
     code = "NV" + uuid.uuid4().hex[:6].upper()
-    body = {"username": f"bs_{uuid.uuid4().hex[:6]}", "full_name": "Bác sĩ Hồ sơ", "role": "Physician",
-            "password": "Matkhau123", "staff_code": code.lower(), "license_no": "000123/DNA-CCHN"}
+    body = {
+        "username": f"bs_{uuid.uuid4().hex[:6]}",
+        "full_name": "Bác sĩ Hồ sơ",
+        "role": "Physician",
+        "password": "Matkhau123",
+        "staff_code": code.lower(),
+        "license_no": "000123/DNA-CCHN",
+    }
     r = client.post("/api/v1/admin/users", headers=admin, json=body)
     assert r.status_code == 201, r.text
     u = r.json()
@@ -24,18 +31,29 @@ def test_user_profile_fields(client, admin):
 
 
 def test_password_needs_letters_and_digits(client, admin):
-    r = client.post("/api/v1/admin/users", headers=admin, json={
-        "username": f"nv_{uuid.uuid4().hex[:6]}", "full_name": "A", "role": "Nurse", "password": "chikhongcoso"})
+    r = client.post(
+        "/api/v1/admin/users",
+        headers=admin,
+        json={"username": f"nv_{uuid.uuid4().hex[:6]}", "full_name": "A", "role": "Nurse", "password": "chikhongcoso"},
+    )
     assert r.status_code == 422 and "chữ và số" in r.json()["error"]["details"][0]["message"]
     policy = client.get("/api/v1/auth/password-policy").json()
-    assert policy == {"min_length": 8, "require_letters_and_digits": True, "max_failed_attempts": 5,
-                      "failed_window_minutes": 15, "lock_minutes": 5}
+    assert policy == {
+        "min_length": 8,
+        "require_letters_and_digits": True,
+        "max_failed_attempts": 5,
+        "failed_window_minutes": 15,
+        "lock_minutes": 5,
+    }
 
 
 def test_last_login_lock_and_unlock(client, admin, login):
     name = f"nv_{uuid.uuid4().hex[:6]}"
-    uid = client.post("/api/v1/admin/users", headers=admin, json={
-        "username": name, "full_name": "Khóa thử", "role": "Nurse", "password": "Matkhau123"}).json()["user_id"]
+    uid = client.post(
+        "/api/v1/admin/users",
+        headers=admin,
+        json={"username": name, "full_name": "Khóa thử", "role": "Nurse", "password": "Matkhau123"},
+    ).json()["user_id"]
     client.post("/api/v1/auth/login", json={"username": name, "password": "Matkhau123"})
     assert client.get(f"/api/v1/admin/users/{uid}", headers=admin).json()["last_login_at"] is not None
     for _ in range(5):

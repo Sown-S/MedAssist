@@ -1,12 +1,13 @@
 import { Fragment, useMemo, useState } from 'react'
 import Icon from '../../../components/Icon'
-import { translate } from '../../../i18n'
-import { stockOf, todayISO } from '../../../api/inventoryStore'
+import { stockOf } from '../../../api/inventoryStore'
 import { Empty } from '../ui'
 import DrugFormModal from './DrugFormModal'
 import ReceiveModal from './ReceiveModal'
 import StockCardModal from './StockCardModal'
-import { STATUS, StatusBadges, ExpiryCell, SortTh, Pager, paginate, exportCsv, unitLabel, fmtMoney, fmtNum, fmtDate } from './shared'
+import { STATUS, StatusBadges, ExpiryCell, SortTh, Pager, paginate, unitLabel, fmtMoney, fmtNum } from './shared'
+import { BatchTable } from './BatchTable'
+import { stockTotals, exportStock } from './stockSummary'
 
 export const PAGE_SIZE = 10
 
@@ -58,45 +59,9 @@ export function StockTab({ inv, user }) {
   })
   const pg = paginate(sorted, page, PAGE_SIZE)
 
-  const totals = useMemo(() => {
-    const t = { value: 0, low: 0, out: 0, expiredQty: 0, expiredValue: 0, w: { 30: 0, 60: 0, 90: 0 } }
-    for (const { d, s } of rows) {
-      if (!d.active) continue
-      t.value += s.value
-      if (s.statuses.includes('low')) t.low++
-      if (s.statuses.includes('out')) t.out++
-      for (const b of s.batches) {
-        if (b.days < 0) {
-          t.expiredQty++
-          t.expiredValue += b.qty * b.cost
-        } else for (const w of [30, 60, 90]) if (b.days <= w) t.w[w]++
-      }
-    }
-    return t
-  }, [rows])
+  const totals = useMemo(() => stockTotals(rows), [rows])
 
-  function doExport() {
-    exportCsv(
-      `stock-${todayISO()}.csv`,
-      ['Drug', 'Active ingredient', 'ATC code', 'Unit', 'Usable stock', 'Expired stock', 'Threshold', 'Days of cover', 'Suggested reorder', 'Nearest expiry', 'Purchase price', 'Selling price', 'Stock value', 'Status'],
-      sorted.map(({ d, s }) => [
-        d.name,
-        d.ingredient,
-        d.atc,
-        translate(unitLabel(d.unit)),
-        s.usable,
-        s.expired,
-        d.threshold,
-        s.daysCover ?? '',
-        s.reorder || '',
-        s.nextExpiry ? fmtDate(s.nextExpiry.expiry) : '',
-        d.cost,
-        d.price,
-        s.value,
-        s.statuses.map((x) => translate(STATUS[x].label)).join(' · ')
-      ])
-    )
-  }
+  const doExport = () => exportStock(sorted)
 
   const reset = (fn) => (v) => {
     fn(v)
@@ -303,63 +268,5 @@ export function StockTab({ inv, user }) {
       <ReceiveModal drug={receive} drugs={inv.drugs} onClose={() => setReceive(null)} />
       <StockCardModal drug={card} moves={inv.moves} onClose={() => setCard(null)} />
     </>
-  )
-}
-
-export function BatchTable({ drug, stock, onReceive }) {
-  return (
-    <div className="inv-batch-box">
-      <div className="inv-batch-head">
-        <b>Batches in stock</b>
-        <span className="ai-soft ai-small">
-          <span>Usable</span> <b className="mono">{stock.usable}</b> · <span>Expired</span> <b className="mono">{stock.expired}</b> ·{' '}
-          <span>Quantities in</span> <b>{unitLabel(drug.unit)}</b>
-        </span>
-      </div>
-      {stock.batches.length === 0 ? (
-        <p className="ai-soft">
-          <span>No stock.</span>{' '}
-          {drug.active && (
-            <button className="btn btn-ghost btn-sm" onClick={onReceive}>
-              + Receive stock
-            </button>
-          )}
-        </p>
-      ) : (
-        <table className="dt">
-          <thead>
-            <tr>
-              <th>Lot</th>
-              <th>Expiry date</th>
-              <th className="num">Remaining</th>
-              <th>Received on</th>
-              <th className="num">Purchase price</th>
-              <th className="num">Value</th>
-              <th />
-            </tr>
-          </thead>
-          <tbody>
-            {stock.batches.map((b, i) => (
-              <tr key={b.id} className={b.days < 0 ? 'inv-expired' : ''}>
-                <td className="mono">
-                  {b.lot}
-                  {i === stock.batches.findIndex((x) => x.days >= 0) && <span className="badge info inv-fefo">FEFO next</span>}
-                </td>
-                <td>
-                  <ExpiryCell batch={b} />
-                </td>
-                <td className="num mono">{b.qty}</td>
-                <td className="mono">{fmtDate(b.receivedAt)}</td>
-                <td className="num mono">{fmtMoney(b.cost)}</td>
-                <td className="num mono">{fmtMoney(b.qty * b.cost)}</td>
-                <td className="ai-actions">
-                  {b.days < 0 ? <span className="badge low">Expired</span> : <span className="badge ok">Usable</span>}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
-    </div>
   )
 }

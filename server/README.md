@@ -272,6 +272,13 @@ python -m scripts.seed_drugs --no-batches        # chỉ danh mục (khi cài m�
 python -m scripts.seed_drugs --deactivate-others # ngừng dùng thuốc không còn trong drugs.csv (không xóa)
 ```
 
+Cơ sở nhận chuyển tuyến (`server/data/hospitals.csv`, tạo bằng `tools/hospital_data/`):
+
+```powershell
+python -m scripts.seed_referral_facilities                      # chạy lại thì cập nhật, không tạo trùng
+python -m scripts.seed_referral_facilities --deactivate-others  # ngừng dùng cơ sở không còn trong file
+```
+
 - Đi qua `inventory_service` bằng tài khoản `system` → có kiểm tra dữ liệu và ghi nhật ký như nhập tay.
 - Dòng **chưa có giá** bị bỏ qua và in ra danh sách (CSDL bắt buộc giá bán).
 - **Chạy lại không cập nhật** thuốc đã có (giá, tên...). Sửa thuốc đã có: giao diện / `PATCH /api/v1/drugs/{id}`.

@@ -1,4 +1,5 @@
 """Báo cáo tổng hợp, nhật ký AI cho Admin, trạng thái AI trong /health, lịch sử hóa đơn theo ngày."""
+
 import datetime
 import uuid
 
@@ -9,6 +10,7 @@ from app.core.config import settings
 from app.core.database import SessionLocal
 from app.models import AiAssessmentLog
 from app.services import health_service
+from tests.api.intake import save_intake
 
 PAST = datetime.date(2020, 1, 15)
 
@@ -19,17 +21,26 @@ def _summary(client, headers, **params):
     return r.json()
 
 
-def _run(visit_id, *, run_type="Assessment", status="Completed", decision=None, latency=None,
-         queued_at=None, candidates=None):
+def _run(
+    visit_id, *, run_type="Assessment", status="Completed", decision=None, latency=None, queued_at=None, candidates=None
+):
     queued_at = queued_at or datetime.datetime.combine(PAST, datetime.time(9), datetime.UTC)
     finished = status in ("Completed", "Degraded", "Failed", "Skipped")
     mode = {"Completed": "Full", "Degraded": "RuleOnly"}.get(status) if run_type == "Assessment" else None
     with SessionLocal() as db:
-        run = AiAssessmentLog(visit_id=uuid.UUID(visit_id), run_type=run_type, status=status, mode=mode,
-                              candidates=candidates, input_features={"symptoms": ["bí mật"]},
-                              llm_output_raw="đầu ra thô", physician_decision=decision,
-                              latency_total_ms=latency, queued_at=queued_at,
-                              completed_at=queued_at if finished else None)
+        run = AiAssessmentLog(
+            visit_id=uuid.UUID(visit_id),
+            run_type=run_type,
+            status=status,
+            mode=mode,
+            candidates=candidates,
+            input_features={"symptoms": ["bí mật"]},
+            llm_output_raw="đầu ra thô",
+            physician_decision=decision,
+            latency_total_ms=latency,
+            queued_at=queued_at,
+            completed_at=queued_at if finished else None,
+        )
         db.add(run)
         db.commit()
         return run.assessment_id
@@ -46,9 +57,11 @@ def past_runs(examining):
     Dời các lần chạy của lượt gọi fixture trước sang 2019 để số đếm không cộng dồn."""
     vid = examining()
     with SessionLocal() as db:
-        db.execute(update(AiAssessmentLog).where(AiAssessmentLog.queued_at < datetime.datetime(2021, 1, 1,
-                                                                                               tzinfo=datetime.UTC))
-                   .values(queued_at=datetime.datetime(2019, 1, 1, tzinfo=datetime.UTC)))
+        db.execute(
+            update(AiAssessmentLog)
+            .where(AiAssessmentLog.queued_at < datetime.datetime(2021, 1, 1, tzinfo=datetime.UTC))
+            .values(queued_at=datetime.datetime(2019, 1, 1, tzinfo=datetime.UTC))
+        )
         db.commit()
     _run(vid, decision="AcceptedTop", latency=1000, candidates=[{"condition_code": "c_a"}, {"condition_code": "c_b"}])
     _run(vid, decision="AcceptedTop", latency=3000)
@@ -58,7 +71,7 @@ def past_runs(examining):
     return vid
 
 
-# ---------------------------------------------------------------------------- /reports/summary
+# --- /reports/summary -----------------------------------------------------------------------------
 def test_summary_admin_only(client, nurse, doctor):
     for h in (nurse, doctor):
         assert client.get("/api/v1/reports/summary", headers=h).status_code == 403
@@ -67,8 +80,23 @@ def test_summary_admin_only(client, nurse, doctor):
 def test_summary_defaults_to_today(client, admin, today):
     s = _summary(client, admin)
     assert s["date_from"] == s["date_to"] == today.isoformat()
-    assert set(s["visits"]["by_status"]) == {"Waiting", "CheckedIn", "Examining", "Prescribed", "Finished",
-                                            "Cancelled"}
+    assert set(s["visits"]["by_status"]) == {"Waiting", "CheckedIn", "Examining", "Prescribed", "Finished", "Cancelled"}
+
+
+def test_summary_skips_unsaved_intake(client, admin, nurse):
+    pid = client.post(
+        "/api/v1/patients",
+        headers=nurse,
+        json={"full_name": f"Báo Cáo {uuid.uuid4().hex[:6]}", "date_of_birth": "1990-01-01", "gender": "Male"},
+    ).json()["patient_id"]
+    before = _summary(client, admin)["visits"]
+    vid = client.post("/api/v1/visits", headers=nurse, json={"patient_id": pid, "chief_complaint": "Sốt"}).json()[
+        "visit_id"
+    ]
+    assert _summary(client, admin)["visits"] == before
+    save_intake(vid)
+    after = _summary(client, admin)["visits"]
+    assert after["by_status"]["Waiting"] == before["by_status"]["Waiting"] + 1 and after["total"] == before["total"] + 1
 
 
 def test_summary_counts_paid_revenue_and_visits(client, admin, nurse, prescribed):
@@ -89,8 +117,15 @@ def test_summary_counts_paid_revenue_and_visits(client, admin, nurse, prescribed
 
 def test_summary_ai_stats(client, admin, past_runs):
     ai = _summary(client, admin, date_from=PAST.isoformat(), date_to=PAST.isoformat())["ai"]
-    assert ai["assessments"] == {"total": 4, "full": 2, "rule_only": 1, "failed": 1, "skipped": 0, "pending": 0,
-                                 "avg_latency_ms": 2000}
+    assert ai["assessments"] == {
+        "total": 4,
+        "full": 2,
+        "rule_only": 1,
+        "failed": 1,
+        "skipped": 0,
+        "pending": 0,
+        "avg_latency_ms": 2000,
+    }
     assert ai["decisions"] == {"accepted_top": 2, "chose_other": 1, "no_suggestion": 1, "acceptance_rate": 0.6667}
     assert ai["extractions"] == {"total": 1, "completed": 1, "failed": 0}
 
@@ -101,17 +136,20 @@ def test_summary_empty_range(client, admin):
     assert s["ai"]["decisions"]["acceptance_rate"] is None and s["ai"]["assessments"]["avg_latency_ms"] is None
 
 
-@pytest.mark.parametrize("params", [{"date_from": "2026-02-01", "date_to": "2026-01-01"},
-                                    {"date_from": "2024-01-01", "date_to": "2025-06-01"}])
+@pytest.mark.parametrize(
+    "params",
+    [{"date_from": "2026-02-01", "date_to": "2026-01-01"}, {"date_from": "2024-01-01", "date_to": "2025-06-01"}],
+)
 def test_summary_invalid_range(client, admin, params):
     r = client.get("/api/v1/reports/summary", headers=admin, params=params)
     assert r.status_code == 422 and r.json()["error"]["code"] == "INVALID_DATE_RANGE"
 
 
-# ---------------------------------------------------------------------------- /admin/ai-logs
+# --- /admin/ai-logs -------------------------------------------------------------------------------
 def test_ai_logs_metadata_only(client, admin, past_runs):
-    r = client.get("/api/v1/admin/ai-logs", headers=admin,
-                   params={"date_from": PAST.isoformat(), "date_to": PAST.isoformat()})
+    r = client.get(
+        "/api/v1/admin/ai-logs", headers=admin, params={"date_from": PAST.isoformat(), "date_to": PAST.isoformat()}
+    )
     assert r.status_code == 200, r.text
     page = r.json()
     assert page["total"] == 5
@@ -137,7 +175,7 @@ def test_ai_logs_admin_only(client, nurse, doctor):
         assert client.get("/api/v1/admin/ai-logs", headers=h).status_code == 403
 
 
-# ---------------------------------------------------------------------------- /health: AI
+# --- /health: AI ----------------------------------------------------------------------------------
 @pytest.fixture
 def fresh_health():
     health_service.reset_cache()
@@ -153,7 +191,8 @@ def no_stuck(monkeypatch):
 
 def test_health_ai_disabled(client, monkeypatch, fresh_health, no_stuck):
     monkeypatch.setattr(settings, "LLM_PROVIDER", "none")
-    assert client.get("/health").json()["ai"]["ok"] is False
+    ai = client.get("/health").json()["ai"]
+    assert ai["ok"] is False and ai["reason"] == "disabled"
 
 
 def test_health_ai_ollama(client, monkeypatch, fresh_health, no_stuck):
@@ -172,9 +211,23 @@ def test_health_ai_ollama(client, monkeypatch, fresh_health, no_stuck):
         return _Resp()
 
     monkeypatch.setattr(health_service.httpx, "get", _get)
-    assert client.get("/health").json()["ai"] == {"ok": True, "detail": "Ollama sẵn sàng"}
+    assert client.get("/health").json()["ai"] == {"ok": True, "detail": "Ollama sẵn sàng", "reason": None}
     client.get("/health")
     assert len(calls) == 1 and calls[0].endswith("/api/tags")
+
+
+def test_health_ai_ollama_without_model(client, monkeypatch, fresh_health, no_stuck):
+    monkeypatch.setattr(settings, "LLM_PROVIDER", "ollama")
+
+    class _Resp:
+        def raise_for_status(self):
+            pass
+
+        def json(self):
+            return {"models": [{"name": "model-khac"}]}
+
+    monkeypatch.setattr(health_service.httpx, "get", lambda url, timeout: _Resp())
+    assert client.get("/health").json()["ai"]["reason"] == "no_model"
 
 
 def test_health_ai_ollama_down_still_200(client, monkeypatch, fresh_health, no_stuck):
@@ -185,7 +238,11 @@ def test_health_ai_ollama_down_still_200(client, monkeypatch, fresh_health, no_s
 
     monkeypatch.setattr(health_service.httpx, "get", _boom)
     r = client.get("/health")
-    assert r.status_code == 200 and r.json()["ai"] == {"ok": False, "detail": "Không kết nối được Ollama"}
+    assert r.status_code == 200 and r.json()["ai"] == {
+        "ok": False,
+        "detail": "Không kết nối được Ollama",
+        "reason": "unreachable",
+    }
     assert "refused" not in r.text
 
 
@@ -194,19 +251,28 @@ def test_health_ai_stuck_queue(client, monkeypatch, fresh_health, examining):
     old = datetime.datetime.now(datetime.UTC) - datetime.timedelta(seconds=settings.AI_ASSESSMENT_TIMEOUT_SECONDS + 60)
     aid = _run(examining(), status="Queued", queued_at=old)
     try:
-        assert client.get("/health").json()["ai"] == {"ok": False, "detail": "Worker AI không xử lý hàng đợi"}
+        assert client.get("/health").json()["ai"] == {
+            "ok": False,
+            "detail": "Worker AI không xử lý hàng đợi",
+            "reason": "worker_stopped",
+        }
     finally:
         with SessionLocal() as db:
-            db.execute(update(AiAssessmentLog).where(AiAssessmentLog.assessment_id == aid)
-                       .values(status="Skipped", completed_at=old))
+            db.execute(
+                update(AiAssessmentLog)
+                .where(AiAssessmentLog.assessment_id == aid)
+                .values(status="Skipped", completed_at=old)
+            )
             db.commit()
 
 
-# ---------------------------------------------------------------------------- /billing/invoices
+# --- /billing/invoices ----------------------------------------------------------------------------
 def test_invoice_history_today(client, nurse, prescribed):
     vid, _ = prescribed([])
-    assert client.patch(f"/api/v1/visits/{vid}/invoice", headers=nurse,
-                        json={"consultation_fee": 150000}).status_code == 200
+    assert (
+        client.patch(f"/api/v1/visits/{vid}/invoice", headers=nurse, json={"consultation_fee": 150000}).status_code
+        == 200
+    )
     assert client.post(f"/api/v1/visits/{vid}/invoice/pay", headers=nurse, json={}).status_code == 200
     rows = [i for i in client.get("/api/v1/billing/invoices", headers=nurse).json() if i["visit_id"] == vid]
     assert len(rows) == 1 and rows[0]["payment_status"] == "Paid" and rows[0]["total_amount"] == 150000

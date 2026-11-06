@@ -1,4 +1,5 @@
-"""Kiểu giá trị SYSTEM_SETTING (ERD v1.8 mục 2.22)."""
+"""Kiểu giá trị SYSTEM_SETTING (ERD §2.22)."""
+
 import pytest
 
 from app.exceptions import AppError
@@ -7,30 +8,47 @@ from app.validation.settings_validators import default_settings, validate_settin
 
 def test_defaults_are_valid_and_cover_all_keys():
     assert default_settings() == {
-        "inventory.near_expiry_days": 90, "inventory.min_remaining_shelf_days": 0,
+        "inventory.near_expiry_days": 90,
+        "inventory.min_remaining_shelf_days": 0,
         "clinic.profile": {"name": "Phòng khám", "address": "", "phone": ""},
-        "billing.default_consultation_fee": 0, "billing.consultation_service_code": "DV01"}
+        "billing.default_consultation_fee": 0,
+        "billing.consultation_service_code": "DV01",
+    }
 
 
-@pytest.mark.parametrize("key, value, expected", [
-    ("inventory.near_expiry_days", 30, 30),
-    ("billing.default_consultation_fee", 150_000, 150_000),
-    ("billing.consultation_service_code", "", ""),
-    ("clinic.profile", {"name": "  PK Hòa Khánh ", "phone": "0236"},
-     {"name": "PK Hòa Khánh", "address": "", "phone": "0236"}),
-])
+@pytest.mark.parametrize(
+    "key, value, expected",
+    [
+        ("inventory.near_expiry_days", 30, 30),
+        ("billing.default_consultation_fee", 150_000, 150_000),
+        ("billing.consultation_service_code", "", ""),
+        (
+            "clinic.profile",
+            {"name": "  PK Hòa Khánh ", "phone": "0236"},
+            {"name": "PK Hòa Khánh", "address": "", "phone": "0236"},
+        ),
+    ],
+)
 def test_valid_values(key, value, expected):
     assert validate_setting(key, value) == expected
 
 
-@pytest.mark.parametrize("key, value", [
-    ("inventory.near_expiry_days", -1), ("inventory.near_expiry_days", 400),
-    ("inventory.near_expiry_days", "90"), ("inventory.near_expiry_days", 9.5),
-    ("billing.default_consultation_fee", -1000), ("billing.default_consultation_fee", True),
-    ("clinic.profile", {"address": "x"}), ("clinic.profile", {"name": "A", "logo": "x"}),
-    ("clinic.profile", "PK A"),
-    ("billing.consultation_service_code", "DV 01"), ("billing.consultation_service_code", 1),
-])
+@pytest.mark.parametrize(
+    "key, value",
+    [
+        ("inventory.near_expiry_days", -1),
+        ("inventory.near_expiry_days", 400),
+        ("inventory.near_expiry_days", "90"),
+        ("inventory.near_expiry_days", 9.5),
+        ("billing.default_consultation_fee", -1000),
+        ("billing.default_consultation_fee", True),
+        ("clinic.profile", {"address": "x"}),
+        ("clinic.profile", {"name": "A", "logo": "x"}),
+        ("clinic.profile", "PK A"),
+        ("billing.consultation_service_code", "DV 01"),
+        ("billing.consultation_service_code", 1),
+    ],
+)
 def test_invalid_values(key, value):
     with pytest.raises(AppError) as exc:
         validate_setting(key, value)

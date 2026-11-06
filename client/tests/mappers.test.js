@@ -129,4 +129,10 @@ describe('Lượt trong hàng chờ (toQueueVisit)', () => {
   it('lượt còn mở: không có finished_at → giờ bắt đầu khám, outcome rỗng', () => {
     expect(toQueueVisit({ ...base, status: 'Examining', is_red_flag: true })).toMatchObject({ statusAt: '2026-11-02T01:30:00Z', finishedAt: null, outcome: null, referredByRole: null, redFlag: true, triage: 'emergency' })
   })
+
+  it('intake_saved = false → lượt đang tiếp đón; server cũ không gửi trường này → coi như đã lưu', () => {
+    expect(toQueueVisit({ ...base, status: 'Waiting', intake_saved: false }).intakeSaved).toBe(false)
+    expect(toQueueVisit({ ...base, status: 'Waiting', intake_saved: true }).intakeSaved).toBe(true)
+    expect(toQueueVisit({ ...base, status: 'Waiting' }).intakeSaved).toBe(true)
+  })
 })

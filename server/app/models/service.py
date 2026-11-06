@@ -1,5 +1,6 @@
-"""SERVICE, SERVICE_PACKAGE — danh mục dịch vụ, xét nghiệm và gói khám có giá (ERD v2.1 mục 2.20a).
+"""SERVICE, SERVICE_PACKAGE — danh mục dịch vụ, xét nghiệm và gói khám có giá (ERD §2.18a, §2.18b).
 Không xóa: ngừng dùng bằng is_active. Lịch sử giá đọc từ audit_log."""
+
 import decimal
 import uuid
 from datetime import datetime

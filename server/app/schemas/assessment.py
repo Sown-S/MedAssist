@@ -6,7 +6,6 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
-
 AiStatus = Literal["Pending", "Preliminary", "Ready", "Degraded", "Failed", "Skipped"]
 AssessmentMode = Literal["Full", "RuleOnly"]
 PriorityLevel = Literal["Routine", "HighPriority", "Emergency"]
@@ -83,6 +82,7 @@ class ExtractionSuggestionOut(BaseModel):
 
 class VitalProposalOut(BaseModel):
     """Đề xuất từ lời kể lúc xếp hàng trích xuất; y tá xác nhận riêng, huyết áp theo cặp (group)."""
+
     model_config = ConfigDict(extra="forbid")
 
     key: str
@@ -102,3 +102,6 @@ class ExtractionOut(BaseModel):
     vital_proposals: list[VitalProposalOut] = []
     text_changed: bool = Field(False, description="Lời kể đã sửa sau lần trích xuất: yêu cầu trích xuất lại")
     completed_at: datetime | None
+    queue_ahead: int | None = Field(
+        None, description="Số việc AI làm trước lần trích xuất này (Queued); 0 khi đang chạy"
+    )

@@ -1,4 +1,5 @@
 """Quản lý tài khoản — chỉ Admin (US07)."""
+
 import uuid
 
 import pytest
@@ -9,8 +10,14 @@ PW = "Matkhau123"
 
 
 def _new(client, admin, **over):
-    body = {"username": f"nv_{uuid.uuid4().hex[:8]}", "full_name": "  Trần   Văn  B ", "role": "Nurse",
-            "password": PW, "phone": "+84 905 123 456", **over}
+    body = {
+        "username": f"nv_{uuid.uuid4().hex[:8]}",
+        "full_name": "  Trần   Văn  B ",
+        "role": "Nurse",
+        "password": PW,
+        "phone": "+84 905 123 456",
+        **over,
+    }
     return client.post("/api/v1/admin/users", json=body, headers=admin)
 
 
@@ -30,11 +37,19 @@ def test_create_user_normalizes_and_audits_without_password(client, users, admin
     assert client.post("/api/v1/auth/login", json={"username": u["username"], "password": PW}).status_code == 200
 
 
-@pytest.mark.parametrize("over, field", [
-    ({"username": "Ab"}, "username"), ({"username": "có dấu"}, "username"), ({"username": "system"}, "username"),
-    ({"role": "Doctor"}, "role"), ({"password": "ngan"}, "password"), ({"phone": "12345"}, "phone"),
-    ({"email": "khong-phai-email"}, "email"), ({"full_name": "   "}, "full_name"),
-])
+@pytest.mark.parametrize(
+    "over, field",
+    [
+        ({"username": "Ab"}, "username"),
+        ({"username": "có dấu"}, "username"),
+        ({"username": "system"}, "username"),
+        ({"role": "Doctor"}, "role"),
+        ({"password": "ngan"}, "password"),
+        ({"phone": "12345"}, "phone"),
+        ({"email": "khong-phai-email"}, "email"),
+        ({"full_name": "   "}, "full_name"),
+    ],
+)
 def test_create_user_validation(client, users, admin, over, field):
     r = _new(client, admin, **over)
     assert r.status_code == 422
@@ -44,7 +59,7 @@ def test_create_user_validation(client, users, admin, over, field):
 def test_duplicate_username(client, users, admin):
     name = f"trung_{uuid.uuid4().hex[:6]}"
     assert _new(client, admin, username=name).status_code == 201
-    r = _new(client, admin, username=name.upper())             # không phân biệt hoa thường
+    r = _new(client, admin, username=name.upper())  # không phân biệt hoa thường
     assert r.status_code == 409 and r.json()["error"]["code"] == "USERNAME_TAKEN"
 
 
@@ -98,10 +113,14 @@ def test_system_account_is_untouchable(client, users, admin):
 
 def test_reset_password(client, users, admin, logs):
     u = _new(client, admin).json()
-    r = client.post(f"/api/v1/admin/users/{u['user_id']}/reset-password",
-                    json={"new_password": "DatLai12345"}, headers=admin)
+    r = client.post(
+        f"/api/v1/admin/users/{u['user_id']}/reset-password", json={"new_password": "DatLai12345"}, headers=admin
+    )
     assert r.status_code == 204
-    assert client.post("/api/v1/auth/login", json={"username": u["username"], "password": "DatLai12345"}).status_code == 200
+    assert (
+        client.post("/api/v1/auth/login", json={"username": u["username"], "password": "DatLai12345"}).status_code
+        == 200
+    )
     assert client.post("/api/v1/auth/login", json={"username": u["username"], "password": PW}).status_code == 401
     assert [r.new_values for r in logs(action="UPDATE", entity="users")] == [{"password_reset_by_admin": True}]
 

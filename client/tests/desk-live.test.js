@@ -76,6 +76,33 @@ describe('Check-in ở quầy (server thật)', () => {
   })
 })
 
+describe('Lượt đang tiếp đón (chưa Lưu & cấp số)', () => {
+  beforeEach(async () => {
+    server.push({ id: 'i1', ticket: 4, name: 'Bệnh nhân đang tiếp đón', status: 'Waiting', intakeSaved: false, triage: 'emergency', priority: true, doctor: '', doctorId: null, room: '' })
+    await queue.syncQueue()
+  })
+
+  it('không vào hàng chờ: không gọi được, không tính vào số người chờ, không thành ca cờ đỏ', () => {
+    const v = visit('i1')
+    expect(queue.isIntakeOpen(v)).toBe(true)
+    expect(queue.isQueued(v)).toBe(false)
+    expect(queue.waitingOrder().map((x) => x.id)).toEqual(['w1'])
+    expect(queue.getQueue().redFlags.map((r) => r.visitId)).not.toContain('i1')
+  })
+
+  it('Lưu & cấp số xong (intake_saved = true) → vào hàng chờ như thường', async () => {
+    server.find((x) => x.id === 'i1').intakeSaved = true
+    await queue.syncQueue()
+    expect(queue.isIntakeOpen(visit('i1'))).toBe(false)
+    expect(queue.waitingOrder().map((x) => x.id)).toEqual(['i1', 'w1'])
+  })
+
+  it('server trả 409 INTAKE_NOT_SAVED → hiện nguyên câu của server', async () => {
+    api.checkIn.mockImplementationOnce(() => Promise.reject(Object.assign(new Error('Lễ tân đang tiếp đón, chưa lưu và cấp số cho lượt này'), { status: 409, code: 'INTAKE_NOT_SAVED' })))
+    expect(await queue.checkInVisit('i1', DESK)).toEqual({ ok: false, error: 'Lễ tân đang tiếp đón, chưa lưu và cấp số cho lượt này' })
+  })
+})
+
 describe('Huỷ lượt đang chờ (server thật)', () => {
   it('chưa chọn lý do / "Khác" chưa ghi rõ → chặn ngay, không gửi request', async () => {
     expect((await queue.cancelVisit('w1', { reason: '' }, DESK)).ok).toBe(false)

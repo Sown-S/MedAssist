@@ -44,22 +44,48 @@ export function useSymptomCatalog() {
   return { ...s, reload: loadSymptomCatalog }
 }
 
-// Nhóm theo category của OKF, dấu hiệu nguy hiểm lên đầu; danh mục không có nhóm → một nhóm.
+// Nhóm hiển thị gom các category của OKF; dấu hiệu nguy hiểm lên đầu. Danh mục không có category → một nhóm.
+// “Dấu hiệu nguy hiểm ngoài danh mục” (out_of_scope_symptom, category system_safety) đứng cuối nhóm nguy hiểm.
+export const DANGER = 'danger'
+export const OUT_OF_SCOPE = 'out_of_scope_symptom'
 const GROUPS = [
-  ['red_flag_sign', 'Warning signs'],
-  ['constitutional', 'General symptoms'],
-  ['respiratory_ent', 'Respiratory & ENT'],
-  ['gastrointestinal', 'Digestive'],
-  ['musculoskeletal', 'Musculoskeletal'],
-  ['dermatologic', 'Skin']
+  [DANGER, 'Warning signs', ['red_flag_sign', 'system_safety']],
+  ['general', 'General symptoms', ['constitutional', 'infectious_sign']],
+  ['respiratory', 'Respiratory', ['respiratory']],
+  ['ent', 'Ear, nose & throat', ['ent']],
+  ['eye', 'Eyes', ['ophthalmology']],
+  ['neuro', 'Neurological', ['neurological']],
+  ['gi', 'Digestive', ['gastrointestinal']],
+  ['msk', 'Musculoskeletal', ['musculoskeletal']],
+  ['skin', 'Skin', ['dermatologic']]
 ]
+const GROUP_OF = Object.fromEntries(GROUPS.flatMap(([key, , cats]) => cats.map((c) => [c, key])))
+export const isDangerSymptom = (s) => GROUP_OF[s?.category] === DANGER
 export function groupSymptoms(list) {
   if (!list.some((s) => s.category)) return [{ key: '', label: '', items: list }]
-  const known = new Set(GROUPS.map(([k]) => k))
-  return [
-    ...GROUPS.map(([key, label]) => ({ key, label, items: list.filter((s) => s.category === key) })),
-    { key: 'other', label: 'Other', items: list.filter((s) => !known.has(s.category)) }
-  ].filter((g) => g.items.length)
+  const groups = GROUPS.map(([key, label]) => ({ key, label, items: list.filter((s) => GROUP_OF[s.category] === key) }))
+  const danger = groups[0].items
+  groups[0].items = [...danger.filter((s) => s.key !== OUT_OF_SCOPE), ...danger.filter((s) => s.key === OUT_OF_SCOPE)]
+  // Không có nhóm “Khác”; chỉ khi danh mục thêm category mới mà client chưa biết thì mới hiện, để y tá không mất mục nào.
+  const rest = list.filter((s) => !GROUP_OF[s.category])
+  return [...groups, { key: 'other', label: 'Other', items: rest }].filter((g) => g.items.length)
+}
+
+// So khớp không dấu: “dau bung” tìm ra “Đau bụng”.
+export const foldText = (s) =>
+  String(s ?? '')
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .replace(/đ/g, 'd')
+    .replace(/Đ/g, 'D')
+    .toLowerCase()
+    .replace(/\s+/g, ' ')
+    .trim()
+export function searchSymptoms(list, query, limit = 8) {
+  const q = foldText(query)
+  if (!q) return []
+  const words = q.split(' ')
+  return list.filter((s) => words.every((w) => foldText(s.label).includes(w))).slice(0, limit)
 }
 
 // Bỏ UNKNOWN vì đó là mặc định.

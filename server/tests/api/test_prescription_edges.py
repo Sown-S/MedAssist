@@ -1,4 +1,5 @@
 """Nhánh lỗi và nhánh phụ của chẩn đoán / đơn thuốc (bổ sung độ phủ cho prescription_service)."""
+
 import uuid
 
 RX = [{"dosage": "1 viên", "frequency": "2 lần/ngày", "duration_days": 3, "quantity": 6}]
@@ -14,13 +15,22 @@ def _dx(client, doctor, vid, name, **over):
     return r.json()
 
 
-# ---------------------------------------------------------------------------- chẩn đoán
+# --- Chẩn đoán ------------------------------------------------------------------------------------
 def test_diagnosis_on_missing_or_not_examining_visit(client, nurse, doctor, examining):
-    assert client.post(f"/api/v1/visits/{uuid.uuid4()}/diagnoses", headers=doctor,
-                       json={"diagnosis_name": "X"}).status_code == 404
-    pid = client.post("/api/v1/patients", headers=nurse, json={
-        "full_name": f"Chưa Khám {uuid.uuid4().hex[:6]}", "date_of_birth": "1990-01-01", "gender": "Male"}).json()["patient_id"]
-    vid = client.post("/api/v1/visits", headers=nurse, json={"patient_id": pid, "chief_complaint": "Ho"}).json()["visit_id"]
+    assert (
+        client.post(
+            f"/api/v1/visits/{uuid.uuid4()}/diagnoses", headers=doctor, json={"diagnosis_name": "X"}
+        ).status_code
+        == 404
+    )
+    pid = client.post(
+        "/api/v1/patients",
+        headers=nurse,
+        json={"full_name": f"Chưa Khám {uuid.uuid4().hex[:6]}", "date_of_birth": "1990-01-01", "gender": "Male"},
+    ).json()["patient_id"]
+    vid = client.post("/api/v1/visits", headers=nurse, json={"patient_id": pid, "chief_complaint": "Ho"}).json()[
+        "visit_id"
+    ]
     r = client.post(f"/api/v1/visits/{vid}/diagnoses", headers=doctor, json={"diagnosis_name": "X"})
     assert r.status_code == 409 and r.json()["error"]["code"] == "VISIT_NOT_EXAMINING"
 
@@ -44,15 +54,19 @@ def test_update_diagnosis_primary_switch_and_rules(client, doctor, examining):
     r = client.patch(f"/api/v1/diagnoses/{a['diagnosis_id']}", headers=doctor, json={"diagnosis_name": None})
     assert r.status_code == 422
     # chuyển chính sang b: a tự hạ
-    r = client.patch(f"/api/v1/diagnoses/{b['diagnosis_id']}", headers=doctor,
-                     json={"is_primary": True, "clinical_notes": "Ưu tiên"})
+    r = client.patch(
+        f"/api/v1/diagnoses/{b['diagnosis_id']}", headers=doctor, json={"is_primary": True, "clinical_notes": "Ưu tiên"}
+    )
     assert r.status_code == 200 and r.json()["is_primary"] and r.json()["clinical_notes"] == "Ưu tiên"
-    listing = {d["diagnosis_id"]: d["is_primary"] for d in
-               client.get(f"/api/v1/visits/{vid}/diagnoses", headers=doctor).json()}
+    listing = {
+        d["diagnosis_id"]: d["is_primary"] for d in client.get(f"/api/v1/visits/{vid}/diagnoses", headers=doctor).json()
+    }
     assert listing == {a["diagnosis_id"]: False, b["diagnosis_id"]: True}
     # gửi lại giá trị như cũ: không lỗi
-    assert client.patch(f"/api/v1/diagnoses/{b['diagnosis_id']}", headers=doctor,
-                        json={"is_primary": True}).status_code == 200
+    assert (
+        client.patch(f"/api/v1/diagnoses/{b['diagnosis_id']}", headers=doctor, json={"is_primary": True}).status_code
+        == 200
+    )
 
 
 def test_retracted_cannot_become_primary_and_current_primary_kept(client, doctor, examining):
@@ -70,11 +84,13 @@ def test_retracted_cannot_become_primary_and_current_primary_kept(client, doctor
 
 
 def test_missing_diagnosis(client, doctor):
-    assert client.patch(f"/api/v1/diagnoses/{uuid.uuid4()}", headers=doctor,
-                        json={"clinical_notes": "x"}).status_code == 404
+    assert (
+        client.patch(f"/api/v1/diagnoses/{uuid.uuid4()}", headers=doctor, json={"clinical_notes": "x"}).status_code
+        == 404
+    )
 
 
-# ---------------------------------------------------------------------------- đơn thuốc
+# --- Đơn thuốc ------------------------------------------------------------------------------------
 def test_confirmed_prescription_cannot_be_replaced(client, doctor, drug, examining):
     did, _ = drug({30: 50})
     vid = examining()
@@ -109,11 +125,15 @@ def test_confirm_rejects_drug_deactivated_after_draft(client, doctor, drug, exam
 
 
 def test_reopen_missing_and_paid(client, nurse, doctor, drug, prescribed):
-    assert client.post(f"/api/v1/visits/{uuid.uuid4()}/prescription/reopen", headers=doctor,
-                       json={"reason": "Sửa đơn"}).status_code == 404
+    assert (
+        client.post(
+            f"/api/v1/visits/{uuid.uuid4()}/prescription/reopen", headers=doctor, json={"reason": "Sửa đơn"}
+        ).status_code
+        == 404
+    )
     did, _ = drug({30: 50})
     vid, _ = prescribed([(did, 2)])
     pay = client.post(f"/api/v1/visits/{vid}/invoice/pay", headers=nurse, json={})
-    assert pay.status_code == 200 and pay.json()["visit_finished"] is False   # thu tiền trước, chưa cấp thuốc
+    assert pay.status_code == 200 and pay.json()["visit_finished"] is False  # thu tiền trước, chưa cấp thuốc
     r = client.post(f"/api/v1/visits/{vid}/prescription/reopen", headers=doctor, json={"reason": "Sửa đơn"})
     assert r.status_code == 409 and r.json()["error"]["code"] == "ALREADY_PAID"

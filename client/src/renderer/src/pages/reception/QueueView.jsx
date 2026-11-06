@@ -3,7 +3,7 @@ import PatientQueueCard from '../../components/PatientQueueCard'
 import PatientAlerts from '../../components/PatientAlerts'
 import Icon from '../../components/Icon'
 import { translate } from '../../i18n'
-import { useQueue, STATUSES, ST, leftReasonLabel, minutesSince, waitingOrder, readyOrder, checkInVisit, atLabs, isInvited } from '../../api/queueStore'
+import { useQueue, STATUSES, ST, leftReasonLabel, minutesSince, waitingOrder, readyOrder, checkInVisit, atLabs, isInvited, isIntakeOpen } from '../../api/queueStore'
 import { useToast } from '../../context/ToastContext'
 import { printTicket } from '../../components/queuePrint'
 import CallPanel from './CallPanel'
@@ -24,10 +24,11 @@ export default function QueueView({ readOnly, onPay }) {
   const [editing, setEditing] = useState(null)
   const [cancelling, setCancelling] = useState(null)
 
-  const byStatus = (s) => visits.filter((v) => v.status === s)
+  // Lượt đang tiếp đón không tính vào số người chờ, chỉ hiện mờ cuối tab Chờ.
+  const byStatus = (s) => visits.filter((v) => v.status === s && !isIntakeOpen(v))
   const list =
     tab === ST.WAITING
-      ? waitingOrder(visits).filter((v) => v.status === ST.WAITING)
+      ? [...waitingOrder(visits).filter((v) => v.status === ST.WAITING), ...visits.filter(isIntakeOpen).sort((a, b) => a.ticket - b.ticket)]
       : tab === ST.CHECKED_IN
         ? readyOrder(visits)
         : byStatus(tab).sort((a, b) => ([ST.FINISHED, ST.CANCELLED].includes(tab) ? b.statusAt.localeCompare(a.statusAt) : a.statusAt.localeCompare(b.statusAt)))
@@ -38,6 +39,7 @@ export default function QueueView({ readOnly, onPay }) {
   }
 
   function waitOf(v) {
+    if (isIntakeOpen(v)) return { label: translate('Intake in progress…'), level: 'ok' }
     if (v.status === ST.FINISHED) return { label: translate('Done') + ' ' + hhmm(v.statusAt), level: 'ok' }
     if (v.status === ST.CANCELLED) return { label: translate('Left') + ' ' + hhmm(v.statusAt), level: 'long' }
     // Server giữ giờ đi xét nghiệm (lab_out_at).
@@ -65,6 +67,8 @@ export default function QueueView({ readOnly, onPay }) {
   }
 
   function actionsOf(v) {
+    // Lễ tân khác đang tiếp đón: chờ Lưu & cấp số xong mới check-in / sửa được.
+    if (isIntakeOpen(v)) return null
     if (v.status === ST.WAITING)
       return (
         <>
@@ -132,6 +136,7 @@ export default function QueueView({ readOnly, onPay }) {
               {list.map((v) => (
                 <PatientQueueCard
                   key={v.id}
+                  dimmed={isIntakeOpen(v)}
                   ticket={v.ticket}
                   name={v.name}
                   meta={meta(v)}
@@ -142,7 +147,7 @@ export default function QueueView({ readOnly, onPay }) {
                       {v.triage === 'emergency' && [ST.WAITING, ST.CHECKED_IN].includes(v.status) && <span className="badge low">{translate('Emergency')}</span>}
                       {v.allergies && <span className="allergy-chip">Allergy</span>}
                       {v.carriedFrom && <span className="badge warn">{translate('Unpaid from')} {dmy(v.carriedFrom + 'T00:00:00')}</span>}
-                      {v.status === ST.WAITING && (
+                      {v.status === ST.WAITING && !isIntakeOpen(v) && (
                         <button
                           className="btn btn-primary btn-sm q-checkin"
                           disabled={readOnly}

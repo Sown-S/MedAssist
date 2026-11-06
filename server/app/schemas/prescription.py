@@ -19,6 +19,7 @@ class PrescriptionItemIn(BaseModel):
 
 class PrescriptionDraft(BaseModel):
     """Ghi đè toàn bộ đơn nháp (đơn nháp cũ được hủy, giữ lại làm lịch sử)."""
+
     model_config = ConfigDict(extra="forbid")
     items: list[PrescriptionItemIn] = Field(min_length=1, max_length=30)
 
@@ -36,11 +37,12 @@ class PrescriptionItemOut(BaseModel):
     dispense_status: str
     skip_reason: str | None
     unit_price: MoneyOut
-    usable_quantity: int | None = None   # tồn đủ hạn cho liệu trình (chỉ khi đơn còn Draft)
+    usable_quantity: int | None = None  # tồn đủ hạn cho liệu trình (chỉ khi đơn còn Draft)
 
 
 class PatientContext(BaseModel):
-    """Khung nhắc khi kê đơn — CHỈ ĐỌC. Hệ thống KHÔNG kiểm tra tương tác thuốc."""
+    """Khung nhắc khi kê đơn, chỉ đọc. Hệ thống không kiểm tra tương tác thuốc."""
+
     chronic_conditions: list[str] = []
     medical_notes: str | None = None
     is_pregnant: bool | None = None
@@ -51,7 +53,7 @@ class PatientContext(BaseModel):
 class PrescriptionOut(BaseModel):
     prescription_id: uuid.UUID | None
     visit_id: uuid.UUID
-    status: str | None                    # None = chưa có đơn
+    status: str | None  # None = chưa có đơn
     confirmed_at: datetime | None = None
     items: list[PrescriptionItemOut] = []
     patient_context: PatientContext
@@ -73,6 +75,7 @@ class PrescriptionListLine(BaseModel):
 
 class PrescriptionListItem(BaseModel):
     """Một đơn đã xác nhận trong danh sách đơn thuốc theo kỳ (màn Đơn thuốc của bác sĩ, lễ tân)."""
+
     prescription_id: uuid.UUID
     visit_id: uuid.UUID
     visit_date: datetime
@@ -85,5 +88,5 @@ class PrescriptionListItem(BaseModel):
     confirmed_at: datetime
     items: list[PrescriptionListLine]
     drug_total: MoneyOut
-    invoice_status: str | None            # Pending / Paid; None khi hóa đơn đã hủy chưa lập lại
+    invoice_status: str | None  # Pending / Paid; None khi hóa đơn đã hủy chưa lập lại
     invoice_total: MoneyOut | None

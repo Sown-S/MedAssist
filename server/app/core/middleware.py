@@ -1,4 +1,5 @@
 """Middleware ASGI: gắn X-Request-ID cho mỗi request và ghi một dòng log truy cập."""
+
 import re
 import time
 import uuid
@@ -8,7 +9,7 @@ from starlette.types import ASGIApp, Message, Receive, Scope, Send
 from app.core.logging import get_logger, request_id_var
 
 _logger = get_logger("access")
-_VALID_ID = re.compile(r"^[A-Za-z0-9._-]{8,64}$")   # nhận id từ client nếu hợp lệ, không thì tự sinh
+_VALID_ID = re.compile(r"^[A-Za-z0-9._-]{8,64}$")  # nhận id từ client nếu hợp lệ, không thì tự sinh
 
 
 class RequestContextMiddleware:

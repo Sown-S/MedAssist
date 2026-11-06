@@ -16,19 +16,37 @@ relations:
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: pustular_furuncle_folliculitis
   polarity: SUPPORTS
-  weight: 0.94
+  weight: 0.95
   is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: maculopapular_rash
+- symptom_code: pityriasis_versicolor_hypo_hyper_macules
   polarity: SUPPORTS
-  weight: 0.82
+  weight: 0.92
   is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: pruritus_intense_skin_itch
+- symptom_code: tinea_capitis_kerion_alopecia
   polarity: SUPPORTS
-  weight: 0.78
+  weight: 0.92
+  is_key: true
+  source_key: moh_qd_75_2015
+  source_edition: Quyết định số 75/QĐ-BYT
+- symptom_code: dress_syndrome_facial_edema_eosinophilia
+  polarity: SUPPORTS
+  weight: 0.92
+  is_key: true
+  source_key: moh_qd_75_2015
+  source_edition: Quyết định số 75/QĐ-BYT
+- symptom_code: epidermolysis_bullosa_mechanobullous
+  polarity: SUPPORTS
+  weight: 0.92
+  is_key: true
+  source_key: moh_qd_75_2015
+  source_edition: Quyết định số 75/QĐ-BYT
+- symptom_code: anemia_pallor_jaundice
+  polarity: SUPPORTS
+  weight: 0.76
   is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
@@ -41,6 +59,7 @@ excerpts:
 ---
 
 ## excerpt: viem_nang_long_chan_doan
+- Chẩn đoán xác định: chủ yếu dựa vào lâm sàng
 - Tổn thương là những sẩn nhỏ ở nang lông, trên có vảy tiết, không đau, sau
 - Vị trí ở bất kỳ vùng da nào của cơ thể, trừ ở lòng bàn tay bàn chân, thường
 - Số lượng tổn thương nhiều hay ít tùy theo từng trường hợp. Hầu hết các

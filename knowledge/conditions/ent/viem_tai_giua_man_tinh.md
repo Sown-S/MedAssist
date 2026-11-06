@@ -2,7 +2,7 @@
 schema: okf_condition_v1
 condition_code: viem_tai_giua_man_tinh
 name_vi: Viêm tai giữa mạn tính
-name_en: Viêm tai giữa mạn tính
+name_en: Chronic otitis media
 icd10_code: H66.3
 disease_group: ent
 description: Viêm tai giữa (VTG) mạn tính được định nghĩa là tình trạng viêm niêm
@@ -12,38 +12,86 @@ description: Viêm tai giữa (VTG) mạn tính được định nghĩa là tìn
 relations:
 - symptom_code: otorrhea_ear_discharge
   polarity: SUPPORTS
-  weight: 0.98
+  weight: 0.92
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: tympanic_membrane_lesion
   polarity: SUPPORTS
-  weight: 0.98
+  weight: 0.92
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: hearing_loss_deafness
   polarity: SUPPORTS
-  weight: 0.92
+  weight: 0.9
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: fever_high
   polarity: SUPPORTS
-  weight: 0.9
-  is_key: true
+  weight: 0.8
+  is_key: false
+  source_key: moh_qd_5643_2015
+  source_edition: Quyết định số 5643/QĐ-BYT
+- symptom_code: dizziness_vertigo
+  polarity: SUPPORTS
+  weight: 0.8
+  is_key: false
+  source_key: moh_qd_5643_2015
+  source_edition: Quyết định số 5643/QĐ-BYT
+- symptom_code: tinnitus_ear_fullness
+  polarity: SUPPORTS
+  weight: 0.8
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: otalgia_ear_pain
   polarity: SUPPORTS
-  weight: 0.9
-  is_key: true
+  weight: 0.8
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: skin_cellulitis_pus_abscess
   polarity: SUPPORTS
-  weight: 0.9
-  is_key: true
+  weight: 0.8
+  is_key: false
+  source_key: moh_qd_5643_2015
+  source_edition: Quyết định số 5643/QĐ-BYT
+- symptom_code: fetid_cholesteatoma_otorrhea
+  polarity: SUPPORTS
+  weight: 0.8
+  is_key: false
+  source_key: moh_qd_5643_2015
+  source_edition: Quyết định số 5643/QĐ-BYT
+- symptom_code: mastoid_retroauricular_swelling
+  polarity: SUPPORTS
+  weight: 0.8
+  is_key: false
+  source_key: moh_qd_5643_2015
+  source_edition: Quyết định số 5643/QĐ-BYT
+- symptom_code: adenoid_facies_mouth_breathing
+  polarity: SUPPORTS
+  weight: 0.8
+  is_key: false
+  source_key: moh_qd_5643_2015
+  source_edition: Quyết định số 5643/QĐ-BYT
+- symptom_code: headache_dull
+  polarity: SUPPORTS
+  weight: 0.74
+  is_key: false
+  source_key: moh_qd_5643_2015
+  source_edition: Quyết định số 5643/QĐ-BYT
+- symptom_code: fever_low_grade
+  polarity: SUPPORTS
+  weight: 0.72
+  is_key: false
+  source_key: moh_qd_5643_2015
+  source_edition: Quyết định số 5643/QĐ-BYT
+- symptom_code: fatigue_malaise
+  polarity: SUPPORTS
+  weight: 0.68
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 excerpts:
@@ -55,11 +103,14 @@ excerpts:
 ---
 
 ## excerpt: viem_tai_giua_man_tinh_chan_doan
+- Lâm sàng
 - Viêm tai giữa mạn tính nhầy: Chảy mủ tai từng đợt, phụ thuộc vào những đợt
 - viêm V.A, mủ chảy ra nhầy, dính, không thối, chưa ảnh hưởng nhiều đến sức nghe.
 - Viêm tai giữa mạn tính mủ: Thường chảy mủ tai kéo dài, mủ đặc xanh thối,
-- có thể có cholesteatoma, nghe kém truyền âm ngày càng tăng, có thể đau âm ỉ trong đầu
+- ó thể có cholesteatoma, nghe kém truyền âm ngày càng tăng, có thể đau âm ỉ trong đầu
 - Viêm tai giữa mạn tính hồi viêm: Sốt cao và kéo dài, thể trạng nhiễm trùng rõ
 - rệt: ăn ngủ kém, gầy, hốc hác, suy nhược. Đối với trẻ nhỏ có thể có sốt cao, co giật, rối
 - loạn tiêu hóa… Nghe kém tăng lên vì tổn thương cả đường khí và đường xương. Đau tai
 - rất dữ dội, đau thành từng đợt, đau sâu trong tai và lan ra phía sau vùng xương chũm
+- hay lan ra cả vùng thái dương gây nên tình trạng nhức đầu, ù tai và chóng mặt. Trong
+- một vài trường hợp có thể thấy dấu hiệu xuất ngoại mặt trong xương chũm, mặt ngoài

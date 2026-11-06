@@ -2,22 +2,26 @@
 schema: okf_condition_v1
 condition_code: xu_tri_vet_thuong_vung_mat
 name_vi: Xử trí vết thương vùng mặt
-name_en: Xử trí vết thương vùng mặt
+name_en: Facial wounds
 icd10_code: S01.8
 disease_group: ent
-description: Vùng mặt là nơi đóng vai trò quan trọng về chức năng, thẩm mỹ. Vì vậy,
-  xử trí vết thương vùng mặt cũng nhằm vào hai mục tiêu trên. Từ ngoài vào trong,
-  vùng mặt gồm:.
+description: Vùng mặt là nơi đóng vai trò quan trọng về chức năng, thẩm mỹ.
 relations:
 - symptom_code: head_neck_mass_fistula_trauma
   polarity: SUPPORTS
-  weight: 0.94
+  weight: 0.95
+  is_key: true
+  source_key: moh_qd_5643_2015
+  source_edition: Quyết định số 5643/QĐ-BYT
+- symptom_code: mastoid_retroauricular_swelling
+  polarity: SUPPORTS
+  weight: 0.92
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: nasal_obstruction_stuffiness
   polarity: SUPPORTS
-  weight: 0.92
+  weight: 0.91
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
@@ -27,10 +31,28 @@ relations:
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: sore_throat_dysphagia
+- symptom_code: spontaneous_nystagmus_vestibular
   polarity: SUPPORTS
-  weight: 0.78
+  weight: 0.9
   is_key: true
+  source_key: moh_qd_5643_2015
+  source_edition: Quyết định số 5643/QĐ-BYT
+- symptom_code: nasal_septal_deviation_spur
+  polarity: SUPPORTS
+  weight: 0.89
+  is_key: true
+  source_key: moh_qd_5643_2015
+  source_edition: Quyết định số 5643/QĐ-BYT
+- symptom_code: vocal_abuse_phonotrauma_strain
+  polarity: SUPPORTS
+  weight: 0.88
+  is_key: false
+  source_key: moh_qd_5643_2015
+  source_edition: Quyết định số 5643/QĐ-BYT
+- symptom_code: laryngeal_paresthesia_throat_clearing
+  polarity: SUPPORTS
+  weight: 0.88
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 excerpts:
@@ -49,4 +71,3 @@ excerpts:
 - Sờ: phải theo trình tự, nhẹ nhàng, so sánh hai bên.
 - Vùng thái dương mỏm tiếp: tìm các điểm đau chói, di lệch xương.
 - Thăm dò độ sâu của vết thương: việc thăm dò này có thể thực hiện tại phòng
-- Xquang: phim blondeau: đánh giá tổn thương tháp mũi, ngành lên xương hàm

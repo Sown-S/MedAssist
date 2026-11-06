@@ -7,8 +7,16 @@ icd10_code: L23.9
 disease_group: dermatology
 description: Viêm da tiếp xúc là phản ứng viêm cấp hoặc mạn tính của da với một số
   yếu tố trong môi trường khi tiếp xúc với da. Là bệnh thường gặp, chiếm 1,5 - 5,4%
-  dân số thế giới. Bệnh gặp ở mọi lứa.
+  dân số thế giới. Bệnh gặp ở mọi lứa tuổi, mọi giới và mọi nghề khác nhau. Tổn thương
+  là dát đỏ, mụn nước, có khi loét trợt hoại tử, ngứa. Bệnh tiến triển dai dẳng, hay
+  tái phát nếu không phát hiện và loại trừ được dị nguyên.
 relations:
+- symptom_code: pruritus_intense_skin_itch
+  polarity: SUPPORTS
+  weight: 0.98
+  is_key: true
+  source_key: moh_qd_75_2015
+  source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: vesicular_blister_rash
   polarity: SUPPORTS
   weight: 0.98
@@ -21,28 +29,58 @@ relations:
   is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: pruritus_intense_skin_itch
+- symptom_code: atopic_dermatitis_flexural_eczema
   polarity: SUPPORTS
-  weight: 0.94
+  weight: 0.98
+  is_key: true
+  source_key: moh_qd_75_2015
+  source_edition: Quyết định số 75/QĐ-BYT
+- symptom_code: allergic_contact_dermatitis_patch_pos
+  polarity: SUPPORTS
+  weight: 0.98
+  is_key: true
+  source_key: moh_qd_75_2015
+  source_edition: Quyết định số 75/QĐ-BYT
+- symptom_code: dress_syndrome_facial_edema_eosinophilia
+  polarity: SUPPORTS
+  weight: 0.98
+  is_key: true
+  source_key: moh_qd_75_2015
+  source_edition: Quyết định số 75/QĐ-BYT
+- symptom_code: erythema_multiforme_target_lesion
+  polarity: SUPPORTS
+  weight: 0.97
+  is_key: true
+  source_key: moh_qd_75_2015
+  source_edition: Quyết định số 75/QĐ-BYT
+- symptom_code: palmoplantar_keratoderma_fissures
+  polarity: SUPPORTS
+  weight: 0.97
   is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: maculopapular_rash
   polarity: SUPPORTS
-  weight: 0.92
+  weight: 0.96
+  is_key: true
+  source_key: moh_qd_75_2015
+  source_edition: Quyết định số 75/QĐ-BYT
+- symptom_code: prurigo_nodularis_excoriated_papules
+  polarity: SUPPORTS
+  weight: 0.96
   is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: verrucous_papule_nodule_ulcer
   polarity: SUPPORTS
-  weight: 0.92
+  weight: 0.95
   is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: conjunctivitis_uveitis_red_eye
   polarity: SUPPORTS
-  weight: 0.8
-  is_key: false
+  weight: 0.95
+  is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 excerpts:
@@ -54,11 +92,23 @@ excerpts:
 ---
 
 ## excerpt: viem_da_tiep_xuc_di_ung_chan_doan
+- Chẩn đoán xác định
 - Thương tổn cơ bản: phụ thuộc vào mức độ nặng, vị trí và thời gian bị bệnh,
 - viêm da tiếp xúc dị ứng có thể cấp hoặc mạn tính.
 - Viêm da tiếp xúc dị ứng cấp tính là dát đỏ, ranh giới rõ, phù nề, trên mặt có
 - mụn nước, sẩn, trường hợp phản ứng mạnh có bọng nước kết hợp lại với nhau thành
 - mảng. Bọng nước vỡ để lại vết trợt tiết dịch và đóng vảy tiết. Cơ năng có ngứa.
-- Viêm da tiếp xúc dị ứng bán cấp là những mảng dát đỏ nhẹ, kích thƣớc nhỏ,
+- Viêm da tiếp xúc dị ứng bán cấp là những mảng dát đỏ nhẹ, kích thước nhỏ,
+- trên có vảy da khô, đôi khi kèm theo những đốm màu đỏ nhỏ hoặc những sẩn chắc,
+- đường kẻ song song hoặc hình thoi, bong vảy da cùng các sẩn vệ tinh, nhỏ, chắc,
 - Bệnh thường gặp ở người đã mẫn cảm với dị nguyên gây viêm da tiếp xúc.
 - Thương tổn thứ phát: mảng sẩn ngứa, dát đỏ lan tỏa và hơi thâm nhiễm ở xa
+- thương tổn ban đầu, có tính đối xứng. Trên mặt các dát đỏ rải rác có các mụn nước
+- nhỏ, hiếm hơn là hồng ban đa dạng, thương tổn hình huy hiệu. Trường hợp nhạy
+- Thể lâm sàng đặc biệt theo vị trí
+- Viêm da tiếp xúc dị ứng ở da đầu: da đỏ bong vảy khô, đôi khi bong vảy
+- phấn nhiều, rất ngứa. bệnh giảm dần sau khi ngừng tiếp xúc với dị nguyên.
+- Viêm da tiếp xúc dị ứng ở mặt: thường gặp, da đỏ nề, mụn nước, tiết dịch.
+- môi trường làm việc và sinh hoạt hoặc bị viêm da tiếp xúc do ánh nắng.
+- Ở mí mắt: thương tổn thường phù nề, kết hợp với viêm kết mạc, nguyên
+- Dái tai: do tiếp xúc với kim loại hay gặp là nickel ở khuyên tai, biểu hiện

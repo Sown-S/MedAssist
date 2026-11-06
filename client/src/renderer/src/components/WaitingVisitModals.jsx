@@ -51,9 +51,9 @@ export function EditWaitingModal({ visit, onClose }) {
   }, [visit.id])
   const vit = vitalCheck(f)
 
-  async function extract(text, { signal }) {
+  async function extract(text, opts) {
     await clinic.updateVisit(visit.id, { text })
-    return clinic.extractSymptoms(visit.id, { signal })
+    return clinic.extractSymptoms(visit.id, opts)
   }
   // Lưu sinh hiệu (+ lời kể khi còn Waiting), triệu chứng, rồi chạy lại luật ưu tiên.
   async function saveOnServer() {

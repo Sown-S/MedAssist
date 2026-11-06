@@ -1,9 +1,7 @@
-"""Xác thực (JWT Bearer) và phân quyền theo vai trò (RBAC) — thực thi ở server.
-
-Dùng trong router:
-    current_user: User = Depends(get_current_user)
-    _: User = Depends(require_roles("Admin"))
+"""Xác thực (JWT Bearer) và phân quyền theo vai trò (RBAC), thực thi ở server.
+Dùng trong router: ``Depends(get_current_user)``, ``Depends(require_roles("Admin"))``.
 """
+
 import uuid
 from collections.abc import Callable
 
@@ -28,8 +26,7 @@ _UNAUTHORIZED = HTTPException(
 )
 
 
-_PASSWORD_CHANGE_REQUIRED = AppError(403, "PASSWORD_CHANGE_REQUIRED",
-                                     "Bạn cần đổi mật khẩu trước khi tiếp tục")
+_PASSWORD_CHANGE_REQUIRED = AppError(403, "PASSWORD_CHANGE_REQUIRED", "Bạn cần đổi mật khẩu trước khi tiếp tục")
 
 
 def get_user_allow_password_change(
@@ -60,20 +57,30 @@ def get_current_user(user: User = Depends(get_user_allow_password_change)) -> Us
 
 
 # Phương thức HTTP -> loại hành động khi ghi lượt bị từ chối
-_METHOD_ACTION = {"GET": "VIEW", "HEAD": "VIEW", "POST": "CREATE", "PUT": "UPDATE",
-                  "PATCH": "UPDATE", "DELETE": "DELETE"}
+_METHOD_ACTION = {
+    "GET": "VIEW",
+    "HEAD": "VIEW",
+    "POST": "CREATE",
+    "PUT": "UPDATE",
+    "PATCH": "UPDATE",
+    "DELETE": "DELETE",
+}
 
 
-def record_denied(request: Request, user: User, entity: str,
-                  entity_id: uuid.UUID | None = None) -> None:
-    """Ghi lượt truy cập bị từ chối vì sai vai trò (Architecture v1.7, kịch bản bảo mật)."""
+def record_denied(request: Request, user: User, entity: str, entity_id: uuid.UUID | None = None) -> None:
+    """Ghi lượt truy cập bị từ chối vì sai vai trò (Architecture: kịch bản bảo mật)."""
     audit.record_now(
         action=_METHOD_ACTION.get(request.method, "VIEW"),
         entity=entity,
         entity_id=entity_id,
         actor_id=user.user_id,
-        new_values={"result": "denied", "status": 403, "role": user.role,
-                    "method": request.method, "path": path_template(request)},
+        new_values={
+            "result": "denied",
+            "status": 403,
+            "role": user.role,
+            "method": request.method,
+            "path": path_template(request),
+        },
         ip_address=client_ip(request),
         user_agent=user_agent(request),
     )
@@ -89,8 +96,9 @@ def require_roles(*roles: str, audit_entity: str | None = None) -> Callable[...,
         if user.role not in roles:
             if audit_entity:
                 record_denied(request, user, audit_entity)
-            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
-                                detail="Bạn không có quyền thực hiện thao tác này")
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN, detail="Bạn không có quyền thực hiện thao tác này"
+            )
         return user
 
     return _checker

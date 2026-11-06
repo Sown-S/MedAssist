@@ -8,7 +8,11 @@ const day = today.slice(0, 10)
 
 const QUEUE = [
   { visit_id: 'v-exam', queue_number: 1, patient_id: 'p1', patient_name: 'Nguyễn Văn An', gender: 'Male', date_of_birth: '1990-05-01', chief_complaint: 'Ho, sốt', status: 'Examining', triage_priority: 'Routine', is_red_flag: false, ai_status: 'Ready', visit_date: today, checked_in_at: today, exam_started_at: today, physician_id: DOC_A.id, physician_name: DOC_A.name, room_name: DOC_A.room },
-  { visit_id: 'v-wait', queue_number: 2, patient_id: 'p2', patient_name: 'Trần Thị Bình', gender: 'Female', date_of_birth: '1985-02-10', chief_complaint: 'Đau họng', status: 'Waiting', triage_priority: 'Routine', is_red_flag: false, ai_status: 'Ready', visit_date: today, checked_in_at: null, exam_started_at: null, physician_id: null, physician_name: null },
+  { visit_id: 'v-wait', queue_number: 2, patient_id: 'p2', patient_name: 'Trần Thị Bình', gender: 'Female', date_of_birth: '1985-02-10', chief_complaint: 'Đau họng', status: 'Waiting', triage_priority: 'Routine', is_red_flag: false, ai_status: 'Ready', visit_date: today, checked_in_at: null, exam_started_at: null, physician_id: null, physician_name: null, intake_saved: true },
+  // Lễ tân khác đang tiếp đón (chưa Lưu & cấp số): chưa vào hàng chờ.
+  { visit_id: 'v-intake', queue_number: 3, patient_id: 'p3', patient_name: 'Phạm Văn Dũng', gender: 'Male', date_of_birth: '1970-01-01', chief_complaint: 'Đau lưng', status: 'Waiting', triage_priority: 'Routine', is_red_flag: false, ai_status: 'Pending', visit_date: today, checked_in_at: null, exam_started_at: null, physician_id: null, physician_name: null, intake_saved: false },
+  // Bác sĩ B chỉ định xét nghiệm, bệnh nhân đang đi làm (vẫn Examining, lab_out_at có giá trị).
+  { visit_id: 'v-lab', queue_number: 4, patient_id: 'p4', patient_name: 'Hoàng Thị Em', gender: 'Female', date_of_birth: '1995-04-04', chief_complaint: 'Sốt', status: 'Examining', triage_priority: 'Routine', is_red_flag: false, ai_status: 'Ready', visit_date: today, checked_in_at: today, exam_started_at: today, lab_out_at: today, physician_id: DOC_B.id, physician_name: DOC_B.name, room_name: DOC_B.room, intake_saved: true },
   // include_closed=true: lượt hôm nay đã kết thúc.
   { visit_id: 'v-paid-wait', queue_number: 5, patient_id: 'p5', patient_name: 'Lê Văn Cường', gender: 'Male', date_of_birth: '1970-01-01', chief_complaint: 'Sốt', status: 'Prescribed', triage_priority: 'Routine', is_red_flag: false, ai_status: 'Ready', visit_date: today, checked_in_at: today, exam_started_at: today, physician_id: DOC_B.id, physician_name: DOC_B.name, room_name: DOC_B.room },
   { visit_id: 'v-referred', queue_number: 6, patient_id: 'p6', patient_name: 'Phạm Thị Dung', gender: 'Female', date_of_birth: '1960-03-03', chief_complaint: 'Khó thở nặng', status: 'Finished', triage_priority: null, is_red_flag: false, ai_status: null, visit_date: today, checked_in_at: null, exam_started_at: null, finished_at: today, outcome: 'Referred', referred_by_role: 'Nurse', physician_id: null, physician_name: null }
@@ -65,8 +69,31 @@ const ROUTES = [
   [/^\/api\/v1\/auth\/password-policy$/, () => ({ min_length: 8, require_letters_and_digits: true, max_failed_attempts: 5, failed_window_minutes: 15, lock_minutes: 5 })],
   [/^\/api\/v1\/patients\/[^/?]+$/, (path) => PATIENT(path.split('/').pop())],
   [/^\/api\/v1\/visits\/[^/?]+$/, () => ({ free_text_description: 'Ho, sốt 2 ngày', chief_complaint: 'Ho, sốt', vital_signs: {} })],
+  // Lượt chỉ dùng cho test màn Cấp phát & thu tiền (không có trong hàng đợi): một dòng thuốc chờ cấp, hoá đơn chờ thu.
+  [/^\/api\/v1\/visits\/v-pay\/prescription$/, () => PAY_RX],
+  [/^\/api\/v1\/visits\/v-pay\/invoice$/, () => PAY_INVOICE],
   [/^\/api\/v1\/visits\/[^/]+\/(assessment|prescription)$/, () => ({ status: 404, body: { error: { code: 'NOT_FOUND', message: 'Không tìm thấy' } } })]
 ]
+
+const PAY_RX = {
+  prescription_id: 'rx-pay',
+  status: 'Confirmed',
+  patient_context: { allergy_notes: null },
+  items: [{ item_id: 'pi1', drug_name: 'Paracetamol 500mg', dosage: '1 viên', frequency: '3 lần/ngày', duration_days: 3, quantity: 9, unit: 'viên', dispense_status: 'Pending' }]
+}
+const PAY_INVOICE = {
+  invoice_code: 'HD-PAY',
+  payment_status: 'Pending',
+  consultation_fee: '30000',
+  paraclinical_fee: '0',
+  drug_fee: '9000',
+  total_amount: '39000',
+  unbilled_items: [],
+  items: [
+    { invoice_item_id: 'ii1', item_type: 'Consultation', item_name: 'Khám bệnh', quantity: 1, unit_price: '30000', subtotal: '30000' },
+    { invoice_item_id: 'ii2', item_type: 'Drug', item_name: 'Paracetamol 500mg', quantity: 9, unit_price: '1000', subtotal: '9000' }
+  ]
+}
 
 export const calls = []
 
@@ -76,15 +103,21 @@ async function respond(url, init = {}) {
   calls.push({ method, path: pathname + search, body: init.body ? JSON.parse(init.body) : undefined })
   let body = method === 'GET' ? (search.includes('limit=') ? { items: [], total: 0 } : []) : {}
   let status = 200
-  if (method === 'GET') {
-    const hit = ROUTES.find(([re]) => re.test(pathname))
-    if (hit) {
-      const r = hit[1](pathname)
-      if (r?.status && r.body) ({ status, body } = r)
-      else body = r
-    }
+  // Route khai báo không có method là GET.
+  const hit = ROUTES.find(([re, , m = 'GET']) => m === method && re.test(pathname))
+  if (hit) {
+    const r = hit[1](pathname)
+    if (r?.status && r.body) ({ status, body } = r)
+    else body = r
   }
   return new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } })
+}
+
+// Test đổi tạm câu trả lời của một endpoint (VD /health hỏng); hàm ném lỗi = mất mạng. Gọi hàm trả về để bỏ.
+export function overrideRoute(re, fn, method = 'GET') {
+  const route = [re, fn, method]
+  ROUTES.unshift(route)
+  return () => ROUTES.splice(ROUTES.indexOf(route), 1)
 }
 
 export function resetCalls() {
