@@ -284,6 +284,21 @@ python -m scripts.seed_referral_facilities --deactivate-others  # ngừng dùng 
 - **Chạy lại không cập nhật** thuốc đã có (giá, tên...). Sửa thuốc đã có: giao diện / `PATCH /api/v1/drugs/{id}`.
 - Tạo / cập nhật `drugs.csv` (đối chiếu văn bản, thêm thuốc, giá): công cụ ở `tools/drug_data/` — xem README trong đó.
 
+### Đánh giá AI trên bộ test đóng băng (`scripts.run_eval`)
+
+Chạy trên CSDL đã có tri thức Active (máy dev sau `import_okf`, hoặc môi trường eval). Đọc `evaluation/testset/`,
+tính red-flag recall, mức ưu tiên đúng, luật khớp, top-1/top-3 và P/R/F1 chẩn đoán phân biệt, P/R/F1 trích xuất,
+độ trễ; cảnh báo khi bộ test có ít hơn 30 ca cờ đỏ hoặc dùng mã không còn trong tri thức.
+
+```powershell
+python -m scripts.run_eval --mode RuleOnly --skip-extraction   # chỉ luật, không cần LLM
+python -m scripts.run_eval                                      # RuleOnly + Full + trích xuất, LLM theo LLM_PROVIDER
+python -m scripts.run_eval --limit 3 --out ..\evaluation\results\thu
+```
+
+Kết quả (`summary.md`, `results.json`, `cases.csv`) ghi vào `evaluation/results/<thời điểm>/`. `LLM_PROVIDER=fake`
+chỉ để kiểm tra luồng chạy, không dùng số liệu của nó cho báo cáo.
+
 ### Dữ liệu cho môi trường kiểm thử (`scripts.seed_eval`)
 
 Nạp một lượt: tài khoản `admin`, `bs01`, `bs02`, `letan01` (mật khẩu chung lấy từ biến `EVAL_PASSWORD`, mặc định
@@ -354,7 +369,7 @@ Tiền tố `/api/v1`. Chi tiết tham số và schema: **Swagger `/docs`** (lu�
 
 | Nhóm | Đường dẫn | Vai trò |
 |---|---|---|
-| Xác thực | `POST auth/login`, `auth/refresh`, `auth/logout`, `auth/change-password`; `GET auth/me`; `GET auth/password-policy` (không cần đăng nhập) | Mọi người |
+| Xác thực | `POST auth/login`, `auth/refresh`, `auth/logout`, `auth/change-password`; `GET auth/me`; `GET auth/password-policy`, `GET auth/client-config` (thông tin phòng khám, thời gian tự đăng xuất; không cần đăng nhập) | Mọi người |
 | Tài khoản | `GET/POST admin/users`; `GET/PATCH admin/users/{id}`; `POST admin/users/{id}/reset-password`, `…/unlock` | Admin |
 | Phòng | `GET rooms` (`include_inactive`); `POST admin/rooms`; `PATCH admin/rooms/{id}` | Mọi vai trò xem; Admin sửa. Gán bác sĩ vào phòng bằng `room_id` của tài khoản |
 | Nhật ký | `GET admin/audit-logs`; `GET admin/audit-logs/export` (xlsx mặc định, csv) | Admin |

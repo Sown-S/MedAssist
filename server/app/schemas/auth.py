@@ -43,6 +43,13 @@ class UserMe(BaseModel):
     room_name: str | None = None
 
 
+class ClientConfig(BaseModel):
+    """Cấu hình dùng chung mọi máy client: thông tin phòng khám in trên phiếu, thời gian tự đăng xuất."""
+
+    clinic: dict
+    idle_logout_minutes: int
+
+
 class PasswordPolicy(BaseModel):
     """Chính sách mật khẩu và khóa đăng nhập server đang áp dụng (client hiển thị chỉ đọc)."""
 
