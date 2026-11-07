@@ -46,6 +46,8 @@ def put_symptoms(db: Session, visit_id: uuid.UUID, data: SymptomsPut, actor: Use
         raise AppError(
             409, "VISIT_CLOSED", "Lượt khám đã kết thúc, không sửa triệu chứng được", [{"current": visit.status}]
         )
+    if visit.status == "Examining" and visit.physician_id != actor.user_id:
+        raise AppError(409, "NOT_YOUR_VISIT", "Chỉ bác sĩ đang khám lượt này mới sửa được triệu chứng")
 
     wanted = {s.symptom_code: s for s in data.symptoms}
     catalog = active_symptoms(db, list(wanted)) if wanted else {}  # ném 422 UNKNOWN_SYMPTOM
