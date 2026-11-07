@@ -14,6 +14,26 @@ xem [`docs/huong-dan-kiem-thu.md`](../docs/huong-dan-kiem-thu.md).
 | `ollama` | LLM cục bộ (Gemma-SEA-LION 9B), giữ model trong VRAM 24 giờ, xử lý 1 ca một lúc | Không (trừ `-OllamaLan`) |
 | `migrate` | Chạy `alembic upgrade head` mỗi lần khởi động rồi thoát; `api`, `worker` chỉ chạy khi bước này thành công | Không |
 
+## Chọn cách chạy
+
+| Cách | Máy chủ chạy bằng | Nhập ở ô **Máy chủ** của app | Chứng chỉ |
+|---|---|---|---|
+| Một máy (kiểm thử, giảng viên) | `docker-compose.eval.yml` ([docs/huong-dan-kiem-thu.md](../docs/huong-dan-kiem-thu.md)); AI tùy chọn qua `eval.env` | `http://127.0.0.1:8000` (mặc định của bản cài trên GitHub) | Không cần |
+| Máy admin, dùng ngay trên máy đó | `docker-compose.yml` (mục dưới) | `https://localhost` | Có `localhost`, `127.0.0.1` |
+| Máy admin qua Tailscale (mỗi máy một mạng) | `docker-compose.yml` | `https://<tên Tailscale của máy admin>`, vd `https://medassist-server` | Có tên ngắn, tên `.ts.net`, IP 100.x |
+| Máy admin trong một mạng chung (router, điểm phát Wi-Fi) | `docker-compose.yml` | `https://<IP LAN của máy admin>` | Có IP LAN |
+
+Một chứng chỉ dùng được cho cả ba cách dưới, cấp một lần trên máy admin (bỏ phần IP LAN nếu chưa có):
+
+```powershell
+.\deploy\scripts\new-certs.ps1 -HostName medassist-server,medassist-server.tailxxxx.ts.net,100.x.y.z,localhost,127.0.0.1,192.168.1.10
+docker compose -f deploy\docker-compose.yml --env-file deploy\.env restart caddy
+```
+
+Đổi mạng LAN (IP khác) thì chạy lại lệnh trên với IP mới; CA giữ nguyên nên bản cài trên client không đổi.
+Môi trường một máy (`medassist-eval`) và máy admin (`medassist`) là hai bộ riêng (CSDL, cổng khác nhau), chạy song song được,
+nhưng không bật AI cho cả hai cùng lúc trên một máy vì hai bản Ollama tranh nhau VRAM.
+
 ## Yêu cầu
 
 - Windows 10/11 có **Docker Desktop** (WSL 2). Máy có GPU NVIDIA: cài driver mới, Docker Desktop tự dùng GPU qua WSL.
@@ -100,8 +120,9 @@ Làm một lần sau khi cài và sau mỗi lần đổi cách sao lưu (NFR04: 
 
 ## Kết nối qua Tailscale
 
-Dùng khi các máy không chung một mạng, vd mỗi máy dùng dữ liệu di động riêng để không dồn 4–6 máy vào một điểm phát.
-Tailscale tạo mạng riêng ảo mã hóa (WireGuard) giữa các máy; ứng dụng vẫn đi HTTPS bằng CA của dự án như trong LAN.
+Dùng khi các máy không chung một mạng, vd mỗi máy dùng dữ liệu di động riêng hoặc thử từ xa. Khi các máy chung một mạng có
+Internet, Tailscale tự nối thẳng qua mạng đó nên vẫn nhập cùng một địa chỉ. Tailscale tạo mạng riêng ảo mã hóa (WireGuard)
+giữa các máy; ứng dụng vẫn đi HTTPS bằng CA của dự án như trong LAN. Cần Internet; mạng chung không có Internet thì dùng IP LAN.
 
 1. **Tài khoản:** cả nhóm đăng nhập Tailscale bằng **một tài khoản chung** (cùng một tailnet). Trên trang quản trị Tailscale,
    giữ MagicDNS bật (mặc định) và **tắt hết hạn khóa (Disable key expiry)** cho máy admin để máy không rớt khỏi mạng giữa buổi.
@@ -110,14 +131,16 @@ Tailscale tạo mạng riêng ảo mã hóa (WireGuard) giữa các máy; ứng 
    Mở cổng 443 trong Windows Firewall (PowerShell quyền Administrator):
    `New-NetFirewallRule -DisplayName "MedAssist HTTPS" -Direction Inbound -Protocol TCP -LocalPort 443 -Action Allow`.
 3. **Máy client:** cài Tailscale, đăng nhập cùng tài khoản, ở màn đăng nhập MedAssist bấm **Máy chủ** và nhập
-   `https://<tên MagicDNS của máy admin>` (vd `https://may-admin.tail1234.ts.net`).
+   `https://<tên Tailscale của máy admin>`: tên ngắn (vd `https://medassist-server`) hoặc tên đầy đủ `...ts.net`; tên nào
+   cũng phải có trong chứng chỉ. Đổi tên máy trên Tailscale thì phải cấp lại chứng chỉ và sửa ô Máy chủ trên mọi client.
 4. **Kiểm tra đường đi:** trên client chạy `tailscale ping <tên máy admin>`. `via <IP>:<cổng>` là kết nối trực tiếp;
    `via DERP(...)` là đi qua máy chuyển tiếp của Tailscale (thường gặp với mạng di động), độ trễ cao hơn nhưng vẫn dùng được.
    Mở `https://<tên máy admin>/health` trên trình duyệt của client để chắc chứng chỉ và cổng 443 đều đúng.
 
-Lưu ý: mọi máy client đều đi qua đường mạng của máy admin, nên máy admin cần sóng ổn định nhất. Dữ liệu mỗi lần hỏi nhỏ
-(hàng đợi hỏi lại khoảng 2 giây một lần). Phương án dự phòng: cấp thêm IP của điểm phát vào chứng chỉ (`-HostName <tên>,<IP 100.x>,<IP điểm phát>`)
-để chuyển về một mạng chung khi Tailscale gặp sự cố. Không dùng `-OllamaLan` khi có máy ngoài nhóm trong tailnet.
+Lưu ý: mọi máy client đều đi qua đường mạng của máy admin, nên máy admin cần sóng ổn định nhất. Mỗi máy dùng dữ liệu di động
+riêng thì lưu lượng đi qua Internet (tốn dữ liệu, có thể qua máy chuyển tiếp); dữ liệu mỗi lần hỏi nhỏ (hàng đợi hỏi lại khoảng
+2 giây một lần). Trong một mạng chung (kể cả điểm phát Wi-Fi), lưu lượng giữa các máy chỉ đi trong mạng đó, không tốn dữ liệu
+di động. Không dùng `-OllamaLan` khi có máy ngoài nhóm trong tailnet.
 
 ## Lỗi thường gặp
 
