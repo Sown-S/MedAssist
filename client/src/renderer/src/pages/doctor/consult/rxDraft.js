@@ -46,6 +46,8 @@ export const MEALS = [
 export const blankDose = () => ({ m: '', n: '', a: '', e: '', days: '', meal: 'after' })
 
 export const num = (x) => parseFloat(String(x ?? '').replace(',', '.')) || 0
+// Số lượng trên đơn là số nguyên dương; '1.5', '2a' trả 0 (không hợp lệ) thay vì bị cắt thành 1, 2.
+export const wholeQty = (q) => (/^\d+$/.test(String(q ?? '').trim()) ? Number(q) : 0)
 
 // Trẻ dưới 12 tuổi: liều tính theo cân nặng → bắt buộc có cân nặng mới chốt đơn.
 export const isChild = (v) => v.age !== '' && v.age != null && Number(v.age) < 12
@@ -84,7 +86,7 @@ export const lineOf = (d) => ({ id: nextLineId(), drugId: d.id, name: d.name, qt
 export function serverItem(l, drugs) {
   const drug = (l.drugId && drugs.find((x) => x.id === l.drugId)) || findServerDrug(l.name, drugs)
   if (!drug) return { error: translate('Not in the drug catalog on the server') + ': ' + l.name }
-  const qty = parseInt(l.qty, 10)
+  const qty = wholeQty(l.qty)
   const daily = perDay(l.dose)
   const days = num(l.dose?.days) > 0 ? Math.round(num(l.dose.days)) : daily > 0 && qty > 0 ? Math.ceil(qty / daily) : 0
   if (!(days > 0)) return { error: translate('Enter the number of days for') + ' ' + l.name }

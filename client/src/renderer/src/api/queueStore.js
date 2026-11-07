@@ -62,7 +62,10 @@ const patch = (id, fields) => commit({ ...state, visits: state.visits.map((v) =>
 
 // Đồng bộ với server. Chỉ Lễ tân / Bác sĩ gọi được GET /queue (Admin không có quyền).
 let syncing = null
-export function syncQueue() {
+// Mặc định kết quả phải mới hơn lúc gọi (thường gọi ngay sau một thao tác): lượt tải đang chạy dở bắt đầu trước thao
+// tác nên chờ nó xong rồi tải lại. poll = vòng tải định kỳ, dùng chung lượt đang chạy.
+export function syncQueue({ poll = false } = {}) {
+  if (syncing && !poll) return syncing.then(() => syncQueue({ poll: true }))
   // Server ghi đè mọi trường nó có (phòng, đi xét nghiệm, lời mời); chỉ giữ trường chỉ có ở máy này.
   syncing ??= fetchQueue()
     .then((list) => {
@@ -84,8 +87,8 @@ export function syncStale() {
 }
 export function useQueueSync(ms = 3000) {
   useEffect(() => {
-    syncQueue()
-    const t = setInterval(syncQueue, ms)
+    syncQueue({ poll: true })
+    const t = setInterval(() => syncQueue({ poll: true }), ms)
     return () => clearInterval(t)
   }, [ms])
 }

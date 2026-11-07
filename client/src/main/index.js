@@ -111,11 +111,20 @@ function createWindow() {
 
   // Khi chạy "npm run dev": load từ Vite dev server (hot reload)
   // Khi build production: load qua app://medassist (xem serveApp)
-  if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
-    mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
-  } else {
-    mainWindow.loadURL(APP_ORIGIN + '/index.html')
-  }
+  const appUrl = is.dev && process.env['ELECTRON_RENDERER_URL'] ? process.env['ELECTRON_RENDERER_URL'] : APP_ORIGIN
+
+  // Cửa sổ chỉ hiện giao diện của app: chặn điều hướng sang địa chỉ khác (VD kéo thả file hay link lạ vào cửa sổ).
+  mainWindow.webContents.on('will-navigate', (e, url) => {
+    if (!url.startsWith(appUrl)) e.preventDefault()
+  })
+
+  mainWindow.loadURL(appUrl === APP_ORIGIN ? APP_ORIGIN + '/index.html' : appUrl)
+}
+
+// App không cần camera, micro, vị trí, thông báo…: từ chối mọi yêu cầu quyền, trừ ghi clipboard
+// (nút sao chép mật khẩu tạm ở màn Tài khoản nhân viên).
+function denyPermissions() {
+  session.defaultSession.setPermissionRequestHandler((wc, permission, callback) => callback(permission === 'clipboard-sanitized-write'))
 }
 
 // ---------- Chỉ tin chứng chỉ gốc (root CA) của dự án khi nói chuyện với máy chủ phòng khám (TC03, BC09) ----------
@@ -167,6 +176,7 @@ app.whenReady().then(() => {
   serveApp()
   registerIpc()
   pinServerCertificate()
+  denyPermissions()
   createWindow()
 
   app.on('activate', function () {

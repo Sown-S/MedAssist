@@ -7,7 +7,7 @@ import { countOf } from '../src/renderer/src/pages/admin/DashboardPage.jsx'
 import { syncQueue } from '../src/renderer/src/api/queueStore.js'
 import { saveDraft, getDraft } from '../src/renderer/src/api/draftStore.js'
 import { DOC_A, DOC_B, DESK, ADMIN } from './helpers'
-import { installFakeServer } from './fakeServer'
+import { installFakeServer, overrideRoute } from './fakeServer'
 
 const KEY = 'medassist_consult_drafts_v1'
 const flush = () => new Promise((ok) => setTimeout(ok, 450)) // draftStore gom lần ghi 400 ms
@@ -159,5 +159,16 @@ describe('Dashboard Admin', () => {
     await waitFor(() => expect(card.querySelector('.val').textContent).toBe('1'))
     expect(screen.getByText('Awaiting payment').closest('.stat-card').querySelector('.val').textContent).toBe('0')
     expect(document.body.textContent).not.toContain('NaN')
+  })
+
+  it('không tải được tài khoản (server lỗi) → báo lỗi và vẫn hiện số liệu, không quay vòng tải mãi', async () => {
+    const restore = overrideRoute(/^\/api\/v1\/admin\/users$/, () => ({ status: 500, body: { error: { code: 'INTERNAL_ERROR', message: 'Lỗi máy chủ' } } }))
+    try {
+      renderPage(<Admin onNavigate={() => {}} />, { user: ADMIN, path: '/admin' })
+      expect(await screen.findByText('Could not load staff accounts: Lỗi máy chủ')).toBeTruthy()
+      expect(screen.getByText('Visits today')).toBeTruthy()
+    } finally {
+      restore()
+    }
   })
 })
