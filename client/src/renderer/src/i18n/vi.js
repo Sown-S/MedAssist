@@ -348,6 +348,7 @@ export const VI = {
     'Mật khẩu này chỉ hiện một lần. Sau khi đóng cửa sổ sẽ không xem lại được — chỉ có thể đặt lại.',
   Copy: 'Sao chép',
   Copied: 'Đã sao chép',
+  'Could not copy — select the password and copy it by hand': 'Không sao chép được — hãy bôi đen mật khẩu và sao chép tay',
   Done: 'Xong',
   'Create an administrator account': 'Tạo tài khoản quản trị viên',
   'Administrators can manage accounts, permissions and all system settings. Confirm with your password.':
