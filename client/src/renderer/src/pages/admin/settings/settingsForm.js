@@ -1,3 +1,5 @@
+import { DOB_RE } from '../../../components/PatientFields'
+
 // Tự đăng xuất sau bao nhiêu phút không thao tác (0 = tắt).
 export const IDLE = [
   { key: 0, label: 'Off' },
@@ -23,6 +25,7 @@ export function validate(d) {
   const int = (v) => Number.isInteger(Number(v)) && String(v).trim() !== ''
   if (!d.clinic.name.trim()) e['clinic.name'] = 'Enter the clinic name — it is printed on every document.'
   if (d.clinic.email && !/^\S+@\S+\.\S+$/.test(d.clinic.email)) e['clinic.email'] = 'Invalid email address.'
+  if (d.clinic.licenseDate && !DOB_RE.test(d.clinic.licenseDate)) e['clinic.licenseDate'] = 'Enter a valid date (dd/mm/yyyy)'
   if (d.clinic.taxCode && !/^\d{10}(-\d{3})?$/.test(d.clinic.taxCode)) e['clinic.taxCode'] = 'A tax code has 10 digits (or 10 digits + "-" + 3 digits for a branch).'
   if (!int(d.ops.defaultThreshold) || d.ops.defaultThreshold < 0) e['ops.defaultThreshold'] = 'Enter a whole number.'
   if (!int(d.ops.shelfBufferDays ?? 0) || (d.ops.shelfBufferDays ?? 0) < 0 || (d.ops.shelfBufferDays ?? 0) > 365) e['ops.shelfBufferDays'] = 'Enter 0–365 days.'
