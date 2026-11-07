@@ -181,7 +181,7 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
   // Đóng khi lượt đã tạo mà chưa lưu xong → huỷ lượt đó để không còn lượt “ma” trong hàng chờ.
   function close() {
     if (visitRef.current && !saved.current)
-      clinic.cancelVisit(visitRef.current.visit_id, 'Huỷ khi đang tiếp đón (chưa lưu)').then(syncQueue, () => {})
+      clinic.cancelVisit(visitRef.current.visit_id, 'Huỷ khi đang tiếp đón (chưa lưu)').then(() => syncQueue(), () => {})
     onClose()
   }
   async function pickRecord(d) {

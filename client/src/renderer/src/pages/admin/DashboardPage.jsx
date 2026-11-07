@@ -145,9 +145,14 @@ export default function DashboardPage({ onNavigate }) {
   const byStatus = summary?.visits.by_status
   const ai = summary?.ai
   const [accounts, setAccounts] = useState(null)
+  const [accountsError, setAccountsError] = useState('')
   const [health, setHealth] = useState(null)
   useEffect(() => {
-    listAccounts().then(setAccounts)
+    // Không đọc được tài khoản (mất kết nối, server lỗi) thì vẫn hiện phần còn lại, kèm thông báo, thay vì tải mãi.
+    listAccounts().then(setAccounts, (e) => {
+      setAccounts([])
+      setAccountsError(e.message)
+    })
     checkHealth().then(setHealth)
   }, [])
 
@@ -167,6 +172,7 @@ export default function DashboardPage({ onNavigate }) {
 
       {!ready && <LoadingBlock />}
       {e1 && <ErrorBlock message={translate('Could not load today’s figures') + ': ' + e1} />}
+      {accountsError && <ErrorBlock message={translate('Could not load staff accounts') + ': ' + translate(accountsError)} />}
 
       {ready && (
         <>
