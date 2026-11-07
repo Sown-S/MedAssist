@@ -18,7 +18,6 @@ export async function getInvoice(visitId) {
     throw e
   }
 }
-export const getPrintData = (visitId) => apiGet(`${V1}/visits/${visitId}/invoice/print`)
 // consultation_fee / paraclinical_items bỏ trống = giữ nguyên.
 export const editInvoice = (visitId, body) => apiRequest(`${V1}/visits/${visitId}/invoice`, 'PATCH', body)
 export const payInvoice = (visitId, method) => apiPost(`${V1}/visits/${visitId}/invoice/pay`, { payment_method: method })

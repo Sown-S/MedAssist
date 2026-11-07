@@ -73,23 +73,22 @@ export async function fetchPasswordPolicy() {
   }
 }
 
-// Độ dài tối thiểu hiện ở nhãn ô mật khẩu mới; chưa đọc được chính sách thì dùng mức của server (8).
-export function usePasswordMinLength() {
-  const [n, setN] = useState(8)
+// Chính sách mật khẩu cho giao diện; null khi chưa đọc được (đang tải hoặc mất kết nối).
+export function usePasswordPolicy() {
+  const [policy, setPolicy] = useState(null)
   useEffect(() => {
-    fetchPasswordPolicy().then((p) => p && setN(p.minLength))
+    fetchPasswordPolicy().then(setPolicy)
   }, [])
-  return n
+  return policy
 }
+// Độ dài tối thiểu hiện ở nhãn ô mật khẩu mới; chưa đọc được thì dùng mức của server (8).
+export const usePasswordMinLength = () => usePasswordPolicy()?.minLength ?? 8
 
 export const ROLES = {
   doctor: { label: 'Doctor', home: '/doctor' },
   reception: { label: 'Receptionist', home: '/reception' },
   admin: { label: 'Administrator', home: '/reports' }
 }
-
-// Sai mật khẩu maxFailed lần thì server khoá tạm, không khoá vĩnh viễn (5 lần / 5 phút).
-export const maxFailed = () => 5
 
 // Tên mặc định của tài khoản Admin tạo lúc cài đặt (scripts.create_user) — nhắc đổi sang tên người thật.
 export const hasDefaultName = (a) => a.fullName === 'System Administrator'

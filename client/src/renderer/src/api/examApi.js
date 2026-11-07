@@ -19,7 +19,6 @@ export async function getPrescription(visitId) {
   }
 }
 export const savePrescription = (visitId, items) => apiRequest(`${V1}/visits/${visitId}/prescription`, 'PUT', { items })
-export const discardPrescription = (visitId) => apiRequest(`${V1}/visits/${visitId}/prescription`, 'DELETE')
 export const confirmPrescription = (visitId) => apiPost(`${V1}/visits/${visitId}/prescription/confirm`, {})
 export const completeExam = (visitId) => apiPost(`${V1}/visits/${visitId}/complete-exam`, {})
 export const reopenPrescription = (visitId, reason) => apiPost(`${V1}/visits/${visitId}/prescription/reopen`, { reason })

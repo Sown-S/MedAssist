@@ -69,9 +69,9 @@ describe('Cấu hình dùng chung (client-config)', () => {
     expect(puts[0].body.value).toEqual({ ...CONFIG.clinic, director: 'BS. B', print_footer: 'Cảm ơn quý khách', show_logo: true })
     expect(puts[1].body).toEqual({ value: 60 })
 
-    s.saveSettings({ ...draft, ops: { ...draft.ops, announceName: true } }, { name: 'Admin' })
+    s.saveSettings({ ...draft, ops: { ...draft.ops, defaultThreshold: 20 } })
     const own = JSON.parse(localStorage.getItem('medassist_settings_v1')).values
-    expect(own.ops.announceName).toBe(true)
+    expect(own.ops.defaultThreshold).toBe(20)
     expect(own.clinic).toBeUndefined()
     expect(own.print).toBeUndefined()
     expect(own.security).toBeUndefined()

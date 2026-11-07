@@ -181,15 +181,6 @@ export function receiveStock({ drugId, lot, expiry, qty, cost }) {
   )
 }
 
-// Lô đủ điều kiện cho một đợt dùng: hạn dùng > hôm nay + max(số ngày dùng, khoảng an toàn ở Cài đặt › Vận hành).
-// Lô còn 3 ngày không được cấp cho đợt 7 ngày.
-export const shelfBuffer = () => Number(getSettings().ops.shelfBufferDays) || 0
-export function eligibleFor(b, days = 0) {
-  const need = Math.max(Number(days) || 0, shelfBuffer())
-  const left = daysLeft(b.expiry)
-  return need > 0 ? left > need : left >= 0
-}
-
 // Lý do điều chỉnh tồn trong dữ liệu cũ (chỉ để hiển thị).
 const REASONS = { lost: 'Lost', damaged: 'Broken / damaged', expired: 'Expired, not yet disposed', entry: 'Data entry error at receipt', dispense: 'Dispensing error', other: 'Other (explain in note)' }
 export const reasonLabel = (k) => REASONS[k] ?? ''

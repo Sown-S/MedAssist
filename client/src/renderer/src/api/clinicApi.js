@@ -159,8 +159,6 @@ export async function getAssessment(visitId) {
     throw e
   }
 }
-export const assessmentPending = (a) => !!a && ['Pending', 'Preliminary'].includes(a.ai_status)
-
 export const triageOf = (priority) => (priority === 'Emergency' ? 'emergency' : priority === 'HighPriority' ? 'high' : 'routine')
 
 // Server gửi khoá sinh hiệu dạng “vital_signs.spo2_pct” kèm tên chưa dịch → đổi sang nhãn sinh hiệu.

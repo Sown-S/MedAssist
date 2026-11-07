@@ -30,8 +30,7 @@ export const FIELDS = {
   'ops.shelfBufferDays': ['Expiry safety buffer', 'now'],
   'ops.defaultThreshold': ['Default minimum stock', 'now'],
   'ops.consultFee': ['Default consultation fee', 'now'],
-  'ops.methods': ['Payment methods', 'now'],
-  'ops.announceName': ['Read the patient’s name aloud when calling', 'now']
+  'ops.methods': ['Payment methods', 'now']
 }
 
 export function Field({ path, hint, error, changed, wide, children }) {

@@ -35,6 +35,8 @@
 .set-err{color:#FCA5A5;font-size:12px;}
 .set-field .ai-switch{margin-top:4px;}
 .set-logo{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+/* Nhóm ô khoá khi mất kết nối (fieldset disabled), không viền / lề mặc định của trình duyệt. */
+.set-fieldset{border:0;padding:0;margin:0;min-width:0;}
 .set-logo img{max-height:56px;max-width:140px;background:#fff;border-radius:6px;padding:4px;}
 .set-logo .btn{display:inline-flex;align-items:center;gap:6px;cursor:pointer;}
 .set-split{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:18px;align-items:start;}

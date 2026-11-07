@@ -1,13 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import Icon from '../../components/Icon'
 import ReauthModal from '../../components/ReauthModal'
-import { useAuth } from '../../context/AuthContext'
 import { useToast } from '../../context/ToastContext'
 import { translate } from '../../i18n'
 import { useSettings, saveSettings, saveServerSettings, loadServerSettings, loadClientConfig, getSettings, changedPaths, isServerSetting } from '../../api/settingsStore'
 import { useServerOnline } from '../../api/connectivity'
-import { fetchPasswordPolicy } from '../../api/accountStore'
-import { fmtDateTime } from './inventory/shared'
+import { usePasswordPolicy } from '../../api/accountStore'
 import { DeviceTab } from './settings/DeviceTab'
 import { PrintTab } from './settings/PrintTab'
 import { FIELDS, Field } from './settings/Field'
@@ -29,20 +27,18 @@ const TAB_OF = (path) => path.split('.')[0]
 
 const labelOf = (p) => FIELDS[p]?.[0] ?? p
 export default function SettingsPage({ params, onNavigate, setLeaveGuard }) {
-  const { user } = useAuth()
   const { showToast } = useToast()
   const saved = useSettings()
   const [tab, setTab] = useState(params?.tab && TABS.some((t) => t.key === params.tab) ? params.tab : 'clinic')
   const [draft, setDraft] = useState(saved.values)
   const [reauth, setReauth] = useState(null)
-  const [policy, setPolicy] = useState(null)
+  const policy = usePasswordPolicy()
   // Nạp tham số đang dùng trên server rồi làm mới bản nháp.
   useEffect(() => {
     loadServerSettings().then(
       () => setDraft(getSettings()),
       (e) => showToast(e.message, 'error')
     )
-    fetchPasswordPolicy().then(setPolicy)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -79,7 +75,7 @@ export default function SettingsPage({ params, onNavigate, setLeaveGuard }) {
     // Ghi tham số lên server trước; lỗi thì không lưu gì ở máy này.
     const r = await saveServerSettings(draft)
     if (!r.ok) return showToast(translate(r.error), 'error')
-    const n = saveSettings(draft, user)
+    const n = saveSettings(draft)
     // Làm mới bản đệm dùng chung (in phiếu, tự đăng xuất) theo đúng giá trị server vừa lưu.
     loadClientConfig()
     showToast(n ? 'Settings saved' : 'No changes')
@@ -96,13 +92,6 @@ export default function SettingsPage({ params, onNavigate, setLeaveGuard }) {
         <div>
           <h1>System settings</h1>
           <p>Settings for the whole clinic. Each change is recorded in the activity log with the old and new value.</p>
-        </div>
-        <div className="ai-toolbar-right">
-          {saved.updatedAt && (
-            <span className="ai-small ai-soft">
-              <span>Last saved</span> <span className="mono">{fmtDateTime(saved.updatedAt)}</span> <span>by</span> <b>{saved.updatedBy}</b>
-            </span>
-          )}
         </div>
       </div>
 
