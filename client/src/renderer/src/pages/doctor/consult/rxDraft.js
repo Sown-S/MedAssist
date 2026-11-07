@@ -106,7 +106,7 @@ export function serverItem(l, drugs) {
   }
 }
 
-export function initDraft(v) {
+function initDraft(v) {
   return {
     exam: v.exam ?? '',
     plan: v.plan ?? '',

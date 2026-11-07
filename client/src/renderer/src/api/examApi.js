@@ -5,10 +5,10 @@ import { conditionOf } from './conditionCatalog'
 
 const V1 = '/api/v1'
 
-export const listDiagnoses = (visitId) => apiGet(`${V1}/visits/${visitId}/diagnoses`)
-export const addDiagnosis = (visitId, body) => apiPost(`${V1}/visits/${visitId}/diagnoses`, body)
-export const updateDiagnosis = (id, body) => apiRequest(`${V1}/diagnoses/${id}`, 'PATCH', body)
-export const retractDiagnosis = (id) => apiPost(`${V1}/diagnoses/${id}/retract`, {})
+const listDiagnoses = (visitId) => apiGet(`${V1}/visits/${visitId}/diagnoses`)
+const addDiagnosis = (visitId, body) => apiPost(`${V1}/visits/${visitId}/diagnoses`, body)
+const updateDiagnosis = (id, body) => apiRequest(`${V1}/diagnoses/${id}`, 'PATCH', body)
+const retractDiagnosis = (id) => apiPost(`${V1}/diagnoses/${id}/retract`, {})
 
 export async function getPrescription(visitId) {
   try {
@@ -24,7 +24,7 @@ export const completeExam = (visitId) => apiPost(`${V1}/visits/${visitId}/comple
 export const reopenPrescription = (visitId, reason) => apiPost(`${V1}/visits/${visitId}/prescription/reopen`, { reason })
 
 // “J03.9 — Viêm amidan cấp” → { icd: 'J03.9', name }; chữ tự do → { icd: null, name }.
-export function parseDiagnosis(text) {
+function parseDiagnosis(text) {
   const t = String(text ?? '').trim()
   const m = t.match(/^([A-Z]\d{2}(?:\.[0-9A-Z]{1,4})?)\s*[—–-]\s*(.+)$/i)
   return m ? { icd: m[1].toUpperCase(), name: m[2].trim() } : { icd: null, name: t }

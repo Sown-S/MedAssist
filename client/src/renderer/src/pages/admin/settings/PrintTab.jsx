@@ -86,7 +86,7 @@ export function PrintTab({ form, draft, readOnly }) {
   )
 }
 
-export function printTest(doc, draft) {
+function printTest(doc, draft) {
   const t = translate
   printHtml(
     t('Test page'),

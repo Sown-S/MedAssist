@@ -3,9 +3,9 @@ import { VITAL_KEYS, vitalDef } from '../../../api/vitals'
 
 // condition_logic: nhóm { op: 'AND' | 'OR', args }; lá: symptom { symptom_code, state } | vital { vital, cmp, value }
 // | age { unit, cmp, value }.
-export const CMPS = ['<', '<=', '>', '>=', '==']
+const CMPS = ['<', '<=', '>', '>=', '==']
 const CMP_TEXT = { '<': '<', '<=': '≤', '>': '>', '>=': '≥', '==': '=' }
-export const MAX_DEPTH = 5
+const MAX_DEPTH = 5
 
 export function LogicView({ node, names, depth = 0 }) {
   if (!node) return <span className="ai-soft">—</span>
@@ -51,7 +51,7 @@ export function LogicView({ node, names, depth = 0 }) {
   return <span className="mono ai-small">{JSON.stringify(node)}</span>
 }
 
-export const newLeaf = (type, symptoms) =>
+const newLeaf = (type, symptoms) =>
   type === 'symptom'
     ? { type: 'symptom', symptom_code: symptoms?.[0] ?? '', state: 'PRESENT' }
     : type === 'vital'

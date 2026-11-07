@@ -3,7 +3,7 @@ export const EMPTY = { fullName: '', username: '', roleKey: 'doctor', phone: '',
 // Không đăng nhập quá số ngày này → coi là tài khoản bỏ không, nên xem xét vô hiệu hoá.
 export const IDLE_DAYS = 30
 
-export const daysSince = (iso) => (iso ? Math.floor((Date.now() - new Date(iso).getTime()) / 86400000) : null)
+const daysSince = (iso) => (iso ? Math.floor((Date.now() - new Date(iso).getTime()) / 86400000) : null)
 export const isIdle = (a) => a.active && (a.lastLoginAt ? daysSince(a.lastLoginAt) >= IDLE_DAYS : daysSince(a.createdAt) >= IDLE_DAYS)
 
 export const STATUS_FILTERS = [

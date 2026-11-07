@@ -4,7 +4,7 @@ import { getSettings, PAPERS } from '../../../api/settingsStore'
 import { getDevice } from '../../../api/deviceSettings'
 import { money } from '../../../lib/format'
 
-export const UNITS = [
+const UNITS = [
   { key: 'tablet', label: 'Tablet' },
   { key: 'capsule', label: 'Capsule' },
   { key: 'sachet', label: 'Sachet' },
@@ -174,7 +174,7 @@ export function printHeaderHtml(set = getSettings()) {
     '</div></div>'
   )
 }
-export const PRINT_CSS =
+const PRINT_CSS =
   'body{font-family:Arial,sans-serif;font-size:12px;color:#000;margin:24px}' +
   'h1{font-size:18px;margin:0 0 4px}h2{font-size:13px;margin:16px 0 6px}' +
   '.meta{margin:2px 0}table{width:100%;border-collapse:collapse;margin-top:8px}' +

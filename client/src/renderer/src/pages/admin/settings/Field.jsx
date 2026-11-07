@@ -1,6 +1,6 @@
 
 
-export const EFFECTS = {
+const EFFECTS = {
   now: { label: 'Applies immediately', cls: 'ok' },
   signin: { label: 'From next sign-in', cls: 'info' },
   server: { label: 'Applied by the server', cls: 'muted' },

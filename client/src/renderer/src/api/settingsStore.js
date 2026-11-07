@@ -23,7 +23,7 @@ export const PAYMENT_METHODS = [
   { key: 'transfer', label: 'Bank transfer' }
 ]
 
-export const DEFAULT_SETTINGS = {
+const DEFAULT_SETTINGS = {
   clinic: {
     name: '',
     address: '',
@@ -119,13 +119,13 @@ const subscribe = (fn) => {
   listeners.add(fn)
   return () => listeners.delete(fn)
 }
-export const getSettingsState = () => state
+const getSettingsState = () => state
 export const getSettings = () => state.values
 export function useSettings() {
   return useSyncExternalStore(subscribe, getSettingsState)
 }
 
-export function flatten(obj, prefix = '') {
+function flatten(obj, prefix = '') {
   const out = {}
   for (const [k, v] of Object.entries(obj)) {
     const p = prefix ? prefix + '.' + k : k

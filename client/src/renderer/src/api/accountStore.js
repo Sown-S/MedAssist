@@ -64,7 +64,7 @@ async function listLive() {
 const patchLive = (id, body) => apiRequest(`/api/v1/admin/users/${id}`, 'PATCH', body)
 
 // Chính sách mật khẩu do server quy định (GET /auth/password-policy); Cài đặt › Bảo mật chỉ hiển thị. Lỗi mạng → null.
-export async function fetchPasswordPolicy() {
+async function fetchPasswordPolicy() {
   try {
     const p = await apiGet('/api/v1/auth/password-policy')
     return { minLength: p.min_length, requireMix: p.require_letters_and_digits, maxFailed: p.max_failed_attempts, failedWindow: p.failed_window_minutes, lockMinutes: p.lock_minutes }
@@ -94,7 +94,7 @@ export const ROLES = {
 export const hasDefaultName = (a) => a.fullName === 'System Administrator'
 
 // Mật khẩu tạm do hệ thống sinh; admin chỉ xem một lần sau khi tạo / đặt lại.
-export async function genPassword() {
+async function genPassword() {
   const c = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789'
   const min = (await fetchPasswordPolicy())?.minLength ?? 8
   const r = crypto.getRandomValues(new Uint32Array(Math.max(10, min)))

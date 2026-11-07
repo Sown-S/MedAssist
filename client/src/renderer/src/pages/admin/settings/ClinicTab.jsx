@@ -16,7 +16,7 @@ function readDataUrl(file) {
   })
 }
 // Vẽ lại lên canvas cạnh dài tối đa LOGO_MAX_SIDE; PNG giữ nền trong suốt, quá dài thì thử WebP. null = không vừa giới hạn.
-export async function shrinkLogo(file) {
+async function shrinkLogo(file) {
   const src = await readDataUrl(file)
   const img = new Image()
   await new Promise((resolve, reject) => {

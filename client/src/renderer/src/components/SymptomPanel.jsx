@@ -7,8 +7,8 @@ import { useAiHealth } from '../api/connectivity'
 
 // Server tự kết thúc lượt trích xuất sau 30 giây tính từ POST (kể cả lúc xếp hàng). Client đếm từ lúc bấm và chờ thêm
 // 5 giây để bù khoảng hỏi lại 2 giây và độ trễ mạng. Thanh tiến trình chạy theo thời gian, đầy ở mốc 30 giây.
-export const SERVER_LIMIT_S = 30
-export const EXTRACTION_TIMEOUT_MS = 35000
+const SERVER_LIMIT_S = 30
+const EXTRACTION_TIMEOUT_MS = 35000
 // Bước đang chạy lấy từ status server trả về (Queued / Running).
 const STEPS = [
   ['saving', 'Description saved'],

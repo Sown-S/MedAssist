@@ -20,7 +20,7 @@ export const STATUSES = [
 export const statusLabel = (k) => STATUSES.find((s) => s.key === normStatus(k))?.label ?? k
 // Trạng thái của bản client cũ → tên trạng thái của backend.
 const LEGACY = { waiting: ST.WAITING, in_exam: ST.EXAMINING, labs: ST.EXAMINING, payment: ST.PRESCRIBED, done: ST.FINISHED, left: ST.CANCELLED }
-export const normStatus = (k) => LEGACY[k] ?? k
+const normStatus = (k) => LEGACY[k] ?? k
 export const inRoom = (v) => v.status === ST.EXAMINING && !v.labOut
 export const atLabs = (v) => v.status === ST.EXAMINING && !!v.labOut
 // Lượt đang tiếp đón (chưa Lưu & cấp số) chưa thuộc hàng chờ: không gọi, không mời, không tính vào số người chờ.
@@ -38,7 +38,7 @@ export const CANCEL_REASONS = [
   { key: 'other', label: 'Other' }
 ]
 // Lý do bỏ về của mọi nguồn (bác sĩ, quầy, chuyển tuyến) — để hiển thị.
-export const ALL_LEFT_REASONS = [...LEFT_REASONS, ...CANCEL_REASONS.filter((r) => r.key !== 'other'), { key: 'referred_out', label: 'Referred to hospital (red flag)' }]
+const ALL_LEFT_REASONS = [...LEFT_REASONS, ...CANCEL_REASONS.filter((r) => r.key !== 'other'), { key: 'referred_out', label: 'Referred to hospital (red flag)' }]
 export const leftReasonLabel = (k) => ALL_LEFT_REASONS.find((r) => r.key === k)?.label ?? ''
 const CLOSED = [ST.FINISHED, ST.CANCELLED]
 export const isClosed = (v) => CLOSED.includes(v.status)
@@ -223,7 +223,7 @@ const viaCall = (call) =>
     },
     (e) => (syncQueue(), { ok: false, code: e?.code, error: callError(e) })
   )
-export function inviteNext() {
+function inviteNext() {
   return viaCall(apiCallNext())
 }
 export function inviteAgain(id) {

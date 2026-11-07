@@ -31,7 +31,7 @@ const subscribe = (fn) => {
   listeners.add(fn)
   return () => listeners.delete(fn)
 }
-export const getInventory = () => state
+const getInventory = () => state
 export function useInventory() {
   // Chỉ nạp khi có màn cần kho (đã đăng nhập), không nạp lúc khởi động vì chưa có token.
   useEffect(() => {
@@ -88,7 +88,7 @@ async function fetchLive() {
   for (const b of [...batches].sort((x, y) => x.createdAt.localeCompare(y.createdAt))) lastCost[b.drugId] = b.cost
   return { drugs: drugs.map((d) => fromServerDrug(d, lastCost[d.drug_id] ?? 0)), batches }
 }
-export function reloadInventory() {
+function reloadInventory() {
   liveLoading ??= fetchLive()
     .then((x) => {
       liveLoaded = true

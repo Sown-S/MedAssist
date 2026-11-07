@@ -8,7 +8,7 @@ import { LogicView } from './logic'
 import { shortDateTime } from '../../../lib/format'
 
 // Phần dùng chung của màn soạn bản phát hành (admin) và màn duyệt (bác sĩ): trạng thái, danh sách thay đổi, lịch sử.
-export const RELEASE_STATUS = { Draft: 'Being drafted', PendingApproval: 'Awaiting approval', Active: 'Approved', Retired: 'Superseded' }
+const RELEASE_STATUS = { Draft: 'Being drafted', PendingApproval: 'Awaiting approval', Active: 'Approved', Retired: 'Superseded' }
 const RELEASE_TONE = { Draft: '', PendingApproval: 'info', Active: 'ok', Retired: 'muted' }
 export const ReleaseBadge = ({ status }) => <span className={'badge ' + (RELEASE_TONE[status] ?? '')}>{RELEASE_STATUS[status] ?? status}</span>
 
