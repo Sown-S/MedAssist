@@ -61,7 +61,7 @@ Chạy kiểm tra của phần mình đã sửa:
 | Sửa ở | Lệnh | CI có chạy lại không |
 |---|---|---|
 | `server/` | `cd server; python -m pytest` (cần PostgreSQL trong Docker, xem `server/README.md` mục 5) | Có, kèm độ phủ ≥ 90% |
-| `server/`, `tools/` (Python) | Ở gốc repo: `ruff format server tools; ruff check --fix server tools` (`pip install ruff==0.17.2`) | Có, sai định dạng là CI đỏ |
+| `server/`, `tools/` (Python) | Ở gốc repo: `ruff format server tools; ruff check --fix server tools` (ruff có trong `server/requirements-dev.txt`) | Có, sai định dạng là CI đỏ |
 | Model hoặc migration | `python -m alembic upgrade head; python -m alembic check` | Có |
 | `client/` | `cd client; npm run lint; npm test; npm run build` | Có lint + test (build phải tự chạy) |
 | `tools/` | `cd tools; python -m pytest` | Có |
