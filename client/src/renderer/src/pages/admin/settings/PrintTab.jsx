@@ -16,7 +16,7 @@ export function PrintTab({ form, draft, readOnly }) {
       <div className="card">
         <div className="card-title">Applies to every computer</div>
         <div className="set-split">
-          <fieldset disabled={readOnly} style={{ border: 0, padding: 0, margin: 0, minWidth: 0 }}>
+          <fieldset className="set-fieldset" disabled={readOnly}>
             <div className="set-grid">
               <Field {...fp('print.showLogo')}>
                 <Switch checked={val('print.showLogo')} onChange={(v) => set('print.showLogo', v)} />
@@ -86,7 +86,7 @@ export function PrintTab({ form, draft, readOnly }) {
   )
 }
 
-export function printTest(doc, draft) {
+function printTest(doc, draft) {
   const t = translate
   printHtml(
     t('Test page'),

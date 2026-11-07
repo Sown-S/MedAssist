@@ -83,4 +83,3 @@ export function clearDrafts() {
   owner = null
   wipeDisk()
 }
-export const hasDrafts = () => Object.keys(drafts).length > 0

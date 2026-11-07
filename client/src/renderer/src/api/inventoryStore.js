@@ -31,7 +31,7 @@ const subscribe = (fn) => {
   listeners.add(fn)
   return () => listeners.delete(fn)
 }
-export const getInventory = () => state
+const getInventory = () => state
 export function useInventory() {
   // Chỉ nạp khi có màn cần kho (đã đăng nhập), không nạp lúc khởi động vì chưa có token.
   useEffect(() => {
@@ -88,7 +88,7 @@ async function fetchLive() {
   for (const b of [...batches].sort((x, y) => x.createdAt.localeCompare(y.createdAt))) lastCost[b.drugId] = b.cost
   return { drugs: drugs.map((d) => fromServerDrug(d, lastCost[d.drug_id] ?? 0)), batches }
 }
-export function reloadInventory() {
+function reloadInventory() {
   liveLoading ??= fetchLive()
     .then((x) => {
       liveLoaded = true
@@ -179,15 +179,6 @@ export function receiveStock({ drugId, lot, expiry, qty, cost }) {
     async (b) => (await reloadInventory(), { ok: true, id: b.batch_id }),
     (e) => ({ ok: false, error: liveError(e) })
   )
-}
-
-// Lô đủ điều kiện cho một đợt dùng: hạn dùng > hôm nay + max(số ngày dùng, khoảng an toàn ở Cài đặt › Vận hành).
-// Lô còn 3 ngày không được cấp cho đợt 7 ngày.
-export const shelfBuffer = () => Number(getSettings().ops.shelfBufferDays) || 0
-export function eligibleFor(b, days = 0) {
-  const need = Math.max(Number(days) || 0, shelfBuffer())
-  const left = daysLeft(b.expiry)
-  return need > 0 ? left > need : left >= 0
 }
 
 // Lý do điều chỉnh tồn trong dữ liệu cũ (chỉ để hiển thị).

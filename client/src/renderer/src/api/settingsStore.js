@@ -23,7 +23,7 @@ export const PAYMENT_METHODS = [
   { key: 'transfer', label: 'Bank transfer' }
 ]
 
-export const DEFAULT_SETTINGS = {
+const DEFAULT_SETTINGS = {
   clinic: {
     name: '',
     address: '',
@@ -48,10 +48,7 @@ export const DEFAULT_SETTINGS = {
     shelfBufferDays: 0,
     defaultThreshold: 50,
     consultFee: 80000,
-    rounding: 1000,
-    methods: ['cash', 'transfer'],
-    // Loa ở quầy đọc kèm họ tên khi mời. Mặc định tắt, chỉ đọc số và phòng (quyền riêng tư).
-    announceName: false
+    methods: ['cash', 'transfer']
   }
 }
 
@@ -112,27 +109,23 @@ function withShared(values, cfg) {
 // Máy chỉ lưu phần riêng của nó; phần dùng chung nằm ở CONFIG_KEY.
 function writeLocal() {
   const { clinic, print, security, ...own } = state.values
-  write(KEY, { ...state, values: own })
+  write(KEY, { values: own })
 }
 
 const stored = read(KEY)
-let state = {
-  values: withShared(merge(DEFAULT_SETTINGS, stored?.values), read(CONFIG_KEY)),
-  updatedAt: stored?.updatedAt ?? null,
-  updatedBy: stored?.updatedBy ?? null
-}
+let state = { values: withShared(merge(DEFAULT_SETTINGS, stored?.values), read(CONFIG_KEY)) }
 const listeners = new Set()
 const subscribe = (fn) => {
   listeners.add(fn)
   return () => listeners.delete(fn)
 }
-export const getSettingsState = () => state
+const getSettingsState = () => state
 export const getSettings = () => state.values
 export function useSettings() {
   return useSyncExternalStore(subscribe, getSettingsState)
 }
 
-export function flatten(obj, prefix = '') {
+function flatten(obj, prefix = '') {
   const out = {}
   for (const [k, v] of Object.entries(obj)) {
     const p = prefix ? prefix + '.' + k : k
@@ -209,10 +202,10 @@ export async function saveServerSettings(draft) {
 }
 
 // Trả số trường đã đổi.
-export function saveSettings(draft, user) {
+export function saveSettings(draft) {
   const paths = changedPaths(draft)
   if (!paths.length) return 0
-  state = { values: draft, updatedAt: new Date().toISOString(), updatedBy: user.name }
+  state = { values: draft }
   writeLocal()
   listeners.forEach((fn) => fn())
   return paths.length

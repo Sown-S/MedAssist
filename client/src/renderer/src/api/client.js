@@ -18,8 +18,8 @@ export class ApiError extends Error {
 // Mỗi lần gọi server chờ tối đa 45 giây (server treo / mạng chập chờn thì nút không quay mãi). Quá 10 giây thì bật cờ
 // "đang chậm" để giao diện báo người dùng là app vẫn đang chờ, không treo. Tải file (xuất nhật ký) gọi fetch riêng, không
 // áp giới hạn này.
-export const REQUEST_TIMEOUT_MS = 45000
-export const SLOW_AFTER_MS = 10000
+const REQUEST_TIMEOUT_MS = 45000
+const SLOW_AFTER_MS = 10000
 let slowCount = 0
 const slowSubs = new Set()
 const bumpSlow = (d) => ((slowCount += d), slowSubs.forEach((f) => f()))

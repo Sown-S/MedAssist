@@ -3,9 +3,10 @@ import { translate } from '../../i18n'
 import { useQueue, isQueued, isPendingFlag } from '../../api/queueStore'
 import { ticketNo } from '../../components/queuePrint'
 import CallPanel from './CallPanel'
-import { fmt, dmy, ymd } from './shared'
+import { dmy } from './shared'
 import { useAwaiting, fromAwaiting, useTodayInvoices } from '../../api/billingApi'
 import { usePrescriptions } from '../../api/prescriptionApi'
+import { money, ymd } from '../../utils/format'
 
 // Chờ thu tiền lấy từ GET /billing/awaiting (có hoá đơn và số tiền).
 
@@ -33,7 +34,7 @@ export default function Dashboard({ go, readOnly, onRegister, onSearch, onPay })
       tone: 'cyan',
       title: 'Invoices & payments',
       value: todayInv.length,
-      sub: `${translate('Collected today')}: ${fmt(revenue)} · ${unpaid.length} ${translate('not paid')} · ${processing} ${translate('waiting for transfer')} · ${paid} ${translate('paid')}`,
+      sub: `${translate('Collected today')}: ${money(revenue)} · ${unpaid.length} ${translate('not paid')} · ${processing} ${translate('waiting for transfer')} · ${paid} ${translate('paid')}`,
       link: 'Click to manage payments →'
     },
     {
@@ -124,7 +125,7 @@ export default function Dashboard({ go, readOnly, onRegister, onSearch, onPay })
                   {v.carriedFrom ? ' · ' + translate('Unpaid from') + ' ' + dmy(v.carriedFrom + 'T00:00:00') : ''}
                 </small>
               </span>
-              <span className="mono amt">{fmt(v.total)}</span>
+              <span className="mono amt">{money(v.total)}</span>
               <button className="btn btn-primary btn-sm" disabled={readOnly} onClick={() => onPay(v)}>
                 Dispense &amp; collect
               </button>

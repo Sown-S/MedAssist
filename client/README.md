@@ -140,11 +140,12 @@ client/
       │  ├─ inventoryStore.js  Danh mục thuốc, tồn theo lô, thẻ kho (đọc từ server)
       │  ├─ serviceApi.js, serviceStore.js, serviceCatalogLive.js   Dịch vụ, xét nghiệm, gói khám, phiếu chỉ định
       │  ├─ prescriptionApi.js, conditionCatalog.js   Danh sách đơn thuốc, danh mục bệnh Active (ICD-10)
-      │  ├─ symptoms.js, vitals.js, patient.js   Danh mục triệu chứng, 8 khóa sinh hiệu, tiện ích bệnh nhân (fold, ageOf)
+      │  ├─ symptoms.js, vitals.js, patient.js   Danh mục triệu chứng, 8 khóa sinh hiệu, tiện ích bệnh nhân (ageOf)
       │  ├─ settingsStore.js   Tham số server (GET / PUT /admin/settings) + cài đặt của máy này
       │  └─ draftStore.js, deviceSettings.js   Phiếu khám dở trên máy, cài đặt thiết bị
       ├─ context/            AuthContext (phiên, tự đăng xuất), ToastContext
       ├─ hooks/              useApiData, useAsyncAction, useDelayedFlag
+      ├─ utils/format.js     Định dạng dùng chung: tiền (money), ngày (ymd, shortDateTime), bỏ dấu để tìm (fold)
       ├─ i18n/               index.js, jsx-runtime.js, jsx-dev-runtime.js, vi.js
       ├─ components/         Dùng chung: Modal, ConfirmModal, ReauthModal, ChangePasswordModal, IntakeModal, SymptomPanel,
       │                      VitalsFields, WaitingVisitModals, StaleVisitsModal, SearchModal, RedFlagModal,
@@ -266,11 +267,10 @@ không được duyệt bản mình soạn (Architecture 5.1.10).
 1. **Bác sĩ chốt đơn**: đồng bộ chẩn đoán → lưu đơn nháp → `POST …/prescription/confirm`. Server trừ kho **FEFO trong một giao dịch**, chỉ dùng lô còn hạn qua hết đợt dùng
    (hạn > hôm nay + max(số ngày dùng, khoảng an toàn hạn dùng)). Thiếu bất kỳ dòng nào → **không trừ gì**, trả `409` kèm từng thuốc thiếu.
    Không kê đơn → `POST …/complete-exam`.
-2. **Hóa đơn chờ thu tự tạo**: phí khám + thuốc nhà thuốc bán + phí cận lâm sàng (nhập tay ở quầy). Một lượt chỉ một hóa đơn chưa hủy.
+2. **Hóa đơn chờ thu tự tạo**: phí khám + thuốc + phí cận lâm sàng (nhập tay ở quầy). Một lượt chỉ một hóa đơn chưa hủy.
 3. **Cấp phát & thu tiền** (`PaymentModal`): *Đã cấp* / *Bỏ qua* (lý do, hoàn kho đúng lô, lập lại hóa đơn) từng dòng hoặc *Cấp hết*;
    thêm dòng dịch vụ / xét nghiệm; thu tiền mặt hoặc chuyển khoản. Thu xong và cấp xong → `Finished`.
 4. **Mở lại đơn**: chỉ khi chưa thu tiền và chưa cấp dòng nào → hoàn kho, hủy hóa đơn chờ thu, lượt về `Examining`.
-5. Thuốc nhà thuốc không bán: không trừ kho, không lên hóa đơn, in đơn riêng.
 
 Không có giảm giá, BHYT, làm tròn. **Hóa đơn đã thu là trạng thái cuối** trên server.
 

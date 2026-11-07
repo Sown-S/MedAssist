@@ -11,14 +11,13 @@ export const KIND_META = {
   rules: { label: 'Triage rules', one: 'Triage rule', keyLabel: 'Rule key' }
 }
 
-export const STATUS_LABEL = { Active: 'In use', Draft: 'Draft', PendingApproval: 'Awaiting approval', Retired: 'Retired' }
+const STATUS_LABEL = { Active: 'In use', Draft: 'Draft', PendingApproval: 'Awaiting approval', Retired: 'Retired' }
 const STATUS_TONE = { Active: 'ok', Draft: '', PendingApproval: 'info', Retired: 'muted' }
 export const StatusBadge = ({ status }) => <span className={'badge ' + (STATUS_TONE[status] ?? '')}>{STATUS_LABEL[status] ?? status}</span>
 
-export const RULE_TYPE_LABEL = { RED_FLAG: 'Red flag', PRIORITY_FLOOR: 'Priority floor' }
-export const RuleTypeBadge = ({ type }) => <span className={'badge ' + (type === 'RED_FLAG' ? 'low' : 'warn')}>{RULE_TYPE_LABEL[type] ?? type}</span>
+const RULE_TYPE_LABEL = { RED_FLAG: 'Red flag', PRIORITY_FLOOR: 'Priority floor' }
+const RuleTypeBadge = ({ type }) => <span className={'badge ' + (type === 'RED_FLAG' ? 'low' : 'warn')}>{RULE_TYPE_LABEL[type] ?? type}</span>
 
-export const fmtDate = (iso) => (iso ? new Date(iso).toLocaleString('vi-VN', { dateStyle: 'short', timeStyle: 'short' }) : '—')
 
 export function errorText(e) {
   const d = (e?.details ?? [])

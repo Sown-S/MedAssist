@@ -1,4 +1,5 @@
-import { PERIODS, ymd } from './shared'
+import { PERIODS } from './shared'
+import { ymd } from '../../utils/format'
 
 export default function PeriodPicker({ period, date, onChange }) {
   return (

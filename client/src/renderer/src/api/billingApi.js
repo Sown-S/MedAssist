@@ -6,7 +6,7 @@ import { apiGet, apiPost, apiRequest, ApiError } from './client'
 
 const V1 = '/api/v1'
 
-export const getAwaiting = () => apiGet(`${V1}/billing/awaiting`)
+const getAwaiting = () => apiGet(`${V1}/billing/awaiting`)
 // Hoá đơn của một ngày (bỏ trống = hôm nay). Hoá đơn bị huỷ do sửa chỉ trả khi includeCancelled.
 export const listInvoices = (date, includeCancelled = false) =>
   apiGet(`${V1}/billing/invoices?${new URLSearchParams({ ...(date ? { date } : {}), include_cancelled: includeCancelled })}`)
@@ -18,7 +18,6 @@ export async function getInvoice(visitId) {
     throw e
   }
 }
-export const getPrintData = (visitId) => apiGet(`${V1}/visits/${visitId}/invoice/print`)
 // consultation_fee / paraclinical_items bỏ trống = giữ nguyên.
 export const editInvoice = (visitId, body) => apiRequest(`${V1}/visits/${visitId}/invoice`, 'PATCH', body)
 export const payInvoice = (visitId, method) => apiPost(`${V1}/visits/${visitId}/invoice/pay`, { payment_method: method })

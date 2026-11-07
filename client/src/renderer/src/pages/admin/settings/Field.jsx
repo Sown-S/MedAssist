@@ -1,6 +1,6 @@
 
 
-export const EFFECTS = {
+const EFFECTS = {
   now: { label: 'Applies immediately', cls: 'ok' },
   signin: { label: 'From next sign-in', cls: 'info' },
   server: { label: 'Applied by the server', cls: 'muted' },
@@ -30,8 +30,7 @@ export const FIELDS = {
   'ops.shelfBufferDays': ['Expiry safety buffer', 'now'],
   'ops.defaultThreshold': ['Default minimum stock', 'now'],
   'ops.consultFee': ['Default consultation fee', 'now'],
-  'ops.methods': ['Payment methods', 'now'],
-  'ops.announceName': ['Read the patient’s name aloud when calling', 'now']
+  'ops.methods': ['Payment methods', 'now']
 }
 
 export function Field({ path, hint, error, changed, wide, children }) {

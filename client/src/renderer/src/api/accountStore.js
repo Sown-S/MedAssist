@@ -64,7 +64,7 @@ async function listLive() {
 const patchLive = (id, body) => apiRequest(`/api/v1/admin/users/${id}`, 'PATCH', body)
 
 // Chính sách mật khẩu do server quy định (GET /auth/password-policy); Cài đặt › Bảo mật chỉ hiển thị. Lỗi mạng → null.
-export async function fetchPasswordPolicy() {
+async function fetchPasswordPolicy() {
   try {
     const p = await apiGet('/api/v1/auth/password-policy')
     return { minLength: p.min_length, requireMix: p.require_letters_and_digits, maxFailed: p.max_failed_attempts, failedWindow: p.failed_window_minutes, lockMinutes: p.lock_minutes }
@@ -73,14 +73,16 @@ export async function fetchPasswordPolicy() {
   }
 }
 
-// Độ dài tối thiểu hiện ở nhãn ô mật khẩu mới; chưa đọc được chính sách thì dùng mức của server (8).
-export function usePasswordMinLength() {
-  const [n, setN] = useState(8)
+// Chính sách mật khẩu cho giao diện; null khi chưa đọc được (đang tải hoặc mất kết nối).
+export function usePasswordPolicy() {
+  const [policy, setPolicy] = useState(null)
   useEffect(() => {
-    fetchPasswordPolicy().then((p) => p && setN(p.minLength))
+    fetchPasswordPolicy().then(setPolicy)
   }, [])
-  return n
+  return policy
 }
+// Độ dài tối thiểu hiện ở nhãn ô mật khẩu mới; chưa đọc được thì dùng mức của server (8).
+export const usePasswordMinLength = () => usePasswordPolicy()?.minLength ?? 8
 
 export const ROLES = {
   doctor: { label: 'Doctor', home: '/doctor' },
@@ -88,14 +90,11 @@ export const ROLES = {
   admin: { label: 'Administrator', home: '/reports' }
 }
 
-// Sai mật khẩu maxFailed lần thì server khoá tạm, không khoá vĩnh viễn (5 lần / 5 phút).
-export const maxFailed = () => 5
-
 // Tên mặc định của tài khoản Admin tạo lúc cài đặt (scripts.create_user) — nhắc đổi sang tên người thật.
 export const hasDefaultName = (a) => a.fullName === 'System Administrator'
 
 // Mật khẩu tạm do hệ thống sinh; admin chỉ xem một lần sau khi tạo / đặt lại.
-export async function genPassword() {
+async function genPassword() {
   const c = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789'
   const min = (await fetchPasswordPolicy())?.minLength ?? 8
   const r = crypto.getRandomValues(new Uint32Array(Math.max(10, min)))

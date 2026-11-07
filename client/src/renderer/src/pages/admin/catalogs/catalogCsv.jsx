@@ -3,7 +3,7 @@ import { todayISO } from '../../../api/inventoryStore'
 import { exportCsv } from '../inventory/shared'
 import { SCHEMAS } from './schemas'
 
-export const csvValue = (schema, key, v) => {
+const csvValue = (schema, key, v) => {
   const f = schema.fields.find((x) => x.key === key)
   if (Array.isArray(v)) return v.join('; ')
   if (f?.type === 'select') return v ?? ''

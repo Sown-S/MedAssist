@@ -4,7 +4,7 @@ import { apiGet } from './client'
 
 const V1 = '/api/v1'
 
-export const listPrescriptions = ({ from, to, physicianId } = {}) =>
+const listPrescriptions = ({ from, to, physicianId } = {}) =>
   apiGet(
     `${V1}/prescriptions?${new URLSearchParams({
       ...(from ? { date_from: from } : {}),

@@ -7,7 +7,7 @@ import { claimDrafts, clearDrafts } from '../api/draftStore'
 
 const AuthContext = createContext(null)
 
-export function toSessionUser(account) {
+function toSessionUser(account) {
   const r = ROLES[account.roleKey]
   const words = account.fullName.trim().split(/\s+/)
   return {

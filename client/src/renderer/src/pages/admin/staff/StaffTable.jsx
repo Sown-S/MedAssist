@@ -1,11 +1,12 @@
 import Icon from '../../../components/Icon'
-import { ROLES, maxFailed, hasDefaultName } from '../../../api/accountStore'
+import { ROLES, hasDefaultName, usePasswordPolicy } from '../../../api/accountStore'
 import { fmtDate, fmtDateTime } from '../inventory/shared'
 import { translate } from '../../../i18n'
 import { STATUS_FILTERS, isIdle } from './staffShared'
 
 // Bảng tài khoản: tìm, lọc theo vai trò / trạng thái, và các thao tác trên từng dòng.
 export default function StaffTable({ rows, me, q, setQ, roleFilter, setRoleFilter, statusFilter, setStatusFilter, onEdit, onOwnPw, onUnlock, onReset, onToggle }) {
+  const policy = usePasswordPolicy()
   return (
     <div className="card">
       <div className="ai-toolbar">
@@ -87,7 +88,8 @@ export default function StaffTable({ rows, me, q, setQ, roleFilter, setRoleFilte
                         {a.active && !a.locked && a.failedAttempts > 0 && (
                           <span className="ai-small sp-warn">
                             <span className="mono">
-                              {a.failedAttempts}/{maxFailed()}
+                              {a.failedAttempts}
+                              {policy && '/' + policy.maxFailed}
                             </span>{' '}
                             <span>failed sign-ins</span>
                           </span>

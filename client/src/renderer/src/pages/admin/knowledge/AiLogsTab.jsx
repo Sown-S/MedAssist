@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import Icon from '../../../components/Icon'
 import { translate } from '../../../i18n'
 import { AI_MODES, AI_RUN_TYPES, AI_STATUSES, listAiLogs } from '../../../api/reportsApi'
-import { fmtDate } from './shared'
+import { shortDateTime } from '../../../utils/format'
 
 // Mỗi lượt chạy AI kèm phiên bản tri thức / model / prompt, độ trễ và quyết định của bác sĩ — truy vết được mà không lộ
 // bệnh nhân (server không trả họ tên, triệu chứng hay đầu ra thô của LLM).
@@ -115,7 +115,7 @@ export default function AiLogsTab() {
                 const st = STATUS_META[x.status] ?? { label: x.status, tone: '' }
                 return (
                   <tr key={x.assessment_id + x.run_type} onClick={() => setOpen(open === x.assessment_id ? null : x.assessment_id)} style={{ cursor: 'pointer' }}>
-                    <td className="mono ai-small">{fmtDate(x.queued_at)}</td>
+                    <td className="mono ai-small">{shortDateTime(x.queued_at)}</td>
                     <td className="ai-small">
                       {translate(RUN_LABEL[x.run_type] ?? x.run_type)}
                       {x.mode && <div className="ai-soft">{translate(MODE_LABEL[x.mode] ?? x.mode)}</div>}
@@ -161,7 +161,7 @@ export default function AiLogsTab() {
                 <div className="pref-row inline">
                   <span>Started → finished</span>
                   <b className="mono">
-                    {fmtDate(x.started_at)} → {fmtDate(x.completed_at)}
+                    {shortDateTime(x.started_at)} → {shortDateTime(x.completed_at)}
                   </b>
                 </div>
                 {x.error_detail && <div className="kb-error">{x.error_detail}</div>}

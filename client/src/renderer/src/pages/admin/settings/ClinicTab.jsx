@@ -16,7 +16,7 @@ function readDataUrl(file) {
   })
 }
 // Vẽ lại lên canvas cạnh dài tối đa LOGO_MAX_SIDE; PNG giữ nền trong suốt, quá dài thì thử WebP. null = không vừa giới hạn.
-export async function shrinkLogo(file) {
+async function shrinkLogo(file) {
   const src = await readDataUrl(file)
   const img = new Image()
   await new Promise((resolve, reject) => {
@@ -61,7 +61,7 @@ export function ClinicTab({ form, readOnly }) {
   return (
     <div className="card">
       <p className="ai-soft ai-small set-intro">Printed on prescriptions, invoices and reports. Shared by every computer in the clinic.</p>
-      <fieldset disabled={readOnly} style={{ border: 0, padding: 0, margin: 0, minWidth: 0 }}>
+      <fieldset className="set-fieldset" disabled={readOnly}>
         <div className="set-grid">
           <Field {...fp('clinic.name')} wide>
             <input {...text('clinic.name', { maxLength: 200 })} placeholder="e.g. Phòng khám Đa khoa An Bình" />
