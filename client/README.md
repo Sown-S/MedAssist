@@ -322,9 +322,9 @@ export const doSomething = (id) => apiRequest(`/api/v1/x/${id}`, 'PATCH', {…})
 | Khóa | Ghi chú |
 |---|---|
 | `medassist_settings_v1` | Bản sao tham số server và cài đặt in ấn của máy |
-| `medassist_client_config_v1` | Bản đệm `GET /auth/client-config` (thông tin phòng khám, phút tự đăng xuất) để in và tự đăng xuất khi mất kết nối |
+| `medassist_client_config_v1` | Bản đệm `GET /auth/client-config` (thông tin phòng khám, logo / tiêu đề / chân trang phiếu in, phút tự đăng xuất) để in và tự đăng xuất khi mất kết nối |
 | `medassist_consult_drafts_v1` | Phiếu khám dở của bác sĩ, chỉ giữ trong ngày |
-| `medassist_device_v1` | Cài đặt riêng máy: khổ giấy, bảng gọi bệnh nhân |
+| `medassist_device_v1` | Cài đặt riêng máy: khổ giấy (tab In ấn › Riêng máy này), bảng gọi bệnh nhân |
 | `medassist_lang` | `en` / `vi` |
 | `userData/secure.json` | Token access / refresh, mã hóa `safeStorage`, không ở `localStorage` |
 | `userData/config.json` | Địa chỉ server của máy |

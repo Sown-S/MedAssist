@@ -1,15 +1,15 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import Icon from '../../components/Icon'
 import ReauthModal from '../../components/ReauthModal'
-import { Switch } from './ui'
 import { useAuth } from '../../context/AuthContext'
 import { useToast } from '../../context/ToastContext'
 import { translate } from '../../i18n'
-import { useSettings, saveSettings, saveServerSettings, loadServerSettings, loadClientConfig, getSettings, changedPaths, isServerSetting, PRINT_DOCS } from '../../api/settingsStore'
+import { useSettings, saveSettings, saveServerSettings, loadServerSettings, loadClientConfig, getSettings, changedPaths, isServerSetting } from '../../api/settingsStore'
 import { useServerOnline } from '../../api/connectivity'
 import { fetchPasswordPolicy } from '../../api/accountStore'
-import { printHeaderHtml, fmtDateTime } from './inventory/shared'
+import { fmtDateTime } from './inventory/shared'
 import { DeviceTab } from './settings/DeviceTab'
+import { PrintTab } from './settings/PrintTab'
 import { FIELDS, Field } from './settings/Field'
 import { ConnectionTab } from './settings/ConnectionTab'
 import { ClinicTab } from './settings/ClinicTab'
@@ -26,8 +26,6 @@ const TABS = [
 ]
 // Tab “Kết nối & AI” chỉ hiển thị trạng thái, không có giá trị lưu.
 const TAB_OF = (path) => path.split('.')[0]
-
-for (const d of PRINT_DOCS) FIELDS['print.papers.' + d.key] = [`Paper size — ${d.label}`, 'now']
 
 const labelOf = (p) => FIELDS[p]?.[0] ?? p
 export default function SettingsPage({ params, onNavigate, setLeaveGuard }) {
@@ -119,45 +117,7 @@ export default function SettingsPage({ params, onNavigate, setLeaveGuard }) {
 
       {tab === 'clinic' && <ClinicTab form={form} readOnly={!online} />}
 
-      {tab === 'print' && (
-        <>
-          <div className="card">
-            <div className="card-title">Templates &amp; paper size</div>
-            <div className="set-split">
-              <div>
-                <p className="ai-soft" style={{ fontSize: 13, marginTop: 0 }}>
-                  {translate('Paper sizes and printers are set per computer — see the “This computer” tab.')}
-                </p>
-                <div className="set-grid" style={{ marginTop: 14 }}>
-                  <Field {...fp('print.showLogo')}>
-                    <Switch checked={val('print.showLogo')} onChange={(v) => set('print.showLogo', v)} />
-                  </Field>
-                  <Field {...fp('print.header')} wide hint="Optional, e.g. opening hours or a hotline. Shown under the clinic details.">
-                    <input {...text('print.header')} />
-                  </Field>
-                  <Field {...fp('print.footer')} wide>
-                    <input {...text('print.footer')} />
-                  </Field>
-                </div>
-              </div>
-              <div>
-                <div className="ai-small ai-soft" style={{ marginBottom: 6 }}>
-                  Header preview
-                </div>
-                <div className="set-print-preview" dangerouslySetInnerHTML={{ __html: printHeaderHtml(draft) }} />
-                {val('print.footer') && <div className="set-print-preview foot">{val('print.footer')}</div>}
-              </div>
-            </div>
-          </div>
-
-          <div className="card" style={{ marginTop: 14 }}>
-            <div className="card-title">Document numbering</div>
-            <p className="ai-soft" style={{ fontSize: 13, margin: 0 }}>
-              {translate('Read-only: the clinic server numbers documents when they are saved (e.g. invoices HD-20261017-0001) and issues queue numbers, so two computers never get the same number.')}
-            </p>
-          </div>
-        </>
-      )}
+      {tab === 'print' && <PrintTab form={form} draft={draft} readOnly={!online} />}
 
       {tab === 'security' && (
         <div className="card">
@@ -194,7 +154,7 @@ export default function SettingsPage({ params, onNavigate, setLeaveGuard }) {
       )}
 
       {tab === 'connection' && <ConnectionTab onNavigate={onNavigate} />}
-      {tab === 'device' && <DeviceTab draft={draft} />}
+      {tab === 'device' && <DeviceTab />}
 
       {tab === 'ops' && <OpsTab form={form} />}
 

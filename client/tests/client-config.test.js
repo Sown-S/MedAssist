@@ -6,7 +6,7 @@ let handle
 let calls
 const json = (status, body) => new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } })
 const CONFIG = {
-  clinic: { name: 'Phòng khám An Bình', address: '12 Lê Lợi', phone: '0236', email: '', tax_code: '0401234567', license_no: 'GP-01', license_date: '01/02/2020', license_issuer: 'Sở Y tế Đà Nẵng', director: 'BS. A', director_license: 'CCHN-1', logo: '' },
+  clinic: { name: 'Phòng khám An Bình', address: '12 Lê Lợi', phone: '0236', email: '', tax_code: '0401234567', license_no: 'GP-01', license_date: '01/02/2020', license_issuer: 'Sở Y tế Đà Nẵng', director: 'BS. A', director_license: 'CCHN-1', logo: '', print_header: 'Mở cửa 7h–20h', print_footer: '', show_logo: false },
   idle_logout_minutes: 30
 }
 
@@ -38,6 +38,8 @@ describe('Cấu hình dùng chung (client-config)', () => {
     expect(await s.loadClientConfig()).toBe(false)
     expect(s.getSettings().clinic.name).toBe('')
     expect(s.getSettings().security.idleMinutes).toBe(15)
+    // Chân trang không tự điền câu mặc định: mọi máy in giống nhau theo server.
+    expect(s.getSettings().print).toEqual({ showLogo: true, header: '', footer: '' })
   })
 
   it('đọc từ server rồi dùng bản đệm khi mở lại lúc mất kết nối', async () => {
@@ -46,29 +48,32 @@ describe('Cấu hình dùng chung (client-config)', () => {
     expect(await s.loadClientConfig()).toBe(true)
     expect(s.getSettings().clinic).toMatchObject({ name: 'Phòng khám An Bình', taxCode: '0401234567', licenseDate: '01/02/2020', directorLicense: 'CCHN-1' })
     expect(s.getSettings().security.idleMinutes).toBe(30)
+    expect(s.getSettings().print).toEqual({ showLogo: false, header: 'Mở cửa 7h–20h', footer: '' })
 
     handle = () => null
     s = await openApp()
     expect(await s.loadClientConfig()).toBe(false)
     expect(s.getSettings().clinic.licenseIssuer).toBe('Sở Y tế Đà Nẵng')
+    expect(s.getSettings().print.header).toBe('Mở cửa 7h–20h')
     expect(s.getSettings().security.idleMinutes).toBe(30)
   })
 
-  it('Admin lưu: gửi clinic.profile dạng snake_case và số phút tự đăng xuất; máy không giữ bản riêng', async () => {
+  it('Admin lưu: gửi clinic.profile (kèm tiêu đề, chân trang, logo) dạng snake_case và số phút tự đăng xuất; máy không giữ bản riêng', async () => {
     handle = (path) => (path === '/api/v1/auth/client-config' ? [200, CONFIG] : [200, {}])
     const s = await openApp()
     await s.loadClientConfig()
-    const draft = { ...s.getSettings(), clinic: { ...s.getSettings().clinic, director: 'BS. B' }, security: { idleMinutes: 60 } }
+    const draft = { ...s.getSettings(), clinic: { ...s.getSettings().clinic, director: 'BS. B' }, print: { showLogo: true, header: 'Mở cửa 7h–20h', footer: 'Cảm ơn quý khách' }, security: { idleMinutes: 60 } }
     expect(await s.saveServerSettings(draft)).toEqual({ ok: true })
     const puts = calls.filter((c) => c.method === 'PUT')
     expect(puts.map((c) => c.path)).toEqual(['/api/v1/admin/settings/clinic.profile', '/api/v1/admin/settings/security.idle_logout_minutes'])
-    expect(puts[0].body.value).toEqual({ ...CONFIG.clinic, director: 'BS. B' })
+    expect(puts[0].body.value).toEqual({ ...CONFIG.clinic, director: 'BS. B', print_footer: 'Cảm ơn quý khách', show_logo: true })
     expect(puts[1].body).toEqual({ value: 60 })
 
-    s.saveSettings({ ...draft, print: { ...draft.print, footer: 'Hẹn gặp lại' } }, { name: 'Admin' })
+    s.saveSettings({ ...draft, ops: { ...draft.ops, announceName: true } }, { name: 'Admin' })
     const own = JSON.parse(localStorage.getItem('medassist_settings_v1')).values
-    expect(own.print.footer).toBe('Hẹn gặp lại')
+    expect(own.ops.announceName).toBe(true)
     expect(own.clinic).toBeUndefined()
+    expect(own.print).toBeUndefined()
     expect(own.security).toBeUndefined()
   })
 
