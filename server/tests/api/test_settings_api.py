@@ -54,6 +54,9 @@ def test_update_validates_audits_and_affects_views(client, users, admin, logs, l
         "director": "",
         "director_license": "",
         "logo": "",
+        "print_header": "",
+        "print_footer": "",
+        "show_logo": True,
     }
     assert (
         client.put(
@@ -70,12 +73,15 @@ def test_client_config_is_public_and_follows_settings(client, users, admin):
     client.put(
         "/api/v1/admin/settings/clinic.profile",
         headers=admin,
-        json={"value": {"name": "PK Thử", "tax_code": "0401234567", "director": "BS A", "logo": logo}},
+        json={
+            "value": {"name": "PK Thử", "tax_code": "0401234567", "director": "BS A", "logo": logo, "show_logo": False}
+        },
     )
     client.put("/api/v1/admin/settings/security.idle_logout_minutes", headers=admin, json={"value": 30})
     cfg = client.get("/api/v1/auth/client-config").json()
     assert cfg["idle_logout_minutes"] == 30
     assert (cfg["clinic"]["name"], cfg["clinic"]["tax_code"], cfg["clinic"]["logo"]) == ("PK Thử", "0401234567", logo)
+    assert cfg["clinic"]["show_logo"] is False and cfg["clinic"]["print_footer"] == ""
 
 
 def test_old_clinic_profile_row_gets_new_fields(client, users, admin):
