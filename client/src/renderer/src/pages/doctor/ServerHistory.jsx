@@ -8,12 +8,11 @@ import { LabOrderResults } from './doctorShared'
 import DocumentModal from './DocumentModal'
 import { useAuth } from '../../context/AuthContext'
 import { ageFrom } from '../../api/clinicApi'
+import { money, shortDateTime } from '../../lib/format'
 
 // Lịch sử khám từ server (FR04); bấm một lượt để xem đầy đủ. excludeVisitId = lượt đang khám;
 // onLoaded(history) để trang cha lấy thông tin bệnh nhân.
 const PAGE = 10
-const fmt = (iso) => (iso ? new Date(iso).toLocaleString('vi-VN', { dateStyle: 'short', timeStyle: 'short' }) : '—')
-const money = (n) => (Number(n) || 0).toLocaleString('vi-VN') + 'đ'
 const TONE = { Finished: 'ok', Cancelled: 'muted', Prescribed: 'warn', Examining: 'info' }
 
 export default function ServerHistory({ patientId, excludeVisitId, onLoaded }) {
@@ -61,7 +60,7 @@ export default function ServerHistory({ patientId, excludeVisitId, onLoaded }) {
         {list.map((v) => (
           <div key={v.visit_id} className="emr-visit">
             <button className="emr-visit-head" onClick={() => setOpen(open === v.visit_id ? null : v.visit_id)}>
-              <span className="mono ai-small">{fmt(v.visit_date)}</span>
+              <span className="mono ai-small">{shortDateTime(v.visit_date)}</span>
               <span className={'badge ' + (TONE[v.status] ?? '')}>{translate(VISIT_STATUS_LABEL[v.status] ?? v.status)}</span>
               {v.outcome === 'Referred' && (
                 <span className="badge low">
@@ -149,8 +148,8 @@ function ReferralBox({ record, onSaved }) {
         </div>
       )}
       <div className="ai-small ai-soft">
-        {translate(f.referred_by_role === 'Nurse' ? 'Recorded by' : 'Doctor')} {f.referred_by_name} · {fmt(f.referred_at)}
-        {f.amended_by_name ? ' · ' + translate('amended by') + ' ' + f.amended_by_name + ' ' + fmt(f.amended_at) : ''}
+        {translate(f.referred_by_role === 'Nurse' ? 'Recorded by' : 'Doctor')} {f.referred_by_name} · {shortDateTime(f.referred_at)}
+        {f.amended_by_name ? ' · ' + translate('amended by') + ' ' + f.amended_by_name + ' ' + shortDateTime(f.amended_at) : ''}
       </div>
       {open && <DocumentModal subject={subject} mode={doctor ? 'amend' : 'reprint'} target={{ visitId: v.visit_id }} onDone={onSaved} onClose={() => setOpen(false)} />}
     </div>

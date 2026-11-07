@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { translate } from '../../../i18n'
 import { getSettings, PAPERS } from '../../../api/settingsStore'
 import { getDevice } from '../../../api/deviceSettings'
+import { money } from '../../../lib/format'
 
 export const UNITS = [
   { key: 'tablet', label: 'Tablet' },
@@ -30,7 +31,8 @@ export const MOVE_TYPES = {
   return: 'Returned to stock'
 }
 
-export const fmtMoney = (n) => (Number.isFinite(n) ? Math.round(n).toLocaleString('vi-VN') + 'đ' : '—')
+// Giá chưa có (không phải số) hiện '—' thay vì 0đ.
+export const fmtMoney = (n) => (Number.isFinite(n) ? money(Math.round(n)) : '—')
 export const fmtNum = (n) => (Number.isFinite(n) ? n.toLocaleString('vi-VN') : '—')
 export function fmtDate(iso) {
   if (!iso) return '—'

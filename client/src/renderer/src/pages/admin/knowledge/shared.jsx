@@ -18,7 +18,6 @@ export const StatusBadge = ({ status }) => <span className={'badge ' + (STATUS_T
 export const RULE_TYPE_LABEL = { RED_FLAG: 'Red flag', PRIORITY_FLOOR: 'Priority floor' }
 export const RuleTypeBadge = ({ type }) => <span className={'badge ' + (type === 'RED_FLAG' ? 'low' : 'warn')}>{RULE_TYPE_LABEL[type] ?? type}</span>
 
-export const fmtDate = (iso) => (iso ? new Date(iso).toLocaleString('vi-VN', { dateStyle: 'short', timeStyle: 'short' }) : '—')
 
 export function errorText(e) {
   const d = (e?.details ?? [])

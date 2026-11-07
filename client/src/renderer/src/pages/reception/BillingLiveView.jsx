@@ -3,9 +3,9 @@ import Icon from '../../components/Icon'
 import { ErrorBlock, LoadingBlock } from '../../components/DataState'
 import { ticketNo } from '../../components/queuePrint'
 import { useAwaiting, fromAwaiting, listInvoices, fromServerMethod } from '../../api/billingApi'
-import { fold } from '../../api/patient'
 import { translate } from '../../i18n'
-import { fmt, hhmm, ymd, methodLabel, PAY_STATUS } from './shared'
+import { hhmm, methodLabel, PAY_STATUS } from './shared'
+import { money, fold, ymd } from '../../lib/format'
 
 // Hoá đơn / Đơn thuốc của Lễ tân khi chạy với server: các lượt còn việc ở quầy (GET /billing/awaiting).
 // Tab Hoá đơn có thêm lịch sử theo ngày; đơn cũ xem ở lịch sử của từng bệnh nhân.
@@ -38,7 +38,7 @@ export default function BillingLiveView({ mode, readOnly, onPay }) {
           <span className="lbl">Not paid</span>
         </div>
         <div className="inv-stat static">
-          <span className="val mono">{fmt(value)}</span>
+          <span className="val mono">{money(value)}</span>
           <span className="lbl">To collect</span>
         </div>
       </div>
@@ -89,7 +89,7 @@ export default function BillingLiveView({ mode, readOnly, onPay }) {
                 <td>
                   <span className={'badge ' + (v.payStatus === 'Paid' ? 'ok' : 'low')}>{translate(v.payStatus === 'Paid' ? 'Paid' : 'Not paid')}</span>
                 </td>
-                <td className="num mono">{fmt(v.total)}</td>
+                <td className="num mono">{money(v.total)}</td>
                 <td onClick={(e) => e.stopPropagation()}>
                   <button className="btn btn-primary btn-sm" disabled={readOnly} onClick={() => onPay(v)}>
                     Dispense &amp; collect
@@ -139,7 +139,7 @@ function InvoiceHistory({ readOnly, onPay, reloadKey }) {
         Invoices by day{' '}
         {list && (
           <span className="cnt">
-            {paid.length} {translate('paid')} · {fmt(revenue)}
+            {paid.length} {translate('paid')} · {money(revenue)}
           </span>
         )}
       </div>
@@ -186,7 +186,7 @@ function InvoiceHistory({ readOnly, onPay, reloadKey }) {
                     <span className={'badge ' + st.cls}>{translate(st.label)}</span>
                     {x.paid_at && <div className="ai-soft ai-small mono">{hhmm(x.paid_at)}</div>}
                   </td>
-                  <td className="num mono">{fmt(Number(x.total_amount))}</td>
+                  <td className="num mono">{money(Number(x.total_amount))}</td>
                 </tr>
               )
             })}

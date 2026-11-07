@@ -4,9 +4,9 @@ import Icon from '../../components/Icon'
 import { useAuth } from '../../context/AuthContext'
 import { translate } from '../../i18n'
 import { useQueue, minutesSince, isMine, labRows, atLabs, ST } from '../../api/queueStore'
-import { fold } from '../../api/patient'
 import { dmy } from '../reception/shared'
 import { PatientBrief, LabOrderResults } from './doctorShared'
+import { fold } from '../../lib/format'
 
 // Hộp thoại của trang chủ bác sĩ: danh sách chờ khám, bệnh nhân đang đi xét nghiệm.
 export const no = (t) => String(t).padStart(3, '0')

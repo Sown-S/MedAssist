@@ -8,17 +8,12 @@ import { createServiceOrder } from '../../api/serviceApi'
 import { useServiceCatalog, orderable, toLabOrder, apiMessage } from '../../api/serviceStore'
 import { LAB_GROUPS, SERVICE_GROUPS, SAMPLES } from '../admin/catalogs/schemas'
 import { printHtml, esc } from '../admin/inventory/shared'
-import { dmy, hhmm, fmt } from '../reception/shared'
+import { dmy, hhmm } from '../reception/shared'
+import { fold, money } from '../../lib/format'
 
 // Xét nghiệm làm thủ công: bác sĩ lập và in phiếu, bệnh nhân cầm phiếu đi làm rồi mang kết quả giấy quay lại.
 // Phiếu lưu ở server (ERD v2.1) — server tự đánh dấu đi xét nghiệm và đưa tiền dịch vụ vào hoá đơn.
 
-const norm = (s) =>
-  (s ?? '')
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
-    .replace(/đ/gi, 'd')
-    .toLowerCase()
 // 'none' (chẩn đoán hình ảnh) = không lấy mẫu.
 const sampleLabel = (k) => (k === 'none' ? '' : SAMPLES.find((s) => s.key === k)?.label ?? '')
 // Xét nghiệm trước, rồi dịch vụ chẩn đoán / thủ thuật (bỏ nhóm khám bệnh).
@@ -66,8 +61,8 @@ export default function LabOrderModal({ open, visit, diagnosis, onClose, onSent 
   const inPkg = new Set(packages.find((p) => p.package_id === pkg)?.items.map((x) => x.service_id) ?? [])
 
   const groups = useMemo(() => {
-    const k = norm(q.trim())
-    const list = labs.filter((x) => !k || norm(x.name).includes(k) || norm(x.code).includes(k))
+    const k = fold(q.trim())
+    const list = labs.filter((x) => !k || fold(x.name).includes(k) || fold(x.code).includes(k))
     return ORDER_GROUPS.map((g) => ({ ...g, rows: list.filter((x) => x.group === g.key) })).filter((g) => g.rows.length)
   }, [labs, q])
 
@@ -108,7 +103,7 @@ export default function LabOrderModal({ open, visit, diagnosis, onClose, onSent 
               <option value="">{translate('No package')}</option>
               {packages.map((p) => (
                 <option key={p.package_id} value={p.package_id}>
-                  {p.name} — {fmt(p.price)} ({p.items.map((x) => x.name).join(', ')})
+                  {p.name} — {money(p.price)} ({p.items.map((x) => x.name).join(', ')})
                 </option>
               ))}
             </select>
@@ -128,7 +123,7 @@ export default function LabOrderModal({ open, visit, diagnosis, onClose, onSent 
                     <input type="checkbox" checked={picked.includes(x.code) || fromPkg} disabled={fromPkg} onChange={() => toggle(x.code)} />
                     <span className="lab-pick-name">{x.name}</span>
                     {fromPkg ? <small>{translate('In package')}</small> : sampleLabel(x.sample) && <small>{translate(sampleLabel(x.sample))}</small>}
-                    {!fromPkg && x.price > 0 && <small className="mono">{fmt(x.price)}</small>}
+                    {!fromPkg && x.price > 0 && <small className="mono">{money(x.price)}</small>}
                   </label>
                 )
               })}

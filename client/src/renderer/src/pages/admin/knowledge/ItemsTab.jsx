@@ -6,7 +6,8 @@ import { translate } from '../../../i18n'
 import { KINDS, itemVersions, previewDeactivate, deactivate } from '../../../api/knowledgeApi'
 import { Empty } from '../ui'
 import ItemFormModal from './ItemFormModal'
-import { KIND_META, StatusBadge, Summary, groupByKey, errorText, fmtDate } from './shared'
+import { KIND_META, StatusBadge, Summary, groupByKey, errorText } from './shared'
+import { shortDateTime } from '../../../lib/format'
 
 const FILTERS = [
   { key: 'current', label: 'In use + drafts' },
@@ -215,7 +216,7 @@ function HistoryModal({ kind, group, names, onClose }) {
                   <td>
                     <Summary kind={kind} values={r.values} names={names} />
                   </td>
-                  <td className="ai-small">{fmtDate(r.created_at)}</td>
+                  <td className="ai-small">{shortDateTime(r.created_at)}</td>
                 </tr>
               ))}
             </tbody>

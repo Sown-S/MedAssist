@@ -5,9 +5,10 @@ import { translate } from '../../i18n'
 import { useQueue, waitingOrder, minutesSince, isMine, inRoom, atLabs, ST, readyOrder } from '../../api/queueStore'
 import { usePrescriptions } from '../../api/prescriptionApi'
 import { useInventory, stockOf } from '../../api/inventoryStore'
-import { useNow, ymd, periodRange, dmy, hhmm } from '../reception/shared'
+import { useNow, periodRange, dmy, hhmm } from '../reception/shared'
 import { useTakePatient, pastVisitsOf, InviteBar } from './doctorShared'
 import { WaitingModal, LabListModal, no, waitTone } from './DoctorHomeModals'
+import { ymd } from '../../lib/format'
 
 export default function DoctorHome({ go }) {
   const { user } = useAuth()

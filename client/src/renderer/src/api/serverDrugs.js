@@ -1,6 +1,7 @@
 // Danh mục thuốc + tồn kho từ server. Kê đơn phải dùng drug_id của server nên ô tìm thuốc ở màn khám dùng danh mục này.
 import { useEffect, useSyncExternalStore } from 'react'
 import { apiGet } from './client'
+import { fold } from '../lib/format'
 
 const V1 = '/api/v1'
 let state = { drugs: [], loaded: false, error: null }
@@ -59,13 +60,6 @@ export function useServerDrugs({ enabled = true } = {}) {
   return s
 }
 
-const fold = (s) =>
-  String(s ?? '')
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
-    .replace(/đ/gi, 'd')
-    .toLowerCase()
-    .trim()
 // Dòng thuốc chép từ đơn cũ không có drug_id → tìm theo tên. Lịch sử khám / hoá đơn ghi nhãn của server:
 // "<hoạt chất> <hàm lượng>" hoặc "<hoạt chất> <hàm lượng> (<tên thương mại>)".
 const labelsOf = (d) => [d.name, `${d.ingredient} ${d.strength}`, `${d.ingredient} ${d.strength} (${d.tradeName})`]

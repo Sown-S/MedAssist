@@ -2,6 +2,7 @@
 // (Form, Extracted, Prompt). Chỉ triệu chứng đã xác nhận mới được lưu và đưa vào luật / AI.
 import { useEffect, useSyncExternalStore } from 'react'
 import { apiGet } from './client'
+import { fold } from '../lib/format'
 
 export const STATES = [
   { key: 'PRESENT', label: 'Yes', short: 'Yes' },
@@ -72,20 +73,11 @@ export function groupSymptoms(list) {
 }
 
 // So khớp không dấu: “dau bung” tìm ra “Đau bụng”.
-export const foldText = (s) =>
-  String(s ?? '')
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
-    .replace(/đ/g, 'd')
-    .replace(/Đ/g, 'D')
-    .toLowerCase()
-    .replace(/\s+/g, ' ')
-    .trim()
 export function searchSymptoms(list, query, limit = 8) {
-  const q = foldText(query)
+  const q = fold(query)
   if (!q) return []
   const words = q.split(' ')
-  return list.filter((s) => words.every((w) => foldText(s.label).includes(w))).slice(0, limit)
+  return list.filter((s) => words.every((w) => fold(s.label).includes(w))).slice(0, limit)
 }
 
 // Bỏ UNKNOWN vì đó là mặc định.
