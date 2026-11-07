@@ -103,6 +103,16 @@ describe('Bản dịch tiếng Việt (vi.js)', () => {
     expect(dup).toEqual([])
   })
 
+  // Bỏ chuỗi ở giao diện thì xoá luôn bản dịch, để vi.js không phình theo các tính năng đã bỏ.
+  it('vi.js không có khoá thừa', () => {
+    const src = sourceFiles(SRC)
+      .map((f) => readFileSync(f, 'utf8'))
+      .join(' ')
+      .replace(/\s+/g, ' ')
+      .replace(/&amp;/g, '&')
+    expect(Object.keys(VI).filter((k) => !src.includes(k))).toEqual([])
+  })
+
   // Khoá là câu tiếng Anh nên một từ chỉ có một bản dịch: từ nhiều nghĩa chỉ dùng ở khu vực của nghĩa đó,
   // nơi khác dùng cụm rõ nghĩa hơn (VD cân nặng là “Body weight”).
   it('từ nhiều nghĩa chỉ dùng đúng khu vực', () => {
