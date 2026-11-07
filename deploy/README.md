@@ -103,7 +103,7 @@ Trên mỗi máy client: cài bản `MedAssist Setup *.exe`, ở màn đăng nh�
 | Sao lưu ngay | `.\deploy\scripts\backup.ps1 -CopyTo E:\MedAssistBackup` (giữ 14 bản mới nhất ở `deploy\backups\` và ở thư mục chép thêm) |
 | Khôi phục | `.\deploy\scripts\restore.ps1 -File deploy\backups\<file>.dump` (gõ `KHOIPHUC` để xác nhận): khôi phục vào CSDL mới, kiểm quyền rồi mới thay CSDL đang chạy; CSDL cũ giữ tên `medassist_truoc_<thời điểm>` |
 | Cấp lại chứng chỉ (đổi IP, sắp hết hạn) | `new-certs.ps1 -HostName <IP>` rồi `... restart caddy` |
-| Nạp bản tri thức mới | Đổi `label` trong `knowledge/_release.md`, `start.ps1`, rồi `... exec api python -m scripts.import_okf --submit` |
+| Nạp bản tri thức mới | Đổi `label` trong `knowledge/_release.md`, `start.ps1`, rồi `... exec api python -m scripts.import_okf --submit --approve-as <bác sĩ> --retire-missing`. Có bỏ bệnh, triệu chứng, luật khỏi `knowledge/` thì bắt buộc `--retire-missing` kèm `--approve-as`: không có hai cờ này, mục đã bỏ vẫn Active (chạy `--dry-run` trước để xem danh sách sẽ bị tắt) |
 | Cho máy dev mượn Ollama (chỉ giai đoạn phát triển) | `.\deploy\scripts\start.ps1 -OllamaLan`; chạy lại `start.ps1` không có `-OllamaLan` để đóng cổng 11434 |
 
 `...` là `docker compose -f deploy\docker-compose.yml --env-file deploy\.env`.
