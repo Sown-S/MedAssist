@@ -5,7 +5,7 @@ import { ticketNo } from '../../components/queuePrint'
 import { useAwaiting, fromAwaiting, listInvoices, fromServerMethod } from '../../api/billingApi'
 import { translate } from '../../i18n'
 import { hhmm, methodLabel, PAY_STATUS } from './shared'
-import { money, fold, ymd } from '../../lib/format'
+import { money, fold, ymd } from '../../utils/format'
 
 // Hoá đơn / Đơn thuốc của Lễ tân khi chạy với server: các lượt còn việc ở quầy (GET /billing/awaiting).
 // Tab Hoá đơn có thêm lịch sử theo ngày; đơn cũ xem ở lịch sử của từng bệnh nhân.

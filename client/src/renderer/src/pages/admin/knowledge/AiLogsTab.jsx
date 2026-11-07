@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import Icon from '../../../components/Icon'
 import { translate } from '../../../i18n'
 import { AI_MODES, AI_RUN_TYPES, AI_STATUSES, listAiLogs } from '../../../api/reportsApi'
-import { shortDateTime } from '../../../lib/format'
+import { shortDateTime } from '../../../utils/format'
 
 // Mỗi lượt chạy AI kèm phiên bản tri thức / model / prompt, độ trễ và quyết định của bác sĩ — truy vết được mà không lộ
 // bệnh nhân (server không trả họ tên, triệu chứng hay đầu ra thô của LLM).

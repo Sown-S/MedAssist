@@ -1,5 +1,5 @@
 import { PERIODS } from './shared'
-import { ymd } from '../../lib/format'
+import { ymd } from '../../utils/format'
 
 export default function PeriodPicker({ period, date, onChange }) {
   return (

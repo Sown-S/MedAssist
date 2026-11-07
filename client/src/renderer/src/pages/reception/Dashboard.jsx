@@ -6,7 +6,7 @@ import CallPanel from './CallPanel'
 import { dmy } from './shared'
 import { useAwaiting, fromAwaiting, useTodayInvoices } from '../../api/billingApi'
 import { usePrescriptions } from '../../api/prescriptionApi'
-import { money, ymd } from '../../lib/format'
+import { money, ymd } from '../../utils/format'
 
 // Chờ thu tiền lấy từ GET /billing/awaiting (có hoá đơn và số tiền).
 

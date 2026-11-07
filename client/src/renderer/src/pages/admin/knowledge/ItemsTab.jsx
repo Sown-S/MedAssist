@@ -7,7 +7,7 @@ import { KINDS, itemVersions, previewDeactivate, deactivate } from '../../../api
 import { Empty } from '../ui'
 import ItemFormModal from './ItemFormModal'
 import { KIND_META, StatusBadge, Summary, groupByKey, errorText } from './shared'
-import { shortDateTime } from '../../../lib/format'
+import { shortDateTime } from '../../../utils/format'
 
 const FILTERS = [
   { key: 'current', label: 'In use + drafts' },

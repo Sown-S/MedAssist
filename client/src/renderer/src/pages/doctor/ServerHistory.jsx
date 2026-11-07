@@ -8,7 +8,7 @@ import { LabOrderResults } from './doctorShared'
 import DocumentModal from './DocumentModal'
 import { useAuth } from '../../context/AuthContext'
 import { ageFrom } from '../../api/clinicApi'
-import { money, shortDateTime } from '../../lib/format'
+import { money, shortDateTime } from '../../utils/format'
 
 // Lịch sử khám từ server (FR04); bấm một lượt để xem đầy đủ. excludeVisitId = lượt đang khám;
 // onLoaded(history) để trang cha lấy thông tin bệnh nhân.

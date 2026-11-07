@@ -7,7 +7,7 @@ import { useQueue, isMine, inRoom } from '../../api/queueStore'
 import { useInventory, stockOf, nearDays } from '../../api/inventoryStore'
 import { unitLabel, fmtMoney, fmtDate, STATUS, Pager, paginate } from '../admin/inventory/shared'
 import { addDrugToDraft } from './consult/rxDraft'
-import { fold } from '../../lib/format'
+import { fold } from '../../utils/format'
 
 const STOCK_FILTERS = [
   { key: '', label: 'All stock levels' },

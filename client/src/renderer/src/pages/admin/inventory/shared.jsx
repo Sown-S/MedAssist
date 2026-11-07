@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { translate } from '../../../i18n'
 import { getSettings, PAPERS } from '../../../api/settingsStore'
 import { getDevice } from '../../../api/deviceSettings'
-import { money } from '../../../lib/format'
+import { money } from '../../../utils/format'
 
 const UNITS = [
   { key: 'tablet', label: 'Tablet' },

@@ -9,7 +9,7 @@ import { printHtml, esc } from '../admin/inventory/shared'
 import { ticketNo } from '../../components/queuePrint'
 import PeriodPicker from './PeriodPicker'
 import { hhmm, dmy, periodRange, periodLabel, PAY_STATUS } from './shared'
-import { money, fold, ymd } from '../../lib/format'
+import { money, fold, ymd } from '../../utils/format'
 
 const STATUS_FILTERS = [
   { key: '', label: 'All payment statuses' },

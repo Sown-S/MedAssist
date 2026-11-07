@@ -5,7 +5,7 @@ import { getRelease } from '../../../api/knowledgeApi'
 import { Empty } from '../ui'
 import { KIND_META, Summary, errorText } from './shared'
 import { LogicView } from './logic'
-import { shortDateTime } from '../../../lib/format'
+import { shortDateTime } from '../../../utils/format'
 
 // Phần dùng chung của màn soạn bản phát hành (admin) và màn duyệt (bác sĩ): trạng thái, danh sách thay đổi, lịch sử.
 const RELEASE_STATUS = { Draft: 'Being drafted', PendingApproval: 'Awaiting approval', Active: 'Approved', Retired: 'Superseded' }

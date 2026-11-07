@@ -1,7 +1,7 @@
 // Danh mục thuốc + tồn kho từ server. Kê đơn phải dùng drug_id của server nên ô tìm thuốc ở màn khám dùng danh mục này.
 import { useEffect, useSyncExternalStore } from 'react'
 import { apiGet } from './client'
-import { fold } from '../lib/format'
+import { fold } from '../utils/format'
 
 const V1 = '/api/v1'
 let state = { drugs: [], loaded: false, error: null }

@@ -9,7 +9,7 @@ import { useServiceCatalog, orderable, toLabOrder, apiMessage } from '../../api/
 import { LAB_GROUPS, SERVICE_GROUPS, SAMPLES } from '../admin/catalogs/schemas'
 import { printHtml, esc } from '../admin/inventory/shared'
 import { dmy, hhmm } from '../reception/shared'
-import { fold, money } from '../../lib/format'
+import { fold, money } from '../../utils/format'
 
 // Xét nghiệm làm thủ công: bác sĩ lập và in phiếu, bệnh nhân cầm phiếu đi làm rồi mang kết quả giấy quay lại.
 // Phiếu lưu ở server (ERD v2.1) — server tự đánh dấu đi xét nghiệm và đưa tiền dịch vụ vào hoá đơn.

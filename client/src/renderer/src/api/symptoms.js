@@ -2,7 +2,7 @@
 // (Form, Extracted, Prompt). Chỉ triệu chứng đã xác nhận mới được lưu và đưa vào luật / AI.
 import { useEffect, useSyncExternalStore } from 'react'
 import { apiGet } from './client'
-import { fold } from '../lib/format'
+import { fold } from '../utils/format'
 
 export const STATES = [
   { key: 'PRESENT', label: 'Yes', short: 'Yes' },

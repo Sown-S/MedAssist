@@ -145,7 +145,7 @@ client/
       │  └─ draftStore.js, deviceSettings.js   Phiếu khám dở trên máy, cài đặt thiết bị
       ├─ context/            AuthContext (phiên, tự đăng xuất), ToastContext
       ├─ hooks/              useApiData, useAsyncAction, useDelayedFlag
-      ├─ lib/format.js       Định dạng dùng chung: tiền (money), ngày (ymd, shortDateTime), bỏ dấu để tìm (fold)
+      ├─ utils/format.js     Định dạng dùng chung: tiền (money), ngày (ymd, shortDateTime), bỏ dấu để tìm (fold)
       ├─ i18n/               index.js, jsx-runtime.js, jsx-dev-runtime.js, vi.js
       ├─ components/         Dùng chung: Modal, ConfirmModal, ReauthModal, ChangePasswordModal, IntakeModal, SymptomPanel,
       │                      VitalsFields, WaitingVisitModals, StaleVisitsModal, SearchModal, RedFlagModal,

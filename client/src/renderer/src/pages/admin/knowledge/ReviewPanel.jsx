@@ -6,7 +6,7 @@ import { getRelease, approveRelease, rejectRelease } from '../../../api/knowledg
 import { Empty } from '../ui'
 import { errorText } from './shared'
 import { ReleaseBadge, ChangeList, ctxOf, ReleaseHistory, ReleaseModal } from './releaseParts'
-import { shortDateTime } from '../../../lib/format'
+import { shortDateTime } from '../../../utils/format'
 
 // Bác sĩ: duyệt bản chờ duyệt
 export function ReviewPanel({ data, names, onChanged }) {

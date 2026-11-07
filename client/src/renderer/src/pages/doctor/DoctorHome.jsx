@@ -8,7 +8,7 @@ import { useInventory, stockOf } from '../../api/inventoryStore'
 import { useNow, periodRange, dmy, hhmm } from '../reception/shared'
 import { useTakePatient, pastVisitsOf, InviteBar } from './doctorShared'
 import { WaitingModal, LabListModal, no, waitTone } from './DoctorHomeModals'
-import { ymd } from '../../lib/format'
+import { ymd } from '../../utils/format'
 
 export default function DoctorHome({ go }) {
   const { user } = useAuth()

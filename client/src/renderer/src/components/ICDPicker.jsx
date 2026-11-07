@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { translate } from '../i18n'
 import { useConditions } from '../api/conditionCatalog'
-import { fold } from '../lib/format'
+import { fold } from '../utils/format'
 
 // onPick (tuỳ chọn): gọi khi chọn một mục trong danh sách; không có thì chọn cũng đi qua onChange.
 export default function ICDPicker({ value, onChange, onPick = onChange }) {
