@@ -94,7 +94,7 @@ cd "D:\Projects\Github Repo\CDSS"
 python -m venv venv
 .\venv\Scripts\activate
 cd server
-pip install -r requirements.txt
+pip install -r requirements-dev.txt    # requirements.txt + pytest, ruff
 ```
 
 ### 2.5. Tạo bảng (Alembic)
@@ -202,7 +202,7 @@ docker compose -f deploy/docker-compose.dev.yml --env-file deploy/.env up -d    
 .\venv\Scripts\activate
 git fetch origin                    # đồng bộ nhánh theo CONTRIBUTING.md mục 1
 cd server
-pip install -r requirements.txt     # chỉ cần khi requirements.txt đổi (vô hại nếu chạy thừa)
+pip install -r requirements-dev.txt # chỉ cần khi requirements đổi (vô hại nếu chạy thừa)
 alembic upgrade head                # chỉ cần khi có migration mới (vô hại nếu chạy thừa)
 uvicorn app.main:app --reload
 ```
@@ -409,7 +409,7 @@ Quy ước chung: tiền trả về **dạng số** (VNĐ); mọi GET dữ liệ
 | `ValidationError ... DATABASE_URL Field required` (khi chạy uvicorn/alembic) hoặc `Thiếu DATABASE_URL trong server/.env` (khi chạy pytest) | Chưa tạo `server/.env`, hoặc đang đứng sai thư mục | [Mục 2.2](#22-tạo-2-file-env-mật-khẩu-ngẫu-nhiên); chạy lệnh trong `server/` |
 | `API phải kết nối bằng medassist_app...` / `Migration phải chạy bằng medassist_owner` | Đổi nhầm vai trò trong `server/.env` | `DATABASE_URL` dùng `medassist_app`, `MIGRATION_DATABASE_URL` dùng `medassist_owner` |
 | `pip install` báo `No matching distribution` | Khác phiên bản Python | Dùng Python 3.14 như máy Sơn |
-| `pip install` lỗi đọc `requirements.txt` (ký tự lạ) | File bị ghi UTF-16 (PowerShell `>`) | Ghi lại: `python -m pip freeze \| Out-File -Encoding ascii requirements.txt` |
+| `pip install` lỗi đọc `requirements.txt` (ký tự lạ) | File bị ghi UTF-16 (PowerShell `>`) | Ghi lại: `python -m pip freeze \| Out-File -Encoding ascii requirements.txt`, rồi bỏ các gói đã có trong `requirements-dev.txt` (pytest, ruff...) |
 | `alembic check` báo có thay đổi | Sửa model mà chưa có revision | Báo Sơn — mọi thay đổi bảng đi qua migration |
 | Đăng nhập trả `429` `RATE_LIMITED` | Sai mật khẩu 5 lần trong 15 phút | Đợi 5 phút, hoặc Admin `unlock` / `reset-password` |
 | API trả `403` `PASSWORD_CHANGE_REQUIRED` | Tài khoản do Admin tạo hoặc vừa đặt lại mật khẩu | Đổi mật khẩu (`auth/change-password`) rồi đăng nhập lại |
@@ -448,7 +448,8 @@ server/
 ├── Dockerfile         # image dùng chung cho api, worker, migrate trên máy admin
 ├── .env.example
 ├── pytest.ini
-└── requirements.txt
+├── requirements.txt       # thư viện chạy thật (image Docker)
+└── requirements-dev.txt   # + pytest, ruff cho máy dev và CI
 ```
 
 Tài liệu liên quan: ERD v1.9, Architecture v1.7, *Quy định thư mục v6*, *Cấu trúc dự kiến v6*; `server/data/README.md`;

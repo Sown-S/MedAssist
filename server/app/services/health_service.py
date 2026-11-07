@@ -37,7 +37,7 @@ def _check_ollama() -> tuple[bool, str, str | None]:
             else (False, "Ollama chưa có model", "no_model")
         )
     except Exception:
-        logger.warning("Health check: không gọi được Ollama", exc_info=True)
+        logger.warning("Health check: không gọi được Ollama")
         result = (False, "Không kết nối được Ollama", "unreachable")
     with _lock:
         _cache = (time.monotonic(), *result)

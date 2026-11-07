@@ -8,6 +8,7 @@
 
 ## Kiểm tra
 - [ ] Sửa `server/`: chạy `python -m pytest` trên máy, tất cả pass
+- [ ] Sửa Python ở `server/`, `tools/`: chạy `ruff format server tools; ruff check --fix server tools` ở gốc repo
 - [ ] Có migration mới: đã chạy `alembic upgrade head` và `alembic check`
 - [ ] Sửa `client/`: chạy `npm run lint`, `npm test` và `npm run build`
 - [ ] Sửa `knowledge/`: chạy `python -m scripts.import_okf --dry-run` không lỗi
