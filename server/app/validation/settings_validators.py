@@ -24,6 +24,10 @@ class ClinicProfile(BaseModel):
     director_license: str = Field(default="", max_length=50)
     # Logo in trên phiếu: data URL ảnh nhỏ, giới hạn để dòng JSONB không phình
     logo: str = Field(default="", max_length=300_000, pattern=r"^(data:image/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+)?$")
+    # Phần in giống nhau trên mọi máy; khổ giấy theo máy in nên vẫn để client lưu riêng
+    print_header: str = Field(default="", max_length=500)
+    print_footer: str = Field(default="", max_length=500)
+    show_logo: bool = True
 
 
 class _NearExpiryDays(BaseModel):
