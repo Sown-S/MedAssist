@@ -1,17 +1,21 @@
 import { useState } from 'react'
 import { ModalHeader } from '../../../components/Modal'
 import Icon from '../../../components/Icon'
+import { useToast } from '../../../context/ToastContext'
 
 // Mật khẩu tạm sau khi tạo / đặt lại tài khoản — chỉ hiện một lần.
 export default function SecretPanel({ secret, onClose }) {
   const [copied, setCopied] = useState(false)
+  const { showToast } = useToast()
   const { account: a, password } = secret
   async function copy() {
     try {
       await navigator.clipboard.writeText(`${a.username}\n${password}`)
       setCopied(true)
     } catch {
+      // Máy chặn clipboard: báo để người dùng tự bôi đen sao chép, vì mật khẩu chỉ hiện một lần.
       setCopied(false)
+      showToast('Could not copy — select the password and copy it by hand', 'error')
     }
   }
   return (

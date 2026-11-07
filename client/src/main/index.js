@@ -114,11 +114,23 @@ function createWindow() {
   const appUrl = is.dev && process.env['ELECTRON_RENDERER_URL'] ? process.env['ELECTRON_RENDERER_URL'] : APP_ORIGIN
 
   // Cửa sổ chỉ hiện giao diện của app: chặn điều hướng sang địa chỉ khác (VD kéo thả file hay link lạ vào cửa sổ).
+  // So giao thức + máy + cổng, không so tiền tố (http://localhost:5173 không được khớp http://localhost:51730).
+  const appOrigin = originOf(appUrl)
   mainWindow.webContents.on('will-navigate', (e, url) => {
-    if (!url.startsWith(appUrl)) e.preventDefault()
+    if (originOf(url) !== appOrigin) e.preventDefault()
   })
 
   mainWindow.loadURL(appUrl === APP_ORIGIN ? APP_ORIGIN + '/index.html' : appUrl)
+}
+
+// URL.origin của giao thức riêng app:// là "null" nên tự ghép giao thức + máy + cổng; địa chỉ không đọc được → null.
+function originOf(url) {
+  try {
+    const u = new URL(url)
+    return u.protocol + '//' + u.host
+  } catch {
+    return null
+  }
 }
 
 // App không cần camera, micro, vị trí, thông báo…: từ chối mọi yêu cầu quyền, trừ ghi clipboard
