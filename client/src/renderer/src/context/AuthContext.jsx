@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useRef, useState } from 'react'
 import { ROLES } from '../api/accountStore'
 import * as authApi from '../api/authApi'
 import { setSessionExpiredHandler, setPasswordChangeRequiredHandler } from '../api/client'
-import { getSettings } from '../api/settingsStore'
+import { getSettings, loadClientConfig } from '../api/settingsStore'
 import { claimDrafts, clearDrafts } from '../api/draftStore'
 
 const AuthContext = createContext(null)
@@ -38,6 +38,7 @@ export function AuthProvider({ children }) {
     setNotice('')
     claimDrafts(account.id)
     setUser(toSessionUser(account))
+    loadClientConfig()
   }
   // Tự đăng xuất / hết phiên / bắt đổi mật khẩu: giữ bản nháp phiếu khám để đăng nhập lại là khám tiếp.
   function endSession(notice = '') {

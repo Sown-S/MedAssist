@@ -66,6 +66,7 @@ const ROUTES = [
   [/^\/api\/v1\/visits\/v-exam\/symptoms$/, () => [{ symptom_code: 'anemia_pallor_jaundice', symptom_name: 'Da xanh xao, vàng da', state: 'PRESENT', source: 'Form', confirmed_at: today }]],
   [/^\/api\/v1\/symptoms$/, () => [{ symptom_code: 'fever', symptom_name: 'Sốt', category: 'constitutional' }]],
   [/^\/api\/v1\/reports\/summary/, () => SUMMARY],
+  [/^\/api\/v1\/auth\/client-config$/, () => ({ clinic: { name: 'Phòng khám An Bình' }, idle_logout_minutes: 15 })],
   [/^\/api\/v1\/auth\/password-policy$/, () => ({ min_length: 8, require_letters_and_digits: true, max_failed_attempts: 5, failed_window_minutes: 15, lock_minutes: 5 })],
   [/^\/api\/v1\/patients\/[^/?]+$/, (path) => PATIENT(path.split('/').pop())],
   [/^\/api\/v1\/visits\/[^/?]+$/, () => ({ free_text_description: 'Ho, sốt 2 ngày', chief_complaint: 'Ho, sốt', vital_signs: {} })],

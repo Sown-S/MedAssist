@@ -5,12 +5,12 @@ import { Switch } from './ui'
 import { useAuth } from '../../context/AuthContext'
 import { useToast } from '../../context/ToastContext'
 import { translate } from '../../i18n'
-import { useSettings, saveSettings, saveServerSettings, loadServerSettings, getSettings, changedPaths, PRINT_DOCS } from '../../api/settingsStore'
+import { useSettings, saveSettings, saveServerSettings, loadServerSettings, loadClientConfig, getSettings, changedPaths, isServerSetting, PRINT_DOCS } from '../../api/settingsStore'
+import { useServerOnline } from '../../api/connectivity'
 import { fetchPasswordPolicy } from '../../api/accountStore'
 import { printHeaderHtml, fmtDateTime } from './inventory/shared'
 import { DeviceTab } from './settings/DeviceTab'
 import { FIELDS, Field } from './settings/Field'
-import { BackupTab } from './settings/BackupTab'
 import { ConnectionTab } from './settings/ConnectionTab'
 import { ClinicTab } from './settings/ClinicTab'
 import { OpsTab } from './settings/OpsTab'
@@ -20,7 +20,6 @@ const TABS = [
   { key: 'clinic', label: 'Clinic' },
   { key: 'print', label: 'Printing & numbering' },
   { key: 'security', label: 'Security' },
-  { key: 'backup', label: 'Backup & retention' },
   { key: 'connection', label: 'Connection & AI' },
   { key: 'device', label: 'This computer' },
   { key: 'ops', label: 'Operations' }
@@ -55,6 +54,11 @@ export default function SettingsPage({ params, onNavigate, setLeaveGuard }) {
   const errors = useMemo(() => validate(draft), [draft])
   const dirty = changed.size > 0
   const errCount = Object.keys(errors).length
+  // Mất kết nối: không sửa được phần lưu trên server (thông tin phòng khám, tự đăng xuất...), như chế độ chỉ đọc chung.
+  const online = useServerOnline()
+  const blockedOffline = !online && [...changed].some(isServerSetting)
+  const idleNow = getAt(draft, 'security.idleMinutes')
+  const idleOptions = IDLE.some((x) => x.key === idleNow) ? IDLE : [...IDLE, { key: idleNow, label: `${idleNow} minutes` }]
 
   // Hỏi trước khi rời trang khi còn thay đổi chưa lưu (Admin.jsx gọi lúc chuyển trang).
   const dirtyRef = useRef(dirty)
@@ -78,6 +82,8 @@ export default function SettingsPage({ params, onNavigate, setLeaveGuard }) {
     const r = await saveServerSettings(draft)
     if (!r.ok) return showToast(translate(r.error), 'error')
     const n = saveSettings(draft, user)
+    // Làm mới bản đệm dùng chung (in phiếu, tự đăng xuất) theo đúng giá trị server vừa lưu.
+    loadClientConfig()
     showToast(n ? 'Settings saved' : 'No changes')
   }
   function save() {
@@ -111,7 +117,7 @@ export default function SettingsPage({ params, onNavigate, setLeaveGuard }) {
         ))}
       </div>
 
-      {tab === 'clinic' && <ClinicTab form={form} />}
+      {tab === 'clinic' && <ClinicTab form={form} readOnly={!online} />}
 
       {tab === 'print' && (
         <>
@@ -172,8 +178,8 @@ export default function SettingsPage({ params, onNavigate, setLeaveGuard }) {
               </div>
             </Field>
             <Field {...fp('security.idleMinutes')} hint="Recommended on shared clinic computers: patient data stays on screen otherwise.">
-              <select value={val('security.idleMinutes')} onChange={(e) => set('security.idleMinutes', Number(e.target.value))}>
-                {IDLE.map((x) => (
+              <select value={idleNow} disabled={!online} onChange={(e) => set('security.idleMinutes', Number(e.target.value))}>
+                {idleOptions.map((x) => (
                   <option key={x.key} value={x.key}>
                     {x.label}
                   </option>
@@ -187,8 +193,6 @@ export default function SettingsPage({ params, onNavigate, setLeaveGuard }) {
         </div>
       )}
 
-      {tab === 'backup' && <BackupTab onNavigate={onNavigate} />}
-
       {tab === 'connection' && <ConnectionTab onNavigate={onNavigate} />}
       {tab === 'device' && <DeviceTab draft={draft} />}
 
@@ -201,6 +205,8 @@ export default function SettingsPage({ params, onNavigate, setLeaveGuard }) {
               <span className="set-err">
                 <span className="mono">{errCount}</span> <span>fields need fixing</span>
               </span>
+            ) : blockedOffline ? (
+              <span className="set-err">No connection to the clinic server — clinic details and shared settings cannot be saved now.</span>
             ) : (
               <>
                 <span className="mono">{changed.size}</span> <span>unsaved changes</span>
@@ -210,7 +216,7 @@ export default function SettingsPage({ params, onNavigate, setLeaveGuard }) {
           <button className="btn btn-ghost btn-sm" disabled={!dirty} onClick={() => setDraft(saved.values)}>
             Discard changes
           </button>
-          <button className="btn btn-primary btn-sm" disabled={!dirty || errCount > 0} onClick={save}>
+          <button className="btn btn-primary btn-sm" disabled={!dirty || errCount > 0 || blockedOffline} onClick={save}>
             <Icon name="save" /> <span>Save</span>
           </button>
         </div>

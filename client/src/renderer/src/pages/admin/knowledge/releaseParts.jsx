@@ -30,7 +30,7 @@ const FIELD_LABEL = {
   rule_type: 'Rule type',
   resulting_priority: 'Resulting priority',
   reason_text: 'Reason shown to doctors',
-  condition_logic: 'Condition'
+  condition_logic: 'Rule condition'
 }
 // Cột khoá của từng loại — không so sánh vì khoá không đổi giữa các phiên bản.
 const KEY_COLS = {

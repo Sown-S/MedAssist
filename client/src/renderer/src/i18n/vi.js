@@ -376,7 +376,6 @@ export const VI = {
   'Drug interaction and dose checking': 'Kiểm tra tương tác và liều thuốc',
   'Checking each prescription for drug–drug interactions, cross-allergies, contraindications with chronic conditions and dose limits, against a pharmacist-reviewed interaction catalog — the current version only shows a read-only allergy / chronic-condition reminder; the doctor reviews the prescription.':
     'Kiểm tra từng đơn về tương tác thuốc – thuốc, dị ứng chéo, chống chỉ định với bệnh nền và giới hạn liều theo danh mục tương tác do dược sĩ duyệt — phiên bản hiện tại chỉ có khung nhắc dị ứng / bệnh nền chỉ đọc; bác sĩ tự rà soát đơn.',
-  'The activity log and medical records are kept on the clinic server and are never deleted automatically.': 'Nhật ký hoạt động và hồ sơ bệnh án được lưu trên máy chủ phòng khám, không bao giờ tự động xoá.',
   'Full health insurance integration': 'Liên thông Bảo hiểm Y tế đầy đủ',
   'Online insurance card lookup through the national social insurance assessment portal, with automatic in-network/out-of-network classification — the current version does not handle health insurance.':
     'Tra cứu thẻ BHYT trực tuyến qua cổng giám định BHXH, tự phân loại đúng tuyến / trái tuyến — phiên bản hiện tại chưa xử lý bảo hiểm y tế.',
@@ -440,7 +439,7 @@ export const VI = {
   'Draft saved': 'Đã lưu nháp',
   Rejected: 'Bị từ chối',
   'AI module': 'Module AI',
-  Conditions: 'Điều kiện',
+  Conditions: 'Bệnh',
   Yes: 'Có',
   'Nothing to review': 'Không có gì cần duyệt',
   Draft: 'Bản nháp',
@@ -726,7 +725,7 @@ export const VI = {
   Create: 'Tạo',
   Read: 'Xem',
   Update: 'Sửa',
-  Finalize: 'Chốt',
+  Finalize: 'Hoàn tất khám',
   Approve: 'Duyệt',
   'Sign in': 'Đăng nhập',
   Batch: 'Lô thuốc',
@@ -749,7 +748,6 @@ export const VI = {
   'Last saved': 'Lưu lần cuối',
   'Printing & numbering': 'In ấn & đánh số',
   Security: 'Bảo mật',
-  'Backup & retention': 'Sao lưu & lưu trữ',
   'Connection & AI': 'Kết nối & AI',
   Operations: 'Vận hành',
   'Applies immediately': 'Hiệu lực ngay',
@@ -772,9 +770,13 @@ export const VI = {
   Logo: 'Logo',
   'No logo': 'Chưa có logo',
   'Choose image': 'Chọn ảnh',
-  'PNG, JPG, SVG or WebP, under 300 KB.': 'PNG, JPG, SVG hoặc WebP, dưới 300 KB.',
+  'PNG, JPG, SVG or WebP — resized to 300 px on the longest side.': 'PNG, JPG, SVG hoặc WebP — tự thu nhỏ để cạnh dài nhất 300 px.',
   'Choose a PNG, JPG, SVG or WebP image': 'Hãy chọn ảnh PNG, JPG, SVG hoặc WebP',
-  'The logo must be smaller than 300 KB': 'Logo phải nhỏ hơn 300 KB',
+  'The image must be smaller than 5 MB': 'Ảnh phải nhỏ hơn 5 MB',
+  'Cannot read this image': 'Không đọc được ảnh này',
+  'The logo is still too large after resizing — choose a simpler image': 'Logo vẫn quá lớn sau khi thu nhỏ — hãy chọn ảnh đơn giản hơn',
+  'No connection to the clinic server — clinic details and shared settings cannot be saved now.':
+    'Mất kết nối máy chủ phòng khám — chưa lưu được thông tin phòng khám và cài đặt dùng chung.',
   'Enter the clinic name — it is printed on every document.': 'Nhập tên phòng khám — tên này được in trên mọi giấy tờ.',
   'Invalid email address.': 'Email không hợp lệ.',
   'A tax code has 10 digits (or 10 digits + "-" + 3 digits for a branch).': 'Mã số thuế gồm 10 chữ số (chi nhánh: 10 chữ số + "-" + 3 chữ số).',
@@ -810,20 +812,14 @@ export const VI = {
     'Lưu cài đặt bảo mật cần nhập mật khẩu. Server áp dụng chính các quy tắc này — giao diện chỉ hiển thị lại.',
   'Your password has expired — please set a new one.': 'Mật khẩu của bạn đã hết hạn — vui lòng đặt mật khẩu mới.',
   // Sao lưu & lưu trữ
-  Backup: 'Sao lưu',
-  Backups: 'Sao lưu',
   File: 'File',
   Size: 'Dung lượng',
   'Not yet': 'Chưa',
-  'Data retention': 'Thời gian lưu trữ dữ liệu',
   'Keep the activity log for': 'Lưu nhật ký hoạt động trong',
   'Keep medical records for': 'Lưu hồ sơ bệnh án trong',
   'Older entries are archived, never deleted silently.': 'Dòng cũ hơn được lưu trữ riêng, không bị xóa âm thầm.',
   years: 'năm',
   'At least 1 year.': 'Tối thiểu 1 năm.',
-  'Export the activity log': 'Xuất nhật ký hoạt động',
-  'Agree on retention periods with the clinic against the medical-records rules and the personal data protection regulation the project cites (e.g. Decree 13/2023/NĐ-CP) before going live.':
-    'Thống nhất thời hạn lưu trữ với phòng khám theo quy định về hồ sơ bệnh án và bảo vệ dữ liệu cá nhân mà đề tài viện dẫn (VD: Nghị định 13/2023/NĐ-CP) trước khi đưa vào sử dụng.',
   // Kết nối & AI
   'Server connection': 'Kết nối server',
   'Server address': 'Địa chỉ server',
@@ -934,7 +930,7 @@ export const VI = {
   '+ Age': '+ Tuổi',
   '+ Group': '+ Nhóm',
   'Rename room': 'Đổi tên phòng',
-  'Printed on prescriptions, invoices and reports.': 'In trên đơn thuốc, hoá đơn và báo cáo.',
+  'Printed on prescriptions, invoices and reports. Shared by every computer in the clinic.': 'In trên đơn thuốc, hoá đơn và báo cáo. Dùng chung cho mọi máy trong phòng khám.',
   'Code *': 'Mã *',
   'Name *': 'Tên *',
   'The code and type of a room cannot be changed.': 'Không đổi được mã và loại phòng.',
@@ -1167,7 +1163,7 @@ export const VI = {
   // ===== Bác sĩ: mời có điều kiện, danh sách chờ, cận lâm sàng, đánh giá đơn, tủ thuốc (bản cập nhật) =====
   'A patient is still in your room': 'Vẫn còn bệnh nhân trong phòng của bạn',
   'Finalize this visit or send the patient for lab tests before calling the next one, so no one is left half-examined.':
-    'Hãy chốt đơn hoặc chuyển bệnh nhân đi xét nghiệm trước khi mời người tiếp theo, để không ai bị khám dở.',
+    'Hãy hoàn tất khám hoặc chuyển bệnh nhân đi xét nghiệm trước khi mời người tiếp theo, để không ai bị khám dở.',
   'A priority patient can be called in now; the current visit stays open and this is recorded in the activity log.':
     'Bệnh nhân ưu tiên có thể được mời vào ngay; lượt khám hiện tại vẫn giữ nguyên và việc này được ghi vào nhật ký hoạt động.',
   'Call in anyway': 'Vẫn mời vào',
@@ -1420,7 +1416,6 @@ export const VI = {
   "Fixed on the clinic server — shown for reference only. Administrators can unlock earlier in Staff accounts.": "Cố định trên server phòng khám — chỉ hiển thị để tham khảo. Quản trị viên có thể mở khoá sớm ở Tài khoản nhân viên.",
   "5 wrong passwords within 15 minutes (20 from one computer) → the account is locked for 5 minutes.": "Sai mật khẩu 5 lần trong 15 phút (20 lần từ một máy) → tài khoản bị khoá 5 phút.",
   "Set up on the clinic server (deploy scripts), not from this screen.": "Thiết lập trên server phòng khám (script triển khai), không chỉnh ở màn hình này.",
-  "Daily database backup (pg_dump) to a second drive and another machine; restore follows the documented, tested procedure.": "Sao lưu CSDL hằng ngày (pg_dump) sang ổ đĩa thứ hai và một máy khác; khôi phục theo quy trình đã viết và đã thử.",
   "The server address is saved on this computer only — each clinic PC sets its own. Home › System status uses this same check.": "Địa chỉ server chỉ lưu trên máy này — mỗi máy của phòng khám tự đặt. Ô Trạng thái hệ thống ở Trang chủ dùng chung phép kiểm tra này.",
   "Clinic server address": "Địa chỉ server phòng khám",
   "Enter a valid server address, e.g. https://192.168.1.10": "Nhập địa chỉ server hợp lệ, VD https://192.168.1.10",
@@ -1661,6 +1656,8 @@ export const VI = {
   Symptom: 'Triệu chứng',
   'Symptom code': 'Mã triệu chứng',
   Condition: 'Bệnh',
+  // Điều kiện của luật phân loại — khác “Condition” (bệnh) nên dùng chữ gốc riêng.
+  'Rule condition': 'Điều kiện áp dụng',
   'Condition code': 'Mã bệnh',
   'Symptom–condition links': 'Liên kết bệnh – triệu chứng',
   'Symptom–condition link': 'Liên kết bệnh – triệu chứng',
@@ -1989,7 +1986,6 @@ export const VI = {
   'The description changed — run the suggestion again before using these.': 'Lời kể đã sửa — hãy chạy lại gợi ý trước khi dùng các số này.',
   // Quản trị — màn chưa có dữ liệu server
   'No activity recorded yet.': 'Chưa có hoạt động nào.',
-  'Automatic daily backup on the clinic server; restoring is done by the system administrator.': 'Sao lưu tự động hằng ngày trên máy chủ; khôi phục do quản trị viên thực hiện.',
   'Invoice & payment': 'Hoá đơn & thanh toán',
   'Skip & return stock': 'Bỏ qua & hoàn kho',
   'Cancel visit & return stock': 'Huỷ lượt & hoàn kho',
@@ -2004,7 +2000,7 @@ export const VI = {
   'Roles & permissions /': 'Phân quyền vai trò /',
   'Discard & leave': 'Bỏ thay đổi & rời trang',
   'P — Plan · Treatment plan & advice': 'P — Kế hoạch · Hướng điều trị & lời dặn',
-  'Finalize & call next': 'Chốt đơn & mời người tiếp',
+  'Finalize & call next': 'Hoàn tất & mời người tiếp',
   'Save & print order': 'Lưu & in phiếu chỉ định',
   'Lab tests & diagnostics': 'Cận lâm sàng',
   'Dispense & collect': 'Cấp phát & thu tiền',
@@ -2014,6 +2010,7 @@ export const VI = {
 }
 
 export const PATTERNS = [
+  [/^(\d+) minutes$/, '$1 phút'],
   // Khung đề xuất từ lời kể (SymptomPanel / SymptomChecklist)
   [/^Last read: (\d+) s · (\d+) suggestions$/, 'Lần đọc trước: $1 giây · $2 đề xuất'],
   [/^(\d+) ahead in line$/, '$1 lượt phía trước'],
