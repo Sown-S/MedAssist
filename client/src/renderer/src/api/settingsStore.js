@@ -37,12 +37,9 @@ export const DEFAULT_SETTINGS = {
     directorLicense: '',
     logo: ''
   },
-  print: {
-    papers: { prescription: 'A5', labOrder: 'A5', invoice: '80mm', other: 'A4' },
-    showLogo: true,
-    header: '',
-    footer: 'Thank you and wish you good health!'
-  },
+  // Dùng chung mọi máy (nằm trong clinic.profile); khổ giấy là cài đặt riêng máy (deviceSettings).
+  // Chân trang rỗng thì phiếu không in chân trang — không tự điền câu mặc định để các máy không lệch nhau.
+  print: { showLogo: true, header: '', footer: '' },
   // Chính sách mật khẩu và khoá đăng nhập do server quy định (GET /auth/password-policy); idleMinutes dùng chung mọi máy.
   security: { idleMinutes: 15 },
   ops: {
@@ -93,17 +90,28 @@ const CLINIC_FIELDS = {
   logo: 'logo'
 }
 const clinicFromServer = (c) => Object.fromEntries(Object.entries(CLINIC_FIELDS).map(([k, sk]) => [k, c?.[sk] ?? '']))
-const clinicToServer = (c) => Object.fromEntries(Object.entries(CLINIC_FIELDS).map(([k, sk]) => [sk, c[k] ?? '']))
+const printFromServer = (c) => ({ showLogo: c?.show_logo ?? true, header: c?.print_header ?? '', footer: c?.print_footer ?? '' })
+const profileToServer = (v) => ({
+  ...Object.fromEntries(Object.entries(CLINIC_FIELDS).map(([k, sk]) => [sk, v.clinic[k] ?? ''])),
+  print_header: v.print.header ?? '',
+  print_footer: v.print.footer ?? '',
+  show_logo: !!v.print.showLogo
+})
 
 // Bản client-config lấy được gần nhất: in phiếu và tự đăng xuất vẫn chạy khi mất kết nối. Chưa có bản nào (máy mới,
 // chưa từng kết nối) thì thông tin phòng khám để trống, tự đăng xuất 15 phút.
-const sharedOf = (values) => ({ clinic: values.clinic, idleMinutes: values.security.idleMinutes })
+const sharedOf = (values) => ({ clinic: values.clinic, print: values.print, idleMinutes: values.security.idleMinutes })
 function withShared(values, cfg) {
-  return { ...values, clinic: { ...DEFAULT_SETTINGS.clinic, ...cfg?.clinic }, security: { ...values.security, idleMinutes: cfg?.idleMinutes ?? 15 } }
+  return {
+    ...values,
+    clinic: { ...DEFAULT_SETTINGS.clinic, ...cfg?.clinic },
+    print: { ...DEFAULT_SETTINGS.print, ...cfg?.print },
+    security: { ...values.security, idleMinutes: cfg?.idleMinutes ?? 15 }
+  }
 }
 // Máy chỉ lưu phần riêng của nó; phần dùng chung nằm ở CONFIG_KEY.
 function writeLocal() {
-  const { clinic, security, ...own } = state.values
+  const { clinic, print, security, ...own } = state.values
   write(KEY, { ...state, values: own })
 }
 
@@ -148,9 +156,9 @@ const SERVER_SETTINGS = [
   { key: 'billing.default_consultation_fee', paths: ['ops.consultFee'], get: (v) => Math.round(Number(v.ops.consultFee)), set: (v, x) => ({ ...v, ops: { ...v.ops, consultFee: x } }) },
   {
     key: 'clinic.profile',
-    paths: Object.keys(CLINIC_FIELDS).map((k) => 'clinic.' + k),
-    get: (v) => clinicToServer(v.clinic),
-    set: (v, x) => ({ ...v, clinic: clinicFromServer(x) })
+    paths: [...Object.keys(CLINIC_FIELDS).map((k) => 'clinic.' + k), 'print.showLogo', 'print.header', 'print.footer'],
+    get: profileToServer,
+    set: (v, x) => ({ ...v, clinic: clinicFromServer(x), print: printFromServer(x) })
   },
   {
     key: 'security.idle_logout_minutes',
@@ -170,7 +178,7 @@ export async function loadClientConfig() {
   } catch {
     return false
   }
-  const cfg = { clinic: clinicFromServer(r.clinic), idleMinutes: r.idle_logout_minutes ?? 15 }
+  const cfg = { clinic: clinicFromServer(r.clinic), print: printFromServer(r.clinic), idleMinutes: r.idle_logout_minutes ?? 15 }
   write(CONFIG_KEY, cfg)
   state = { ...state, values: withShared(state.values, cfg) }
   listeners.forEach((fn) => fn())
