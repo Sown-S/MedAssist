@@ -5,99 +5,98 @@ name_vi: Sarcoidosis
 name_en: Sarcoidosis
 icd10_code: D86.3
 disease_group: dermatology
-description: Là bệnh hệ thống, thương tổn không chỉ ở da mà có ở tất cả các cơ quan,
-  phủ tạng. Sarcoidosis còn được gọi là bệnh Besnier- Boeck-Schaumann (BBS) do 3 tác
-  giả này mô tả. Năm 1889, Besnier đầu tiên mô tả một thể lâm sàng với thương tổn
-  ở mặt cùng với viêm bao hoạt dịch sần sùi đầu ngón tay, gọi là lupus pernio (lupus
-  cước). Năm 1899, Boeck đã mô tả bệnh sarcoidosis da với những biểu hiện khác nhau.
+description: Là bệnh hệ thống, thương tổn không chỉ ở da mà có ở tất cả các cơ quan, phủ tạng. Sarcoidosis
+  còn được gọi là bệnh Besnier- Boeck-Schaumann (BBS) do 3 tác giả này mô tả. Năm 1889, Besnier đầu tiên
+  mô tả một thể lâm sàng với thương tổn ở mặt cùng với viêm bao hoạt dịch sần sùi đầu ngón tay, gọi là
+  lupus pernio (lupus cước). Năm 1899, Boeck đã mô tả bệnh sarcoidosis da với những biểu hiện khác nhau.
 relations:
 - symptom_code: molluscum_umbilicated_pearly_papule
   polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: cutaneous_sarcoidosis_lupus_pernio
   polarity: SUPPORTS
-  weight: 0.98
+  weight: 0.9
   is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: cutaneous_tuberculosis_lupus_vulgaris
   polarity: SUPPORTS
-  weight: 0.97
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: maculopapular_rash
   polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: acne_comedones_nodulocystic
   polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: vesicular_blister_rash
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: scaly_plaque_hyperkeratosis
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: verrucous_papule_nodule_ulcer
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: malar_butterfly_photosensitivity
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: erythema_nodosum_shins
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: conjunctivitis_uveitis_red_eye
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: myalgia_arthralgia
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: darier_hyperkeratotic_greasy_papules
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: lymphadenopathy_splenomegaly
   polarity: SUPPORTS
-  weight: 0.78
+  weight: 0.3
   is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: anemia_pallor_jaundice
   polarity: SUPPORTS
-  weight: 0.76
+  weight: 0.3
   is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT

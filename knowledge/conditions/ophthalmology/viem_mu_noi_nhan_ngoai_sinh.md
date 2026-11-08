@@ -5,92 +5,91 @@ name_vi: Viêm mủ nội nhãn ngoại sinh
 name_en: Exogenous endophthalmitis
 icd10_code: H44.1
 disease_group: ophthalmology
-description: Viêm mủ nội nhãn được dùng trong lâm sàng để chỉ tình trạng viêm của
-  các thành phần trong nhãn cầu đặc trưng bởi sự xâm nhập của bạch cầu đa nhân trung
-  tính gây hoại tử mủ do các tác nhân gây bệnh vào mắt sau chấn thương mắt hoặc sau
-  phẫu thuật mắt.
+description: Viêm mủ nội nhãn được dùng trong lâm sàng để chỉ tình trạng viêm của các thành phần trong
+  nhãn cầu đặc trưng bởi sự xâm nhập của bạch cầu đa nhân trung tính gây hoại tử mủ do các tác nhân gây
+  bệnh vào mắt sau chấn thương mắt hoặc sau phẫu thuật mắt.
 relations:
 - symptom_code: ocular_pain_photophobia_tearing
   polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: corneal_ulcer_hypopyon_keratitis
   polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: endophthalmitis_vitreous_pus_loss_reflex
-  polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
-  source_key: moh_qd_40_2015
-  source_edition: Quyết định số 40/QĐ-BYT
-- symptom_code: visual_acuity_decreased_blur
-  polarity: SUPPORTS
-  weight: 0.97
-  is_key: true
-  source_key: moh_qd_40_2015
-  source_edition: Quyết định số 40/QĐ-BYT
-- symptom_code: anterior_uveitis_keratic_precipitates
-  polarity: SUPPORTS
-  weight: 0.97
-  is_key: true
-  source_key: moh_qd_40_2015
-  source_edition: Quyết định số 40/QĐ-BYT
-- symptom_code: orbital_cellulitis_chemosis_proptosis
-  polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
-  source_key: moh_qd_40_2015
-  source_edition: Quyết định số 40/QĐ-BYT
-- symptom_code: bacterial_corneal_ulcer_stromal_abscess
-  polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
-  source_key: moh_qd_40_2015
-  source_edition: Quyết định số 40/QĐ-BYT
-- symptom_code: fever_high
   polarity: SUPPORTS
   weight: 0.9
   is_key: true
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
+- symptom_code: visual_acuity_decreased_blur
+  polarity: SUPPORTS
+  weight: 0.6
+  is_key: false
+  source_key: moh_qd_40_2015
+  source_edition: Quyết định số 40/QĐ-BYT
+- symptom_code: anterior_uveitis_keratic_precipitates
+  polarity: SUPPORTS
+  weight: 0.3
+  is_key: false
+  source_key: moh_qd_40_2015
+  source_edition: Quyết định số 40/QĐ-BYT
+- symptom_code: orbital_cellulitis_chemosis_proptosis
+  polarity: SUPPORTS
+  weight: 0.3
+  is_key: false
+  source_key: moh_qd_40_2015
+  source_edition: Quyết định số 40/QĐ-BYT
+- symptom_code: bacterial_corneal_ulcer_stromal_abscess
+  polarity: SUPPORTS
+  weight: 0.3
+  is_key: false
+  source_key: moh_qd_40_2015
+  source_edition: Quyết định số 40/QĐ-BYT
+- symptom_code: fever_high
+  polarity: SUPPORTS
+  weight: 0.6
+  is_key: false
+  source_key: moh_qd_40_2015
+  source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: nausea_vomiting_diarrhea
   polarity: SUPPORTS
-  weight: 0.85
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: conjunctivitis_uveitis_red_eye
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: blepharospasm_eyelid_edema
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: fever_low_grade
   polarity: SUPPORTS
-  weight: 0.72
+  weight: 0.3
   is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: headache_dull
   polarity: SUPPORTS
-  weight: 0.72
+  weight: 0.3
   is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: fatigue_malaise
   polarity: SUPPORTS
-  weight: 0.68
+  weight: 0.3
   is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT

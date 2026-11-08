@@ -5,33 +5,33 @@ name_vi: Bệnh loãng xương
 name_en: Osteoporosis
 icd10_code: M81.9
 disease_group: musculoskeletal
-description: Loãng xương (Osteoporosis) là tình trạng rối loạn chuyển hoá của xương
-  dẫn đến tổn thương độ chắc của xương đưa đến tăng nguy cơ gẫy xương. Độ chắc của
-  xương bao gồm sự toàn vẹn cả về khối lượng và chất lượng của xương. Khối lượng xương
-  được biểu hiện bằng mật độ khoáng chất của xương (Bone Mineral Density – BMD). Khối
-  lượng xương (Bone Mass Content – BMC). Chất lượng xương phụ thuộc vào thể tích xương.
+description: Loãng xương (Osteoporosis) là tình trạng rối loạn chuyển hoá của xương dẫn đến tổn thương
+  độ chắc của xương đưa đến tăng nguy cơ gẫy xương. Độ chắc của xương bao gồm sự toàn vẹn cả về khối lượng
+  và chất lượng của xương. Khối lượng xương được biểu hiện bằng mật độ khoáng chất của xương (Bone Mineral
+  Density – BMD). Khối lượng xương (Bone Mass Content – BMC). Chất lượng xương phụ thuộc vào thể tích
+  xương.
 relations:
 - symptom_code: bone_pain_fracture_lesion
   polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: osteoporosis_vertebral_collapse_kyphosis
   polarity: SUPPORTS
-  weight: 0.98
+  weight: 0.9
   is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: myalgia_arthralgia
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: spinal_deformity_scoliosis_loss_lordosis
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT

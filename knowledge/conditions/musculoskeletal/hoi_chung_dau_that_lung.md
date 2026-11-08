@@ -5,104 +5,103 @@ name_vi: Hội chứng đau thắt lưng
 name_en: Low back pain
 icd10_code: M54.5
 disease_group: musculoskeletal
-description: Đau cột sống thắt lưng hay còn gọi là đau lưng vùng thấp (Low back pain)
-  là hội chứng do đau khu trú trong khoảng từ ngang mức L1 đến nếp lằn mông (có thể
-  ở một bên hoặc cả hai bên), đây là một hội chứng xương khớp hay gặp nhất trong thực
-  hành lâm sàng.
+description: Đau cột sống thắt lưng hay còn gọi là đau lưng vùng thấp (Low back pain) là hội chứng do
+  đau khu trú trong khoảng từ ngang mức L1 đến nếp lằn mông (có thể ở một bên hoặc cả hai bên), đây là
+  một hội chứng xương khớp hay gặp nhất trong thực hành lâm sàng.
 relations:
 - symptom_code: mechanical_spinal_pain_stiffness
   polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: lumbar_spondylosis_paraspinal_spasm
   polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: sciatica_lasegue_positive
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: bone_pain_fracture_lesion
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: ankylosing_spondylitis_schober_chest
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: knee_osteoarthritis_wood_planing_osteophyte
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: radicular_sensory_motor_reflex_deficit
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: osteoporosis_vertebral_collapse_kyphosis
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: joint_deformity_ankylosis_subluxation
   polarity: SUPPORTS
-  weight: 0.9
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: myalgia_arthralgia
   polarity: SUPPORTS
-  weight: 0.85
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: periarticular_tendon_bursa_tenderness
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: spinal_deformity_scoliosis_loss_lordosis
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: limb_numbness_paresthesia_tingling
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: muscle_tenderness_cramps_myotonia
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: anemia_pallor_jaundice
   polarity: SUPPORTS
-  weight: 0.78
+  weight: 0.3
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: weight_loss_anorexia
   polarity: SUPPORTS
-  weight: 0.74
+  weight: 0.3
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT

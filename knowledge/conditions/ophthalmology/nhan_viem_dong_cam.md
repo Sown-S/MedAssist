@@ -5,61 +5,61 @@ name_vi: Nhãn viêm đồng cảm
 name_en: Sympathetic ophthalmia
 icd10_code: H44.2
 disease_group: ophthalmology
-description: Nhãn viêm đồng cảm (NVĐC) là tình trạng viêm màng bồ đào u hạt của cả
-  hai mắt, xảy ra sau khi một mắt bị chấn thương xuyên hay phẫu thuật nội nhãn. Mắt
-  chấn thương được gọi là mắt gây đồng cảm còn mắt kia là mắt bị nhãn viêm đồng cảm.
+description: Nhãn viêm đồng cảm (NVĐC) là tình trạng viêm màng bồ đào u hạt của cả hai mắt, xảy ra sau
+  khi một mắt bị chấn thương xuyên hay phẫu thuật nội nhãn. Mắt chấn thương được gọi là mắt gây đồng cảm
+  còn mắt kia là mắt bị nhãn viêm đồng cảm.
 relations:
 - symptom_code: sympathetic_ophthalmia_granulomatous
-  polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
-  source_key: moh_qd_40_2015
-  source_edition: Quyết định số 40/QĐ-BYT
-- symptom_code: vkh_exudative_retinal_detachment
-  polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
-  source_key: moh_qd_40_2015
-  source_edition: Quyết định số 40/QĐ-BYT
-- symptom_code: retinal_vitreous_optic_disc_lesion
-  polarity: SUPPORTS
-  weight: 0.97
-  is_key: true
-  source_key: moh_qd_40_2015
-  source_edition: Quyết định số 40/QĐ-BYT
-- symptom_code: conjunctivitis_uveitis_red_eye
-  polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
-  source_key: moh_qd_40_2015
-  source_edition: Quyết định số 40/QĐ-BYT
-- symptom_code: nausea_vomiting_diarrhea
-  polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
-  source_key: moh_qd_40_2015
-  source_edition: Quyết định số 40/QĐ-BYT
-- symptom_code: pediatric_uveitis_band_keratopathy
-  polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
-  source_key: moh_qd_40_2015
-  source_edition: Quyết định số 40/QĐ-BYT
-- symptom_code: ocular_pain_photophobia_tearing
-  polarity: SUPPORTS
-  weight: 0.91
-  is_key: true
-  source_key: moh_qd_40_2015
-  source_edition: Quyết định số 40/QĐ-BYT
-- symptom_code: visual_acuity_decreased_blur
   polarity: SUPPORTS
   weight: 0.9
   is_key: true
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
+- symptom_code: vkh_exudative_retinal_detachment
+  polarity: SUPPORTS
+  weight: 0.3
+  is_key: false
+  source_key: moh_qd_40_2015
+  source_edition: Quyết định số 40/QĐ-BYT
+- symptom_code: retinal_vitreous_optic_disc_lesion
+  polarity: SUPPORTS
+  weight: 0.6
+  is_key: false
+  source_key: moh_qd_40_2015
+  source_edition: Quyết định số 40/QĐ-BYT
+- symptom_code: conjunctivitis_uveitis_red_eye
+  polarity: SUPPORTS
+  weight: 0.6
+  is_key: false
+  source_key: moh_qd_40_2015
+  source_edition: Quyết định số 40/QĐ-BYT
+- symptom_code: nausea_vomiting_diarrhea
+  polarity: SUPPORTS
+  weight: 0.6
+  is_key: false
+  source_key: moh_qd_40_2015
+  source_edition: Quyết định số 40/QĐ-BYT
+- symptom_code: pediatric_uveitis_band_keratopathy
+  polarity: SUPPORTS
+  weight: 0.3
+  is_key: false
+  source_key: moh_qd_40_2015
+  source_edition: Quyết định số 40/QĐ-BYT
+- symptom_code: ocular_pain_photophobia_tearing
+  polarity: SUPPORTS
+  weight: 0.6
+  is_key: false
+  source_key: moh_qd_40_2015
+  source_edition: Quyết định số 40/QĐ-BYT
+- symptom_code: visual_acuity_decreased_blur
+  polarity: SUPPORTS
+  weight: 0.6
+  is_key: false
+  source_key: moh_qd_40_2015
+  source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: headache_dull
   polarity: SUPPORTS
-  weight: 0.72
+  weight: 0.3
   is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT

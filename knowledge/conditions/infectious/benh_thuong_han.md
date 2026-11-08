@@ -5,128 +5,139 @@ name_vi: Bệnh thương hàn
 name_en: Typhoid fever
 icd10_code: A01.0
 disease_group: infectious
-description: Bệnh thương hàn (Typhoid fever) là một bệnh cấp tính toàn thân do vi
-  khuẩn Salmonella enterica typ huyết thanh Typhi gây nên với bệnh cảnh sốt kéo dài,
-  có nhiều biến chứng nặng như xuất huyết tiêu hóa, thủng ruột, viêm cơ tim, viêm
-  não dễ dẫn đến tử vong.
+description: Bệnh thương hàn (Typhoid fever) là một bệnh cấp tính toàn thân do vi khuẩn Salmonella enterica
+  typ huyết thanh Typhi gây nên với bệnh cảnh sốt kéo dài, có nhiều biến chứng nặng như xuất huyết tiêu
+  hóa, thủng ruột, viêm cơ tim, viêm não dễ dẫn đến tử vong.
 relations:
 - symptom_code: typhoid_stepwise_fever_bradycardia_tuphos
   polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5642_2015
   source_edition: Quyết định số 5642/QĐ-BYT
 - symptom_code: eosinophilic_meningitis_paresthesia_headache
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5642_2015
   source_edition: Quyết định số 5642/QĐ-BYT
-- symptom_code: acute_infectious_watery_diarrhea_dehydration
+- symptom_code: watery_diarrhea
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5642_2015
   source_edition: Quyết định số 5642/QĐ-BYT
-- symptom_code: sepsis_sirs_organ_dysfunction_hypoperfusion
+- symptom_code: reduced_urine_output
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.6
+  is_key: false
+  source_key: moh_qd_5642_2015
+  source_edition: Quyết định số 5642/QĐ-BYT
+- symptom_code: cold_extremities
+  polarity: SUPPORTS
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_5642_2015
   source_edition: Quyết định số 5642/QĐ-BYT
 - symptom_code: viral_hepatitis_jaundice_dark_urine_ast_alt
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5642_2015
   source_edition: Quyết định số 5642/QĐ-BYT
-- symptom_code: encephalopathy_delirium_convulsion
+- symptom_code: sym_altered_consciousness
   polarity: SUPPORTS
-  weight: 0.91
-  is_key: true
+  weight: 0.3
+  is_key: false
+  source_key: moh_qd_5642_2015
+  source_edition: Quyết định số 5642/QĐ-BYT
+- symptom_code: sym_seizures
+  polarity: SUPPORTS
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_5642_2015
   source_edition: Quyết định số 5642/QĐ-BYT
 - symptom_code: fever_high
   polarity: SUPPORTS
-  weight: 0.9
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5642_2015
   source_edition: Quyết định số 5642/QĐ-BYT
 - symptom_code: maculopapular_rash
   polarity: SUPPORTS
-  weight: 0.9
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5642_2015
   source_edition: Quyết định số 5642/QĐ-BYT
 - symptom_code: pulmonary_crackles_rales_consolidation
   polarity: SUPPORTS
-  weight: 0.9
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5642_2015
   source_edition: Quyết định số 5642/QĐ-BYT
 - symptom_code: dizziness_vertigo
   polarity: SUPPORTS
-  weight: 0.88
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5642_2015
   source_edition: Quyết định số 5642/QĐ-BYT
 - symptom_code: fever_prolonged
   polarity: SUPPORTS
-  weight: 0.86
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5642_2015
   source_edition: Quyết định số 5642/QĐ-BYT
 - symptom_code: nausea_vomiting_diarrhea
   polarity: SUPPORTS
-  weight: 0.85
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5642_2015
   source_edition: Quyết định số 5642/QĐ-BYT
 - symptom_code: abdominal_distension_borborygmi_pain
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_5642_2015
   source_edition: Quyết định số 5642/QĐ-BYT
 - symptom_code: intoxication_coated_tongue_dry_lips
   polarity: SUPPORTS
-  weight: 0.78
+  weight: 0.3
   is_key: false
   source_key: moh_qd_5642_2015
   source_edition: Quyết định số 5642/QĐ-BYT
 - symptom_code: lymphadenopathy_splenomegaly
   polarity: SUPPORTS
-  weight: 0.76
+  weight: 0.3
   is_key: false
   source_key: moh_qd_5642_2015
   source_edition: Quyết định số 5642/QĐ-BYT
 - symptom_code: splenomegaly_left_hypochondriac_mass
   polarity: SUPPORTS
-  weight: 0.76
+  weight: 0.3
   is_key: false
   source_key: moh_qd_5642_2015
   source_edition: Quyết định số 5642/QĐ-BYT
 - symptom_code: epidemiological_exposure_vector_travel
   polarity: SUPPORTS
-  weight: 0.76
+  weight: 0.3
   is_key: false
   source_key: moh_qd_5642_2015
   source_edition: Quyết định số 5642/QĐ-BYT
 - symptom_code: fever_low_grade
   polarity: SUPPORTS
-  weight: 0.72
+  weight: 0.3
   is_key: false
   source_key: moh_qd_5642_2015
   source_edition: Quyết định số 5642/QĐ-BYT
 - symptom_code: headache_dull
   polarity: SUPPORTS
-  weight: 0.72
+  weight: 0.3
   is_key: false
   source_key: moh_qd_5642_2015
   source_edition: Quyết định số 5642/QĐ-BYT
 - symptom_code: fatigue_malaise
   polarity: SUPPORTS
-  weight: 0.68
+  weight: 0.3
   is_key: false
   source_key: moh_qd_5642_2015
   source_edition: Quyết định số 5642/QĐ-BYT

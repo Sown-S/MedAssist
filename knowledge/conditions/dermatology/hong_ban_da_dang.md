@@ -5,100 +5,99 @@ name_vi: Hồng ban đa dạng
 name_en: Erythema multiforme
 icd10_code: L51.9
 disease_group: dermatology
-description: Hồng ban đa dạng là một bệnh da cấp tính do nhiều căn nguyên khác nhau
-  gây nên, biểu hiện trên da là các thương tổn dát đỏ, sẩn phù, mụn nước, bọng nước
-  xen kẽ với các thương tổn hình bia bắn. Vị trí hay gặp là mu tay, cổ tay, cẳng tay,
-  cẳng chân, đầu gối. Niêm mạc miệng, mắt, sinh dục cũng thường bị tổn thương. Sự
-  đa dạng về thương tổn kèm theo hình ảnh đặc trưng (hình bia bắn) là nét riêng biệt
+description: Hồng ban đa dạng là một bệnh da cấp tính do nhiều căn nguyên khác nhau gây nên, biểu hiện
+  trên da là các thương tổn dát đỏ, sẩn phù, mụn nước, bọng nước xen kẽ với các thương tổn hình bia bắn.
+  Vị trí hay gặp là mu tay, cổ tay, cẳng tay, cẳng chân, đầu gối. Niêm mạc miệng, mắt, sinh dục cũng thường
+  bị tổn thương. Sự đa dạng về thương tổn kèm theo hình ảnh đặc trưng (hình bia bắn) là nét riêng biệt
   của bệnh.
 relations:
 - symptom_code: maculopapular_rash
   polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: vesicular_blister_rash
   polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: erythema_multiforme_target_lesion
   polarity: SUPPORTS
-  weight: 0.98
+  weight: 0.9
   is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: genital_herpes_clustered_painful_ulcers
   polarity: SUPPORTS
-  weight: 0.97
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: basal_cell_carcinoma_pearly_telangiectasia
   polarity: SUPPORTS
-  weight: 0.97
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: urticarial_wheal_angioedema
   polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: dermatophytosis_annular_active_border
   polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: allergic_contact_dermatitis_patch_pos
   polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: prurigo_nodularis_excoriated_papules
   polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: verrucous_papule_nodule_ulcer
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: fungal_ringworm_nail_hair_lesion
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: herpetic_dermatomal_pain_blister
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: sjs_ten_epidermal_necrolysis_mucosal
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: lymphadenopathy_splenomegaly
   polarity: SUPPORTS
-  weight: 0.76
+  weight: 0.3
   is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: fatigue_malaise
   polarity: SUPPORTS
-  weight: 0.68
+  weight: 0.3
   is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT

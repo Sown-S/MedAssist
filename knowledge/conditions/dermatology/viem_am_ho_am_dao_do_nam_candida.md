@@ -5,41 +5,40 @@ name_vi: Viêm âm hộ-âm đạo do nấm candida
 name_en: Vulvovaginal Candidiasis
 icd10_code: B37.3
 disease_group: dermatology
-description: Viêm âm hộ-âm đạo do nấm Candida là bệnh rất thường gặp ở phụ nữ. Người
-  ta thấy rằng hầu hết phụ nữ đều có ít nhất một lần trong đời có biểu hiện lâm sàng
-  viêm âm hộ-âm đạo do nấm Candida. Nhiều phụ nữ bị nhiễm Candida nhưng không có triệu
-  chứng lâm sàng, xét nghiệm soi tươi hoặc nuôi cấy có nấm. Khoảng 25-30% phụ nữ khỏe
-  mạnh có thể tìm thấy các chủng nấm Candida trong âm đạo dù không có biểu hiện lâm
-  sàng.
+description: Viêm âm hộ-âm đạo do nấm Candida là bệnh rất thường gặp ở phụ nữ. Người ta thấy rằng hầu
+  hết phụ nữ đều có ít nhất một lần trong đời có biểu hiện lâm sàng viêm âm hộ-âm đạo do nấm Candida.
+  Nhiều phụ nữ bị nhiễm Candida nhưng không có triệu chứng lâm sàng, xét nghiệm soi tươi hoặc nuôi cấy
+  có nấm. Khoảng 25-30% phụ nữ khỏe mạnh có thể tìm thấy các chủng nấm Candida trong âm đạo dù không có
+  biểu hiện lâm sàng.
 relations:
 - symptom_code: vulvovaginal_oral_candidiasis_curd
   polarity: SUPPORTS
-  weight: 0.98
+  weight: 0.9
   is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: genital_ulcer_chancre_discharge
   polarity: SUPPORTS
-  weight: 0.97
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: pruritus_intense_skin_itch
   polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: chlamydial_trichomonal_vaginitis_cervicitis
   polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: vesicular_blister_rash
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 excerpts:

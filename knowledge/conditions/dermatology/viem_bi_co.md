@@ -5,49 +5,49 @@ name_vi: Viêm bì cơ
 name_en: Dermatomyositis
 icd10_code: M33.1
 disease_group: dermatology
-description: Là một bệnh tự miễn, thương tổn chủ yếu là viêm da và cơ. Bệnh ít gặp,
-  tỉ lệ là 1/100.000 dân, nữ hay gặp hơn nam.
+description: Là một bệnh tự miễn, thương tổn chủ yếu là viêm da và cơ. Bệnh ít gặp, tỉ lệ là 1/100.000
+  dân, nữ hay gặp hơn nam.
 relations:
 - symptom_code: heliotrope_gottron_sign
   polarity: SUPPORTS
-  weight: 0.98
+  weight: 0.9
   is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: melanoma_abcd_asymmetric_pigmented_lesion
   polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: maculopapular_rash
   polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: scaly_plaque_hyperkeratosis
   polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: allergic_contact_dermatitis_patch_pos
   polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: prurigo_nodularis_excoriated_papules
   polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: proximal_muscle_weakness_wasting
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 excerpts:

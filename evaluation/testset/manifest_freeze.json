@@ -1,32 +1,33 @@
 {
-  "freeze_version": "testset-v1.2-frozen",
-  "frozen_at": "2026-10-30T22:20:34",
-  "git_tag_recommended": "testset-v1.2-frozen",
+  "freeze_version": "testset-v1.3-frozen",
+  "frozen_at": "2026-11-07T22:45:30+07:00",
+  "git_tag_recommended": "testset-v1.3-frozen",
   "knowledge_snapshot": {
-    "total_conditions": 199,
+    "total_conditions": 169,
     "groups": {
-      "dermatology": 63,
-      "ent": 56,
-      "infectious": 17,
-      "musculoskeletal": 32,
-      "ophthalmology": 29,
+      "dermatology": 58,
+      "ent": 43,
+      "infectious": 11,
+      "musculoskeletal": 31,
+      "ophthalmology": 24,
       "respiratory": 2
     },
-    "total_symptoms": 98,
-    "total_triage_rules": 11,
-    "total_sources": 11
+    "total_symptoms": 299,
+    "total_triage_rules": 12,
+    "total_sources": 11,
+    "kb_release": "KB-2026.09"
   },
-  "combined_sha256": "b75141885fe33216de882110a2126ca060cd54c9467556275531a78efb8078c5",
+  "combined_sha256": "4e7b58cffc3cd950e1411a131919e36976ea94f209c426821886b03708cd368d",
   "files": [
     {
       "path": "evaluation/testset/symptom_extraction_testset.jsonl",
       "num_cases": 29,
-      "sha256": "21c778cd09a9e11091428ac7cdffb1d7ff42f960648a8106abac20f6901de2a7"
+      "sha256": "92e62bf63fa63a78f9595c41b8a4fdb26ca8c4517006e828031a19b390949b34"
     },
     {
       "path": "evaluation/testset/clinical_cases_labeled.jsonl",
-      "num_cases": 20,
-      "sha256": "624fe91ea1edaf51eab6619cd9d0ef17b523cf497f0eeb9f7a135b0186c66134"
+      "num_cases": 82,
+      "sha256": "10fc9b2b5c21cd5d28ec79717780e60979a9d409c87b4664e46246936b968412"
     }
   ],
   "retired_cases": {
@@ -34,5 +35,52 @@
     "CLIN-012": "condition_code chưa có: thoai_hoa_khop_goi, u_sun_mang_hoat_dich",
     "CLIN-016": "symptom_code chưa có: myasthenic_ptosis_diplopia_fatigue; condition_code chưa có: nhuoc_co"
   },
-  "policy_note": "Đóng băng bộ test theo Nguyên tắc vàng #6 (Quy định v5): Không chỉnh rule hay prompt dựa trên bộ test này."
+  "policy_note": "Đóng băng bộ test theo Nguyên tắc vàng #6 (Quy định v5): Không chỉnh rule hay prompt dựa trên bộ test này.",
+  "git_tag_created": false,
+  "review_status": "APPROVED",
+  "review_basis": "Project authorization: AI drafts; Tuan/Huy are assigned author/reviewer; clinical retrospective review remains pending; no personal signatures asserted.",
+  "sha256_normalization": "CRLF to LF before hashing",
+  "combined_sha256_formula": "sha256((sha_ext + \":\" + sha_clin).encode(\"utf-8\"))",
+  "clinical_statistics": {
+    "total": 82,
+    "emergency": 48,
+    "priorities": {
+      "HighPriority": 3,
+      "Routine": 31,
+      "Emergency": 48
+    },
+    "red_flag_coverage": {
+      "rf_acute_chest_pain": 4,
+      "rf_altered_consciousness": 4,
+      "rf_cauda_equina_cord_compression": 4,
+      "rf_out_of_scope": 9,
+      "rf_progressive_paralysis": 4,
+      "rf_respiratory_failure": 7,
+      "rf_seizures": 4,
+      "rf_septic_arthritis_suspected": 5,
+      "rf_shock_circulatory_failure": 7
+    },
+    "new_cases": 62,
+    "new_case_range": [
+      "CLIN-023",
+      "CLIN-084"
+    ],
+    "pediatric_cases_age_1_to_10_with_age_months": 14,
+    "isolated_legacy_danger_cases": [
+      "CLIN-047",
+      "CLIN-048",
+      "CLIN-049",
+      "CLIN-050",
+      "CLIN-084"
+    ]
+  },
+  "freeze_revision": 2,
+  "supersedes_combined_sha256": "1d829d954930ba62c310944f2f34af9ac8ee0647bdf50c5042e0aeafe7b7ba0f",
+  "benchmark_status": "NOT_RUN_FOR_THIS_SNAPSHOT",
+  "superseded_evaluation": {
+    "combined_sha256": "1d829d954930ba62c310944f2f34af9ac8ee0647bdf50c5042e0aeafe7b7ba0f",
+    "clinical_cases": 81,
+    "emergency_cases": 47,
+    "status": "Prior reports refer to the previous hash; not valid for this revised snapshot."
+  }
 }

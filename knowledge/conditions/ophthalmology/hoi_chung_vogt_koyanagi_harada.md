@@ -5,92 +5,91 @@ name_vi: Hội chứng vogt-koyanagi-harada
 name_en: Vogt-Koyanagi-Harada syndrome
 icd10_code: H30.8
 disease_group: ophthalmology
-description: Vogt-Koyanagi-Harada là một viêm màng bồ đào toàn bộ, mãn tính, tiến
-  triển từng đợt cấp tính. Bệnh biểu hiện 2 mắt, xảy ra do sự tấn công của các tế
-  bào lymphoT đến các tế bào của mắt (tế bào lympho T có khuynh hướng chống lại các
-  tế bào sắc tố hắc mạc, da, tiền đình và màng não).
+description: Vogt-Koyanagi-Harada là một viêm màng bồ đào toàn bộ, mãn tính, tiến triển từng đợt cấp tính.
+  Bệnh biểu hiện 2 mắt, xảy ra do sự tấn công của các tế bào lymphoT đến các tế bào của mắt (tế bào lympho
+  T có khuynh hướng chống lại các tế bào sắc tố hắc mạc, da, tiền đình và màng não).
 relations:
 - symptom_code: anterior_uveitis_keratic_precipitates
   polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: vkh_exudative_retinal_detachment
   polarity: SUPPORTS
-  weight: 0.98
+  weight: 0.9
   is_key: true
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: corneal_ulcer_hypopyon_keratitis
   polarity: SUPPORTS
-  weight: 0.97
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: intraocular_pressure_glaucoma_cupping
   polarity: SUPPORTS
-  weight: 0.97
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: retinal_vitreous_optic_disc_lesion
   polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: ocular_pain_photophobia_tearing
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: conjunctival_ciliary_injection_discharge
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: petechiae_mucosal_bleeding
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: conjunctivitis_uveitis_red_eye
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: pupil_miosis_posterior_synechiae
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: vitreous_haze_floaters
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: macular_edema_oct_thickening
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: visual_acuity_decreased_blur
   polarity: SUPPORTS
-  weight: 0.91
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: headache_dull
   polarity: SUPPORTS
-  weight: 0.72
+  weight: 0.3
   is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT

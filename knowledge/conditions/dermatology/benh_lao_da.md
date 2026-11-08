@@ -5,55 +5,55 @@ name_vi: Bệnh lao da
 name_en: Cutaneous tuberculosis
 icd10_code: A18.4
 disease_group: dermatology
-description: Lao da là bệnh nhiễm khuẩn da mạn tính, do trực khuẩn lao có tên khoa
-  học là Mycobacterium tuberculosis gây nên. Bệnh thường gặp ở những nước kém phát
-  triển đặc biệt là ở những người suy dinh dưỡng, giảm miễn dịch.
+description: Lao da là bệnh nhiễm khuẩn da mạn tính, do trực khuẩn lao có tên khoa học là Mycobacterium
+  tuberculosis gây nên. Bệnh thường gặp ở những nước kém phát triển đặc biệt là ở những người suy dinh
+  dưỡng, giảm miễn dịch.
 relations:
 - symptom_code: cutaneous_tuberculosis_lupus_vulgaris
   polarity: SUPPORTS
-  weight: 0.98
+  weight: 0.9
   is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: verrucous_papule_nodule_ulcer
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: maculopapular_rash
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: vesicular_blister_rash
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: scaly_plaque_hyperkeratosis
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: erythema_nodosum_shins
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.3
   is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: skin_cellulitis_pus_abscess
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.3
   is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: palmoplantar_keratoderma_fissures
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.3
   is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT

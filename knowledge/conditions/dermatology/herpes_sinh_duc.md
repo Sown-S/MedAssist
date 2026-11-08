@@ -5,56 +5,56 @@ name_vi: Herpes sinh dục
 name_en: Genital herpes simplex viral infections
 icd10_code: A60.0
 disease_group: dermatology
-description: Nhiễm herpes sinh dục (HSV) là một bệnh lây truyền qua đường tình dục,
-  có triệu chứng hoặc không. Bệnh gây ảnh hưởng nhiều đến tâm lý người bệnh vì triệu
-  chứng xảy ra ở vùng sinh dục, diễn biến mạn tính và tái phát, hiện chưa điều trị
-  khỏi được và lây cho bạn tình, có thể lây cho trẻ sơ sinh khi mẹ bị bệnh.
+description: Nhiễm herpes sinh dục (HSV) là một bệnh lây truyền qua đường tình dục, có triệu chứng hoặc
+  không. Bệnh gây ảnh hưởng nhiều đến tâm lý người bệnh vì triệu chứng xảy ra ở vùng sinh dục, diễn biến
+  mạn tính và tái phát, hiện chưa điều trị khỏi được và lây cho bạn tình, có thể lây cho trẻ sơ sinh khi
+  mẹ bị bệnh.
 relations:
 - symptom_code: genital_herpes_clustered_painful_ulcers
   polarity: SUPPORTS
-  weight: 0.98
+  weight: 0.9
   is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: vesicular_blister_rash
   polarity: SUPPORTS
-  weight: 0.97
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: pruritus_intense_skin_itch
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: pustular_furuncle_folliculitis
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: myalgia_arthralgia
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: lymphadenopathy_splenomegaly
   polarity: SUPPORTS
-  weight: 0.78
+  weight: 0.3
   is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: headache_dull
   polarity: SUPPORTS
-  weight: 0.72
+  weight: 0.3
   is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: fatigue_malaise
   polarity: SUPPORTS
-  weight: 0.7
+  weight: 0.3
   is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT

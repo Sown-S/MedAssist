@@ -5,44 +5,44 @@ name_vi: Bệnh polyp mũi
 name_en: Nasal polyposis
 icd10_code: J33.9
 disease_group: ent
-description: Polyp mũi là tổn thương giả u do thoái hoái cục bộ của niêm mạc mũi hay
-  xoang mà chủ yếu là tổ chức đệm. Polyp mũi là bệnh rất thường gặp, có thể đơn thuần
-  ở hốc mũi, có thể ở các xoang hay cả ở mũi và xoang.
+description: Polyp mũi là tổn thương giả u do thoái hoái cục bộ của niêm mạc mũi hay xoang mà chủ yếu
+  là tổ chức đệm. Polyp mũi là bệnh rất thường gặp, có thể đơn thuần ở hốc mũi, có thể ở các xoang hay
+  cả ở mũi và xoang.
 relations:
 - symptom_code: nasal_polyp_sinonasal_mass
   polarity: SUPPORTS
-  weight: 0.95
+  weight: 0.9
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: middle_meatus_mucopurulent_discharge
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: nasal_obstruction_stuffiness
   polarity: SUPPORTS
-  weight: 0.9
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: facial_sinus_pain_anosmia
   polarity: SUPPORTS
-  weight: 0.9
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: turbinate_hypertrophy_pallor
   polarity: SUPPORTS
-  weight: 0.9
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: nasal_septal_deviation_spur
   polarity: SUPPORTS
-  weight: 0.89
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 excerpts:

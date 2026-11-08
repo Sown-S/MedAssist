@@ -5,92 +5,91 @@ name_vi: Viêm tai giữa mạn tính
 name_en: Chronic otitis media
 icd10_code: H66.3
 disease_group: ent
-description: Viêm tai giữa (VTG) mạn tính được định nghĩa là tình trạng viêm niêm
-  mạc tai giữa kéo dài trên 12 tuần, không đáp ứng với điều trị nội khoa, màng nhĩ
-  bị thủng, chảy tai, phù nề niêm mạc trong tai giữa và xương chũm (sào đạo, sào bào,
-  thông bào).
+description: Viêm tai giữa (VTG) mạn tính được định nghĩa là tình trạng viêm niêm mạc tai giữa kéo dài
+  trên 12 tuần, không đáp ứng với điều trị nội khoa, màng nhĩ bị thủng, chảy tai, phù nề niêm mạc trong
+  tai giữa và xương chũm (sào đạo, sào bào, thông bào).
 relations:
 - symptom_code: otorrhea_ear_discharge
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: tympanic_membrane_lesion
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: hearing_loss_deafness
   polarity: SUPPORTS
-  weight: 0.9
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: fever_high
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.3
   is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: dizziness_vertigo
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.3
   is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: tinnitus_ear_fullness
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: otalgia_ear_pain
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: skin_cellulitis_pus_abscess
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.3
   is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: fetid_cholesteatoma_otorrhea
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.3
   is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: mastoid_retroauricular_swelling
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: adenoid_facies_mouth_breathing
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.3
   is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: headache_dull
   polarity: SUPPORTS
-  weight: 0.74
+  weight: 0.3
   is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: fever_low_grade
   polarity: SUPPORTS
-  weight: 0.72
+  weight: 0.3
   is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: fatigue_malaise
   polarity: SUPPORTS
-  weight: 0.68
+  weight: 0.3
   is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT

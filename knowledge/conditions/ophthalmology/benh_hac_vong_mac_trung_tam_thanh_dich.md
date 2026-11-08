@@ -5,40 +5,39 @@ name_vi: Bệnh hắc võng mạc trung tâm thanh dịch
 name_en: Central serous chorioretinopathy
 icd10_code: H35.7
 disease_group: ophthalmology
-description: Bệnh hắc võng mạc trung tâm thanh dịch (HVMTTTD) biểu hiện bằng một vùng
-  bong thanh dịch của lớp võng mạc thần kinh do dịch dò từ mao mạch hắc mạc xuyên
-  qua lớp biểu mô sắc tố võng mạc. Bệnh thường gây giảm thị lực tạm thời một bên mắt,
-  hay gặp ở nam giới trong độ tuổi từ 20 đến 50. Một số trường hợp thị lực giảm không
-  phục hồi dù bong thanh dịch võng mạc đã hết.
+description: Bệnh hắc võng mạc trung tâm thanh dịch (HVMTTTD) biểu hiện bằng một vùng bong thanh dịch
+  của lớp võng mạc thần kinh do dịch dò từ mao mạch hắc mạc xuyên qua lớp biểu mô sắc tố võng mạc. Bệnh
+  thường gây giảm thị lực tạm thời một bên mắt, hay gặp ở nam giới trong độ tuổi từ 20 đến 50. Một số
+  trường hợp thị lực giảm không phục hồi dù bong thanh dịch võng mạc đã hết.
 relations:
 - symptom_code: central_serous_chorioretinopathy_metamorphopsia
   polarity: SUPPORTS
-  weight: 0.97
+  weight: 0.9
   is_key: true
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: retinal_vitreous_optic_disc_lesion
   polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: visual_acuity_decreased_blur
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: vkh_exudative_retinal_detachment
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: visual_field_scotoma_constriction
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 excerpts:

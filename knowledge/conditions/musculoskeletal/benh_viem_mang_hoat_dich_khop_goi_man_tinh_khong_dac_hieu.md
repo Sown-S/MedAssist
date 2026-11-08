@@ -5,32 +5,30 @@ name_vi: Bệnh viêm màng hoạt dịch khớp gối mạn tính không đặc
 name_en: Unspecified knee synovitis
 icd10_code: M65.8
 disease_group: musculoskeletal
-description: Viêm khớp không đặc hiệu được định nghĩa là bất kể loại viêm khớp nào
-  có tiềm năng trở thành viêm khớp dai dẳng mà không đáp ứng đủ tiêu chuẩn để chẩn
-  đoán vào một loại viêm khớp đặc hiệu nào đó.
+description: Viêm khớp không đặc hiệu được định nghĩa là bất kể loại viêm khớp nào có tiềm năng trở thành
+  viêm khớp dai dẳng mà không đáp ứng đủ tiêu chuẩn để chẩn đoán vào một loại viêm khớp đặc hiệu nào đó.
 relations:
 - symptom_code: knee_effusion_crepitus_locking
   polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: joint_swelling_warmth_redness_effusion
   polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: myalgia_arthralgia
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 excerpts:
 - excerpt_key: benh_viem_mang_hoat_dich_khop_goi_man_tinh_khong_dac_hieu_chan_doan
-  title: Tiêu chuẩn chẩn đoán lâm sàng Bệnh viêm màng hoạt dịch khớp gối mạn tính
-    không đặc hiệu
+  title: Tiêu chuẩn chẩn đoán lâm sàng Bệnh viêm màng hoạt dịch khớp gối mạn tính không đặc hiệu
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
   source_locator: Mục Chẩn đoán lâm sàng (Quyết định số 361/QĐ-BYT)

@@ -5,117 +5,116 @@ name_vi: Họng - thanh quản viêm mũi họng cấp tính
 name_en: Acute nasopharyngitis
 icd10_code: J00
 disease_group: ent
-description: Viêm mũi họng cấp tính là viêm cấp tính niêm mạc vùng mũi và họng, thường
-  kết hợp với viêm amiddan, VA,... thuộc vòng bạch huyết Waldeyer khi bệnh nhân còn
-  các tổ chức lympho này. Đây là một bệnh lý cấp tính hay gặp trong chuyên khoa tai
-  mũi họng, có thể xuất hiện đơn thuần hoặc là biểu hiện viêm long đường hô hấp trên
-  trong giai đoạn đầu của nhiều bệnh nhiễm trùng lây.
+description: Viêm mũi họng cấp tính là viêm cấp tính niêm mạc vùng mũi và họng, thường kết hợp với viêm
+  amiddan, VA,... thuộc vòng bạch huyết Waldeyer khi bệnh nhân còn các tổ chức lympho này. Đây là một
+  bệnh lý cấp tính hay gặp trong chuyên khoa tai mũi họng, có thể xuất hiện đơn thuần hoặc là biểu hiện
+  viêm long đường hô hấp trên trong giai đoạn đầu của nhiều bệnh nhiễm trùng lây.
 relations:
 - symptom_code: vocal_abuse_phonotrauma_strain
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: laryngeal_paresthesia_throat_clearing
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: allergic_sneezing_nasal_itch
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: tonsillitis_adenoid_pharyngitis
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: vesicular_blister_rash
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: cough_productive_sputum
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: nasopharyngeal_carcinoma_trotter
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: granular_hypertrophic_pharyngitis
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: fever_high
   polarity: SUPPORTS
-  weight: 0.9
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: nasal_obstruction_stuffiness
   polarity: SUPPORTS
-  weight: 0.9
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: rhinorrhea_nasal_congestion
   polarity: SUPPORTS
-  weight: 0.86
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: cough_dry
   polarity: SUPPORTS
-  weight: 0.85
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: lymphadenopathy_splenomegaly
   polarity: SUPPORTS
-  weight: 0.78
+  weight: 0.3
   is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: chills_rigors
   polarity: SUPPORTS
-  weight: 0.75
+  weight: 0.3
   is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: weight_loss_anorexia
   polarity: SUPPORTS
-  weight: 0.74
+  weight: 0.3
   is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: fever_low_grade
   polarity: SUPPORTS
-  weight: 0.72
+  weight: 0.3
   is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: headache_dull
   polarity: SUPPORTS
-  weight: 0.72
+  weight: 0.3
   is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: fatigue_malaise
   polarity: SUPPORTS
-  weight: 0.68
+  weight: 0.3
   is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT

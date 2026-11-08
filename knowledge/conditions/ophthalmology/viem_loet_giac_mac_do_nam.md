@@ -5,37 +5,37 @@ name_vi: Viêm loét giác mạc do nấm
 name_en: Fungal keratitis
 icd10_code: B49.0
 disease_group: ophthalmology
-description: Loét giác mạc do nấm là hiện tượng mất tổ chức giác mạc do hoại tử, gây
-  ra bởi một quá trình viêm trên giác mạc do nấm, là một nguyên nhân gây mù loà.
+description: Loét giác mạc do nấm là hiện tượng mất tổ chức giác mạc do hoại tử, gây ra bởi một quá trình
+  viêm trên giác mạc do nấm, là một nguyên nhân gây mù loà.
 relations:
 - symptom_code: fungal_corneal_ulcer_feathery_satellite
   polarity: SUPPORTS
-  weight: 0.97
+  weight: 0.9
   is_key: true
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: corneal_ulcer_hypopyon_keratitis
   polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: visual_acuity_decreased_blur
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: conjunctival_ciliary_injection_discharge
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: ocular_pain_photophobia_tearing
   polarity: SUPPORTS
-  weight: 0.9
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 excerpts:

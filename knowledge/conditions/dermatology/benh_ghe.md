@@ -5,63 +5,62 @@ name_vi: Bệnh ghẻ
 name_en: Scabies
 icd10_code: B86
 disease_group: dermatology
-description: Là một bệnh da khá phổ biến, thường xuất hiện ở những vùng dân cư đông
-  đúc, nhà ở chật hẹp, thiếu vệ sinh, thiếu nước sinh hoạt. Bệnh lây qua tiếp xúc
-  trực tiếp hoặc qua quần áo, chăn màn. Bệnh có thể gây ra các biến chứng nhiễm trùng,
-  chàm hoá, viêm cầu thận cấp.
+description: Là một bệnh da khá phổ biến, thường xuất hiện ở những vùng dân cư đông đúc, nhà ở chật hẹp,
+  thiếu vệ sinh, thiếu nước sinh hoạt. Bệnh lây qua tiếp xúc trực tiếp hoặc qua quần áo, chăn màn. Bệnh
+  có thể gây ra các biến chứng nhiễm trùng, chàm hoá, viêm cầu thận cấp.
 relations:
 - symptom_code: scabies_interdigital_burrows_nocturnal
   polarity: SUPPORTS
-  weight: 0.98
+  weight: 0.9
   is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: syphilis_hard_chancre_roseola_palmoplantar
   polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: pruritus_intense_skin_itch
   polarity: SUPPORTS
-  weight: 0.97
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: genital_ulcer_chancre_discharge
   polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: atopic_dermatitis_flexural_eczema
   polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: prurigo_nodularis_excoriated_papules
   polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: vesicular_blister_rash
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: pustular_furuncle_folliculitis
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: scaly_plaque_hyperkeratosis
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 excerpts:

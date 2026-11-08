@@ -5,63 +5,62 @@ name_vi: Bệnh viêm khớp dạng thấp
 name_en: Rheumatoid Arthritis
 icd10_code: M05.9
 disease_group: musculoskeletal
-description: Viêm khớp dạng thấp (VKDT) là một bệnh lý tự miễn điển hình, diễn biến
-  mạn tính với các biểu hiện tại khớp, ngoài khớp và toàn thân ở nhiều mức độ khác
-  nhau. Bệnh diễn biến phức tạp, gây hậu quả nặng nề do đó cần được điều trị tích
-  cực ngay từ đầu bằng các biện pháp điều trị hữu hiệu để làm ngừng hay làm chậm tiến
-  triển của bệnh, hạn chế tàn phế và nâng cao chất lượng sống cho người bệnh.
+description: Viêm khớp dạng thấp (VKDT) là một bệnh lý tự miễn điển hình, diễn biến mạn tính với các biểu
+  hiện tại khớp, ngoài khớp và toàn thân ở nhiều mức độ khác nhau. Bệnh diễn biến phức tạp, gây hậu quả
+  nặng nề do đó cần được điều trị tích cực ngay từ đầu bằng các biện pháp điều trị hữu hiệu để làm ngừng
+  hay làm chậm tiến triển của bệnh, hạn chế tàn phế và nâng cao chất lượng sống cho người bệnh.
 relations:
 - symptom_code: morning_stiffness_over_1h
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: symmetric_polyarthritis_hands
   polarity: SUPPORTS
-  weight: 0.92
+  weight: 0.9
   is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: rheumatoid_nodules_ulnar_deviation
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: joint_swelling_warmth_redness_effusion
   polarity: SUPPORTS
-  weight: 0.89
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: conjunctivitis_uveitis_red_eye
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: serositis_pleural_pericardial
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: myalgia_arthralgia
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: periarticular_tendon_bursa_tenderness
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: muscle_tenderness_cramps_myotonia
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT

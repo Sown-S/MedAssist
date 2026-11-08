@@ -5,32 +5,32 @@ name_vi: Bệnh phong
 name_en: Leprosy
 icd10_code: A30.9
 disease_group: dermatology
-description: Bệnh phong là bệnh nhiễm trùng kinh diễn do trực khuẩn Mycobacterium
-  leprae (M. leprae) gây nên. Bệnh có thể gây các tàn tật nếu không được phát hiện
-  và điều trị kịp thời. Chính những tàn tật này làm cho người bệnh bị xa lánh, kỳ
-  thị. Ngày nay, bệnh phong sẽ được chữa khỏi hoàn toàn bằng đa hóa trị liệu.
+description: Bệnh phong là bệnh nhiễm trùng kinh diễn do trực khuẩn Mycobacterium leprae (M. leprae) gây
+  nên. Bệnh có thể gây các tàn tật nếu không được phát hiện và điều trị kịp thời. Chính những tàn tật
+  này làm cho người bệnh bị xa lánh, kỳ thị. Ngày nay, bệnh phong sẽ được chữa khỏi hoàn toàn bằng đa
+  hóa trị liệu.
 relations:
 - symptom_code: leprosy_anesthetic_hypopigmented_nerve
   polarity: SUPPORTS
-  weight: 0.98
+  weight: 0.9
   is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: maculopapular_rash
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: limb_numbness_paresthesia_tingling
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: epidemiological_exposure_vector_travel
   polarity: SUPPORTS
-  weight: 0.76
+  weight: 0.3
   is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT

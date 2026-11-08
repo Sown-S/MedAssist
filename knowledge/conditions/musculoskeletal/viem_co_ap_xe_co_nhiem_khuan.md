@@ -5,54 +5,54 @@ name_vi: Viêm cơ, áp xe cơ nhiễm khuẩn
 name_en: Pyomyositis and infectious muscle abscess
 icd10_code: M60.0
 disease_group: musculoskeletal
-description: Viêm cơ nhiễm khuẩn (infectiuos myositis) là tổn thương viêm hoặc áp
-  xe tại cơ vân do vi khuẩn gây nên.
+description: Viêm cơ nhiễm khuẩn (infectiuos myositis) là tổn thương viêm hoặc áp xe tại cơ vân do vi
+  khuẩn gây nên.
 relations:
 - symptom_code: pyomyositis_psoas_muscle_abscess
   polarity: SUPPORTS
-  weight: 0.98
+  weight: 0.9
   is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: still_quotidian_spiking_fever_arthralgia
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: osteomyelitis_bone_tenderness_fistula
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: fever_high
   polarity: SUPPORTS
-  weight: 0.9
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: skin_cellulitis_pus_abscess
   polarity: SUPPORTS
-  weight: 0.9
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: fever_prolonged
   polarity: SUPPORTS
-  weight: 0.86
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: weight_loss_anorexia
   polarity: SUPPORTS
-  weight: 0.74
+  weight: 0.3
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: fatigue_malaise
   polarity: SUPPORTS
-  weight: 0.68
+  weight: 0.3
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT

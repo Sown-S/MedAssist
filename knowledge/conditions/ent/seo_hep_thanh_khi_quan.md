@@ -5,57 +5,56 @@ name_vi: Sẹo hẹp thanh khí quản
 name_en: Cicatricial laryngotracheal stenosis
 icd10_code: J38.6
 disease_group: ent
-description: Sẹo hẹp thanh khí quản (SHTKQ) là biến chứng do tổn thương thanh quản
-  (TQ) hoặc khí quản (KQ) do nguyên nhân bẩm sinh hoặc mắc phải gây ra sẹo từ đó làm
-  hẹp khẩu kính đường thở. Theo phân loại của Myer và Cotton thì sẹo hẹp ở thanh quản
-  hạ thanh môn được tính là độ I khi khẩu kính đường thở hẹp 50%. Khi khẩu kính đường
-  thở giảm trên 60% thì bắt đầu xuất hiện triệu chứng khó thở.
+description: Sẹo hẹp thanh khí quản (SHTKQ) là biến chứng do tổn thương thanh quản (TQ) hoặc khí quản
+  (KQ) do nguyên nhân bẩm sinh hoặc mắc phải gây ra sẹo từ đó làm hẹp khẩu kính đường thở. Theo phân loại
+  của Myer và Cotton thì sẹo hẹp ở thanh quản hạ thanh môn được tính là độ I khi khẩu kính đường thở hẹp
+  50%. Khi khẩu kính đường thở giảm trên 60% thì bắt đầu xuất hiện triệu chứng khó thở.
 relations:
 - symptom_code: laryngotracheal_stenosis_necrosis
   polarity: SUPPORTS
-  weight: 0.96
+  weight: 0.9
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: hoarseness_dysphonia_stridor
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: wheezing_bronchospasm
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: glottic_closure_mucosal_wave_deficit
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: subglottic_croup_barking_cough
   polarity: SUPPORTS
-  weight: 0.91
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: vocal_abuse_phonotrauma_strain
   polarity: SUPPORTS
-  weight: 0.88
+  weight: 0.6
   is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: laryngeal_paresthesia_throat_clearing
   polarity: SUPPORTS
-  weight: 0.88
+  weight: 0.6
   is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: sore_throat_dysphagia
   polarity: SUPPORTS
-  weight: 0.76
+  weight: 0.3
   is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT

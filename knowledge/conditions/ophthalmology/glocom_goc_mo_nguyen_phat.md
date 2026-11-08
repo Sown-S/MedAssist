@@ -5,34 +5,33 @@ name_vi: Glôcôm góc mở nguyên phát
 name_en: Primary open-angle glaucoma
 icd10_code: H40.1
 disease_group: ophthalmology
-description: 'Glôcôm góc mở nguyên phát là một tình trạng bệnh lý của thị thần kinh,
-  tiến triển mãn tính, đặc trưng bởi sự tổn hại của tế bào hạch võng mạc và lớp sợi
-  thần kinh, teo lõm đĩa thị giác, tổn thương thị trường điển hình, thường có liên
-  quan với nhãn áp cao. Các yếu tố nguy cơ cao bị glôcôm góc mở tuổi > 40. Người ruột
-  thịt của người bệnh glôcôm. Tật khúc xạ: Cận thị > 4 diốp; Lão thị sớm, tăng số
-  kính lão nhanh.'
+description: 'Glôcôm góc mở nguyên phát là một tình trạng bệnh lý của thị thần kinh, tiến triển mãn tính,
+  đặc trưng bởi sự tổn hại của tế bào hạch võng mạc và lớp sợi thần kinh, teo lõm đĩa thị giác, tổn thương
+  thị trường điển hình, thường có liên quan với nhãn áp cao. Các yếu tố nguy cơ cao bị glôcôm góc mở tuổi
+  > 40. Người ruột thịt của người bệnh glôcôm. Tật khúc xạ: Cận thị > 4 diốp; Lão thị sớm, tăng số kính
+  lão nhanh.'
 relations:
 - symptom_code: intraocular_pressure_glaucoma_cupping
   polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: open_angle_glaucoma_rnfl_visual_field
   polarity: SUPPORTS
-  weight: 0.98
+  weight: 0.9
   is_key: true
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: visual_acuity_decreased_blur
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: ocular_pain_photophobia_tearing
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT

@@ -5,62 +5,61 @@ name_vi: Viêm da tiếp xúc do côn trùng
 name_en: Insect-induced contact dermatitis
 icd10_code: L24.8
 disease_group: dermatology
-description: Là một phản ứng cấp tính của da với các chất kích ứng từ côn trùng. Viêm
-  da tiếp xúc do Paederus là loại thường gặp nhất. Ở Việt Nam, bệnh thường xuất hiện
-  vào mùa mưa bão, thành dịch, có thể rải rác suốt cả năm. Bệnh không nguy hiểm nhưng
-  làm người bệnh lo lắng.
+description: Là một phản ứng cấp tính của da với các chất kích ứng từ côn trùng. Viêm da tiếp xúc do Paederus
+  là loại thường gặp nhất. Ở Việt Nam, bệnh thường xuất hiện vào mùa mưa bão, thành dịch, có thể rải rác
+  suốt cả năm. Bệnh không nguy hiểm nhưng làm người bệnh lo lắng.
 relations:
 - symptom_code: vesicular_blister_rash
   polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: porphyria_cutanea_tarda_photo_blisters
   polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: paederus_kissing_blister_dermatitis
   polarity: SUPPORTS
-  weight: 0.97
+  weight: 0.9
   is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: pruritus_intense_skin_itch
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: maculopapular_rash
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: pustular_furuncle_folliculitis
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: scaly_plaque_hyperkeratosis
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: lymphadenopathy_splenomegaly
   polarity: SUPPORTS
-  weight: 0.78
+  weight: 0.3
   is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: fatigue_malaise
   polarity: SUPPORTS
-  weight: 0.7
+  weight: 0.3
   is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT

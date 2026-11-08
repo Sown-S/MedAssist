@@ -5,40 +5,39 @@ name_vi: Bệnh bạch biến
 name_en: Vitiligo
 icd10_code: L80
 disease_group: dermatology
-description: Bạch biến là một bệnh da do rối loạn sắc tố với các đám da giảm hoặc
-  mất sắc tố có thể gặp ở mọi vị trí trên cơ thể nhưng thường gặp ở vùng mặt, cẳng
-  tay và bộ phận sinh dục. Bệnh bạch biến có thể khởi phát ở bất kỳ tuổi nào, nhưng
-  thường gặp ở người trẻ. Nam chiếm 32,5% và nữ là 67,5%. Một số trường hợp bệnh có
-  tính chất gia đình. Bệnh ảnh hưởng nhiều đến tâm sinh lý và thẩm mỹ của người bệnh.
+description: Bạch biến là một bệnh da do rối loạn sắc tố với các đám da giảm hoặc mất sắc tố có thể gặp
+  ở mọi vị trí trên cơ thể nhưng thường gặp ở vùng mặt, cẳng tay và bộ phận sinh dục. Bệnh bạch biến có
+  thể khởi phát ở bất kỳ tuổi nào, nhưng thường gặp ở người trẻ. Nam chiếm 32,5% và nữ là 67,5%. Một số
+  trường hợp bệnh có tính chất gia đình. Bệnh ảnh hưởng nhiều đến tâm sinh lý và thẩm mỹ của người bệnh.
 relations:
 - symptom_code: vitiligo_chalk_white_depigmented_macules
   polarity: SUPPORTS
-  weight: 0.98
+  weight: 0.9
   is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: palmoplantar_keratoderma_fissures
   polarity: SUPPORTS
-  weight: 0.97
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: pigmentary_macule_patch
   polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: tinea_capitis_kerion_alopecia
   polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: maculopapular_rash
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 excerpts:

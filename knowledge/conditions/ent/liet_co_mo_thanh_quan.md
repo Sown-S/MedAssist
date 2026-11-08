@@ -5,103 +5,103 @@ name_vi: Liệt cơ mở thanh quản
 name_en: Vocal fold abductor paralysis
 icd10_code: J38.0
 disease_group: ent
-description: Là bệnh lý do tổn thương thần kinh hồi quy nhánh chi phối cho cơ mở thanh
-  quản là cơ nhẫn phễu sau. Tổn thương có thể là một bên hoặc cả hai bên thần kinh
-  chi phối do nhiều nguyên nhân khác nhau.
+description: Là bệnh lý do tổn thương thần kinh hồi quy nhánh chi phối cho cơ mở thanh quản là cơ nhẫn
+  phễu sau. Tổn thương có thể là một bên hoặc cả hai bên thần kinh chi phối do nhiều nguyên nhân khác
+  nhau.
 relations:
 - symptom_code: bilateral_vocal_cord_abductor_palsy
   polarity: SUPPORTS
-  weight: 0.97
+  weight: 0.9
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: vocal_abuse_phonotrauma_strain
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: laryngeal_paresthesia_throat_clearing
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: head_neck_mass_fistula_trauma
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: dyspnea_chronic_exertional
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: vocal_fatigue_phonasthenia
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: voice_pitch_timbre_alteration
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: glottic_closure_mucosal_wave_deficit
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: temporal_bone_fracture_hemotympanum
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: subglottic_croup_barking_cough
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: salivary_thyroid_gland_nodule
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: tachypnea_accessory_muscle_retractions
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: hoarseness_dysphonia_stridor
   polarity: SUPPORTS
-  weight: 0.91
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: cyanosis_hypoxemia_central_peripheral
   polarity: SUPPORTS
-  weight: 0.91
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: sore_throat_dysphagia
   polarity: SUPPORTS
-  weight: 0.76
+  weight: 0.3
   is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: intoxication_coated_tongue_dry_lips
   polarity: SUPPORTS
-  weight: 0.76
+  weight: 0.3
   is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT

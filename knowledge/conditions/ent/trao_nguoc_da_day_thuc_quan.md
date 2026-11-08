@@ -5,75 +5,74 @@ name_vi: Trào ngược dạ dày thực quản
 name_en: Gastroesophageal reflux disease
 icd10_code: K21.9
 disease_group: ent
-description: Trào ngược dạ dày thực quản là khi có sự trào ngược của dịch vị vào trong
-  thực quản. Trong một tờ báo xuất bản năm 1935 Asher Winkeltein lần đầu tiên đề cập
-  đến thuật ngữ “viêm thực quản pepsin” Bài báo mô tả triệu chứng lâm sàng của một
-  vài bệnh nhân mà nguyên nhân được cho là viêm thực quản thứ phát do trào ngược acid
-  dịch vị HCl và pepsin.
+description: Trào ngược dạ dày thực quản là khi có sự trào ngược của dịch vị vào trong thực quản. Trong
+  một tờ báo xuất bản năm 1935 Asher Winkeltein lần đầu tiên đề cập đến thuật ngữ “viêm thực quản pepsin”
+  Bài báo mô tả triệu chứng lâm sàng của một vài bệnh nhân mà nguyên nhân được cho là viêm thực quản thứ
+  phát do trào ngược acid dịch vị HCl và pepsin.
 relations:
 - symptom_code: laryngopharyngeal_reflux_globus
   polarity: SUPPORTS
-  weight: 0.96
+  weight: 0.9
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: nausea_vomiting_diarrhea
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: hoarseness_dysphonia_stridor
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: voice_pitch_timbre_alteration
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: glottic_closure_mucosal_wave_deficit
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: subglottic_croup_barking_cough
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: vocal_cord_nodule_polyp_reinke
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: vocal_abuse_phonotrauma_strain
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: laryngeal_paresthesia_throat_clearing
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: sore_throat_dysphagia
   polarity: SUPPORTS
-  weight: 0.76
+  weight: 0.3
   is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: fatigue_malaise
   polarity: SUPPORTS
-  weight: 0.68
+  weight: 0.3
   is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
