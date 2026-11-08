@@ -18,7 +18,7 @@ export const GROUPS = [
   { key: 'supply', label: 'Medical supplies' }
 ]
 
-export const WINDOWS = [0, 30, 60, 90]
+const WINDOWS = [0, 30, 60, 90]
 
 export function StockTab({ inv, user }) {
   const [q, setQ] = useState('')

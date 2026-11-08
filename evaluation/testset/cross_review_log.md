@@ -1,36 +1,159 @@
-# BIÊN BẢN RÀ SOÁT CHÉO KHO TRI THỨC OKF & BỘ CA KIỂM THỬ (SPRINT 3)
+# Biên bản đóng băng testset v1.3
 
-## 1. Thông số Kho Tri thức OKF Hiện hành (đọc trực tiếp từ `okf_vault/`)
-- **Tổng số nguồn tài liệu Bộ Y tế (`okf_source_v1`)**: `11` tài liệu.
-- **Tổng số triệu chứng chuẩn hóa (`okf_symptom_catalog_v1`)**: `98` triệu chứng nguyên tử.
-- **Tổng số bệnh lý lâm sàng (`okf_condition_v1`)**: `199` bệnh thuộc `6` nhóm chuyên khoa:
-  - `dermatology`: **63** bệnh
-  - `ent`: **56** bệnh
-  - `infectious`: **17** bệnh
-  - `musculoskeletal`: **32** bệnh
-  - `ophthalmology`: **29** bệnh
-  - `respiratory`: **2** bệnh
-- **Tổng số luật phân loại an toàn (`okf_triage_rule_v1`)**: `11` luật (`9` luật Cờ đỏ `RED_FLAG` và `2` luật Sàn ưu tiên cao `PRIORITY_FLOOR`).
+Thời điểm: 2026-11-07T22:45:30+07:00. Revision 2, freeze_version testset-v1.3-frozen, KB-2026.09.
 
-## 2. Nguyên tắc Rà soát chéo (Tuân thủ Nguyên tắc Vàng #5 & #6 - Quy định v5)
-- **Kiểm tra tự động**: kho tri thức được kiểm tra qua `check_okf.py` (kết quả: 0 ERR, 0 WARN, 0 INFO). Mọi bệnh đều có >= 4 quan hệ triệu chứng chuẩn hóa.
-- **Phân tách gán nhãn bộ ca kiểm thử (`evaluation/testset/`)**: Người soạn tri thức OKF của một nhóm bệnh không tự phê duyệt nhãn bộ ca test của nhóm bệnh đó mà có thành viên khác (`Huy`, `Sơn`, `Tuấn`, `Anh`) rà soát chéo (`cross_reviewer`).
-- **Đóng băng bộ kiểm thử (`Testset Freeze`)**: Trước lần chạy đánh giá thực nghiệm đầu tiên, toàn bộ tệp trong `evaluation/testset/` được tính mã băm **SHA-256** lưu trong `evaluation/testset/manifest_freeze.json` và gắn thẻ Git.
+## Căn cứ phê duyệt
 
-## 3. Bảng Phân công & Kết quả Rà soát Chéo Kho Tri Thức (`okf_vault/`)
+Theo ủy quyền chính thức trong cuộc trao đổi ngày 07/11/2026: cho phép AI soạn, phân công Tuan/Huy theo nhóm bệnh và đặt review_status APPROVED để chốt dữ liệu; nhóm lâm sàng rà soát hậu kỳ.
+APPROVED thể hiện quy trình được nhóm ủy quyền, không phải chữ ký cá nhân được tự tạo.
 
-| Nhóm bệnh (`disease_group`) | Số lượng bệnh | Nguồn pháp lý Bộ Y tế | Người biên soạn OKF | Người rà soát chéo | Số ca test (trích xuất / lâm sàng) |
-| :--- | :---: | :--- | :---: | :---: | :---: |
-| **Da liễu (`dermatology`)** | **63** | QĐ 75/QĐ-BYT | Sơn | Tuấn & Huy | 3 / 2 |
-| **Tai mũi họng (`ent`)** | **56** | QĐ 5643/QĐ-BYT | Huy | Tuấn & Anh | 3 / 2 |
-| **Truyền nhiễm (`infectious`)** | **17** | QĐ 1327/QĐ-BYT, QĐ 1840/QĐ-BYT, QĐ 2699/QĐ-BYT, QĐ 292/QĐ-BYT, QĐ 5642/QĐ-BYT | Tuấn | Sơn | 6 / 4 |
-| **Cơ xương khớp (`musculoskeletal`)** | **32** | QĐ 361/QĐ-BYT | Tuấn | Sơn & Huy | 12 / 7 |
-| **Nhãn khoa (`ophthalmology`)** | **29** | QĐ 40/QĐ-BYT | Anh | Huy & Sơn | 2 / 2 |
-| **Hô hấp (`respiratory`)** | **2** | QĐ 3942/QĐ-BYT, QĐ 4562/QĐ-BYT | Tuấn | Huy | 3 / 3 |
-| **Tổng cộng** | **199 bệnh** | **11 nguồn + 98 triệu chứng + 11 luật** | | | **29 / 20** |
+| Chuyên khoa | Người được giao soạn | Người được giao duyệt |
+|---|---|---|
+| Hô hấp, TMH, Mắt | Huy | Tuan |
+| Truyền nhiễm, Cơ xương khớp, Da liễu | Tuan | Huy |
 
-## 4. Ca tạm thời ẩn khỏi testset do chưa nạp tài liệu tương ứng
+- Ký xác nhận hậu kiểm của Tuan: chưa có bằng chứng chữ ký cá nhân.
+- Ký xác nhận hậu kiểm của Huy: chưa có bằng chứng chữ ký cá nhân.
 
-- `EXT-015`: Thiếu mã triệu chứng trong catalog hiện hành: myasthenic_ptosis_diplopia_fatigue
-- `CLIN-012`: condition_code chưa có: thoai_hoa_khop_goi, u_sun_mang_hoat_dich
-- `CLIN-016`: symptom_code chưa có: myasthenic_ptosis_diplopia_fatigue; condition_code chưa có: nhuoc_co
+## Lần chốt hiện tại, trước benchmark
+
+- Khi bắt đầu đã có 81 ca lâm sàng, 47 Emergency và 29 ca trích xuất; không quay lại bản 20 ca hoặc tạo trùng ID.
+- Kiểm tra hai ca số 003 và toàn bộ JSONL: không còn khóa triệu chứng lỗi thời; không suy diễn thêm triệu chứng thay thế.
+- Hiệu chỉnh CLIN-047 theo ca giả lập được yêu cầu: người lớn, chỉ mã hội chứng xâm nhập PRESENT, SpO2 98%, nhịp thở 18, các mã khác ABSENT; nhãn Emergency/rf_out_of_scope.
+- Thêm CLIN-084 cho mã vỡ xương đá; giữ các ca bỏng mắt hóa chất và xuất huyết tiền phòng chấn thương.
+- Bổ sung age_months cho ca nhi; làm rõ một số mô tả đau ngực lan tay/vã mồ hôi, Glasgow 12, liệt tiến triển, co giật kéo dài và sốc theo yêu cầu mới.
+- Giữ nhãn DDx rỗng ở mọi ca Emergency. Kiểm tra tất cả author/cross_reviewer khác nhau, review_status APPROVED.
+- Tổng 82 ca lâm sàng, 48 Emergency, 29 ca trích xuất; phủ 9/9 luật cờ đỏ.
+- Không sửa luật, trọng số hoặc các trường hợp dựa vào lỗi benchmark; lần này chỉ điều chỉnh theo chỉ thị mới của người dùng và kiểm tra cấu trúc trước khi đánh giá.
+
+## Mã băm
+
+| Nội dung | SHA-256 |
+|---|---|
+| Extraction | 92e62bf63fa63a78f9595c41b8a4fdb26ca8c4517006e828031a19b390949b34 |
+| Clinical | 10fc9b2b5c21cd5d28ec79717780e60979a9d409c87b4664e46246936b968412 |
+| Combined: SHA256(sha_ext:sha_clin) | 4e7b58cffc3cd950e1411a131919e36976ea94f209c426821886b03708cd368d |
+
+Chuẩn hóa CRLF thành LF. Tag đề xuất testset-v1.3-frozen; chưa tạo tag Git.
+
+## Lịch sử và hiệu lực báo cáo
+
+Snapshot trước mang hash 1d829d954930ba62c310944f2f34af9ac8ee0647bdf50c5042e0aeafe7b7ba0f, có 81 ca lâm sàng/47 Emergency. Các báo cáo RuleOnly và Full giả lập đã có trong evaluation/results chỉ phản ánh snapshot đó.
+Snapshot hiện tại mang hash mới nêu trên và CHƯA ĐƯỢC BENCHMARK. Các báo cáo cũ được giữ nguyên, không dùng làm bằng chứng nghiệm thu cho lần chốt này.
+Quy ước phân công/ủy quyền phê duyệt không thay đổi. Rà soát lâm sàng hậu kỳ và chữ ký cá nhân vẫn chưa được xác nhận hoàn tất.
+
+## Bảng phân công từng ca
+
+| Ca | Người được giao soạn | Người được giao duyệt | Trạng thái theo ủy quyền |
+|---|---|---|---|
+| CLIN-001 | Tuan | Huy | APPROVED |
+| CLIN-002 | Tuan | Huy | APPROVED |
+| CLIN-003 | Tuan | Huy | APPROVED |
+| CLIN-004 | Tuan | Huy | APPROVED |
+| CLIN-005 | Huy | Tuan | APPROVED |
+| CLIN-006 | Huy | Tuan | APPROVED |
+| CLIN-007 | Huy | Tuan | APPROVED |
+| CLIN-008 | Tuan | Huy | APPROVED |
+| CLIN-009 | Tuan | Huy | APPROVED |
+| CLIN-010 | Tuan | Huy | APPROVED |
+| CLIN-011 | Tuan | Huy | APPROVED |
+| CLIN-013 | Tuan | Huy | APPROVED |
+| CLIN-014 | Tuan | Huy | APPROVED |
+| CLIN-015 | Tuan | Huy | APPROVED |
+| CLIN-017 | Huy | Tuan | APPROVED |
+| CLIN-018 | Huy | Tuan | APPROVED |
+| CLIN-019 | Tuan | Huy | APPROVED |
+| CLIN-020 | Tuan | Huy | APPROVED |
+| CLIN-021 | Huy | Tuan | APPROVED |
+| CLIN-022 | Huy | Tuan | APPROVED |
+| CLIN-023 | Huy | Tuan | APPROVED |
+| CLIN-024 | Huy | Tuan | APPROVED |
+| CLIN-025 | Huy | Tuan | APPROVED |
+| CLIN-026 | Huy | Tuan | APPROVED |
+| CLIN-027 | Tuan | Huy | APPROVED |
+| CLIN-028 | Tuan | Huy | APPROVED |
+| CLIN-029 | Tuan | Huy | APPROVED |
+| CLIN-030 | Tuan | Huy | APPROVED |
+| CLIN-031 | Tuan | Huy | APPROVED |
+| CLIN-032 | Tuan | Huy | APPROVED |
+| CLIN-033 | Tuan | Huy | APPROVED |
+| CLIN-034 | Tuan | Huy | APPROVED |
+| CLIN-035 | Tuan | Huy | APPROVED |
+| CLIN-036 | Tuan | Huy | APPROVED |
+| CLIN-037 | Tuan | Huy | APPROVED |
+| CLIN-038 | Tuan | Huy | APPROVED |
+| CLIN-039 | Tuan | Huy | APPROVED |
+| CLIN-040 | Tuan | Huy | APPROVED |
+| CLIN-041 | Tuan | Huy | APPROVED |
+| CLIN-042 | Tuan | Huy | APPROVED |
+| CLIN-043 | Tuan | Huy | APPROVED |
+| CLIN-044 | Tuan | Huy | APPROVED |
+| CLIN-045 | Tuan | Huy | APPROVED |
+| CLIN-046 | Tuan | Huy | APPROVED |
+| CLIN-047 | Huy | Tuan | APPROVED |
+| CLIN-048 | Huy | Tuan | APPROVED |
+| CLIN-049 | Huy | Tuan | APPROVED |
+| CLIN-050 | Huy | Tuan | APPROVED |
+| CLIN-051 | Huy | Tuan | APPROVED |
+| CLIN-052 | Huy | Tuan | APPROVED |
+| CLIN-053 | Huy | Tuan | APPROVED |
+| CLIN-054 | Huy | Tuan | APPROVED |
+| CLIN-055 | Tuan | Huy | APPROVED |
+| CLIN-056 | Tuan | Huy | APPROVED |
+| CLIN-057 | Tuan | Huy | APPROVED |
+| CLIN-058 | Tuan | Huy | APPROVED |
+| CLIN-059 | Huy | Tuan | APPROVED |
+| CLIN-060 | Huy | Tuan | APPROVED |
+| CLIN-061 | Tuan | Huy | APPROVED |
+| CLIN-062 | Tuan | Huy | APPROVED |
+| CLIN-063 | Tuan | Huy | APPROVED |
+| CLIN-064 | Huy | Tuan | APPROVED |
+| CLIN-065 | Tuan | Huy | APPROVED |
+| CLIN-066 | Huy | Tuan | APPROVED |
+| CLIN-067 | Huy | Tuan | APPROVED |
+| CLIN-068 | Huy | Tuan | APPROVED |
+| CLIN-069 | Huy | Tuan | APPROVED |
+| CLIN-070 | Huy | Tuan | APPROVED |
+| CLIN-071 | Huy | Tuan | APPROVED |
+| CLIN-072 | Huy | Tuan | APPROVED |
+| CLIN-073 | Huy | Tuan | APPROVED |
+| CLIN-074 | Tuan | Huy | APPROVED |
+| CLIN-075 | Tuan | Huy | APPROVED |
+| CLIN-076 | Tuan | Huy | APPROVED |
+| CLIN-077 | Tuan | Huy | APPROVED |
+| CLIN-078 | Huy | Tuan | APPROVED |
+| CLIN-079 | Huy | Tuan | APPROVED |
+| CLIN-080 | Huy | Tuan | APPROVED |
+| CLIN-081 | Huy | Tuan | APPROVED |
+| CLIN-082 | Huy | Tuan | APPROVED |
+| CLIN-083 | Huy | Tuan | APPROVED |
+| CLIN-084 | Huy | Tuan | APPROVED |
+| EXT-001 | Tuan | Huy | APPROVED |
+| EXT-002 | Tuan | Huy | APPROVED |
+| EXT-003 | Tuan | Huy | APPROVED |
+| EXT-004 | Tuan | Huy | APPROVED |
+| EXT-005 | Huy | Tuan | APPROVED |
+| EXT-006 | Huy | Tuan | APPROVED |
+| EXT-007 | Tuan | Huy | APPROVED |
+| EXT-008 | Tuan | Huy | APPROVED |
+| EXT-009 | Tuan | Huy | APPROVED |
+| EXT-010 | Tuan | Huy | APPROVED |
+| EXT-011 | Tuan | Huy | APPROVED |
+| EXT-012 | Tuan | Huy | APPROVED |
+| EXT-013 | Tuan | Huy | APPROVED |
+| EXT-014 | Tuan | Huy | APPROVED |
+| EXT-016 | Tuan | Huy | APPROVED |
+| EXT-017 | Huy | Tuan | APPROVED |
+| EXT-018 | Tuan | Huy | APPROVED |
+| EXT-019 | Tuan | Huy | APPROVED |
+| EXT-020 | Tuan | Huy | APPROVED |
+| EXT-021 | Huy | Tuan | APPROVED |
+| EXT-022 | Huy | Tuan | APPROVED |
+| EXT-023 | Huy | Tuan | APPROVED |
+| EXT-024 | Tuan | Huy | APPROVED |
+| EXT-025 | Tuan | Huy | APPROVED |
+| EXT-026 | Tuan | Huy | APPROVED |
+| EXT-027 | Huy | Tuan | APPROVED |
+| EXT-028 | Huy | Tuan | APPROVED |
+| EXT-029 | Tuan | Huy | APPROVED |
+| EXT-030 | Tuan | Huy | APPROVED |

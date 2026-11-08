@@ -1,16 +1,16 @@
 import { checkVitals } from '../../../api/vitals'
-import { num, isChild } from './rxDraft'
+import { num, isChild, wholeQty } from './rxDraft'
 
 // FR03: hệ thống không đánh giá đơn, chỉ nhắc dị ứng / bệnh nền. Chỉ chặn khi thiếu dữ liệu bắt buộc:
 // chẩn đoán, số lượng + cách dùng, cân nặng trẻ em.
 export function finalizeCheck(visit, d) {
-  const incomplete = d.rx.some((l) => !(parseInt(l.qty) > 0) || !l.usage.trim())
+  const incomplete = d.rx.some((l) => !wholeQty(l.qty) || !l.usage.trim())
   const needWeight = isChild(visit) && d.rx.length > 0 && !(num(d.vitals.weight_kg) > 0)
   const vitalErr = checkVitals(d.vitals).errors
   const problem = !d.diagnosis.trim()
     ? 'Enter the diagnosis before finalizing.'
     : incomplete
-      ? 'Enter the quantity and directions for every drug.'
+      ? 'Enter a whole-number quantity and the directions for every drug.'
       : needWeight
         ? 'Enter the child’s weight (kg) before finalizing — it is printed on the prescription.'
         : vitalErr.length

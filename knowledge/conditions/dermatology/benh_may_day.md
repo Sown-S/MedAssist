@@ -5,63 +5,62 @@ name_vi: Bệnh mày đay
 name_en: Urticaria
 icd10_code: L50.9
 disease_group: dermatology
-description: Mày đay là phản ứng của mao mạch trên da với các yếu tố khác nhau gây
-  nên phù cấp hoặc mạn tính ở trung bì. Cơ chế phức tạp, đa số là thông qua kháng
-  thể IgE; trong đó có vai trò quan trọng của các chất trung gian hóa học, nhất là
-  histamin. Là bệnh da phổ biến, do nhiều nguyên nhân khác nhau gây ra, dễ nhận biết
-  nhưng rất khó tìm được nguyên nhân chính xác.
+description: Mày đay là phản ứng của mao mạch trên da với các yếu tố khác nhau gây nên phù cấp hoặc mạn
+  tính ở trung bì. Cơ chế phức tạp, đa số là thông qua kháng thể IgE; trong đó có vai trò quan trọng của
+  các chất trung gian hóa học, nhất là histamin. Là bệnh da phổ biến, do nhiều nguyên nhân khác nhau gây
+  ra, dễ nhận biết nhưng rất khó tìm được nguyên nhân chính xác.
 relations:
 - symptom_code: urticarial_wheal_angioedema
   polarity: SUPPORTS
-  weight: 0.98
+  weight: 0.9
   is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: nausea_vomiting_diarrhea
   polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: allergic_contact_dermatitis_patch_pos
   polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: maculopapular_rash
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: pigmentary_macule_patch
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: vulvovaginal_oral_candidiasis_curd
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: pruritus_intense_skin_itch
   polarity: SUPPORTS
-  weight: 0.89
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: myalgia_arthralgia
   polarity: SUPPORTS
-  weight: 0.85
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: lymphadenopathy_splenomegaly
   polarity: SUPPORTS
-  weight: 0.76
+  weight: 0.3
   is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT

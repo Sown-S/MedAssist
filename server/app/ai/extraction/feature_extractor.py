@@ -113,7 +113,9 @@ async def extract_symptoms(
     try:
         async with asyncio.timeout(remaining):
             output = await llm_client.generate_json(
-                prompt=prompt, schema=extraction_json_schema(), timeout_seconds=remaining,
+                prompt=prompt,
+                schema=extraction_json_schema([row["symptom_code"] for row in prompt_catalogue]),
+                timeout_seconds=remaining,
             )
     except (LLMError, TimeoutError):
         return []

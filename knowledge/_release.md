@@ -1,6 +1,6 @@
 ---
 schema: okf_release_v1
-label: KB-2026.08
-description: Bản phát hành tri thức lâm sàng tự động trích xuất từ 11 nguồn tài liệu
-  Bộ Y tế (6 nhóm bệnh, 199 bệnh, 300 triệu chứng và 12 luật phân loại).
+label: KB-2026.09
+description: 169 hồ sơ thuộc 6 nhóm; 299 mã triệu chứng; 9 luật cờ đỏ, 3 sàn ưu tiên; 11 nguồn Bộ Y tế.
+  Trọng số định tính 0.90/0.60/0.30, tối đa 3 key/bệnh; phục vụ thực nghiệm, nhóm lâm sàng hậu kiểm.
 ---

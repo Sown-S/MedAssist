@@ -5,39 +5,38 @@ name_vi: Loạn sản xơ xương
 name_en: Fibrous dysplasia of bone
 icd10_code: M85.0
 disease_group: musculoskeletal
-description: Loạn sản xơ xương (Fibrous dysplasia of bone) là bệnh lý xương mạn tính
-  không di truyền, trong đó mô xương bình thường bị thay thế bởi mô xơ. Đặc trưng
-  lâm sàng của bệnh là tổn thương xương tiến triển lành tính, biến dạng xương, đau
-  xương, gãy xương. Đây là một bệnh xương hiếm gặp, chiếm khoảng 5% u xương lành tính,
-  xuất hiện lẻ tẻ. Bệnh thường xảy ra ở tuổi thiếu niên, trong độ tuổi từ 3-15.
+description: Loạn sản xơ xương (Fibrous dysplasia of bone) là bệnh lý xương mạn tính không di truyền,
+  trong đó mô xương bình thường bị thay thế bởi mô xơ. Đặc trưng lâm sàng của bệnh là tổn thương xương
+  tiến triển lành tính, biến dạng xương, đau xương, gãy xương. Đây là một bệnh xương hiếm gặp, chiếm khoảng
+  5% u xương lành tính, xuất hiện lẻ tẻ. Bệnh thường xảy ra ở tuổi thiếu niên, trong độ tuổi từ 3-15.
 relations:
 - symptom_code: fibrous_dysplasia_bone_deformity_fracture
   polarity: SUPPORTS
-  weight: 0.98
+  weight: 0.9
   is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: bone_pain_fracture_lesion
   polarity: SUPPORTS
-  weight: 0.97
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: giant_cell_bone_tumor_epiphyseal_swelling
   polarity: SUPPORTS
-  weight: 0.97
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: asymmetric_oligoarthritis_lower
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: headache_dull
   polarity: SUPPORTS
-  weight: 0.72
+  weight: 0.3
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT

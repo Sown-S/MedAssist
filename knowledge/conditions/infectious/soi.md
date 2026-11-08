@@ -5,74 +5,67 @@ name_vi: Sởi
 name_en: Measles
 icd10_code: B05
 disease_group: infectious
-description: Bệnh sởi là bệnh truyền nhiễm gây dịch lây qua đường hô hấp do vi rút
-  sởi gây nên. Bệnh chủ yếu gặp ở trẻ em dưới 5 tuổi, hay xảy ra vào mùa đông xuân,
-  có thể xuất hiện ở người lớn do chưa được tiêm phòng hoặc đã tiêm phòng nhưng chưa
-  được tiêm đầy đủ.
+description: Bệnh sởi là bệnh truyền nhiễm gây dịch lây qua đường hô hấp do vi rút sởi gây nên. Bệnh chủ
+  yếu gặp ở trẻ em dưới 5 tuổi, hay xảy ra vào mùa đông xuân, có thể xuất hiện ở người lớn do chưa được
+  tiêm phòng hoặc đã tiêm phòng nhưng chưa được tiêm đầy đủ.
 relations:
 - symptom_code: koplik_spots
   polarity: SUPPORTS
-  weight: 0.98
+  weight: 0.9
   is_key: true
   source_key: moh_qd_1327_2014
   source_edition: Quyết định số 1327/QĐ-BYT
 - symptom_code: maculopapular_rash
   polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
-  source_key: moh_qd_1327_2014
-  source_edition: Quyết định số 1327/QĐ-BYT
-- symptom_code: measles_catarrhal_3c_cephalocaudal_rash
-  polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_1327_2014
   source_edition: Quyết định số 1327/QĐ-BYT
 - symptom_code: fever_high
   polarity: SUPPORTS
-  weight: 0.9
-  is_key: true
-  source_key: moh_qd_1327_2014
-  source_edition: Quyết định số 1327/QĐ-BYT
-- symptom_code: seasonal_flu_abrupt_fever_myalgia_coryza
-  polarity: SUPPORTS
-  weight: 0.9
-  is_key: true
-  source_key: moh_qd_1327_2014
-  source_edition: Quyết định số 1327/QĐ-BYT
-- symptom_code: rhinorrhea_nasal_congestion
-  polarity: SUPPORTS
-  weight: 0.87
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_1327_2014
   source_edition: Quyết định số 1327/QĐ-BYT
 - symptom_code: cough_dry
   polarity: SUPPORTS
-  weight: 0.85
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_1327_2014
   source_edition: Quyết định số 1327/QĐ-BYT
-- symptom_code: nausea_vomiting_diarrhea
+- symptom_code: rhinorrhea_nasal_congestion
   polarity: SUPPORTS
-  weight: 0.85
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_1327_2014
   source_edition: Quyết định số 1327/QĐ-BYT
 - symptom_code: conjunctivitis_uveitis_red_eye
   polarity: SUPPORTS
-  weight: 0.85
+  weight: 0.6
+  is_key: false
+  source_key: moh_qd_1327_2014
+  source_edition: Quyết định số 1327/QĐ-BYT
+- symptom_code: myalgia_arthralgia
+  polarity: SUPPORTS
+  weight: 0.6
+  is_key: false
+  source_key: moh_qd_1327_2014
+  source_edition: Quyết định số 1327/QĐ-BYT
+- symptom_code: nausea_vomiting_diarrhea
+  polarity: SUPPORTS
+  weight: 0.6
   is_key: false
   source_key: moh_qd_1327_2014
   source_edition: Quyết định số 1327/QĐ-BYT
 - symptom_code: epidemiological_exposure_vector_travel
   polarity: SUPPORTS
-  weight: 0.76
+  weight: 0.3
   is_key: false
   source_key: moh_qd_1327_2014
   source_edition: Quyết định số 1327/QĐ-BYT
 - symptom_code: fever_low_grade
   polarity: SUPPORTS
-  weight: 0.72
+  weight: 0.3
   is_key: false
   source_key: moh_qd_1327_2014
   source_edition: Quyết định số 1327/QĐ-BYT

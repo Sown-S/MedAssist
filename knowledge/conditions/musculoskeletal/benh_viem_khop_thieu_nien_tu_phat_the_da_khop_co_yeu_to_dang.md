@@ -1,75 +1,74 @@
 ---
 schema: okf_condition_v1
 condition_code: benh_viem_khop_thieu_nien_tu_phat_the_da_khop_co_yeu_to_dang
-name_vi: Bệnh viêm khớp thiếu niên tự phát thể đa khớp có yếu tố dạng thấp dương tính
-  và âm tính RF (+) và RF (-)
+name_vi: Bệnh viêm khớp thiếu niên tự phát thể đa khớp có yếu tố dạng thấp dương tính và âm tính RF (+)
+  và RF (-)
 name_en: Juvenile Idiopathic Arthritis
 icd10_code: M08.0
 disease_group: musculoskeletal
-description: 'Viêm khớp thiếu niên tự phát theo ILAR là nhóm bệnh viêm khớp mạn tính
-  khởi phát bệnh trên 6 tuần ở trẻ em dưới 16 tuổi. Biểu hiện lâm sàng không đồng
-  nhất gồm: thể ít khớp; thể đa khớp RF (+); thể đa khớp RF (-); thể hệ thống; thể
-  viêm khớp vẩy nến; thể viêm điểm bám gân; thể viêm khớp không phân loại. Viêm khớp
-  thiếu niên tự phát thể đa khớp chiếm 1/3 nhóm bệnh lý này.'
+description: 'Viêm khớp thiếu niên tự phát theo ILAR là nhóm bệnh viêm khớp mạn tính khởi phát bệnh trên
+  6 tuần ở trẻ em dưới 16 tuổi. Biểu hiện lâm sàng không đồng nhất gồm: thể ít khớp; thể đa khớp RF (+);
+  thể đa khớp RF (-); thể hệ thống; thể viêm khớp vẩy nến; thể viêm điểm bám gân; thể viêm khớp không
+  phân loại. Viêm khớp thiếu niên tự phát thể đa khớp chiếm 1/3 nhóm bệnh lý này.'
 relations:
 - symptom_code: jia_systemic_polyarticular_enthesitis
   polarity: SUPPORTS
-  weight: 0.98
+  weight: 0.9
   is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: symmetric_polyarthritis_hands
   polarity: SUPPORTS
-  weight: 0.97
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: joint_swelling_warmth_redness_effusion
   polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: conjunctivitis_uveitis_red_eye
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: serositis_pleural_pericardial
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: myalgia_arthralgia
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: asymmetric_oligoarthritis_lower
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: rheumatoid_nodules_ulnar_deviation
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: fever_low_grade
   polarity: SUPPORTS
-  weight: 0.72
+  weight: 0.3
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 excerpts:
 - excerpt_key: benh_viem_khop_thieu_nien_tu_phat_the_da_khop_co_yeu_to_dang_chan_doan
-  title: Tiêu chuẩn chẩn đoán lâm sàng Bệnh viêm khớp thiếu niên tự phát thể đa khớp
-    có yếu tố dạng thấp dương tính và âm tính RF (+) và RF (-)
+  title: Tiêu chuẩn chẩn đoán lâm sàng Bệnh viêm khớp thiếu niên tự phát thể đa khớp có yếu tố dạng thấp
+    dương tính và âm tính RF (+) và RF (-)
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
   source_locator: Mục Chẩn đoán lâm sàng (Quyết định số 361/QĐ-BYT)

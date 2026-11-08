@@ -5,88 +5,87 @@ name_vi: Viêm màng bồ đào cấp tính ở trẻ em
 name_en: Acute uveitis in children
 icd10_code: H20.0
 disease_group: ophthalmology
-description: Là tình trạng viêm cấp của màng bồ đào (MBĐ), có thể xảy ra ở MBĐ trước,
-  MBĐ trung gian, MBĐ sau hoặc toàn bộ MBĐ. Viêm MBĐ cấp tính ở trẻ em có thể kết
-  hợp với viêm nhiễm toàn thân như viêm khớp tự phát ở trẻ em hoặc bệnh sarcoidosis
-  ở trẻ em. Viêm MBĐ ở trẻ em thường tiên lượng xấu hơn ở người lớn do việc phát hiện,
-  điều trị muộn và hay tái phát.
+description: Là tình trạng viêm cấp của màng bồ đào (MBĐ), có thể xảy ra ở MBĐ trước, MBĐ trung gian,
+  MBĐ sau hoặc toàn bộ MBĐ. Viêm MBĐ cấp tính ở trẻ em có thể kết hợp với viêm nhiễm toàn thân như viêm
+  khớp tự phát ở trẻ em hoặc bệnh sarcoidosis ở trẻ em. Viêm MBĐ ở trẻ em thường tiên lượng xấu hơn ở
+  người lớn do việc phát hiện, điều trị muộn và hay tái phát.
 relations:
 - symptom_code: conjunctival_ciliary_injection_discharge
   polarity: SUPPORTS
-  weight: 0.97
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: corneal_ulcer_hypopyon_keratitis
   polarity: SUPPORTS
-  weight: 0.97
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: retinal_vitreous_optic_disc_lesion
   polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: conjunctivitis_uveitis_red_eye
   polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: myalgia_arthralgia
   polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: bacterial_corneal_ulcer_stromal_abscess
   polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: anterior_uveitis_keratic_precipitates
   polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: pediatric_uveitis_band_keratopathy
   polarity: SUPPORTS
-  weight: 0.96
+  weight: 0.9
   is_key: true
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: visual_acuity_decreased_blur
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: pupil_miosis_posterior_synechiae
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: corneal_edema_descemet_folds
   polarity: SUPPORTS
-  weight: 0.91
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: ocular_pain_photophobia_tearing
   polarity: SUPPORTS
-  weight: 0.9
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: vitreous_haze_floaters
   polarity: SUPPORTS
-  weight: 0.9
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 excerpts:

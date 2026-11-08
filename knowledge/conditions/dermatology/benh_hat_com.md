@@ -5,58 +5,57 @@ name_vi: Bệnh hạt cơm
 name_en: Warts
 icd10_code: B07
 disease_group: dermatology
-description: Là tình trạng bệnh lý với sự tăng sinh lành tính của các tế bào biểu
-  bì ở da và niêm mạc, do virút có tên Human Papilloma Virút (HPV) gây nên. Bệnh gặp
-  ở mọi giới và mọi lứa tuổi. Tuy nhiên, thường gặp nhất ở tuổi lao động, đặc biệt
-  là học sinh và sinh viên. Khoảng 10% dân số mắc bệnh. Tỉ lệ mắc bệnh cao hơn ở những
-  người suy giảm miễn dịch, đặc biệt là suy giảm miễn dịch bẩm sinh hay mắc phải.
+description: Là tình trạng bệnh lý với sự tăng sinh lành tính của các tế bào biểu bì ở da và niêm mạc,
+  do virút có tên Human Papilloma Virút (HPV) gây nên. Bệnh gặp ở mọi giới và mọi lứa tuổi. Tuy nhiên,
+  thường gặp nhất ở tuổi lao động, đặc biệt là học sinh và sinh viên. Khoảng 10% dân số mắc bệnh. Tỉ lệ
+  mắc bệnh cao hơn ở những người suy giảm miễn dịch, đặc biệt là suy giảm miễn dịch bẩm sinh hay mắc phải.
 relations:
 - symptom_code: molluscum_umbilicated_pearly_papule
   polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: condyloma_acuminata_cauliflower_papules
   polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: porphyria_cutanea_tarda_photo_blisters
   polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: palmoplantar_keratoderma_fissures
   polarity: SUPPORTS
-  weight: 0.97
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: genital_ulcer_chancre_discharge
   polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: scaly_plaque_hyperkeratosis
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: verrucous_papule_nodule_ulcer
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: epidermolysis_bullosa_mechanobullous
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 excerpts:

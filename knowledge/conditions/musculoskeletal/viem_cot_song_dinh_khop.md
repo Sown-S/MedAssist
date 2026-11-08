@@ -5,68 +5,68 @@ name_vi: Viêm cột sống dính khớp
 name_en: Ankylosing Spondylitis
 icd10_code: M45
 disease_group: musculoskeletal
-description: Viêm cột sống dính khớp là một bệnh thấp viêm đặc trưng bởi tổn thương
-  khớp cùng chậu, cột sống và các khớp ở chi dưới, thường kèm theo viêm các điểm bám
-  gân. Bệnh tiến triển chậm song có xu hướng dính khớp. Bệnh viêm cột sống dính khớp
-  có mối liên quan chặt chẽ với yếu tố kháng nguyên hoà hợp mô HLA-B27.
+description: Viêm cột sống dính khớp là một bệnh thấp viêm đặc trưng bởi tổn thương khớp cùng chậu, cột
+  sống và các khớp ở chi dưới, thường kèm theo viêm các điểm bám gân. Bệnh tiến triển chậm song có xu
+  hướng dính khớp. Bệnh viêm cột sống dính khớp có mối liên quan chặt chẽ với yếu tố kháng nguyên hoà
+  hợp mô HLA-B27.
 relations:
 - symptom_code: inflammatory_sacroiliac_back_pain
   polarity: SUPPORTS
-  weight: 0.98
+  weight: 0.9
   is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: ankylosing_spondylitis_schober_chest
   polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: enthesitis_achilles_heel
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: conjunctivitis_uveitis_red_eye
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: nausea_vomiting_diarrhea
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: myalgia_arthralgia
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: joint_swelling_warmth_redness_effusion
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: joint_range_of_motion_limitation
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: joint_deformity_ankylosis_subluxation
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: periarticular_tendon_bursa_tenderness
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT

@@ -20,7 +20,7 @@ export const STATUSES = [
 export const statusLabel = (k) => STATUSES.find((s) => s.key === normStatus(k))?.label ?? k
 // Trạng thái của bản client cũ → tên trạng thái của backend.
 const LEGACY = { waiting: ST.WAITING, in_exam: ST.EXAMINING, labs: ST.EXAMINING, payment: ST.PRESCRIBED, done: ST.FINISHED, left: ST.CANCELLED }
-export const normStatus = (k) => LEGACY[k] ?? k
+const normStatus = (k) => LEGACY[k] ?? k
 export const inRoom = (v) => v.status === ST.EXAMINING && !v.labOut
 export const atLabs = (v) => v.status === ST.EXAMINING && !!v.labOut
 // Lượt đang tiếp đón (chưa Lưu & cấp số) chưa thuộc hàng chờ: không gọi, không mời, không tính vào số người chờ.
@@ -38,7 +38,7 @@ export const CANCEL_REASONS = [
   { key: 'other', label: 'Other' }
 ]
 // Lý do bỏ về của mọi nguồn (bác sĩ, quầy, chuyển tuyến) — để hiển thị.
-export const ALL_LEFT_REASONS = [...LEFT_REASONS, ...CANCEL_REASONS.filter((r) => r.key !== 'other'), { key: 'referred_out', label: 'Referred to hospital (red flag)' }]
+const ALL_LEFT_REASONS = [...LEFT_REASONS, ...CANCEL_REASONS.filter((r) => r.key !== 'other'), { key: 'referred_out', label: 'Referred to hospital (red flag)' }]
 export const leftReasonLabel = (k) => ALL_LEFT_REASONS.find((r) => r.key === k)?.label ?? ''
 const CLOSED = [ST.FINISHED, ST.CANCELLED]
 export const isClosed = (v) => CLOSED.includes(v.status)
@@ -62,7 +62,10 @@ const patch = (id, fields) => commit({ ...state, visits: state.visits.map((v) =>
 
 // Đồng bộ với server. Chỉ Lễ tân / Bác sĩ gọi được GET /queue (Admin không có quyền).
 let syncing = null
-export function syncQueue() {
+// Mặc định kết quả phải mới hơn lúc gọi (thường gọi ngay sau một thao tác): lượt tải đang chạy dở bắt đầu trước thao
+// tác nên chờ nó xong rồi tải lại. poll = vòng tải định kỳ, dùng chung lượt đang chạy.
+export function syncQueue({ poll = false } = {}) {
+  if (syncing && !poll) return syncing.then(() => syncQueue({ poll: true }))
   // Server ghi đè mọi trường nó có (phòng, đi xét nghiệm, lời mời); chỉ giữ trường chỉ có ở máy này.
   syncing ??= fetchQueue()
     .then((list) => {
@@ -84,8 +87,8 @@ export function syncStale() {
 }
 export function useQueueSync(ms = 3000) {
   useEffect(() => {
-    syncQueue()
-    const t = setInterval(syncQueue, ms)
+    syncQueue({ poll: true })
+    const t = setInterval(() => syncQueue({ poll: true }), ms)
     return () => clearInterval(t)
   }, [ms])
 }
@@ -223,7 +226,7 @@ const viaCall = (call) =>
     },
     (e) => (syncQueue(), { ok: false, code: e?.code, error: callError(e) })
   )
-export function inviteNext() {
+function inviteNext() {
   return viaCall(apiCallNext())
 }
 export function inviteAgain(id) {

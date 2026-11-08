@@ -1,8 +1,10 @@
-// Cài đặt hệ thống. Vài tham số nghiệp vụ nằm trên server (xem SERVER_SETTINGS), còn lại là cài đặt của máy này.
+// Cài đặt hệ thống. Vài tham số nghiệp vụ nằm trên server (xem SERVER_SETTINGS); thông tin phòng khám và thời gian tự
+// đăng xuất dùng chung mọi máy (xem loadClientConfig); còn lại là cài đặt của máy này.
 import { useSyncExternalStore } from 'react'
 import { apiGet, apiRequest, ApiError } from './client'
 
 const KEY = 'medassist_settings_v1'
+const CONFIG_KEY = 'medassist_client_config_v1'
 
 export const PAPERS = [
   { key: 'A4', label: 'A4 (210 × 297 mm)', css: 'A4' },
@@ -16,16 +18,12 @@ export const PRINT_DOCS = [
   { key: 'invoice', label: 'Invoice / payment receipt' },
   { key: 'other', label: 'Other documents & reports' }
 ]
-// date: phần ngày trong số → quyết định chu kỳ làm mới số.
-export const NUMBERED_DOCS = [
-  { key: 'invoice', label: 'Invoice' }
-]
 export const PAYMENT_METHODS = [
   { key: 'cash', label: 'Cash' },
   { key: 'transfer', label: 'Bank transfer' }
 ]
 
-export const DEFAULT_SETTINGS = {
+const DEFAULT_SETTINGS = {
   clinic: {
     name: '',
     address: '',
@@ -39,29 +37,18 @@ export const DEFAULT_SETTINGS = {
     directorLicense: '',
     logo: ''
   },
-  print: {
-    papers: { prescription: 'A5', labOrder: 'A5', invoice: '80mm', other: 'A4' },
-    showLogo: true,
-    header: '',
-    footer: 'Thank you and wish you good health!'
-  },
-  numbering: {
-    invoice: { prefix: 'HD', date: 'yymmdd', digits: 4 },
-    queueResetAt: '00:00',
-    queueStart: 1
-  },
-  security: { minLength: 8, requireMix: true, expiryDays: 0, maxFailed: 5, lockMinutes: 15, idleMinutes: 15 },
-  backup: { enabled: true, time: '02:00', keep: 14, path: 'D:\\MedAssist\\Backup', offsite: '' },
+  // Dùng chung mọi máy (nằm trong clinic.profile); khổ giấy là cài đặt riêng máy (deviceSettings).
+  // Chân trang rỗng thì phiếu không in chân trang — không tự điền câu mặc định để các máy không lệch nhau.
+  print: { showLogo: true, header: '', footer: '' },
+  // Chính sách mật khẩu và khoá đăng nhập do server quy định (GET /auth/password-policy); idleMinutes dùng chung mọi máy.
+  security: { idleMinutes: 15 },
   ops: {
     nearDays: 90,
     // Chỉ cấp lô còn hạn > hôm nay + max(số ngày dùng, khoảng này).
     shelfBufferDays: 0,
     defaultThreshold: 50,
     consultFee: 80000,
-    rounding: 1000,
-    methods: ['cash', 'transfer'],
-    // Loa ở quầy đọc kèm họ tên khi mời. Mặc định tắt, chỉ đọc số và phòng (quyền riêng tư).
-    announceName: false
+    methods: ['cash', 'transfer']
   }
 }
 
@@ -85,20 +72,60 @@ function merge(def, saved) {
   return out
 }
 
+// Tên trường clinic.profile trên server (snake_case) ↔ tên trong cài đặt của client.
+const CLINIC_FIELDS = {
+  name: 'name',
+  address: 'address',
+  phone: 'phone',
+  email: 'email',
+  taxCode: 'tax_code',
+  licenseNo: 'license_no',
+  licenseDate: 'license_date',
+  licenseIssuer: 'license_issuer',
+  director: 'director',
+  directorLicense: 'director_license',
+  logo: 'logo'
+}
+const clinicFromServer = (c) => Object.fromEntries(Object.entries(CLINIC_FIELDS).map(([k, sk]) => [k, c?.[sk] ?? '']))
+const printFromServer = (c) => ({ showLogo: c?.show_logo ?? true, header: c?.print_header ?? '', footer: c?.print_footer ?? '' })
+const profileToServer = (v) => ({
+  ...Object.fromEntries(Object.entries(CLINIC_FIELDS).map(([k, sk]) => [sk, v.clinic[k] ?? ''])),
+  print_header: v.print.header ?? '',
+  print_footer: v.print.footer ?? '',
+  show_logo: !!v.print.showLogo
+})
+
+// Bản client-config lấy được gần nhất: in phiếu và tự đăng xuất vẫn chạy khi mất kết nối. Chưa có bản nào (máy mới,
+// chưa từng kết nối) thì thông tin phòng khám để trống, tự đăng xuất 15 phút.
+const sharedOf = (values) => ({ clinic: values.clinic, print: values.print, idleMinutes: values.security.idleMinutes })
+function withShared(values, cfg) {
+  return {
+    ...values,
+    clinic: { ...DEFAULT_SETTINGS.clinic, ...cfg?.clinic },
+    print: { ...DEFAULT_SETTINGS.print, ...cfg?.print },
+    security: { ...values.security, idleMinutes: cfg?.idleMinutes ?? 15 }
+  }
+}
+// Máy chỉ lưu phần riêng của nó; phần dùng chung nằm ở CONFIG_KEY.
+function writeLocal() {
+  const { clinic, print, security, ...own } = state.values
+  write(KEY, { values: own })
+}
+
 const stored = read(KEY)
-let state = { values: merge(DEFAULT_SETTINGS, stored?.values), updatedAt: stored?.updatedAt ?? null, updatedBy: stored?.updatedBy ?? null }
+let state = { values: withShared(merge(DEFAULT_SETTINGS, stored?.values), read(CONFIG_KEY)) }
 const listeners = new Set()
 const subscribe = (fn) => {
   listeners.add(fn)
   return () => listeners.delete(fn)
 }
-export const getSettingsState = () => state
+const getSettingsState = () => state
 export const getSettings = () => state.values
 export function useSettings() {
   return useSyncExternalStore(subscribe, getSettingsState)
 }
 
-export function flatten(obj, prefix = '') {
+function flatten(obj, prefix = '') {
   const out = {}
   for (const [k, v] of Object.entries(obj)) {
     const p = prefix ? prefix + '.' + k : k
@@ -115,18 +142,42 @@ export function changedPaths(draft) {
 }
 
 // Tham số nghiệp vụ trên server (GET / PUT /admin/settings, chỉ Admin): ngưỡng sắp hết hạn, khoảng an toàn hạn dùng,
-// thông tin phòng khám in trên phiếu, phí khám mặc định.
+// thông tin phòng khám in trên phiếu, phí khám mặc định, thời gian tự đăng xuất.
 const SERVER_SETTINGS = [
   { key: 'inventory.near_expiry_days', paths: ['ops.nearDays'], get: (v) => Math.round(Number(v.ops.nearDays)), set: (v, x) => ({ ...v, ops: { ...v.ops, nearDays: x } }) },
   { key: 'inventory.min_remaining_shelf_days', paths: ['ops.shelfBufferDays'], get: (v) => Math.round(Number(v.ops.shelfBufferDays)), set: (v, x) => ({ ...v, ops: { ...v.ops, shelfBufferDays: x } }) },
   { key: 'billing.default_consultation_fee', paths: ['ops.consultFee'], get: (v) => Math.round(Number(v.ops.consultFee)), set: (v, x) => ({ ...v, ops: { ...v.ops, consultFee: x } }) },
   {
     key: 'clinic.profile',
-    paths: ['clinic.name', 'clinic.address', 'clinic.phone'],
-    get: (v) => ({ name: v.clinic.name, address: v.clinic.address, phone: v.clinic.phone }),
-    set: (v, x) => ({ ...v, clinic: { ...v.clinic, name: x.name ?? '', address: x.address ?? '', phone: x.phone ?? '' } })
+    paths: [...Object.keys(CLINIC_FIELDS).map((k) => 'clinic.' + k), 'print.showLogo', 'print.header', 'print.footer'],
+    get: profileToServer,
+    set: (v, x) => ({ ...v, clinic: clinicFromServer(x), print: printFromServer(x) })
+  },
+  {
+    key: 'security.idle_logout_minutes',
+    paths: ['security.idleMinutes'],
+    get: (v) => Math.round(Number(v.security.idleMinutes)),
+    set: (v, x) => ({ ...v, security: { ...v.security, idleMinutes: x } })
   }
 ]
+export const isServerSetting = (path) => SERVER_SETTINGS.some((s) => s.paths.includes(path))
+
+// GET /auth/client-config (không cần đăng nhập): gọi lúc mở app, sau khi đăng nhập và ngay sau khi Admin lưu.
+// Mất kết nối → giữ bản đệm, trả false.
+export async function loadClientConfig() {
+  let r
+  try {
+    r = await apiGet('/api/v1/auth/client-config')
+  } catch {
+    return false
+  }
+  const cfg = { clinic: clinicFromServer(r.clinic), print: printFromServer(r.clinic), idleMinutes: r.idle_logout_minutes ?? 15 }
+  write(CONFIG_KEY, cfg)
+  state = { ...state, values: withShared(state.values, cfg) }
+  listeners.forEach((fn) => fn())
+  return true
+}
+
 export async function loadServerSettings() {
   const rows = await apiGet('/api/v1/admin/settings')
   let values = state.values
@@ -135,7 +186,8 @@ export async function loadServerSettings() {
     if (row) values = s.set(values, row.value)
   }
   state = { ...state, values }
-  write(KEY, state)
+  writeLocal()
+  write(CONFIG_KEY, sharedOf(values))
   listeners.forEach((fn) => fn())
 }
 // Lỗi → { ok: false, error }, không lưu gì ở máy.
@@ -150,22 +202,11 @@ export async function saveServerSettings(draft) {
 }
 
 // Trả số trường đã đổi.
-export function saveSettings(draft, user) {
+export function saveSettings(draft) {
   const paths = changedPaths(draft)
   if (!paths.length) return 0
-  state = { values: draft, updatedAt: new Date().toISOString(), updatedBy: user.name }
-  write(KEY, state)
+  state = { values: draft }
+  writeLocal()
   listeners.forEach((fn) => fn())
   return paths.length
-}
-
-function datePart(kind, d) {
-  const y = String(d.getFullYear()).slice(2)
-  const m = String(d.getMonth() + 1).padStart(2, '0')
-  const day = String(d.getDate()).padStart(2, '0')
-  return { yymmdd: y + m + day, yymm: y + m, yy: y, none: '' }[kind] ?? ''
-}
-export function formatNumber(rule, seq, d = new Date()) {
-  const parts = [rule.prefix, datePart(rule.date, d), String(seq).padStart(rule.digits, '0')].filter(Boolean)
-  return parts.join('-')
 }

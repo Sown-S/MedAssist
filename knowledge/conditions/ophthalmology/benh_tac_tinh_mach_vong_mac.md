@@ -5,75 +5,74 @@ name_vi: Bệnh tắc tĩnh mạch võng mạc
 name_en: Retinal vein occlusion
 icd10_code: H34.8
 disease_group: ophthalmology
-description: Tắc tĩnh mạch võng mạc là bệnh lý mạch máu võng mạc biểu hiện sự ngừng
-  trệ tuần hoàn trở về ở võng mạc, xảy ra ở thân tĩnh mạch trung tâm võng mạc ngay
-  đĩa thị, sau lá sàng được gọi là tắc tĩnh mạch trung tâm võng mạc hoặc tắc ở thân
-  tĩnh mạch sau khi phân chia 2 nhánh gọi là tắc tĩnh mạch nửa võng mạc hoặc tắc ở
-  nơi bắt chéo động – tĩnh mạch gọi là tắc nhánh tĩnh mạch võng mạc.
+description: Tắc tĩnh mạch võng mạc là bệnh lý mạch máu võng mạc biểu hiện sự ngừng trệ tuần hoàn trở
+  về ở võng mạc, xảy ra ở thân tĩnh mạch trung tâm võng mạc ngay đĩa thị, sau lá sàng được gọi là tắc
+  tĩnh mạch trung tâm võng mạc hoặc tắc ở thân tĩnh mạch sau khi phân chia 2 nhánh gọi là tắc tĩnh mạch
+  nửa võng mạc hoặc tắc ở nơi bắt chéo động – tĩnh mạch gọi là tắc nhánh tĩnh mạch võng mạc.
 relations:
 - symptom_code: retinal_vein_occlusion_flame_hemorrhage
   polarity: SUPPORTS
-  weight: 0.98
+  weight: 0.9
   is_key: true
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: visual_acuity_decreased_blur
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: intraocular_pressure_glaucoma_cupping
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: retinal_vitreous_optic_disc_lesion
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: orbital_cellulitis_chemosis_proptosis
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: open_angle_glaucoma_rnfl_visual_field
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: macular_edema_oct_thickening
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: neovascular_glaucoma_rubeosis
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: visual_field_scotoma_constriction
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: cotton_wool_spots_retinal_ischemia
   polarity: SUPPORTS
-  weight: 0.91
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: anemia_pallor_jaundice
   polarity: SUPPORTS
-  weight: 0.76
+  weight: 0.3
   is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT

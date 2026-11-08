@@ -5,51 +5,50 @@ name_vi: Bệnh lậu
 name_en: Gonorrhea
 icd10_code: A54.9
 disease_group: dermatology
-description: Là bệnh lây truyền qua đường tình dục thường gặp. Bệnh do song cầu khuẩn
-  Gram âm có tên là Neisseria gonorrhoeae gây nên. Những năm gần đây bệnh lậu có xu
-  hướng tăng. Theo ước tính của Tổ chức Y tế Thế giới (WHO), hằng năm trên toàn thế
-  giới có khoảng 62 triệu người bệnh lậu trong tổng số 390 triệu người bệnh mắc các
-  bệnh lây truyền qua đường tình dục.
+description: Là bệnh lây truyền qua đường tình dục thường gặp. Bệnh do song cầu khuẩn Gram âm có tên là
+  Neisseria gonorrhoeae gây nên. Những năm gần đây bệnh lậu có xu hướng tăng. Theo ước tính của Tổ chức
+  Y tế Thế giới (WHO), hằng năm trên toàn thế giới có khoảng 62 triệu người bệnh lậu trong tổng số 390
+  triệu người bệnh mắc các bệnh lây truyền qua đường tình dục.
 relations:
 - symptom_code: genital_ulcer_chancre_discharge
   polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: gonorrhea_purulent_urethritis_dysuria
   polarity: SUPPORTS
-  weight: 0.98
+  weight: 0.9
   is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: chlamydial_trichomonal_vaginitis_cervicitis
   polarity: SUPPORTS
-  weight: 0.97
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: pruritus_intense_skin_itch
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: conjunctivitis_uveitis_red_eye
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: sore_throat_dysphagia
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: fatigue_malaise
   polarity: SUPPORTS
-  weight: 0.7
+  weight: 0.3
   is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT

@@ -83,6 +83,18 @@ def test_public_client_satisfies_protocol_and_sends_structured_local_request():
     assert "authorization" not in request.headers
 
 
+def test_extraction_requests_full_context_and_disables_silent_truncation():
+    sent = []
+
+    def handler(request):
+        sent.append(json.loads(request.content))
+        return response()
+
+    generate(client_for(handler), schema=extraction_json_schema(["signal_a"]))
+    assert sent[0]["truncate"] is False
+    assert sent[0]["options"] == {"temperature": 0, "num_ctx": 8192}
+
+
 @pytest.mark.parametrize("keep_alive", ["10m", 0, -1])
 def test_keep_alive_is_forwarded(keep_alive):
     sent = []

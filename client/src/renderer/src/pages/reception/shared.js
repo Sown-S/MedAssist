@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { PAYMENT_METHODS } from '../../api/settingsStore'
+import { ymd } from '../../utils/format'
 
-export const fmt = (n) => (n < 0 ? '−' : '') + Math.abs(n).toLocaleString('vi-VN') + 'đ'
 export const hhmm = (iso) => new Date(iso).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit', hour12: false })
 export const dmy = (iso) => new Date(iso).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' })
 // Hoá đơn pending chưa chọn hình thức → '—'.
@@ -24,8 +24,6 @@ export function useNow() {
   return now
 }
 
-const p2 = (n) => String(n).padStart(2, '0')
-export const ymd = (d) => `${d.getFullYear()}-${p2(d.getMonth() + 1)}-${p2(d.getDate())}`
 export const PERIODS = [
   { key: 'today', label: 'Today' },
   { key: 'week', label: 'This week' },

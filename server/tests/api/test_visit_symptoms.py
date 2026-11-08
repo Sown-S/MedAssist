@@ -70,6 +70,15 @@ def test_closed_visit_and_roles(client, nurse, login, visit_id, wk_knowledge):
     assert client.get(f"/api/v1/visits/{uuid.uuid4()}/symptoms", headers=nurse).status_code == 404
 
 
+def test_examining_only_own_physician(client, nurse, doctor, doctor2, examining, wk_knowledge):
+    vid = examining()
+    item = [{"symptom_code": "wk_fever_high", "state": "PRESENT"}]
+    for other in (doctor2, nurse):
+        r = _put(client, other, vid, item)
+        assert r.status_code == 409 and r.json()["error"]["code"] == "NOT_YOUR_VISIT"
+    assert _put(client, doctor, vid, item).status_code == 200
+
+
 def test_audit_counts_only(client, nurse, visit_id, wk_knowledge, logs):
     _put(
         client,

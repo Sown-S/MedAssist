@@ -6,17 +6,27 @@ from typing import Any
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
+from app.exceptions import AppError
 from app.models import SystemSetting, User
 from app.services import audit_service as audit
 from app.validation.settings_validators import SETTINGS, validate_setting
+
+
+def _current(key: str, row: SystemSetting | None) -> Any:
+    # Dòng lưu trước khi khóa có thêm trường: chuẩn hóa lại để có đủ trường mặc định
+    if row is None:
+        return validate_setting(key, SETTINGS[key][1])
+    try:
+        return validate_setting(key, row.value)
+    except AppError:
+        return row.value
 
 
 def get_value(db: Session, key: str) -> Any:
     """Giá trị đang dùng (DB nếu có, không thì mặc định). Dùng trong service khác."""
     if key not in SETTINGS:
         raise KeyError(key)
-    row = db.get(SystemSetting, key)
-    return row.value if row else validate_setting(key, SETTINGS[key][1])
+    return _current(key, db.get(SystemSetting, key))
 
 
 def list_settings(db: Session) -> list[dict]:
@@ -27,7 +37,7 @@ def list_settings(db: Session) -> list[dict]:
         out.append(
             {
                 "setting_key": key,
-                "value": row.value if row else validate_setting(key, default),
+                "value": _current(key, row),
                 "description": description,
                 "is_default": row is None,
                 "updated_by": row.updated_by if row else None,
@@ -40,7 +50,7 @@ def list_settings(db: Session) -> list[dict]:
 def update_setting(db: Session, key: str, value: Any, actor: User) -> dict:
     new_value = validate_setting(key, value)  # 422 nếu sai kiểu, khóa lạ -> UNKNOWN_SETTING
     row = db.scalar(select(SystemSetting).where(SystemSetting.setting_key == key).with_for_update())
-    old_value = row.value if row else validate_setting(key, SETTINGS[key][1])
+    old_value = _current(key, row)
     if row is None:
         row = SystemSetting(setting_key=key, value=new_value, description=SETTINGS[key][2], updated_by=actor.user_id)
         db.add(row)

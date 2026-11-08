@@ -5,63 +5,62 @@ name_vi: Bệnh thoái hóa cột sống thắt lưng
 name_en: Spondylosis
 icd10_code: M47.8
 disease_group: musculoskeletal
-description: Thoái hóa cột sống thắt lưng (Spondylosis hoặc Oteoarthritis of lumbar
-  spine) là bệnh mạn tính tiến triển từ từ tăng dần gây đau, hạn chế vận động, biến
-  dạng cột sống thắt lưng mà không có biểu hiện viêm. Tổn thương cơ bản của bệnh là
-  tình trạng thoái hóa sụn khớp và đĩa đệm cột sống phối hợp với những thay đổi ở
-  phần xương dưới sụn và màng hoạt dịch.
+description: Thoái hóa cột sống thắt lưng (Spondylosis hoặc Oteoarthritis of lumbar spine) là bệnh mạn
+  tính tiến triển từ từ tăng dần gây đau, hạn chế vận động, biến dạng cột sống thắt lưng mà không có biểu
+  hiện viêm. Tổn thương cơ bản của bệnh là tình trạng thoái hóa sụn khớp và đĩa đệm cột sống phối hợp
+  với những thay đổi ở phần xương dưới sụn và màng hoạt dịch.
 relations:
 - symptom_code: mechanical_spinal_pain_stiffness
   polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: lumbar_spondylosis_paraspinal_spasm
   polarity: SUPPORTS
-  weight: 0.95
+  weight: 0.9
   is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: morning_stiffness_under_30m
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: sciatica_lasegue_positive
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.3
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: joint_range_of_motion_limitation
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: periarticular_tendon_bursa_tenderness
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: spinal_deformity_scoliosis_loss_lordosis
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: muscle_tenderness_cramps_myotonia
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: fever_high
   polarity: CONTRADICTS
-  weight: 0.65
+  weight: 0.3
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT

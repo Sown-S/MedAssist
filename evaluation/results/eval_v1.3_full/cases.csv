@@ -1,0 +1,82 @@
+﻿mode,case_id,expected_priority,predicted_priority,expected_top,predicted_top
+Full,CLIN-001,HighPriority,HighPriority,cum_mua soi,cum_mua viem_hong_cap_tinh soi
+Full,CLIN-002,HighPriority,HighPriority,soi cum_mua,soi cum_mua hoi_chung_dress
+Full,CLIN-003,Routine,Routine,tay_chan_mieng,benh_viem_da_dang_herpes_cua_duhring_brocq tay_chan_mieng hong_thanh_quan_viem_mui_hong_cap_tinh
+Full,CLIN-004,HighPriority,HighPriority,sot_ret,benh_sot_ret_khang_thuoc sot_ret hoi_chung_dress
+Full,CLIN-005,Routine,Routine,phoi_tac_nghen_man_tinh hen_phe_quan,phoi_tac_nghen_man_tinh hen_phe_quan viem_phu_ne_thanh_thiet_cap_tinh
+Full,CLIN-006,Routine,Routine,hen_phe_quan phoi_tac_nghen_man_tinh,hen_phe_quan cum_mua phoi_tac_nghen_man_tinh
+Full,CLIN-007,Emergency,Emergency,,
+Full,CLIN-008,Routine,Routine,benh_viem_khop_dang_thap,benh_viem_khop_dang_thap benh_viem_khop_thieu_nien_tu_phat_the_viem_cot_song_dinh benh_apthose
+Full,CLIN-009,Routine,Routine,benh_lupus_ban_do_he_thong,benh_lupus_ban_do_he_thong benh_apthose benh_sot_mo
+Full,CLIN-010,Routine,Routine,benh_gut,benh_gut benh_viem_mang_hoat_dich_khop_goi_man_tinh_khong_dac_hieu benh_loang_xuong
+Full,CLIN-011,Routine,Routine,viem_cot_song_dinh_khop benh_viem_khop_phan_ung,viem_cot_song_dinh_khop benh_viem_khop_thieu_nien_tu_phat_the_viem_cot_song_dinh nhiem_chlamydia_trachomatis_sinh_duc_tiet_nieu
+Full,CLIN-013,Routine,Routine,dau_than_kinh_toa hoi_chung_dau_that_lung benh_thoai_hoa_cot_song_that_lung,dau_than_kinh_toa benh_thoai_hoa_cot_song_that_lung hoi_chung_dau_that_lung
+Full,CLIN-014,Routine,Routine,hoi_chung_co_vai_canh_tay benh_thoai_hoa_cot_song_co,benh_thoai_hoa_cot_song_co hoi_chung_co_vai_canh_tay hoi_chung_dau_nhuc_so_mat
+Full,CLIN-015,Emergency,Emergency,,
+Full,CLIN-017,Routine,Routine,viem_tai_giua_man_tinh_co_cholesteatoma viem_tai_giua_man_tinh,viem_tai_giua_man_tinh chong_mat viem_tai_giua_man_tinh_co_cholesteatoma
+Full,CLIN-018,Routine,Routine,viem_mui_xoang_di_ung,viem_mui_xoang_di_ung papilloma_u_nhu_mui_xoang viem_mui_xoang_do_nam
+Full,CLIN-019,Routine,Routine,benh_ghe viem_da_co_dia,viem_am_ho_am_dao_do_nam_candida benh_lichen_phang herpes_sinh_duc
+Full,CLIN-020,Routine,Routine,benh_zona,benh_lichen_phang benh_thuy_dau benh_zona
+Full,CLIN-021,Routine,Routine,glocom_goc_dong_nguyen_phat glocom_goc_mo_nguyen_phat,glocom_goc_dong_nguyen_phat glocom_goc_mo_nguyen_phat kho_mat_do_thieu_vitamin_a
+Full,CLIN-022,Routine,Routine,viem_loet_giac_mac_do_vi_khuan viem_loet_giac_mac_do_nam viem_giac_mac_do_herpes,viem_loet_giac_mac_do_nam viem_loet_giac_mac_do_vi_khuan viem_ket_giac_mac_mua_xuan
+Full,CLIN-023,Emergency,Emergency,,
+Full,CLIN-024,Emergency,Emergency,,
+Full,CLIN-025,Emergency,Emergency,,
+Full,CLIN-026,Emergency,Emergency,,
+Full,CLIN-027,Emergency,Emergency,,
+Full,CLIN-028,Emergency,Emergency,,
+Full,CLIN-029,Emergency,Emergency,,
+Full,CLIN-030,Emergency,Emergency,,
+Full,CLIN-031,Emergency,Emergency,,
+Full,CLIN-032,Emergency,Emergency,,
+Full,CLIN-033,Emergency,Emergency,,
+Full,CLIN-034,Emergency,Emergency,,
+Full,CLIN-035,Emergency,Emergency,,
+Full,CLIN-036,Emergency,Emergency,,
+Full,CLIN-037,Emergency,Emergency,,
+Full,CLIN-038,Emergency,Emergency,,
+Full,CLIN-039,Emergency,Emergency,,
+Full,CLIN-040,Emergency,Emergency,,
+Full,CLIN-041,Emergency,Emergency,,
+Full,CLIN-042,Emergency,Emergency,,
+Full,CLIN-043,Emergency,Emergency,,
+Full,CLIN-044,Emergency,Emergency,,
+Full,CLIN-045,Emergency,Emergency,,
+Full,CLIN-046,Emergency,Emergency,,
+Full,CLIN-047,Emergency,Emergency,,
+Full,CLIN-048,Emergency,Emergency,,
+Full,CLIN-049,Emergency,Emergency,,
+Full,CLIN-050,Emergency,Emergency,,
+Full,CLIN-051,Emergency,Emergency,,
+Full,CLIN-052,Emergency,Emergency,,
+Full,CLIN-053,Emergency,Emergency,,
+Full,CLIN-054,Emergency,Emergency,,
+Full,CLIN-055,Emergency,Emergency,,
+Full,CLIN-056,Emergency,Emergency,,
+Full,CLIN-057,Emergency,Emergency,,
+Full,CLIN-058,Emergency,Emergency,,
+Full,CLIN-059,Emergency,Emergency,,
+Full,CLIN-060,Emergency,Emergency,,
+Full,CLIN-061,Emergency,Emergency,,
+Full,CLIN-062,Emergency,Emergency,,
+Full,CLIN-063,Emergency,Emergency,,
+Full,CLIN-064,Emergency,Emergency,,
+Full,CLIN-065,Emergency,Emergency,,
+Full,CLIN-066,Emergency,Emergency,,
+Full,CLIN-067,Emergency,Emergency,,
+Full,CLIN-068,Routine,Routine,,
+Full,CLIN-069,Routine,Routine,,
+Full,CLIN-070,Routine,Routine,,
+Full,CLIN-071,Routine,Routine,,
+Full,CLIN-072,Routine,Routine,,
+Full,CLIN-073,Routine,Routine,,
+Full,CLIN-074,Routine,Routine,,
+Full,CLIN-075,Routine,Routine,,
+Full,CLIN-076,Routine,Routine,,
+Full,CLIN-077,Routine,Routine,,
+Full,CLIN-078,Routine,Routine,,nang_va_ro_khe_mang_ii viem_hong_cap_tinh ngat_mui
+Full,CLIN-079,Routine,Routine,,u_tuyen_nuoc_bot liet_day_than_kinh_vii_ngoai_bien nang_va_ro_khe_mang_i
+Full,CLIN-080,Routine,Routine,,nang_ro_giap_luoi hoi_chung_dau_nhuc_so_mat nang_va_ro_khe_mang_i
+Full,CLIN-081,Routine,Routine,,glocom_goc_mo_nguyen_phat glocom_goc_dong_nguyen_phat loi_mat
+Full,CLIN-082,Routine,Routine,,nhuoc_thi glocom_goc_mo_nguyen_phat benh_hac_vong_mac_trung_tam_thanh_dich
+Full,CLIN-083,Routine,Routine,,seo_hep_thanh_khi_quan

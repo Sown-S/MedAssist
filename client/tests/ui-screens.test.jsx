@@ -50,7 +50,7 @@ describe('Các màn chính dựng được', () => {
 
   // Mỗi tab là một file riêng — bấm qua hết để chắc tab nào cũng dựng được.
   it.each([
-    ['Settings', ['Printing & numbering', 'Security', 'Backup & retention', 'Connection & AI', 'This computer', 'Operations', 'Clinic']],
+    ['Settings', ['Printing & numbering', 'Security', 'Connection & AI', 'This computer', 'Operations', 'Clinic']],
     ['Stock & expiry', ['Stock movements', 'Stock by batch']]
   ])('Quản trị › %s › từng tab', async (page, tabs) => {
     renderPage(<Admin onNavigate={() => {}} />, { user: ADMIN, path: '/admin' })

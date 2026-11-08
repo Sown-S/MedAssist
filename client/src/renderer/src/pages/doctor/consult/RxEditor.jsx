@@ -1,11 +1,9 @@
 import Icon from '../../../components/Icon'
 import DrugPicker from '../../../components/DrugPicker'
 import { translate } from '../../../i18n'
-import { findDrugByName } from '../../../api/inventoryStore'
-import { controlledKind, CONTROLLED_LABEL } from '../../../api/rxSafety'
 import { unitLabel } from '../../admin/inventory/shared'
 import { dmy } from '../../reception/shared'
-import { SLOTS, MEALS, perDay, unitVi } from './rxDraft'
+import { SLOTS, MEALS, perDay, unitVi, wholeQty } from './rxDraft'
 
 // Đơn mẫu: một lần bấm thêm cả nhóm thuốc.
 const TEMPLATES = [
@@ -29,7 +27,7 @@ export const DRUG_SEARCH_ID = 'consult-drug-search'
 
 // Phần kê đơn: tìm thuốc, đơn mẫu, lặp đơn gần nhất, từng dòng thuốc (liều theo buổi → số lượng + cách dùng),
 // cảnh báo tồn kho và chặn chốt khi thiếu thuốc.
-export default function RxEditor({ rx, tried, invDrugs, srvDrugs, issueOf, issues, short, last, setLine, setDose, onAdd, onTemplate, onRepeat, onRemove }) {
+export default function RxEditor({ rx, tried, srvDrugs, issueOf, issues, short, last, setLine, setDose, onAdd, onTemplate, onRepeat, onRemove }) {
   return (
     <>
       <div className="card-title" style={{ marginBottom: 8 }}>
@@ -57,17 +55,12 @@ export default function RxEditor({ rx, tried, invDrugs, srvDrugs, issueOf, issue
         <div className="rx-lines">
           {rx.map((it) => {
             const issue = issueOf(it)
-            const bad = tried && (!(parseInt(it.qty) > 0) || !it.usage.trim())
+            const bad = tried && (!wholeQty(it.qty) || !it.usage.trim())
             const daily = perDay(it.dose)
             return (
               <div className={'rx-line' + (bad ? ' bad' : '')} key={it.id}>
                 <div className="rx-line-top">
                   <b>{it.name}</b>
-                  {controlledKind(findDrugByName(it.name, invDrugs)) && (
-                    <span className="badge low" title={translate('Printed on a separate prescription')}>
-                      {translate(CONTROLLED_LABEL[controlledKind(findDrugByName(it.name, invDrugs))])}
-                    </span>
-                  )}
                   <label className="rx-ess" title={translate('Reception warns the patient if they decide not to buy this drug')}>
                     <input type="checkbox" checked={it.essential} onChange={() => setLine(it.id, { essential: !it.essential })} /> <span>Must buy — warn reception</span>
                   </label>
@@ -104,7 +97,7 @@ export default function RxEditor({ rx, tried, invDrugs, srvDrugs, issueOf, issue
                 </div>
                 <div className="rx-line-fields">
                   <span className="rx-qty">
-                    <input type="number" min="1" placeholder="Qty" value={it.qty} onChange={(e) => setLine(it.id, { qty: e.target.value })} />
+                    <input type="number" min="1" step="1" placeholder="Qty" value={it.qty} onChange={(e) => setLine(it.id, { qty: e.target.value })} />
                     <span className="ai-soft">{unitLabel(it.unit)}</span>
                   </span>
                   <input className="rx-usage" type="text" list="rx-usages" placeholder="Directions — filled in from the dose above, or type for “as needed” drugs" value={it.usage} onChange={(e) => setLine(it.id, { usage: e.target.value })} />

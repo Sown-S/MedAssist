@@ -5,81 +5,80 @@ name_vi: Bệnh thoái hóa cột sống cổ
 name_en: Cervical spondylosis
 icd10_code: M47.2
 disease_group: musculoskeletal
-description: Thoái hóa cột sống cổ (Cervical spondylosis) là bệnh lý mạn tính khá
-  phổ biến, tiến triển chậm, thường gặp ở người lớn tuổi và/hoặc liên quan đến tư
-  thế vận động. Tổn thương cơ bản của bệnh là tình trạng thoái hóa sụn khớp và/hoặc
-  đĩa đệm ở cột sống cổ. Có thể gặp thoái hóa ở bất kỳ đoạn nào song đoạn C5-C6-C7
-  là thường gặp nhất.
+description: Thoái hóa cột sống cổ (Cervical spondylosis) là bệnh lý mạn tính khá phổ biến, tiến triển
+  chậm, thường gặp ở người lớn tuổi và/hoặc liên quan đến tư thế vận động. Tổn thương cơ bản của bệnh
+  là tình trạng thoái hóa sụn khớp và/hoặc đĩa đệm ở cột sống cổ. Có thể gặp thoái hóa ở bất kỳ đoạn nào
+  song đoạn C5-C6-C7 là thường gặp nhất.
 relations:
 - symptom_code: mechanical_spinal_pain_stiffness
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: cervical_radiculopathy_spurling
-  polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
-  source_key: moh_qd_361_2014
-  source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: radicular_sensory_motor_reflex_deficit
   polarity: SUPPORTS
   weight: 0.9
   is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
+- symptom_code: radicular_sensory_motor_reflex_deficit
+  polarity: SUPPORTS
+  weight: 0.6
+  is_key: false
+  source_key: moh_qd_361_2014
+  source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: dizziness_vertigo
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.3
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: cervical_vertebrobasilar_insufficiency
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: joint_range_of_motion_limitation
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: periarticular_tendon_bursa_tenderness
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: limb_numbness_paresthesia_tingling
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: muscle_tenderness_cramps_myotonia
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: headache_dull
   polarity: SUPPORTS
-  weight: 0.72
+  weight: 0.3
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: fatigue_malaise
   polarity: SUPPORTS
-  weight: 0.68
+  weight: 0.3
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: fever_high
   polarity: CONTRADICTS
-  weight: 0.65
+  weight: 0.3
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT

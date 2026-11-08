@@ -3,11 +3,12 @@ import Modal, { ModalHeader } from '../../../components/Modal'
 import { translate } from '../../../i18n'
 import { getRelease } from '../../../api/knowledgeApi'
 import { Empty } from '../ui'
-import { KIND_META, Summary, errorText, fmtDate } from './shared'
+import { KIND_META, Summary, errorText } from './shared'
 import { LogicView } from './logic'
+import { shortDateTime } from '../../../utils/format'
 
 // Phần dùng chung của màn soạn bản phát hành (admin) và màn duyệt (bác sĩ): trạng thái, danh sách thay đổi, lịch sử.
-export const RELEASE_STATUS = { Draft: 'Being drafted', PendingApproval: 'Awaiting approval', Active: 'Approved', Retired: 'Superseded' }
+const RELEASE_STATUS = { Draft: 'Being drafted', PendingApproval: 'Awaiting approval', Active: 'Approved', Retired: 'Superseded' }
 const RELEASE_TONE = { Draft: '', PendingApproval: 'info', Active: 'ok', Retired: 'muted' }
 export const ReleaseBadge = ({ status }) => <span className={'badge ' + (RELEASE_TONE[status] ?? '')}>{RELEASE_STATUS[status] ?? status}</span>
 
@@ -30,7 +31,7 @@ const FIELD_LABEL = {
   rule_type: 'Rule type',
   resulting_priority: 'Resulting priority',
   reason_text: 'Reason shown to doctors',
-  condition_logic: 'Condition'
+  condition_logic: 'Rule condition'
 }
 // Cột khoá của từng loại — không so sánh vì khoá không đổi giữa các phiên bản.
 const KEY_COLS = {
@@ -135,9 +136,9 @@ export function ReleaseHistory({ releases, onView }) {
               <td>
                 <ReleaseBadge status={r.status} />
               </td>
-              <td className="ai-small">{fmtDate(r.created_at)}</td>
-              <td className="ai-small">{fmtDate(r.submitted_at)}</td>
-              <td className="ai-small">{fmtDate(r.approved_at)}</td>
+              <td className="ai-small">{shortDateTime(r.created_at)}</td>
+              <td className="ai-small">{shortDateTime(r.submitted_at)}</td>
+              <td className="ai-small">{shortDateTime(r.approved_at)}</td>
               <td>
                 <button className="btn btn-ghost btn-sm" onClick={() => onView(r)}>
                   View

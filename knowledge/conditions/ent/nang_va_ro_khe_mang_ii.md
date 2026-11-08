@@ -5,44 +5,43 @@ name_vi: Nang và rò khe mang II
 name_en: Second branchial cleft cyst and fistula
 icd10_code: Q18.1
 disease_group: ent
-description: Nang và rò khe mang II là do còn tồn tại khe mang II và xoang cổ trong
-  quá trình phát triển phôi thai, các thành phần này lẽ ra sẽ biến mất đi trong quá
-  trình phát triển của cá thể.
+description: Nang và rò khe mang II là do còn tồn tại khe mang II và xoang cổ trong quá trình phát triển
+  phôi thai, các thành phần này lẽ ra sẽ biến mất đi trong quá trình phát triển của cá thể.
 relations:
 - symptom_code: branchial_cleft_piriform_fistula
   polarity: SUPPORTS
-  weight: 0.98
+  weight: 0.9
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: head_neck_mass_fistula_trauma
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: hearing_loss_deafness
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: facial_nerve_palsy_bell
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: conductive_hearing_loss
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: nasopharyngeal_carcinoma_trotter
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 excerpts:

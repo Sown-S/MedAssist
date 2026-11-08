@@ -7,7 +7,6 @@ import { LANGUAGES, getLang, setLang, translate } from '../i18n'
 import { useNavigate } from 'react-router-dom'
 import { useQueue, isMine, inRoom, atLabs, isPendingFlag } from '../api/queueStore'
 import { useInventory, stockOf } from '../api/inventoryStore'
-import { soldOutside } from '../api/rxSafety'
 
 // Thông báo tính tại máy từ hàng chờ và kho.
 const hm = (iso) => new Date(iso).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit', hour12: false })
@@ -52,7 +51,7 @@ export default function TopActions({ user }) {
           .map((v) => ({ id: 'lb' + v.id, title: translate('Back from lab') + ' — ' + v.name, note: translate('Results are ready — resume the visit'), time: hm(v.labReturnedAt), to: consult() }))
       ]
     : []
-  const low = inv.drugs.filter((d) => d.active && d.kind === 'drug' && !soldOutside(d) && stockOf(d, inv.batches).statuses.some((x) => x === 'out' || x === 'low'))
+  const low = inv.drugs.filter((d) => d.active && d.kind === 'drug' && stockOf(d, inv.batches).statuses.some((x) => x === 'out' || x === 'low'))
   const stock = low.length
     ? [{ id: 'stock', title: low.length + ' ' + translate('drugs low or out of stock'), note: low.slice(0, 4).map((d) => d.name).join(', ') + (low.length > 4 ? '…' : ''), time: '', to: doctor ? '/doctor?view=drugs' : null }]
     : []

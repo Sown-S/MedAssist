@@ -106,7 +106,7 @@ def test_vietnamese_note_returns_three_statuses_pending_nurse_confirmation(catal
                for row in result)
     assert catalogue.calls == [["signal_a", "signal_b", "signal_c"]]
     assert len(client.calls) == 1
-    assert client.calls[0]["schema"] == extraction_json_schema()
+    assert client.calls[0]["schema"] == extraction_json_schema([row["symptom_code"] for row in ROWS])
     assert 0 < client.calls[0]["timeout_seconds"] <= 5
     assert client.response == original
     assert payload(client) == {
@@ -672,3 +672,21 @@ def test_extraction_prompt_versions_remain_available():
     assert "extraction-v1" in load_prompt("extraction-v1")
     assert EXTRACTION_PROMPT_VERSION == "extraction-v2"
     assert "phủ định=ABSENT" in load_prompt(EXTRACTION_PROMPT_VERSION)
+
+
+def test_request_schema_constrains_generation_to_every_active_code(catalogue):
+    rows = [{"symptom_code": f"signal_{i:03d}", "symptom_name": f"Dấu hiệu {i}"}
+            for i in range(300)]
+    client = MockLLMClient({"symptoms": []})
+    extract(catalogue, client, reader=FakeKnowledgeReader(symptoms=rows))
+    code_schema = client.calls[0]["schema"]["$defs"]["ExtractedSymptom"]["properties"]["symptom_code"]
+    assert set(code_schema["enum"]) == {row["symptom_code"] for row in rows}
+    assert "signal_299" in code_schema["enum"]
+
+
+def test_catalogue_schema_is_request_local():
+    first = extraction_json_schema(["signal_a"])
+    first["$defs"]["ExtractedSymptom"]["properties"]["symptom_code"]["enum"].append("signal_b")
+    second = extraction_json_schema(["signal_c"])
+    assert second["$defs"]["ExtractedSymptom"]["properties"]["symptom_code"]["enum"] == ["signal_c"]
+    assert "enum" not in extraction_json_schema()["$defs"]["ExtractedSymptom"]["properties"]["symptom_code"]

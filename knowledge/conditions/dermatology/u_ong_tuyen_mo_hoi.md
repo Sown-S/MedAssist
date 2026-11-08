@@ -5,40 +5,39 @@ name_vi: U ống tuyến mồ hôi
 name_en: Syringoma
 icd10_code: D23.9
 disease_group: dermatology
-description: Là u da lành tính do sự phát triển quá mức của các tế bào ống tuyến mồ
-  hôi. Bệnh gặp ở nhiều chủng tộc khác nhau, thường xảy ra ở tuổi từ 30-40, nữ nhiều
-  hơn nam với tỉ lệ 6,6:1. Theo thống kê của Bệnh viện da liễu tỉnh Kangwondo ở Hàn
-  Quốc năm 1992, bệnh gặp ở 0,12% dân số. Bệnh ảnh hưởng đến thẩm mỹ và tác động nhiều
-  đến tâm lý , khiến người bệnh kém tự tin khi giao tiếp trong cuộc sống.
+description: Là u da lành tính do sự phát triển quá mức của các tế bào ống tuyến mồ hôi. Bệnh gặp ở nhiều
+  chủng tộc khác nhau, thường xảy ra ở tuổi từ 30-40, nữ nhiều hơn nam với tỉ lệ 6,6:1. Theo thống kê
+  của Bệnh viện da liễu tỉnh Kangwondo ở Hàn Quốc năm 1992, bệnh gặp ở 0,12% dân số. Bệnh ảnh hưởng đến
+  thẩm mỹ và tác động nhiều đến tâm lý , khiến người bệnh kém tự tin khi giao tiếp trong cuộc sống.
 relations:
 - symptom_code: syringoma_periorbital_flesh_papules
   polarity: SUPPORTS
-  weight: 0.98
+  weight: 0.9
   is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: melasma_symmetric_facial_hyperpigmentation
   polarity: SUPPORTS
-  weight: 0.97
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: tinea_capitis_kerion_alopecia
   polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: pustular_furuncle_folliculitis
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: pruritus_intense_skin_itch
   polarity: SUPPORTS
-  weight: 0.88
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 excerpts:

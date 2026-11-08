@@ -4,8 +4,9 @@ import { useToast } from '../../../context/ToastContext'
 import { translate } from '../../../i18n'
 import { getRelease, approveRelease, rejectRelease } from '../../../api/knowledgeApi'
 import { Empty } from '../ui'
-import { errorText, fmtDate } from './shared'
+import { errorText } from './shared'
 import { ReleaseBadge, ChangeList, ctxOf, ReleaseHistory, ReleaseModal } from './releaseParts'
+import { shortDateTime } from '../../../utils/format'
 
 // Bác sĩ: duyệt bản chờ duyệt
 export function ReviewPanel({ data, names, onChanged }) {
@@ -53,7 +54,7 @@ export function ReviewPanel({ data, names, onChanged }) {
               </div>
               {pending.description && <div className="ai-small ai-soft">{pending.description}</div>}
               <div className="ai-small ai-soft">
-                <span>Submitted</span> {fmtDate(pending.submitted_at)}
+                <span>Submitted</span> {shortDateTime(pending.submitted_at)}
               </div>
             </div>
             <div className="ai-toolbar-right">

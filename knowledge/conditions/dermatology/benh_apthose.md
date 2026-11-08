@@ -5,56 +5,55 @@ name_vi: Bệnh apthose
 name_en: Apthosis
 icd10_code: K12.0
 disease_group: dermatology
-description: Bệnh aphtose được đặc trưng bởi các vết loét ở niêm mạc miệng, sinh dục
-  giới hạn rõ ràng, đau nhức nhiều và dễ tái phát. Tiến triển của bệnh có thể khỏi
-  tự nhiên và cho đến nay chưa có biện pháp điều trị đặc hiệu. Mục đích điều trị toàn
-  thân và tại chỗ là làm giảm đau và nhanh lành sẹo.
+description: Bệnh aphtose được đặc trưng bởi các vết loét ở niêm mạc miệng, sinh dục giới hạn rõ ràng,
+  đau nhức nhiều và dễ tái phát. Tiến triển của bệnh có thể khỏi tự nhiên và cho đến nay chưa có biện
+  pháp điều trị đặc hiệu. Mục đích điều trị toàn thân và tại chỗ là làm giảm đau và nhanh lành sẹo.
 relations:
 - symptom_code: maculopapular_rash
   polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: oral_mucosal_ulcers
   polarity: SUPPORTS
-  weight: 0.95
+  weight: 0.9
   is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: pustular_furuncle_folliculitis
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: erythema_nodosum_shins
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: basal_cell_carcinoma_pearly_telangiectasia
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: myalgia_arthralgia
   polarity: SUPPORTS
-  weight: 0.85
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: anemia_pallor_jaundice
   polarity: SUPPORTS
-  weight: 0.76
+  weight: 0.3
   is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: fatigue_malaise
   polarity: SUPPORTS
-  weight: 0.68
+  weight: 0.3
   is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT

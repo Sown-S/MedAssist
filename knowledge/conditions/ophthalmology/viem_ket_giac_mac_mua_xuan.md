@@ -5,50 +5,49 @@ name_vi: Viêm kết giác mạc mùa xuân
 name_en: Vernal keratoconjunctivitis
 icd10_code: H16.2
 disease_group: ophthalmology
-description: Viêm kết giác mạc mùa xuân là một hình thái lâm sàng của viêm kết mạc
-  dị ứng, gặp chủ yếu ở nam giới, tuổi thanh thiếu niên. Bệnh thường khởi phát ở trẻ
-  em vào khoảng 4-5 tuổi, bênh tiến triển mạn tính, thường theo mùa và hay có những
-  đợt kịch phát.
+description: Viêm kết giác mạc mùa xuân là một hình thái lâm sàng của viêm kết mạc dị ứng, gặp chủ yếu
+  ở nam giới, tuổi thanh thiếu niên. Bệnh thường khởi phát ở trẻ em vào khoảng 4-5 tuổi, bênh tiến triển
+  mạn tính, thường theo mùa và hay có những đợt kịch phát.
 relations:
 - symptom_code: allergic_conjunctivitis_giant_papillae
   polarity: SUPPORTS
-  weight: 0.98
+  weight: 0.9
   is_key: true
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: conjunctival_ciliary_injection_discharge
   polarity: SUPPORTS
-  weight: 0.97
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: ocular_pain_photophobia_tearing
   polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: conjunctivitis_uveitis_red_eye
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: visual_acuity_decreased_blur
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: corneal_ulcer_hypopyon_keratitis
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: blepharospasm_eyelid_edema
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
