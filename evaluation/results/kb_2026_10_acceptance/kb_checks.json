@@ -1,0 +1,5324 @@
+{
+  "knowledge_release": "KB-2026.10",
+  "testset_sha256": "4e7b58cffc3cd950e1411a131919e36976ea94f209c426821886b03708cd368d",
+  "conditions": 169,
+  "symptoms": 299,
+  "relations": 1744,
+  "errors": [],
+  "regression": [
+    {
+      "symptom_code": "acne_comedones_nodulocystic",
+      "top3": [
+        "trung_ca"
+      ],
+      "forbidden_ranked": [],
+      "passed": true
+    },
+    {
+      "symptom_code": "cutaneous_tuberculosis_lupus_vulgaris",
+      "top3": [
+        "benh_lao_da"
+      ],
+      "forbidden_ranked": [],
+      "passed": true
+    },
+    {
+      "symptom_code": "dress_syndrome_facial_edema_eosinophilia",
+      "top3": [
+        "hoi_chung_dress"
+      ],
+      "forbidden_ranked": [],
+      "passed": true
+    },
+    {
+      "symptom_code": "genital_herpes_clustered_painful_ulcers",
+      "top3": [
+        "herpes_sinh_duc"
+      ],
+      "forbidden_ranked": [],
+      "passed": true
+    },
+    {
+      "symptom_code": "gout_hyperuricemia_colchicine_response",
+      "top3": [
+        "benh_gut"
+      ],
+      "forbidden_ranked": [],
+      "passed": true
+    },
+    {
+      "symptom_code": "leprosy_anesthetic_hypopigmented_nerve",
+      "top3": [
+        "benh_phong"
+      ],
+      "forbidden_ranked": [],
+      "passed": true
+    },
+    {
+      "symptom_code": "lichen_planus_wickham_purple_papules",
+      "top3": [
+        "benh_lichen_phang"
+      ],
+      "forbidden_ranked": [],
+      "passed": true
+    },
+    {
+      "symptom_code": "paederus_kissing_blister_dermatitis",
+      "top3": [
+        "viem_da_tiep_xuc_do_con_trung"
+      ],
+      "forbidden_ranked": [],
+      "passed": true
+    },
+    {
+      "symptom_code": "pemphigus_flaccid_bulla_nikolsky_pos",
+      "top3": [
+        "pemphigus",
+        "bong_nuoc_dang_pemphigus"
+      ],
+      "forbidden_ranked": [],
+      "passed": true
+    },
+    {
+      "symptom_code": "rotatory_vertigo_meniere",
+      "top3": [
+        "benh_meniere"
+      ],
+      "forbidden_ranked": [],
+      "passed": true
+    },
+    {
+      "symptom_code": "scabies_interdigital_burrows_nocturnal",
+      "top3": [
+        "benh_ghe"
+      ],
+      "forbidden_ranked": [],
+      "passed": true
+    },
+    {
+      "symptom_code": "syphilis_hard_chancre_roseola_palmoplantar",
+      "top3": [
+        "benh_giang_mai"
+      ],
+      "forbidden_ranked": [],
+      "passed": true
+    },
+    {
+      "symptom_code": "tinea_capitis_kerion_alopecia",
+      "top3": [
+        "nam_toc"
+      ],
+      "forbidden_ranked": [],
+      "passed": true
+    },
+    {
+      "symptom_code": "varicella_polymorphous_centripetal_vesicles",
+      "top3": [
+        "benh_thuy_dau",
+        "benh_zona"
+      ],
+      "forbidden_ranked": [],
+      "passed": true
+    }
+  ],
+  "conditions_without_key": [
+    "benh_hat_com",
+    "nhot",
+    "sam_da",
+    "viem_nang_long",
+    "chong_mat",
+    "hoi_chung_dau_nhuc_so_mat",
+    "hong_thanh_quan_viem_mui_hong_cap_tinh",
+    "khoi_u_vung_co",
+    "mui_xoang_viem_mui_xoang_tre_em",
+    "nam_thanh_quan",
+    "ngat_mui",
+    "papilloma_thanh_quan",
+    "roi_loan_giong",
+    "u_tai",
+    "viem_hong_cap_tinh",
+    "viem_mui_xoang_cap_tinh",
+    "viem_mui_xoang_man_tinh",
+    "viem_tai_giua_cap_tinh_tre_em",
+    "viem_tai_giua_man_tinh",
+    "viem_tai_giua_man_tre_em",
+    "viem_thanh_quan_cap_tinh",
+    "viem_thanh_quan_man_tinh",
+    "benh_sot_ret_khang_thuoc",
+    "benh_thuong_han",
+    "benh_tieu_chay_do_vi_khuan",
+    "cum_mua",
+    "sot_ret",
+    "benh_viem_mang_hoat_dich_khop_goi_man_tinh_khong_dac_hieu",
+    "hoi_chung_dau_that_lung",
+    "loi_mat"
+  ],
+  "review_candidates": [
+    {
+      "condition_code": "a_vay_nen_va_vay_phan_dang_lichen",
+      "symptom_code": "scaly_plaque_hyperkeratosis",
+      "matched_names": [
+        "vay ca"
+      ],
+      "possible_owners": [
+        "benh_vay_ca"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "a_vay_nen_va_vay_phan_dang_lichen",
+      "symptom_code": "parapsoriasis_chronic_scaly_plaques",
+      "matched_names": [
+        "vay nen"
+      ],
+      "possible_owners": [
+        "benh_vay_nen"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "a_vay_nen_va_vay_phan_dang_lichen",
+      "symptom_code": "vesicular_blister_rash",
+      "matched_names": [
+        "phong"
+      ],
+      "possible_owners": [
+        "benh_phong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "a_vay_nen_va_vay_phan_dang_lichen",
+      "symptom_code": "urticarial_wheal_angioedema",
+      "matched_names": [
+        "may day"
+      ],
+      "possible_owners": [
+        "benh_may_day"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "a_vay_nen_va_vay_phan_dang_lichen",
+      "symptom_code": "verrucous_papule_nodule_ulcer",
+      "matched_names": [
+        "hat com",
+        "phong",
+        "u mem lay"
+      ],
+      "possible_owners": [
+        "benh_hat_com",
+        "benh_phong",
+        "u_mem_lay"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "a_vay_nen_va_vay_phan_dang_lichen",
+      "symptom_code": "pigmentary_macule_patch",
+      "matched_names": [
+        "bach bien",
+        "gai den",
+        "ram ma",
+        "sam da"
+      ],
+      "possible_owners": [
+        "benh_bach_bien",
+        "benh_gai_den",
+        "ram_ma",
+        "sam_da"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_apthose",
+      "symptom_code": "pustular_furuncle_folliculitis",
+      "matched_names": [
+        "folliculitis",
+        "furuncle",
+        "nhot",
+        "trung ca",
+        "viem nang long"
+      ],
+      "possible_owners": [
+        "nhot",
+        "trung_ca",
+        "viem_nang_long"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_apthose",
+      "symptom_code": "erythema_nodosum_shins",
+      "matched_names": [
+        "erythema nodosum",
+        "hong ban nut"
+      ],
+      "possible_owners": [
+        "hong_ban_nut"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_apthose",
+      "symptom_code": "anemia_pallor_jaundice",
+      "matched_names": [
+        "nhot"
+      ],
+      "possible_owners": [
+        "nhot"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_choc",
+      "symptom_code": "vesicular_blister_rash",
+      "matched_names": [
+        "phong"
+      ],
+      "possible_owners": [
+        "benh_phong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_choc",
+      "symptom_code": "melasma_symmetric_facial_hyperpigmentation",
+      "matched_names": [
+        "hyperpigmentation",
+        "ram ma"
+      ],
+      "possible_owners": [
+        "ram_ma",
+        "sam_da"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_choc",
+      "symptom_code": "pigmentary_macule_patch",
+      "matched_names": [
+        "bach bien",
+        "gai den",
+        "ram ma",
+        "sam da"
+      ],
+      "possible_owners": [
+        "benh_bach_bien",
+        "benh_gai_den",
+        "ram_ma",
+        "sam_da"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_choc",
+      "symptom_code": "atopic_dermatitis_flexural_eczema",
+      "matched_names": [
+        "atopic dermatitis",
+        "viem da co dia"
+      ],
+      "possible_owners": [
+        "viem_da_co_dia"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_da_do_anh_sang",
+      "symptom_code": "vesicular_blister_rash",
+      "matched_names": [
+        "phong"
+      ],
+      "possible_owners": [
+        "benh_phong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_da_do_anh_sang",
+      "symptom_code": "scaly_plaque_hyperkeratosis",
+      "matched_names": [
+        "vay ca"
+      ],
+      "possible_owners": [
+        "benh_vay_ca"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_da_do_anh_sang",
+      "symptom_code": "urticarial_wheal_angioedema",
+      "matched_names": [
+        "may day"
+      ],
+      "possible_owners": [
+        "benh_may_day"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_da_do_anh_sang",
+      "symptom_code": "verrucous_papule_nodule_ulcer",
+      "matched_names": [
+        "hat com",
+        "phong",
+        "u mem lay"
+      ],
+      "possible_owners": [
+        "benh_hat_com",
+        "benh_phong",
+        "u_mem_lay"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_da_do_anh_sang",
+      "symptom_code": "pigmentary_macule_patch",
+      "matched_names": [
+        "bach bien",
+        "gai den",
+        "ram ma",
+        "sam da"
+      ],
+      "possible_owners": [
+        "benh_bach_bien",
+        "benh_gai_den",
+        "ram_ma",
+        "sam_da"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_da_do_anh_sang",
+      "symptom_code": "molluscum_umbilicated_pearly_papule",
+      "matched_names": [
+        "u mem lay"
+      ],
+      "possible_owners": [
+        "u_mem_lay"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_da_do_anh_sang",
+      "symptom_code": "atopic_dermatitis_flexural_eczema",
+      "matched_names": [
+        "atopic dermatitis",
+        "viem da co dia"
+      ],
+      "possible_owners": [
+        "viem_da_co_dia"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_da_do_anh_sang",
+      "symptom_code": "melasma_symmetric_facial_hyperpigmentation",
+      "matched_names": [
+        "hyperpigmentation",
+        "ram ma"
+      ],
+      "possible_owners": [
+        "ram_ma",
+        "sam_da"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_da_do_anh_sang",
+      "symptom_code": "pellagra_3d_photosensitive_casal_necklace",
+      "matched_names": [
+        "pellagra"
+      ],
+      "possible_owners": [
+        "benh_pellagra"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_da_do_anh_sang",
+      "symptom_code": "prurigo_nodularis_excoriated_papules",
+      "matched_names": [
+        "prurigo",
+        "san ngua"
+      ],
+      "possible_owners": [
+        "san_ngua"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_da_do_nam_soi",
+      "symptom_code": "vesicular_blister_rash",
+      "matched_names": [
+        "phong"
+      ],
+      "possible_owners": [
+        "benh_phong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_da_do_nam_soi",
+      "symptom_code": "scaly_plaque_hyperkeratosis",
+      "matched_names": [
+        "vay ca"
+      ],
+      "possible_owners": [
+        "benh_vay_ca"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_da_nghe_nghiep",
+      "symptom_code": "pigmentary_macule_patch",
+      "matched_names": [
+        "bach bien",
+        "gai den",
+        "ram ma",
+        "sam da"
+      ],
+      "possible_owners": [
+        "benh_bach_bien",
+        "benh_gai_den",
+        "ram_ma",
+        "sam_da"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_da_nghe_nghiep",
+      "symptom_code": "onychomycosis_subungual_hyperkeratosis",
+      "matched_names": [
+        "nam mong",
+        "onychomycosis"
+      ],
+      "possible_owners": [
+        "nam_mong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_da_nghe_nghiep",
+      "symptom_code": "atopic_dermatitis_flexural_eczema",
+      "matched_names": [
+        "atopic dermatitis",
+        "viem da co dia"
+      ],
+      "possible_owners": [
+        "viem_da_co_dia"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_da_nghe_nghiep",
+      "symptom_code": "melasma_symmetric_facial_hyperpigmentation",
+      "matched_names": [
+        "hyperpigmentation",
+        "ram ma"
+      ],
+      "possible_owners": [
+        "ram_ma",
+        "sam_da"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_da_nghe_nghiep",
+      "symptom_code": "vesicular_blister_rash",
+      "matched_names": [
+        "phong"
+      ],
+      "possible_owners": [
+        "benh_phong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_da_nghe_nghiep",
+      "symptom_code": "scaly_plaque_hyperkeratosis",
+      "matched_names": [
+        "vay ca"
+      ],
+      "possible_owners": [
+        "benh_vay_ca"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_da_nghe_nghiep",
+      "symptom_code": "allergic_contact_dermatitis_patch_pos",
+      "matched_names": [
+        "allergic contact dermatitis"
+      ],
+      "possible_owners": [
+        "viem_da_tiep_xuc_di_ung"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_da_nghe_nghiep",
+      "symptom_code": "pustular_furuncle_folliculitis",
+      "matched_names": [
+        "folliculitis",
+        "furuncle",
+        "nhot",
+        "trung ca",
+        "viem nang long"
+      ],
+      "possible_owners": [
+        "nhot",
+        "trung_ca",
+        "viem_nang_long"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_da_nghe_nghiep",
+      "symptom_code": "urticarial_wheal_angioedema",
+      "matched_names": [
+        "may day"
+      ],
+      "possible_owners": [
+        "benh_may_day"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_da_va_niem_mac_do_candida",
+      "symptom_code": "onychomycosis_subungual_hyperkeratosis",
+      "matched_names": [
+        "nam mong",
+        "onychomycosis"
+      ],
+      "possible_owners": [
+        "nam_mong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_da_va_niem_mac_do_candida",
+      "symptom_code": "scaly_plaque_hyperkeratosis",
+      "matched_names": [
+        "vay ca"
+      ],
+      "possible_owners": [
+        "benh_vay_ca"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_da_va_niem_mac_do_candida",
+      "symptom_code": "seborrheic_dermatitis_greasy_scales",
+      "matched_names": [
+        "seborrheic dermatitis"
+      ],
+      "possible_owners": [
+        "viem_da_dau"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_da_va_niem_mac_do_candida",
+      "symptom_code": "pustular_furuncle_folliculitis",
+      "matched_names": [
+        "folliculitis",
+        "furuncle",
+        "nhot",
+        "trung ca",
+        "viem nang long"
+      ],
+      "possible_owners": [
+        "nhot",
+        "trung_ca",
+        "viem_nang_long"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_gai_den",
+      "symptom_code": "melasma_symmetric_facial_hyperpigmentation",
+      "matched_names": [
+        "hyperpigmentation",
+        "ram ma"
+      ],
+      "possible_owners": [
+        "ram_ma",
+        "sam_da"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_gai_den",
+      "symptom_code": "scaly_plaque_hyperkeratosis",
+      "matched_names": [
+        "vay ca"
+      ],
+      "possible_owners": [
+        "benh_vay_ca"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_gai_den",
+      "symptom_code": "atopic_dermatitis_flexural_eczema",
+      "matched_names": [
+        "atopic dermatitis",
+        "viem da co dia"
+      ],
+      "possible_owners": [
+        "viem_da_co_dia"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_ghe",
+      "symptom_code": "atopic_dermatitis_flexural_eczema",
+      "matched_names": [
+        "atopic dermatitis",
+        "viem da co dia"
+      ],
+      "possible_owners": [
+        "viem_da_co_dia"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_ghe",
+      "symptom_code": "prurigo_nodularis_excoriated_papules",
+      "matched_names": [
+        "prurigo",
+        "san ngua"
+      ],
+      "possible_owners": [
+        "san_ngua"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_ghe",
+      "symptom_code": "vesicular_blister_rash",
+      "matched_names": [
+        "phong"
+      ],
+      "possible_owners": [
+        "benh_phong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_ghe",
+      "symptom_code": "pustular_furuncle_folliculitis",
+      "matched_names": [
+        "folliculitis",
+        "furuncle",
+        "nhot",
+        "trung ca",
+        "viem nang long"
+      ],
+      "possible_owners": [
+        "nhot",
+        "trung_ca",
+        "viem_nang_long"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_ghe",
+      "symptom_code": "scaly_plaque_hyperkeratosis",
+      "matched_names": [
+        "vay ca"
+      ],
+      "possible_owners": [
+        "benh_vay_ca"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_giang_mai",
+      "symptom_code": "molluscum_umbilicated_pearly_papule",
+      "matched_names": [
+        "u mem lay"
+      ],
+      "possible_owners": [
+        "u_mem_lay"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_giang_mai",
+      "symptom_code": "vesicular_blister_rash",
+      "matched_names": [
+        "phong"
+      ],
+      "possible_owners": [
+        "benh_phong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_giang_mai",
+      "symptom_code": "scaly_plaque_hyperkeratosis",
+      "matched_names": [
+        "vay ca"
+      ],
+      "possible_owners": [
+        "benh_vay_ca"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_giang_mai",
+      "symptom_code": "verrucous_papule_nodule_ulcer",
+      "matched_names": [
+        "hat com",
+        "phong",
+        "u mem lay"
+      ],
+      "possible_owners": [
+        "benh_hat_com",
+        "benh_phong",
+        "u_mem_lay"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_hat_com",
+      "symptom_code": "molluscum_umbilicated_pearly_papule",
+      "matched_names": [
+        "u mem lay"
+      ],
+      "possible_owners": [
+        "u_mem_lay"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_hat_com",
+      "symptom_code": "scaly_plaque_hyperkeratosis",
+      "matched_names": [
+        "vay ca"
+      ],
+      "possible_owners": [
+        "benh_vay_ca"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_lao_da",
+      "symptom_code": "verrucous_papule_nodule_ulcer",
+      "matched_names": [
+        "hat com",
+        "phong",
+        "u mem lay"
+      ],
+      "possible_owners": [
+        "benh_hat_com",
+        "benh_phong",
+        "u_mem_lay"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_lao_da",
+      "symptom_code": "vesicular_blister_rash",
+      "matched_names": [
+        "phong"
+      ],
+      "possible_owners": [
+        "benh_phong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_lao_da",
+      "symptom_code": "scaly_plaque_hyperkeratosis",
+      "matched_names": [
+        "vay ca"
+      ],
+      "possible_owners": [
+        "benh_vay_ca"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_lao_da",
+      "symptom_code": "erythema_nodosum_shins",
+      "matched_names": [
+        "erythema nodosum",
+        "hong ban nut"
+      ],
+      "possible_owners": [
+        "hong_ban_nut"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_lichen_phang",
+      "symptom_code": "vesicular_blister_rash",
+      "matched_names": [
+        "phong"
+      ],
+      "possible_owners": [
+        "benh_phong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_lichen_phang",
+      "symptom_code": "verrucous_papule_nodule_ulcer",
+      "matched_names": [
+        "hat com",
+        "phong",
+        "u mem lay"
+      ],
+      "possible_owners": [
+        "benh_hat_com",
+        "benh_phong",
+        "u_mem_lay"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_may_day",
+      "symptom_code": "allergic_contact_dermatitis_patch_pos",
+      "matched_names": [
+        "allergic contact dermatitis"
+      ],
+      "possible_owners": [
+        "viem_da_tiep_xuc_di_ung"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_may_day",
+      "symptom_code": "pigmentary_macule_patch",
+      "matched_names": [
+        "bach bien",
+        "gai den",
+        "ram ma",
+        "sam da"
+      ],
+      "possible_owners": [
+        "benh_bach_bien",
+        "benh_gai_den",
+        "ram_ma",
+        "sam_da"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_pellagra",
+      "symptom_code": "vesicular_blister_rash",
+      "matched_names": [
+        "phong"
+      ],
+      "possible_owners": [
+        "benh_phong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_pellagra",
+      "symptom_code": "pigmentary_macule_patch",
+      "matched_names": [
+        "bach bien",
+        "gai den",
+        "ram ma",
+        "sam da"
+      ],
+      "possible_owners": [
+        "benh_bach_bien",
+        "benh_gai_den",
+        "ram_ma",
+        "sam_da"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_pellagra",
+      "symptom_code": "allergic_contact_dermatitis_patch_pos",
+      "matched_names": [
+        "allergic contact dermatitis"
+      ],
+      "possible_owners": [
+        "viem_da_tiep_xuc_di_ung"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_pellagra",
+      "symptom_code": "prurigo_nodularis_excoriated_papules",
+      "matched_names": [
+        "prurigo",
+        "san ngua"
+      ],
+      "possible_owners": [
+        "san_ngua"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_pellagra",
+      "symptom_code": "scaly_plaque_hyperkeratosis",
+      "matched_names": [
+        "vay ca"
+      ],
+      "possible_owners": [
+        "benh_vay_ca"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_pellagra",
+      "symptom_code": "dizziness_vertigo",
+      "matched_names": [
+        "chong mat",
+        "vertigo"
+      ],
+      "possible_owners": [
+        "chong_mat"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_pellagra",
+      "symptom_code": "anemia_pallor_jaundice",
+      "matched_names": [
+        "nhot"
+      ],
+      "possible_owners": [
+        "nhot"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_porphyrin_da",
+      "symptom_code": "vesicular_blister_rash",
+      "matched_names": [
+        "phong"
+      ],
+      "possible_owners": [
+        "benh_phong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_porphyrin_da",
+      "symptom_code": "pigmentary_macule_patch",
+      "matched_names": [
+        "bach bien",
+        "gai den",
+        "ram ma",
+        "sam da"
+      ],
+      "possible_owners": [
+        "benh_bach_bien",
+        "benh_gai_den",
+        "ram_ma",
+        "sam_da"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_porphyrin_da",
+      "symptom_code": "atopic_dermatitis_flexural_eczema",
+      "matched_names": [
+        "atopic dermatitis",
+        "viem da co dia"
+      ],
+      "possible_owners": [
+        "viem_da_co_dia"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_porphyrin_da",
+      "symptom_code": "acanthosis_nigricans_velvety_neck_axilla",
+      "matched_names": [
+        "acanthosis nigricans",
+        "gai den"
+      ],
+      "possible_owners": [
+        "benh_gai_den"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_vay_ca",
+      "symptom_code": "atopic_dermatitis_flexural_eczema",
+      "matched_names": [
+        "atopic dermatitis",
+        "viem da co dia"
+      ],
+      "possible_owners": [
+        "viem_da_co_dia"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_vay_ca",
+      "symptom_code": "pustular_furuncle_folliculitis",
+      "matched_names": [
+        "folliculitis",
+        "furuncle",
+        "nhot",
+        "trung ca",
+        "viem nang long"
+      ],
+      "possible_owners": [
+        "nhot",
+        "trung_ca",
+        "viem_nang_long"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_vay_ca",
+      "symptom_code": "vesicular_blister_rash",
+      "matched_names": [
+        "phong"
+      ],
+      "possible_owners": [
+        "benh_phong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_vay_ca",
+      "symptom_code": "erythroderma_generalized_exfoliation",
+      "matched_names": [
+        "do da toan than",
+        "erythroderma"
+      ],
+      "possible_owners": [
+        "do_da_toan_than"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_vay_nen",
+      "symptom_code": "scaly_plaque_hyperkeratosis",
+      "matched_names": [
+        "vay ca"
+      ],
+      "possible_owners": [
+        "benh_vay_ca"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_vay_nen",
+      "symptom_code": "erythroderma_generalized_exfoliation",
+      "matched_names": [
+        "do da toan than",
+        "erythroderma"
+      ],
+      "possible_owners": [
+        "do_da_toan_than"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_vay_phan_do_nang_long",
+      "symptom_code": "scaly_plaque_hyperkeratosis",
+      "matched_names": [
+        "vay ca"
+      ],
+      "possible_owners": [
+        "benh_vay_ca"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_vay_phan_do_nang_long",
+      "symptom_code": "erythroderma_generalized_exfoliation",
+      "matched_names": [
+        "do da toan than",
+        "erythroderma"
+      ],
+      "possible_owners": [
+        "do_da_toan_than"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_vay_phan_do_nang_long",
+      "symptom_code": "melasma_symmetric_facial_hyperpigmentation",
+      "matched_names": [
+        "hyperpigmentation",
+        "ram ma"
+      ],
+      "possible_owners": [
+        "ram_ma",
+        "sam_da"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_vay_phan_do_nang_long",
+      "symptom_code": "seborrheic_dermatitis_greasy_scales",
+      "matched_names": [
+        "seborrheic dermatitis"
+      ],
+      "possible_owners": [
+        "viem_da_dau"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_vay_phan_do_nang_long",
+      "symptom_code": "prurigo_nodularis_excoriated_papules",
+      "matched_names": [
+        "prurigo",
+        "san ngua"
+      ],
+      "possible_owners": [
+        "san_ngua"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_vay_phan_do_nang_long",
+      "symptom_code": "pustular_furuncle_folliculitis",
+      "matched_names": [
+        "folliculitis",
+        "furuncle",
+        "nhot",
+        "trung ca",
+        "viem nang long"
+      ],
+      "possible_owners": [
+        "nhot",
+        "trung_ca",
+        "viem_nang_long"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_vay_phan_do_nang_long",
+      "symptom_code": "pigmentary_macule_patch",
+      "matched_names": [
+        "bach bien",
+        "gai den",
+        "ram ma",
+        "sam da"
+      ],
+      "possible_owners": [
+        "benh_bach_bien",
+        "benh_gai_den",
+        "ram_ma",
+        "sam_da"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_viem_da_dang_herpes_cua_duhring_brocq",
+      "symptom_code": "vesicular_blister_rash",
+      "matched_names": [
+        "phong"
+      ],
+      "possible_owners": [
+        "benh_phong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_viem_da_dang_herpes_cua_duhring_brocq",
+      "symptom_code": "bullous_pemphigoid_tense_bulla",
+      "matched_names": [
+        "pemphigoid"
+      ],
+      "possible_owners": [
+        "bong_nuoc_dang_pemphigus"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_viem_da_dang_herpes_cua_duhring_brocq",
+      "symptom_code": "urticarial_wheal_angioedema",
+      "matched_names": [
+        "may day"
+      ],
+      "possible_owners": [
+        "benh_may_day"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_zona",
+      "symptom_code": "vesicular_blister_rash",
+      "matched_names": [
+        "phong"
+      ],
+      "possible_owners": [
+        "benh_phong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_zona",
+      "symptom_code": "dizziness_vertigo",
+      "matched_names": [
+        "chong mat",
+        "vertigo"
+      ],
+      "possible_owners": [
+        "chong_mat"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_zona",
+      "symptom_code": "verrucous_papule_nodule_ulcer",
+      "matched_names": [
+        "hat com",
+        "phong",
+        "u mem lay"
+      ],
+      "possible_owners": [
+        "benh_hat_com",
+        "benh_phong",
+        "u_mem_lay"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_zona",
+      "symptom_code": "varicella_polymorphous_centripetal_vesicles",
+      "matched_names": [
+        "phong",
+        "thuy dau",
+        "varicella"
+      ],
+      "possible_owners": [
+        "benh_phong",
+        "benh_thuy_dau"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "bong_nuoc_dang_pemphigus",
+      "symptom_code": "pemphigus_flaccid_bulla_nikolsky_pos",
+      "matched_names": [
+        "pemphigus"
+      ],
+      "possible_owners": [
+        "pemphigus"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "bong_nuoc_dang_pemphigus",
+      "symptom_code": "vesicular_blister_rash",
+      "matched_names": [
+        "phong"
+      ],
+      "possible_owners": [
+        "benh_phong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "bong_nuoc_dang_pemphigus",
+      "symptom_code": "urticarial_wheal_angioedema",
+      "matched_names": [
+        "may day"
+      ],
+      "possible_owners": [
+        "benh_may_day"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "bong_nuoc_dang_pemphigus",
+      "symptom_code": "verrucous_papule_nodule_ulcer",
+      "matched_names": [
+        "hat com",
+        "phong",
+        "u mem lay"
+      ],
+      "possible_owners": [
+        "benh_hat_com",
+        "benh_phong",
+        "u_mem_lay"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "day_sung_long_ban_tay_ban_chan_di_truyen",
+      "symptom_code": "atopic_dermatitis_flexural_eczema",
+      "matched_names": [
+        "atopic dermatitis",
+        "viem da co dia"
+      ],
+      "possible_owners": [
+        "viem_da_co_dia"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "day_sung_long_ban_tay_ban_chan_di_truyen",
+      "symptom_code": "pustular_furuncle_folliculitis",
+      "matched_names": [
+        "folliculitis",
+        "furuncle",
+        "nhot",
+        "trung ca",
+        "viem nang long"
+      ],
+      "possible_owners": [
+        "nhot",
+        "trung_ca",
+        "viem_nang_long"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "day_sung_long_ban_tay_ban_chan_di_truyen",
+      "symptom_code": "vesicular_blister_rash",
+      "matched_names": [
+        "phong"
+      ],
+      "possible_owners": [
+        "benh_phong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "day_sung_long_ban_tay_ban_chan_di_truyen",
+      "symptom_code": "scaly_plaque_hyperkeratosis",
+      "matched_names": [
+        "vay ca"
+      ],
+      "possible_owners": [
+        "benh_vay_ca"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "day_sung_long_ban_tay_ban_chan_di_truyen",
+      "symptom_code": "pigmentary_macule_patch",
+      "matched_names": [
+        "bach bien",
+        "gai den",
+        "ram ma",
+        "sam da"
+      ],
+      "possible_owners": [
+        "benh_bach_bien",
+        "benh_gai_den",
+        "ram_ma",
+        "sam_da"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "di_sung_nang_long",
+      "symptom_code": "molluscum_umbilicated_pearly_papule",
+      "matched_names": [
+        "u mem lay"
+      ],
+      "possible_owners": [
+        "u_mem_lay"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "di_sung_nang_long",
+      "symptom_code": "vesicular_blister_rash",
+      "matched_names": [
+        "phong"
+      ],
+      "possible_owners": [
+        "benh_phong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "di_sung_nang_long",
+      "symptom_code": "onychomycosis_subungual_hyperkeratosis",
+      "matched_names": [
+        "nam mong",
+        "onychomycosis"
+      ],
+      "possible_owners": [
+        "nam_mong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "di_sung_nang_long",
+      "symptom_code": "pustular_furuncle_folliculitis",
+      "matched_names": [
+        "folliculitis",
+        "furuncle",
+        "nhot",
+        "trung ca",
+        "viem nang long"
+      ],
+      "possible_owners": [
+        "nhot",
+        "trung_ca",
+        "viem_nang_long"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "di_sung_nang_long",
+      "symptom_code": "scaly_plaque_hyperkeratosis",
+      "matched_names": [
+        "vay ca"
+      ],
+      "possible_owners": [
+        "benh_vay_ca"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "di_sung_nang_long",
+      "symptom_code": "verrucous_papule_nodule_ulcer",
+      "matched_names": [
+        "hat com",
+        "phong",
+        "u mem lay"
+      ],
+      "possible_owners": [
+        "benh_hat_com",
+        "benh_phong",
+        "u_mem_lay"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "di_sung_nang_long",
+      "symptom_code": "atopic_dermatitis_flexural_eczema",
+      "matched_names": [
+        "atopic dermatitis",
+        "viem da co dia"
+      ],
+      "possible_owners": [
+        "viem_da_co_dia"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "di_sung_nang_long",
+      "symptom_code": "ichthyosis_fish_scale_hyperkeratosis",
+      "matched_names": [
+        "ichthyosis",
+        "vay ca"
+      ],
+      "possible_owners": [
+        "benh_vay_ca"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "do_da_toan_than",
+      "symptom_code": "vesicular_blister_rash",
+      "matched_names": [
+        "phong"
+      ],
+      "possible_owners": [
+        "benh_phong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "do_da_toan_than",
+      "symptom_code": "scaly_plaque_hyperkeratosis",
+      "matched_names": [
+        "vay ca"
+      ],
+      "possible_owners": [
+        "benh_vay_ca"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "do_da_toan_than",
+      "symptom_code": "onychomycosis_subungual_hyperkeratosis",
+      "matched_names": [
+        "nam mong",
+        "onychomycosis"
+      ],
+      "possible_owners": [
+        "nam_mong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "do_da_toan_than",
+      "symptom_code": "atopic_dermatitis_flexural_eczema",
+      "matched_names": [
+        "atopic dermatitis",
+        "viem da co dia"
+      ],
+      "possible_owners": [
+        "viem_da_co_dia"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "do_da_toan_than",
+      "symptom_code": "pityriasis_rubra_pilaris_islands_sparing",
+      "matched_names": [
+        "pityriasis rubra pilaris"
+      ],
+      "possible_owners": [
+        "benh_vay_phan_do_nang_long"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "do_da_toan_than",
+      "symptom_code": "ichthyosis_fish_scale_hyperkeratosis",
+      "matched_names": [
+        "ichthyosis",
+        "vay ca"
+      ],
+      "possible_owners": [
+        "benh_vay_ca"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "do_da_toan_than",
+      "symptom_code": "pustular_furuncle_folliculitis",
+      "matched_names": [
+        "folliculitis",
+        "furuncle",
+        "nhot",
+        "trung ca",
+        "viem nang long"
+      ],
+      "possible_owners": [
+        "nhot",
+        "trung_ca",
+        "viem_nang_long"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "do_da_toan_than",
+      "symptom_code": "seborrheic_dermatitis_greasy_scales",
+      "matched_names": [
+        "seborrheic dermatitis"
+      ],
+      "possible_owners": [
+        "viem_da_dau"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "do_da_toan_than",
+      "symptom_code": "prurigo_nodularis_excoriated_papules",
+      "matched_names": [
+        "prurigo",
+        "san ngua"
+      ],
+      "possible_owners": [
+        "san_ngua"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "do_da_toan_than",
+      "symptom_code": "pigmentary_macule_patch",
+      "matched_names": [
+        "bach bien",
+        "gai den",
+        "ram ma",
+        "sam da"
+      ],
+      "possible_owners": [
+        "benh_bach_bien",
+        "benh_gai_den",
+        "ram_ma",
+        "sam_da"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "do_da_toan_than",
+      "symptom_code": "anemia_pallor_jaundice",
+      "matched_names": [
+        "nhot"
+      ],
+      "possible_owners": [
+        "nhot"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "herpes_sinh_duc",
+      "symptom_code": "vesicular_blister_rash",
+      "matched_names": [
+        "phong"
+      ],
+      "possible_owners": [
+        "benh_phong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "herpes_sinh_duc",
+      "symptom_code": "pustular_furuncle_folliculitis",
+      "matched_names": [
+        "folliculitis",
+        "furuncle",
+        "nhot",
+        "trung ca",
+        "viem nang long"
+      ],
+      "possible_owners": [
+        "nhot",
+        "trung_ca",
+        "viem_nang_long"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "hoi_chung_bong_vay_da_do_tu_cau",
+      "symptom_code": "erythroderma_generalized_exfoliation",
+      "matched_names": [
+        "do da toan than",
+        "erythroderma"
+      ],
+      "possible_owners": [
+        "do_da_toan_than"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "hoi_chung_bong_vay_da_do_tu_cau",
+      "symptom_code": "vesicular_blister_rash",
+      "matched_names": [
+        "phong"
+      ],
+      "possible_owners": [
+        "benh_phong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "hoi_chung_bong_vay_da_do_tu_cau",
+      "symptom_code": "scaly_plaque_hyperkeratosis",
+      "matched_names": [
+        "vay ca"
+      ],
+      "possible_owners": [
+        "benh_vay_ca"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "hoi_chung_bong_vay_da_do_tu_cau",
+      "symptom_code": "honey_crusted_impetigo_erosion",
+      "matched_names": [
+        "choc",
+        "impetigo"
+      ],
+      "possible_owners": [
+        "benh_choc"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "hoi_chung_bong_vay_da_do_tu_cau",
+      "symptom_code": "pustular_furuncle_folliculitis",
+      "matched_names": [
+        "folliculitis",
+        "furuncle",
+        "nhot",
+        "trung ca",
+        "viem nang long"
+      ],
+      "possible_owners": [
+        "nhot",
+        "trung_ca",
+        "viem_nang_long"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "hoi_chung_raynaud",
+      "symptom_code": "atopic_dermatitis_flexural_eczema",
+      "matched_names": [
+        "atopic dermatitis",
+        "viem da co dia"
+      ],
+      "possible_owners": [
+        "viem_da_co_dia"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "hoi_chung_raynaud",
+      "symptom_code": "verrucous_papule_nodule_ulcer",
+      "matched_names": [
+        "hat com",
+        "phong",
+        "u mem lay"
+      ],
+      "possible_owners": [
+        "benh_hat_com",
+        "benh_phong",
+        "u_mem_lay"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "hoi_chung_raynaud",
+      "symptom_code": "anemia_pallor_jaundice",
+      "matched_names": [
+        "nhot"
+      ],
+      "possible_owners": [
+        "nhot"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "hong_ban_da_dang",
+      "symptom_code": "vesicular_blister_rash",
+      "matched_names": [
+        "phong"
+      ],
+      "possible_owners": [
+        "benh_phong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "hong_ban_da_dang",
+      "symptom_code": "urticarial_wheal_angioedema",
+      "matched_names": [
+        "may day"
+      ],
+      "possible_owners": [
+        "benh_may_day"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "hong_ban_da_dang",
+      "symptom_code": "dermatophytosis_annular_active_border",
+      "matched_names": [
+        "dermatophytosis"
+      ],
+      "possible_owners": [
+        "benh_da_do_nam_soi"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "hong_ban_da_dang",
+      "symptom_code": "allergic_contact_dermatitis_patch_pos",
+      "matched_names": [
+        "allergic contact dermatitis"
+      ],
+      "possible_owners": [
+        "viem_da_tiep_xuc_di_ung"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "hong_ban_da_dang",
+      "symptom_code": "prurigo_nodularis_excoriated_papules",
+      "matched_names": [
+        "prurigo",
+        "san ngua"
+      ],
+      "possible_owners": [
+        "san_ngua"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "hong_ban_da_dang",
+      "symptom_code": "verrucous_papule_nodule_ulcer",
+      "matched_names": [
+        "hat com",
+        "phong",
+        "u mem lay"
+      ],
+      "possible_owners": [
+        "benh_hat_com",
+        "benh_phong",
+        "u_mem_lay"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "hong_ban_da_dang",
+      "symptom_code": "herpetic_dermatomal_pain_blister",
+      "matched_names": [
+        "zona"
+      ],
+      "possible_owners": [
+        "benh_zona"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "ly_thuong_bi_bong_nuoc_bam_sinh",
+      "symptom_code": "vesicular_blister_rash",
+      "matched_names": [
+        "phong"
+      ],
+      "possible_owners": [
+        "benh_phong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "ly_thuong_bi_bong_nuoc_bam_sinh",
+      "symptom_code": "bullous_pemphigoid_tense_bulla",
+      "matched_names": [
+        "pemphigoid"
+      ],
+      "possible_owners": [
+        "bong_nuoc_dang_pemphigus"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "ly_thuong_bi_bong_nuoc_bam_sinh",
+      "symptom_code": "prurigo_nodularis_excoriated_papules",
+      "matched_names": [
+        "prurigo",
+        "san ngua"
+      ],
+      "possible_owners": [
+        "san_ngua"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "ly_thuong_bi_bong_nuoc_bam_sinh",
+      "symptom_code": "verrucous_papule_nodule_ulcer",
+      "matched_names": [
+        "hat com",
+        "phong",
+        "u mem lay"
+      ],
+      "possible_owners": [
+        "benh_hat_com",
+        "benh_phong",
+        "u_mem_lay"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "ly_thuong_bi_bong_nuoc_bam_sinh",
+      "symptom_code": "anemia_pallor_jaundice",
+      "matched_names": [
+        "nhot"
+      ],
+      "possible_owners": [
+        "nhot"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "nam_mong",
+      "symptom_code": "dermatophytosis_annular_active_border",
+      "matched_names": [
+        "dermatophytosis"
+      ],
+      "possible_owners": [
+        "benh_da_do_nam_soi"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "nam_mong",
+      "symptom_code": "atopic_dermatitis_flexural_eczema",
+      "matched_names": [
+        "atopic dermatitis",
+        "viem da co dia"
+      ],
+      "possible_owners": [
+        "viem_da_co_dia"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "nam_toc",
+      "symptom_code": "vesicular_blister_rash",
+      "matched_names": [
+        "phong"
+      ],
+      "possible_owners": [
+        "benh_phong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "nam_toc",
+      "symptom_code": "scaly_plaque_hyperkeratosis",
+      "matched_names": [
+        "vay ca"
+      ],
+      "possible_owners": [
+        "benh_vay_ca"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "nam_toc",
+      "symptom_code": "honey_crusted_impetigo_erosion",
+      "matched_names": [
+        "choc",
+        "impetigo"
+      ],
+      "possible_owners": [
+        "benh_choc"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "nam_toc",
+      "symptom_code": "seborrheic_dermatitis_greasy_scales",
+      "matched_names": [
+        "seborrheic dermatitis"
+      ],
+      "possible_owners": [
+        "viem_da_dau"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "nam_toc",
+      "symptom_code": "pustular_furuncle_folliculitis",
+      "matched_names": [
+        "folliculitis",
+        "furuncle",
+        "nhot",
+        "trung ca",
+        "viem nang long"
+      ],
+      "possible_owners": [
+        "nhot",
+        "trung_ca",
+        "viem_nang_long"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "nhiem_chlamydia_trachomatis_sinh_duc_tiet_nieu",
+      "symptom_code": "gonorrhea_purulent_urethritis_dysuria",
+      "matched_names": [
+        "gonorrhea"
+      ],
+      "possible_owners": [
+        "benh_lau"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "nhot",
+      "symptom_code": "atopic_dermatitis_flexural_eczema",
+      "matched_names": [
+        "atopic dermatitis",
+        "viem da co dia"
+      ],
+      "possible_owners": [
+        "viem_da_co_dia"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "nhot",
+      "symptom_code": "seborrheic_dermatitis_greasy_scales",
+      "matched_names": [
+        "seborrheic dermatitis"
+      ],
+      "possible_owners": [
+        "viem_da_dau"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "nhot",
+      "symptom_code": "syringoma_periorbital_flesh_papules",
+      "matched_names": [
+        "syringoma",
+        "u ong tuyen mo hoi"
+      ],
+      "possible_owners": [
+        "u_ong_tuyen_mo_hoi"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "pemphigus",
+      "symptom_code": "vesicular_blister_rash",
+      "matched_names": [
+        "phong"
+      ],
+      "possible_owners": [
+        "benh_phong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "pemphigus",
+      "symptom_code": "erythroderma_generalized_exfoliation",
+      "matched_names": [
+        "do da toan than",
+        "erythroderma"
+      ],
+      "possible_owners": [
+        "do_da_toan_than"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "pemphigus",
+      "symptom_code": "melasma_symmetric_facial_hyperpigmentation",
+      "matched_names": [
+        "hyperpigmentation",
+        "ram ma"
+      ],
+      "possible_owners": [
+        "ram_ma",
+        "sam_da"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "pemphigus",
+      "symptom_code": "scaly_plaque_hyperkeratosis",
+      "matched_names": [
+        "vay ca"
+      ],
+      "possible_owners": [
+        "benh_vay_ca"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "pemphigus",
+      "symptom_code": "pigmentary_macule_patch",
+      "matched_names": [
+        "bach bien",
+        "gai den",
+        "ram ma",
+        "sam da"
+      ],
+      "possible_owners": [
+        "benh_bach_bien",
+        "benh_gai_den",
+        "ram_ma",
+        "sam_da"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "pemphigus",
+      "symptom_code": "honey_crusted_impetigo_erosion",
+      "matched_names": [
+        "choc",
+        "impetigo"
+      ],
+      "possible_owners": [
+        "benh_choc"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "pemphigus",
+      "symptom_code": "seborrheic_dermatitis_greasy_scales",
+      "matched_names": [
+        "seborrheic dermatitis"
+      ],
+      "possible_owners": [
+        "viem_da_dau"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "sam_da",
+      "symptom_code": "allergic_contact_dermatitis_patch_pos",
+      "matched_names": [
+        "allergic contact dermatitis"
+      ],
+      "possible_owners": [
+        "viem_da_tiep_xuc_di_ung"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "sam_da",
+      "symptom_code": "neurofibromatosis_cafe_au_lait_lisch",
+      "matched_names": [
+        "neurofibromatosis"
+      ],
+      "possible_owners": [
+        "u_xo_than_kinh"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "sam_da",
+      "symptom_code": "vitiligo_chalk_white_depigmented_macules",
+      "matched_names": [
+        "bach bien",
+        "vitiligo"
+      ],
+      "possible_owners": [
+        "benh_bach_bien"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "sam_da",
+      "symptom_code": "pellagra_3d_photosensitive_casal_necklace",
+      "matched_names": [
+        "pellagra"
+      ],
+      "possible_owners": [
+        "benh_pellagra"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "sam_da",
+      "symptom_code": "vesicular_blister_rash",
+      "matched_names": [
+        "phong"
+      ],
+      "possible_owners": [
+        "benh_phong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "san_ngua",
+      "symptom_code": "vesicular_blister_rash",
+      "matched_names": [
+        "phong"
+      ],
+      "possible_owners": [
+        "benh_phong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "san_ngua",
+      "symptom_code": "urticarial_wheal_angioedema",
+      "matched_names": [
+        "may day"
+      ],
+      "possible_owners": [
+        "benh_may_day"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "san_ngua",
+      "symptom_code": "verrucous_papule_nodule_ulcer",
+      "matched_names": [
+        "hat com",
+        "phong",
+        "u mem lay"
+      ],
+      "possible_owners": [
+        "benh_hat_com",
+        "benh_phong",
+        "u_mem_lay"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "san_ngua",
+      "symptom_code": "scaly_plaque_hyperkeratosis",
+      "matched_names": [
+        "vay ca"
+      ],
+      "possible_owners": [
+        "benh_vay_ca"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "san_ngua",
+      "symptom_code": "atopic_dermatitis_flexural_eczema",
+      "matched_names": [
+        "atopic dermatitis",
+        "viem da co dia"
+      ],
+      "possible_owners": [
+        "viem_da_co_dia"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "san_ngua",
+      "symptom_code": "anemia_pallor_jaundice",
+      "matched_names": [
+        "nhot"
+      ],
+      "possible_owners": [
+        "nhot"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "sarcoidosis",
+      "symptom_code": "molluscum_umbilicated_pearly_papule",
+      "matched_names": [
+        "u mem lay"
+      ],
+      "possible_owners": [
+        "u_mem_lay"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "sarcoidosis",
+      "symptom_code": "vesicular_blister_rash",
+      "matched_names": [
+        "phong"
+      ],
+      "possible_owners": [
+        "benh_phong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "sarcoidosis",
+      "symptom_code": "scaly_plaque_hyperkeratosis",
+      "matched_names": [
+        "vay ca"
+      ],
+      "possible_owners": [
+        "benh_vay_ca"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "sarcoidosis",
+      "symptom_code": "verrucous_papule_nodule_ulcer",
+      "matched_names": [
+        "hat com",
+        "phong",
+        "u mem lay"
+      ],
+      "possible_owners": [
+        "benh_hat_com",
+        "benh_phong",
+        "u_mem_lay"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "sarcoidosis",
+      "symptom_code": "erythema_nodosum_shins",
+      "matched_names": [
+        "erythema nodosum",
+        "hong ban nut"
+      ],
+      "possible_owners": [
+        "hong_ban_nut"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "sarcoidosis",
+      "symptom_code": "anemia_pallor_jaundice",
+      "matched_names": [
+        "nhot"
+      ],
+      "possible_owners": [
+        "nhot"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "trung_ca",
+      "symptom_code": "erythema_nodosum_shins",
+      "matched_names": [
+        "erythema nodosum",
+        "hong ban nut"
+      ],
+      "possible_owners": [
+        "hong_ban_nut"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "u_mem_lay",
+      "symptom_code": "atopic_dermatitis_flexural_eczema",
+      "matched_names": [
+        "atopic dermatitis",
+        "viem da co dia"
+      ],
+      "possible_owners": [
+        "viem_da_co_dia"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "u_ong_tuyen_mo_hoi",
+      "symptom_code": "melasma_symmetric_facial_hyperpigmentation",
+      "matched_names": [
+        "hyperpigmentation",
+        "ram ma"
+      ],
+      "possible_owners": [
+        "ram_ma",
+        "sam_da"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "u_ong_tuyen_mo_hoi",
+      "symptom_code": "pustular_furuncle_folliculitis",
+      "matched_names": [
+        "folliculitis",
+        "furuncle",
+        "nhot",
+        "trung ca",
+        "viem nang long"
+      ],
+      "possible_owners": [
+        "nhot",
+        "trung_ca",
+        "viem_nang_long"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "u_xo_than_kinh",
+      "symptom_code": "herpetic_dermatomal_pain_blister",
+      "matched_names": [
+        "zona"
+      ],
+      "possible_owners": [
+        "benh_zona"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "u_xo_than_kinh",
+      "symptom_code": "melasma_symmetric_facial_hyperpigmentation",
+      "matched_names": [
+        "hyperpigmentation",
+        "ram ma"
+      ],
+      "possible_owners": [
+        "ram_ma",
+        "sam_da"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "u_xo_than_kinh",
+      "symptom_code": "verrucous_papule_nodule_ulcer",
+      "matched_names": [
+        "hat com",
+        "phong",
+        "u mem lay"
+      ],
+      "possible_owners": [
+        "benh_hat_com",
+        "benh_phong",
+        "u_mem_lay"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "u_xo_than_kinh",
+      "symptom_code": "pigmentary_macule_patch",
+      "matched_names": [
+        "bach bien",
+        "gai den",
+        "ram ma",
+        "sam da"
+      ],
+      "possible_owners": [
+        "benh_bach_bien",
+        "benh_gai_den",
+        "ram_ma",
+        "sam_da"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "vay_phan_hong_gibert",
+      "symptom_code": "pityriasis_rubra_pilaris_islands_sparing",
+      "matched_names": [
+        "pityriasis rubra pilaris"
+      ],
+      "possible_owners": [
+        "benh_vay_phan_do_nang_long"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "vay_phan_hong_gibert",
+      "symptom_code": "erythema_multiforme_target_lesion",
+      "matched_names": [
+        "erythema multiforme"
+      ],
+      "possible_owners": [
+        "hong_ban_da_dang"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "vay_phan_hong_gibert",
+      "symptom_code": "melasma_symmetric_facial_hyperpigmentation",
+      "matched_names": [
+        "hyperpigmentation",
+        "ram ma"
+      ],
+      "possible_owners": [
+        "ram_ma",
+        "sam_da"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "vay_phan_hong_gibert",
+      "symptom_code": "pustular_furuncle_folliculitis",
+      "matched_names": [
+        "folliculitis",
+        "furuncle",
+        "nhot",
+        "trung ca",
+        "viem nang long"
+      ],
+      "possible_owners": [
+        "nhot",
+        "trung_ca",
+        "viem_nang_long"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "vay_phan_hong_gibert",
+      "symptom_code": "scaly_plaque_hyperkeratosis",
+      "matched_names": [
+        "vay ca"
+      ],
+      "possible_owners": [
+        "benh_vay_ca"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "vay_phan_hong_gibert",
+      "symptom_code": "pigmentary_macule_patch",
+      "matched_names": [
+        "bach bien",
+        "gai den",
+        "ram ma",
+        "sam da"
+      ],
+      "possible_owners": [
+        "benh_bach_bien",
+        "benh_gai_den",
+        "ram_ma",
+        "sam_da"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "vay_phan_hong_gibert",
+      "symptom_code": "dizziness_vertigo",
+      "matched_names": [
+        "chong mat",
+        "vertigo"
+      ],
+      "possible_owners": [
+        "chong_mat"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "vay_phan_hong_gibert",
+      "symptom_code": "urticarial_wheal_angioedema",
+      "matched_names": [
+        "may day"
+      ],
+      "possible_owners": [
+        "benh_may_day"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_am_dao_do_trung_roi",
+      "symptom_code": "gonorrhea_purulent_urethritis_dysuria",
+      "matched_names": [
+        "gonorrhea"
+      ],
+      "possible_owners": [
+        "benh_lau"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_am_ho_am_dao_do_nam_candida",
+      "symptom_code": "vesicular_blister_rash",
+      "matched_names": [
+        "phong"
+      ],
+      "possible_owners": [
+        "benh_phong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_bi_co",
+      "symptom_code": "scaly_plaque_hyperkeratosis",
+      "matched_names": [
+        "vay ca"
+      ],
+      "possible_owners": [
+        "benh_vay_ca"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_bi_co",
+      "symptom_code": "allergic_contact_dermatitis_patch_pos",
+      "matched_names": [
+        "allergic contact dermatitis"
+      ],
+      "possible_owners": [
+        "viem_da_tiep_xuc_di_ung"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_bi_co",
+      "symptom_code": "prurigo_nodularis_excoriated_papules",
+      "matched_names": [
+        "prurigo",
+        "san ngua"
+      ],
+      "possible_owners": [
+        "san_ngua"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_da_co_dia",
+      "symptom_code": "vesicular_blister_rash",
+      "matched_names": [
+        "phong"
+      ],
+      "possible_owners": [
+        "benh_phong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_da_co_dia",
+      "symptom_code": "pustular_furuncle_folliculitis",
+      "matched_names": [
+        "folliculitis",
+        "furuncle",
+        "nhot",
+        "trung ca",
+        "viem nang long"
+      ],
+      "possible_owners": [
+        "nhot",
+        "trung_ca",
+        "viem_nang_long"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_da_co_dia",
+      "symptom_code": "scaly_plaque_hyperkeratosis",
+      "matched_names": [
+        "vay ca"
+      ],
+      "possible_owners": [
+        "benh_vay_ca"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_da_co_dia",
+      "symptom_code": "urticarial_wheal_angioedema",
+      "matched_names": [
+        "may day"
+      ],
+      "possible_owners": [
+        "benh_may_day"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_da_co_dia",
+      "symptom_code": "pigmentary_macule_patch",
+      "matched_names": [
+        "bach bien",
+        "gai den",
+        "ram ma",
+        "sam da"
+      ],
+      "possible_owners": [
+        "benh_bach_bien",
+        "benh_gai_den",
+        "ram_ma",
+        "sam_da"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_da_dau",
+      "symptom_code": "pustular_furuncle_folliculitis",
+      "matched_names": [
+        "folliculitis",
+        "furuncle",
+        "nhot",
+        "trung ca",
+        "viem nang long"
+      ],
+      "possible_owners": [
+        "nhot",
+        "trung_ca",
+        "viem_nang_long"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_da_dau",
+      "symptom_code": "scaly_plaque_hyperkeratosis",
+      "matched_names": [
+        "vay ca"
+      ],
+      "possible_owners": [
+        "benh_vay_ca"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_da_dau",
+      "symptom_code": "atopic_dermatitis_flexural_eczema",
+      "matched_names": [
+        "atopic dermatitis",
+        "viem da co dia"
+      ],
+      "possible_owners": [
+        "viem_da_co_dia"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_da_dau_chi_ruot",
+      "symptom_code": "vesicular_blister_rash",
+      "matched_names": [
+        "phong"
+      ],
+      "possible_owners": [
+        "benh_phong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_da_dau_chi_ruot",
+      "symptom_code": "seborrheic_dermatitis_greasy_scales",
+      "matched_names": [
+        "seborrheic dermatitis"
+      ],
+      "possible_owners": [
+        "viem_da_dau"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_da_dau_chi_ruot",
+      "symptom_code": "pustular_furuncle_folliculitis",
+      "matched_names": [
+        "folliculitis",
+        "furuncle",
+        "nhot",
+        "trung ca",
+        "viem nang long"
+      ],
+      "possible_owners": [
+        "nhot",
+        "trung_ca",
+        "viem_nang_long"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_da_dau_chi_ruot",
+      "symptom_code": "scaly_plaque_hyperkeratosis",
+      "matched_names": [
+        "vay ca"
+      ],
+      "possible_owners": [
+        "benh_vay_ca"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_da_tiep_xuc_di_ung",
+      "symptom_code": "vesicular_blister_rash",
+      "matched_names": [
+        "phong"
+      ],
+      "possible_owners": [
+        "benh_phong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_da_tiep_xuc_di_ung",
+      "symptom_code": "scaly_plaque_hyperkeratosis",
+      "matched_names": [
+        "vay ca"
+      ],
+      "possible_owners": [
+        "benh_vay_ca"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_da_tiep_xuc_di_ung",
+      "symptom_code": "atopic_dermatitis_flexural_eczema",
+      "matched_names": [
+        "atopic dermatitis",
+        "viem da co dia"
+      ],
+      "possible_owners": [
+        "viem_da_co_dia"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_da_tiep_xuc_di_ung",
+      "symptom_code": "erythema_multiforme_target_lesion",
+      "matched_names": [
+        "erythema multiforme"
+      ],
+      "possible_owners": [
+        "hong_ban_da_dang"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_da_tiep_xuc_di_ung",
+      "symptom_code": "prurigo_nodularis_excoriated_papules",
+      "matched_names": [
+        "prurigo",
+        "san ngua"
+      ],
+      "possible_owners": [
+        "san_ngua"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_da_tiep_xuc_di_ung",
+      "symptom_code": "verrucous_papule_nodule_ulcer",
+      "matched_names": [
+        "hat com",
+        "phong",
+        "u mem lay"
+      ],
+      "possible_owners": [
+        "benh_hat_com",
+        "benh_phong",
+        "u_mem_lay"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_da_tiep_xuc_do_con_trung",
+      "symptom_code": "vesicular_blister_rash",
+      "matched_names": [
+        "phong"
+      ],
+      "possible_owners": [
+        "benh_phong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_da_tiep_xuc_do_con_trung",
+      "symptom_code": "pustular_furuncle_folliculitis",
+      "matched_names": [
+        "folliculitis",
+        "furuncle",
+        "nhot",
+        "trung ca",
+        "viem nang long"
+      ],
+      "possible_owners": [
+        "nhot",
+        "trung_ca",
+        "viem_nang_long"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_da_tiep_xuc_do_con_trung",
+      "symptom_code": "scaly_plaque_hyperkeratosis",
+      "matched_names": [
+        "vay ca"
+      ],
+      "possible_owners": [
+        "benh_vay_ca"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_nang_long",
+      "symptom_code": "vesicular_blister_rash",
+      "matched_names": [
+        "phong"
+      ],
+      "possible_owners": [
+        "benh_phong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_nang_long",
+      "symptom_code": "anemia_pallor_jaundice",
+      "matched_names": [
+        "nhot"
+      ],
+      "possible_owners": [
+        "nhot"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_meniere",
+      "symptom_code": "dizziness_vertigo",
+      "matched_names": [
+        "chong mat",
+        "vertigo"
+      ],
+      "possible_owners": [
+        "chong_mat"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_meniere",
+      "symptom_code": "tinnitus_ear_fullness",
+      "matched_names": [
+        "tinnitus",
+        "u tai"
+      ],
+      "possible_owners": [
+        "u_tai"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_polyp_mui",
+      "symptom_code": "nasal_polyp_sinonasal_mass",
+      "matched_names": [
+        "mui xoang",
+        "u nhu"
+      ],
+      "possible_owners": [
+        "papilloma_u_nhu_mui_xoang"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_polyp_mui",
+      "symptom_code": "nasal_obstruction_stuffiness",
+      "matched_names": [
+        "nasal obstruction"
+      ],
+      "possible_owners": [
+        "ngat_mui"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_polyp_mui",
+      "symptom_code": "turbinate_hypertrophy_pallor",
+      "matched_names": [
+        "nhot"
+      ],
+      "possible_owners": [
+        "nhot"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "chong_mat",
+      "symptom_code": "tympanic_membrane_lesion",
+      "matched_names": [
+        "phong"
+      ],
+      "possible_owners": [
+        "benh_phong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "chong_mat",
+      "symptom_code": "tinnitus_ear_fullness",
+      "matched_names": [
+        "tinnitus",
+        "u tai"
+      ],
+      "possible_owners": [
+        "u_tai"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "chong_mat",
+      "symptom_code": "anemia_pallor_jaundice",
+      "matched_names": [
+        "nhot"
+      ],
+      "possible_owners": [
+        "nhot"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "diec_dot_ngot",
+      "symptom_code": "dizziness_vertigo",
+      "matched_names": [
+        "chong mat",
+        "vertigo"
+      ],
+      "possible_owners": [
+        "chong_mat"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "diec_dot_ngot",
+      "symptom_code": "tinnitus_ear_fullness",
+      "matched_names": [
+        "tinnitus",
+        "u tai"
+      ],
+      "possible_owners": [
+        "u_tai"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "hoi_chung_dau_nhuc_so_mat",
+      "symptom_code": "nasal_polyp_sinonasal_mass",
+      "matched_names": [
+        "mui xoang",
+        "u nhu"
+      ],
+      "possible_owners": [
+        "papilloma_u_nhu_mui_xoang"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "hoi_chung_dau_nhuc_so_mat",
+      "symptom_code": "head_neck_mass_fistula_trauma",
+      "matched_names": [
+        "khoi u vung co",
+        "neck mass"
+      ],
+      "possible_owners": [
+        "khoi_u_vung_co"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "hoi_chung_dau_nhuc_so_mat",
+      "symptom_code": "dizziness_vertigo",
+      "matched_names": [
+        "chong mat",
+        "vertigo"
+      ],
+      "possible_owners": [
+        "chong_mat"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "hong_thanh_quan_viem_mui_hong_cap_tinh",
+      "symptom_code": "allergic_sneezing_nasal_itch",
+      "matched_names": [
+        "nhot"
+      ],
+      "possible_owners": [
+        "nhot"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "hong_thanh_quan_viem_mui_hong_cap_tinh",
+      "symptom_code": "vesicular_blister_rash",
+      "matched_names": [
+        "phong"
+      ],
+      "possible_owners": [
+        "benh_phong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "hong_thanh_quan_viem_mui_hong_cap_tinh",
+      "symptom_code": "nasopharyngeal_carcinoma_trotter",
+      "matched_names": [
+        "u tai"
+      ],
+      "possible_owners": [
+        "u_tai"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "hong_thanh_quan_viem_mui_hong_cap_tinh",
+      "symptom_code": "nasal_obstruction_stuffiness",
+      "matched_names": [
+        "nasal obstruction"
+      ],
+      "possible_owners": [
+        "ngat_mui"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "khoi_u_vung_co",
+      "symptom_code": "hoarseness_dysphonia_stridor",
+      "matched_names": [
+        "roi loan giong"
+      ],
+      "possible_owners": [
+        "roi_loan_giong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "khoi_u_vung_co",
+      "symptom_code": "external_ear_swelling_fistula",
+      "matched_names": [
+        "nhot"
+      ],
+      "possible_owners": [
+        "nhot"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "khoi_u_vung_co",
+      "symptom_code": "nasal_polyp_sinonasal_mass",
+      "matched_names": [
+        "mui xoang",
+        "u nhu"
+      ],
+      "possible_owners": [
+        "papilloma_u_nhu_mui_xoang"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "khoi_u_vung_co",
+      "symptom_code": "nasopharyngeal_carcinoma_trotter",
+      "matched_names": [
+        "u tai"
+      ],
+      "possible_owners": [
+        "u_tai"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "lao_thanh_quan",
+      "symptom_code": "hoarseness_dysphonia_stridor",
+      "matched_names": [
+        "roi loan giong"
+      ],
+      "possible_owners": [
+        "roi_loan_giong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "lao_thanh_quan",
+      "symptom_code": "anemia_pallor_jaundice",
+      "matched_names": [
+        "nhot"
+      ],
+      "possible_owners": [
+        "nhot"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "liet_co_mo_thanh_quan",
+      "symptom_code": "head_neck_mass_fistula_trauma",
+      "matched_names": [
+        "khoi u vung co",
+        "neck mass"
+      ],
+      "possible_owners": [
+        "khoi_u_vung_co"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "liet_co_mo_thanh_quan",
+      "symptom_code": "tachypnea_accessory_muscle_retractions",
+      "matched_names": [
+        "phong"
+      ],
+      "possible_owners": [
+        "benh_phong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "liet_co_mo_thanh_quan",
+      "symptom_code": "hoarseness_dysphonia_stridor",
+      "matched_names": [
+        "roi loan giong"
+      ],
+      "possible_owners": [
+        "roi_loan_giong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "mui_xoang_viem_mui_xoang_tre_em",
+      "symptom_code": "nasal_polyp_sinonasal_mass",
+      "matched_names": [
+        "mui xoang",
+        "u nhu"
+      ],
+      "possible_owners": [
+        "papilloma_u_nhu_mui_xoang"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "mui_xoang_viem_mui_xoang_tre_em",
+      "symptom_code": "nasal_obstruction_stuffiness",
+      "matched_names": [
+        "nasal obstruction"
+      ],
+      "possible_owners": [
+        "ngat_mui"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "mui_xoang_viem_mui_xoang_tre_em",
+      "symptom_code": "turbinate_hypertrophy_pallor",
+      "matched_names": [
+        "nhot"
+      ],
+      "possible_owners": [
+        "nhot"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "nam_thanh_quan",
+      "symptom_code": "hoarseness_dysphonia_stridor",
+      "matched_names": [
+        "roi loan giong"
+      ],
+      "possible_owners": [
+        "roi_loan_giong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "nam_thanh_quan",
+      "symptom_code": "head_neck_mass_fistula_trauma",
+      "matched_names": [
+        "khoi u vung co",
+        "neck mass"
+      ],
+      "possible_owners": [
+        "khoi_u_vung_co"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "nam_thanh_quan",
+      "symptom_code": "laryngeal_tuberculosis_monochorditis",
+      "matched_names": [
+        "lao thanh quan",
+        "laryngeal tuberculosis"
+      ],
+      "possible_owners": [
+        "lao_thanh_quan"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "nang_ro_giap_luoi",
+      "symptom_code": "head_neck_mass_fistula_trauma",
+      "matched_names": [
+        "khoi u vung co",
+        "neck mass"
+      ],
+      "possible_owners": [
+        "khoi_u_vung_co"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "nang_va_ro_khe_mang_i",
+      "symptom_code": "head_neck_mass_fistula_trauma",
+      "matched_names": [
+        "khoi u vung co",
+        "neck mass"
+      ],
+      "possible_owners": [
+        "khoi_u_vung_co"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "nang_va_ro_khe_mang_i",
+      "symptom_code": "external_ear_swelling_fistula",
+      "matched_names": [
+        "nhot"
+      ],
+      "possible_owners": [
+        "nhot"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "nang_va_ro_khe_mang_ii",
+      "symptom_code": "head_neck_mass_fistula_trauma",
+      "matched_names": [
+        "khoi u vung co",
+        "neck mass"
+      ],
+      "possible_owners": [
+        "khoi_u_vung_co"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "nang_va_ro_khe_mang_ii",
+      "symptom_code": "nasopharyngeal_carcinoma_trotter",
+      "matched_names": [
+        "u tai"
+      ],
+      "possible_owners": [
+        "u_tai"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "ngat_mui",
+      "symptom_code": "nasal_polyp_sinonasal_mass",
+      "matched_names": [
+        "mui xoang",
+        "u nhu"
+      ],
+      "possible_owners": [
+        "papilloma_u_nhu_mui_xoang"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "ngat_mui",
+      "symptom_code": "juvenile_nasopharyngeal_angiofibroma",
+      "matched_names": [
+        "nasopharyngeal angiofibroma"
+      ],
+      "possible_owners": [
+        "u_xo_mach_vom_mui_hong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "ngat_mui",
+      "symptom_code": "nasopharyngeal_carcinoma_trotter",
+      "matched_names": [
+        "u tai"
+      ],
+      "possible_owners": [
+        "u_tai"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "ngat_mui",
+      "symptom_code": "allergic_sneezing_nasal_itch",
+      "matched_names": [
+        "nhot"
+      ],
+      "possible_owners": [
+        "nhot"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "ngat_mui",
+      "symptom_code": "turbinate_hypertrophy_pallor",
+      "matched_names": [
+        "nhot"
+      ],
+      "possible_owners": [
+        "nhot"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "ngu_ngay_va_hoi_chung_tac_nghen_tho_trong_khi_ngu",
+      "symptom_code": "nasal_polyp_sinonasal_mass",
+      "matched_names": [
+        "mui xoang",
+        "u nhu"
+      ],
+      "possible_owners": [
+        "papilloma_u_nhu_mui_xoang"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "ngu_ngay_va_hoi_chung_tac_nghen_tho_trong_khi_ngu",
+      "symptom_code": "turbinate_hypertrophy_pallor",
+      "matched_names": [
+        "nhot"
+      ],
+      "possible_owners": [
+        "nhot"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "papilloma_thanh_quan",
+      "symptom_code": "sinonasal_inverted_papilloma",
+      "matched_names": [
+        "papilloma",
+        "u nhu"
+      ],
+      "possible_owners": [
+        "papilloma_u_nhu_mui_xoang"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "papilloma_thanh_quan",
+      "symptom_code": "hoarseness_dysphonia_stridor",
+      "matched_names": [
+        "roi loan giong"
+      ],
+      "possible_owners": [
+        "roi_loan_giong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "papilloma_thanh_quan",
+      "symptom_code": "tachypnea_accessory_muscle_retractions",
+      "matched_names": [
+        "phong"
+      ],
+      "possible_owners": [
+        "benh_phong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "papilloma_thanh_quan",
+      "symptom_code": "nasal_polyp_sinonasal_mass",
+      "matched_names": [
+        "mui xoang",
+        "u nhu"
+      ],
+      "possible_owners": [
+        "papilloma_u_nhu_mui_xoang"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "papilloma_u_nhu_mui_xoang",
+      "symptom_code": "nasal_obstruction_stuffiness",
+      "matched_names": [
+        "nasal obstruction"
+      ],
+      "possible_owners": [
+        "ngat_mui"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "roi_loan_giong",
+      "symptom_code": "sinonasal_inverted_papilloma",
+      "matched_names": [
+        "papilloma",
+        "u nhu"
+      ],
+      "possible_owners": [
+        "papilloma_u_nhu_mui_xoang"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "roi_loan_giong",
+      "symptom_code": "laryngeal_tuberculosis_monochorditis",
+      "matched_names": [
+        "lao thanh quan",
+        "laryngeal tuberculosis"
+      ],
+      "possible_owners": [
+        "lao_thanh_quan"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "roi_loan_giong",
+      "symptom_code": "nasal_obstruction_stuffiness",
+      "matched_names": [
+        "nasal obstruction"
+      ],
+      "possible_owners": [
+        "ngat_mui"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "seo_hep_thanh_khi_quan",
+      "symptom_code": "hoarseness_dysphonia_stridor",
+      "matched_names": [
+        "roi loan giong"
+      ],
+      "possible_owners": [
+        "roi_loan_giong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "trao_nguoc_da_day_thuc_quan",
+      "symptom_code": "hoarseness_dysphonia_stridor",
+      "matched_names": [
+        "roi loan giong"
+      ],
+      "possible_owners": [
+        "roi_loan_giong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "u_lanh_tinh_mui_xoang",
+      "symptom_code": "nasal_obstruction_stuffiness",
+      "matched_names": [
+        "nasal obstruction"
+      ],
+      "possible_owners": [
+        "ngat_mui"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "u_lanh_tinh_mui_xoang",
+      "symptom_code": "nasal_polyp_sinonasal_mass",
+      "matched_names": [
+        "mui xoang",
+        "u nhu"
+      ],
+      "possible_owners": [
+        "papilloma_u_nhu_mui_xoang"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "u_lanh_tinh_mui_xoang",
+      "symptom_code": "juvenile_nasopharyngeal_angiofibroma",
+      "matched_names": [
+        "nasopharyngeal angiofibroma"
+      ],
+      "possible_owners": [
+        "u_xo_mach_vom_mui_hong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "u_tai",
+      "symptom_code": "tympanic_membrane_lesion",
+      "matched_names": [
+        "phong"
+      ],
+      "possible_owners": [
+        "benh_phong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "u_tai",
+      "symptom_code": "external_ear_swelling_fistula",
+      "matched_names": [
+        "nhot"
+      ],
+      "possible_owners": [
+        "nhot"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "u_tai",
+      "symptom_code": "head_neck_mass_fistula_trauma",
+      "matched_names": [
+        "khoi u vung co",
+        "neck mass"
+      ],
+      "possible_owners": [
+        "khoi_u_vung_co"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "u_tai",
+      "symptom_code": "dizziness_vertigo",
+      "matched_names": [
+        "chong mat",
+        "vertigo"
+      ],
+      "possible_owners": [
+        "chong_mat"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "u_tai",
+      "symptom_code": "anemia_pallor_jaundice",
+      "matched_names": [
+        "nhot"
+      ],
+      "possible_owners": [
+        "nhot"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "u_tuyen_nuoc_bot",
+      "symptom_code": "nasal_polyp_sinonasal_mass",
+      "matched_names": [
+        "mui xoang",
+        "u nhu"
+      ],
+      "possible_owners": [
+        "papilloma_u_nhu_mui_xoang"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "u_tuyen_nuoc_bot",
+      "symptom_code": "head_neck_mass_fistula_trauma",
+      "matched_names": [
+        "khoi u vung co",
+        "neck mass"
+      ],
+      "possible_owners": [
+        "khoi_u_vung_co"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "u_tuyen_nuoc_bot",
+      "symptom_code": "nasal_obstruction_stuffiness",
+      "matched_names": [
+        "nasal obstruction"
+      ],
+      "possible_owners": [
+        "ngat_mui"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "u_xo_mach_vom_mui_hong",
+      "symptom_code": "nasal_polyp_sinonasal_mass",
+      "matched_names": [
+        "mui xoang",
+        "u nhu"
+      ],
+      "possible_owners": [
+        "papilloma_u_nhu_mui_xoang"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "u_xo_mach_vom_mui_hong",
+      "symptom_code": "nasal_obstruction_stuffiness",
+      "matched_names": [
+        "nasal obstruction"
+      ],
+      "possible_owners": [
+        "ngat_mui"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_amidan_cap_va_man_tinh",
+      "symptom_code": "hoarseness_dysphonia_stridor",
+      "matched_names": [
+        "roi loan giong"
+      ],
+      "possible_owners": [
+        "roi_loan_giong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_amidan_cap_va_man_tinh",
+      "symptom_code": "anemia_pallor_jaundice",
+      "matched_names": [
+        "nhot"
+      ],
+      "possible_owners": [
+        "nhot"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_hong_cap_tinh",
+      "symptom_code": "nasopharyngeal_carcinoma_trotter",
+      "matched_names": [
+        "u tai"
+      ],
+      "possible_owners": [
+        "u_tai"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_hong_man_tinh",
+      "symptom_code": "nasal_obstruction_stuffiness",
+      "matched_names": [
+        "nasal obstruction"
+      ],
+      "possible_owners": [
+        "ngat_mui"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_mui_xoang_cap_tinh",
+      "symptom_code": "nasal_polyp_sinonasal_mass",
+      "matched_names": [
+        "mui xoang",
+        "u nhu"
+      ],
+      "possible_owners": [
+        "papilloma_u_nhu_mui_xoang"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_mui_xoang_cap_tinh",
+      "symptom_code": "nasal_obstruction_stuffiness",
+      "matched_names": [
+        "nasal obstruction"
+      ],
+      "possible_owners": [
+        "ngat_mui"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_mui_xoang_di_ung",
+      "symptom_code": "allergic_sneezing_nasal_itch",
+      "matched_names": [
+        "nhot"
+      ],
+      "possible_owners": [
+        "nhot"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_mui_xoang_di_ung",
+      "symptom_code": "nasal_obstruction_stuffiness",
+      "matched_names": [
+        "nasal obstruction"
+      ],
+      "possible_owners": [
+        "ngat_mui"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_mui_xoang_di_ung",
+      "symptom_code": "turbinate_hypertrophy_pallor",
+      "matched_names": [
+        "nhot"
+      ],
+      "possible_owners": [
+        "nhot"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_mui_xoang_do_nam",
+      "symptom_code": "nasal_polyp_sinonasal_mass",
+      "matched_names": [
+        "mui xoang",
+        "u nhu"
+      ],
+      "possible_owners": [
+        "papilloma_u_nhu_mui_xoang"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_mui_xoang_do_nam",
+      "symptom_code": "nasal_obstruction_stuffiness",
+      "matched_names": [
+        "nasal obstruction"
+      ],
+      "possible_owners": [
+        "ngat_mui"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_mui_xoang_man_tinh",
+      "symptom_code": "nasal_obstruction_stuffiness",
+      "matched_names": [
+        "nasal obstruction"
+      ],
+      "possible_owners": [
+        "ngat_mui"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_mui_xoang_man_tinh",
+      "symptom_code": "nasal_polyp_sinonasal_mass",
+      "matched_names": [
+        "mui xoang",
+        "u nhu"
+      ],
+      "possible_owners": [
+        "papilloma_u_nhu_mui_xoang"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_phu_ne_thanh_thiet_cap_tinh",
+      "symptom_code": "hoarseness_dysphonia_stridor",
+      "matched_names": [
+        "roi loan giong"
+      ],
+      "possible_owners": [
+        "roi_loan_giong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_phu_ne_thanh_thiet_cap_tinh",
+      "symptom_code": "laryngeal_tuberculosis_monochorditis",
+      "matched_names": [
+        "lao thanh quan",
+        "laryngeal tuberculosis"
+      ],
+      "possible_owners": [
+        "lao_thanh_quan"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_tai_giua_cap_tinh_tre_em",
+      "symptom_code": "tympanic_membrane_lesion",
+      "matched_names": [
+        "phong"
+      ],
+      "possible_owners": [
+        "benh_phong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_tai_giua_cap_tinh_tre_em",
+      "symptom_code": "nasal_polyp_sinonasal_mass",
+      "matched_names": [
+        "mui xoang",
+        "u nhu"
+      ],
+      "possible_owners": [
+        "papilloma_u_nhu_mui_xoang"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_tai_giua_cap_tinh_tre_em",
+      "symptom_code": "external_ear_swelling_fistula",
+      "matched_names": [
+        "nhot"
+      ],
+      "possible_owners": [
+        "nhot"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_tai_giua_cap_tinh_tre_em",
+      "symptom_code": "nasal_obstruction_stuffiness",
+      "matched_names": [
+        "nasal obstruction"
+      ],
+      "possible_owners": [
+        "ngat_mui"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_tai_giua_cap_tinh_tre_em",
+      "symptom_code": "dizziness_vertigo",
+      "matched_names": [
+        "chong mat",
+        "vertigo"
+      ],
+      "possible_owners": [
+        "chong_mat"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_tai_giua_cap_tinh_tre_em",
+      "symptom_code": "tinnitus_ear_fullness",
+      "matched_names": [
+        "tinnitus",
+        "u tai"
+      ],
+      "possible_owners": [
+        "u_tai"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_tai_giua_man_tinh",
+      "symptom_code": "tympanic_membrane_lesion",
+      "matched_names": [
+        "phong"
+      ],
+      "possible_owners": [
+        "benh_phong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_tai_giua_man_tinh",
+      "symptom_code": "dizziness_vertigo",
+      "matched_names": [
+        "chong mat",
+        "vertigo"
+      ],
+      "possible_owners": [
+        "chong_mat"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_tai_giua_man_tinh",
+      "symptom_code": "tinnitus_ear_fullness",
+      "matched_names": [
+        "tinnitus",
+        "u tai"
+      ],
+      "possible_owners": [
+        "u_tai"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_tai_giua_man_tinh_co_cholesteatoma",
+      "symptom_code": "dizziness_vertigo",
+      "matched_names": [
+        "chong mat",
+        "vertigo"
+      ],
+      "possible_owners": [
+        "chong_mat"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_tai_giua_man_tinh_co_cholesteatoma",
+      "symptom_code": "tinnitus_ear_fullness",
+      "matched_names": [
+        "tinnitus",
+        "u tai"
+      ],
+      "possible_owners": [
+        "u_tai"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_tai_giua_man_tinh_co_cholesteatoma",
+      "symptom_code": "tympanic_membrane_lesion",
+      "matched_names": [
+        "phong"
+      ],
+      "possible_owners": [
+        "benh_phong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_tai_giua_man_tre_em",
+      "symptom_code": "tympanic_membrane_lesion",
+      "matched_names": [
+        "phong"
+      ],
+      "possible_owners": [
+        "benh_phong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_tai_giua_man_tre_em",
+      "symptom_code": "dizziness_vertigo",
+      "matched_names": [
+        "chong mat",
+        "vertigo"
+      ],
+      "possible_owners": [
+        "chong_mat"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_tai_giua_man_tre_em",
+      "symptom_code": "tinnitus_ear_fullness",
+      "matched_names": [
+        "tinnitus",
+        "u tai"
+      ],
+      "possible_owners": [
+        "u_tai"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_thanh_quan_cap_tinh",
+      "symptom_code": "hoarseness_dysphonia_stridor",
+      "matched_names": [
+        "roi loan giong"
+      ],
+      "possible_owners": [
+        "roi_loan_giong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_thanh_quan_cap_tinh",
+      "symptom_code": "laryngeal_tuberculosis_monochorditis",
+      "matched_names": [
+        "lao thanh quan",
+        "laryngeal tuberculosis"
+      ],
+      "possible_owners": [
+        "lao_thanh_quan"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_thanh_quan_cap_tinh",
+      "symptom_code": "tachypnea_accessory_muscle_retractions",
+      "matched_names": [
+        "phong"
+      ],
+      "possible_owners": [
+        "benh_phong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_thanh_quan_cap_tinh_ha_thanh_mon",
+      "symptom_code": "hoarseness_dysphonia_stridor",
+      "matched_names": [
+        "roi loan giong"
+      ],
+      "possible_owners": [
+        "roi_loan_giong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_thanh_quan_cap_tinh_ha_thanh_mon",
+      "symptom_code": "nasal_obstruction_stuffiness",
+      "matched_names": [
+        "nasal obstruction"
+      ],
+      "possible_owners": [
+        "ngat_mui"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_thanh_quan_cap_tinh_ha_thanh_mon",
+      "symptom_code": "head_neck_mass_fistula_trauma",
+      "matched_names": [
+        "khoi u vung co",
+        "neck mass"
+      ],
+      "possible_owners": [
+        "khoi_u_vung_co"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_thanh_quan_cap_tinh_ha_thanh_mon",
+      "symptom_code": "tachypnea_accessory_muscle_retractions",
+      "matched_names": [
+        "phong"
+      ],
+      "possible_owners": [
+        "benh_phong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_thanh_quan_man_tinh",
+      "symptom_code": "hoarseness_dysphonia_stridor",
+      "matched_names": [
+        "roi loan giong"
+      ],
+      "possible_owners": [
+        "roi_loan_giong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_v_a_cap_va_man_tinh",
+      "symptom_code": "nasal_obstruction_stuffiness",
+      "matched_names": [
+        "nasal obstruction"
+      ],
+      "possible_owners": [
+        "ngat_mui"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_v_a_cap_va_man_tinh",
+      "symptom_code": "tinnitus_ear_fullness",
+      "matched_names": [
+        "tinnitus",
+        "u tai"
+      ],
+      "possible_owners": [
+        "u_tai"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_v_a_cap_va_man_tinh",
+      "symptom_code": "turbinate_hypertrophy_pallor",
+      "matched_names": [
+        "nhot"
+      ],
+      "possible_owners": [
+        "nhot"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_v_a_cap_va_man_tinh",
+      "symptom_code": "tachypnea_accessory_muscle_retractions",
+      "matched_names": [
+        "phong"
+      ],
+      "possible_owners": [
+        "benh_phong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_v_a_cap_va_man_tinh",
+      "symptom_code": "anemia_pallor_jaundice",
+      "matched_names": [
+        "nhot"
+      ],
+      "possible_owners": [
+        "nhot"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "xop_xo_tai",
+      "symptom_code": "tympanic_membrane_lesion",
+      "matched_names": [
+        "phong"
+      ],
+      "possible_owners": [
+        "benh_phong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "xop_xo_tai",
+      "symptom_code": "dizziness_vertigo",
+      "matched_names": [
+        "chong mat",
+        "vertigo"
+      ],
+      "possible_owners": [
+        "chong_mat"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "xop_xo_tai",
+      "symptom_code": "tinnitus_ear_fullness",
+      "matched_names": [
+        "tinnitus",
+        "u tai"
+      ],
+      "possible_owners": [
+        "u_tai"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_nhiem_trung_o_da_va_mo_mem",
+      "symptom_code": "vesicular_blister_rash",
+      "matched_names": [
+        "phong"
+      ],
+      "possible_owners": [
+        "benh_phong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_sot_mo",
+      "symptom_code": "anemia_pallor_jaundice",
+      "matched_names": [
+        "nhot"
+      ],
+      "possible_owners": [
+        "nhot"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_sot_ret_khang_thuoc",
+      "symptom_code": "cerebral_malaria_coma_hemoglobinuria",
+      "matched_names": [
+        "sot ret"
+      ],
+      "possible_owners": [
+        "sot_ret"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_sot_ret_khang_thuoc",
+      "symptom_code": "anemia_pallor_jaundice",
+      "matched_names": [
+        "nhot"
+      ],
+      "possible_owners": [
+        "nhot"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_thuong_han",
+      "symptom_code": "dizziness_vertigo",
+      "matched_names": [
+        "chong mat",
+        "vertigo"
+      ],
+      "possible_owners": [
+        "chong_mat"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_thuy_dau",
+      "symptom_code": "vesicular_blister_rash",
+      "matched_names": [
+        "phong"
+      ],
+      "possible_owners": [
+        "benh_phong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "cum_mua",
+      "symptom_code": "tachypnea_accessory_muscle_retractions",
+      "matched_names": [
+        "phong"
+      ],
+      "possible_owners": [
+        "benh_phong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "sot_ret",
+      "symptom_code": "anemia_pallor_jaundice",
+      "matched_names": [
+        "nhot"
+      ],
+      "possible_owners": [
+        "nhot"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "tay_chan_mieng",
+      "symptom_code": "palmar_vesicles",
+      "matched_names": [
+        "phong"
+      ],
+      "possible_owners": [
+        "benh_phong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "tay_chan_mieng",
+      "symptom_code": "plantar_vesicles",
+      "matched_names": [
+        "phong"
+      ],
+      "possible_owners": [
+        "benh_phong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_lupus_ban_do_he_thong",
+      "symptom_code": "skin_sclerosis_raynaud",
+      "matched_names": [
+        "hoi chung raynaud"
+      ],
+      "possible_owners": [
+        "hoi_chung_raynaud"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_lupus_ban_do_he_thong",
+      "symptom_code": "anemia_pallor_jaundice",
+      "matched_names": [
+        "nhot"
+      ],
+      "possible_owners": [
+        "nhot"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_thoai_hoa_cot_song_co",
+      "symptom_code": "dizziness_vertigo",
+      "matched_names": [
+        "chong mat",
+        "vertigo"
+      ],
+      "possible_owners": [
+        "chong_mat"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_thoai_hoa_cot_song_co",
+      "symptom_code": "cervical_vertebrobasilar_insufficiency",
+      "matched_names": [
+        "chong mat",
+        "u tai"
+      ],
+      "possible_owners": [
+        "chong_mat",
+        "u_tai"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_u_te_bao_khong_lo",
+      "symptom_code": "lumbar_spondylosis_paraspinal_spasm",
+      "matched_names": [
+        "spondylosis"
+      ],
+      "possible_owners": [
+        "benh_thoai_hoa_cot_song_that_lung"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_viem_khop_phan_ung",
+      "symptom_code": "ankylosing_spondylitis_schober_chest",
+      "matched_names": [
+        "ankylosing spondylitis"
+      ],
+      "possible_owners": [
+        "viem_cot_song_dinh_khop"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_viem_khop_phan_ung",
+      "symptom_code": "anemia_pallor_jaundice",
+      "matched_names": [
+        "nhot"
+      ],
+      "possible_owners": [
+        "nhot"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_viem_khop_thieu_nien_tu_phat_the_he_thong",
+      "symptom_code": "osteoporosis_vertebral_collapse_kyphosis",
+      "matched_names": [
+        "loang xuong",
+        "osteoporosis"
+      ],
+      "possible_owners": [
+        "benh_loang_xuong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_viem_khop_thieu_nien_tu_phat_the_he_thong",
+      "symptom_code": "dermatomyositis_shawls_mechanic_hands",
+      "matched_names": [
+        "dermatomyositis"
+      ],
+      "possible_owners": [
+        "viem_bi_co"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_viem_khop_thieu_nien_tu_phat_the_he_thong",
+      "symptom_code": "anemia_pallor_jaundice",
+      "matched_names": [
+        "nhot"
+      ],
+      "possible_owners": [
+        "nhot"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_viem_khop_thieu_nien_tu_phat_the_viem_cot_song_dinh",
+      "symptom_code": "ankylosing_spondylitis_schober_chest",
+      "matched_names": [
+        "ankylosing spondylitis"
+      ],
+      "possible_owners": [
+        "viem_cot_song_dinh_khop"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_viem_khop_vay_nen",
+      "symptom_code": "psoriatic_plaque_nail_pitting",
+      "matched_names": [
+        "vay nen"
+      ],
+      "possible_owners": [
+        "benh_vay_nen"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_viem_khop_vay_nen",
+      "symptom_code": "psoriasis_auspitz_brocq_koebner",
+      "matched_names": [
+        "psoriasis"
+      ],
+      "possible_owners": [
+        "benh_vay_nen"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_viem_khop_vay_nen",
+      "symptom_code": "psoriatic_dactylitis_distal_interphalangeal",
+      "matched_names": [
+        "vay nen"
+      ],
+      "possible_owners": [
+        "benh_vay_nen"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_viem_khop_vay_nen",
+      "symptom_code": "giant_cell_bone_tumor_epiphyseal_swelling",
+      "matched_names": [
+        "u te bao khong lo"
+      ],
+      "possible_owners": [
+        "benh_u_te_bao_khong_lo"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_xo_cung_bi_toan_the",
+      "symptom_code": "skin_sclerosis_raynaud",
+      "matched_names": [
+        "hoi chung raynaud"
+      ],
+      "possible_owners": [
+        "hoi_chung_raynaud"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_xo_cung_bi_toan_the",
+      "symptom_code": "anemia_pallor_jaundice",
+      "matched_names": [
+        "nhot"
+      ],
+      "possible_owners": [
+        "nhot"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "chom_xuong_dui",
+      "symptom_code": "giant_cell_bone_tumor_epiphyseal_swelling",
+      "matched_names": [
+        "u te bao khong lo"
+      ],
+      "possible_owners": [
+        "benh_u_te_bao_khong_lo"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "chom_xuong_dui",
+      "symptom_code": "anemia_pallor_jaundice",
+      "matched_names": [
+        "nhot"
+      ],
+      "possible_owners": [
+        "nhot"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "dau_than_kinh_toa",
+      "symptom_code": "lumbar_spondylosis_paraspinal_spasm",
+      "matched_names": [
+        "spondylosis"
+      ],
+      "possible_owners": [
+        "benh_thoai_hoa_cot_song_that_lung"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "hoi_chung_co_vai_canh_tay",
+      "symptom_code": "cervical_vertebrobasilar_insufficiency",
+      "matched_names": [
+        "chong mat",
+        "u tai"
+      ],
+      "possible_owners": [
+        "chong_mat",
+        "u_tai"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "hoi_chung_co_vai_canh_tay",
+      "symptom_code": "osteoporosis_vertebral_collapse_kyphosis",
+      "matched_names": [
+        "loang xuong",
+        "osteoporosis"
+      ],
+      "possible_owners": [
+        "benh_loang_xuong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "hoi_chung_co_vai_canh_tay",
+      "symptom_code": "dizziness_vertigo",
+      "matched_names": [
+        "chong mat",
+        "vertigo"
+      ],
+      "possible_owners": [
+        "chong_mat"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "hoi_chung_dau_that_lung",
+      "symptom_code": "lumbar_spondylosis_paraspinal_spasm",
+      "matched_names": [
+        "spondylosis"
+      ],
+      "possible_owners": [
+        "benh_thoai_hoa_cot_song_that_lung"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "hoi_chung_dau_that_lung",
+      "symptom_code": "ankylosing_spondylitis_schober_chest",
+      "matched_names": [
+        "ankylosing spondylitis"
+      ],
+      "possible_owners": [
+        "viem_cot_song_dinh_khop"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "hoi_chung_dau_that_lung",
+      "symptom_code": "osteoporosis_vertebral_collapse_kyphosis",
+      "matched_names": [
+        "loang xuong",
+        "osteoporosis"
+      ],
+      "possible_owners": [
+        "benh_loang_xuong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "hoi_chung_dau_that_lung",
+      "symptom_code": "anemia_pallor_jaundice",
+      "matched_names": [
+        "nhot"
+      ],
+      "possible_owners": [
+        "nhot"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "loan_duong_co_tien_trien",
+      "symptom_code": "dermatomyositis_shawls_mechanic_hands",
+      "matched_names": [
+        "dermatomyositis"
+      ],
+      "possible_owners": [
+        "viem_bi_co"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "loan_san_xo_xuong",
+      "symptom_code": "giant_cell_bone_tumor_epiphyseal_swelling",
+      "matched_names": [
+        "u te bao khong lo"
+      ],
+      "possible_owners": [
+        "benh_u_te_bao_khong_lo"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "ngoai_xuong_canh_tay",
+      "symptom_code": "tendinitis_finkelstein_trigger_elbow",
+      "matched_names": [
+        "ngon tay lo xo"
+      ],
+      "possible_owners": [
+        "viem_gan_gap_ngon_tay_ngon_tay_lo_xo"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_da_co_va_viem_da_co",
+      "symptom_code": "dermatomyositis_shawls_mechanic_hands",
+      "matched_names": [
+        "dermatomyositis"
+      ],
+      "possible_owners": [
+        "viem_bi_co"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_da_co_va_viem_da_co",
+      "symptom_code": "skin_sclerosis_raynaud",
+      "matched_names": [
+        "hoi chung raynaud"
+      ],
+      "possible_owners": [
+        "hoi_chung_raynaud"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_gan_gap_ngon_tay_ngon_tay_lo_xo",
+      "symptom_code": "psoriatic_dactylitis_distal_interphalangeal",
+      "matched_names": [
+        "vay nen"
+      ],
+      "possible_owners": [
+        "benh_vay_nen"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_gan_vung_mom_tram_quay_co_tay",
+      "symptom_code": "tendinitis_finkelstein_trigger_elbow",
+      "matched_names": [
+        "ngon tay lo xo"
+      ],
+      "possible_owners": [
+        "viem_gan_gap_ngon_tay_ngon_tay_lo_xo"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_khop_thieu_nien_tu_phat_the_viem_khop_vay_nen",
+      "symptom_code": "psoriatic_plaque_nail_pitting",
+      "matched_names": [
+        "vay nen"
+      ],
+      "possible_owners": [
+        "benh_vay_nen"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_khop_thieu_nien_tu_phat_the_viem_khop_vay_nen",
+      "symptom_code": "psoriatic_dactylitis_distal_interphalangeal",
+      "matched_names": [
+        "vay nen"
+      ],
+      "possible_owners": [
+        "benh_vay_nen"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_khop_thieu_nien_tu_phat_the_viem_khop_vay_nen",
+      "symptom_code": "psoriasis_auspitz_brocq_koebner",
+      "matched_names": [
+        "psoriasis"
+      ],
+      "possible_owners": [
+        "benh_vay_nen"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_khop_thieu_nien_tu_phat_the_viem_khop_vay_nen",
+      "symptom_code": "ankylosing_spondylitis_schober_chest",
+      "matched_names": [
+        "ankylosing spondylitis"
+      ],
+      "possible_owners": [
+        "viem_cot_song_dinh_khop"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_khop_thieu_nien_tu_phat_the_viem_khop_vay_nen",
+      "symptom_code": "giant_cell_bone_tumor_epiphyseal_swelling",
+      "matched_names": [
+        "u te bao khong lo"
+      ],
+      "possible_owners": [
+        "benh_u_te_bao_khong_lo"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_mang_hoat_dich_khop_hang_thoang_qua",
+      "symptom_code": "septic_arthritis_purulent_synovial_fluid",
+      "matched_names": [
+        "septic arthritis"
+      ],
+      "possible_owners": [
+        "viem_khop_nhiem_khuan"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_hac_vong_mac_trung_tam_thanh_dich",
+      "symptom_code": "vkh_exudative_retinal_detachment",
+      "matched_names": [
+        "u tai"
+      ],
+      "possible_owners": [
+        "u_tai"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_tac_tinh_mach_vong_mac",
+      "symptom_code": "intraocular_pressure_glaucoma_cupping",
+      "matched_names": [
+        "phong"
+      ],
+      "possible_owners": [
+        "benh_phong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_tac_tinh_mach_vong_mac",
+      "symptom_code": "orbital_cellulitis_chemosis_proptosis",
+      "matched_names": [
+        "loi mat",
+        "orbital cellulitis",
+        "proptosis"
+      ],
+      "possible_owners": [
+        "loi_mat",
+        "viem_to_chuc_hoc_mat"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_tac_tinh_mach_vong_mac",
+      "symptom_code": "open_angle_glaucoma_rnfl_visual_field",
+      "matched_names": [
+        "phong"
+      ],
+      "possible_owners": [
+        "benh_phong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_tac_tinh_mach_vong_mac",
+      "symptom_code": "neovascular_glaucoma_rubeosis",
+      "matched_names": [
+        "phong"
+      ],
+      "possible_owners": [
+        "benh_phong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_tac_tinh_mach_vong_mac",
+      "symptom_code": "anemia_pallor_jaundice",
+      "matched_names": [
+        "nhot"
+      ],
+      "possible_owners": [
+        "nhot"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_viem_mang_bo_dao_truoc_cap_tinh",
+      "symptom_code": "corneal_ulcer_hypopyon_keratitis",
+      "matched_names": [
+        "phong"
+      ],
+      "possible_owners": [
+        "benh_phong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_viem_mang_bo_dao_truoc_cap_tinh",
+      "symptom_code": "intraocular_pressure_glaucoma_cupping",
+      "matched_names": [
+        "phong"
+      ],
+      "possible_owners": [
+        "benh_phong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_viem_mang_bo_dao_truoc_cap_tinh",
+      "symptom_code": "bacterial_corneal_ulcer_stromal_abscess",
+      "matched_names": [
+        "phong"
+      ],
+      "possible_owners": [
+        "benh_phong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_viem_mang_bo_dao_truoc_cap_tinh",
+      "symptom_code": "vkh_exudative_retinal_detachment",
+      "matched_names": [
+        "u tai"
+      ],
+      "possible_owners": [
+        "u_tai"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "benh_viem_mang_bo_dao_truoc_cap_tinh",
+      "symptom_code": "anemia_pallor_jaundice",
+      "matched_names": [
+        "nhot"
+      ],
+      "possible_owners": [
+        "nhot"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "glocom_goc_dong_nguyen_phat",
+      "symptom_code": "intraocular_pressure_glaucoma_cupping",
+      "matched_names": [
+        "phong"
+      ],
+      "possible_owners": [
+        "benh_phong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "glocom_goc_dong_nguyen_phat",
+      "symptom_code": "acute_angle_closure_mid_dilated_pupil",
+      "matched_names": [
+        "phong"
+      ],
+      "possible_owners": [
+        "benh_phong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "glocom_goc_mo_nguyen_phat",
+      "symptom_code": "intraocular_pressure_glaucoma_cupping",
+      "matched_names": [
+        "phong"
+      ],
+      "possible_owners": [
+        "benh_phong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "glocom_goc_mo_nguyen_phat",
+      "symptom_code": "open_angle_glaucoma_rnfl_visual_field",
+      "matched_names": [
+        "phong"
+      ],
+      "possible_owners": [
+        "benh_phong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "hoi_chung_vogt_koyanagi_harada",
+      "symptom_code": "vkh_exudative_retinal_detachment",
+      "matched_names": [
+        "u tai"
+      ],
+      "possible_owners": [
+        "u_tai"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "hoi_chung_vogt_koyanagi_harada",
+      "symptom_code": "corneal_ulcer_hypopyon_keratitis",
+      "matched_names": [
+        "phong"
+      ],
+      "possible_owners": [
+        "benh_phong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "hoi_chung_vogt_koyanagi_harada",
+      "symptom_code": "intraocular_pressure_glaucoma_cupping",
+      "matched_names": [
+        "phong"
+      ],
+      "possible_owners": [
+        "benh_phong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "kho_mat_do_thieu_vitamin_a",
+      "symptom_code": "corneal_ulcer_hypopyon_keratitis",
+      "matched_names": [
+        "phong"
+      ],
+      "possible_owners": [
+        "benh_phong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "kho_mat_do_thieu_vitamin_a",
+      "symptom_code": "intraocular_pressure_glaucoma_cupping",
+      "matched_names": [
+        "phong"
+      ],
+      "possible_owners": [
+        "benh_phong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "kho_mat_do_thieu_vitamin_a",
+      "symptom_code": "corneal_perforation_iris_prolapse",
+      "matched_names": [
+        "phong"
+      ],
+      "possible_owners": [
+        "benh_phong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "loi_mat",
+      "symptom_code": "intraocular_pressure_glaucoma_cupping",
+      "matched_names": [
+        "phong"
+      ],
+      "possible_owners": [
+        "benh_phong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "loi_mat",
+      "symptom_code": "dacryocystitis_lacrimal_sac_reflux",
+      "matched_names": [
+        "dacryocystitis"
+      ],
+      "possible_owners": [
+        "viem_tui_le"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "nhan_viem_dong_cam",
+      "symptom_code": "vkh_exudative_retinal_detachment",
+      "matched_names": [
+        "u tai"
+      ],
+      "possible_owners": [
+        "u_tai"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "nhuoc_thi",
+      "symptom_code": "diplopia_strabismus_proptosis",
+      "matched_names": [
+        "loi mat",
+        "proptosis"
+      ],
+      "possible_owners": [
+        "loi_mat"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "tac_dong_mach_trung_tam_vong_mac",
+      "symptom_code": "open_angle_glaucoma_rnfl_visual_field",
+      "matched_names": [
+        "phong"
+      ],
+      "possible_owners": [
+        "benh_phong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "tac_dong_mach_trung_tam_vong_mac",
+      "symptom_code": "anemia_pallor_jaundice",
+      "matched_names": [
+        "nhot"
+      ],
+      "possible_owners": [
+        "nhot"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_giac_mac_do_herpes",
+      "symptom_code": "corneal_ulcer_hypopyon_keratitis",
+      "matched_names": [
+        "phong"
+      ],
+      "possible_owners": [
+        "benh_phong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_giac_mac_do_herpes",
+      "symptom_code": "vesicular_blister_rash",
+      "matched_names": [
+        "phong"
+      ],
+      "possible_owners": [
+        "benh_phong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_ket_giac_mac_mua_xuan",
+      "symptom_code": "corneal_ulcer_hypopyon_keratitis",
+      "matched_names": [
+        "phong"
+      ],
+      "possible_owners": [
+        "benh_phong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_ket_mac_cap",
+      "symptom_code": "corneal_ulcer_hypopyon_keratitis",
+      "matched_names": [
+        "phong"
+      ],
+      "possible_owners": [
+        "benh_phong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_ket_mac_cap",
+      "symptom_code": "corneal_perforation_iris_prolapse",
+      "matched_names": [
+        "phong"
+      ],
+      "possible_owners": [
+        "benh_phong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_loet_giac_mac_do_amip_acanthamoeba",
+      "symptom_code": "corneal_ulcer_hypopyon_keratitis",
+      "matched_names": [
+        "phong"
+      ],
+      "possible_owners": [
+        "benh_phong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_loet_giac_mac_do_amip_acanthamoeba",
+      "symptom_code": "bacterial_corneal_ulcer_stromal_abscess",
+      "matched_names": [
+        "phong"
+      ],
+      "possible_owners": [
+        "benh_phong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_loet_giac_mac_do_nam",
+      "symptom_code": "corneal_ulcer_hypopyon_keratitis",
+      "matched_names": [
+        "phong"
+      ],
+      "possible_owners": [
+        "benh_phong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_loet_giac_mac_do_vi_khuan",
+      "symptom_code": "corneal_ulcer_hypopyon_keratitis",
+      "matched_names": [
+        "phong"
+      ],
+      "possible_owners": [
+        "benh_phong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_loet_giac_mac_do_vi_khuan",
+      "symptom_code": "bacterial_corneal_ulcer_stromal_abscess",
+      "matched_names": [
+        "phong"
+      ],
+      "possible_owners": [
+        "benh_phong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_mang_bo_dao_cap_tinh_o_tre_em",
+      "symptom_code": "corneal_ulcer_hypopyon_keratitis",
+      "matched_names": [
+        "phong"
+      ],
+      "possible_owners": [
+        "benh_phong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_mang_bo_dao_cap_tinh_o_tre_em",
+      "symptom_code": "bacterial_corneal_ulcer_stromal_abscess",
+      "matched_names": [
+        "phong"
+      ],
+      "possible_owners": [
+        "benh_phong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_mu_noi_nhan_ngoai_sinh",
+      "symptom_code": "corneal_ulcer_hypopyon_keratitis",
+      "matched_names": [
+        "phong"
+      ],
+      "possible_owners": [
+        "benh_phong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_mu_noi_nhan_ngoai_sinh",
+      "symptom_code": "orbital_cellulitis_chemosis_proptosis",
+      "matched_names": [
+        "loi mat",
+        "orbital cellulitis",
+        "proptosis"
+      ],
+      "possible_owners": [
+        "loi_mat",
+        "viem_to_chuc_hoc_mat"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_mu_noi_nhan_ngoai_sinh",
+      "symptom_code": "bacterial_corneal_ulcer_stromal_abscess",
+      "matched_names": [
+        "phong"
+      ],
+      "possible_owners": [
+        "benh_phong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_mu_noi_nhan_noi_sinh",
+      "symptom_code": "corneal_ulcer_hypopyon_keratitis",
+      "matched_names": [
+        "phong"
+      ],
+      "possible_owners": [
+        "benh_phong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_mu_noi_nhan_noi_sinh",
+      "symptom_code": "bacterial_corneal_ulcer_stromal_abscess",
+      "matched_names": [
+        "phong"
+      ],
+      "possible_owners": [
+        "benh_phong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_thi_than_kinh",
+      "symptom_code": "open_angle_glaucoma_rnfl_visual_field",
+      "matched_names": [
+        "phong"
+      ],
+      "possible_owners": [
+        "benh_phong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_thi_than_kinh",
+      "symptom_code": "anemia_pallor_jaundice",
+      "matched_names": [
+        "nhot"
+      ],
+      "possible_owners": [
+        "nhot"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_to_chuc_hoc_mat",
+      "symptom_code": "diplopia_strabismus_proptosis",
+      "matched_names": [
+        "loi mat",
+        "proptosis"
+      ],
+      "possible_owners": [
+        "loi_mat"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_to_chuc_hoc_mat",
+      "symptom_code": "optic_neuritis_rapd_retrobulbar_pain",
+      "matched_names": [
+        "optic neuritis"
+      ],
+      "possible_owners": [
+        "viem_thi_than_kinh"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_to_chuc_hoc_mat",
+      "symptom_code": "intraocular_pressure_glaucoma_cupping",
+      "matched_names": [
+        "phong"
+      ],
+      "possible_owners": [
+        "benh_phong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "viem_tui_le",
+      "symptom_code": "orbital_cellulitis_chemosis_proptosis",
+      "matched_names": [
+        "loi mat",
+        "orbital cellulitis",
+        "proptosis"
+      ],
+      "possible_owners": [
+        "loi_mat",
+        "viem_to_chuc_hoc_mat"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    },
+    {
+      "condition_code": "phoi_tac_nghen_man_tinh",
+      "symptom_code": "tachypnea_accessory_muscle_retractions",
+      "matched_names": [
+        "phong"
+      ],
+      "possible_owners": [
+        "benh_phong"
+      ],
+      "status": "NEEDS_CLINICAL_REVIEW"
+    }
+  ],
+  "limitations": "Synthetic probes are not clinical efficacy evidence. Name matching is heuristic, non-exhaustive; candidates require human review, not automatic removal."
+}

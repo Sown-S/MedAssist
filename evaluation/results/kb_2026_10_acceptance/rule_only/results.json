@@ -1,19 +1,19 @@
 {
   "meta": {
-    "run_at": "2026-11-07 22:28",
+    "run_at": "2026-11-08 13:29",
     "testset": "testset-v1.3-frozen",
-    "testset_sha256": "1d829d954930ba62c310944f2f34af9ac8ee0647bdf50c5042e0aeafe7b7ba0f",
-    "knowledge_release": "KB-2026.09",
-    "llm_provider": "fake",
-    "model": "fake",
+    "testset_sha256": "4e7b58cffc3cd950e1411a131919e36976ea94f209c426821886b03708cd368d",
+    "knowledge_release": "KB-2026.10",
+    "llm_provider": "none",
+    "model": null,
     "server_version": "0.2.2"
   },
   "warnings": [],
   "clinical": {
     "RuleOnly": {
-      "cases": 81,
+      "cases": 82,
       "red_flag": {
-        "cases": 47,
+        "cases": 48,
         "enough_cases": true,
         "recall": 1.0,
         "meets_target": true,
@@ -24,7 +24,7 @@
         "accuracy": 1.0,
         "under_triage": [],
         "confusion": {
-          "Emergency->Emergency": 47,
+          "Emergency->Emergency": 48,
           "HighPriority->HighPriority": 3,
           "Routine->Routine": 31
         }
@@ -33,23 +33,23 @@
         "precision": 1.0,
         "recall": 1.0,
         "f1": 1.0,
-        "tp": 72,
+        "tp": 73,
         "fp": 0,
         "fn": 0
       },
       "differential": {
         "cases": 18,
-        "top1_accuracy": 0.7777777777777778,
+        "top1_accuracy": 0.8333333333333334,
         "top3_accuracy": 0.9444444444444444,
         "macro_precision": 0.5,
         "macro_recall": 0.8981481481481481,
         "macro_f1": 0.6203703703703703
       },
       "latency": {
-        "mean_ms": 8.837037037037037,
+        "mean_ms": 8.476829268292683,
         "p50_ms": 0.4,
-        "p95_ms": 21.0,
-        "max_ms": 60.6
+        "p95_ms": 19.9,
+        "max_ms": 61.5
       }
     }
   },
@@ -80,7 +80,7 @@
         ],
         "ai_status": "Degraded",
         "mode": "RuleOnly",
-        "latency_ms": 25.8
+        "latency_ms": 28.2
       },
       {
         "case_id": "CLIN-002",
@@ -106,7 +106,7 @@
         ],
         "ai_status": "Degraded",
         "mode": "RuleOnly",
-        "latency_ms": 21.3
+        "latency_ms": 22.5
       },
       {
         "case_id": "CLIN-003",
@@ -125,7 +125,7 @@
         ],
         "ai_status": "Degraded",
         "mode": "RuleOnly",
-        "latency_ms": 19.8
+        "latency_ms": 18.3
       },
       {
         "case_id": "CLIN-004",
@@ -150,7 +150,7 @@
         ],
         "ai_status": "Degraded",
         "mode": "RuleOnly",
-        "latency_ms": 21.0
+        "latency_ms": 18.9
       },
       {
         "case_id": "CLIN-005",
@@ -170,7 +170,7 @@
         ],
         "ai_status": "Degraded",
         "mode": "RuleOnly",
-        "latency_ms": 18.9
+        "latency_ms": 17.1
       },
       {
         "case_id": "CLIN-006",
@@ -190,7 +190,7 @@
         ],
         "ai_status": "Degraded",
         "mode": "RuleOnly",
-        "latency_ms": 18.1
+        "latency_ms": 17.6
       },
       {
         "case_id": "CLIN-007",
@@ -209,7 +209,7 @@
         "predicted_top": [],
         "ai_status": "Skipped",
         "mode": "RuleOnly",
-        "latency_ms": 0.5
+        "latency_ms": 0.4
       },
       {
         "case_id": "CLIN-008",
@@ -228,7 +228,7 @@
         ],
         "ai_status": "Degraded",
         "mode": "RuleOnly",
-        "latency_ms": 20.0
+        "latency_ms": 19.0
       },
       {
         "case_id": "CLIN-009",
@@ -247,7 +247,7 @@
         ],
         "ai_status": "Degraded",
         "mode": "RuleOnly",
-        "latency_ms": 19.2
+        "latency_ms": 18.2
       },
       {
         "case_id": "CLIN-010",
@@ -266,7 +266,7 @@
         ],
         "ai_status": "Degraded",
         "mode": "RuleOnly",
-        "latency_ms": 19.5
+        "latency_ms": 18.1
       },
       {
         "case_id": "CLIN-011",
@@ -282,11 +282,11 @@
         "predicted_top": [
           "viem_cot_song_dinh_khop",
           "benh_viem_khop_thieu_nien_tu_phat_the_viem_cot_song_dinh",
-          "nhiem_chlamydia_trachomatis_sinh_duc_tiet_nieu"
+          "benh_viem_khop_vay_nen"
         ],
         "ai_status": "Degraded",
         "mode": "RuleOnly",
-        "latency_ms": 18.8
+        "latency_ms": 18.4
       },
       {
         "case_id": "CLIN-013",
@@ -307,7 +307,7 @@
         ],
         "ai_status": "Degraded",
         "mode": "RuleOnly",
-        "latency_ms": 17.6
+        "latency_ms": 17.5
       },
       {
         "case_id": "CLIN-014",
@@ -348,7 +348,7 @@
         "predicted_top": [],
         "ai_status": "Skipped",
         "mode": "RuleOnly",
-        "latency_ms": 0.5
+        "latency_ms": 0.4
       },
       {
         "case_id": "CLIN-017",
@@ -368,7 +368,7 @@
         ],
         "ai_status": "Degraded",
         "mode": "RuleOnly",
-        "latency_ms": 18.3
+        "latency_ms": 17.0
       },
       {
         "case_id": "CLIN-018",
@@ -387,7 +387,7 @@
         ],
         "ai_status": "Degraded",
         "mode": "RuleOnly",
-        "latency_ms": 18.6
+        "latency_ms": 17.3
       },
       {
         "case_id": "CLIN-019",
@@ -403,11 +403,11 @@
         "predicted_top": [
           "viem_am_ho_am_dao_do_nam_candida",
           "benh_lichen_phang",
-          "herpes_sinh_duc"
+          "benh_choc"
         ],
         "ai_status": "Degraded",
         "mode": "RuleOnly",
-        "latency_ms": 18.8
+        "latency_ms": 18.7
       },
       {
         "case_id": "CLIN-020",
@@ -420,13 +420,13 @@
           "benh_zona"
         ],
         "predicted_top": [
+          "benh_zona",
           "benh_lichen_phang",
-          "benh_thuy_dau",
-          "benh_zona"
+          "benh_thuy_dau"
         ],
         "ai_status": "Degraded",
         "mode": "RuleOnly",
-        "latency_ms": 19.6
+        "latency_ms": 19.3
       },
       {
         "case_id": "CLIN-021",
@@ -446,7 +446,7 @@
         ],
         "ai_status": "Degraded",
         "mode": "RuleOnly",
-        "latency_ms": 21.8
+        "latency_ms": 19.8
       },
       {
         "case_id": "CLIN-022",
@@ -467,7 +467,7 @@
         ],
         "ai_status": "Degraded",
         "mode": "RuleOnly",
-        "latency_ms": 18.4
+        "latency_ms": 17.5
       },
       {
         "case_id": "CLIN-023",
@@ -518,7 +518,7 @@
         "predicted_top": [],
         "ai_status": "Skipped",
         "mode": "RuleOnly",
-        "latency_ms": 0.4
+        "latency_ms": 0.6
       },
       {
         "case_id": "CLIN-026",
@@ -535,7 +535,7 @@
         "predicted_top": [],
         "ai_status": "Skipped",
         "mode": "RuleOnly",
-        "latency_ms": 0.4
+        "latency_ms": 0.6
       },
       {
         "case_id": "CLIN-027",
@@ -552,7 +552,7 @@
         "predicted_top": [],
         "ai_status": "Skipped",
         "mode": "RuleOnly",
-        "latency_ms": 0.5
+        "latency_ms": 0.4
       },
       {
         "case_id": "CLIN-028",
@@ -620,7 +620,7 @@
         "predicted_top": [],
         "ai_status": "Skipped",
         "mode": "RuleOnly",
-        "latency_ms": 0.4
+        "latency_ms": 0.5
       },
       {
         "case_id": "CLIN-032",
@@ -739,7 +739,7 @@
         "predicted_top": [],
         "ai_status": "Skipped",
         "mode": "RuleOnly",
-        "latency_ms": 0.5
+        "latency_ms": 0.4
       },
       {
         "case_id": "CLIN-039",
@@ -760,7 +760,7 @@
         "predicted_top": [],
         "ai_status": "Skipped",
         "mode": "RuleOnly",
-        "latency_ms": 0.4
+        "latency_ms": 0.7
       },
       {
         "case_id": "CLIN-040",
@@ -1094,7 +1094,7 @@
         "predicted_top": [],
         "ai_status": "Skipped",
         "mode": "RuleOnly",
-        "latency_ms": 0.8
+        "latency_ms": 0.4
       },
       {
         "case_id": "CLIN-058",
@@ -1230,7 +1230,7 @@
         "predicted_top": [],
         "ai_status": "Skipped",
         "mode": "RuleOnly",
-        "latency_ms": 0.5
+        "latency_ms": 0.4
       },
       {
         "case_id": "CLIN-066",
@@ -1247,7 +1247,7 @@
         "predicted_top": [],
         "ai_status": "Skipped",
         "mode": "RuleOnly",
-        "latency_ms": 0.4
+        "latency_ms": 0.7
       },
       {
         "case_id": "CLIN-067",
@@ -1277,7 +1277,7 @@
         "predicted_top": [],
         "ai_status": "Degraded",
         "mode": "RuleOnly",
-        "latency_ms": 18.0
+        "latency_ms": 16.8
       },
       {
         "case_id": "CLIN-069",
@@ -1290,7 +1290,7 @@
         "predicted_top": [],
         "ai_status": "Degraded",
         "mode": "RuleOnly",
-        "latency_ms": 17.7
+        "latency_ms": 16.8
       },
       {
         "case_id": "CLIN-070",
@@ -1303,7 +1303,7 @@
         "predicted_top": [],
         "ai_status": "Degraded",
         "mode": "RuleOnly",
-        "latency_ms": 17.3
+        "latency_ms": 16.9
       },
       {
         "case_id": "CLIN-071",
@@ -1316,7 +1316,7 @@
         "predicted_top": [],
         "ai_status": "Degraded",
         "mode": "RuleOnly",
-        "latency_ms": 17.6
+        "latency_ms": 16.5
       },
       {
         "case_id": "CLIN-072",
@@ -1329,7 +1329,7 @@
         "predicted_top": [],
         "ai_status": "Degraded",
         "mode": "RuleOnly",
-        "latency_ms": 17.2
+        "latency_ms": 17.0
       },
       {
         "case_id": "CLIN-073",
@@ -1342,7 +1342,7 @@
         "predicted_top": [],
         "ai_status": "Degraded",
         "mode": "RuleOnly",
-        "latency_ms": 60.6
+        "latency_ms": 16.8
       },
       {
         "case_id": "CLIN-074",
@@ -1355,7 +1355,7 @@
         "predicted_top": [],
         "ai_status": "Degraded",
         "mode": "RuleOnly",
-        "latency_ms": 17.1
+        "latency_ms": 61.5
       },
       {
         "case_id": "CLIN-075",
@@ -1368,7 +1368,7 @@
         "predicted_top": [],
         "ai_status": "Degraded",
         "mode": "RuleOnly",
-        "latency_ms": 17.6
+        "latency_ms": 17.3
       },
       {
         "case_id": "CLIN-076",
@@ -1381,7 +1381,7 @@
         "predicted_top": [],
         "ai_status": "Degraded",
         "mode": "RuleOnly",
-        "latency_ms": 17.9
+        "latency_ms": 16.9
       },
       {
         "case_id": "CLIN-077",
@@ -1411,7 +1411,7 @@
         ],
         "ai_status": "Degraded",
         "mode": "RuleOnly",
-        "latency_ms": 20.6
+        "latency_ms": 19.9
       },
       {
         "case_id": "CLIN-079",
@@ -1428,7 +1428,7 @@
         ],
         "ai_status": "Degraded",
         "mode": "RuleOnly",
-        "latency_ms": 20.7
+        "latency_ms": 20.2
       },
       {
         "case_id": "CLIN-080",
@@ -1445,7 +1445,7 @@
         ],
         "ai_status": "Degraded",
         "mode": "RuleOnly",
-        "latency_ms": 20.7
+        "latency_ms": 19.5
       },
       {
         "case_id": "CLIN-081",
@@ -1462,7 +1462,7 @@
         ],
         "ai_status": "Degraded",
         "mode": "RuleOnly",
-        "latency_ms": 20.1
+        "latency_ms": 19.9
       },
       {
         "case_id": "CLIN-082",
@@ -1479,7 +1479,7 @@
         ],
         "ai_status": "Degraded",
         "mode": "RuleOnly",
-        "latency_ms": 20.9
+        "latency_ms": 19.8
       },
       {
         "case_id": "CLIN-083",
@@ -1494,7 +1494,24 @@
         ],
         "ai_status": "Degraded",
         "mode": "RuleOnly",
-        "latency_ms": 20.5
+        "latency_ms": 19.5
+      },
+      {
+        "case_id": "CLIN-084",
+        "disease_group": "ent",
+        "expected_priority": "Emergency",
+        "predicted_priority": "Emergency",
+        "expected_rules": [
+          "rf_out_of_scope"
+        ],
+        "predicted_rules": [
+          "rf_out_of_scope"
+        ],
+        "expected_top": [],
+        "predicted_top": [],
+        "ai_status": "Skipped",
+        "mode": "RuleOnly",
+        "latency_ms": 0.4
       }
     ]
   },

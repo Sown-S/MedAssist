@@ -15,7 +15,7 @@
     "total_symptoms": 299,
     "total_triage_rules": 12,
     "total_sources": 11,
-    "kb_release": "KB-2026.09"
+    "kb_release": "KB-2026.10"
   },
   "combined_sha256": "4e7b58cffc3cd950e1411a131919e36976ea94f209c426821886b03708cd368d",
   "files": [
@@ -38,7 +38,7 @@
   "policy_note": "Đóng băng bộ test theo Nguyên tắc vàng #6 (Quy định v5): Không chỉnh rule hay prompt dựa trên bộ test này.",
   "git_tag_created": false,
   "review_status": "APPROVED",
-  "review_basis": "Project authorization: AI drafts; Tuan/Huy are assigned author/reviewer; clinical retrospective review remains pending; no personal signatures asserted.",
+  "review_basis": "Ngày 08/11/2026, người phụ trách xác nhận chưa hoàn tất rà soát chéo thực tế giữa Tuấn và Huy. APPROVED là trạng thái đóng băng kỹ thuật theo ủy quyền trước đây, không phải phê duyệt lâm sàng. Rà soát chéo thực tế còn chờ hoàn tất. Giữ nguyên mã băm testset v1.3 đã đóng băng.",
   "sha256_normalization": "CRLF to LF before hashing",
   "combined_sha256_formula": "sha256((sha_ext + \":\" + sha_clin).encode(\"utf-8\"))",
   "clinical_statistics": {
