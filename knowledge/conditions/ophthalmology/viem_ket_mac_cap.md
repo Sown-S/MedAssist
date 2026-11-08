@@ -5,57 +5,56 @@ name_vi: Viêm kết mạc cấp
 name_en: Acute conjunctivitis
 icd10_code: H10.3
 disease_group: ophthalmology
-description: 'Viêm kết mạc cấp là tình trạng viêm cấp tính của kết mạc, thường do
-  nhiễm trùng (do virus, vi khuẩn) hoặc dị ứng. Viêm kết mạc cấp có nhiều hình thái
-  viêm kết mạc cấp tiết tố mủ do vi khuẩn: Đây là hình thái viêm kết mạc dạng nhú
-  tối cấp. Viêm kết mạc cấp tiết tố màng do vi khuẩn: là loại viêm kết mạc cấp tiết
-  tố có màng phủ trên diện kết mạc, có màu trắng xám hoặc trắng ngà.'
+description: 'Viêm kết mạc cấp là tình trạng viêm cấp tính của kết mạc, thường do nhiễm trùng (do virus,
+  vi khuẩn) hoặc dị ứng. Viêm kết mạc cấp có nhiều hình thái viêm kết mạc cấp tiết tố mủ do vi khuẩn:
+  Đây là hình thái viêm kết mạc dạng nhú tối cấp. Viêm kết mạc cấp tiết tố màng do vi khuẩn: là loại viêm
+  kết mạc cấp tiết tố có màng phủ trên diện kết mạc, có màu trắng xám hoặc trắng ngà.'
 relations:
 - symptom_code: corneal_ulcer_hypopyon_keratitis
   polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: pseudomembranous_conjunctivitis_follicles
   polarity: SUPPORTS
-  weight: 0.96
+  weight: 0.9
   is_key: true
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: conjunctival_ciliary_injection_discharge
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: conjunctivitis_uveitis_red_eye
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: corneal_perforation_iris_prolapse
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: lymphadenopathy_splenomegaly
   polarity: SUPPORTS
-  weight: 0.76
+  weight: 0.3
   is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: fever_low_grade
   polarity: SUPPORTS
-  weight: 0.74
+  weight: 0.3
   is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: headache_dull
   polarity: SUPPORTS
-  weight: 0.72
+  weight: 0.3
   is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT

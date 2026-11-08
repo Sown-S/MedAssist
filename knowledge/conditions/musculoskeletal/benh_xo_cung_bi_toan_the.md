@@ -5,87 +5,86 @@ name_vi: Bệnh xơ cứng bì toàn thể
 name_en: Systemic scleroderma
 icd10_code: M34.9
 disease_group: musculoskeletal
-description: Xơ cứng bì toàn thể là một bệnh hệ thống chưa rõ nguyên nhân với đặc
-  điểm giảm độ đàn hồi, xơ cứng ở da, tổn thương vi mạch và tổn thương các cơ quan
-  nội tạng (chủ yếu ở đường tiêu hóa, mạch máu, tim, phổi, thận). Xơ cứng bì toàn
-  thể là một bệnh tự miễn dịch gặp chủ yếu ở nữ giới, chiếm 80% và thường gặp ở độ
-  tuổi từ 40 đến 50 tuổi.
+description: Xơ cứng bì toàn thể là một bệnh hệ thống chưa rõ nguyên nhân với đặc điểm giảm độ đàn hồi,
+  xơ cứng ở da, tổn thương vi mạch và tổn thương các cơ quan nội tạng (chủ yếu ở đường tiêu hóa, mạch
+  máu, tim, phổi, thận). Xơ cứng bì toàn thể là một bệnh tự miễn dịch gặp chủ yếu ở nữ giới, chiếm 80%
+  và thường gặp ở độ tuổi từ 40 đến 50 tuổi.
 relations:
 - symptom_code: skin_sclerosis_raynaud
   polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: sclerodactyly_digital_ulcers_telangiectasia
   polarity: SUPPORTS
-  weight: 0.98
+  weight: 0.9
   is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: maculopapular_rash
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: cough_dry
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: dyspnea_chronic_exertional
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: serositis_pleural_pericardial
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: nausea_vomiting_diarrhea
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: myalgia_arthralgia
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: joint_swelling_warmth_redness_effusion
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: joint_range_of_motion_limitation
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: joint_deformity_ankylosis_subluxation
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: anemia_pallor_jaundice
   polarity: SUPPORTS
-  weight: 0.76
+  weight: 0.3
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: sore_throat_dysphagia
   polarity: SUPPORTS
-  weight: 0.76
+  weight: 0.3
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT

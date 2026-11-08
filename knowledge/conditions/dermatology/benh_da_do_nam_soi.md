@@ -5,57 +5,56 @@ name_vi: Bệnh da do nấm sợi
 name_en: Dermatophytosis
 icd10_code: B35.9
 disease_group: dermatology
-description: Bệnh da do nấm sợi (dermatophytosis) rất thường gặp, nhất là ở các nước
-  có khí hậu nhiệt đới nóng ẩm, rất thuận lợi cho các chủng nấm phát triển. Bệnh tuy
-  không nguy hiểm đến tính mạng nhưng thường có triệu chứng cơ năng ngứa nhiều, nếu
-  không được điều trị hay điều trị không đúng, thương tổn nấm có thể lan tỏa, ảnh
-  hưởng đến chất lượng cuộc sống.
+description: Bệnh da do nấm sợi (dermatophytosis) rất thường gặp, nhất là ở các nước có khí hậu nhiệt
+  đới nóng ẩm, rất thuận lợi cho các chủng nấm phát triển. Bệnh tuy không nguy hiểm đến tính mạng nhưng
+  thường có triệu chứng cơ năng ngứa nhiều, nếu không được điều trị hay điều trị không đúng, thương tổn
+  nấm có thể lan tỏa, ảnh hưởng đến chất lượng cuộc sống.
 relations:
 - symptom_code: dermatophytosis_annular_active_border
-  polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
-  source_key: moh_qd_75_2015
-  source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: vesicular_blister_rash
-  polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
-  source_key: moh_qd_75_2015
-  source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: fungal_ringworm_nail_hair_lesion
-  polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
-  source_key: moh_qd_75_2015
-  source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: vulvovaginal_oral_candidiasis_curd
-  polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
-  source_key: moh_qd_75_2015
-  source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: scaly_plaque_hyperkeratosis
-  polarity: SUPPORTS
-  weight: 0.91
-  is_key: true
-  source_key: moh_qd_75_2015
-  source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: maculopapular_rash
   polarity: SUPPORTS
   weight: 0.9
   is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
+- symptom_code: vesicular_blister_rash
+  polarity: SUPPORTS
+  weight: 0.6
+  is_key: false
+  source_key: moh_qd_75_2015
+  source_edition: Quyết định số 75/QĐ-BYT
+- symptom_code: fungal_ringworm_nail_hair_lesion
+  polarity: SUPPORTS
+  weight: 0.6
+  is_key: false
+  source_key: moh_qd_75_2015
+  source_edition: Quyết định số 75/QĐ-BYT
+- symptom_code: vulvovaginal_oral_candidiasis_curd
+  polarity: SUPPORTS
+  weight: 0.3
+  is_key: false
+  source_key: moh_qd_75_2015
+  source_edition: Quyết định số 75/QĐ-BYT
+- symptom_code: scaly_plaque_hyperkeratosis
+  polarity: SUPPORTS
+  weight: 0.6
+  is_key: false
+  source_key: moh_qd_75_2015
+  source_edition: Quyết định số 75/QĐ-BYT
+- symptom_code: maculopapular_rash
+  polarity: SUPPORTS
+  weight: 0.6
+  is_key: false
+  source_key: moh_qd_75_2015
+  source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: pruritus_intense_skin_itch
   polarity: SUPPORTS
-  weight: 0.89
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: epidemiological_exposure_vector_travel
   polarity: SUPPORTS
-  weight: 0.76
+  weight: 0.3
   is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT

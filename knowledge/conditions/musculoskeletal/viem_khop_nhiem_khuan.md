@@ -5,49 +5,48 @@ name_vi: Viêm khớp nhiễm khuẩn
 name_en: Septic arthritis
 icd10_code: M00.9
 disease_group: musculoskeletal
-description: Viêm khớp nhiễm khuẩn hay viêm khớp sinh mủ (pyogenic/ suppurative arthritis)
-  là viêm khớp do vi khuẩn sinh mủ không đặc hiệu (không phải do lao, phong, nấm,
-  ký sinh trùng hay virus) gây nên.
+description: Viêm khớp nhiễm khuẩn hay viêm khớp sinh mủ (pyogenic/ suppurative arthritis) là viêm khớp
+  do vi khuẩn sinh mủ không đặc hiệu (không phải do lao, phong, nấm, ký sinh trùng hay virus) gây nên.
 relations:
 - symptom_code: septic_arthritis_purulent_synovial_fluid
   polarity: SUPPORTS
-  weight: 0.98
+  weight: 0.9
   is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: myalgia_arthralgia
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: maculopapular_rash
   polarity: SUPPORTS
-  weight: 0.9
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: skin_cellulitis_pus_abscess
   polarity: SUPPORTS
-  weight: 0.9
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: joint_swelling_warmth_redness_effusion
   polarity: SUPPORTS
-  weight: 0.9
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: joint_range_of_motion_limitation
   polarity: SUPPORTS
-  weight: 0.88
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: chills_rigors
   polarity: SUPPORTS
-  weight: 0.75
+  weight: 0.3
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT

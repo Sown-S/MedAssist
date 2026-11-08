@@ -5,56 +5,55 @@ name_vi: Hồng ban nút
 name_en: Erythema nodosum
 icd10_code: L52
 disease_group: musculoskeletal
-description: Hồng ban nút (Erythema nodosum) là tình trạng viêm của các tế bào mỡ
-  dưới da (panniculitis) biểu hiện dưới dạng sẩn hoặc u cục nhỏ màu đỏ, thường gặp
-  nhất ở hai cẳng chân. Cơ chế bệnh sinh chưa biết rõ, thường xảy ra ở người mang
-  gen HLA B8 (80%) và 6% có tính chất gia đình.
+description: Hồng ban nút (Erythema nodosum) là tình trạng viêm của các tế bào mỡ dưới da (panniculitis)
+  biểu hiện dưới dạng sẩn hoặc u cục nhỏ màu đỏ, thường gặp nhất ở hai cẳng chân. Cơ chế bệnh sinh chưa
+  biết rõ, thường xảy ra ở người mang gen HLA B8 (80%) và 6% có tính chất gia đình.
 relations:
 - symptom_code: maculopapular_rash
   polarity: SUPPORTS
-  weight: 0.97
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: erythema_nodosum_shins
   polarity: SUPPORTS
-  weight: 0.97
+  weight: 0.9
   is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: myalgia_arthralgia
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: discoid_lupus_follicular_plugging_scarring
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: joint_swelling_warmth_redness_effusion
   polarity: SUPPORTS
-  weight: 0.89
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: petechiae_mucosal_bleeding
   polarity: SUPPORTS
-  weight: 0.88
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: lymphadenopathy_splenomegaly
   polarity: SUPPORTS
-  weight: 0.76
+  weight: 0.3
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: fatigue_malaise
   polarity: SUPPORTS
-  weight: 0.68
+  weight: 0.3
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT

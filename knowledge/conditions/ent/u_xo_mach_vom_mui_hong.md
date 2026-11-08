@@ -5,33 +5,32 @@ name_vi: U xơ mạch vòm mũi họng
 name_en: Nasopharyngeal angiofibroma
 icd10_code: D10.6
 disease_group: ent
-description: U xơ mạch vòm mũi họng (Juvenile Nasopharyngeal Angiofibroma – JNA),
-  là một khối u lành tính, phát sinh và phát triển ở vùng cửa mũi sau và vòm mũi họng.
-  Thường gặp ở trẻ nam tuổi thiếu niên. Bản chất u là tăng sinh mạch máu, tổ chức
-  xơ bao quanh các hồ máu, gây chảy máu rất nhiều trong khi mổ.
+description: U xơ mạch vòm mũi họng (Juvenile Nasopharyngeal Angiofibroma – JNA), là một khối u lành tính,
+  phát sinh và phát triển ở vùng cửa mũi sau và vòm mũi họng. Thường gặp ở trẻ nam tuổi thiếu niên. Bản
+  chất u là tăng sinh mạch máu, tổ chức xơ bao quanh các hồ máu, gây chảy máu rất nhiều trong khi mổ.
 relations:
 - symptom_code: juvenile_nasopharyngeal_angiofibroma
-  polarity: SUPPORTS
-  weight: 0.97
-  is_key: true
-  source_key: moh_qd_5643_2015
-  source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: nasal_polyp_sinonasal_mass
-  polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
-  source_key: moh_qd_5643_2015
-  source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: nasal_obstruction_stuffiness
   polarity: SUPPORTS
   weight: 0.9
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
+- symptom_code: nasal_polyp_sinonasal_mass
+  polarity: SUPPORTS
+  weight: 0.3
+  is_key: false
+  source_key: moh_qd_5643_2015
+  source_edition: Quyết định số 5643/QĐ-BYT
+- symptom_code: nasal_obstruction_stuffiness
+  polarity: SUPPORTS
+  weight: 0.6
+  is_key: false
+  source_key: moh_qd_5643_2015
+  source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: epistaxis_nasal_bleeding
   polarity: SUPPORTS
-  weight: 0.88
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 excerpts:

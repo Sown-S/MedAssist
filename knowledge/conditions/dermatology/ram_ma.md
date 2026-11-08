@@ -5,27 +5,26 @@ name_vi: Rám má
 name_en: Chloasma
 icd10_code: L81.1
 disease_group: dermatology
-description: Rám má là một hiện tượng tăng sắc tố, thường xuất hiện ở mặt nhất là
-  hai bên gò má. Bệnh có cả ở hai giới, nhưng phụ nữ gặp nhiều hơn. Bệnh tuy lành
-  tính, không gây tử vong nhưng lại ảnh hưởng nhiều đến tâm sinh lý và thẩm mỹ của
-  người bệnh đặc biệt là phụ nữ.
+description: Rám má là một hiện tượng tăng sắc tố, thường xuất hiện ở mặt nhất là hai bên gò má. Bệnh
+  có cả ở hai giới, nhưng phụ nữ gặp nhiều hơn. Bệnh tuy lành tính, không gây tử vong nhưng lại ảnh hưởng
+  nhiều đến tâm sinh lý và thẩm mỹ của người bệnh đặc biệt là phụ nữ.
 relations:
 - symptom_code: melasma_symmetric_facial_hyperpigmentation
   polarity: SUPPORTS
-  weight: 0.98
+  weight: 0.9
   is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: pigmentary_macule_patch
   polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: fungal_ringworm_nail_hair_lesion
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 excerpts:

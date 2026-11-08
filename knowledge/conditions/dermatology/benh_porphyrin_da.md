@@ -5,63 +5,62 @@ name_vi: Bệnh porphyrin da
 name_en: Cutaneous porphyria
 icd10_code: E80.2
 disease_group: dermatology
-description: Porphyrin da là bệnh do rối loạn tổng hợp nhân hem gây nên. Tuỳ theo
-  vị trí rối loạn tổng hợp hem sẽ gây nên những nhóm bệnh porphyrin khác nhau. Có
-  những nhóm bệnh nguy hiểm đến tính mạng người bệnh như rối loạn porphyrin cấp tính
-  có hoặc không có các biểu hiện ngoài da. Tuy nhiên, porphyrin da chậm là hình thái
-  lâm sàng phổ biến nhất trong nhóm bệnh porphyrin.
+description: Porphyrin da là bệnh do rối loạn tổng hợp nhân hem gây nên. Tuỳ theo vị trí rối loạn tổng
+  hợp hem sẽ gây nên những nhóm bệnh porphyrin khác nhau. Có những nhóm bệnh nguy hiểm đến tính mạng người
+  bệnh như rối loạn porphyrin cấp tính có hoặc không có các biểu hiện ngoài da. Tuy nhiên, porphyrin da
+  chậm là hình thái lâm sàng phổ biến nhất trong nhóm bệnh porphyrin.
 relations:
 - symptom_code: vesicular_blister_rash
   polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: porphyria_cutanea_tarda_photo_blisters
-  polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
-  source_key: moh_qd_75_2015
-  source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: pigmentary_macule_patch
-  polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
-  source_key: moh_qd_75_2015
-  source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: fungal_ringworm_nail_hair_lesion
-  polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
-  source_key: moh_qd_75_2015
-  source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: atopic_dermatitis_flexural_eczema
-  polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
-  source_key: moh_qd_75_2015
-  source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: acanthosis_nigricans_velvety_neck_axilla
-  polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
-  source_key: moh_qd_75_2015
-  source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: photodermatitis_occupational_skin_lesion
-  polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
-  source_key: moh_qd_75_2015
-  source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: maculopapular_rash
   polarity: SUPPORTS
   weight: 0.9
   is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
+- symptom_code: pigmentary_macule_patch
+  polarity: SUPPORTS
+  weight: 0.6
+  is_key: false
+  source_key: moh_qd_75_2015
+  source_edition: Quyết định số 75/QĐ-BYT
+- symptom_code: fungal_ringworm_nail_hair_lesion
+  polarity: SUPPORTS
+  weight: 0.6
+  is_key: false
+  source_key: moh_qd_75_2015
+  source_edition: Quyết định số 75/QĐ-BYT
+- symptom_code: atopic_dermatitis_flexural_eczema
+  polarity: SUPPORTS
+  weight: 0.3
+  is_key: false
+  source_key: moh_qd_75_2015
+  source_edition: Quyết định số 75/QĐ-BYT
+- symptom_code: acanthosis_nigricans_velvety_neck_axilla
+  polarity: SUPPORTS
+  weight: 0.3
+  is_key: false
+  source_key: moh_qd_75_2015
+  source_edition: Quyết định số 75/QĐ-BYT
+- symptom_code: photodermatitis_occupational_skin_lesion
+  polarity: SUPPORTS
+  weight: 0.3
+  is_key: false
+  source_key: moh_qd_75_2015
+  source_edition: Quyết định số 75/QĐ-BYT
+- symptom_code: maculopapular_rash
+  polarity: SUPPORTS
+  weight: 0.6
+  is_key: false
+  source_key: moh_qd_75_2015
+  source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: lymphadenopathy_splenomegaly
   polarity: SUPPORTS
-  weight: 0.78
+  weight: 0.3
   is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT

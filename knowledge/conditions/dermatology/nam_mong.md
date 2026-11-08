@@ -5,45 +5,44 @@ name_vi: Nấm móng
 name_en: Onychomycosis
 icd10_code: B35.1
 disease_group: dermatology
-description: Là bệnh viêm móng thường gặp, tiến triển âm thầm, mãn tính. Ở châu Âu,
-  ước tính khoảng 2-6% dân số mắc bệnh nấm móng. Bệnh do nhiều chủng nấm gây nên và
-  có thương tổn lâm sàng đa dạng. Việc chẩn đoán dựa vào biểu hiện lâm sàng và xét
-  nghiệm tìm nấm.
+description: Là bệnh viêm móng thường gặp, tiến triển âm thầm, mãn tính. Ở châu Âu, ước tính khoảng 2-6%
+  dân số mắc bệnh nấm móng. Bệnh do nhiều chủng nấm gây nên và có thương tổn lâm sàng đa dạng. Việc chẩn
+  đoán dựa vào biểu hiện lâm sàng và xét nghiệm tìm nấm.
 relations:
 - symptom_code: onychomycosis_subungual_hyperkeratosis
   polarity: SUPPORTS
-  weight: 0.98
+  weight: 0.9
   is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: fungal_ringworm_nail_hair_lesion
   polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: pityriasis_versicolor_hypo_hyper_macules
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: dermatophytosis_annular_active_border
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: vulvovaginal_oral_candidiasis_curd
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: atopic_dermatitis_flexural_eczema
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 excerpts:

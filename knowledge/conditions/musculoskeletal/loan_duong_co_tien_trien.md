@@ -5,47 +5,46 @@ name_vi: Loạn dưỡng cơ tiến triển
 name_en: Progressive muscular dystrophy
 icd10_code: G71.0
 disease_group: musculoskeletal
-description: Loạn dưỡng cơ tiến triển (Progressive muscular dystrophies) là một nhóm
-  bệnh cơ vân thoái hóa tiến triển do các bất thường về gen di truyền với các đặc
-  điểm về lâm sàng và di truyền đặc trưng. Bệnh được chia thành các thể loạn dưỡng
-  cơ Duchenne. Loạn dưỡng cơ Becker. Loạn dưỡng cơ mặt - vai - cánh tay và một số
-  thể hiếm gặp khác. Tùy theo thể, bệnh có thể gặp ở trẻ em hoặc cả trẻ em và người
+description: Loạn dưỡng cơ tiến triển (Progressive muscular dystrophies) là một nhóm bệnh cơ vân thoái
+  hóa tiến triển do các bất thường về gen di truyền với các đặc điểm về lâm sàng và di truyền đặc trưng.
+  Bệnh được chia thành các thể loạn dưỡng cơ Duchenne. Loạn dưỡng cơ Becker. Loạn dưỡng cơ mặt - vai -
+  cánh tay và một số thể hiếm gặp khác. Tùy theo thể, bệnh có thể gặp ở trẻ em hoặc cả trẻ em và người
   lớn.
 relations:
 - symptom_code: proximal_muscle_weakness_wasting
   polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: duchene_becker_gowers_calf_hypertrophy
   polarity: SUPPORTS
-  weight: 0.98
+  weight: 0.9
   is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: muscle_tenderness_cramps_myotonia
   polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: radicular_sensory_motor_reflex_deficit
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: joint_range_of_motion_limitation
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: dermatomyositis_shawls_mechanic_hands
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 excerpts:

@@ -5,111 +5,110 @@ name_vi: Bệnh sốt rét kháng thuốc
 name_en: Drug-resistant malaria
 icd10_code: B50.9
 disease_group: infectious
-description: Sốt rét kháng thuốc (Resistance malaria - theo định nghĩa của WHO 2011
-  - Global plan for Artemisinin resistance containment - GPARC) là khả năng một chủng
-  ký sinh trùng sốt rét vẫn tồn tại và/hoặc nhân lên khi sử dụng thuốc sốt rét đủ
-  liều hoặc với liều cao hơn liều khuyến cáo và khả năng hấp thu thuốc và dung nạp
-  thuốc của người bệnh tốt.
+description: Sốt rét kháng thuốc (Resistance malaria - theo định nghĩa của WHO 2011 - Global plan for
+  Artemisinin resistance containment - GPARC) là khả năng một chủng ký sinh trùng sốt rét vẫn tồn tại
+  và/hoặc nhân lên khi sử dụng thuốc sốt rét đủ liều hoặc với liều cao hơn liều khuyến cáo và khả năng
+  hấp thu thuốc và dung nạp thuốc của người bệnh tốt.
 relations:
-- symptom_code: malaria_paroxysmal_rigor_fever_sweat
+- symptom_code: chills_rigors
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
-  source_key: moh_qd_5642_2015
-  source_edition: Quyết định số 5642/QĐ-BYT
-- symptom_code: cerebral_malaria_coma_hemoglobinuria
-  polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
-  source_key: moh_qd_5642_2015
-  source_edition: Quyết định số 5642/QĐ-BYT
-- symptom_code: pulmonary_crackles_rales_consolidation
-  polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
-  source_key: moh_qd_5642_2015
-  source_edition: Quyết định số 5642/QĐ-BYT
-- symptom_code: encephalopathy_delirium_convulsion
-  polarity: SUPPORTS
-  weight: 0.91
-  is_key: true
-  source_key: moh_qd_5642_2015
-  source_edition: Quyết định số 5642/QĐ-BYT
-- symptom_code: cyanosis_hypoxemia_central_peripheral
-  polarity: SUPPORTS
-  weight: 0.91
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_5642_2015
   source_edition: Quyết định số 5642/QĐ-BYT
 - symptom_code: fever_high
   polarity: SUPPORTS
-  weight: 0.9
-  is_key: true
-  source_key: moh_qd_5642_2015
-  source_edition: Quyết định số 5642/QĐ-BYT
-- symptom_code: nausea_vomiting_diarrhea
-  polarity: SUPPORTS
-  weight: 0.85
-  is_key: true
-  source_key: moh_qd_5642_2015
-  source_edition: Quyết định số 5642/QĐ-BYT
-- symptom_code: hepatomegaly_right_hypochondriac_tenderness
-  polarity: SUPPORTS
-  weight: 0.88
-  is_key: false
-  source_key: moh_qd_5642_2015
-  source_edition: Quyết định số 5642/QĐ-BYT
-- symptom_code: anemia_pallor_jaundice
-  polarity: SUPPORTS
-  weight: 0.8
-  is_key: false
-  source_key: moh_qd_5642_2015
-  source_edition: Quyết định số 5642/QĐ-BYT
-- symptom_code: abdominal_distension_borborygmi_pain
-  polarity: SUPPORTS
-  weight: 0.8
-  is_key: false
-  source_key: moh_qd_5642_2015
-  source_edition: Quyết định số 5642/QĐ-BYT
-- symptom_code: chills_rigors
-  polarity: SUPPORTS
-  weight: 0.79
-  is_key: false
-  source_key: moh_qd_5642_2015
-  source_edition: Quyết định số 5642/QĐ-BYT
-- symptom_code: lymphadenopathy_splenomegaly
-  polarity: SUPPORTS
-  weight: 0.78
-  is_key: false
-  source_key: moh_qd_5642_2015
-  source_edition: Quyết định số 5642/QĐ-BYT
-- symptom_code: epidemiological_exposure_vector_travel
-  polarity: SUPPORTS
-  weight: 0.78
-  is_key: false
-  source_key: moh_qd_5642_2015
-  source_edition: Quyết định số 5642/QĐ-BYT
-- symptom_code: splenomegaly_left_hypochondriac_mass
-  polarity: SUPPORTS
-  weight: 0.76
+  weight: 0.6
   is_key: false
   source_key: moh_qd_5642_2015
   source_edition: Quyết định số 5642/QĐ-BYT
 - symptom_code: sweating_profuse
   polarity: SUPPORTS
-  weight: 0.72
+  weight: 0.3
+  is_key: false
+  source_key: moh_qd_5642_2015
+  source_edition: Quyết định số 5642/QĐ-BYT
+- symptom_code: cerebral_malaria_coma_hemoglobinuria
+  polarity: SUPPORTS
+  weight: 0.6
+  is_key: false
+  source_key: moh_qd_5642_2015
+  source_edition: Quyết định số 5642/QĐ-BYT
+- symptom_code: pulmonary_crackles_rales_consolidation
+  polarity: SUPPORTS
+  weight: 0.6
+  is_key: false
+  source_key: moh_qd_5642_2015
+  source_edition: Quyết định số 5642/QĐ-BYT
+- symptom_code: sym_altered_consciousness
+  polarity: SUPPORTS
+  weight: 0.3
+  is_key: false
+  source_key: moh_qd_5642_2015
+  source_edition: Quyết định số 5642/QĐ-BYT
+- symptom_code: sym_seizures
+  polarity: SUPPORTS
+  weight: 0.3
+  is_key: false
+  source_key: moh_qd_5642_2015
+  source_edition: Quyết định số 5642/QĐ-BYT
+- symptom_code: cyanosis_hypoxemia_central_peripheral
+  polarity: SUPPORTS
+  weight: 0.6
+  is_key: false
+  source_key: moh_qd_5642_2015
+  source_edition: Quyết định số 5642/QĐ-BYT
+- symptom_code: nausea_vomiting_diarrhea
+  polarity: SUPPORTS
+  weight: 0.6
+  is_key: false
+  source_key: moh_qd_5642_2015
+  source_edition: Quyết định số 5642/QĐ-BYT
+- symptom_code: hepatomegaly_right_hypochondriac_tenderness
+  polarity: SUPPORTS
+  weight: 0.6
+  is_key: false
+  source_key: moh_qd_5642_2015
+  source_edition: Quyết định số 5642/QĐ-BYT
+- symptom_code: anemia_pallor_jaundice
+  polarity: SUPPORTS
+  weight: 0.3
+  is_key: false
+  source_key: moh_qd_5642_2015
+  source_edition: Quyết định số 5642/QĐ-BYT
+- symptom_code: abdominal_distension_borborygmi_pain
+  polarity: SUPPORTS
+  weight: 0.6
+  is_key: false
+  source_key: moh_qd_5642_2015
+  source_edition: Quyết định số 5642/QĐ-BYT
+- symptom_code: lymphadenopathy_splenomegaly
+  polarity: SUPPORTS
+  weight: 0.3
+  is_key: false
+  source_key: moh_qd_5642_2015
+  source_edition: Quyết định số 5642/QĐ-BYT
+- symptom_code: epidemiological_exposure_vector_travel
+  polarity: SUPPORTS
+  weight: 0.3
+  is_key: false
+  source_key: moh_qd_5642_2015
+  source_edition: Quyết định số 5642/QĐ-BYT
+- symptom_code: splenomegaly_left_hypochondriac_mass
+  polarity: SUPPORTS
+  weight: 0.3
   is_key: false
   source_key: moh_qd_5642_2015
   source_edition: Quyết định số 5642/QĐ-BYT
 - symptom_code: headache_dull
   polarity: SUPPORTS
-  weight: 0.72
+  weight: 0.3
   is_key: false
   source_key: moh_qd_5642_2015
   source_edition: Quyết định số 5642/QĐ-BYT
 - symptom_code: fatigue_malaise
   polarity: SUPPORTS
-  weight: 0.68
+  weight: 0.3
   is_key: false
   source_key: moh_qd_5642_2015
   source_edition: Quyết định số 5642/QĐ-BYT

@@ -5,50 +5,49 @@ name_vi: Bệnh ménière
 name_en: Meniere disease
 icd10_code: H81.0
 disease_group: ent
-description: 'Hội chứng Ménière hay bệnh Ménière bao gồm ba triệu chứng chính: chóng
-  mặt, điếc và ù tai có nguyên nhân từ sự rối loạn tai. Bệnh thường gặp ở người trên
-  40 tuổi, nữ nhiều hơn nam.'
+description: 'Hội chứng Ménière hay bệnh Ménière bao gồm ba triệu chứng chính: chóng mặt, điếc và ù tai
+  có nguyên nhân từ sự rối loạn tai. Bệnh thường gặp ở người trên 40 tuổi, nữ nhiều hơn nam.'
 relations:
 - symptom_code: hearing_loss_deafness
   polarity: SUPPORTS
-  weight: 0.97
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: rotatory_vertigo_meniere
   polarity: SUPPORTS
-  weight: 0.97
+  weight: 0.9
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: dizziness_vertigo
   polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: tinnitus_ear_fullness
   polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: sensorineural_hearing_loss
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: spontaneous_nystagmus_vestibular
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: nausea_vomiting_diarrhea
   polarity: SUPPORTS
-  weight: 0.85
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 excerpts:

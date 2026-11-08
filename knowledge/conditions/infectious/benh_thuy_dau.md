@@ -5,50 +5,49 @@ name_vi: Bệnh thủy đậu
 name_en: Varicella
 icd10_code: B01.9
 disease_group: infectious
-description: Thủy đậu là một bệnh truyền nhiễm cấp tính do virus Herpes zoster gây
-  nên, lây từ người sang người qua đường hô hấp hoặc tiếp xúc gần. Thủy đậu xảy ra
-  chủ yếu ở trẻ em, biểu hiện bằng sốt và phát ban dạng nốt phỏng, thường diễn biến
-  lành tính.
+description: Thủy đậu là một bệnh truyền nhiễm cấp tính do virus Herpes zoster gây nên, lây từ người sang
+  người qua đường hô hấp hoặc tiếp xúc gần. Thủy đậu xảy ra chủ yếu ở trẻ em, biểu hiện bằng sốt và phát
+  ban dạng nốt phỏng, thường diễn biến lành tính.
 relations:
 - symptom_code: varicella_polymorphous_centripetal_vesicles
-  polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
-  source_key: moh_qd_5642_2015
-  source_edition: Quyết định số 5642/QĐ-BYT
-- symptom_code: vesicular_blister_rash
-  polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
-  source_key: moh_qd_5642_2015
-  source_edition: Quyết định số 5642/QĐ-BYT
-- symptom_code: viral_hepatitis_jaundice_dark_urine_ast_alt
-  polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
-  source_key: moh_qd_5642_2015
-  source_edition: Quyết định số 5642/QĐ-BYT
-- symptom_code: maculopapular_rash
   polarity: SUPPORTS
   weight: 0.9
   is_key: true
   source_key: moh_qd_5642_2015
   source_edition: Quyết định số 5642/QĐ-BYT
+- symptom_code: vesicular_blister_rash
+  polarity: SUPPORTS
+  weight: 0.6
+  is_key: false
+  source_key: moh_qd_5642_2015
+  source_edition: Quyết định số 5642/QĐ-BYT
+- symptom_code: viral_hepatitis_jaundice_dark_urine_ast_alt
+  polarity: SUPPORTS
+  weight: 0.6
+  is_key: false
+  source_key: moh_qd_5642_2015
+  source_edition: Quyết định số 5642/QĐ-BYT
+- symptom_code: maculopapular_rash
+  polarity: SUPPORTS
+  weight: 0.6
+  is_key: false
+  source_key: moh_qd_5642_2015
+  source_edition: Quyết định số 5642/QĐ-BYT
 - symptom_code: lymphadenopathy_splenomegaly
   polarity: SUPPORTS
-  weight: 0.76
+  weight: 0.3
   is_key: false
   source_key: moh_qd_5642_2015
   source_edition: Quyết định số 5642/QĐ-BYT
 - symptom_code: epidemiological_exposure_vector_travel
   polarity: SUPPORTS
-  weight: 0.76
+  weight: 0.3
   is_key: false
   source_key: moh_qd_5642_2015
   source_edition: Quyết định số 5642/QĐ-BYT
 - symptom_code: fatigue_malaise
   polarity: SUPPORTS
-  weight: 0.68
+  weight: 0.3
   is_key: false
   source_key: moh_qd_5642_2015
   source_edition: Quyết định số 5642/QĐ-BYT

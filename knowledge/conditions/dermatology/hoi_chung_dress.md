@@ -5,32 +5,31 @@ name_vi: Hội chứng DRESS
 name_en: The Drug Reaction with Eosinophilia and Systemic Symptoms
 icd10_code: L27.0
 disease_group: dermatology
-description: Hội chứng DRESS là một phản ứng hiếm gặp do thuốc đặc trưng bởi tăng
-  bạch cầu ái toan và tổn thương nội tạng. Các biểu hiện bệnh thường khởi đầu chậm
-  2-6 tuần sau khi bắt đầu điều trị thuốc và có thể tái phát nhiều lần, rất lâu sau
-  khi ngừng thuốc. Bệnh có thể nguy hiểm, đe dọa tính mạng.
+description: Hội chứng DRESS là một phản ứng hiếm gặp do thuốc đặc trưng bởi tăng bạch cầu ái toan và
+  tổn thương nội tạng. Các biểu hiện bệnh thường khởi đầu chậm 2-6 tuần sau khi bắt đầu điều trị thuốc
+  và có thể tái phát nhiều lần, rất lâu sau khi ngừng thuốc. Bệnh có thể nguy hiểm, đe dọa tính mạng.
 relations:
 - symptom_code: dress_syndrome_facial_edema_eosinophilia
   polarity: SUPPORTS
-  weight: 0.98
+  weight: 0.9
   is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: fever_high
   polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: maculopapular_rash
   polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: lymphadenopathy_splenomegaly
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.3
   is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT

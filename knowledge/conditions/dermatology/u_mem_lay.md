@@ -5,52 +5,51 @@ name_vi: U mềm lây
 name_en: Molluscum Contagiosum
 icd10_code: B08.1
 disease_group: dermatology
-description: U mềm lây được Batcman mô tả lần đầu tiên năm 1817 và năm 1905 Juliusberg
-  phát hiện ra căn nguyên gây bệnh là một virút có tên khoa học Molluscum Contagiosum
-  virus (MCV). Ở Mỹ, theo ước tính có khoảng 1% dân số mắc u mềm lây ít nhất một lần
-  trong đời. Bệnh có thể xảy ra ở bất kỳ lứa tuổi nào nhưng thường gặp nhất ở trẻ
-  em.
+description: U mềm lây được Batcman mô tả lần đầu tiên năm 1817 và năm 1905 Juliusberg phát hiện ra căn
+  nguyên gây bệnh là một virút có tên khoa học Molluscum Contagiosum virus (MCV). Ở Mỹ, theo ước tính
+  có khoảng 1% dân số mắc u mềm lây ít nhất một lần trong đời. Bệnh có thể xảy ra ở bất kỳ lứa tuổi nào
+  nhưng thường gặp nhất ở trẻ em.
 relations:
 - symptom_code: molluscum_umbilicated_pearly_papule
   polarity: SUPPORTS
-  weight: 0.98
+  weight: 0.9
   is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: epidermolysis_bullosa_mechanobullous
   polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: porphyria_cutanea_tarda_photo_blisters
   polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: verrucous_papule_nodule_ulcer
   polarity: SUPPORTS
-  weight: 0.97
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: atopic_dermatitis_flexural_eczema
   polarity: SUPPORTS
-  weight: 0.97
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: palmoplantar_keratoderma_fissures
   polarity: SUPPORTS
-  weight: 0.97
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: pruritus_intense_skin_itch
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 excerpts:

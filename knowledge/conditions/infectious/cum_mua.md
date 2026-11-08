@@ -5,99 +5,104 @@ name_vi: Cúm mùa
 name_en: Seasonal influenza
 icd10_code: J11.1
 disease_group: infectious
-description: Chỉ đạo biên soạn Chủ biên Tham gia biên soạn CHẨN ĐOÁN VÀ ĐIỀU TRỊ CÚM
-  MÙA (Ban hành kèm theo Quyết định số 1840/QĐ-BYT ngày 03/06/2025) Cúm mùa (Seasonal
-  Influenza) là một bệnh nhiễm trùng hô hấp cấp tính do những chủng vi rút cúm đang
-  lưu hành (A/H1N1; A/H3N2; B). Bệnh lây truyền qua đường hô hấp, chủ yếu qua giọt
-  bắn hô hấp hoặc qua tiếp xúc với các bề mặt bị nhiễm vi rút.
+description: Chỉ đạo biên soạn Chủ biên Tham gia biên soạn CHẨN ĐOÁN VÀ ĐIỀU TRỊ CÚM MÙA (Ban hành kèm
+  theo Quyết định số 1840/QĐ-BYT ngày 03/06/2025) Cúm mùa (Seasonal Influenza) là một bệnh nhiễm trùng
+  hô hấp cấp tính do những chủng vi rút cúm đang lưu hành (A/H1N1; A/H3N2; B). Bệnh lây truyền qua đường
+  hô hấp, chủ yếu qua giọt bắn hô hấp hoặc qua tiếp xúc với các bề mặt bị nhiễm vi rút.
 relations:
-- symptom_code: seasonal_flu_abrupt_fever_myalgia_coryza
+- symptom_code: fever_high
   polarity: SUPPORTS
-  weight: 0.97
-  is_key: true
-  source_key: moh_qd_1840_2025
-  source_edition: Quyết định số 1840/QĐ-BYT
-- symptom_code: tachypnea_accessory_muscle_retractions
-  polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
-  source_key: moh_qd_1840_2025
-  source_edition: Quyết định số 1840/QĐ-BYT
-- symptom_code: dyspnea_chronic_exertional
-  polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
-  source_key: moh_qd_1840_2025
-  source_edition: Quyết định số 1840/QĐ-BYT
-- symptom_code: avian_influenza_rapid_ards_pneumonia
-  polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
-  source_key: moh_qd_1840_2025
-  source_edition: Quyết định số 1840/QĐ-BYT
-- symptom_code: measles_catarrhal_3c_cephalocaudal_rash
-  polarity: SUPPORTS
-  weight: 0.9
-  is_key: true
-  source_key: moh_qd_1840_2025
-  source_edition: Quyết định số 1840/QĐ-BYT
-- symptom_code: chest_tightness_pleuritic_pain
-  polarity: SUPPORTS
-  weight: 0.88
-  is_key: true
-  source_key: moh_qd_1840_2025
-  source_edition: Quyết định số 1840/QĐ-BYT
-- symptom_code: rhinorrhea_nasal_congestion
-  polarity: SUPPORTS
-  weight: 0.86
-  is_key: true
-  source_key: moh_qd_1840_2025
-  source_edition: Quyết định số 1840/QĐ-BYT
-- symptom_code: cough_dry
-  polarity: SUPPORTS
-  weight: 0.85
-  is_key: true
-  source_key: moh_qd_1840_2025
-  source_edition: Quyết định số 1840/QĐ-BYT
-- symptom_code: nausea_vomiting_diarrhea
-  polarity: SUPPORTS
-  weight: 0.85
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_1840_2025
   source_edition: Quyết định số 1840/QĐ-BYT
 - symptom_code: myalgia_arthralgia
   polarity: SUPPORTS
-  weight: 0.85
-  is_key: true
+  weight: 0.6
+  is_key: false
+  source_key: moh_qd_1840_2025
+  source_edition: Quyết định số 1840/QĐ-BYT
+- symptom_code: cough_dry
+  polarity: SUPPORTS
+  weight: 0.6
+  is_key: false
+  source_key: moh_qd_1840_2025
+  source_edition: Quyết định số 1840/QĐ-BYT
+- symptom_code: rhinorrhea_nasal_congestion
+  polarity: SUPPORTS
+  weight: 0.6
+  is_key: false
+  source_key: moh_qd_1840_2025
+  source_edition: Quyết định số 1840/QĐ-BYT
+- symptom_code: tachypnea_accessory_muscle_retractions
+  polarity: SUPPORTS
+  weight: 0.6
+  is_key: false
+  source_key: moh_qd_1840_2025
+  source_edition: Quyết định số 1840/QĐ-BYT
+- symptom_code: dyspnea_chronic_exertional
+  polarity: SUPPORTS
+  weight: 0.6
+  is_key: false
+  source_key: moh_qd_1840_2025
+  source_edition: Quyết định số 1840/QĐ-BYT
+- symptom_code: avian_influenza_rapid_ards_pneumonia
+  polarity: SUPPORTS
+  weight: 0.6
+  is_key: false
+  source_key: moh_qd_1840_2025
+  source_edition: Quyết định số 1840/QĐ-BYT
+- symptom_code: conjunctivitis_uveitis_red_eye
+  polarity: SUPPORTS
+  weight: 0.6
+  is_key: false
+  source_key: moh_qd_1840_2025
+  source_edition: Quyết định số 1840/QĐ-BYT
+- symptom_code: maculopapular_rash
+  polarity: SUPPORTS
+  weight: 0.6
+  is_key: false
+  source_key: moh_qd_1840_2025
+  source_edition: Quyết định số 1840/QĐ-BYT
+- symptom_code: chest_tightness_pleuritic_pain
+  polarity: SUPPORTS
+  weight: 0.6
+  is_key: false
+  source_key: moh_qd_1840_2025
+  source_edition: Quyết định số 1840/QĐ-BYT
+- symptom_code: nausea_vomiting_diarrhea
+  polarity: SUPPORTS
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_1840_2025
   source_edition: Quyết định số 1840/QĐ-BYT
 - symptom_code: epidemiological_exposure_vector_travel
   polarity: SUPPORTS
-  weight: 0.78
+  weight: 0.3
   is_key: false
   source_key: moh_qd_1840_2025
   source_edition: Quyết định số 1840/QĐ-BYT
 - symptom_code: sore_throat_dysphagia
   polarity: SUPPORTS
-  weight: 0.76
+  weight: 0.3
   is_key: false
   source_key: moh_qd_1840_2025
   source_edition: Quyết định số 1840/QĐ-BYT
 - symptom_code: chills_rigors
   polarity: SUPPORTS
-  weight: 0.75
+  weight: 0.3
   is_key: false
   source_key: moh_qd_1840_2025
   source_edition: Quyết định số 1840/QĐ-BYT
 - symptom_code: headache_dull
   polarity: SUPPORTS
-  weight: 0.72
+  weight: 0.3
   is_key: false
   source_key: moh_qd_1840_2025
   source_edition: Quyết định số 1840/QĐ-BYT
 - symptom_code: fatigue_malaise
   polarity: SUPPORTS
-  weight: 0.68
+  weight: 0.3
   is_key: false
   source_key: moh_qd_1840_2025
   source_edition: Quyết định số 1840/QĐ-BYT

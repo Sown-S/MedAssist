@@ -5,45 +5,45 @@ name_vi: Viêm da dầu
 name_en: Seborrheic Dermatitis
 icd10_code: L21.9
 disease_group: dermatology
-description: Viêm da dầu là một bệnh da mạn tính. Thương tổn cơ bản là dát đỏ, giới
-  hạn rõ, trên có vảy mỡ, khu trú ở vùng có nhiều tuyến bã như da đầu, mặt và phần
-  trên của thân mình. Ở Mỹ, khoảng 1 đến 3 % dân số mắc bệnh, nam nhiều hơn nữ, chủ
-  yếu gặp ở người trẻ từ 18 đến 40 tuổi, ít gặp ở người cao tuổi.
+description: Viêm da dầu là một bệnh da mạn tính. Thương tổn cơ bản là dát đỏ, giới hạn rõ, trên có vảy
+  mỡ, khu trú ở vùng có nhiều tuyến bã như da đầu, mặt và phần trên của thân mình. Ở Mỹ, khoảng 1 đến
+  3 % dân số mắc bệnh, nam nhiều hơn nữ, chủ yếu gặp ở người trẻ từ 18 đến 40 tuổi, ít gặp ở người cao
+  tuổi.
 relations:
 - symptom_code: seborrheic_dermatitis_greasy_scales
   polarity: SUPPORTS
-  weight: 0.98
+  weight: 0.9
   is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: pustular_furuncle_folliculitis
   polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: scaly_plaque_hyperkeratosis
   polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: atopic_dermatitis_flexural_eczema
   polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: maculopapular_rash
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: pityriasis_versicolor_hypo_hyper_macules
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 excerpts:

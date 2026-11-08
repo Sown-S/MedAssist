@@ -5,69 +5,68 @@ name_vi: Viêm da đầu chi- ruột
 name_en: Acrodermatitis enteropathica
 icd10_code: E83.2
 disease_group: dermatology
-description: Viêm da đầu chi ruột hay còn được gọi là bệnh viêm da đầu chi do thiếu
-  kẽm, đặc trưng bởi các dát đỏ quanh các hốc tự nhiên và các đầu chi kết hợp với
-  rụng tóc, tiêu chảy mạn tính và các rối loạn về tâm thần, do tình trạng giảm kẽm
-  trong huyết thanh.
+description: Viêm da đầu chi ruột hay còn được gọi là bệnh viêm da đầu chi do thiếu kẽm, đặc trưng bởi
+  các dát đỏ quanh các hốc tự nhiên và các đầu chi kết hợp với rụng tóc, tiêu chảy mạn tính và các rối
+  loạn về tâm thần, do tình trạng giảm kẽm trong huyết thanh.
 relations:
 - symptom_code: sjs_ten_epidermal_necrolysis_mucosal
   polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: acrodermatitis_enteropathica_periorificial_zinc
   polarity: SUPPORTS
-  weight: 0.98
+  weight: 0.9
   is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: maculopapular_rash
   polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: vesicular_blister_rash
   polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: vulvovaginal_oral_candidiasis_curd
   polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: tinea_capitis_kerion_alopecia
   polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: seborrheic_dermatitis_greasy_scales
   polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: pustular_furuncle_folliculitis
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: scaly_plaque_hyperkeratosis
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: nausea_vomiting_diarrhea
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 excerpts:

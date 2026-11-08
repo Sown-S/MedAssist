@@ -5,58 +5,57 @@ name_vi: Khô mắt do thiếu vitamin a
 name_en: Xerophthalmia due to vitamin A deficiency
 icd10_code: E50.0
 disease_group: ophthalmology
-description: 'Bệnh khô mắt do thiếu vitamin A là biểu hiện sớm và đặc hiệu ở mắt của
-  một bệnh toàn thân do thiếu Vitamin A gây ra bao gồm những tổn thương trên kết mạc,
-  giác mạc và võng mạc. Những biến đổi ở mắt do thiếu vitamin A, bao gồm nhiều mức
-  độ: khô kết mạc biểu hiện tình trạng thiếu vitamin A nhẹ, khô giác mạc thường để
-  chỉ thiếu vitamin A ở mức độ nặng hơn.'
+description: 'Bệnh khô mắt do thiếu vitamin A là biểu hiện sớm và đặc hiệu ở mắt của một bệnh toàn thân
+  do thiếu Vitamin A gây ra bao gồm những tổn thương trên kết mạc, giác mạc và võng mạc. Những biến đổi
+  ở mắt do thiếu vitamin A, bao gồm nhiều mức độ: khô kết mạc biểu hiện tình trạng thiếu vitamin A nhẹ,
+  khô giác mạc thường để chỉ thiếu vitamin A ở mức độ nặng hơn.'
 relations:
 - symptom_code: corneal_ulcer_hypopyon_keratitis
   polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: xerophthalmia_bitot_spots_night_blindness
   polarity: SUPPORTS
-  weight: 0.98
+  weight: 0.9
   is_key: true
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: nausea_vomiting_diarrhea
   polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: visual_acuity_decreased_blur
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: intraocular_pressure_glaucoma_cupping
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: anterior_uveitis_keratic_precipitates
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: corneal_perforation_iris_prolapse
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: ocular_pain_photophobia_tearing
   polarity: SUPPORTS
-  weight: 0.9
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 excerpts:

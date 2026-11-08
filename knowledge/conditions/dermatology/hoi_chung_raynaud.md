@@ -5,62 +5,61 @@ name_vi: Hội chứng raynaud
 name_en: Raynaud syndrome
 icd10_code: I73.0
 disease_group: dermatology
-description: Hội chứng Raynaud (Raynaud’s syndrome) là tình trạng bệnh lý do rối loạn
-  vận mạch, co thắt các mạch máu làm giảm lượng máu tới mô gây thiếu máu cục bộ. Bệnh
-  thường thấy ở các cực, nhất là đầu các ngón tay, ngón chân. Một số ít trường hợp
-  gặp ở mũi, tai, môi, núm vú.
+description: Hội chứng Raynaud (Raynaud’s syndrome) là tình trạng bệnh lý do rối loạn vận mạch, co thắt
+  các mạch máu làm giảm lượng máu tới mô gây thiếu máu cục bộ. Bệnh thường thấy ở các cực, nhất là đầu
+  các ngón tay, ngón chân. Một số ít trường hợp gặp ở mũi, tai, môi, núm vú.
 relations:
 - symptom_code: leprosy_anesthetic_hypopigmented_nerve
   polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: melanoma_abcd_asymmetric_pigmented_lesion
   polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: skin_sclerosis_raynaud
   polarity: SUPPORTS
-  weight: 0.97
+  weight: 0.9
   is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: atopic_dermatitis_flexural_eczema
   polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: pruritus_intense_skin_itch
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: maculopapular_rash
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: verrucous_papule_nodule_ulcer
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: myalgia_arthralgia
   polarity: SUPPORTS
-  weight: 0.85
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: anemia_pallor_jaundice
   polarity: SUPPORTS
-  weight: 0.76
+  weight: 0.3
   is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT

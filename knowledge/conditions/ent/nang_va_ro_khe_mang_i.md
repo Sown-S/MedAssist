@@ -5,43 +5,43 @@ name_vi: Nang và rò khe mang I
 name_en: First branchial cleft cyst and fistula
 icd10_code: Q18.0
 disease_group: ent
-description: Là một dị tật bẩm sinh tương đối hiếm gặp, do sự phát triển bất thường
-  của khe mang I, thuộc vùng mang, trong quá trình phát triển phôi thai.
+description: Là một dị tật bẩm sinh tương đối hiếm gặp, do sự phát triển bất thường của khe mang I, thuộc
+  vùng mang, trong quá trình phát triển phôi thai.
 relations:
 - symptom_code: branchial_cleft_piriform_fistula
   polarity: SUPPORTS
-  weight: 0.96
+  weight: 0.9
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: head_neck_mass_fistula_trauma
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: external_ear_swelling_fistula
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: otomycosis_fungal_debris
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: thyroglossal_duct_cyst_elevation
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: salivary_thyroid_gland_nodule
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 excerpts:

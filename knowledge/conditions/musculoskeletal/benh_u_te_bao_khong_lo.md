@@ -5,40 +5,39 @@ name_vi: Bệnh u tế bào khổng lồ
 name_en: Giant cell tumor
 icd10_code: D48.0
 disease_group: musculoskeletal
-description: U tế bào khổng lồ (giant cell tumor, GCT) của xương, còn gọi là u đại
-  bào, là một dạng u xương lành tính, thường gặp ở đầu xương dài ở người lớn trẻ tuổi
-  khi xương đã trưởng thành và sụn tiếp hợp ở vùng đầu xương đã cốt hóa. U xương tế
-  bào khổng lồ chiếm 5 - 10% các khối u xương nguyên phát và chiếm khoảng 20% các
-  u xương lành tính.
+description: U tế bào khổng lồ (giant cell tumor, GCT) của xương, còn gọi là u đại bào, là một dạng u
+  xương lành tính, thường gặp ở đầu xương dài ở người lớn trẻ tuổi khi xương đã trưởng thành và sụn tiếp
+  hợp ở vùng đầu xương đã cốt hóa. U xương tế bào khổng lồ chiếm 5 - 10% các khối u xương nguyên phát
+  và chiếm khoảng 20% các u xương lành tính.
 relations:
 - symptom_code: giant_cell_bone_tumor_epiphyseal_swelling
   polarity: SUPPORTS
-  weight: 0.98
+  weight: 0.9
   is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: bone_pain_fracture_lesion
   polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: lumbar_spondylosis_paraspinal_spasm
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: joint_swelling_warmth_redness_effusion
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: joint_range_of_motion_limitation
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 excerpts:

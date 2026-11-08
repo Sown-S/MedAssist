@@ -5,41 +5,46 @@ name_vi: Bệnh nhiễm trùng ở da và mô mềm
 name_en: Skin and soft tissue infections
 icd10_code: L08.8
 disease_group: infectious
-description: 'Nhiễm trùng da và mô mềm là nhiễm trùng thường gặp với biểu hiện lâm
-  sàng đa dạng ở các mức độ khác nhau. Tỷ lệ cần nhập viện điều trị trong số những
-  người bệnh có nhiễm trùng da và mô mềm khoảng 29%. Những yếu tố thuận lợi dẫn tới
-  nhiễm trùng da và mô mềm bao gồm: các tổn thương hàng rào da niêm mạc: như vết thương,
-  bỏng. Các bệnh lý mạn tính: đái tháo đường, xơ gan, các bệnh lý gây suy giảm miễn
-  dịch khác.'
+description: 'Nhiễm trùng da và mô mềm là nhiễm trùng thường gặp với biểu hiện lâm sàng đa dạng ở các
+  mức độ khác nhau. Tỷ lệ cần nhập viện điều trị trong số những người bệnh có nhiễm trùng da và mô mềm
+  khoảng 29%. Những yếu tố thuận lợi dẫn tới nhiễm trùng da và mô mềm bao gồm: các tổn thương hàng rào
+  da niêm mạc: như vết thương, bỏng. Các bệnh lý mạn tính: đái tháo đường, xơ gan, các bệnh lý gây suy
+  giảm miễn dịch khác.'
 relations:
 - symptom_code: typhoid_stepwise_fever_bradycardia_tuphos
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5642_2015
   source_edition: Quyết định số 5642/QĐ-BYT
-- symptom_code: sepsis_sirs_organ_dysfunction_hypoperfusion
+- symptom_code: reduced_urine_output
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.3
+  is_key: false
+  source_key: moh_qd_5642_2015
+  source_edition: Quyết định số 5642/QĐ-BYT
+- symptom_code: cold_extremities
+  polarity: SUPPORTS
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_5642_2015
   source_edition: Quyết định số 5642/QĐ-BYT
 - symptom_code: vesicular_blister_rash
   polarity: SUPPORTS
-  weight: 0.91
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5642_2015
   source_edition: Quyết định số 5642/QĐ-BYT
 - symptom_code: fever_high
   polarity: SUPPORTS
-  weight: 0.9
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5642_2015
   source_edition: Quyết định số 5642/QĐ-BYT
 - symptom_code: maculopapular_rash
   polarity: SUPPORTS
-  weight: 0.9
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5642_2015
   source_edition: Quyết định số 5642/QĐ-BYT
 - symptom_code: skin_cellulitis_pus_abscess
@@ -50,13 +55,13 @@ relations:
   source_edition: Quyết định số 5642/QĐ-BYT
 - symptom_code: petechiae_mucosal_bleeding
   polarity: SUPPORTS
-  weight: 0.88
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5642_2015
   source_edition: Quyết định số 5642/QĐ-BYT
 - symptom_code: intoxication_coated_tongue_dry_lips
   polarity: SUPPORTS
-  weight: 0.76
+  weight: 0.3
   is_key: false
   source_key: moh_qd_5642_2015
   source_edition: Quyết định số 5642/QĐ-BYT

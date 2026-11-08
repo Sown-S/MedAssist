@@ -5,135 +5,140 @@ name_vi: Sốt rét
 name_en: KSTSR
 icd10_code: B54
 disease_group: infectious
-description: 'Bệnh sốt rét là bệnh truyền nhiễm do 5 loài ký sinh trùng Plasmodium
-  gây nên gồm Plasmodium falciparum, Plasmodium vivax, Plasmodium malariae, Plasmodium
-  ovale và Plasmodium knowlesi. Bệnh lây truyền chủ yếu là do muỗi Anopheles. Bệnh
-  thường biểu hiện bằng những cơn sốt rét điển hình với ba triệu chứng: rét run, sốt,
-  vã mồ hôi. Bệnh tiến triển có chu kỳ và có hạn định nếu không bị tái nhiễm.'
+description: 'Bệnh sốt rét là bệnh truyền nhiễm do 5 loài ký sinh trùng Plasmodium gây nên gồm Plasmodium
+  falciparum, Plasmodium vivax, Plasmodium malariae, Plasmodium ovale và Plasmodium knowlesi. Bệnh lây
+  truyền chủ yếu là do muỗi Anopheles. Bệnh thường biểu hiện bằng những cơn sốt rét điển hình với ba triệu
+  chứng: rét run, sốt, vã mồ hôi. Bệnh tiến triển có chu kỳ và có hạn định nếu không bị tái nhiễm.'
 relations:
-- symptom_code: malaria_paroxysmal_rigor_fever_sweat
+- symptom_code: chills_rigors
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
-  source_key: moh_qd_2699_2020
-  source_edition: Quyết định số 2699/QĐ-BYT
-- symptom_code: cerebral_malaria_coma_hemoglobinuria
-  polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
-  source_key: moh_qd_2699_2020
-  source_edition: Quyết định số 2699/QĐ-BYT
-- symptom_code: sepsis_sirs_organ_dysfunction_hypoperfusion
-  polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
-  source_key: moh_qd_2699_2020
-  source_edition: Quyết định số 2699/QĐ-BYT
-- symptom_code: viral_hepatitis_jaundice_dark_urine_ast_alt
-  polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
-  source_key: moh_qd_2699_2020
-  source_edition: Quyết định số 2699/QĐ-BYT
-- symptom_code: pulmonary_crackles_rales_consolidation
-  polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
-  source_key: moh_qd_2699_2020
-  source_edition: Quyết định số 2699/QĐ-BYT
-- symptom_code: encephalopathy_delirium_convulsion
-  polarity: SUPPORTS
-  weight: 0.91
-  is_key: true
-  source_key: moh_qd_2699_2020
-  source_edition: Quyết định số 2699/QĐ-BYT
-- symptom_code: cyanosis_hypoxemia_central_peripheral
-  polarity: SUPPORTS
-  weight: 0.91
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_2699_2020
   source_edition: Quyết định số 2699/QĐ-BYT
 - symptom_code: fever_high
   polarity: SUPPORTS
-  weight: 0.9
-  is_key: true
-  source_key: moh_qd_2699_2020
-  source_edition: Quyết định số 2699/QĐ-BYT
-- symptom_code: petechiae_mucosal_bleeding
-  polarity: SUPPORTS
-  weight: 0.88
-  is_key: true
-  source_key: moh_qd_2699_2020
-  source_edition: Quyết định số 2699/QĐ-BYT
-- symptom_code: fever_prolonged
-  polarity: SUPPORTS
-  weight: 0.86
-  is_key: true
-  source_key: moh_qd_2699_2020
-  source_edition: Quyết định số 2699/QĐ-BYT
-- symptom_code: nausea_vomiting_diarrhea
-  polarity: SUPPORTS
-  weight: 0.85
-  is_key: true
-  source_key: moh_qd_2699_2020
-  source_edition: Quyết định số 2699/QĐ-BYT
-- symptom_code: lymphadenopathy_splenomegaly
-  polarity: SUPPORTS
-  weight: 0.8
-  is_key: false
-  source_key: moh_qd_2699_2020
-  source_edition: Quyết định số 2699/QĐ-BYT
-- symptom_code: anemia_pallor_jaundice
-  polarity: SUPPORTS
-  weight: 0.8
-  is_key: false
-  source_key: moh_qd_2699_2020
-  source_edition: Quyết định số 2699/QĐ-BYT
-- symptom_code: hepatomegaly_right_hypochondriac_tenderness
-  polarity: SUPPORTS
-  weight: 0.8
-  is_key: false
-  source_key: moh_qd_2699_2020
-  source_edition: Quyết định số 2699/QĐ-BYT
-- symptom_code: abdominal_distension_borborygmi_pain
-  polarity: SUPPORTS
-  weight: 0.8
-  is_key: false
-  source_key: moh_qd_2699_2020
-  source_edition: Quyết định số 2699/QĐ-BYT
-- symptom_code: chills_rigors
-  polarity: SUPPORTS
-  weight: 0.79
-  is_key: false
-  source_key: moh_qd_2699_2020
-  source_edition: Quyết định số 2699/QĐ-BYT
-- symptom_code: epidemiological_exposure_vector_travel
-  polarity: SUPPORTS
-  weight: 0.78
-  is_key: false
-  source_key: moh_qd_2699_2020
-  source_edition: Quyết định số 2699/QĐ-BYT
-- symptom_code: splenomegaly_left_hypochondriac_mass
-  polarity: SUPPORTS
-  weight: 0.76
+  weight: 0.6
   is_key: false
   source_key: moh_qd_2699_2020
   source_edition: Quyết định số 2699/QĐ-BYT
 - symptom_code: sweating_profuse
   polarity: SUPPORTS
-  weight: 0.72
+  weight: 0.3
+  is_key: false
+  source_key: moh_qd_2699_2020
+  source_edition: Quyết định số 2699/QĐ-BYT
+- symptom_code: cerebral_malaria_coma_hemoglobinuria
+  polarity: SUPPORTS
+  weight: 0.6
+  is_key: false
+  source_key: moh_qd_2699_2020
+  source_edition: Quyết định số 2699/QĐ-BYT
+- symptom_code: reduced_urine_output
+  polarity: SUPPORTS
+  weight: 0.3
+  is_key: false
+  source_key: moh_qd_2699_2020
+  source_edition: Quyết định số 2699/QĐ-BYT
+- symptom_code: cold_extremities
+  polarity: SUPPORTS
+  weight: 0.3
+  is_key: false
+  source_key: moh_qd_2699_2020
+  source_edition: Quyết định số 2699/QĐ-BYT
+- symptom_code: viral_hepatitis_jaundice_dark_urine_ast_alt
+  polarity: SUPPORTS
+  weight: 0.6
+  is_key: false
+  source_key: moh_qd_2699_2020
+  source_edition: Quyết định số 2699/QĐ-BYT
+- symptom_code: pulmonary_crackles_rales_consolidation
+  polarity: SUPPORTS
+  weight: 0.6
+  is_key: false
+  source_key: moh_qd_2699_2020
+  source_edition: Quyết định số 2699/QĐ-BYT
+- symptom_code: sym_altered_consciousness
+  polarity: SUPPORTS
+  weight: 0.3
+  is_key: false
+  source_key: moh_qd_2699_2020
+  source_edition: Quyết định số 2699/QĐ-BYT
+- symptom_code: sym_seizures
+  polarity: SUPPORTS
+  weight: 0.3
+  is_key: false
+  source_key: moh_qd_2699_2020
+  source_edition: Quyết định số 2699/QĐ-BYT
+- symptom_code: cyanosis_hypoxemia_central_peripheral
+  polarity: SUPPORTS
+  weight: 0.6
+  is_key: false
+  source_key: moh_qd_2699_2020
+  source_edition: Quyết định số 2699/QĐ-BYT
+- symptom_code: petechiae_mucosal_bleeding
+  polarity: SUPPORTS
+  weight: 0.6
+  is_key: false
+  source_key: moh_qd_2699_2020
+  source_edition: Quyết định số 2699/QĐ-BYT
+- symptom_code: fever_prolonged
+  polarity: SUPPORTS
+  weight: 0.6
+  is_key: false
+  source_key: moh_qd_2699_2020
+  source_edition: Quyết định số 2699/QĐ-BYT
+- symptom_code: nausea_vomiting_diarrhea
+  polarity: SUPPORTS
+  weight: 0.6
+  is_key: false
+  source_key: moh_qd_2699_2020
+  source_edition: Quyết định số 2699/QĐ-BYT
+- symptom_code: lymphadenopathy_splenomegaly
+  polarity: SUPPORTS
+  weight: 0.3
+  is_key: false
+  source_key: moh_qd_2699_2020
+  source_edition: Quyết định số 2699/QĐ-BYT
+- symptom_code: anemia_pallor_jaundice
+  polarity: SUPPORTS
+  weight: 0.3
+  is_key: false
+  source_key: moh_qd_2699_2020
+  source_edition: Quyết định số 2699/QĐ-BYT
+- symptom_code: hepatomegaly_right_hypochondriac_tenderness
+  polarity: SUPPORTS
+  weight: 0.6
+  is_key: false
+  source_key: moh_qd_2699_2020
+  source_edition: Quyết định số 2699/QĐ-BYT
+- symptom_code: abdominal_distension_borborygmi_pain
+  polarity: SUPPORTS
+  weight: 0.6
+  is_key: false
+  source_key: moh_qd_2699_2020
+  source_edition: Quyết định số 2699/QĐ-BYT
+- symptom_code: epidemiological_exposure_vector_travel
+  polarity: SUPPORTS
+  weight: 0.3
+  is_key: false
+  source_key: moh_qd_2699_2020
+  source_edition: Quyết định số 2699/QĐ-BYT
+- symptom_code: splenomegaly_left_hypochondriac_mass
+  polarity: SUPPORTS
+  weight: 0.3
   is_key: false
   source_key: moh_qd_2699_2020
   source_edition: Quyết định số 2699/QĐ-BYT
 - symptom_code: headache_dull
   polarity: SUPPORTS
-  weight: 0.72
+  weight: 0.3
   is_key: false
   source_key: moh_qd_2699_2020
   source_edition: Quyết định số 2699/QĐ-BYT
 - symptom_code: fatigue_malaise
   polarity: SUPPORTS
-  weight: 0.68
+  weight: 0.3
   is_key: false
   source_key: moh_qd_2699_2020
   source_edition: Quyết định số 2699/QĐ-BYT
