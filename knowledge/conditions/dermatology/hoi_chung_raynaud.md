@@ -9,12 +9,6 @@ description: Hội chứng Raynaud (Raynaud’s syndrome) là tình trạng bệ
   các mạch máu làm giảm lượng máu tới mô gây thiếu máu cục bộ. Bệnh thường thấy ở các cực, nhất là đầu
   các ngón tay, ngón chân. Một số ít trường hợp gặp ở mũi, tai, môi, núm vú.
 relations:
-- symptom_code: leprosy_anesthetic_hypopigmented_nerve
-  polarity: SUPPORTS
-  weight: 0.3
-  is_key: false
-  source_key: moh_qd_75_2015
-  source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: melanoma_abcd_asymmetric_pigmented_lesion
   polarity: SUPPORTS
   weight: 0.6

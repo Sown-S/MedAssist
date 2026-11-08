@@ -10,12 +10,6 @@ description: Từ thời Hippocrates, tác giả đã mô tả hình ảnh nhi�
   từ albicans nghĩa là "trắng" để đặt tên cho loại nấm gây bệnh tưa miệng. Năm 1954, từ Candida albicans
   chính thức được sử dụng. Nấm Candida có thể gây bệnh ở các lứa tuổi khác nhau và ở cả hai giới.
 relations:
-- symptom_code: scabies_interdigital_burrows_nocturnal
-  polarity: SUPPORTS
-  weight: 0.3
-  is_key: false
-  source_key: moh_qd_75_2015
-  source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: vulvovaginal_oral_candidiasis_curd
   polarity: SUPPORTS
   weight: 0.9

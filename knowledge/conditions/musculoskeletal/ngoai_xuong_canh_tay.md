@@ -1,9 +1,9 @@
 ---
 schema: okf_condition_v1
 condition_code: ngoai_xuong_canh_tay
-name_vi: Ngoài xương cánh tay
+name_vi: "Viêm lồi cầu ngoài xương cánh tay"
 name_en: Lateral epicondylitis
-icd10_code: M89.1
+icd10_code: "M77.1"
 disease_group: musculoskeletal
 description: Bệnh viêm lồi cầu ngoài xương cánh tay (lateral epicondylitis) còn được gọi bằng một số tên
   khác như khuỷu tay của người chơi tennis (tennis elbow), khuỷu tay của người chèo thuyền. Tổn thương

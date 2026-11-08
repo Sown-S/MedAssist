@@ -39,12 +39,6 @@ relations:
   is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: gout_hyperuricemia_colchicine_response
-  polarity: SUPPORTS
-  weight: 0.6
-  is_key: false
-  source_key: moh_qd_361_2014
-  source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: knee_osteoarthritis_wood_planing_osteophyte
   polarity: SUPPORTS
   weight: 0.6
