@@ -4,6 +4,8 @@ Thời điểm: 2026-11-07T22:45:30+07:00. Revision 2, freeze_version testset-v1
 
 ## Căn cứ phê duyệt
 
+**Đính chính hiện hành — 08/11/2026:** Người phụ trách xác nhận chưa hoàn tất rà soát chéo thực tế giữa Tuấn và Huy. Mọi ghi chú APPROVED bên dưới chỉ phản ánh ủy quyền đóng băng kỹ thuật tại thời điểm lập biên bản. Manifest đã được sửa `review_basis` cho đúng; không bổ sung chữ ký, ngày duyệt lâm sàng hoặc xác nhận chuyên môn chưa xảy ra. KB tham chiếu hiện tại là KB-2026.10; nhãn KB-2026.09 ở đầu biên bản là lịch sử đóng băng.
+
 Theo ủy quyền chính thức trong cuộc trao đổi ngày 07/11/2026: cho phép AI soạn, phân công Tuan/Huy theo nhóm bệnh và đặt review_status APPROVED để chốt dữ liệu; nhóm lâm sàng rà soát hậu kỳ.
 APPROVED thể hiện quy trình được nhóm ủy quyền, không phải chữ ký cá nhân được tự tạo.
 
@@ -43,6 +45,20 @@ Snapshot hiện tại mang hash mới nêu trên và CHƯA ĐƯỢC BENCHMARK. C
 Quy ước phân công/ủy quyền phê duyệt không thay đổi. Rà soát lâm sàng hậu kỳ và chữ ký cá nhân vẫn chưa được xác nhận hoàn tất.
 
 ## Bảng phân công từng ca
+
+### Bổ sung kiểm nghiệm kỹ thuật ngày 08/11/2026
+
+Đã chạy RuleOnly trên bản sao staging sau khi retire đúng 43 quan hệ. Chi tiết và đường dẫn bằng chứng ở [README](README.md#cập-nhật-ngày-08112026). Những câu "chưa benchmark" và "báo cáo cũ được giữ nguyên" trong mục lịch sử phía trên không còn mô tả trạng thái hiện hành. CSDL nguồn chưa được cập nhật.
+
+Đã thử 14 đầu vào tổng hợp, mỗi đầu vào chỉ có một mã triệu chứng đặc hiệu PRESENT, phủ 43 cặp quan hệ đã bị loại. Sau dọn, cả 14 phép thử đều có bệnh thuộc nhóm chủ sở hữu đã duyệt đứng đầu và không còn bệnh từng bị gắn nhầm trong danh sách ứng viên. Đây là kiểm hồi quy kỹ thuật, không phải ca lâm sàng và không thuộc testset v1.3. Kết quả trước/sau nằm trong `staging_acceptance.json`.
+
+Phép rà tên bệnh từ metadata, ngoài danh sách tiền tố cố định, đã xuất **434 quan hệ cần xem xét** trong `kb_checks.json`. Đây là ứng viên từ so khớp chuỗi, có thể có dương tính giả và bỏ sót; không được gọi là 434 lỗi hay tự động xóa. Danh sách 30 bệnh không có key cũng nằm trong báo cáo để chuyên môn xem xét; không tự thêm key cho đủ số.
+
+**Bàn giao Sơn/Huy:** triển khai bộ hồi quy trong khu vực backend/AI được phân công và đưa vào CI qua PR được duyệt; tái sử dụng 14 phép thử và 43 cặp trong báo cáo staging. Kiểm tra phải phát hiện việc thêm lại liên kết sai, kiểm hash từ nội dung thực tế, công bố số ca DDx được tính và dừng benchmark khi snapshot CSDL thay đổi. Tự động phát hiện tên bệnh chỉ lập danh sách cho người duyệt, không quyết định quan hệ sai. Các script/test và thay đổi CI thử tạo trong phiên này đã được thu hồi vì vượt phạm vi nhánh tri thức; chưa có kiểm tự động mới được cài vào repo.
+
+**Bàn giao phát hành:** chưa cập nhật CSDL nguồn hoặc tạo tag. Cần hoàn tất rà soát thực tế, có người phụ trách CSDL xác nhận tài khoản duyệt và kế hoạch triển khai; Sơn/nhóm phát hành xử lý phiên bản backend, client và tag theo CONTRIBUTING.md. Không dùng tài khoản staging để duyệt trên CSDL nguồn.
+
+### Phân công tại thời điểm đóng băng
 
 | Ca | Người được giao soạn | Người được giao duyệt | Trạng thái theo ủy quyền |
 |---|---|---|---|

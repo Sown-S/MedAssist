@@ -29,12 +29,6 @@ relations:
   is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: genital_herpes_clustered_painful_ulcers
-  polarity: SUPPORTS
-  weight: 0.3
-  is_key: false
-  source_key: moh_qd_75_2015
-  source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: basal_cell_carcinoma_pearly_telangiectasia
   polarity: SUPPORTS
   weight: 0.6

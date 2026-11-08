@@ -28,12 +28,6 @@ relations:
   is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: pemphigus_flaccid_bulla_nikolsky_pos
-  polarity: SUPPORTS
-  weight: 0.3
-  is_key: false
-  source_key: moh_qd_75_2015
-  source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: atopic_dermatitis_flexural_eczema
   polarity: SUPPORTS
   weight: 0.3
@@ -50,12 +44,6 @@ relations:
   polarity: SUPPORTS
   weight: 0.9
   is_key: true
-  source_key: moh_qd_75_2015
-  source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: lichen_planus_wickham_purple_papules
-  polarity: SUPPORTS
-  weight: 0.3
-  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: palmoplantar_keratoderma_fissures
@@ -118,12 +106,6 @@ relations:
   is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: cutaneous_tuberculosis_lupus_vulgaris
-  polarity: SUPPORTS
-  weight: 0.3
-  is_key: false
-  source_key: moh_qd_75_2015
-  source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: pityriasis_versicolor_hypo_hyper_macules
   polarity: SUPPORTS
   weight: 0.6
@@ -131,12 +113,6 @@ relations:
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: vulvovaginal_oral_candidiasis_curd
-  polarity: SUPPORTS
-  weight: 0.3
-  is_key: false
-  source_key: moh_qd_75_2015
-  source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: tinea_capitis_kerion_alopecia
   polarity: SUPPORTS
   weight: 0.3
   is_key: false

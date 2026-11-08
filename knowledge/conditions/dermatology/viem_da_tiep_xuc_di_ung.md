@@ -40,12 +40,6 @@ relations:
   is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: dress_syndrome_facial_edema_eosinophilia
-  polarity: SUPPORTS
-  weight: 0.3
-  is_key: false
-  source_key: moh_qd_75_2015
-  source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: erythema_multiforme_target_lesion
   polarity: SUPPORTS
   weight: 0.3
