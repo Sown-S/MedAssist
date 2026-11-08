@@ -2,8 +2,8 @@
 
 - Freeze: testset-v1.3-frozen, revision 2.
 - Thời điểm: 2026-11-07T22:45:30+07:00 (Asia/Bangkok).
-- KB tham chiếu: KB-2026.09.
-- Trạng thái benchmark: CHƯA CHẠY CHO SNAPSHOT NÀY.
+- KB tham chiếu hiện tại: KB-2026.10 (khi đóng băng ban đầu: KB-2026.09).
+- Đã chạy RuleOnly trên bản sao staging ngày 08/11/2026; Full với mô hình thật chưa chạy. Xem mục cập nhật bên dưới.
 - Git tag được đề xuất, chưa tạo.
 
 | Thông số | Số lượng |
@@ -62,3 +62,20 @@ AI thực hiện soạn/chỉnh theo ủy quyền của nhóm ngày 07/11/2026. 
 Chỉ kiểm tra cấu trúc, mã, nhãn và hash trong lần đóng băng này; không chạy run_eval.py và không sửa KB, luật, backend hay báo cáo cũ.
 Các báo cáo hiện có trong evaluation/results mang hash trước đó và không áp dụng cho snapshot hiện tại. Cần chạy benchmark mới sau bước đóng băng; không sử dụng lại các chỉ số của snapshot trước.
 Không có baseline v1.2 chính thức. Không chỉnh KB/prompt/nhãn theo kết quả benchmark của bộ đã đóng băng.
+
+## Cập nhật ngày 08/11/2026
+
+Các ghi chú trong mục "Trước benchmark" mô tả thời điểm đóng băng ban đầu. Hai thư mục báo cáo snapshot 81 ca đã được xóa theo yêu cầu; không còn dùng làm bằng chứng cho snapshot hiện tại.
+
+Người phụ trách xác nhận **chưa hoàn tất rà soát chéo thực tế**. `review_basis` đã được sửa để phản ánh đúng trạng thái này. `APPROVED` trong dữ liệu đóng băng là trạng thái kỹ thuật theo ủy quyền; không chứng nhận phê duyệt lâm sàng.
+
+- Bản sao kiểm thử: `medassist_kb202610_stage_20261108`. Nạp KB-2026.10 và retire 43 quan hệ trên bản sao: 1.787 → 1.744 quan hệ Active; 169 bệnh, 299 triệu chứng, 12 luật. Kiểm tra so sánh với kho trên đĩa không còn thay đổi hoặc mục thiếu.
+- CSDL nguồn `medassist` không bị sửa, vẫn có 1.787 quan hệ Active ở lần kiểm tra này. Chưa triển khai thay đổi vào CSDL đang chạy.
+- Tài khoản duyệt trên staging là tài khoản kiểm thử riêng; không đại diện Tuấn/Huy hoặc phê duyệt lâm sàng.
+- RuleOnly: 82 ca, phát hiện đủ 48/48 Emergency, 0 báo động nhầm, mức ưu tiên đúng 82/82; DDx top-1 83,3%, top-3 94,4% trên **18 ca có nhãn DDx**. Không dùng kết quả này để tuyên bố đã đánh giá đầy đủ 169 bệnh.
+- Full với mô hình thật chưa chạy: cấu hình tại thời điểm kiểm tra là `fake`, dịch vụ Ollama chưa truy cập được. Không có kết quả Full thật hoặc trích xuất mới.
+- `benchmark_status` trong manifest vẫn giữ giá trị lịch sử `NOT_RUN_FOR_THIS_SNAPSHOT`; phạm vi sửa manifest chỉ cho phép `kb_release` và `review_basis`. Trạng thái thực nghiệm mới được ghi tại đây, không suy diễn trạng thái đó thành "chưa có kết quả RuleOnly".
+
+Bằng chứng: [báo cáo RuleOnly](../results/kb_2026_10_acceptance/rule_only/summary.md), [đối soát staging trước/sau](../results/kb_2026_10_acceptance/staging_acceptance.json), [kết quả rà soát và phép thử riêng](../results/kb_2026_10_acceptance/kb_checks.json).
+
+Hai tệp JSONL và mã băm đóng băng không thay đổi. Báo cáo chạy bằng backend 0.2.2; đây chưa phải bằng chứng phát hành ứng dụng v0.2.3.

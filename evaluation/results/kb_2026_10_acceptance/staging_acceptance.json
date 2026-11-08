@@ -1,0 +1,382 @@
+{
+  "run_at": "2026-11-08T13:29:17.418564+07:00",
+  "database": "medassist_kb202610_stage_20261108",
+  "source_database_unchanged": true,
+  "source_kb_fingerprint": "0b134a403a9ee59e92ffd72b7dfc196b0d24e9529fddb3597df96c2332397115",
+  "staging_kb_fingerprint": "51d3dd8d17ceacb8950717ca5f34b527e6b326761424add7154abdb4da4ccd3a",
+  "knowledge_tree_sha256": "8025b1f1965e1f10c6aab911a52322a41adb66f40559b46aefd1dfd6ae90cfae",
+  "git_commit": "439126d8a932dffda3d6e935313f67448b56da1f",
+  "working_tree_dirty": true,
+  "release": "KB-2026.10",
+  "release_id": "ddc0be1c-7cc1-4b3c-942c-fa7f7261339b",
+  "approval_scope": "STAGING technical simulation only; no clinical approval asserted",
+  "before": {
+    "conditions": 169,
+    "symptoms": 299,
+    "relations": 1787,
+    "rules": 12
+  },
+  "after": {
+    "conditions": 169,
+    "symptoms": 299,
+    "relations": 1744,
+    "rules": 12
+  },
+  "retired_pairs": [
+    "benh_bach_bien/tinea_capitis_kerion_alopecia",
+    "benh_choc/cutaneous_tuberculosis_lupus_vulgaris",
+    "benh_da_nghe_nghiep/acne_comedones_nodulocystic",
+    "benh_da_va_niem_mac_do_candida/scabies_interdigital_burrows_nocturnal",
+    "benh_ghe/syphilis_hard_chancre_roseola_palmoplantar",
+    "benh_giang_mai/acne_comedones_nodulocystic",
+    "benh_giang_mai/tinea_capitis_kerion_alopecia",
+    "benh_giang_mai/varicella_polymorphous_centripetal_vesicles",
+    "benh_sui_mao_ga_sinh_duc/genital_herpes_clustered_painful_ulcers",
+    "benh_sui_mao_ga_sinh_duc/lichen_planus_wickham_purple_papules",
+    "benh_vay_ca/tinea_capitis_kerion_alopecia",
+    "benh_vay_phan_do_nang_long/acne_comedones_nodulocystic",
+    "benh_viem_da_dang_herpes_cua_duhring_brocq/dress_syndrome_facial_edema_eosinophilia",
+    "benh_viem_da_dang_herpes_cua_duhring_brocq/varicella_polymorphous_centripetal_vesicles",
+    "benh_viem_khop_vay_nen/gout_hyperuricemia_colchicine_response",
+    "benh_zona/leprosy_anesthetic_hypopigmented_nerve",
+    "benh_zona/paederus_kissing_blister_dermatitis",
+    "benh_zona/pemphigus_flaccid_bulla_nikolsky_pos",
+    "bong_nuoc_dang_pemphigus/dress_syndrome_facial_edema_eosinophilia",
+    "chong_mat/rotatory_vertigo_meniere",
+    "day_sung_long_ban_tay_ban_chan_di_truyen/paederus_kissing_blister_dermatitis",
+    "di_sung_nang_long/acne_comedones_nodulocystic",
+    "di_sung_nang_long/pemphigus_flaccid_bulla_nikolsky_pos",
+    "do_da_toan_than/cutaneous_tuberculosis_lupus_vulgaris",
+    "do_da_toan_than/lichen_planus_wickham_purple_papules",
+    "do_da_toan_than/pemphigus_flaccid_bulla_nikolsky_pos",
+    "do_da_toan_than/tinea_capitis_kerion_alopecia",
+    "hoi_chung_bong_vay_da_do_tu_cau/pemphigus_flaccid_bulla_nikolsky_pos",
+    "hoi_chung_raynaud/leprosy_anesthetic_hypopigmented_nerve",
+    "hong_ban_da_dang/genital_herpes_clustered_painful_ulcers",
+    "ly_thuong_bi_bong_nuoc_bam_sinh/pemphigus_flaccid_bulla_nikolsky_pos",
+    "ly_thuong_bi_bong_nuoc_bam_sinh/tinea_capitis_kerion_alopecia",
+    "nhot/acne_comedones_nodulocystic",
+    "sam_da/dress_syndrome_facial_edema_eosinophilia",
+    "sarcoidosis/acne_comedones_nodulocystic",
+    "sarcoidosis/cutaneous_tuberculosis_lupus_vulgaris",
+    "trung_ca/tinea_capitis_kerion_alopecia",
+    "u_ong_tuyen_mo_hoi/tinea_capitis_kerion_alopecia",
+    "viem_da_dau_chi_ruot/tinea_capitis_kerion_alopecia",
+    "viem_da_tiep_xuc_di_ung/dress_syndrome_facial_edema_eosinophilia",
+    "viem_khop_thieu_nien_tu_phat_the_viem_khop_vay_nen/gout_hyperuricemia_colchicine_response",
+    "viem_nang_long/dress_syndrome_facial_edema_eosinophilia",
+    "viem_nang_long/tinea_capitis_kerion_alopecia"
+  ],
+  "regression_before": [
+    {
+      "symptom_code": "acne_comedones_nodulocystic",
+      "top3": [
+        "trung_ca",
+        "nhot",
+        "di_sung_nang_long"
+      ],
+      "forbidden_ranked": [
+        "benh_da_nghe_nghiep",
+        "benh_giang_mai",
+        "benh_vay_phan_do_nang_long",
+        "di_sung_nang_long",
+        "nhot",
+        "sarcoidosis"
+      ],
+      "passed": false
+    },
+    {
+      "symptom_code": "cutaneous_tuberculosis_lupus_vulgaris",
+      "top3": [
+        "benh_lao_da",
+        "benh_choc",
+        "sarcoidosis"
+      ],
+      "forbidden_ranked": [
+        "benh_choc",
+        "do_da_toan_than",
+        "sarcoidosis"
+      ],
+      "passed": false
+    },
+    {
+      "symptom_code": "dress_syndrome_facial_edema_eosinophilia",
+      "top3": [
+        "hoi_chung_dress",
+        "viem_nang_long",
+        "benh_viem_da_dang_herpes_cua_duhring_brocq"
+      ],
+      "forbidden_ranked": [
+        "benh_viem_da_dang_herpes_cua_duhring_brocq",
+        "bong_nuoc_dang_pemphigus",
+        "sam_da",
+        "viem_da_tiep_xuc_di_ung",
+        "viem_nang_long"
+      ],
+      "passed": false
+    },
+    {
+      "symptom_code": "genital_herpes_clustered_painful_ulcers",
+      "top3": [
+        "herpes_sinh_duc",
+        "benh_sui_mao_ga_sinh_duc",
+        "hong_ban_da_dang"
+      ],
+      "forbidden_ranked": [
+        "benh_sui_mao_ga_sinh_duc",
+        "hong_ban_da_dang"
+      ],
+      "passed": false
+    },
+    {
+      "symptom_code": "gout_hyperuricemia_colchicine_response",
+      "top3": [
+        "benh_gut",
+        "benh_viem_khop_vay_nen",
+        "viem_khop_thieu_nien_tu_phat_the_viem_khop_vay_nen"
+      ],
+      "forbidden_ranked": [
+        "benh_viem_khop_vay_nen",
+        "viem_khop_thieu_nien_tu_phat_the_viem_khop_vay_nen"
+      ],
+      "passed": false
+    },
+    {
+      "symptom_code": "leprosy_anesthetic_hypopigmented_nerve",
+      "top3": [
+        "benh_phong",
+        "hoi_chung_raynaud",
+        "benh_zona"
+      ],
+      "forbidden_ranked": [
+        "benh_zona",
+        "hoi_chung_raynaud"
+      ],
+      "passed": false
+    },
+    {
+      "symptom_code": "lichen_planus_wickham_purple_papules",
+      "top3": [
+        "benh_lichen_phang",
+        "benh_sui_mao_ga_sinh_duc",
+        "do_da_toan_than"
+      ],
+      "forbidden_ranked": [
+        "benh_sui_mao_ga_sinh_duc",
+        "do_da_toan_than"
+      ],
+      "passed": false
+    },
+    {
+      "symptom_code": "paederus_kissing_blister_dermatitis",
+      "top3": [
+        "viem_da_tiep_xuc_do_con_trung",
+        "day_sung_long_ban_tay_ban_chan_di_truyen",
+        "benh_zona"
+      ],
+      "forbidden_ranked": [
+        "benh_zona",
+        "day_sung_long_ban_tay_ban_chan_di_truyen"
+      ],
+      "passed": false
+    },
+    {
+      "symptom_code": "pemphigus_flaccid_bulla_nikolsky_pos",
+      "top3": [
+        "pemphigus",
+        "bong_nuoc_dang_pemphigus",
+        "ly_thuong_bi_bong_nuoc_bam_sinh"
+      ],
+      "forbidden_ranked": [
+        "benh_zona",
+        "di_sung_nang_long",
+        "do_da_toan_than",
+        "hoi_chung_bong_vay_da_do_tu_cau",
+        "ly_thuong_bi_bong_nuoc_bam_sinh"
+      ],
+      "passed": false
+    },
+    {
+      "symptom_code": "rotatory_vertigo_meniere",
+      "top3": [
+        "benh_meniere",
+        "chong_mat"
+      ],
+      "forbidden_ranked": [
+        "chong_mat"
+      ],
+      "passed": false
+    },
+    {
+      "symptom_code": "scabies_interdigital_burrows_nocturnal",
+      "top3": [
+        "benh_ghe",
+        "benh_da_va_niem_mac_do_candida"
+      ],
+      "forbidden_ranked": [
+        "benh_da_va_niem_mac_do_candida"
+      ],
+      "passed": false
+    },
+    {
+      "symptom_code": "syphilis_hard_chancre_roseola_palmoplantar",
+      "top3": [
+        "benh_giang_mai",
+        "benh_ghe"
+      ],
+      "forbidden_ranked": [
+        "benh_ghe"
+      ],
+      "passed": false
+    },
+    {
+      "symptom_code": "tinea_capitis_kerion_alopecia",
+      "top3": [
+        "nam_toc",
+        "benh_bach_bien",
+        "u_ong_tuyen_mo_hoi"
+      ],
+      "forbidden_ranked": [
+        "benh_bach_bien",
+        "benh_giang_mai",
+        "benh_vay_ca",
+        "do_da_toan_than",
+        "ly_thuong_bi_bong_nuoc_bam_sinh",
+        "trung_ca",
+        "u_ong_tuyen_mo_hoi",
+        "viem_da_dau_chi_ruot",
+        "viem_nang_long"
+      ],
+      "passed": false
+    },
+    {
+      "symptom_code": "varicella_polymorphous_centripetal_vesicles",
+      "top3": [
+        "benh_thuy_dau",
+        "benh_viem_da_dang_herpes_cua_duhring_brocq",
+        "benh_giang_mai"
+      ],
+      "forbidden_ranked": [
+        "benh_giang_mai",
+        "benh_viem_da_dang_herpes_cua_duhring_brocq"
+      ],
+      "passed": false
+    }
+  ],
+  "regression_after": [
+    {
+      "symptom_code": "acne_comedones_nodulocystic",
+      "top3": [
+        "trung_ca"
+      ],
+      "forbidden_ranked": [],
+      "passed": true
+    },
+    {
+      "symptom_code": "cutaneous_tuberculosis_lupus_vulgaris",
+      "top3": [
+        "benh_lao_da"
+      ],
+      "forbidden_ranked": [],
+      "passed": true
+    },
+    {
+      "symptom_code": "dress_syndrome_facial_edema_eosinophilia",
+      "top3": [
+        "hoi_chung_dress"
+      ],
+      "forbidden_ranked": [],
+      "passed": true
+    },
+    {
+      "symptom_code": "genital_herpes_clustered_painful_ulcers",
+      "top3": [
+        "herpes_sinh_duc"
+      ],
+      "forbidden_ranked": [],
+      "passed": true
+    },
+    {
+      "symptom_code": "gout_hyperuricemia_colchicine_response",
+      "top3": [
+        "benh_gut"
+      ],
+      "forbidden_ranked": [],
+      "passed": true
+    },
+    {
+      "symptom_code": "leprosy_anesthetic_hypopigmented_nerve",
+      "top3": [
+        "benh_phong"
+      ],
+      "forbidden_ranked": [],
+      "passed": true
+    },
+    {
+      "symptom_code": "lichen_planus_wickham_purple_papules",
+      "top3": [
+        "benh_lichen_phang"
+      ],
+      "forbidden_ranked": [],
+      "passed": true
+    },
+    {
+      "symptom_code": "paederus_kissing_blister_dermatitis",
+      "top3": [
+        "viem_da_tiep_xuc_do_con_trung"
+      ],
+      "forbidden_ranked": [],
+      "passed": true
+    },
+    {
+      "symptom_code": "pemphigus_flaccid_bulla_nikolsky_pos",
+      "top3": [
+        "pemphigus",
+        "bong_nuoc_dang_pemphigus"
+      ],
+      "forbidden_ranked": [],
+      "passed": true
+    },
+    {
+      "symptom_code": "rotatory_vertigo_meniere",
+      "top3": [
+        "benh_meniere"
+      ],
+      "forbidden_ranked": [],
+      "passed": true
+    },
+    {
+      "symptom_code": "scabies_interdigital_burrows_nocturnal",
+      "top3": [
+        "benh_ghe"
+      ],
+      "forbidden_ranked": [],
+      "passed": true
+    },
+    {
+      "symptom_code": "syphilis_hard_chancre_roseola_palmoplantar",
+      "top3": [
+        "benh_giang_mai"
+      ],
+      "forbidden_ranked": [],
+      "passed": true
+    },
+    {
+      "symptom_code": "tinea_capitis_kerion_alopecia",
+      "top3": [
+        "nam_toc"
+      ],
+      "forbidden_ranked": [],
+      "passed": true
+    },
+    {
+      "symptom_code": "varicella_polymorphous_centripetal_vesicles",
+      "top3": [
+        "benh_thuy_dau",
+        "benh_zona"
+      ],
+      "forbidden_ranked": [],
+      "passed": true
+    }
+  ]
+}

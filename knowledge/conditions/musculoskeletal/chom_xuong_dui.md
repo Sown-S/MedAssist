@@ -1,9 +1,9 @@
 ---
 schema: okf_condition_v1
 condition_code: chom_xuong_dui
-name_vi: Chỏm xương đùi
+name_vi: "Hoại tử vô mạch chỏm xương đùi"
 name_en: Avascular necrosis
-icd10_code: M89.2
+icd10_code: "M87"
 disease_group: musculoskeletal
 description: Hoại tử vô mạch (Avascular Necrosis- AVN) chỏm xương đùi hay còn gọi là hoại tử vô khuẩn
   chỏm xương đùi là bệnh có tổn thương hoại tử tế bào xương và tủy xương do bị thiếu máu nuôi phần trên

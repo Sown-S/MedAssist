@@ -71,12 +71,6 @@ relations:
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: gout_hyperuricemia_colchicine_response
-  polarity: SUPPORTS
-  weight: 0.6
-  is_key: false
-  source_key: moh_qd_361_2014
-  source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: giant_cell_bone_tumor_epiphyseal_swelling
   polarity: SUPPORTS
   weight: 0.3
