@@ -1,11 +1,8 @@
 """Dữ liệu cho môi trường kiểm thử (deploy/docker-compose.eval.yml): tài khoản, danh mục, tri thức, bệnh nhân,
-lượt khám các ngày trước và hàng đợi hôm nay. Chạy lại an toàn: phần nào đã có thì bỏ qua.
-
-Chạy trong container api (service seed của compose eval tự chạy mỗi lần bật):
-    python -m scripts.seed_eval
-    python -m scripts.seed_eval --skip-knowledge    # tri thức đã nạp bằng import_okf
-Mật khẩu chung của các tài khoản lấy từ biến EVAL_PASSWORD. Không dùng cho phòng khám thật.
+lượt khám các ngày trước và hàng đợi hôm nay. Chạy lại an toàn; mật khẩu chung lấy từ EVAL_PASSWORD.
+Không dùng cho phòng khám thật. Cách chạy: server/README.md mục 6.
 """
+
 import argparse
 import asyncio
 import datetime
@@ -27,8 +24,18 @@ from app.schemas.patient import PatientCreate
 from app.schemas.prescription import PrescriptionDraft
 from app.schemas.visit import ReferralIn, VisitCreate
 from app.schemas.visit_symptom import SymptomsPut
-from app.services import (ai_queue_service, audit_service as audit, billing_service, emr_service,
-                          inventory_service, prescription_service, queue_service, symptom_service)
+from app.services import (
+    ai_queue_service,
+    billing_service,
+    emr_service,
+    inventory_service,
+    prescription_service,
+    queue_service,
+    symptom_service,
+)
+from app.services import (
+    audit_service as audit,
+)
 from app.services.knowledge_reader import DbKnowledgeReader
 from app.worker.runner import DisabledLLMClient, process_one
 
@@ -46,9 +53,15 @@ ACCOUNTS = [  # username, họ tên, vai trò, mã phòng
 # Thuốc kê cho lượt khám mẫu theo nhóm bệnh: (tên thương mại, liều, số lần, số ngày, số lượng)
 RX_BY_GROUP = {
     "ent": [("Zinnat 500", "1 viên", "2 lần/ngày sau ăn", 7, 14), ("Panadol", "1 viên", "Khi sốt > 38,5°C", 3, 6)],
-    "infectious": [("Panadol", "1 viên", "3 lần/ngày khi sốt", 3, 9), ("Oresol 245", "1 gói", "Pha 200 ml, uống trong ngày", 3, 6)],
+    "infectious": [
+        ("Panadol", "1 viên", "3 lần/ngày khi sốt", 3, 9),
+        ("Oresol 245", "1 gói", "Pha 200 ml, uống trong ngày", 3, 6),
+    ],
     "respiratory": [("Amoxicilin 500", "1 viên", "3 lần/ngày", 7, 21), ("Acemuc 200", "1 gói", "3 lần/ngày", 5, 15)],
-    "musculoskeletal": [("Mobic 7.5", "1 viên", "1 lần/ngày sau ăn", 7, 7), ("Omeprazol 20", "1 viên", "Sáng trước ăn", 7, 7)],
+    "musculoskeletal": [
+        ("Mobic 7.5", "1 viên", "1 lần/ngày sau ăn", 7, 7),
+        ("Omeprazol 20", "1 viên", "Sáng trước ăn", 7, 7),
+    ],
     "dermatology": [("Clarityne", "1 viên", "Tối 1 viên", 10, 10), ("Canesten 1%", "Bôi mỏng", "2 lần/ngày", 14, 1)],
     "ophthalmology": [("Clarityne", "1 viên", "Tối 1 viên", 7, 7), ("Vitamin C 500", "1 viên", "Sáng 1 viên", 10, 10)],
 }
@@ -57,13 +70,19 @@ DEFAULT_RX = [("Panadol", "1 viên", "Khi đau, cách 6 giờ", 3, 6)]
 # Hàng đợi hôm nay: (loại ca, số ca, trạng thái cuối)
 # Ca đã khám xong đứng trước để có số thứ tự nhỏ; đánh giá của chúng chạy ngay trong script (_rule_only_now).
 TODAY_PLAN = [
-    ("typical", 1, "Finished"), ("typical", 1, "Prescribed"), ("typical", 1, "Examining"),
-    ("red_flag", 2, "CheckedIn"), ("priority_floor", 2, "CheckedIn"), ("typical", 3, "CheckedIn"),
-    ("priority_floor", 1, "Waiting"), ("ambiguous", 2, "Waiting"), ("typical", 2, "Waiting"),
+    ("typical", 1, "Finished"),
+    ("typical", 1, "Prescribed"),
+    ("typical", 1, "Examining"),
+    ("red_flag", 2, "CheckedIn"),
+    ("priority_floor", 2, "CheckedIn"),
+    ("typical", 3, "CheckedIn"),
+    ("priority_floor", 1, "Waiting"),
+    ("ambiguous", 2, "Waiting"),
+    ("typical", 2, "Waiting"),
 ]
 HISTORY_DAYS = 10
 HISTORY_PER_DAY = 3
-RETURNING = 4                    # bệnh nhân trong hàng đợi hôm nay có thêm một lượt khám cũ
+RETURNING = 4  # bệnh nhân trong hàng đợi hôm nay có thêm một lượt khám cũ
 
 
 def load_cases(path: Path) -> list[dict]:
@@ -74,7 +93,7 @@ def _phone(i: int) -> str:
     return f"09{(35_000_000 + i * 7_919) % 100_000_000:08d}"
 
 
-# ------------------------------------------------------------------------------------------- nền
+# --- Nền ------------------------------------------------------------------------------------------
 def seed_accounts(db, password: str) -> dict[str, User]:
     pw_hash = hash_password(password)
     rooms = {r.code: r.room_id for r in db.scalars(select(Room))}
@@ -84,12 +103,23 @@ def seed_accounts(db, password: str) -> dict[str, User]:
         user = db.scalar(select(User).where(User.username == username))
         if user is None:
             room_id = rooms.get(room)
-            user = User(username=username, password_hash=pw_hash, full_name=name, role=role,
-                        room_id=None if room_id in taken else room_id)
+            user = User(
+                username=username,
+                password_hash=pw_hash,
+                full_name=name,
+                role=role,
+                room_id=None if room_id in taken else room_id,
+            )
             db.add(user)
             db.flush()
-            audit.record(db, action="CREATE", entity="users", entity_id=user.user_id, actor_id=SYSTEM_USER_ID,
-                         new_values={"username": username, "role": role, "source": "scripts.seed_eval"})
+            audit.record(
+                db,
+                action="CREATE",
+                entity="users",
+                entity_id=user.user_id,
+                actor_id=SYSTEM_USER_ID,
+                new_values={"username": username, "role": role, "source": "scripts.seed_eval"},
+            )
         out[username] = user
     db.commit()
     return out
@@ -108,6 +138,7 @@ def _run(main, *argv: str) -> None:
 
 def seed_catalogs(knowledge_dir: Path | None, approver: str) -> None:
     from scripts import import_okf, seed_drugs, seed_referral_facilities, seed_services
+
     _run(seed_drugs.main)
     _run(seed_services.main)
     _run(seed_referral_facilities.main)
@@ -123,36 +154,52 @@ def seed_stock_alerts(db, today: datetime.date) -> None:
     for drug in drugs[5:8]:
         number = f"EVAL-NEAR-{str(drug.drug_id)[:6].upper()}"
         if not db.scalar(select(InventoryBatch.batch_id).where(InventoryBatch.batch_number == number)):
-            inventory_service.create_batch(db, BatchCreate(
-                drug_id=drug.drug_id, batch_number=number, expiry_date=today + datetime.timedelta(days=20),
-                quantity=30, import_price=Decimal(1000)), system)
+            inventory_service.create_batch(
+                db,
+                BatchCreate(
+                    drug_id=drug.drug_id,
+                    batch_number=number,
+                    expiry_date=today + datetime.timedelta(days=20),
+                    quantity=30,
+                    import_price=Decimal(1000),
+                ),
+                system,
+            )
     for drug in drugs[10:13]:
         drug.reorder_level = 5000
     db.commit()
 
 
-# ------------------------------------------------------------------------------------- lượt khám
+# --- Lượt khám ------------------------------------------------------------------------------------
 class Flow:
     def __init__(self, db, users: dict[str, User], reader):
         self.db, self.users, self.reader = db, users, reader
         self.nurse = users["letan01"]
-        self.conditions = {c.condition_code: c for c in db.scalars(select(Condition).where(Condition.status == "Active"))}
+        self.conditions = {
+            c.condition_code: c for c in db.scalars(select(Condition).where(Condition.status == "Active"))
+        }
         self.drugs = {d.trade_name: d for d in db.scalars(select(Drug).where(Drug.is_active.is_(True)))}
 
     def patient(self, case: dict, idx: int):
         p = case["patient"]
-        found = self.db.scalar(select(Patient).where(Patient.full_name == p["full_name"],
-                                                     Patient.date_of_birth == datetime.date.fromisoformat(p["date_of_birth"])))
+        found = self.db.scalar(
+            select(Patient).where(
+                Patient.full_name == p["full_name"],
+                Patient.date_of_birth == datetime.date.fromisoformat(p["date_of_birth"]),
+            )
+        )
         if found:
             return found
         data = {k: v for k, v in p.items() if v is not None}
-        return emr_service.create_patient(self.db, PatientCreate(phone=_phone(idx), confirm_duplicate=True, **data),
-                                          self.nurse)
+        return emr_service.create_patient(
+            self.db, PatientCreate(phone=_phone(idx), confirm_duplicate=True, **data), self.nurse
+        )
 
     def intake(self, case: dict, idx: int, check_in: bool) -> Visit:
         patient = self.patient(case, idx)
-        visit = queue_service.create_visit(self.db, VisitCreate(patient_id=patient.patient_id, **case["visit"]),
-                                           self.nurse)
+        visit = queue_service.create_visit(
+            self.db, VisitCreate(patient_id=patient.patient_id, **case["visit"]), self.nurse
+        )
         symptoms = [{"symptom_code": k, "state": v} for k, v in case["symptoms"].items()]
         symptom_service.put_symptoms(self.db, visit.visit_id, SymptomsPut(symptoms=symptoms), self.nurse)
         ai_queue_service.enqueue_assessment(self.db, visit.visit_id, self.nurse, self.reader)
@@ -166,15 +213,25 @@ class Flow:
         for trade, dosage, freq, days, qty in RX_BY_GROUP.get(cond.disease_group if cond else "", DEFAULT_RX):
             drug = self.drugs.get(trade)
             if drug:
-                out.append({"drug_id": drug.drug_id, "dosage": dosage, "frequency": freq, "duration_days": days,
-                            "quantity": qty})
+                out.append(
+                    {
+                        "drug_id": drug.drug_id,
+                        "dosage": dosage,
+                        "frequency": freq,
+                        "duration_days": days,
+                        "quantity": qty,
+                    }
+                )
         return out
 
     def examine(self, visit: Visit, case: dict, doctor: User) -> None:
         queue_service.start_exam(self.db, visit.visit_id, doctor)
         cond = self.conditions.get(case.get("condition_code") or "")
-        dx = (DiagnosisCreate(condition_code=cond.condition_code) if cond
-              else DiagnosisCreate(diagnosis_name=case["visit"]["chief_complaint"][:255]))
+        dx = (
+            DiagnosisCreate(condition_code=cond.condition_code)
+            if cond
+            else DiagnosisCreate(diagnosis_name=case["visit"]["chief_complaint"][:255])
+        )
         prescription_service.add_diagnosis(self.db, visit.visit_id, dx, doctor)
 
     def prescribe(self, visit: Visit, case: dict, doctor: User) -> None:
@@ -191,20 +248,35 @@ class Flow:
 
     def refer(self, visit: Visit, case: dict, doctor: User) -> None:
         queue_service.start_exam(self.db, visit.visit_id, doctor)
-        queue_service.refer(self.db, visit.visit_id, ReferralIn(
-            facility_name="Bệnh viện Đà Nẵng", reason="Cần chuyên khoa và cận lâm sàng tuyến trên",
-            diagnosis=case["visit"]["chief_complaint"][:500], transport="Family"), doctor)
+        queue_service.refer(
+            self.db,
+            visit.visit_id,
+            ReferralIn(
+                facility_name="Bệnh viện Đà Nẵng",
+                reason="Cần chuyên khoa và cận lâm sàng tuyến trên",
+                diagnosis=case["visit"]["chief_complaint"][:500],
+                transport="Family",
+            ),
+            doctor,
+        )
 
 
-# --------------------------------------------------------------------------------- dời ngày cũ
+# --- Dời ngày cũ ----------------------------------------------------------------------------------
 # Mốc lệch thêm (phút) sau giờ tiếp đón, để một lượt khám cũ trông như diễn ra trong khoảng 1 giờ.
 _EXTRA = {
-    ("visit", "checked_in_at"): 5, ("visit", "exam_started_at"): 20, ("visit", "finished_at"): 50,
-    ("visit", "updated_at"): 50, ("visit_symptom", "confirmed_at"): 2, ("ai_assessment_log", "*"): 3,
-    ("diagnosis", "*"): 30, ("prescription", "*"): 32,
-    ("invoice", "created_at"): 33, ("invoice", "paid_at"): 50, ("prescription_item", "dispensed_at"): 48,
+    ("visit", "checked_in_at"): 5,
+    ("visit", "exam_started_at"): 20,
+    ("visit", "finished_at"): 50,
+    ("visit", "updated_at"): 50,
+    ("visit_symptom", "confirmed_at"): 2,
+    ("ai_assessment_log", "*"): 3,
+    ("diagnosis", "*"): 30,
+    ("prescription", "*"): 32,
+    ("invoice", "created_at"): 33,
+    ("invoice", "paid_at"): 50,
+    ("prescription_item", "dispensed_at"): 48,
 }
-_TABLES = {   # bảng -> điều kiện chọn các dòng thuộc lượt khám
+_TABLES = {  # bảng -> điều kiện chọn các dòng thuộc lượt khám
     "visit": "visit_id = :v",
     "visit_symptom": "visit_id = :v",
     "ai_assessment_log": "visit_id = :v",
@@ -220,9 +292,13 @@ def backdate(db, visit_id, at: datetime.datetime, queue_number: int) -> None:
     nên giữ giờ thật lúc nạp."""
     created = db.scalar(select(Visit.created_at).where(Visit.visit_id == visit_id))
     delta = at - created
-    cols = db.execute(text("SELECT table_name, column_name FROM information_schema.columns WHERE table_schema = "
-                           "'public' AND data_type = 'timestamp with time zone' AND table_name = ANY(:t)"),
-                      {"t": list(_TABLES)}).all()
+    cols = db.execute(
+        text(
+            "SELECT table_name, column_name FROM information_schema.columns WHERE table_schema = "
+            "'public' AND data_type = 'timestamp with time zone' AND table_name = ANY(:t)"
+        ),
+        {"t": list(_TABLES)},
+    ).all()
     for table, where in _TABLES.items():
         sets = []
         for t, col in cols:
@@ -232,22 +308,30 @@ def backdate(db, visit_id, at: datetime.datetime, queue_number: int) -> None:
             sets.append(f"{col} = {col} + make_interval(secs => :d) + make_interval(mins => {extra})")
         if table == "visit":
             sets += ["queue_date = (:at)::date", "queue_number = :n"]
-        db.execute(text(f"UPDATE {table} SET {', '.join(sets)} WHERE {where}"),
-                   {"d": delta.total_seconds(), "v": visit_id, "at": at.date(), "n": queue_number})
+        db.execute(
+            text(f"UPDATE {table} SET {', '.join(sets)} WHERE {where}"),
+            {"d": delta.total_seconds(), "v": visit_id, "at": at.date(), "n": queue_number},
+        )
     prefix = f"HD-{at:%Y%m%d}-"
     seq = db.scalar(text("SELECT count(*) FROM invoice WHERE invoice_code LIKE :p"), {"p": prefix + "%"})
-    for i, inv_id in enumerate(db.scalars(text("SELECT invoice_id FROM invoice WHERE visit_id = :v ORDER BY created_at"),
-                                          {"v": visit_id})):
-        db.execute(text("UPDATE invoice SET invoice_code = :c WHERE invoice_id = :i"),
-                   {"c": f"{prefix}{seq + i + 1:04d}", "i": inv_id})
+    for i, inv_id in enumerate(
+        db.scalars(text("SELECT invoice_id FROM invoice WHERE visit_id = :v ORDER BY created_at"), {"v": visit_id})
+    ):
+        db.execute(
+            text("UPDATE invoice SET invoice_code = :c WHERE invoice_id = :i"),
+            {"c": f"{prefix}{seq + i + 1:04d}", "i": inv_id},
+        )
 
 
 def _rule_only_now(flow: "Flow", visit_id) -> None:
     """Lượt khám đã xử lý xong trong script: chạy đánh giá ngay trong tiến trình, không gọi LLM, để có gợi ý theo
     luật trước khi bác sĩ chẩn đoán. Việc cũ hơn còn trong hàng đợi (nếu có) cũng được xử lý theo thứ tự."""
     flow.db.commit()
-    pending = select(func.count()).select_from(AiAssessmentLog).where(
-        AiAssessmentLog.visit_id == visit_id, AiAssessmentLog.status.in_(("Queued", "Running")))
+    pending = (
+        select(func.count())
+        .select_from(AiAssessmentLog)
+        .where(AiAssessmentLog.visit_id == visit_id, AiAssessmentLog.status.in_(("Queued", "Running")))
+    )
     for _ in range(500):
         if not flow.db.scalar(pending) or not asyncio.run(process_one(flow.reader, DisabledLLMClient(), None)):
             break
@@ -258,9 +342,9 @@ def seed_history(flow: Flow, cases: list[dict], today: datetime.date, now: datet
     db = flow.db
     doctors = [flow.users["bs01"], flow.users["bs02"]]
     typical = [c for c in cases if c["category"] in ("typical", "variant")]
-    today_typical = typical[:sum(n for cat, n, _ in TODAY_PLAN if cat == "typical")]
-    pool = typical[len(today_typical):]
-    plan = []                                          # (ngày lùi, ca, kết cục)
+    today_typical = typical[: sum(n for cat, n, _ in TODAY_PLAN if cat == "typical")]
+    pool = typical[len(today_typical) :]
+    plan = []  # (ngày lùi, ca, kết cục)
     for d in range(1, HISTORY_DAYS + 1):
         for k in range(HISTORY_PER_DAY):
             case = pool[((d - 1) * HISTORY_PER_DAY + k) % len(pool)]
@@ -284,7 +368,8 @@ def seed_history(flow: Flow, cases: list[dict], today: datetime.date, now: datet
         day = today - datetime.timedelta(days=days_ago)
         counters[day] = counters.get(day, 0) + 1
         at = datetime.datetime.combine(day, datetime.time(7, 30), now.tzinfo) + datetime.timedelta(
-            minutes=40 * counters[day])
+            minutes=40 * counters[day]
+        )
         backdate(db, visit.visit_id, at, counters[day])
         db.commit()
     return len(plan)
@@ -320,7 +405,7 @@ def seed_today(flow: Flow, cases: list[dict]) -> int:
     return n
 
 
-# ------------------------------------------------------------------------------------------ main
+# --- Main -----------------------------------------------------------------------------------------
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description="Nạp dữ liệu môi trường kiểm thử MedAssist")
     ap.add_argument("--cases", type=Path, default=DEFAULT_CASES)
@@ -352,8 +437,10 @@ def main(argv: list[str] | None = None) -> int:
         has_today = db.scalar(select(Visit.visit_id).where(Visit.queue_date == today).limit(1))
         made_history = 0 if has_history else seed_history(flow, cases, today, now)
         made_today = 0 if has_today else seed_today(flow, cases)
-    print(f"Tài khoản: {', '.join(u for u, *_ in ACCOUNTS)} (mật khẩu chung trong EVAL_PASSWORD). "
-          f"Lượt khám cũ mới tạo: {made_history}; hàng đợi hôm nay mới tạo: {made_today}.")
+    print(
+        f"Tài khoản: {', '.join(u for u, *_ in ACCOUNTS)} (mật khẩu chung trong EVAL_PASSWORD). "
+        f"Lượt khám cũ mới tạo: {made_history}; hàng đợi hôm nay mới tạo: {made_today}."
+    )
     return 0
 
 

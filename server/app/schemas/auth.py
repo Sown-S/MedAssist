@@ -17,9 +17,9 @@ class RefreshRequest(BaseModel):
 class TokenResponse(BaseModel):
     access_token: str
     token_type: str = "bearer"
-    expires_in: int              # giây
+    expires_in: int  # giây
     refresh_token: str
-    refresh_expires_in: int      # giây
+    refresh_expires_in: int  # giây
     role: str
 
 
@@ -43,8 +43,16 @@ class UserMe(BaseModel):
     room_name: str | None = None
 
 
+class ClientConfig(BaseModel):
+    """Cấu hình dùng chung mọi máy client: thông tin phòng khám in trên phiếu, thời gian tự đăng xuất."""
+
+    clinic: dict
+    idle_logout_minutes: int
+
+
 class PasswordPolicy(BaseModel):
     """Chính sách mật khẩu và khóa đăng nhập server đang áp dụng (client hiển thị chỉ đọc)."""
+
     min_length: int
     require_letters_and_digits: bool
     max_failed_attempts: int

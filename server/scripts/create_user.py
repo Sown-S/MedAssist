@@ -1,10 +1,7 @@
-"""Tạo tài khoản nhân viên từ dòng lệnh (dùng để tạo Admin đầu tiên).
-
-Chạy trong server/:
-    python -m scripts.create_user --username admin --full-name "Quản trị viên" --role Admin
-Mật khẩu nhập ẩn (không hiện, không lưu vào lịch sử lệnh). Dòng audit ghi người thực hiện
-là tài khoản 'system', vì script không có người đăng nhập.
+"""Tạo tài khoản nhân viên từ dòng lệnh (tạo Admin đầu tiên). Cách chạy: server/README.md mục 2.6.
+Mật khẩu nhập ẩn, không lưu vào lịch sử lệnh; dòng audit ghi người thực hiện là tài khoản 'system'.
 """
+
 import argparse
 import getpass
 import sys
@@ -44,14 +41,29 @@ def main() -> int:
         if db.scalar(select(User).where(User.username == args.username)):
             print(f"Tên đăng nhập '{args.username}' đã tồn tại.", file=sys.stderr)
             return 1
-        user = User(username=args.username, password_hash=pw_hash, full_name=args.full_name,
-                    role=args.role, email=args.email, phone=args.phone)
+        user = User(
+            username=args.username,
+            password_hash=pw_hash,
+            full_name=args.full_name,
+            role=args.role,
+            email=args.email,
+            phone=args.phone,
+        )
         db.add(user)
         db.flush()
-        audit.record(db, action="CREATE", entity="users", entity_id=user.user_id,
-                     actor_id=SYSTEM_USER_ID,
-                     new_values={"username": user.username, "role": user.role,
-                                 "full_name": user.full_name, "source": "scripts.create_user"})
+        audit.record(
+            db,
+            action="CREATE",
+            entity="users",
+            entity_id=user.user_id,
+            actor_id=SYSTEM_USER_ID,
+            new_values={
+                "username": user.username,
+                "role": user.role,
+                "full_name": user.full_name,
+                "source": "scripts.create_user",
+            },
+        )
         db.commit()
         print(f"Đã tạo {user.role} '{user.username}' ({user.user_id}).")
     return 0

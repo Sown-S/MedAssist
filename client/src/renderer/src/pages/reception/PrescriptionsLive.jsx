@@ -6,10 +6,10 @@ import { canRecall, recallVisit } from '../../api/queueStore'
 import { useAuth } from '../../context/AuthContext'
 import { useToast } from '../../context/ToastContext'
 import { printHtml, esc } from '../admin/inventory/shared'
-import { fold } from '../../api/patient'
 import { ticketNo } from '../../components/queuePrint'
 import PeriodPicker from './PeriodPicker'
-import { fmt, hhmm, dmy, ymd, periodRange, periodLabel, PAY_STATUS } from './shared'
+import { hhmm, dmy, periodRange, periodLabel, PAY_STATUS } from './shared'
+import { money, fold, ymd } from '../../utils/format'
 
 const STATUS_FILTERS = [
   { key: '', label: 'All payment statuses' },
@@ -64,13 +64,13 @@ export default function PrescriptionsLive({ initialDoctorId = '', initialDoctorN
         (r) =>
           `<tr><td>${esc(when(r))}</td><td>${esc(r.name)}<br><small>${esc(r.patientId)}</small></td><td>${esc(r.doctor)}</td><td>${esc(
             r.rx.map((x) => `${x.name} × ${x.qty}`).join(', ')
-          )}</td><td>${esc(t(PAY_STATUS[r.pay].label))}</td><td class="num">${fmt(r.amount)}</td></tr>`
+          )}</td><td>${esc(t(PAY_STATUS[r.pay].label))}</td><td class="num">${money(r.amount)}</td></tr>`
       )
       .join('')
     printHtml(
       t('Prescription list'),
       `<h1>${esc(t('Prescription list'))} — ${esc(t(periodLabel(period, date)))}</h1>
-      <p class="meta">${esc(t('Prescriptions'))}: <b>${list.length}</b> · ${esc(t('Invoice total'))}: <b>${fmt(value)}</b></p>
+      <p class="meta">${esc(t('Prescriptions'))}: <b>${list.length}</b> · ${esc(t('Invoice total'))}: <b>${money(value)}</b></p>
       <table><thead><tr><th>${esc(t('Prescribed'))}</th><th>${esc(t('Patient'))}</th><th>${esc(t('Doctor'))}</th><th>${esc(t('Medicines'))}</th><th>${esc(
         t('Payment')
       )}</th><th class="num">${esc(t('Amount'))}</th></tr></thead><tbody>${rows}</tbody></table>`,
@@ -94,7 +94,7 @@ export default function PrescriptionsLive({ initialDoctorId = '', initialDoctorN
           <span className="lbl">Not paid</span>
         </button>
         <div className="inv-stat static">
-          <span className="val mono">{fmt(value)}</span>
+          <span className="val mono">{money(value)}</span>
           <span className="lbl">Invoice total</span>
         </div>
       </div>
@@ -157,7 +157,7 @@ export default function PrescriptionsLive({ initialDoctorId = '', initialDoctorN
                     {r.rx.map((x) => x.name).join(', ')}
                   </td>
                   <td className="mono">{when(r)}</td>
-                  <td className="num mono">{fmt(r.amount)}</td>
+                  <td className="num mono">{money(r.amount)}</td>
                   <td>
                     <span className={'badge ' + PAY_STATUS[r.pay].cls}>{PAY_STATUS[r.pay].label}</span>
                   </td>

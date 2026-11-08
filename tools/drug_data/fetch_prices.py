@@ -1,27 +1,8 @@
-"""Tham khảo giá bán lẻ công khai (Nhà thuốc Long Châu, Pharmacity) cho data/drugs.csv — BÁN TỰ ĐỘNG.
-
-Chạy trong tools/:
-    python -m drug_data.fetch_prices refresh                 # CÁCH DÙNG CHÍNH: đọc giá từ product_url dán tay
-    python -m drug_data.fetch_prices search [--auto] [--only-missing] [--limit 20]   # xem TRẠNG THÁI bên dưới
-
-TRẠNG THÁI (18/10/2026, đã thử trên trang thật): 'search' KHÔNG tìm được sản phẩm —
-  * Long Châu: robots.txt không cho công cụ tự động truy cập trang tìm kiếm (/tim-kiem) -> script dừng đúng quy định.
-  * Pharmacity: trang tìm kiếm chỉ là khung Next.js, kết quả tải bằng JavaScript sau khi mở trang -> HTML thô
-    không có sản phẩm. Không gọi API nội bộ, không dùng trình duyệt tự động (quyết định của nhóm).
-  => Thuốc chưa có giá: python -m drug_data.estimate_prices. Cần giá thật cho thuốc nào: mở trang sản phẩm trên
-     trình duyệt, dán đường dẫn vào cột product_url của output/price_review.csv (thêm dòng: generic_name,
-     trade_name, strength như drugs.csv), chạy 'refresh', duyệt (cột duyet = x), rồi 'apply'.
-    python -m drug_data.fetch_prices apply                   # ghi các dòng đã duyệt (cột duyet = x) vào drugs.csv
-
---auto: giá có ĐỘ TIN CẬY CAO được ghi thẳng vào server/data/drugs.csv (duyet = auto); còn lại vào
-output/price_review.csv để duyệt tay. Độ tin cậy cao = tên thuốc + hàm lượng khớp tên sản phẩm, quy được ra
-giá/đơn vị, giá đọc từ JSON-LD hoặc thẻ meta, và nếu cả hai trang có giá thì chênh lệch <= 30%.
-
-Nguyên tắc thu thập: chỉ đọc giá hiển thị công khai; đọc robots.txt và DỪNG với trang không cho phép;
-User-Agent khai báo rõ (không giả trình duyệt); giãn cách mặc định 3 giây/lần; lưu mọi trang đã tải
-(data/sources/prices/cache) làm minh chứng. Đọc điều khoản sử dụng của từng trang trước khi chạy.
-Giao diện các trang có thể thay đổi: SITES bên dưới là cấu hình mặc định, sửa được qua tham số dòng lệnh.
+"""Tham khảo giá bán lẻ công khai (Long Châu, Pharmacity) cho server/data/drugs.csv, bán tự động.
+Tôn trọng robots.txt, User-Agent rõ ràng, giãn cách 3 giây, lưu mọi trang đã tải làm minh chứng.
+Cách chạy, trạng thái, tiêu chí --auto: tools/drug_data/README.md mục "Giá tham khảo".
 """
+
 import argparse
 import hashlib
 import html
@@ -38,26 +19,53 @@ from urllib.robotparser import RobotFileParser
 
 from drug_data.tt19_catalog import DRUGS_CSV, OUTPUT_DIR, TOOL_DIR, _numbers, read_csv, strip_accents, write_csv
 
-DATA_DIR = TOOL_DIR                                   # đường dẫn cache_file trong file duyệt tính từ đây
+DATA_DIR = TOOL_DIR  # đường dẫn cache_file trong file duyệt tính từ đây
 PRICE_DIR = TOOL_DIR / "sources" / "prices"
 CACHE_DIR = PRICE_DIR / "cache"
 APPROVED_DIR = PRICE_DIR / "approved"
 REVIEW_CSV = OUTPUT_DIR / "price_review.csv"
-AUTO_MAX_SPREAD = Decimal("1.30")                     # hai trang lệch nhau quá 30% -> phải duyệt tay
+AUTO_MAX_SPREAD = Decimal("1.30")  # hai trang lệch nhau quá 30% -> phải duyệt tay
 
 SITES = {
-    "longchau": {"name": "Nhà thuốc Long Châu", "base": "https://nhathuoclongchau.com.vn",
-                 "search": "/tim-kiem?s={q}", "product_re": r'href="((?:https://nhathuoclongchau\.com\.vn)?/thuoc/[^"#?]+\.html)"'},
-    "pharmacity": {"name": "Pharmacity", "base": "https://www.pharmacity.vn",
-                   "search": "/search?keyword={q}", "product_re": r'href="((?:https://www\.pharmacity\.vn)?/[a-z0-9-]+\.html)"'},
+    "longchau": {
+        "name": "Nhà thuốc Long Châu",
+        "base": "https://nhathuoclongchau.com.vn",
+        "search": "/tim-kiem?s={q}",
+        "product_re": r'href="((?:https://nhathuoclongchau\.com\.vn)?/thuoc/[^"#?]+\.html)"',
+    },
+    "pharmacity": {
+        "name": "Pharmacity",
+        "base": "https://www.pharmacity.vn",
+        "search": "/search?keyword={q}",
+        "product_re": r'href="((?:https://www\.pharmacity\.vn)?/[a-z0-9-]+\.html)"',
+    },
 }
-REVIEW_FIELDS = ["duyet", "gia_ban_duyet", "generic_name", "trade_name", "strength", "dosage_form", "unit",
-                 "gia_hien_tai", "site", "query", "product_name", "product_url", "retrieved_at", "listed_price",
-                 "pack_text", "units_per_pack", "price_per_unit", "match_score", "note", "cache_file"]
+REVIEW_FIELDS = [
+    "duyet",
+    "gia_ban_duyet",
+    "generic_name",
+    "trade_name",
+    "strength",
+    "dosage_form",
+    "unit",
+    "gia_hien_tai",
+    "site",
+    "query",
+    "product_name",
+    "product_url",
+    "retrieved_at",
+    "listed_price",
+    "pack_text",
+    "units_per_pack",
+    "price_per_unit",
+    "match_score",
+    "note",
+    "cache_file",
+]
 PRODUCTS_PER_QUERY = 3
 
 
-# ============================================================================ HTTP lịch sự
+# --- HTTP lịch sự ---------------------------------------------------------------------------------
 class PoliteClient:
     def __init__(self, client, contact: str, delay: float):
         self.client, self.delay, self._last = client, delay, 0.0
@@ -71,9 +79,9 @@ class PoliteClient:
             try:
                 r = self._get(root + "/robots.txt")
                 if r.status_code >= 500:
-                    rp = None                                     # không đọc được robots: không thu thập
+                    rp = None  # không đọc được robots: không thu thập
                 elif r.status_code >= 400:
-                    rp.parse([])                                  # không có robots.txt: được phép
+                    rp.parse([])  # không có robots.txt: được phép
                 else:
                     rp.parse(r.text.splitlines())
             except Exception:
@@ -110,7 +118,7 @@ def _now() -> str:
     return datetime.now(timezone.utc).isoformat(timespec="seconds")
 
 
-# ============================================================================ đọc trang sản phẩm
+# --- Đọc trang sản phẩm ---------------------------------------------------------------------------
 def _walk(obj):
     if isinstance(obj, dict):
         yield obj
@@ -135,19 +143,31 @@ def parse_product(page: str) -> dict:
                 offer = offers[0] if isinstance(offers, list) else offers
                 price = offer.get("price") or offer.get("lowPrice")
                 if price not in (None, ""):
-                    return {"name": _txt(node.get("name")), "price": Decimal(str(price)), "how": "json-ld",
-                            "description": _txt(node.get("description"))}
+                    return {
+                        "name": _txt(node.get("name")),
+                        "price": Decimal(str(price)),
+                        "how": "json-ld",
+                        "description": _txt(node.get("description")),
+                    }
     meta_price = re.search(r'<meta[^>]+property="product:price:amount"[^>]+content="([\d.]+)"', page, re.I)
     title = re.search(r'<meta[^>]+property="og:title"[^>]+content="([^"]+)"', page, re.I)
     if meta_price:
-        return {"name": _txt(title.group(1) if title else ""), "price": Decimal(meta_price.group(1)), "how": "meta",
-                "description": ""}
+        return {
+            "name": _txt(title.group(1) if title else ""),
+            "price": Decimal(meta_price.group(1)),
+            "how": "meta",
+            "description": "",
+        }
     nd = re.search(r'<script id="__NEXT_DATA__"[^>]*>(.*?)</script>', page, re.S)
     if nd:
         m = re.search(r'"price"\s*:\s*(\d{3,9})', nd.group(1))
         if m:
-            return {"name": _txt(title.group(1) if title else ""), "price": Decimal(m.group(1)),
-                    "how": "next-data (độ tin cậy thấp)", "description": ""}
+            return {
+                "name": _txt(title.group(1) if title else ""),
+                "price": Decimal(m.group(1)),
+                "how": "next-data (độ tin cậy thấp)",
+                "description": "",
+            }
     return {}
 
 
@@ -159,7 +179,12 @@ _PACK_PATTERNS = [
     (re.compile(r"(?:hộp|hop)\s*(\d+)\s*(?:vỉ|vi|túi|tui)\s*x\s*(\d+)\s*(viên|vien|gói|goi|ống|ong)", re.I), "a*b"),
     (re.compile(r"(?:hộp|hop)\s*(\d+)\s*(viên|vien|gói|goi|ống|ong|chai|lọ|lo|tuýp|tuyp)", re.I), "a"),
     (re.compile(r"(?:vỉ|vi)\s*(\d+)\s*(viên|vien)", re.I), "a"),
-    (re.compile(r"(chai|lọ|lo|tuýp|tuyp|bình|binh|ống xịt|bình xịt)\s*(?:x\s*)?\d+(?:[.,]\d+)?\s*(?:ml|g|liều|lieu)", re.I), "1"),
+    (
+        re.compile(
+            r"(chai|lọ|lo|tuýp|tuyp|bình|binh|ống xịt|bình xịt)\s*(?:x\s*)?\d+(?:[.,]\d+)?\s*(?:ml|g|liều|lieu)", re.I
+        ),
+        "1",
+    ),
 ]
 _UNIT_ALIASES = {"vien": "viên", "goi": "gói", "ong": "ống", "lo": "lọ", "tuyp": "tuýp", "binh": "bình"}
 
@@ -185,7 +210,8 @@ def per_unit_price(listed: Decimal, units: int | None, pack_unit: str, our_unit:
     if units is None:
         return None
     same = strip_accents(pack_unit) == strip_accents(our_unit) or (
-        units == 1 and strip_accents(our_unit) in {"chai", "lo", "tuyp", "binh"})
+        units == 1 and strip_accents(our_unit) in {"chai", "lo", "tuyp", "binh"}
+    )
     if not same:
         return None
     return (listed / units).quantize(Decimal("1"), rounding=ROUND_HALF_UP)
@@ -209,7 +235,7 @@ def match_score(drug: dict, product_name: str) -> tuple[int, list[str]]:
     return score, notes
 
 
-# ============================================================================ search / refresh / apply
+# --- search / refresh / apply ---------------------------------------------------------------------
 def _query(drug: dict) -> str:
     trade = drug["trade_name"]
     generic_like = strip_accents(trade).startswith(strip_accents(drug["generic_name"].split()[0]))
@@ -218,9 +244,19 @@ def _query(drug: dict) -> str:
 
 def _row_from_product(drug, site, query, url, page, cache_file) -> dict:
     p = parse_product(page)
-    row = {"generic_name": drug["generic_name"], "trade_name": drug["trade_name"], "strength": drug["strength"],
-           "dosage_form": drug["dosage_form"], "unit": drug["unit"], "gia_hien_tai": drug.get("sale_price", ""),
-           "site": site, "query": query, "product_url": url, "retrieved_at": _now(), "cache_file": cache_file}
+    row = {
+        "generic_name": drug["generic_name"],
+        "trade_name": drug["trade_name"],
+        "strength": drug["strength"],
+        "dosage_form": drug["dosage_form"],
+        "unit": drug["unit"],
+        "gia_hien_tai": drug.get("sale_price", ""),
+        "site": site,
+        "query": query,
+        "product_url": url,
+        "retrieved_at": _now(),
+        "cache_file": cache_file,
+    }
     if not p:
         return {**row, "match_score": 0, "note": "không đọc được giá trên trang"}
     pack_text, units, pack_unit = parse_pack(p["name"] + " " + p["description"] + " " + _txt(page)[:20000])
@@ -229,14 +265,24 @@ def _row_from_product(drug, site, query, url, page, cache_file) -> dict:
     if ppu is None:
         notes.append("không quy được ra giá/đơn vị — tự tính và ghi gia_ban_duyet")
     notes.append(f"giá đọc từ {p['how']}")
-    return {**row, "product_name": p["name"], "listed_price": str(p["price"].normalize()), "pack_text": pack_text,
-            "units_per_pack": units or "", "price_per_unit": ppu if ppu is not None else "",
-            "match_score": score, "note": "; ".join(notes)}
+    return {
+        **row,
+        "product_name": p["name"],
+        "listed_price": str(p["price"].normalize()),
+        "pack_text": pack_text,
+        "units_per_pack": units or "",
+        "price_per_unit": ppu if ppu is not None else "",
+        "match_score": score,
+        "note": "; ".join(notes),
+    }
 
 
 def high_confidence(row: dict) -> bool:
-    return (str(row.get("match_score")) == "4" and str(row.get("price_per_unit", "")) not in ("", "None")
-            and "next-data" not in (row.get("note") or ""))
+    return (
+        str(row.get("match_score")) == "4"
+        and str(row.get("price_per_unit", "")) not in ("", "None")
+        and "next-data" not in (row.get("note") or "")
+    )
 
 
 def mark_auto(rows: list[dict]) -> Decimal | None:
@@ -251,8 +297,10 @@ def mark_auto(rows: list[dict]) -> Decimal | None:
             r["note"] = (r.get("note") or "") + "; các trang lệch nhau > 30% — duyệt tay"
         return None
     avg = sum(prices) / len(prices)
-    price = (avg / 100).quantize(Decimal("1"), rounding=ROUND_HALF_UP) * 100 if avg >= 1000 else avg.quantize(Decimal("1"))
-    best = max(good, key=lambda r: r["site"] == "longchau")      # giữ 1 dòng làm minh chứng chính
+    price = (
+        (avg / 100).quantize(Decimal("1"), rounding=ROUND_HALF_UP) * 100 if avg >= 1000 else avg.quantize(Decimal("1"))
+    )
+    best = max(good, key=lambda r: r["site"] == "longchau")  # giữ 1 dòng làm minh chứng chính
     best.update(duyet="auto", gia_ban_duyet=str(price))
     if len(good) > 1:
         best["note"] = (best.get("note") or "") + f"; trung bình {len(good)} trang"
@@ -267,9 +315,17 @@ def search(client: PoliteClient, drugs: list[dict], sites: list[str], log=print,
         for key in sites:
             cfg = SITES[key]
             url = cfg["base"] + cfg["search"].format(q=quote_plus(query))
-            base = {"generic_name": drug["generic_name"], "trade_name": drug["trade_name"],
-                    "strength": drug["strength"], "dosage_form": drug["dosage_form"], "unit": drug["unit"],
-                    "gia_hien_tai": drug.get("sale_price", ""), "site": key, "query": query, "match_score": 0}
+            base = {
+                "generic_name": drug["generic_name"],
+                "trade_name": drug["trade_name"],
+                "strength": drug["strength"],
+                "dosage_form": drug["dosage_form"],
+                "unit": drug["unit"],
+                "gia_hien_tai": drug.get("sale_price", ""),
+                "site": key,
+                "query": query,
+                "match_score": 0,
+            }
             try:
                 page, _ = client.fetch(url, key)
             except (PermissionError, RuntimeError) as exc:
@@ -286,8 +342,13 @@ def search(client: PoliteClient, drugs: list[dict], sites: list[str], log=print,
                     continue
                 found.append(_row_from_product(drug, key, query, link, ppage, cache))
             if not found:
-                rows.append({**base, "note": "không tìm thấy sản phẩm — dán product_url bằng tay rồi chạy refresh",
-                             "retrieved_at": _now()})
+                rows.append(
+                    {
+                        **base,
+                        "note": "không tìm thấy sản phẩm — dán product_url bằng tay rồi chạy refresh",
+                        "retrieved_at": _now(),
+                    }
+                )
                 continue
             best = max(found, key=lambda r: int(r["match_score"]))
             rows.append(best)
@@ -341,8 +402,12 @@ def apply(review: list[dict], fields: list[str], drugs: list[dict]) -> tuple[lis
         hit = chosen.get((d["generic_name"], d["trade_name"], d["strength"]))
         if hit:
             price, r = hit
-            d = {**d, "sale_price": str(int(Decimal(price))), "price_source": r.get("product_url", ""),
-                 "price_retrieved_at": (r.get("retrieved_at") or "")[:10]}
+            d = {
+                **d,
+                "sale_price": str(int(Decimal(price))),
+                "price_source": r.get("product_url", ""),
+                "price_retrieved_at": (r.get("retrieved_at") or "")[:10],
+            }
             if r.get("cache_file") and (DATA_DIR / r["cache_file"]).exists():
                 APPROVED_DIR.mkdir(parents=True, exist_ok=True)
                 shutil.copyfile(DATA_DIR / r["cache_file"], APPROVED_DIR / Path(r["cache_file"]).name)
@@ -352,11 +417,12 @@ def apply(review: list[dict], fields: list[str], drugs: list[dict]) -> tuple[lis
     return fields, updated, problems
 
 
-# ============================================================================ CLI
+# --- CLI ------------------------------------------------------------------------------------------
 def _contact(args) -> str:
     if args.contact:
         return args.contact
     from drug_data.tt19_catalog import load_config
+
     return load_config().get("gia", {}).get("email_lien_he", "")
 
 
@@ -393,9 +459,11 @@ def main(argv=None) -> int:
         sites = [s.strip() for s in args.sites.split(",") if s.strip() in SITES]
         targets = [d for d in drugs if not args.only_missing or not d.get("sale_price", "").strip()]
         if args.limit:
-            targets = targets[:args.limit]
-        print("LƯU Ý: 'search' hiện không tìm được sản phẩm (Long Châu chặn bằng robots.txt, Pharmacity hiển thị "
-              "kết quả bằng JavaScript). Dùng estimate_prices, hoặc dán product_url rồi 'refresh'. Vẫn chạy thử...")
+            targets = targets[: args.limit]
+        print(
+            "LƯU Ý: 'search' hiện không tìm được sản phẩm (Long Châu chặn bằng robots.txt, Pharmacity hiển thị "
+            "kết quả bằng JavaScript). Dùng estimate_prices, hoặc dán product_url rồi 'refresh'. Vẫn chạy thử..."
+        )
         print(f"Tra giá {len(targets)} thuốc trên {', '.join(SITES[s]['name'] for s in sites)}...")
         rows = search(_client(args), targets, sites, auto=args.auto)
         if args.auto:

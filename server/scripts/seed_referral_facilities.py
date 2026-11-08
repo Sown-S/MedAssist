@@ -1,10 +1,8 @@
-"""Nạp danh mục cơ sở nhận chuyển tuyến từ server/data/hospitals.csv (tạo bằng tools/hospital_data).
-
+"""Nạp danh mục cơ sở nhận chuyển tuyến từ server/data/hospitals.csv (tạo bằng tools/hospital_data), tài khoản 'system'.
 Định danh theo tỉnh + tên không dấu (uq_referral_facility_identity): chạy lại thì cập nhật, không tạo trùng.
-Ghi nhật ký bằng tài khoản 'system'. Chạy trong server/:
-    python -m scripts.seed_referral_facilities
-    python -m scripts.seed_referral_facilities --deactivate-others   # ngừng dùng cơ sở không còn trong file
+Cách chạy: server/README.md mục 6.
 """
+
 import argparse
 import csv
 import sys
@@ -40,15 +38,24 @@ def seed(path: Path = DEFAULT_FILE, deactivate_others: bool = False) -> dict:
     with SessionLocal() as db:
         seen = set()
         for row in rows:
-            facility = db.scalar(select(ReferralFacility).where(
-                ReferralFacility.province == row["province"],
-                func.lower(func.f_unaccent(ReferralFacility.name)) == func.lower(func.f_unaccent(row["name"]))))
+            facility = db.scalar(
+                select(ReferralFacility).where(
+                    ReferralFacility.province == row["province"],
+                    func.lower(func.f_unaccent(ReferralFacility.name)) == func.lower(func.f_unaccent(row["name"])),
+                )
+            )
             if facility is None:
                 facility = ReferralFacility(**row)
                 db.add(facility)
                 db.flush()
-                audit.record(db, action="CREATE", entity="referral_facility", entity_id=facility.facility_id,
-                             actor_id=SYSTEM_USER_ID, new_values={"name": row["name"], "province": row["province"]})
+                audit.record(
+                    db,
+                    action="CREATE",
+                    entity="referral_facility",
+                    entity_id=facility.facility_id,
+                    actor_id=SYSTEM_USER_ID,
+                    new_values={"name": row["name"], "province": row["province"]},
+                )
                 stats["created"] += 1
             else:
                 changed = {k: row[k] for k in ("name", *FIELDS) if getattr(facility, k) != row[k]}
@@ -58,18 +65,33 @@ def seed(path: Path = DEFAULT_FILE, deactivate_others: bool = False) -> dict:
                     setattr(facility, k, v)
                 if changed:
                     facility.updated_at = func.now()
-                    audit.record(db, action="UPDATE", entity="referral_facility", entity_id=facility.facility_id,
-                                 actor_id=SYSTEM_USER_ID, new_values={"changed_fields": sorted(changed)})
+                    audit.record(
+                        db,
+                        action="UPDATE",
+                        entity="referral_facility",
+                        entity_id=facility.facility_id,
+                        actor_id=SYSTEM_USER_ID,
+                        new_values={"changed_fields": sorted(changed)},
+                    )
                     stats["updated"] += 1
                 else:
                     stats["unchanged"] += 1
             seen.add(facility.facility_id)
         if deactivate_others:
-            for facility in db.scalars(select(ReferralFacility).where(
-                    ReferralFacility.is_active.is_(True), ReferralFacility.facility_id.not_in(seen))).all():
+            for facility in db.scalars(
+                select(ReferralFacility).where(
+                    ReferralFacility.is_active.is_(True), ReferralFacility.facility_id.not_in(seen)
+                )
+            ).all():
                 facility.is_active, facility.updated_at = False, func.now()
-                audit.record(db, action="UPDATE", entity="referral_facility", entity_id=facility.facility_id,
-                             actor_id=SYSTEM_USER_ID, new_values={"is_active": False})
+                audit.record(
+                    db,
+                    action="UPDATE",
+                    entity="referral_facility",
+                    entity_id=facility.facility_id,
+                    actor_id=SYSTEM_USER_ID,
+                    new_values={"is_active": False},
+                )
                 stats["deactivated"] += 1
         db.commit()
     return stats
@@ -78,8 +100,11 @@ def seed(path: Path = DEFAULT_FILE, deactivate_others: bool = False) -> dict:
 def main() -> int:
     p = argparse.ArgumentParser(description="Nạp danh mục cơ sở nhận chuyển tuyến")
     p.add_argument("--file", type=Path, default=DEFAULT_FILE)
-    p.add_argument("--deactivate-others", action="store_true",
-                   help="Ngừng dùng (is_active = false) các cơ sở đang dùng nhưng không có trong file")
+    p.add_argument(
+        "--deactivate-others",
+        action="store_true",
+        help="Ngừng dùng (is_active = false) các cơ sở đang dùng nhưng không có trong file",
+    )
     args = p.parse_args()
     s = seed(args.file, deactivate_others=args.deactivate_others)
     print(f"Mới: {s['created']}, cập nhật: {s['updated']}, không đổi: {s['unchanged']}, ngừng dùng: {s['deactivated']}")

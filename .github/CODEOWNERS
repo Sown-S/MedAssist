@@ -1,0 +1,9 @@
+# Người phụ trách từng thư mục (bảng "Thư mục" trong README.md); GitHub tự mời họ duyệt PR chạm vào thư mục đó.
+# Dòng sau ghi đè dòng trước.
+*                       @Sown-S
+/client/                @Haiz4chan
+/server/app/ai/         @VuDangHuy2
+/server/tests/unit/ai/  @VuDangHuy2
+/knowledge/             @tuannndt
+/evaluation/            @tuannndt
+/docs/                  @Sown-S @Haiz4chan @VuDangHuy2 @tuannndt

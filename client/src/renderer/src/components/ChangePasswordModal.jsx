@@ -2,13 +2,14 @@ import { useEffect, useState } from 'react'
 import Modal, { ModalHeader } from './Modal'
 import { useAuth } from '../context/AuthContext'
 import { changePassword } from '../api/authApi'
-import { getSettings } from '../api/settingsStore'
+import { usePasswordMinLength } from '../api/accountStore'
 
 // Đổi xong server thu hồi mọi token → về màn đăng nhập.
 export default function ChangePasswordModal({ open, onClose }) {
   const { user: me, signOutAfterPasswordChange } = useAuth()
   const [form, setForm] = useState({ old: '', np: '', np2: '', err: '' })
   const [busy, setBusy] = useState(false)
+  const minLength = usePasswordMinLength()
 
   useEffect(() => {
     if (open) setForm({ old: '', np: '', np2: '', err: '' })
@@ -35,7 +36,7 @@ export default function ChangePasswordModal({ open, onClose }) {
             <input type="password" autoFocus autoComplete="current-password" value={form.old} onChange={(e) => setForm({ ...form, old: e.target.value })} />
           </div>
           <div className="login-field">
-            <label>{`New password (at least ${getSettings().security.minLength} characters)`}</label>
+            <label>{`New password (at least ${minLength} characters)`}</label>
             <input type="password" autoComplete="new-password" value={form.np} onChange={(e) => setForm({ ...form, np: e.target.value })} />
           </div>
           <div className="login-field">

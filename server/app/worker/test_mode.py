@@ -26,10 +26,12 @@ async def assessment_test_mode(assessment_id, attempt_count, session_factory):
                 with session_factory() as db:
                     result = db.execute(
                         update(AiAssessmentLog)
-                        .where(AiAssessmentLog.assessment_id == assessment_id,
-                               AiAssessmentLog.status == "Running",
-                               AiAssessmentLog.attempt_count == attempt_count,
-                               AiAssessmentLog.lease_until > func.now())
+                        .where(
+                            AiAssessmentLog.assessment_id == assessment_id,
+                            AiAssessmentLog.status == "Running",
+                            AiAssessmentLog.attempt_count == attempt_count,
+                            AiAssessmentLog.lease_until > func.now(),
+                        )
                         .values(lease_until=func.now() + timedelta(seconds=settings.WORKER_LEASE_SECONDS))
                     )
                     db.commit()

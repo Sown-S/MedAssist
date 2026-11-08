@@ -1,4 +1,5 @@
 """Bệnh nhân (US04): tạo, sửa, tìm không dấu, chống trùng, quyền, nhật ký không chứa dữ liệu."""
+
 import uuid
 from datetime import date, timedelta
 
@@ -20,25 +21,38 @@ def _create(client, headers, **over):
 
 
 def test_create_patient_normalizes(client, users, nurse):
-    r = _create(client, nurse, full_name="  Lê   Văn  Cường ", phone="+84 912-345-678",
-                id_number=f"0{uuid.uuid4().int % 10**11:011d}", address=" 12  Nguyễn Văn Linh ",
-                medical_history={"chronic_conditions": ["Hen phế quản"], "notes": "Theo dõi"},
-                allergy_notes="Dị ứng penicillin")
+    r = _create(
+        client,
+        nurse,
+        full_name="  Lê   Văn  Cường ",
+        phone="+84 912-345-678",
+        id_number=f"0{uuid.uuid4().int % 10**11:011d}",
+        address=" 12  Nguyễn Văn Linh ",
+        medical_history={"chronic_conditions": ["Hen phế quản"], "notes": "Theo dõi"},
+        allergy_notes="Dị ứng penicillin",
+    )
     assert r.status_code == 201, r.text
     p = r.json()
     assert p["full_name"] == "Lê Văn Cường" and p["phone"] == "0912345678" and p["address"] == "12 Nguyễn Văn Linh"
     assert p["medical_history"] == {"chronic_conditions": ["Hen phế quản"], "notes": "Theo dõi"}
 
 
-@pytest.mark.parametrize("over, field, message", [
-    ({"full_name": ""}, "full_name", "Không được để trống"),
-    ({"gender": "Nam"}, "gender", None),
-    ({"date_of_birth": (date.today() + timedelta(days=1)).isoformat()}, "date_of_birth", "Ngày sinh không được ở tương lai"),
-    ({"date_of_birth": "1880-01-01"}, "date_of_birth", None),
-    ({"id_number": "12345"}, "id_number", None),
-    ({"phone": "0905"}, "phone", None),
-    ({"medical_history": {"benh": "x"}}, "medical_history.benh", "Trường không được phép"),
-])
+@pytest.mark.parametrize(
+    "over, field, message",
+    [
+        ({"full_name": ""}, "full_name", "Không được để trống"),
+        ({"gender": "Nam"}, "gender", None),
+        (
+            {"date_of_birth": (date.today() + timedelta(days=1)).isoformat()},
+            "date_of_birth",
+            "Ngày sinh không được ở tương lai",
+        ),
+        ({"date_of_birth": "1880-01-01"}, "date_of_birth", None),
+        ({"id_number": "12345"}, "id_number", None),
+        ({"phone": "0905"}, "phone", None),
+        ({"medical_history": {"benh": "x"}}, "medical_history.benh", "Trường không được phép"),
+    ],
+)
 def test_create_patient_validation(client, users, nurse, over, field, message):
     r = _create(client, nurse, **over)
     assert r.status_code == 422
@@ -61,7 +75,7 @@ def test_possible_duplicate_needs_confirmation(client, users, nurse):
     err = r.json()["error"]
     assert err["code"] == "POSSIBLE_DUPLICATE" and err["details"][0]["patient_id"] == first["patient_id"]
     assert _create(client, nurse, full_name=unaccented, confirm_duplicate=True).status_code == 201
-    assert _create(client, nurse, full_name=name, date_of_birth="2018-01-01").status_code == 201   # khác ngày sinh
+    assert _create(client, nurse, full_name=name, date_of_birth="2018-01-01").status_code == 201  # khác ngày sinh
 
 
 def test_duplicate_id_number_blocked(client, users, nurse):
@@ -84,7 +98,9 @@ def test_search_unaccented_phone_and_escaping(client, users, nurse, login):
         assert [i["patient_id"] for i in items] == [p["patient_id"]], q
     assert client.get("/api/v1/patients", params={"phone": "+84987654321"}, headers=doctor).json()["total"] >= 1
     all_total = client.get("/api/v1/patients", headers=doctor).json()["total"]
-    assert client.get("/api/v1/patients", params={"q": "%"}, headers=doctor).json()["total"] < all_total or all_total == 0
+    assert (
+        client.get("/api/v1/patients", params={"q": "%"}, headers=doctor).json()["total"] < all_total or all_total == 0
+    )
 
 
 def test_get_and_update_patient_audit_has_no_values(client, users, nurse, login, logs):
@@ -94,10 +110,10 @@ def test_get_and_update_patient_audit_has_no_values(client, users, nurse, login,
     assert r.status_code == 200 and r.json()["phone"] == "0922222222"
     assert client.get(f"/api/v1/patients/{pid}", headers=login("bs")).status_code == 200
 
-    create, = logs(action="CREATE", entity="patient")
-    update, = logs(action="UPDATE", entity="patient")
+    (create,) = logs(action="CREATE", entity="patient")
+    (update,) = logs(action="UPDATE", entity="patient")
     assert "full_name" in create.new_values["fields"] and update.new_values == {"changed_fields": ["phone"]}
-    for row in (create, update):                                      # không có giá trị thật
+    for row in (create, update):  # không có giá trị thật
         assert "0911111111" not in str(row.new_values) and p["full_name"] not in str(row.new_values)
     view = [v for v in logs(action="VIEW", entity="patient") if str(v.entity_id) == pid]
     assert len(view) == 1
@@ -111,7 +127,7 @@ def test_update_cannot_clear_required_field(client, users, nurse):
 
 def test_permissions(client, users, nurse, login):
     pid = _create(client, nurse).json()["patient_id"]
-    assert _create(client, login("bs")).status_code == 403                     # bác sĩ không tạo
+    assert _create(client, login("bs")).status_code == 403  # bác sĩ không tạo
     assert client.get(f"/api/v1/patients/{pid}", headers=login("admin")).status_code == 403
     assert client.get("/api/v1/patients", headers=login("admin")).status_code == 403
     assert client.get(f"/api/v1/patients/{uuid.uuid4()}", headers=nurse).status_code == 404

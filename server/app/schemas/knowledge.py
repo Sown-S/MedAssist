@@ -1,4 +1,5 @@
 """API quản trị tri thức (US11, FR11): Admin soạn bản nháp, Bác sĩ duyệt bản phát hành, Admin tắt khẩn cấp."""
+
 import uuid
 from datetime import date, datetime
 from decimal import Decimal
@@ -13,7 +14,7 @@ Kind = Literal["symptoms", "conditions", "relations", "excerpts", "rules"]
 ItemStatus = Literal["Draft", "PendingApproval", "Active", "Retired"]
 
 
-# ============================================================================ bản phát hành
+# --- Bản phát hành --------------------------------------------------------------------------------
 class ReleaseCreate(BaseModel):
     model_config = ConfigDict(extra="forbid")
     label: CleanStr = Field(min_length=1, max_length=30, description="Nhãn phiên bản, vd KB-2026.02")
@@ -46,14 +47,14 @@ class ReleaseChange(BaseModel):
     version: int
     status: str
     values: dict[str, Any]
-    active_values: dict[str, Any] | None = None       # bản Active hiện tại để giao diện so sánh
+    active_values: dict[str, Any] | None = None  # bản Active hiện tại để giao diện so sánh
 
 
 class ReleaseDetail(ReleaseOut):
     changes: list[ReleaseChange] = []
 
 
-# ============================================================================ nội dung từng loại
+# --- Nội dung từng loại ---------------------------------------------------------------------------
 class SymptomDraft(BaseModel):
     model_config = ConfigDict(extra="forbid")
     symptom_name: CleanStr = Field(min_length=1, max_length=150)
@@ -98,9 +99,13 @@ class RuleDraft(BaseModel):
         return {"RED_FLAG": "Emergency", "PRIORITY_FLOOR": "HighPriority"}[self.rule_type]
 
 
-DRAFT_SCHEMAS: dict[str, type[BaseModel]] = {"symptoms": SymptomDraft, "conditions": ConditionDraft,
-                                             "relations": RelationDraft, "excerpts": ExcerptDraft,
-                                             "rules": RuleDraft}
+DRAFT_SCHEMAS: dict[str, type[BaseModel]] = {
+    "symptoms": SymptomDraft,
+    "conditions": ConditionDraft,
+    "relations": RelationDraft,
+    "excerpts": ExcerptDraft,
+    "rules": RuleDraft,
+}
 
 
 class ItemOut(BaseModel):
@@ -116,7 +121,7 @@ class ItemOut(BaseModel):
     values: dict[str, Any]
 
 
-# ============================================================================ tắt khẩn cấp
+# --- Tắt khẩn cấp ---------------------------------------------------------------------------------
 class Dependent(BaseModel):
     kind: Kind
     key: str
@@ -133,10 +138,13 @@ class DeactivateRequest(BaseModel):
     reason: CleanStr = Field(min_length=3, max_length=500)
     confirm_dependents: list[Dependent] = Field(
         default_factory=list,
-        description="Gửi lại đúng danh sách mục phụ thuộc vừa xem trước; lệch (do có thay đổi giữa chừng) thì bị từ chối")
+        description=(
+            "Gửi lại đúng danh sách mục phụ thuộc vừa xem trước; lệch (do có thay đổi giữa chừng) thì bị từ chối"
+        ),
+    )
 
 
-# ============================================================================ nguồn
+# --- Nguồn ----------------------------------------------------------------------------------------
 class SourceCreate(BaseModel):
     model_config = ConfigDict(extra="forbid")
     title: CleanStr = Field(min_length=1, max_length=255)

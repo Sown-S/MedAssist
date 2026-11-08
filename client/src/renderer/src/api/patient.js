@@ -1,14 +1,4 @@
-// Tiện ích dùng chung cho dữ liệu bệnh nhân: so khớp không dấu và tính tuổi từ ngày sinh dd/mm/yyyy.
-export const fold = (s) =>
-  String(s ?? '')
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
-    .replace(/đ/g, 'd')
-    .replace(/Đ/g, 'D')
-    .toLowerCase()
-    .replace(/\s+/g, ' ')
-    .trim()
-
+// Tiện ích dùng chung cho dữ liệu bệnh nhân: tính tuổi từ ngày sinh dd/mm/yyyy.
 export function ageOf(dob) {
   const m = String(dob ?? '').trim().match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/)
   if (!m) return ''

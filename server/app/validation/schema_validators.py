@@ -1,16 +1,8 @@
-"""Kiểm tra định dạng / schema dùng chung. Hiện có: sinh hiệu (visit.vital_signs).
-
-Dùng trong schema request:
-    from app.validation.schema_validators import VitalSigns
-    class VisitCreate(BaseModel):
-        vital_signs: VitalSigns | None = None
-
-    # sau khi nhận: cảnh báo mềm để trả kèm phản hồi
-    warnings = vital_sign_warnings(body.vital_signs)
-
-Lưu vào DB: body.vital_signs.to_db()  -> dict chỉ gồm khóa có giá trị (khóa thiếu = UNKNOWN,
-không bao giờ điền mặc định).
+"""Kiểm tra định dạng dùng chung: sinh hiệu (visit.vital_signs, kiểu ``VitalSigns`` trong schema request).
+Lưu DB bằng ``to_db()``: chỉ khóa có giá trị (khóa thiếu = UNKNOWN, không điền mặc định).
+Cảnh báo mềm trả kèm phản hồi: ``vital_sign_warnings()``.
 """
+
 import json
 from functools import lru_cache
 from pathlib import Path
@@ -68,9 +60,14 @@ def _build_model() -> type[BaseModel]:
     fields = {}
     for key, spec in vital_signs_schema()["properties"].items():
         py_type = int if spec["type"] == "integer" else float
-        annotated = Annotated[py_type, Field(strict=True, description=f"{spec['x-label']} ({spec['x-unit']}), "
-                                             f"{_fmt(spec['minimum'])}–{_fmt(spec['maximum'])}"),
-                              AfterValidator(_range_checker(spec))]
+        annotated = Annotated[
+            py_type,
+            Field(
+                strict=True,
+                description=f"{spec['x-label']} ({spec['x-unit']}), {_fmt(spec['minimum'])}–{_fmt(spec['maximum'])}",
+            ),
+            AfterValidator(_range_checker(spec)),
+        ]
         fields[key] = (annotated | None, None)
     return create_model("VitalSigns", __base__=_VitalSignsBase, **fields)
 
@@ -89,7 +86,11 @@ def vital_sign_warnings(vitals: BaseModel | dict | None) -> list[dict[str, Any]]
         if not soft or value is None:
             continue
         if ("below" in soft and value < soft["below"]) or ("above" in soft and value > soft["above"]):
-            out.append({"field": f"vital_signs.{key}", "code": "UNUSUAL_VALUE",
-                        "message": f"{spec['x-label']} {_fmt(value)} {spec['x-unit']} hiếm gặp — "
-                                   f"vui lòng xác nhận lại"})
+            out.append(
+                {
+                    "field": f"vital_signs.{key}",
+                    "code": "UNUSUAL_VALUE",
+                    "message": f"{spec['x-label']} {_fmt(value)} {spec['x-unit']} hiếm gặp — vui lòng xác nhận lại",
+                }
+            )
     return out

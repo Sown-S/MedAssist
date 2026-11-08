@@ -23,9 +23,7 @@ _LEADING_SYMPTOM_TAG_RE = re.compile(r"^\s*\[([a-z0-9]+(?:_[a-z0-9]+)*)\]\s*")
 _INLINE_SYMPTOM_TAG_RE = re.compile(r"\[([a-z0-9]+(?:_[a-z0-9]+)*)\]")
 
 
-def _clean_explanation(
-    raw: Any, symptom_map: Mapping[str, str] | None = None
-) -> str | None:
+def _clean_explanation(raw: Any, symptom_map: Mapping[str, str] | None = None) -> str | None:
     """Loại bỏ thẻ [symptom_code] kỹ thuật ở đầu câu giải thích và đổi thẻ nội tuyến sang tên tiếng Việt."""
     if not isinstance(raw, str):
         return None
@@ -37,15 +35,11 @@ def _clean_explanation(
     if stripped:
         text = stripped
     if names:
-        text = _INLINE_SYMPTOM_TAG_RE.sub(
-            lambda m: names.get(m.group(1), m.group(1)), text
-        )
+        text = _INLINE_SYMPTOM_TAG_RE.sub(lambda m: names.get(m.group(1), m.group(1)), text)
     return text
 
 
-def _candidate(
-    candidate: Mapping[str, Any], rank: int, symptom_map: Mapping[str, str] | None = None
-) -> dict[str, Any]:
+def _candidate(candidate: Mapping[str, Any], rank: int, symptom_map: Mapping[str, str] | None = None) -> dict[str, Any]:
     """Chỉ giữ projection an toàn của một ứng viên để lưu/polling."""
     supporting = candidate.get("supporting", candidate.get("supporting_evidence", []))
     contradicting = candidate.get("contradicting", candidate.get("contradicting_evidence", []))
@@ -81,20 +75,13 @@ def _candidate(
         "supporting": evidence(supporting),
         "contradicting": evidence(contradicting),
         "missing": missing_items(missing if isinstance(missing, list) else [missing]),
-        "explanation": _clean_explanation(
-            candidate.get("explanation", candidate.get("reason")), names
-        ),
+        "explanation": _clean_explanation(candidate.get("explanation", candidate.get("reason")), names),
         "label": "Reference Suggestion",
     }
 
 
-def _candidates(
-    state: Mapping[str, Any], symptom_map: Mapping[str, str] | None = None
-) -> list[dict[str, Any]]:
-    return [
-        _candidate(item, index, symptom_map)
-        for index, item in enumerate(state.get("candidates", [])[:3], 1)
-    ]
+def _candidates(state: Mapping[str, Any], symptom_map: Mapping[str, str] | None = None) -> list[dict[str, Any]]:
+    return [_candidate(item, index, symptom_map) for index, item in enumerate(state.get("candidates", [])[:3], 1)]
 
 
 def _symptom_map(reader: KnowledgeReader) -> dict[str, str]:
@@ -126,9 +113,7 @@ def get_latest_assessment(
         release_label = knowledge_reader.active_release().get("label")
     if not release_label and log.knowledge_release_id:
         release_label = db.scalar(
-            select(KnowledgeRelease.label).where(
-                KnowledgeRelease.release_id == log.knowledge_release_id
-            )
+            select(KnowledgeRelease.label).where(KnowledgeRelease.release_id == log.knowledge_release_id)
         )
     rule_data = log.rule_hits or {}
     if isinstance(rule_data, dict):
@@ -154,18 +139,18 @@ def get_latest_assessment(
                 rule_type = "PRIORITY_FLOOR"
         if rule_type not in ("RED_FLAG", "PRIORITY_FLOOR"):
             continue
-        alerts.append({
-            "rule_key": rule_key,
-            "rule_type": rule_type,
-            "reason_text": hit.get("reason_text") or hit.get("reason") or "",
-        })
+        alerts.append(
+            {
+                "rule_key": rule_key,
+                "rule_type": rule_type,
+                "reason_text": hit.get("reason_text") or hit.get("reason") or "",
+            }
+        )
 
     candidates = log.candidates if isinstance(log.candidates, list) else []
     symptom_map = _symptom_map(knowledge_reader) if knowledge_reader is not None else {}
     if any(
-        not isinstance(candidate, Mapping)
-        or "rank" not in candidate
-        or "supporting" not in candidate
+        not isinstance(candidate, Mapping) or "rank" not in candidate or "supporting" not in candidate
         for candidate in candidates
     ):
         candidates = _candidates({"candidates": candidates}, symptom_map)
@@ -184,12 +169,14 @@ def get_latest_assessment(
         "assessment_id": log.assessment_id,
         "ai_status": visit.ai_status,
         "mode": log.mode,
-        "knowledge_release": release_label or (
-            str(log.knowledge_release_id) if log.knowledge_release_id else None
-        ),
+        "knowledge_release": release_label or (str(log.knowledge_release_id) if log.knowledge_release_id else None),
         "model_version": log.model_version or getattr(log, "model_name", None),
         "prompt_version": log.prompt_version,
-        "priority": {"rule": log.priority_rule, "final": log.priority_final, "raised_by_ai": visit.priority_raised_by_ai},
+        "priority": {
+            "rule": log.priority_rule,
+            "final": log.priority_final,
+            "raised_by_ai": visit.priority_raised_by_ai,
+        },
         "alerts": alerts,
         "complete_now": complete_now,
         "candidates": candidates,

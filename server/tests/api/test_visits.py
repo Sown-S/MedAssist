@@ -1,4 +1,5 @@
 """Lượt khám và hàng đợi (US10): tạo, sửa, check-in, nhận khám, trả lại, hủy, lượt cũ."""
+
 import uuid
 
 import pytest
@@ -23,6 +24,7 @@ def doctor(login):
 def doctor2(client, users, login):
     from app.core.security import hash_password
     from app.models import User
+
     with SessionLocal() as db:
         if not db.query(User).filter_by(username="bs2").first():
             db.add(User(username="bs2", password_hash=hash_password("Matkhau123"), full_name="BS 2", role="Physician"))
@@ -32,15 +34,19 @@ def doctor2(client, users, login):
 
 @pytest.fixture
 def patient_id(client, nurse):
-    r = client.post("/api/v1/patients", headers=nurse, json={
-        "full_name": f"Bệnh Nhân {uuid.uuid4().hex[:8]}", "date_of_birth": "1985-06-01", "gender": "Male"})
+    r = client.post(
+        "/api/v1/patients",
+        headers=nurse,
+        json={"full_name": f"Bệnh Nhân {uuid.uuid4().hex[:8]}", "date_of_birth": "1985-06-01", "gender": "Male"},
+    )
     return r.json()["patient_id"]
 
 
 def _visit(client, nurse, patient_id, **over):
     """Lượt đã Lưu & cấp số (check-in / mời được)."""
-    r = client.post("/api/v1/visits", headers=nurse, json={"patient_id": patient_id,
-                                                           "chief_complaint": "Sốt, ho", **over})
+    r = client.post(
+        "/api/v1/visits", headers=nurse, json={"patient_id": patient_id, "chief_complaint": "Sốt, ho", **over}
+    )
     if r.status_code == 201:
         save_intake(r.json()["visit_id"])
     return r
@@ -50,7 +56,11 @@ def test_create_visit_with_vitals_and_warnings(client, nurse, patient_id, logs):
     r = _visit(client, nurse, patient_id, vital_signs={"temperature_c": 33.46, "spo2_pct": 96})
     assert r.status_code == 201, r.text
     v = r.json()
-    assert v["status"] == "Waiting" and v["queue_number"] >= 1 and v["vital_signs"] == {"temperature_c": 33.5, "spo2_pct": 96}
+    assert (
+        v["status"] == "Waiting"
+        and v["queue_number"] >= 1
+        and v["vital_signs"] == {"temperature_c": 33.5, "spo2_pct": 96}
+    )
     assert [w["field"] for w in v["warnings"]] == ["vital_signs.temperature_c"]
     (row,) = logs(action="CREATE", entity="visit")
     assert row.new_values["vital_sign_keys"] == ["spo2_pct", "temperature_c"] and "33.5" not in str(row.new_values)
@@ -62,15 +72,18 @@ def test_create_visit_errors(client, nurse, doctor, patient_id):
     assert r.status_code == 422 and r.json()["error"]["details"][0]["field"] == "vital_signs.spo2_pct"
     assert _visit(client, doctor, patient_id).status_code == 403
     assert _visit(client, nurse, patient_id).status_code == 201
-    r = _visit(client, nurse, patient_id)                                   # đã có lượt đang mở
+    r = _visit(client, nurse, patient_id)  # đã có lượt đang mở
     assert r.status_code == 409 and r.json()["error"]["code"] == "PATIENT_HAS_OPEN_VISIT"
 
 
 def test_queue_numbers_increase(client, nurse):
     numbers = []
     for _ in range(3):
-        pid = client.post("/api/v1/patients", headers=nurse, json={
-            "full_name": f"Q {uuid.uuid4().hex[:8]}", "date_of_birth": "2000-01-01", "gender": "Other"}).json()["patient_id"]
+        pid = client.post(
+            "/api/v1/patients",
+            headers=nurse,
+            json={"full_name": f"Q {uuid.uuid4().hex[:8]}", "date_of_birth": "2000-01-01", "gender": "Other"},
+        ).json()["patient_id"]
         numbers.append(_visit(client, nurse, pid).json()["queue_number"])
     assert numbers == sorted(numbers) and len(set(numbers)) == 3
 
@@ -89,8 +102,11 @@ def test_vitals_editable_after_check_in(client, nurse, doctor, patient_id):
     client.patch(f"/api/v1/visits/{vid}/check-in", headers=nurse)
     r = client.patch(f"/api/v1/visits/{vid}", headers=nurse, json={"vital_signs": {"spo2_pct": 88}})
     assert r.status_code == 200 and r.json()["vital_signs"] == {"spo2_pct": 88}
-    r = client.patch(f"/api/v1/visits/{vid}", headers=nurse,
-                     json={"vital_signs": {"spo2_pct": 90}, "free_text_description": "Khó thở hơn"})
+    r = client.patch(
+        f"/api/v1/visits/{vid}",
+        headers=nurse,
+        json={"vital_signs": {"spo2_pct": 90}, "free_text_description": "Khó thở hơn"},
+    )
     assert r.status_code == 409 and r.json()["error"]["code"] == "VISIT_LOCKED"
     client.patch(f"/api/v1/visits/{vid}/start-exam", headers=doctor)
     r = client.patch(f"/api/v1/visits/{vid}", headers=nurse, json={"vital_signs": {"spo2_pct": 90}})
@@ -99,14 +115,14 @@ def test_vitals_editable_after_check_in(client, nurse, doctor, patient_id):
 
 def test_full_flow_to_examining_and_claim_race(client, nurse, doctor, doctor2, patient_id, logs, users):
     vid = _visit(client, nurse, patient_id).json()["visit_id"]
-    assert client.patch(f"/api/v1/visits/{vid}/start-exam", headers=doctor).status_code == 409   # chưa check-in
+    assert client.patch(f"/api/v1/visits/{vid}/start-exam", headers=doctor).status_code == 409  # chưa check-in
     r = client.patch(f"/api/v1/visits/{vid}/check-in", headers=nurse)
     assert r.status_code == 200 and r.json()["status"] == "CheckedIn" and r.json()["checked_in_at"]
     assert client.patch(f"/api/v1/visits/{vid}/check-in", headers=nurse).status_code == 409
 
     r = client.patch(f"/api/v1/visits/{vid}/start-exam", headers=doctor)
     assert r.status_code == 200 and r.json()["physician_id"] == str(users["bs"].user_id)
-    r2 = client.patch(f"/api/v1/visits/{vid}/start-exam", headers=doctor2)     # bác sĩ thứ hai
+    r2 = client.patch(f"/api/v1/visits/{vid}/start-exam", headers=doctor2)  # bác sĩ thứ hai
     assert r2.status_code == 409 and r2.json()["error"]["code"] == "VISIT_TAKEN"
 
     transitions = [(x.old_values["status"], x.new_values["status"]) for x in logs(action="UPDATE", entity="visit")]
@@ -129,10 +145,13 @@ def test_cancel_rules(client, nurse, doctor, doctor2, patient_id, logs):
     assert client.patch(f"/api/v1/visits/{vid}/cancel", headers=nurse, json={"reason": ""}).status_code == 422
     client.patch(f"/api/v1/visits/{vid}/check-in", headers=nurse)
     client.patch(f"/api/v1/visits/{vid}/start-exam", headers=doctor)
-    assert client.patch(f"/api/v1/visits/{vid}/cancel", headers=nurse,
-                        json={"reason": "Bệnh nhân về"}).status_code == 409          # y tá: không khi Examining
-    assert client.patch(f"/api/v1/visits/{vid}/cancel", headers=doctor2,
-                        json={"reason": "Bệnh nhân về"}).status_code == 409          # không phải của mình
+    assert (
+        client.patch(f"/api/v1/visits/{vid}/cancel", headers=nurse, json={"reason": "Bệnh nhân về"}).status_code == 409
+    )  # y tá: không khi Examining
+    assert (
+        client.patch(f"/api/v1/visits/{vid}/cancel", headers=doctor2, json={"reason": "Bệnh nhân về"}).status_code
+        == 409
+    )  # không phải của mình
     r = client.patch(f"/api/v1/visits/{vid}/cancel", headers=doctor, json={"reason": "Bệnh nhân bỏ về"})
     assert r.status_code == 200 and r.json()["status"] == "Cancelled" and r.json()["finished_at"]
     last = logs(action="UPDATE", entity="visit")[-1]
@@ -146,11 +165,16 @@ def test_nurse_cancel_waiting_then_new_visit_allowed(client, nurse, patient_id):
 
 
 def test_queue_order_priority_then_fifo(client, nurse, doctor):
-    pids = [client.post("/api/v1/patients", headers=nurse, json={
-        "full_name": f"Thứ Tự {uuid.uuid4().hex[:8]}", "date_of_birth": "1990-01-01", "gender": "Male"}).json()["patient_id"]
-        for _ in range(3)]
+    pids = [
+        client.post(
+            "/api/v1/patients",
+            headers=nurse,
+            json={"full_name": f"Thứ Tự {uuid.uuid4().hex[:8]}", "date_of_birth": "1990-01-01", "gender": "Male"},
+        ).json()["patient_id"]
+        for _ in range(3)
+    ]
     vids = [_visit(client, nurse, p).json()["visit_id"] for p in pids]
-    with engine.begin() as conn:      # giả lập Node 1 nâng mức lượt thứ ba (bước 5 / Sprint 3)
+    with engine.begin() as conn:  # giả lập Node 1 nâng mức lượt thứ ba
         conn.execute(text("UPDATE visit SET triage_priority='HighPriority' WHERE visit_id = :v"), {"v": vids[2]})
     queue = client.get("/api/v1/queue", headers=doctor).json()
     order = [q["visit_id"] for q in queue if q["visit_id"] in vids]
@@ -182,13 +206,16 @@ def test_stale_visits_listed_and_bulk_cancelled(client, nurse, patient_id, users
     row = next(v for v in stale if v["visit_id"] == old_id)
     assert row["patient_name"] and row["status"] == "Waiting"
     assert old_id not in [q["visit_id"] for q in client.get("/api/v1/queue", headers=nurse).json()]
-    assert client.patch(f"/api/v1/visits/{old_id}/check-in", headers=nurse).status_code == 409   # không check-in lượt cũ
+    assert client.patch(f"/api/v1/visits/{old_id}/check-in", headers=nurse).status_code == 409  # không check-in lượt cũ
     today = _visit(client, nurse, patient_id)
-    assert today.status_code == 409                                          # vẫn còn lượt mở (cũ)
+    assert today.status_code == 409  # vẫn còn lượt mở (cũ)
     r = client.post("/api/v1/visits/stale/cancel", headers=nurse, json={"visit_ids": [old_id], "reason": "Hết ngày"})
     assert r.status_code == 200 and r.json() == [old_id]
-    bad = client.post("/api/v1/visits/stale/cancel", headers=nurse,
-                      json={"visit_ids": [_visit(client, nurse, patient_id).json()["visit_id"]], "reason": "x x x"})
+    bad = client.post(
+        "/api/v1/visits/stale/cancel",
+        headers=nurse,
+        json={"visit_ids": [_visit(client, nurse, patient_id).json()["visit_id"]], "reason": "x x x"},
+    )
     assert bad.status_code == 409 and bad.json()["error"]["code"] == "NOT_STALE"
 
 
@@ -197,8 +224,9 @@ def test_examining_visit_from_yesterday_stays_in_queue(client, nurse, doctor, pa
     client.patch(f"/api/v1/visits/{vid}/check-in", headers=nurse)
     client.patch(f"/api/v1/visits/{vid}/start-exam", headers=doctor)
     with SessionLocal() as db:
-        yesterday = db.scalar(text("UPDATE visit SET queue_date = CURRENT_DATE - 1 WHERE visit_id = :v "
-                                   "RETURNING queue_date"), {"v": vid})
+        yesterday = db.scalar(
+            text("UPDATE visit SET queue_date = CURRENT_DATE - 1 WHERE visit_id = :v RETURNING queue_date"), {"v": vid}
+        )
         db.commit()
     item = next(q for q in client.get("/api/v1/queue", headers=doctor).json() if q["visit_id"] == vid)
     assert item["status"] == "Examining" and item["queue_date"] == str(yesterday)

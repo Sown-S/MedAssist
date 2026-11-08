@@ -95,7 +95,7 @@ function createWindow() {
       // Quy định v5 §3: renderer không chạm Node.js; mọi việc của desktop đi qua preload (window.api).
       contextIsolation: true,
       nodeIntegration: false,
-      sandbox: false
+      sandbox: true
     }
   })
 
@@ -103,19 +103,40 @@ function createWindow() {
     mainWindow.show()
   })
 
-  // Mở link ngoài (nếu có) bằng trình duyệt mặc định, không mở trong app
+  // Chỉ mở link https: bằng trình duyệt mặc định, không mở cửa sổ mới trong app
   mainWindow.webContents.setWindowOpenHandler((details) => {
-    shell.openExternal(details.url)
+    if (/^https:\/\//i.test(details.url)) shell.openExternal(details.url)
     return { action: 'deny' }
   })
 
   // Khi chạy "npm run dev": load từ Vite dev server (hot reload)
   // Khi build production: load qua app://medassist (xem serveApp)
-  if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
-    mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
-  } else {
-    mainWindow.loadURL(APP_ORIGIN + '/index.html')
+  const appUrl = is.dev && process.env['ELECTRON_RENDERER_URL'] ? process.env['ELECTRON_RENDERER_URL'] : APP_ORIGIN
+
+  // Cửa sổ chỉ hiện giao diện của app: chặn điều hướng sang địa chỉ khác (VD kéo thả file hay link lạ vào cửa sổ).
+  // So giao thức + máy + cổng, không so tiền tố (http://localhost:5173 không được khớp http://localhost:51730).
+  const appOrigin = originOf(appUrl)
+  mainWindow.webContents.on('will-navigate', (e, url) => {
+    if (originOf(url) !== appOrigin) e.preventDefault()
+  })
+
+  mainWindow.loadURL(appUrl === APP_ORIGIN ? APP_ORIGIN + '/index.html' : appUrl)
+}
+
+// URL.origin của giao thức riêng app:// là "null" nên tự ghép giao thức + máy + cổng; địa chỉ không đọc được → null.
+function originOf(url) {
+  try {
+    const u = new URL(url)
+    return u.protocol + '//' + u.host
+  } catch {
+    return null
   }
+}
+
+// App không cần camera, micro, vị trí, thông báo…: từ chối mọi yêu cầu quyền, trừ ghi clipboard
+// (nút sao chép mật khẩu tạm ở màn Tài khoản nhân viên).
+function denyPermissions() {
+  session.defaultSession.setPermissionRequestHandler((wc, permission, callback) => callback(permission === 'clipboard-sanitized-write'))
 }
 
 // ---------- Chỉ tin chứng chỉ gốc (root CA) của dự án khi nói chuyện với máy chủ phòng khám (TC03, BC09) ----------
@@ -167,6 +188,7 @@ app.whenReady().then(() => {
   serveApp()
   registerIpc()
   pinServerCertificate()
+  denyPermissions()
   createWindow()
 
   app.on('activate', function () {

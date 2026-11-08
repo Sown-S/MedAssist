@@ -1,12 +1,8 @@
-"""Cấp phát thuốc và thu tiền (US03, US06) — lượt 6c. Nurse thao tác khi lượt khám ở Prescribed.
-
-  * Cấp phát từng dòng: Dispensed, hoặc Skipped (bắt buộc lý do) -> hoàn kho đúng các lô đã trừ và
-    LẬP LẠI hóa đơn Pending (bỏ dòng thuốc đó). Sau khi đã thu tiền: chỉ được Dispensed.
-  * Sửa hóa đơn Pending (phí khám, dòng cận lâm sàng nhập tay) = hủy và lập lại.
-  * Thu tiền: Pending -> Paid (Tiền mặt / Chuyển khoản). Paid là chốt cuối.
-  * Lượt khám tự Finished khi hóa đơn Paid VÀ không còn dòng thuốc Pending (đơn -> Dispensed).
-  * Hủy lượt khám ở Prescribed (bệnh nhân bỏ về): chỉ khi chưa cấp thuốc nào, chưa thu tiền.
+"""Cấp phát thuốc và thu tiền (US03, US06). Nurse thao tác khi lượt khám ở Prescribed.
+Bỏ qua thuốc hoặc sửa hóa đơn Pending thì lập lại hóa đơn; Paid là chốt cuối.
+Chi tiết: docs/thiet-ke-backend.md §5.3.
 """
+
 import datetime
 import uuid
 from decimal import Decimal
@@ -26,22 +22,33 @@ def _prescribed_visit(db: Session, visit_id: uuid.UUID) -> Visit:
     if visit is None:
         raise NotFoundError("Không tìm thấy lượt khám")
     if visit.status != "Prescribed":
-        raise AppError(409, "VISIT_NOT_AWAITING_PAYMENT", "Lượt khám không ở bước cấp phát / thu tiền",
-                       [{"current": visit.status}])
+        raise AppError(
+            409, "VISIT_NOT_AWAITING_PAYMENT", "Lượt khám không ở bước cấp phát / thu tiền", [{"current": visit.status}]
+        )
     return visit
 
 
 def _confirmed_rx(db: Session, visit_id: uuid.UUID) -> Prescription | None:
-    return db.scalar(select(Prescription).where(Prescription.visit_id == visit_id,
-                                                Prescription.status.in_(("Confirmed", "Dispensed")))
-                     .with_for_update())
+    return db.scalar(
+        select(Prescription)
+        .where(Prescription.visit_id == visit_id, Prescription.status.in_(("Confirmed", "Dispensed")))
+        .with_for_update()
+    )
 
 
 def _pending_items(db: Session, rx: Prescription | None) -> int:
     if rx is None:
         return 0
-    return db.scalar(select(func.count()).select_from(PrescriptionItem).where(
-        PrescriptionItem.prescription_id == rx.prescription_id, PrescriptionItem.dispense_status == "Pending")) or 0
+    return (
+        db.scalar(
+            select(func.count())
+            .select_from(PrescriptionItem)
+            .where(
+                PrescriptionItem.prescription_id == rx.prescription_id, PrescriptionItem.dispense_status == "Pending"
+            )
+        )
+        or 0
+    )
 
 
 def _maybe_finish(db: Session, visit: Visit, actor: User) -> bool:
@@ -57,7 +64,7 @@ def _maybe_finish(db: Session, visit: Visit, actor: User) -> bool:
     return True
 
 
-# ---------------------------------------------------------------------------- cấp phát
+# --- Cấp phát -------------------------------------------------------------------------------------
 def dispense_item(db: Session, item_id: uuid.UUID, action: str, skip_reason: str | None, actor: User) -> bool:
     item = db.scalar(select(PrescriptionItem).where(PrescriptionItem.item_id == item_id).with_for_update())
     if item is None:
@@ -72,8 +79,12 @@ def dispense_item(db: Session, item_id: uuid.UUID, action: str, skip_reason: str
 
     if action == "Skipped":
         if not skip_reason:
-            raise AppError(422, "VALIDATION_ERROR", "Dữ liệu không hợp lệ",
-                           [{"field": "skip_reason", "in": "body", "message": "Bỏ qua thuốc phải ghi lý do"}])
+            raise AppError(
+                422,
+                "VALIDATION_ERROR",
+                "Dữ liệu không hợp lệ",
+                [{"field": "skip_reason", "in": "body", "message": "Bỏ qua thuốc phải ghi lý do"}],
+            )
         if invoice is not None and invoice.payment_status == "Paid":
             raise AppError(409, "ALREADY_PAID", "Hóa đơn đã thu tiền: không bỏ qua thuốc được (cần hoàn tiền)")
         item.dispense_status, item.skip_reason = "Skipped", skip_reason
@@ -87,8 +98,15 @@ def dispense_item(db: Session, item_id: uuid.UUID, action: str, skip_reason: str
         extra = {}
     item.dispensed_by, item.dispensed_at = actor.user_id, func.now()
     db.flush()
-    audit.record(db, action="UPDATE", entity="prescription_item", entity_id=item.item_id, actor_id=actor.user_id,
-                 old_values={"dispense_status": "Pending"}, new_values={"dispense_status": action, **extra})
+    audit.record(
+        db,
+        action="UPDATE",
+        entity="prescription_item",
+        entity_id=item.item_id,
+        actor_id=actor.user_id,
+        old_values={"dispense_status": "Pending"},
+        new_values={"dispense_status": action, **extra},
+    )
     return _maybe_finish(db, visit, actor)
 
 
@@ -97,8 +115,11 @@ def dispense_all(db: Session, visit_id: uuid.UUID, actor: User) -> bool:
     rx = _confirmed_rx(db, visit_id)
     if rx is None or rx.status != "Confirmed":
         raise AppError(409, "PRESCRIPTION_NOT_CONFIRMED", "Không có đơn thuốc chờ cấp phát")
-    ids = db.scalars(select(PrescriptionItem.item_id).where(
-        PrescriptionItem.prescription_id == rx.prescription_id, PrescriptionItem.dispense_status == "Pending")).all()
+    ids = db.scalars(
+        select(PrescriptionItem.item_id).where(
+            PrescriptionItem.prescription_id == rx.prescription_id, PrescriptionItem.dispense_status == "Pending"
+        )
+    ).all()
     if not ids:
         raise AppError(409, "NOTHING_TO_DISPENSE", "Không còn dòng thuốc chờ cấp phát")
     finished = False
@@ -107,15 +128,23 @@ def dispense_all(db: Session, visit_id: uuid.UUID, actor: User) -> bool:
     return finished
 
 
-# ---------------------------------------------------------------------------- hóa đơn
-def edit_invoice(db: Session, visit_id: uuid.UUID, consultation_fee: Decimal | None,
-                 paraclinical: list[dict] | None, actor: User,
-                 consultation_service_id: uuid.UUID | None = None) -> Invoice:
+# --- Hóa đơn --------------------------------------------------------------------------------------
+def edit_invoice(
+    db: Session,
+    visit_id: uuid.UUID,
+    consultation_fee: Decimal | None,
+    paraclinical: list[dict] | None,
+    actor: User,
+    consultation_service_id: uuid.UUID | None = None,
+) -> Invoice:
     visit = _prescribed_visit(db, visit_id)
     consultation_name = None
     if consultation_service_id is not None:
-        service = db.scalar(select(Service).where(Service.service_id == consultation_service_id,
-                                                  Service.kind == "Service", Service.is_active.is_(True)))
+        service = db.scalar(
+            select(Service).where(
+                Service.service_id == consultation_service_id, Service.kind == "Service", Service.is_active.is_(True)
+            )
+        )
         if service is None:
             raise AppError(422, "INVALID_SERVICE", "Dịch vụ khám không tồn tại hoặc đã ngừng dùng")
         consultation_name = service.name
@@ -125,11 +154,30 @@ def edit_invoice(db: Session, visit_id: uuid.UUID, consultation_fee: Decimal | N
         raise NotFoundError("Lượt khám chưa có hóa đơn")
     if invoice.payment_status != "Pending":
         raise AppError(409, "ALREADY_PAID", "Hóa đơn đã thu tiền, không sửa được")
-    lines = None if paraclinical is None else [
-        dict(item_type="Paraclinical", item_name=p["item_name"], quantity=p["quantity"],
-             unit_price=p["unit_price"], prescription_item_id=None) for p in paraclinical]
-    return invoice_service.reissue(db, visit, invoice, "Sửa hóa đơn", actor, consultation_fee=consultation_fee,
-                                   consultation_name=consultation_name, paraclinical=lines)
+    lines = (
+        None
+        if paraclinical is None
+        else [
+            dict(
+                item_type="Paraclinical",
+                item_name=p["item_name"],
+                quantity=p["quantity"],
+                unit_price=p["unit_price"],
+                prescription_item_id=None,
+            )
+            for p in paraclinical
+        ]
+    )
+    return invoice_service.reissue(
+        db,
+        visit,
+        invoice,
+        "Sửa hóa đơn",
+        actor,
+        consultation_fee=consultation_fee,
+        consultation_name=consultation_name,
+        paraclinical=lines,
+    )
 
 
 def pay(db: Session, visit_id: uuid.UUID, method: str, actor: User) -> tuple[Invoice, bool]:
@@ -141,13 +189,19 @@ def pay(db: Session, visit_id: uuid.UUID, method: str, actor: User) -> tuple[Inv
         raise AppError(409, "ALREADY_PAID", "Hóa đơn đã thu tiền")
     invoice.payment_status, invoice.payment_method, invoice.paid_at = "Paid", method, func.now()
     db.flush()
-    audit.record(db, action="UPDATE", entity="invoice", entity_id=invoice.invoice_id, actor_id=actor.user_id,
-                 old_values={"payment_status": "Pending"},
-                 new_values={"payment_status": "Paid", "payment_method": method, "total_amount": invoice.total_amount})
+    audit.record(
+        db,
+        action="UPDATE",
+        entity="invoice",
+        entity_id=invoice.invoice_id,
+        actor_id=actor.user_id,
+        old_values={"payment_status": "Pending"},
+        new_values={"payment_status": "Paid", "payment_method": method, "total_amount": invoice.total_amount},
+    )
     return invoice, _maybe_finish(db, visit, actor)
 
 
-# ---------------------------------------------------------------------------- hủy lượt khám ở Prescribed
+# --- Hủy lượt khám ở Prescribed -------------------------------------------------------------------
 def cancel_prescribed(db: Session, visit_id: uuid.UUID, reason: str, actor: User) -> Visit:
     """Bệnh nhân bỏ về: chưa cấp thuốc nào, chưa thu tiền -> hoàn kho, hủy đơn, hủy hóa đơn, hủy lượt."""
     _prescribed_visit(db, visit_id)
@@ -156,8 +210,11 @@ def cancel_prescribed(db: Session, visit_id: uuid.UUID, reason: str, actor: User
         raise AppError(409, "ALREADY_PAID", "Hóa đơn đã thu tiền, không hủy lượt khám được")
     rx = _confirmed_rx(db, visit_id)
     if rx is not None:
-        items = list(db.scalars(select(PrescriptionItem).where(
-            PrescriptionItem.prescription_id == rx.prescription_id).with_for_update()))
+        items = list(
+            db.scalars(
+                select(PrescriptionItem).where(PrescriptionItem.prescription_id == rx.prescription_id).with_for_update()
+            )
+        )
         if any(i.dispense_status == "Dispensed" for i in items):
             raise AppError(409, "ALREADY_DISPENSED", "Đã cấp thuốc: bỏ qua phần còn lại và thu tiền phần đã cấp")
         for i in items:
@@ -165,60 +222,102 @@ def cancel_prescribed(db: Session, visit_id: uuid.UUID, reason: str, actor: User
                 inventory_service.restore_item(db, i.item_id, actor, note=f"Hủy lượt khám: {reason}")
         rx.status, rx.cancelled_at = "Cancelled", func.now()
         db.flush()
-        audit.record(db, action="UPDATE", entity="prescription", entity_id=rx.prescription_id,
-                     actor_id=actor.user_id, old_values={"status": "Confirmed"},
-                     new_values={"status": "Cancelled", "reason": reason})
+        audit.record(
+            db,
+            action="UPDATE",
+            entity="prescription",
+            entity_id=rx.prescription_id,
+            actor_id=actor.user_id,
+            old_values={"status": "Confirmed"},
+            new_values={"status": "Cancelled", "reason": reason},
+        )
     if invoice is not None:
         invoice_service.cancel(db, invoice, f"Hủy lượt khám: {reason}", actor)
     return queue_service.cancel_from_prescribed(db, visit_id, reason, actor)
 
 
-# ---------------------------------------------------------------------------- danh sách chờ thu tiền, in phiếu
+# --- Danh sách chờ thu tiền, in phiếu -------------------------------------------------------------
 def awaiting_payment(db: Session) -> list[dict]:
     rows = db.execute(
         select(Visit, Patient.full_name, Invoice)
         .join(Patient, Patient.patient_id == Visit.patient_id)
         .outerjoin(Invoice, (Invoice.visit_id == Visit.visit_id) & (Invoice.payment_status != "Cancelled"))
-        .where(Visit.status == "Prescribed").order_by(Visit.updated_at)).all()
+        .where(Visit.status == "Prescribed")
+        .order_by(Visit.updated_at)
+    ).all()
     out = []
     for v, name, inv in rows:
-        rx = db.scalar(select(Prescription).where(Prescription.visit_id == v.visit_id,
-                                                  Prescription.status.in_(("Confirmed", "Dispensed"))))
+        rx = db.scalar(
+            select(Prescription).where(
+                Prescription.visit_id == v.visit_id, Prescription.status.in_(("Confirmed", "Dispensed"))
+            )
+        )
         pending = _pending_items(db, rx)
-        out.append({"visit_id": v.visit_id, "queue_number": v.queue_number, "patient_name": name,
-                    "invoice_code": inv.invoice_code if inv else None,
-                    "total_amount": inv.total_amount if inv else None,
-                    "payment_status": inv.payment_status if inv else None,
-                    "has_prescription": rx is not None, "pending_items": pending})
+        out.append(
+            {
+                "visit_id": v.visit_id,
+                "queue_number": v.queue_number,
+                "patient_name": name,
+                "invoice_code": inv.invoice_code if inv else None,
+                "total_amount": inv.total_amount if inv else None,
+                "payment_status": inv.payment_status if inv else None,
+                "has_prescription": rx is not None,
+                "pending_items": pending,
+            }
+        )
     return out
 
 
 def invoice_history(db: Session, day: datetime.date | None, include_cancelled: bool) -> list[dict]:
     """Hóa đơn trong ngày, mới nhất trước. Hóa đơn đã thu xếp theo ngày thu, còn lại theo ngày lập."""
     day = day or db.scalar(select(func.current_date()))
-    stmt = (select(Invoice, Visit.queue_number, Patient.full_name)
-            .join(Visit, Visit.visit_id == Invoice.visit_id)
-            .join(Patient, Patient.patient_id == Visit.patient_id)
-            .where(cast(func.coalesce(Invoice.paid_at, Invoice.created_at), Date) == day))
+    stmt = (
+        select(Invoice, Visit.queue_number, Patient.full_name)
+        .join(Visit, Visit.visit_id == Invoice.visit_id)
+        .join(Patient, Patient.patient_id == Visit.patient_id)
+        .where(cast(func.coalesce(Invoice.paid_at, Invoice.created_at), Date) == day)
+    )
     if not include_cancelled:
         stmt = stmt.where(Invoice.payment_status != "Cancelled")
     rows = db.execute(stmt.order_by(func.coalesce(Invoice.paid_at, Invoice.created_at).desc())).all()
-    return [{"invoice_id": inv.invoice_id, "invoice_code": inv.invoice_code, "visit_id": inv.visit_id,
-             "queue_number": qn, "patient_name": name, "consultation_fee": inv.consultation_fee,
-             "paraclinical_fee": inv.paraclinical_fee, "drug_fee": inv.drug_fee, "total_amount": inv.total_amount,
-             "payment_method": inv.payment_method, "payment_status": inv.payment_status, "paid_at": inv.paid_at,
-             "cancelled_at": inv.cancelled_at, "created_at": inv.created_at} for inv, qn, name in rows]
+    return [
+        {
+            "invoice_id": inv.invoice_id,
+            "invoice_code": inv.invoice_code,
+            "visit_id": inv.visit_id,
+            "queue_number": qn,
+            "patient_name": name,
+            "consultation_fee": inv.consultation_fee,
+            "paraclinical_fee": inv.paraclinical_fee,
+            "drug_fee": inv.drug_fee,
+            "total_amount": inv.total_amount,
+            "payment_method": inv.payment_method,
+            "payment_status": inv.payment_status,
+            "paid_at": inv.paid_at,
+            "cancelled_at": inv.cancelled_at,
+            "created_at": inv.created_at,
+        }
+        for inv, qn, name in rows
+    ]
 
 
 def print_data(db: Session, visit_id: uuid.UUID) -> dict:
     from app.models import User as U
     from app.services.settings_service import get_value
+
     visit = queue_service.get_visit(db, visit_id)
     invoice = invoice_service.current_for_visit(db, visit_id)
     patient = db.get(Patient, visit.patient_id)
     physician = db.get(U, visit.physician_id) if visit.physician_id else None
-    return {"clinic": get_value(db, "clinic.profile"),
-            "patient": {"patient_code": patient_code(patient.patient_id), "full_name": patient.full_name, "date_of_birth": patient.date_of_birth,
-                        "gender": patient.gender},
-            "physician_name": physician.full_name if physician else None,
-            "visit_date": visit.visit_date, "invoice": invoice_service.to_out(db, invoice)}
+    return {
+        "clinic": get_value(db, "clinic.profile"),
+        "patient": {
+            "patient_code": patient_code(patient.patient_id),
+            "full_name": patient.full_name,
+            "date_of_birth": patient.date_of_birth,
+            "gender": patient.gender,
+        },
+        "physician_name": physician.full_name if physician else None,
+        "visit_date": visit.visit_date,
+        "invoice": invoice_service.to_out(db, invoice),
+    }

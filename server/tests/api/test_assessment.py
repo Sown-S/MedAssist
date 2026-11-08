@@ -1,7 +1,7 @@
 """AI-11: hợp đồng API khởi tạo và polling đánh giá AI."""
 
-from datetime import datetime, timezone
 import uuid
+from datetime import datetime, timezone
 from types import SimpleNamespace
 
 import pytest
@@ -20,11 +20,7 @@ from app.models import (
 from app.routers import assessment_router
 from tests.unit.ai.fakes import FakeKnowledgeReader
 
-
-if not any(
-    getattr(route, "path", None) == "/api/v1/visits/{visit_id}/assessment"
-    for route in app.routes
-):
+if not any(getattr(route, "path", None) == "/api/v1/visits/{visit_id}/assessment" for route in app.routes):
     app.include_router(assessment_router.router, prefix="/api/v1")
 
 
@@ -62,9 +58,7 @@ def _visit(client, nurse, *, vital_signs=None):
     return visit.json()["visit_id"]
 
 
-def test_post_queues_repeatable_assessment_and_get_polls_latest(
-    client, login, users, logs, knowledge_reader
-):
+def test_post_queues_repeatable_assessment_and_get_polls_latest(client, login, users, logs, knowledge_reader):
     nurse = login("yta")
     doctor = login("bs")
     admin = login("admin")
@@ -76,7 +70,7 @@ def test_post_queues_repeatable_assessment_and_get_polls_latest(
     assert queued()["intake_saved"] is False
     first = client.post(f"/api/v1/visits/{visit_id}/assessment", headers=nurse)
     assert first.status_code == 202, first.text
-    assert queued()["intake_saved"] is True                 # Lưu & cấp số xong mới check-in được
+    assert queued()["intake_saved"] is True  # Lưu & cấp số xong mới check-in được
     assert first.json() == {
         "assessment_id": first.json()["assessment_id"],
         "ai_status": "Pending",
@@ -99,11 +93,11 @@ def test_post_queues_repeatable_assessment_and_get_polls_latest(
     assert client.get(f"/api/v1/visits/{visit_id}/assessment", headers=doctor).status_code == 200
     assert client.get(f"/api/v1/visits/{visit_id}/assessment", headers=admin).status_code == 403
 
-    assessment_audits = [row for row in logs(action="AI_ASSESSMENT", entity="visit")
-                         if str(row.entity_id) == visit_id]
+    assessment_audits = [row for row in logs(action="AI_ASSESSMENT", entity="visit") if str(row.entity_id) == visit_id]
     assert len(assessment_audits) == 2
     accepted_views = [
-        row for row in logs(action="VIEW", entity="visit")
+        row
+        for row in logs(action="VIEW", entity="visit")
         if str(row.entity_id) == visit_id and (row.new_values or {}).get("result") != "denied"
     ]
     assert len(accepted_views) == 1
@@ -119,8 +113,7 @@ def test_post_supersedes_queued_and_rejects_closed_visit(client, login, knowledg
         old = db.get(AiAssessmentLog, uuid.UUID(first["assessment_id"]))
         assert old.status == "Skipped" and old.error_detail == "SUPERSEDED"
 
-    cancelled = client.patch(f"/api/v1/visits/{visit_id}/cancel", headers=nurse,
-                             json={"reason": "Bệnh nhân về"})
+    cancelled = client.patch(f"/api/v1/visits/{visit_id}/cancel", headers=nurse, json={"reason": "Bệnh nhân về"})
     assert cancelled.status_code == 200, cancelled.text
     closed = client.post(f"/api/v1/visits/{visit_id}/assessment", headers=nurse)
     assert closed.status_code == 409 and closed.json()["error"]["code"] == "VISIT_CLOSED"
@@ -129,12 +122,8 @@ def test_post_supersedes_queued_and_rejects_closed_visit(client, login, knowledg
 def test_post_requires_nurse(client, login, knowledge_reader):
     nurse = login("yta")
     visit_id = _visit(client, nurse)
-    assert client.post(
-        f"/api/v1/visits/{visit_id}/assessment", headers=login("bs")
-    ).status_code == 403
-    assert client.post(
-        f"/api/v1/visits/{visit_id}/assessment", headers=login("admin")
-    ).status_code == 403
+    assert client.post(f"/api/v1/visits/{visit_id}/assessment", headers=login("bs")).status_code == 403
+    assert client.post(f"/api/v1/visits/{visit_id}/assessment", headers=login("admin")).status_code == 403
     assert client.post(f"/api/v1/visits/{visit_id}/assessment").status_code == 401
 
 
@@ -144,14 +133,10 @@ def test_get_without_assessment_returns_business_404(client, login, knowledge_re
     response = client.get(f"/api/v1/visits/{visit_id}/assessment", headers=nurse)
     assert response.status_code == 404
     assert response.json()["error"]["code"] == "NOT_FOUND"
-    assert response.json()["error"]["message"] == (
-        "Chưa có kết quả đánh giá AI cho lượt khám này"
-    )
+    assert response.json()["error"]["message"] == ("Chưa có kết quả đánh giá AI cho lượt khám này")
 
 
-def test_post_red_flag_returns_skipped_without_candidates(
-    client, login, users, knowledge_reader, owner_engine
-):
+def test_post_red_flag_returns_skipped_without_candidates(client, login, users, knowledge_reader, owner_engine):
     nurse = login("yta")
     visit_id = _visit(client, nurse, vital_signs={"spo2_pct": 80})
     with SessionLocal() as db:
@@ -173,7 +158,10 @@ def test_post_red_flag_returns_skipped_without_candidates(
             rule_name="Cờ đỏ API",
             rule_type="RED_FLAG",
             condition_logic={
-                "type": "vital", "vital": "spo2_pct", "cmp": "<=", "value": 90,
+                "type": "vital",
+                "vital": "spo2_pct",
+                "cmp": "<=",
+                "value": 90,
             },
             resulting_priority="Emergency",
             reason_text="SpO2 thấp",
@@ -191,35 +179,45 @@ def test_post_red_flag_returns_skipped_without_candidates(
 
     try:
         knowledge_reader._release = {"release_id": release_id, "label": "AI11-RED"}
-        knowledge_reader._triage_rules = [{
-            "triage_rule_id": rule_id,
-            "rule_key": rule_key,
-            "version": 1,
-            "rule_type": "RED_FLAG",
-            "resulting_priority": "Emergency",
-            "reason_text": "SpO2 thấp",
-            "condition_logic": {
-                "type": "vital", "vital": "spo2_pct", "cmp": "<=", "value": 90,
-            },
-        }]
+        knowledge_reader._triage_rules = [
+            {
+                "triage_rule_id": rule_id,
+                "rule_key": rule_key,
+                "version": 1,
+                "rule_type": "RED_FLAG",
+                "resulting_priority": "Emergency",
+                "reason_text": "SpO2 thấp",
+                "condition_logic": {
+                    "type": "vital",
+                    "vital": "spo2_pct",
+                    "cmp": "<=",
+                    "value": 90,
+                },
+            }
+        ]
 
         response = client.post(f"/api/v1/visits/{visit_id}/assessment", headers=nurse)
         assert response.status_code == 202, response.text
         body = response.json()
         assert body["ai_status"] == "Skipped" and body["mode"] == "RuleOnly"
         assert body["priority"] == {
-            "rule": "Emergency", "final": "Emergency", "raised_by_ai": False,
+            "rule": "Emergency",
+            "final": "Emergency",
+            "raised_by_ai": False,
         }
-        assert body["alerts"] == [{
-            "rule_key": rule_key, "rule_type": "RED_FLAG", "reason_text": "SpO2 thấp",
-        }]
+        assert body["alerts"] == [
+            {
+                "rule_key": rule_key,
+                "rule_type": "RED_FLAG",
+                "reason_text": "SpO2 thấp",
+            }
+        ]
         assert body["candidates"] == []
     finally:
         with owner_engine.begin() as conn:
             conn.execute(
                 text(
-                    "UPDATE ai_assessment_log SET knowledge_release_id = NULL "
-                    "WHERE knowledge_release_id = :release_id"
+                    "UPDATE ai_assessment_log SET knowledge_release_id = NULL WHERE knowledge_release_id = :release_id"
                 ),
                 {"release_id": release_id},
             )
@@ -257,35 +255,43 @@ def test_get_returns_exact_completed_candidate_shape(client, login, users, knowl
         visit.triage_priority_rule = "Routine"
         visit.triage_priority = "HighPriority"
         visit.priority_raised_by_ai = True
-        db.add(AiAssessmentLog(
-            assessment_id=assessment_id,
-            visit_id=visit_id,
-            run_type="Assessment",
-            triggered_by=users["yta"].user_id,
-            status="Completed",
-            mode="Full",
-            rule_hits={"hits": [], "complete_now": []},
-            priority_rule="Routine",
-            priority_final="HighPriority",
-            candidates=[{
-                "rank": 1,
-                "condition_code": "influenza",
-                "name_vi": "Cúm",
-                "icd10_code": "J11",
-                "score": 0.75,
-                "supporting": [{
-                    "symptom_code": "cough", "symptom_name": "Ho",
-                    "weight": 0.8, "is_key": True,
-                }],
-                "contradicting": [],
-                "missing": [{"symptom_code": "fever", "symptom_name": "Sốt"}],
-                "explanation": "Bằng chứng hỗ trợ từ cough.",
-                "label": "Reference Suggestion",
-            }],
-            model_version="9b",
-            prompt_version="reasoning_v1",
-            completed_at=datetime.now(timezone.utc),
-        ))
+        db.add(
+            AiAssessmentLog(
+                assessment_id=assessment_id,
+                visit_id=visit_id,
+                run_type="Assessment",
+                triggered_by=users["yta"].user_id,
+                status="Completed",
+                mode="Full",
+                rule_hits={"hits": [], "complete_now": []},
+                priority_rule="Routine",
+                priority_final="HighPriority",
+                candidates=[
+                    {
+                        "rank": 1,
+                        "condition_code": "influenza",
+                        "name_vi": "Cúm",
+                        "icd10_code": "J11",
+                        "score": 0.75,
+                        "supporting": [
+                            {
+                                "symptom_code": "cough",
+                                "symptom_name": "Ho",
+                                "weight": 0.8,
+                                "is_key": True,
+                            }
+                        ],
+                        "contradicting": [],
+                        "missing": [{"symptom_code": "fever", "symptom_name": "Sốt"}],
+                        "explanation": "Bằng chứng hỗ trợ từ cough.",
+                        "label": "Reference Suggestion",
+                    }
+                ],
+                model_version="9b",
+                prompt_version="reasoning_v1",
+                completed_at=datetime.now(timezone.utc),
+            )
+        )
         db.commit()
 
     response = client.get(f"/api/v1/visits/{visit_id}/assessment", headers=doctor)
@@ -300,21 +306,27 @@ def test_get_returns_exact_completed_candidate_shape(client, login, users, knowl
         "priority": {"rule": "Routine", "final": "HighPriority", "raised_by_ai": True},
         "alerts": [],
         "complete_now": [],
-        "candidates": [{
-            "rank": 1,
-            "condition_code": "influenza",
-            "name_vi": "Cúm",
-            "icd10_code": "J11",
-            "score": 0.75,
-            "supporting": [{
-                "symptom_code": "cough", "symptom_name": "Ho",
-                "weight": 0.8, "is_key": True,
-            }],
-            "contradicting": [],
-            "missing": [{"symptom_code": "fever", "symptom_name": "Sốt"}],
-            "explanation": "Bằng chứng hỗ trợ từ cough.",
-            "label": "Reference Suggestion",
-        }],
+        "candidates": [
+            {
+                "rank": 1,
+                "condition_code": "influenza",
+                "name_vi": "Cúm",
+                "icd10_code": "J11",
+                "score": 0.75,
+                "supporting": [
+                    {
+                        "symptom_code": "cough",
+                        "symptom_name": "Ho",
+                        "weight": 0.8,
+                        "is_key": True,
+                    }
+                ],
+                "contradicting": [],
+                "missing": [{"symptom_code": "fever", "symptom_name": "Sốt"}],
+                "explanation": "Bằng chứng hỗ trợ từ cough.",
+                "label": "Reference Suggestion",
+            }
+        ],
     }
 
 

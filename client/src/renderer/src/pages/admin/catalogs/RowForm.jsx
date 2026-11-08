@@ -154,7 +154,7 @@ export function RowForm({ catalogKey, row, all, cats, inv, onClose }) {
   )
 }
 
-export function FieldInput({ fd, value, onChange, cats, inv }) {
+function FieldInput({ fd, value, onChange, cats, inv }) {
   if (fd.type === 'select')
     return (
       <select value={value ?? ''} onChange={(e) => onChange(e.target.value)}>
@@ -188,7 +188,7 @@ export function FieldInput({ fd, value, onChange, cats, inv }) {
   return <input value={value ?? ''} onChange={(e) => onChange(e.target.value)} />
 }
 
-export function PackageItems({ value, onChange, cats }) {
+function PackageItems({ value, onChange, cats }) {
   const [pick, setPick] = useState('')
   const options = [
     ...cats.services.filter((r) => r.active).map((r) => ({ ref: 'service:' + r.code, r })),
@@ -233,7 +233,7 @@ export function PackageItems({ value, onChange, cats }) {
   )
 }
 
-export function RxItems({ value, onChange, cats, inv }) {
+function RxItems({ value, onChange, cats, inv }) {
   const drugs = inv.drugs.filter((d) => d.active)
   const routes = cats.routes.filter((r) => r.active)
   const upd = (i, patch) => onChange(value.map((v, j) => (j === i ? { ...v, ...patch } : v)))
@@ -270,7 +270,7 @@ export function RxItems({ value, onChange, cats, inv }) {
   )
 }
 
-export function AdvicePick({ value, onChange, cats }) {
+function AdvicePick({ value, onChange, cats }) {
   return (
     <div className="ai-sym-picker">
       {cats.advice

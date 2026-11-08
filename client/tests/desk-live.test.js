@@ -69,6 +69,18 @@ describe('Check-in ở quầy (server thật)', () => {
     expect(visit('w1').status).toBe('CheckedIn')
   })
 
+  it('vòng tải định kỳ đang chạy dở lúc check-in → vẫn hiện trạng thái sau thao tác, không phải bản tải trước đó', async () => {
+    // Bản tải chụp dữ liệu lúc bắt đầu và trả về sau 20 ms, như một GET /queue chậm.
+    api.fetchQueue.mockImplementation(() => {
+      const snapshot = server.map((v) => ({ ...v }))
+      return new Promise((resolve) => setTimeout(() => resolve(snapshot), 20))
+    })
+    const poll = queue.syncQueue({ poll: true })
+    expect(await queue.checkInVisit('w1', DESK)).toEqual({ ok: true })
+    expect(visit('w1').status).toBe('CheckedIn')
+    await poll
+  })
+
   it('server từ chối → trả đúng câu lỗi của server, không đổi trạng thái', async () => {
     const r = await queue.checkInVisit('e1', DESK)
     expect(r).toEqual({ ok: false, error: 'Lượt khám không còn ở trạng thái chờ' })

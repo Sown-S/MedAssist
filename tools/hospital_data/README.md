@@ -1,6 +1,6 @@
 # tools/hospital_data — danh mục cơ sở nhận chuyển tuyến
 
-Công cụ chạy **trên máy dev** để tạo `server/data/hospitals.csv` (bảng `referral_facility`, ERD v2.0 mục 2.10a).
+Công cụ chạy **trên máy dev** để tạo `server/data/hospitals.csv` (bảng `referral_facility`, ERD §2.10a).
 Không thuộc server, không vào image Docker, không import gì từ `server/app`. Người phụ trách: Sơn.
 
 ## Nguồn

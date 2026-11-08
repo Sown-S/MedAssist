@@ -1,5 +1,6 @@
-"""REFERRAL_FACILITY — danh mục cơ sở nhận chuyển tuyến (ERD v2.0 mục 2.10a).
+"""REFERRAL_FACILITY — danh mục cơ sở nhận chuyển tuyến (ERD §2.10a).
 Nạp bằng scripts.seed_referral_facilities từ server/data/hospitals.csv; không xóa, ngừng dùng bằng is_active."""
+
 import uuid
 from datetime import datetime
 
@@ -19,10 +20,18 @@ class ReferralFacility(Base):
         CheckConstraint("facility_type IN ('Hospital','HealthCenter')", name="chk_referral_facility_type"),
         CheckConstraint("ownership IN ('Public','Ministry','Private')", name="chk_referral_facility_ownership"),
         Index("uq_referral_facility_kcb_code", "kcb_code", unique=True, postgresql_where=text("kcb_code IS NOT NULL")),
-        Index("uq_referral_facility_identity", "province",
-              func.lower(func.f_unaccent(column("name"))).label("name_unaccent"), unique=True),
-        Index("idx_referral_facility_name_trgm", func.lower(func.f_unaccent(column("name"))).label("name_unaccent"),
-              postgresql_using="gin", postgresql_ops={"name_unaccent": "gin_trgm_ops"}),
+        Index(
+            "uq_referral_facility_identity",
+            "province",
+            func.lower(func.f_unaccent(column("name"))).label("name_unaccent"),
+            unique=True,
+        ),
+        Index(
+            "idx_referral_facility_name_trgm",
+            func.lower(func.f_unaccent(column("name"))).label("name_unaccent"),
+            postgresql_using="gin",
+            postgresql_ops={"name_unaccent": "gin_trgm_ops"},
+        ),
     )
 
     facility_id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, server_default=text("gen_random_uuid()"))

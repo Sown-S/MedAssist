@@ -2,7 +2,7 @@
 // và dữ liệu mẫu trong catalogStore.
 import { fmtMoney, fmtDate } from '../inventory/shared'
 
-export const GENERAL_GROUPS = [
+const GENERAL_GROUPS = [
   { key: 'gender', label: 'Gender' },
   { key: 'ethnicity', label: 'Ethnicity' },
   { key: 'occupation', label: 'Occupation' },

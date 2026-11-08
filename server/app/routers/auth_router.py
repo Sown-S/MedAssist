@@ -1,4 +1,5 @@
-"""Xác thực tài khoản (US07, FR07) — ghi LOGIN, LOGIN_FAILED, LOGOUT vào AUDIT_LOG (US09)."""
+"""Xác thực tài khoản (US07, FR07); ghi LOGIN, LOGIN_FAILED, LOGOUT vào AUDIT_LOG (US09)."""
+
 import uuid
 
 import jwt
@@ -10,14 +11,29 @@ from app.core.auth import get_user_allow_password_change
 from app.core.config import settings
 from app.core.database import get_db
 from app.core.request_meta import client_ip, user_agent
-from app.core.security import (MIN_PASSWORD_LENGTH, burn_verify_time, create_access_token, create_refresh_token,
-                               decode_token, hash_password, stamp_matches, verify_password)
+from app.core.security import (
+    MIN_PASSWORD_LENGTH,
+    burn_verify_time,
+    create_access_token,
+    create_refresh_token,
+    decode_token,
+    hash_password,
+    stamp_matches,
+    verify_password,
+)
 from app.exceptions import AppError
 from app.models.user import User
-from app.schemas.auth import (ChangePasswordRequest, LoginRequest, PasswordPolicy, RefreshRequest, TokenResponse,
-                              UserMe)
+from app.schemas.auth import (
+    ChangePasswordRequest,
+    ClientConfig,
+    LoginRequest,
+    PasswordPolicy,
+    RefreshRequest,
+    TokenResponse,
+    UserMe,
+)
 from app.services import audit_service as audit
-from app.services import user_service
+from app.services import settings_service, user_service
 from app.services.login_guard import check_login_allowed
 
 router = APIRouter(prefix="/auth", tags=["auth"])
@@ -30,8 +46,9 @@ _REFRESH_FAILED = AppError(401, "UNAUTHORIZED", "Phiên đăng nhập đã hết
 def _tokens(user: User) -> TokenResponse:
     access, access_s = create_access_token(user.user_id, user.role, user.password_hash)
     refresh, refresh_s = create_refresh_token(user.user_id, user.role, user.password_hash)
-    return TokenResponse(access_token=access, expires_in=access_s, refresh_token=refresh,
-                         refresh_expires_in=refresh_s, role=user.role)
+    return TokenResponse(
+        access_token=access, expires_in=access_s, refresh_token=refresh, refresh_expires_in=refresh_s, role=user.role
+    )
 
 
 @router.post("/login", response_model=TokenResponse)
@@ -40,12 +57,21 @@ def login(body: LoginRequest, request: Request, db: Session = Depends(get_db)) -
 
     wait = check_login_allowed(db, body.username, meta["ip_address"])
     if wait:
-        audit.record(db, action="LOGIN_FAILED", entity="users", attempted_username=body.username,
-                     new_values={"reason": "locked", "retry_after_s": wait}, **meta)
+        audit.record(
+            db,
+            action="LOGIN_FAILED",
+            entity="users",
+            attempted_username=body.username,
+            new_values={"reason": "locked", "retry_after_s": wait},
+            **meta,
+        )
         db.commit()
-        raise AppError(429, "RATE_LIMITED",
-                       f"Đăng nhập sai quá nhiều lần. Vui lòng thử lại sau {wait} giây.",
-                       [{"retry_after_seconds": wait}])
+        raise AppError(
+            429,
+            "RATE_LIMITED",
+            f"Đăng nhập sai quá nhiều lần. Vui lòng thử lại sau {wait} giây.",
+            [{"retry_after_seconds": wait}],
+        )
 
     user = db.scalar(select(User).where(User.username == body.username))
     if user is None:
@@ -60,11 +86,17 @@ def login(body: LoginRequest, request: Request, db: Session = Depends(get_db)) -
 
     if reason:
         # user_id có khi tài khoản có thật (sai mật khẩu / bị khóa); NULL khi không tồn tại
-        audit.record(db, action="LOGIN_FAILED", entity="users",
-                     entity_id=user.user_id if user else None,
-                     actor_id=user.user_id if user else None,
-                     attempted_username=body.username, new_values={"reason": reason}, **meta)
-        db.commit()   # dòng log phải được lưu dù đăng nhập thất bại
+        audit.record(
+            db,
+            action="LOGIN_FAILED",
+            entity="users",
+            entity_id=user.user_id if user else None,
+            actor_id=user.user_id if user else None,
+            attempted_username=body.username,
+            new_values={"reason": reason},
+            **meta,
+        )
+        db.commit()  # dòng log phải được lưu dù đăng nhập thất bại
         raise _LOGIN_FAILED
 
     audit.record(db, action="LOGIN", entity="users", entity_id=user.user_id, actor_id=user.user_id, **meta)
@@ -87,21 +119,41 @@ def refresh(body: RefreshRequest, db: Session = Depends(get_db)) -> TokenRespons
 
 
 @router.post("/logout", status_code=status.HTTP_204_NO_CONTENT)
-def logout(request: Request, user: User = Depends(get_user_allow_password_change),
-           db: Session = Depends(get_db)) -> None:
+def logout(
+    request: Request, user: User = Depends(get_user_allow_password_change), db: Session = Depends(get_db)
+) -> None:
     # JWT không trạng thái: client xóa cả hai token; server ghi nhận đăng xuất (US07)
-    audit.record(db, action="LOGOUT", entity="users", entity_id=user.user_id, actor_id=user.user_id,
-                 ip_address=client_ip(request), user_agent=user_agent(request))
+    audit.record(
+        db,
+        action="LOGOUT",
+        entity="users",
+        entity_id=user.user_id,
+        actor_id=user.user_id,
+        ip_address=client_ip(request),
+        user_agent=user_agent(request),
+    )
     db.commit()
+
+
+@router.get("/client-config", response_model=ClientConfig)
+def client_config(db: Session = Depends(get_db)) -> ClientConfig:
+    """Không cần đăng nhập: màn đăng nhập hiện tên, logo phòng khám. Chỉ thông tin công khai in trên phiếu."""
+    return ClientConfig(
+        clinic=settings_service.get_value(db, "clinic.profile"),
+        idle_logout_minutes=settings_service.get_value(db, "security.idle_logout_minutes"),
+    )
 
 
 @router.get("/password-policy", response_model=PasswordPolicy)
 def password_policy() -> PasswordPolicy:
     """Không cần đăng nhập: màn đổi mật khẩu lần đầu cũng cần biết yêu cầu."""
-    return PasswordPolicy(min_length=MIN_PASSWORD_LENGTH, require_letters_and_digits=True,
-                          max_failed_attempts=settings.LOGIN_MAX_FAILURES_PER_USER,
-                          failed_window_minutes=settings.LOGIN_WINDOW_MINUTES,
-                          lock_minutes=settings.LOGIN_LOCK_MINUTES)
+    return PasswordPolicy(
+        min_length=MIN_PASSWORD_LENGTH,
+        require_letters_and_digits=True,
+        max_failed_attempts=settings.LOGIN_MAX_FAILURES_PER_USER,
+        failed_window_minutes=settings.LOGIN_WINDOW_MINUTES,
+        lock_minutes=settings.LOGIN_LOCK_MINUTES,
+    )
 
 
 @router.get("/me", response_model=UserMe)
@@ -110,18 +162,36 @@ def me(user: User = Depends(get_user_allow_password_change), db: Session = Depen
 
 
 @router.post("/change-password", status_code=status.HTTP_204_NO_CONTENT)
-def change_password(body: ChangePasswordRequest, request: Request,
-                    user: User = Depends(get_user_allow_password_change),
-                    db: Session = Depends(get_db)) -> None:
+def change_password(
+    body: ChangePasswordRequest,
+    request: Request,
+    user: User = Depends(get_user_allow_password_change),
+    db: Session = Depends(get_db),
+) -> None:
     if not verify_password(body.old_password, user.password_hash):
-        raise AppError(422, "WRONG_PASSWORD", "Mật khẩu hiện tại không đúng",
-                       [{"field": "old_password", "in": "body", "message": "Không đúng"}])
+        raise AppError(
+            422,
+            "WRONG_PASSWORD",
+            "Mật khẩu hiện tại không đúng",
+            [{"field": "old_password", "in": "body", "message": "Không đúng"}],
+        )
     if body.new_password == body.old_password:
-        raise AppError(422, "VALIDATION_ERROR", "Mật khẩu mới phải khác mật khẩu cũ",
-                       [{"field": "new_password", "in": "body", "message": "Phải khác mật khẩu cũ"}])
+        raise AppError(
+            422,
+            "VALIDATION_ERROR",
+            "Mật khẩu mới phải khác mật khẩu cũ",
+            [{"field": "new_password", "in": "body", "message": "Phải khác mật khẩu cũ"}],
+        )
     user.password_hash = hash_password(body.new_password)
     user.must_change_password = False
-    audit.record(db, action="UPDATE", entity="users", entity_id=user.user_id, actor_id=user.user_id,
-                 new_values={"password_changed": True},
-                 ip_address=client_ip(request), user_agent=user_agent(request))
+    audit.record(
+        db,
+        action="UPDATE",
+        entity="users",
+        entity_id=user.user_id,
+        actor_id=user.user_id,
+        new_values={"password_changed": True},
+        ip_address=client_ip(request),
+        user_agent=user_agent(request),
+    )
     db.commit()

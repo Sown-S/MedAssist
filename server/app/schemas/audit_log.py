@@ -11,12 +11,17 @@ ActionType = Literal[ACTION_TYPES]  # type: ignore[valid-type]
 
 class AuditLogFilter(BaseModel):
     """Bộ lọc dùng chung cho xem và xuất nhật ký."""
+
     user_id: uuid.UUID | None = None
-    username: str | None = Field(default=None, max_length=50, description="Khớp chính xác; gồm cả tên đã thử khi LOGIN_FAILED")
+    username: str | None = Field(
+        default=None, max_length=50, description="Khớp chính xác; gồm cả tên đã thử khi LOGIN_FAILED"
+    )
     action_type: ActionType | None = None
     target_entity: str | None = Field(default=None, max_length=50)
     entity_id: uuid.UUID | None = None
-    created_from: datetime | None = Field(default=None, description="ISO 8601, có múi giờ, vd 2026-10-10T00:00:00+07:00")
+    created_from: datetime | None = Field(
+        default=None, description="ISO 8601, có múi giờ, vd 2026-10-10T00:00:00+07:00"
+    )
     created_to: datetime | None = None
 
 
@@ -27,7 +32,7 @@ class AuditLogOut(BaseModel):
     created_at: datetime
     action_type: str
     user_id: uuid.UUID | None
-    username: str | None          # tên tài khoản thực hiện (join users)
+    username: str | None  # tên tài khoản thực hiện (join users)
     attempted_username: str | None
     target_entity: str
     entity_id: uuid.UUID | None

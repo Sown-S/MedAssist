@@ -5,7 +5,7 @@ import { apiGet } from './client'
 let cache = null
 let loading = null
 
-export function loadConditions() {
+function loadConditions() {
   if (cache) return Promise.resolve(cache)
   loading ??= (async () => {
     const out = []

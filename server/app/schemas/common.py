@@ -1,4 +1,5 @@
 """Kiểu dữ liệu dùng chung cho schema request/response."""
+
 import re
 from typing import Annotated
 

@@ -2,6 +2,7 @@
 // khoá mọi thao tác ghi; có lại thì tự mở.
 import { useEffect, useSyncExternalStore } from 'react'
 import { getBaseUrl } from './serverConfig'
+import { subscribeSlow, isServerSlow } from './client'
 
 const INTERVAL_MS = 3000
 const TIMEOUT_MS = 2500
@@ -58,6 +59,9 @@ export function useServerOnline() {
   return useSyncExternalStore(subscribe, snapshot)
 }
 export const isServerOnline = snapshot
+
+// true khi có yêu cầu chờ server quá 10 giây (xem timedFetch trong client.js).
+export const useServerSlow = () => useSyncExternalStore(subscribeSlow, isServerSlow)
 
 // { ok, reason, detail } — khung đề xuất từ lời kể ẩn khi disabled, báo vàng và khoá nút khi hỏng, tự mở lại khi ok.
 export function useAiHealth() {
