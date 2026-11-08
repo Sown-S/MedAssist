@@ -98,8 +98,14 @@ async def extract_symptoms(
     if not catalogue:
         return []
     prompt_catalogue = _select_prompt_catalogue(catalogue, masked)
+    # Giữ mã nguyên vẹn. Với lời kể hoàn toàn không dấu, biểu diễn tên cùng dạng
+    # để model không bỏ sót chỉ vì khác cách viết; không sửa văn bản đã che PII.
+    unaccented_note = _strip_accents(masked) == masked
+    names = {row["symptom_code"]: (_strip_accents(row["symptom_name"])
+                                 if unaccented_note else row["symptom_name"])
+             for row in prompt_catalogue}
     prompt = load_prompt(EXTRACTION_PROMPT_VERSION) + "\n" + json.dumps(
-        {"catalogue": prompt_catalogue, "text": masked}, ensure_ascii=False, allow_nan=False,
+        {"catalogue": names, "text": masked}, ensure_ascii=False, allow_nan=False,
     )
     remaining = deadline - monotonic()
     if remaining <= 0:
@@ -107,7 +113,9 @@ async def extract_symptoms(
     try:
         async with asyncio.timeout(remaining):
             output = await llm_client.generate_json(
-                prompt=prompt, schema=extraction_json_schema(), timeout_seconds=remaining,
+                prompt=prompt,
+                schema=extraction_json_schema([row["symptom_code"] for row in prompt_catalogue]),
+                timeout_seconds=remaining,
             )
     except (LLMError, TimeoutError):
         return []
@@ -203,7 +211,7 @@ def _validated_suggestions(output: object, allowed: set[str]) -> list[SymptomSug
     ]
 
 
-_MAX_PROMPT_CATALOGUE = 20
+_PRIORITY_CATALOGUE_SIZE = 20
 _STOP_WORDS = frozenset({
     "va", "hoac", "co", "khong", "bi", "la", "o", "tai", "cac", "vung",
     "benh", "nhan", "ngay", "nay", "khi", "do", "kem", "theo", "tren",
@@ -213,7 +221,7 @@ _STOP_WORDS = frozenset({
 })
 
 # Bảng mở rộng từ đồng nghĩa/khẩu ngữ lâm sàng tiếng Việt sang thuật ngữ y khoa chuẩn
-# giúp tầng lọc ứng viên (Stage 1) giữ độ phủ cao mà vẫn cố định O(1) lần gọi LLM.
+# chỉ giúp xếp nhóm liên quan lên trước; không loại mã khỏi catalog gửi LLM.
 _CLINICAL_SYNONYMS: tuple[tuple[tuple[str, ...], str], ...] = (
     (("nóng người", "nong nguoi", "nóng sốt", "hầm hập", "sốt nóng"), "sốt cao sốt nhẹ fever"),
     (("gai người", "gai nguoi", "lạnh run", "sợ lạnh", "ớn lạnh"), "ớn lạnh gai rét rét run chills"),
@@ -281,8 +289,8 @@ def _select_prompt_catalogue(
     catalogue: list[dict[str, str]],
     text: str,
 ) -> list[dict[str, str]]:
-    """Lọc Top-K ứng viên sát nhất có mở rộng từ đồng nghĩa/khẩu ngữ để giữ cố định 1 lần gọi LLM."""
-    if len(catalogue) <= _MAX_PROMPT_CATALOGUE:
+    """Đưa nhóm liên quan lên trước, giữ toàn bộ catalog trong một lần gọi LLM."""
+    if len(catalogue) <= _PRIORITY_CATALOGUE_SIZE:
         return catalogue
     tw, tuw, tbi, tubi = _lexical_features(text, expand_synonyms=True)
     scored: list[tuple[float, str, dict[str, str]]] = []
@@ -300,6 +308,7 @@ def _select_prompt_catalogue(
         )
         scored.append((score, code, row))
     scored.sort(key=lambda item: (-item[0], item[1]))
-    selected = [item[2] for item in scored[:_MAX_PROMPT_CATALOGUE]]
+    selected = [item[2] for item in scored[:_PRIORITY_CATALOGUE_SIZE]]
     selected.sort(key=lambda item: item["symptom_code"])
-    return selected
+    selected_codes = {row["symptom_code"] for row in selected}
+    return selected + [row for row in catalogue if row["symptom_code"] not in selected_codes]
