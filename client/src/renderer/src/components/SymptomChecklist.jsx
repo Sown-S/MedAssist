@@ -6,6 +6,8 @@ import { STATES, useSymptomCatalog, groupSymptoms, searchSymptoms, symptomName, 
 // Danh sách triệu chứng cho y tá, từ trên xuống: ô tìm (gõ không dấu) → “Đã xác nhận” → Dấu hiệu nguy hiểm (mở sẵn)
 // → các nhóm khác (đóng sẵn, tiêu đề có số đã chọn). Mục đã chọn vẫn nằm trong nhóm của nó, được tô nổi.
 const SOURCE_LABEL = { Form: 'Picked by nurse', Extracted: 'From description', Prompt: 'Asked (missing info)' }
+// Kết quả tìm hiện trước bấy nhiêu mục; nhiều hơn thì có nút hiện hết, để không ai tưởng chỉ có bấy nhiêu.
+const RESULTS_SHOWN = 8
 const nameOf = (s) => (s.key === OUT_OF_SCOPE ? translate('Dangerous sign not in the list') : translate(s.label))
 const OutOfScopeHint = () => <small className="sym-hint">{translate('e.g. multiple trauma, heavy bleeding — describe it in the patient’s description')}</small>
 
@@ -37,6 +39,7 @@ function Row({ s, value, onSet, disabled }) {
 export default function SymptomChecklist({ value, onSet, disabled = false }) {
   const catalog = useSymptomCatalog()
   const [query, setQuery] = useState('')
+  const [showAll, setShowAll] = useState(false)
   const [openGroups, setOpenGroups] = useState({})
   const groups = groupSymptoms(catalog.list)
   const byKey = new Map(catalog.list.map((s) => [s.key, s]))
@@ -47,6 +50,8 @@ export default function SymptomChecklist({ value, onSet, disabled = false }) {
     .map(([key, x]) => ({ s: byKey.get(key) ?? { key, label: symptomName(key) }, ...x }))
     .sort((a, b) => isDangerSymptom(b.s) - isDangerSymptom(a.s))
   const results = searchSymptoms(catalog.list, query)
+  const hidden = showAll ? 0 : Math.max(0, results.length - RESULTS_SHOWN)
+  const shown = hidden ? results.slice(0, RESULTS_SHOWN) : results
 
   return (
     <div className="sym-checklist">
@@ -70,13 +75,18 @@ export default function SymptomChecklist({ value, onSet, disabled = false }) {
               disabled={disabled}
               placeholder={translate('Search symptoms — accents not needed (e.g. dau bung)')}
               aria-label={translate('Search symptoms')}
-              onChange={(e) => setQuery(e.target.value)}
-              onKeyDown={(e) => e.key === 'Escape' && setQuery('')}
+              onChange={(e) => (setQuery(e.target.value), setShowAll(false))}
+              onKeyDown={(e) => e.key === 'Escape' && (setQuery(''), setShowAll(false))}
             />
           </div>
           {query.trim() && (
             <div className="sym-results">
-              {results.length ? results.map((s) => <Row key={s.key} s={s} value={value} onSet={onSet} disabled={disabled} />) : <p className="ai-soft">{translate('No matching symptom.')}</p>}
+              {results.length ? shown.map((s) => <Row key={s.key} s={s} value={value} onSet={onSet} disabled={disabled} />) : <p className="ai-soft">{translate('No matching symptom.')}</p>}
+              {hidden > 0 && (
+                <button type="button" className="btn btn-ghost btn-sm sym-more" onClick={() => setShowAll(true)}>
+                  {translate(`Show ${hidden} more`)}
+                </button>
+              )}
             </div>
           )}
         </div>

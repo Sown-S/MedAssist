@@ -20,7 +20,14 @@ describe('Trích xuất có triệu chứng chưa rõ', () => {
   it('nhắc hỏi lại, không báo “không tìm thấy triệu chứng”', async () => {
     panel()
     expect(await screen.findByText(/Not sure — ask the patient again:.*Ho khan/)).toBeTruthy()
-    expect(screen.queryByText(/No catalog symptoms found/)).toBeNull()
+    expect(screen.queryByText(/did not recognise any symptom/)).toBeNull()
+  })
+
+  it('trích xuất rỗng: báo mô hình chưa nhận ra, không ngụ ý bệnh nhân không có triệu chứng', async () => {
+    const empty = { proposals: [], unsure: [], vitalProposals: [], textChanged: false }
+    render(<SymptomPanel value={{}} onChange={() => {}} text="Thấy trong người khó chịu" onText={() => {}} onExtract={async () => empty} />)
+    fireEvent.click(screen.getByText('Read description & suggest'))
+    expect(await screen.findByText(/did not recognise any symptom.*does not mean the patient has none/)).toBeTruthy()
   })
 
   it('lễ tân đã chọn Có / Không cho mục đó → không nhắc nữa', async () => {
