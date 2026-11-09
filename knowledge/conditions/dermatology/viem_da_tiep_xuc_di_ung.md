@@ -5,82 +5,75 @@ name_vi: Viêm da tiếp xúc dị ứng
 name_en: Allergic Contact Dermatitis
 icd10_code: L23.9
 disease_group: dermatology
-description: Viêm da tiếp xúc là phản ứng viêm cấp hoặc mạn tính của da với một số
-  yếu tố trong môi trường khi tiếp xúc với da. Là bệnh thường gặp, chiếm 1,5 - 5,4%
-  dân số thế giới. Bệnh gặp ở mọi lứa tuổi, mọi giới và mọi nghề khác nhau. Tổn thương
-  là dát đỏ, mụn nước, có khi loét trợt hoại tử, ngứa. Bệnh tiến triển dai dẳng, hay
-  tái phát nếu không phát hiện và loại trừ được dị nguyên.
+description: Viêm da tiếp xúc là phản ứng viêm cấp hoặc mạn tính của da với một số yếu tố trong môi trường
+  khi tiếp xúc với da. Là bệnh thường gặp, chiếm 1,5 - 5,4% dân số thế giới. Bệnh gặp ở mọi lứa tuổi,
+  mọi giới và mọi nghề khác nhau. Tổn thương là dát đỏ, mụn nước, có khi loét trợt hoại tử, ngứa. Bệnh
+  tiến triển dai dẳng, hay tái phát nếu không phát hiện và loại trừ được dị nguyên.
 relations:
 - symptom_code: pruritus_intense_skin_itch
   polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: vesicular_blister_rash
   polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: scaly_plaque_hyperkeratosis
   polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: atopic_dermatitis_flexural_eczema
   polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: allergic_contact_dermatitis_patch_pos
   polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
-  source_key: moh_qd_75_2015
-  source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: dress_syndrome_facial_edema_eosinophilia
-  polarity: SUPPORTS
-  weight: 0.98
+  weight: 0.9
   is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: erythema_multiforme_target_lesion
   polarity: SUPPORTS
-  weight: 0.97
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: palmoplantar_keratoderma_fissures
   polarity: SUPPORTS
-  weight: 0.97
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: maculopapular_rash
   polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: prurigo_nodularis_excoriated_papules
   polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: verrucous_papule_nodule_ulcer
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: conjunctivitis_uveitis_red_eye
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 excerpts:

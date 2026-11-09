@@ -1,12 +1,8 @@
-"""Định dạng lỗi thống nhất cho mọi API (tiếng Việt, có mã lỗi để client xử lý).
+"""Định dạng lỗi thống nhất cho mọi API: {"error": {code, message, details, request_id}}, thông báo tiếng Việt.
 
-    {"error": {"code": "VALIDATION_ERROR", "message": "Dữ liệu không hợp lệ",
-               "details": [{"field": "vital_signs.spo2_pct", "in": "body", "message": "..."}],
-               "request_id": "3f2a..."}}
-
-Nguyên tắc: KHÔNG trả chi tiết nội bộ (câu SQL, tên bảng, traceback) ra client; lỗi 500 chỉ
-có request_id để tra log server.
+Không trả chi tiết nội bộ (câu SQL, tên bảng, traceback); lỗi 500 chỉ có request_id để tra log server.
 """
+
 from typing import Any
 
 from fastapi import FastAPI, Request
@@ -23,8 +19,7 @@ _logger = get_logger("errors")
 class AppError(Exception):
     """Lỗi nghiệp vụ chủ động ném từ service/router: raise AppError(404, "NOT_FOUND", "...")."""
 
-    def __init__(self, status_code: int, code: str, message: str,
-                 details: list[dict[str, Any]] | None = None) -> None:
+    def __init__(self, status_code: int, code: str, message: str, details: list[dict[str, Any]] | None = None) -> None:
         super().__init__(message)
         self.status_code, self.code, self.message, self.details = status_code, code, message, details
 
@@ -59,7 +54,7 @@ def _body(status_code: int, code: str, message: str, details=None, headers=None)
     return JSONResponse(status_code=status_code, content={"error": error}, headers=headers)
 
 
-# ---- Thông báo tiếng Việt cho lỗi kiểm tra của Pydantic ------------------------------
+# --- Thông báo tiếng Việt cho lỗi kiểm tra của Pydantic -------------------------------------------
 def _num(value: Any) -> Any:
     """100.0 -> 100 cho dễ đọc."""
     return int(value) if isinstance(value, float) and value.is_integer() else value
@@ -129,7 +124,7 @@ def _validation_details(errors) -> list[dict[str, Any]]:
     return details
 
 
-# ---- Lỗi ràng buộc CSDL -> lỗi nghiệp vụ dễ hiểu ---------------------------------------
+# --- Lỗi ràng buộc CSDL -> lỗi nghiệp vụ dễ hiểu --------------------------------------------------
 _SQLSTATE = {
     "23505": (409, "CONFLICT", "Dữ liệu đã tồn tại hoặc trùng lặp"),
     "23503": (409, "INVALID_REFERENCE", "Dữ liệu tham chiếu không tồn tại hoặc đang được sử dụng"),
@@ -168,8 +163,9 @@ def register_exception_handlers(app: FastAPI) -> None:
         sqlstate = getattr(exc.orig, "sqlstate", None)
         status_code, code, message = _SQLSTATE.get(sqlstate, (409, "CONFLICT", "Dữ liệu xung đột"))
         constraint = _constraint_name(exc)
-        _logger.warning("IntegrityError %s constraint=%s on %s %s", sqlstate, constraint,
-                        request.method, request.url.path)
+        _logger.warning(
+            "IntegrityError %s constraint=%s on %s %s", sqlstate, constraint, request.method, request.url.path
+        )
         # Tên ràng buộc (vd chk_visit_vital_signs_keys) giúp client chỉ ra trường sai; không lộ dữ liệu
         details = [{"constraint": constraint}] if constraint else None
         return _body(status_code, code, message, details)
@@ -177,5 +173,4 @@ def register_exception_handlers(app: FastAPI) -> None:
     @app.exception_handler(Exception)
     async def _unhandled(request: Request, exc: Exception):
         _logger.exception("Lỗi không xử lý được: %s %s", request.method, request.url.path)
-        return _body(500, "INTERNAL_ERROR",
-                     "Lỗi hệ thống. Vui lòng thử lại hoặc báo quản trị viên kèm mã request_id.")
+        return _body(500, "INTERNAL_ERROR", "Lỗi hệ thống. Vui lòng thử lại hoặc báo quản trị viên kèm mã request_id.")

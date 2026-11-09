@@ -66,11 +66,35 @@ const ROUTES = [
   [/^\/api\/v1\/visits\/v-exam\/symptoms$/, () => [{ symptom_code: 'anemia_pallor_jaundice', symptom_name: 'Da xanh xao, vàng da', state: 'PRESENT', source: 'Form', confirmed_at: today }]],
   [/^\/api\/v1\/symptoms$/, () => [{ symptom_code: 'fever', symptom_name: 'Sốt', category: 'constitutional' }]],
   [/^\/api\/v1\/reports\/summary/, () => SUMMARY],
+  [/^\/api\/v1\/auth\/client-config$/, () => ({ clinic: { name: 'Phòng khám An Bình' }, idle_logout_minutes: 15 })],
   [/^\/api\/v1\/auth\/password-policy$/, () => ({ min_length: 8, require_letters_and_digits: true, max_failed_attempts: 5, failed_window_minutes: 15, lock_minutes: 5 })],
   [/^\/api\/v1\/patients\/[^/?]+$/, (path) => PATIENT(path.split('/').pop())],
   [/^\/api\/v1\/visits\/[^/?]+$/, () => ({ free_text_description: 'Ho, sốt 2 ngày', chief_complaint: 'Ho, sốt', vital_signs: {} })],
+  // Lượt chỉ dùng cho test màn Cấp phát & thu tiền (không có trong hàng đợi): một dòng thuốc chờ cấp, hoá đơn chờ thu.
+  [/^\/api\/v1\/visits\/v-pay\/prescription$/, () => PAY_RX],
+  [/^\/api\/v1\/visits\/v-pay\/invoice$/, () => PAY_INVOICE],
   [/^\/api\/v1\/visits\/[^/]+\/(assessment|prescription)$/, () => ({ status: 404, body: { error: { code: 'NOT_FOUND', message: 'Không tìm thấy' } } })]
 ]
+
+const PAY_RX = {
+  prescription_id: 'rx-pay',
+  status: 'Confirmed',
+  patient_context: { allergy_notes: null },
+  items: [{ item_id: 'pi1', drug_name: 'Paracetamol 500mg', dosage: '1 viên', frequency: '3 lần/ngày', duration_days: 3, quantity: 9, unit: 'viên', dispense_status: 'Pending' }]
+}
+const PAY_INVOICE = {
+  invoice_code: 'HD-PAY',
+  payment_status: 'Pending',
+  consultation_fee: '30000',
+  paraclinical_fee: '0',
+  drug_fee: '9000',
+  total_amount: '39000',
+  unbilled_items: [],
+  items: [
+    { invoice_item_id: 'ii1', item_type: 'Consultation', item_name: 'Khám bệnh', quantity: 1, unit_price: '30000', subtotal: '30000' },
+    { invoice_item_id: 'ii2', item_type: 'Drug', item_name: 'Paracetamol 500mg', quantity: 9, unit_price: '1000', subtotal: '9000' }
+  ]
+}
 
 export const calls = []
 
@@ -80,15 +104,21 @@ async function respond(url, init = {}) {
   calls.push({ method, path: pathname + search, body: init.body ? JSON.parse(init.body) : undefined })
   let body = method === 'GET' ? (search.includes('limit=') ? { items: [], total: 0 } : []) : {}
   let status = 200
-  if (method === 'GET') {
-    const hit = ROUTES.find(([re]) => re.test(pathname))
-    if (hit) {
-      const r = hit[1](pathname)
-      if (r?.status && r.body) ({ status, body } = r)
-      else body = r
-    }
+  // Route khai báo không có method là GET.
+  const hit = ROUTES.find(([re, , m = 'GET']) => m === method && re.test(pathname))
+  if (hit) {
+    const r = hit[1](pathname)
+    if (r?.status && r.body) ({ status, body } = r)
+    else body = r
   }
   return new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } })
+}
+
+// Test đổi tạm câu trả lời của một endpoint (VD /health hỏng); hàm ném lỗi = mất mạng. Gọi hàm trả về để bỏ.
+export function overrideRoute(re, fn, method = 'GET') {
+  const route = [re, fn, method]
+  ROUTES.unshift(route)
+  return () => ROUTES.splice(ROUTES.indexOf(route), 1)
 }
 
 export function resetCalls() {

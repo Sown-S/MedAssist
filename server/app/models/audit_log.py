@@ -1,6 +1,7 @@
-"""AUDIT_LOG — ERD v1.8 mục 2.21. Chỉ-thêm: trigger chặn UPDATE/DELETE/TRUNCATE,
+"""AUDIT_LOG (ERD §2.21). Chỉ-thêm: trigger chặn UPDATE/DELETE/TRUNCATE,
 medassist_app không có quyền UPDATE/DELETE. Ứng dụng CHỈ được INSERT.
 """
+
 import uuid
 from datetime import datetime
 from typing import Any
@@ -12,8 +13,18 @@ from sqlalchemy.orm import Mapped, mapped_column
 from app.core.database import Base
 
 ACTION_TYPES = (
-    "LOGIN", "LOGIN_FAILED", "LOGOUT", "VIEW", "CREATE", "UPDATE", "DELETE", "EXPORT",
-    "APPROVE", "REJECT", "RETIRE", "AI_ASSESSMENT",
+    "LOGIN",
+    "LOGIN_FAILED",
+    "LOGOUT",
+    "VIEW",
+    "CREATE",
+    "UPDATE",
+    "DELETE",
+    "EXPORT",
+    "APPROVE",
+    "REJECT",
+    "RETIRE",
+    "AI_ASSESSMENT",
 )
 
 
@@ -25,7 +36,7 @@ class AuditLog(Base):
             "'EXPORT','APPROVE','REJECT','RETIRE','AI_ASSESSMENT')",
             name="audit_log_action_type_check",
         ),
-        # v1.8: có người thực hiện, trừ LOGIN_FAILED (khi đó phải có tên đã nhập)
+        # Có người thực hiện, trừ LOGIN_FAILED (khi đó phải có tên đã nhập)
         CheckConstraint(
             "user_id IS NOT NULL OR (action_type = 'LOGIN_FAILED' AND attempted_username IS NOT NULL)",
             name="chk_audit_log_actor",
@@ -34,10 +45,18 @@ class AuditLog(Base):
         Index("idx_audit_log_entity", "target_entity", "entity_id"),
         Index("idx_audit_log_created", text("created_at DESC")),
         # 0003: đếm LOGIN_FAILED theo tên đăng nhập / IP trong cửa sổ thời gian
-        Index("idx_audit_login_failed_user", "attempted_username", "created_at",
-              postgresql_where=text("action_type = 'LOGIN_FAILED'")),
-        Index("idx_audit_login_failed_ip", "ip_address", "created_at",
-              postgresql_where=text("action_type = 'LOGIN_FAILED'")),
+        Index(
+            "idx_audit_login_failed_user",
+            "attempted_username",
+            "created_at",
+            postgresql_where=text("action_type = 'LOGIN_FAILED'"),
+        ),
+        Index(
+            "idx_audit_login_failed_ip",
+            "ip_address",
+            "created_at",
+            postgresql_where=text("action_type = 'LOGIN_FAILED'"),
+        ),
     )
 
     log_id: Mapped[uuid.UUID] = mapped_column(primary_key=True, server_default=text("gen_random_uuid()"))

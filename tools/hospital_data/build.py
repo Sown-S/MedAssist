@@ -1,8 +1,7 @@
-"""Tạo danh mục cơ sở nhận chuyển tuyến từ văn bản của Bộ Y tế và Sở Y tế (xem README.md).
-
-    python -m hospital_data.build            # đọc sources/, ghi manifest.json và output/hospital_candidates.csv
-    python -m hospital_data.build export     # dòng có 'x' ở cột chon -> server/data/hospitals.csv
+"""Tạo danh mục cơ sở nhận chuyển tuyến từ văn bản của Bộ Y tế và Sở Y tế. Cách chạy: tools/hospital_data/README.md.
+``build``: sources/ -> manifest.json, output/hospital_candidates.csv; ``build export`` -> server/data/hospitals.csv.
 """
+
 import argparse
 import csv
 import hashlib
@@ -22,16 +21,43 @@ CANDIDATES = HERE / "output" / "hospital_candidates.csv"
 REVIEW = HERE / "duyet.csv"
 HOSPITALS = HERE.parents[1] / "server" / "data" / "hospitals.csv"
 
-CAND_COLS = ["chon", "ten", "tinh", "dia_chi", "loai", "so_huu", "cap_cmkt", "ma_kcb", "nguon", "vi_tri",
-             "can_xem", "duyet", "ten_goc"]
-OUT_COLS = ["name", "province", "address", "facility_type", "ownership", "tech_level", "kcb_code", "source_doc",
-            "source_file"]
+CAND_COLS = [
+    "chon",
+    "ten",
+    "tinh",
+    "dia_chi",
+    "loai",
+    "so_huu",
+    "cap_cmkt",
+    "ma_kcb",
+    "nguon",
+    "vi_tri",
+    "can_xem",
+    "duyet",
+    "ten_goc",
+]
+OUT_COLS = [
+    "name",
+    "province",
+    "address",
+    "facility_type",
+    "ownership",
+    "tech_level",
+    "kcb_code",
+    "source_doc",
+    "source_file",
+]
 
 # Thứ tự quan trọng: viết tắt dài trước
-_ABBR = [(r"^BVĐKKVMNPB\b", "Bệnh viện Đa khoa khu vực miền núi phía Bắc"),
-         (r"^BVĐKKV\b", "Bệnh viện Đa khoa khu vực"), (r"^BVĐK\b", "Bệnh viện Đa khoa"),
-         (r"^BV\b", "Bệnh viện"), (r"^(TTYT|TT Y tế)\b", "Trung tâm Y tế"),
-         (r"^bệnh viện\b", "Bệnh viện"), (r"^trung tâm y tế\b", "Trung tâm Y tế")]
+_ABBR = [
+    (r"^BVĐKKVMNPB\b", "Bệnh viện Đa khoa khu vực miền núi phía Bắc"),
+    (r"^BVĐKKV\b", "Bệnh viện Đa khoa khu vực"),
+    (r"^BVĐK\b", "Bệnh viện Đa khoa"),
+    (r"^BV\b", "Bệnh viện"),
+    (r"^(TTYT|TT Y tế)\b", "Trung tâm Y tế"),
+    (r"^bệnh viện\b", "Bệnh viện"),
+    (r"^trung tâm y tế\b", "Trung tâm Y tế"),
+]
 _EXCLUDE = re.compile(r"pháp y", re.I)
 
 
@@ -107,9 +133,14 @@ def check_sources(cfg: list[dict]) -> list[str]:
             prev = old.get(key, {})
             if prev and prev.get("sha256") != digest:
                 warnings.append(f"Nguồn đã đổi so với lần trước: {key}")
-            new[key] = {"sha256": digest, "bytes": f.stat().st_size, "co_quan": src["co_quan"],
-                        "van_ban": src["van_ban"], "url": src["url"],
-                        "ghi_nhan": prev.get("ghi_nhan") if prev.get("sha256") == digest else date.today().isoformat()}
+            new[key] = {
+                "sha256": digest,
+                "bytes": f.stat().st_size,
+                "co_quan": src["co_quan"],
+                "van_ban": src["van_ban"],
+                "url": src["url"],
+                "ghi_nhan": prev.get("ghi_nhan") if prev.get("sha256") == digest else date.today().isoformat(),
+            }
     path.write_text(json.dumps(new, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     return warnings
 
@@ -120,8 +151,9 @@ def collect(cfg: list[dict]) -> list[dict]:
     by_core: dict[tuple[str, str], dict] = {}
     for src in cfg:
         for name in src["files"]:
-            for row in (r for raw in PARSERS[src["parser"]](SOURCES / src["id"] / name, src)
-                        for r in _split_grouped(raw)):
+            for row in (
+                r for raw in PARSERS[src["parser"]](SOURCES / src["id"] / name, src) for r in _split_grouped(raw)
+            ):
                 ten, notes = normalize_name(row["ten"])
                 loai = facility_type(ten)
                 if loai is None:
@@ -143,10 +175,22 @@ def collect(cfg: list[dict]) -> list[dict]:
                 ref = f"{src['id']}: {row['vi_tri']}"
                 if cur is None:
                     cur = merged[(tinh, fold(ten))] = {
-                        "chon": "x", "ten": ten, "tinh": tinh, "dia_chi": row["dia_chi"], "loai": loai,
-                        "so_huu": row["so_huu"], "cap_cmkt": row["cap_cmkt"], "ma_kcb": "",
-                        "nguon": src["id"], "vi_tri": ref, "can_xem": notes, "duyet": "", "ten_goc": row["ten"],
-                        "_doc": src["van_ban"], "_file": f"{src['id']}/{name}"}
+                        "chon": "x",
+                        "ten": ten,
+                        "tinh": tinh,
+                        "dia_chi": row["dia_chi"],
+                        "loai": loai,
+                        "so_huu": row["so_huu"],
+                        "cap_cmkt": row["cap_cmkt"],
+                        "ma_kcb": "",
+                        "nguon": src["id"],
+                        "vi_tri": ref,
+                        "can_xem": notes,
+                        "duyet": "",
+                        "ten_goc": row["ten"],
+                        "_doc": src["van_ban"],
+                        "_file": f"{src['id']}/{name}",
+                    }
                     if core and not src.get("bo_sung"):
                         by_core.setdefault((tinh, core), cur)
                     continue
@@ -190,10 +234,8 @@ def _flag_near_duplicates(rows: list[dict]) -> None:
 
 
 def apply_review(rows: list[dict], path: Path = REVIEW) -> list[str]:
-    """Áp quyết định đã duyệt (duyet.csv) để chạy lại build không mất công duyệt.
-
-    hanh_dong: giu | bo; ten_moi, dia_chi ('-' = xóa), so_huu ghi đè khi có. Khớp theo tỉnh + tên không dấu.
-    """
+    """Áp quyết định đã duyệt (duyet.csv) để chạy lại build không mất công duyệt. Khớp theo tỉnh + tên không dấu.
+    hanh_dong: giu | bo; ten_moi, dia_chi ('-' = xóa), so_huu ghi đè khi có."""
     if not path.exists():
         return []
     with open(path, encoding="utf-8-sig", newline="") as f:
@@ -241,9 +283,19 @@ def export(src: Path = CANDIDATES, dst: Path = HOSPITALS) -> int:
         w = csv.DictWriter(f, fieldnames=OUT_COLS)
         w.writeheader()
         for r in sorted(rows, key=lambda r: (r["tinh"], fold(r["ten"]))):
-            w.writerow({"name": r["ten"], "province": r["tinh"], "address": r["dia_chi"], "facility_type": r["loai"],
-                        "ownership": r["so_huu"], "tech_level": r["cap_cmkt"], "kcb_code": r["ma_kcb"],
-                        "source_doc": r["_doc"], "source_file": r["_file"]})
+            w.writerow(
+                {
+                    "name": r["ten"],
+                    "province": r["tinh"],
+                    "address": r["dia_chi"],
+                    "facility_type": r["loai"],
+                    "ownership": r["so_huu"],
+                    "tech_level": r["cap_cmkt"],
+                    "kcb_code": r["ma_kcb"],
+                    "source_doc": r["_doc"],
+                    "source_file": r["_file"],
+                }
+            )
     return len(rows)
 
 

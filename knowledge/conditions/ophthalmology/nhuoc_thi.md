@@ -5,32 +5,32 @@ name_vi: Nhược thị
 name_en: Amblyopia
 icd10_code: H53.0
 disease_group: ophthalmology
-description: Nhược thị là tình trạng giảm thị lực ở một hoặc hai mắt hoặc có sự khác
-  biệt thị lực giữa hai mắt trên 2 dòng sau khi đã được điều chỉnh kính tối ưu hoặc
-  điều trị được nguyên nhân, có thể là nhược thị cơ năng hoặc nhược thị thực thể.
+description: Nhược thị là tình trạng giảm thị lực ở một hoặc hai mắt hoặc có sự khác biệt thị lực giữa
+  hai mắt trên 2 dòng sau khi đã được điều chỉnh kính tối ưu hoặc điều trị được nguyên nhân, có thể là
+  nhược thị cơ năng hoặc nhược thị thực thể.
 relations:
 - symptom_code: amblyopia_crowding_phenomenon
   polarity: SUPPORTS
-  weight: 0.98
+  weight: 0.9
   is_key: true
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: visual_acuity_decreased_blur
   polarity: SUPPORTS
-  weight: 0.97
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: diplopia_strabismus_proptosis
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: pediatric_uveitis_band_keratopathy
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 excerpts:

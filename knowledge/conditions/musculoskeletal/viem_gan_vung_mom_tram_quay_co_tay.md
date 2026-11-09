@@ -5,40 +5,38 @@ name_vi: Viêm gân vùng mỏm trâm quay cổ tay
 name_en: De quervain syndrome
 icd10_code: M65.4
 disease_group: musculoskeletal
-description: Viêm gân vùng mỏm trâm quay cổ tay (De Quervain syndrome) là bệnh lý
-  viêm bao gân cơ dạng dài và duỗi ngắn ngón tay cái do nhà phẫu thuật người Thuỵ
-  Sỹ Fréderic De Quervain phát hiện năm 1895. Bệnh thường gặp ở nữ giới từ 30 đến
-  50 tuổi. Bình thường cơ dạng dài và cơ duỗi ngắn ngón cái trượt trong đường hầm
-  được bao bọc bởi bao hoạt dịch gân, có tác dụng làm trơn để hai gân trượt được dễ
-  dàng.
+description: Viêm gân vùng mỏm trâm quay cổ tay (De Quervain syndrome) là bệnh lý viêm bao gân cơ dạng
+  dài và duỗi ngắn ngón tay cái do nhà phẫu thuật người Thuỵ Sỹ Fréderic De Quervain phát hiện năm 1895.
+  Bệnh thường gặp ở nữ giới từ 30 đến 50 tuổi. Bình thường cơ dạng dài và cơ duỗi ngắn ngón cái trượt
+  trong đường hầm được bao bọc bởi bao hoạt dịch gân, có tác dụng làm trơn để hai gân trượt được dễ dàng.
 relations:
 - symptom_code: de_quervain_radial_styloid_tenosynovitis
   polarity: SUPPORTS
-  weight: 0.98
+  weight: 0.9
   is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: tendinitis_finkelstein_trigger_elbow
   polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: myalgia_arthralgia
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: joint_range_of_motion_limitation
   polarity: SUPPORTS
-  weight: 0.88
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: periarticular_tendon_bursa_tenderness
   polarity: SUPPORTS
-  weight: 0.87
+  weight: 0.6
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT

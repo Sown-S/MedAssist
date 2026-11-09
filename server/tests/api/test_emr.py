@@ -1,13 +1,14 @@
 """EMR (US04): tra cứu nhanh, lịch sử khám (chẩn đoán + tóm tắt đơn), xem lại một lượt khám, audit."""
+
 import uuid
 
 import pytest
 
-from app.services.emr_service import interpret_term
 from app.exceptions import AppError
+from app.services.emr_service import interpret_term
 
 
-# ---------------------------------------------------------------------------- tiện ích
+# --- Tiện ích -------------------------------------------------------------------------------------
 def _uniq_phone():
     return "09" + f"{uuid.uuid4().int % 10**8:08d}"
 
@@ -35,27 +36,35 @@ def _pay(client, nurse, vid):
 @pytest.fixture
 def patient(client, nurse):
     def _make(**over):
-        body = {"full_name": f"Trần Văn Bình {uuid.uuid4().hex[:6]}", "date_of_birth": "1985-06-02",
-                "gender": "Male", **over}
+        body = {
+            "full_name": f"Trần Văn Bình {uuid.uuid4().hex[:6]}",
+            "date_of_birth": "1985-06-02",
+            "gender": "Male",
+            **over,
+        }
         r = client.post("/api/v1/patients", headers=nurse, json={**body, "confirm_duplicate": True})
         assert r.status_code == 201, r.text
         return r.json()
+
     return _make
 
 
-# ---------------------------------------------------------------------------- hiểu ô tìm kiếm (unit)
-@pytest.mark.parametrize("term, expected", [
-    ("BN-3F2A9C1B", {"kind": "patient_code", "value": "3f2a9c1b"}),
-    ("bn3f2a9c1b", {"kind": "patient_code", "value": "3f2a9c1b"}),
-    ("3f2a9c1b", {"kind": "patient_code", "value": "3f2a9c1b"}),
-    ("048090001234", {"kind": "id_number", "value": "048090001234"}),
-    ("123456789", {"kind": "id_number", "value": "123456789"}),
-    ("0905 123 456", {"kind": "phone", "value": "0905123456"}),
-    ("+84905123456", {"kind": "phone", "value": "0905123456"}),
-    ("1985", {"kind": "birth_year", "birth_year": 1985}),
-    ("nguyen van a", {"kind": "name", "name": "nguyen van a"}),
-    ("Nguyễn  Văn A 1985", {"kind": "name_birth_year", "name": "Nguyễn Văn A", "birth_year": 1985}),
-])
+# --- Hiểu ô tìm kiếm (unit) -----------------------------------------------------------------------
+@pytest.mark.parametrize(
+    "term, expected",
+    [
+        ("BN-3F2A9C1B", {"kind": "patient_code", "value": "3f2a9c1b"}),
+        ("bn3f2a9c1b", {"kind": "patient_code", "value": "3f2a9c1b"}),
+        ("3f2a9c1b", {"kind": "patient_code", "value": "3f2a9c1b"}),
+        ("048090001234", {"kind": "id_number", "value": "048090001234"}),
+        ("123456789", {"kind": "id_number", "value": "123456789"}),
+        ("0905 123 456", {"kind": "phone", "value": "0905123456"}),
+        ("+84905123456", {"kind": "phone", "value": "0905123456"}),
+        ("1985", {"kind": "birth_year", "birth_year": 1985}),
+        ("nguyen van a", {"kind": "name", "name": "nguyen van a"}),
+        ("Nguyễn  Văn A 1985", {"kind": "name_birth_year", "name": "Nguyễn Văn A", "birth_year": 1985}),
+    ],
+)
 def test_interpret_term(term, expected):
     assert interpret_term(term) == expected
 
@@ -66,7 +75,7 @@ def test_interpret_term_rejects(term):
         interpret_term(term)
 
 
-# ---------------------------------------------------------------------------- tra cứu nhanh (API)
+# --- Tra cứu nhanh (API) --------------------------------------------------------------------------
 def test_patient_code_returned_everywhere(client, nurse, patient):
     p = patient()
     assert p["patient_code"] == "BN-" + uuid.UUID(p["patient_id"]).hex[:8].upper()
@@ -135,7 +144,7 @@ def test_admin_cannot_lookup(client, login):
     assert r.status_code == 403
 
 
-# ---------------------------------------------------------------------------- lịch sử khám
+# --- Lịch sử khám ---------------------------------------------------------------------------------
 def test_history_shows_confirmed_diagnoses_and_prescription(client, nurse, doctor, drug, prescribed):
     did, _ = drug({30: 50}, price=1500)
     vid, _ = prescribed([(did, 10)])
@@ -187,8 +196,9 @@ def test_history_pagination_and_404(client, doctor, examining, nurse):
     _pay(client, nurse, vid)
     _cancel(client, nurse, _new_visit(client, nurse, pid))
     _new_visit(client, nurse, pid)
-    page = client.get(f"/api/v1/patients/{pid}/history", headers=doctor,
-                      params={"limit": 2, "offset": 2, "include_cancelled": True}).json()
+    page = client.get(
+        f"/api/v1/patients/{pid}/history", headers=doctor, params={"limit": 2, "offset": 2, "include_cancelled": True}
+    ).json()
     assert page["total"] == 3 and len(page["items"]) == 1 and page["items"][0]["visit_id"] == vid
     assert client.get(f"/api/v1/patients/{uuid.uuid4()}/history", headers=doctor).status_code == 404
 
@@ -196,8 +206,15 @@ def test_history_pagination_and_404(client, doctor, examining, nurse):
 def test_history_draft_prescription_not_shown(client, doctor, drug, examining, nurse):
     did, _ = drug({30: 20})
     vid = examining()
-    client.put(f"/api/v1/visits/{vid}/prescription", headers=doctor, json={"items": [
-        {"drug_id": did, "dosage": "1 viên", "frequency": "2 lần/ngày", "duration_days": 3, "quantity": 6}]})
+    client.put(
+        f"/api/v1/visits/{vid}/prescription",
+        headers=doctor,
+        json={
+            "items": [
+                {"drug_id": did, "dosage": "1 viên", "frequency": "2 lần/ngày", "duration_days": 3, "quantity": 6}
+            ]
+        },
+    )
     pid = client.get(f"/api/v1/visits/{vid}", headers=nurse).json()["patient_id"]
     item = client.get(f"/api/v1/patients/{pid}/history", headers=doctor).json()["items"][0]
     assert item["prescription"] is None
@@ -214,7 +231,7 @@ def test_history_audit_view(client, doctor, examining, nurse, logs):
     assert rows and rows[-1].new_values["path"].endswith("/history")
 
 
-# ---------------------------------------------------------------------------- xem lại một lượt khám
+# --- Xem lại một lượt khám ------------------------------------------------------------------------
 def test_visit_record_full(client, nurse, doctor, drug, prescribed):
     did, _ = drug({30: 50}, price=2000)
     vid, invoice = prescribed([(did, 4)])

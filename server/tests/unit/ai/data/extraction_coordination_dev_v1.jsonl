@@ -1,0 +1,10 @@
+{"id":"dev-c01","clinical_note":"Không sốt cao và ho khan.","expected_symptoms":{"fever_high":"ABSENT","cough_dry":"ABSENT"},"tags":["shared_negation","new_pair"]}
+{"id":"dev-c02","clinical_note":"Khong sot cao va ho khan.","expected_symptoms":{"fever_high":"ABSENT","cough_dry":"ABSENT"},"tags":["shared_negation","unaccented"]}
+{"id":"dev-c03","clinical_note":"Không thở khò khè và ho khan.","expected_symptoms":{"wheezing_bronchospasm":"ABSENT","cough_dry":"ABSENT"},"tags":["shared_negation","reversed_order"]}
+{"id":"dev-c04","clinical_note":"Không ho khan và có thở khò khè.","expected_symptoms":{"cough_dry":"ABSENT","wheezing_bronchospasm":"PRESENT"},"tags":["own_scope","affirmation"]}
+{"id":"dev-c05","clinical_note":"Không ho khan nhưng thở khò khè.","expected_symptoms":{"cough_dry":"ABSENT","wheezing_bronchospasm":"PRESENT"},"tags":["contrast"]}
+{"id":"dev-c06","clinical_note":"Không ho khan và chưa rõ có thở khò khè hay không.","expected_symptoms":{"cough_dry":"ABSENT","wheezing_bronchospasm":"UNKNOWN"},"tags":["own_scope","uncertainty"]}
+{"id":"dev-c07","clinical_note":"Không đau nhức đầu và chóng mặt xoay tròn.","expected_symptoms":{"headache_dull":"ABSENT","dizziness_vertigo":"ABSENT"},"tags":["shared_negation","new_pair"]}
+{"id":"dev-c08","clinical_note":"Không ho khan, có sốt cao.","expected_symptoms":{"cough_dry":"ABSENT","fever_high":"PRESENT"},"tags":["comma","own_scope"]}
+{"id":"dev-c09","clinical_note":"Không ho khan và thở khò khè và sốt cao.","expected_symptoms":{"cough_dry":"ABSENT","wheezing_bronchospasm":"ABSENT","fever_high":"ABSENT"},"tags":["shared_negation","three_mentions"]}
+{"id":"dev-c10","clinical_note":"Không ho khan; thở khò khè.","expected_symptoms":{"cough_dry":"ABSENT","wheezing_bronchospasm":"PRESENT"},"tags":["sentence_boundary"]}

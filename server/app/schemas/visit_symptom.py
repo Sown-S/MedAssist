@@ -1,4 +1,5 @@
-"""Triệu chứng đã xác nhận của một lượt khám (HITL, bảng visit_symptom) — đầu vào bắt buộc của AI."""
+"""Triệu chứng đã xác nhận của một lượt khám (HITL, bảng visit_symptom): đầu vào bắt buộc của AI."""
+
 from datetime import datetime
 from typing import Literal
 
@@ -14,14 +15,17 @@ class SymptomConfirm(BaseModel):
     model_config = ConfigDict(extra="forbid")
     symptom_code: SymptomCode
     state: SymptomState
-    source: SymptomSource = Field(default="Form",
-                                  description="Form: chọn trên form; Extracted: gợi ý trích xuất đã được xác nhận; "
-                                              "Prompt: bổ sung theo nhắc 'cần bổ sung ngay'")
+    source: SymptomSource = Field(
+        default="Form",
+        description="Form: chọn trên form; Extracted: gợi ý trích xuất đã được xác nhận; "
+        "Prompt: bổ sung theo nhắc 'cần bổ sung ngay'",
+    )
 
 
 class SymptomsPut(BaseModel):
-    """Thay TOÀN BỘ danh sách đã xác nhận. Mã có trước đó mà không còn trong danh sách được đặt về
+    """Thay toàn bộ danh sách đã xác nhận. Mã có trước đó mà không còn trong danh sách được đặt về
     UNKNOWN (CSDL không xóa dòng, giữ vết người xác nhận)."""
+
     model_config = ConfigDict(extra="forbid")
     symptoms: list[SymptomConfirm] = Field(max_length=200)
 

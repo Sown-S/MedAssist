@@ -5,31 +5,31 @@ name_vi: Viêm kết mạc dị ứng cấp tính
 name_en: Acute allergic conjunctivitis
 icd10_code: H10.1
 disease_group: ophthalmology
-description: Viêm kết mạc dị ứng cấp tính là hình thái dị ứng nhanh của viêm kết mạc
-  dị ứng khi bệnh nhân tiếp xúc với dị nguyên.
+description: Viêm kết mạc dị ứng cấp tính là hình thái dị ứng nhanh của viêm kết mạc dị ứng khi bệnh nhân
+  tiếp xúc với dị nguyên.
 relations:
 - symptom_code: allergic_conjunctivitis_giant_papillae
   polarity: SUPPORTS
-  weight: 0.97
+  weight: 0.9
   is_key: true
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: ocular_pain_photophobia_tearing
   polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: conjunctival_ciliary_injection_discharge
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: conjunctivitis_uveitis_red_eye
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 excerpts:

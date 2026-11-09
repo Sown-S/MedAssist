@@ -20,9 +20,7 @@ from app.services import ai_queue_service, assessment_service
 router = APIRouter(tags=["assessment"])
 
 _nurse_visit = require_roles("Nurse", audit_entity="visit")
-_view_assessment = audit_view(
-    "visit", roles=CLINICAL_ROLES, id_param="visit_id", dedupe_seconds=300
-)
+_view_assessment = audit_view("visit", roles=CLINICAL_ROLES, id_param="visit_id", dedupe_seconds=300)
 
 
 def _knowledge_unavailable() -> AppError:
@@ -67,9 +65,7 @@ def get_knowledge_reader(db: Session = Depends(get_db)) -> KnowledgeReader:
     raise _knowledge_unavailable()
 
 
-def _latest_or_404(
-    db: Session, visit_id: uuid.UUID, knowledge_reader: KnowledgeReader
-) -> dict:
+def _latest_or_404(db: Session, visit_id: uuid.UUID, knowledge_reader: KnowledgeReader) -> dict:
     result = assessment_service.get_latest_assessment(db, visit_id, knowledge_reader)
     if result is None:
         raise NotFoundError("Chưa có kết quả đánh giá AI cho lượt khám này")

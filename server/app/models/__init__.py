@@ -1,44 +1,43 @@
-"""Toàn bộ 31 model theo ERD v2.1 — import ở đây để Alembic autogenerate thấy đủ bảng.
-
-Model phải khớp lược đồ do revision 0001 (medassist_schema_v1_8.sql) tạo.
-Kiểm tra: `alembic check` -> "No new upgrade operations detected"; test_db_guards.py.
-Bảng do Alembic tạo: KHÔNG gọi Base.metadata.create_all().
+"""Toàn bộ model, import ở đây để Alembic autogenerate thấy đủ bảng. Bảng do Alembic tạo, không gọi create_all().
+Model sinh từ lược đồ (revision 0001 + các revision sau) rồi biên tập, phải khớp bảng thật:
+kiểm bằng `alembic check` và tests/unit/test_db_guards.py.
 """
-from app.core.database import Base  # noqa: F401
 
-# Người dùng, cấu hình, nhật ký
-from app.models.user import User  # noqa: F401
-from app.models.system_setting import SystemSetting  # noqa: F401
+from app.core.database import Base  # noqa: F401
+from app.models.ai_assessment_log import AiAssessmentLog  # noqa: F401
 from app.models.audit_log import AuditLog  # noqa: F401
-from app.models.room import Room  # noqa: F401
+from app.models.condition import Condition  # noqa: F401
+from app.models.condition_key import ConditionKey  # noqa: F401
+from app.models.condition_symptom import ConditionSymptom  # noqa: F401
+from app.models.diagnosis import Diagnosis  # noqa: F401
+from app.models.drug import Drug  # noqa: F401
+from app.models.guideline_excerpt import GuidelineExcerpt  # noqa: F401
+from app.models.inventory_batch import InventoryBatch  # noqa: F401
+from app.models.invoice import Invoice  # noqa: F401
+from app.models.invoice_item import InvoiceItem  # noqa: F401
+from app.models.knowledge_epoch import KnowledgeEpoch  # noqa: F401
+from app.models.knowledge_release import KnowledgeRelease  # noqa: F401
 
 # Tri thức (OKF)
 from app.models.knowledge_source import KnowledgeSource  # noqa: F401
-from app.models.knowledge_release import KnowledgeRelease  # noqa: F401
-from app.models.knowledge_epoch import KnowledgeEpoch  # noqa: F401
-from app.models.symptom_key import SymptomKey  # noqa: F401
-from app.models.condition_key import ConditionKey  # noqa: F401
-from app.models.symptom import Symptom  # noqa: F401
-from app.models.condition import Condition  # noqa: F401
-from app.models.condition_symptom import ConditionSymptom  # noqa: F401
-from app.models.guideline_excerpt import GuidelineExcerpt  # noqa: F401
-from app.models.triage_rule import TriageRule  # noqa: F401
 
 # Lâm sàng
 from app.models.patient import Patient  # noqa: F401
-from app.models.visit import Visit  # noqa: F401
-from app.models.visit_symptom import VisitSymptom  # noqa: F401
-from app.models.ai_assessment_log import AiAssessmentLog  # noqa: F401
-from app.models.diagnosis import Diagnosis  # noqa: F401
+from app.models.prescription import Prescription  # noqa: F401
+from app.models.prescription_item import PrescriptionItem  # noqa: F401
 from app.models.referral_facility import ReferralFacility  # noqa: F401
-from app.models.service_order import ServiceOrder, ServiceOrderItem  # noqa: F401
+from app.models.room import Room  # noqa: F401
 
 # Thuốc, kho, dịch vụ, hóa đơn
 from app.models.service import Service, ServicePackage  # noqa: F401
-from app.models.drug import Drug  # noqa: F401
-from app.models.prescription import Prescription  # noqa: F401
-from app.models.prescription_item import PrescriptionItem  # noqa: F401
-from app.models.inventory_batch import InventoryBatch  # noqa: F401
+from app.models.service_order import ServiceOrder, ServiceOrderItem  # noqa: F401
 from app.models.stock_movement import StockMovement  # noqa: F401
-from app.models.invoice import Invoice  # noqa: F401
-from app.models.invoice_item import InvoiceItem  # noqa: F401
+from app.models.symptom import Symptom  # noqa: F401
+from app.models.symptom_key import SymptomKey  # noqa: F401
+from app.models.system_setting import SystemSetting  # noqa: F401
+from app.models.triage_rule import TriageRule  # noqa: F401
+
+# Người dùng, cấu hình, nhật ký
+from app.models.user import User  # noqa: F401
+from app.models.visit import Visit  # noqa: F401
+from app.models.visit_symptom import VisitSymptom  # noqa: F401

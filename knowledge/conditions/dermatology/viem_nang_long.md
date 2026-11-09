@@ -5,48 +5,36 @@ name_vi: Viêm nang lông
 name_en: Folliculitis
 icd10_code: L73.9
 disease_group: dermatology
-description: Viêm nang lông (folliculitis) là tình trạng viêm nông một hoặc nhiều
-  nang lông. Bệnh gặp ở bất kỳ lứa tuổi nào, nhất là thanh thiếu niên và người trẻ.
+description: Viêm nang lông (folliculitis) là tình trạng viêm nông một hoặc nhiều nang lông. Bệnh gặp
+  ở bất kỳ lứa tuổi nào, nhất là thanh thiếu niên và người trẻ.
 relations:
 - symptom_code: vesicular_blister_rash
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: pustular_furuncle_folliculitis
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: pityriasis_versicolor_hypo_hyper_macules
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
-  source_key: moh_qd_75_2015
-  source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: tinea_capitis_kerion_alopecia
-  polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
-  source_key: moh_qd_75_2015
-  source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: dress_syndrome_facial_edema_eosinophilia
-  polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: epidermolysis_bullosa_mechanobullous
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: anemia_pallor_jaundice
   polarity: SUPPORTS
-  weight: 0.76
+  weight: 0.3
   is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT

@@ -14,7 +14,7 @@ Chú ý chung:
 
 - Sai mật khẩu 5 lần trong 15 phút thì tài khoản bị khóa tạm 5 phút; quản trị viên mở khóa được.
 - Mất kết nối tới máy chủ: app hiện băng cảnh báo và **chỉ cho xem**, mọi nút ghi bị khóa; có mạng lại thì tự mở.
-- Không thao tác trong một khoảng thời gian (Cài đặt › Bảo mật) thì app tự đăng xuất, vì máy dùng chung có dữ liệu bệnh nhân.
+- Không thao tác trong một khoảng thời gian (Cài đặt › Bảo mật, áp dụng cho mọi máy) thì app tự đăng xuất, vì máy dùng chung có dữ liệu bệnh nhân.
 
 ## 2. Lễ tân
 

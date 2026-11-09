@@ -2,6 +2,7 @@
 
 Mỗi hàm chỉ đọc đúng cấu trúc của văn bản nguồn; lọc, chuẩn hóa, gộp trùng nằm ở build.py.
 """
+
 import re
 from pathlib import Path
 
@@ -13,12 +14,18 @@ def clean(s) -> str:
 
 
 def _row(ten, dia_chi="", so_huu="", cap_cmkt="", vi_tri="") -> dict:
-    return {"ten": clean(ten), "dia_chi": clean(dia_chi), "so_huu": so_huu, "cap_cmkt": clean(cap_cmkt),
-            "vi_tri": vi_tri}
+    return {
+        "ten": clean(ten),
+        "dia_chi": clean(dia_chi),
+        "so_huu": so_huu,
+        "cap_cmkt": clean(cap_cmkt),
+        "vi_tri": vi_tri,
+    }
 
 
 def _pdf_tables(path: Path, drop_font: str | None = None):
     import pdfplumber
+
     with pdfplumber.open(path) as pdf:
         for no, page in enumerate(pdf.pages, start=1):
             if drop_font:
@@ -31,15 +38,21 @@ def _pdf_tables(path: Path, drop_font: str | None = None):
 
 def byt_xep_cap(path: Path, cfg: dict) -> list[dict]:
     """Bảng 6 cột: STT, Đơn vị, Địa chỉ, Mô hình, Xếp cấp CMKT, Điểm."""
-    return [_row(r[1], cap_cmkt=r[4], so_huu="Ministry", vi_tri=f"tr.{p} STT {r[0].rstrip('.')}")
-            for p, r in _pdf_tables(path) if len(r) >= 5 and re.fullmatch(r"\d+\.?", r[0])]
+    return [
+        _row(r[1], cap_cmkt=r[4], so_huu="Ministry", vi_tri=f"tr.{p} STT {r[0].rstrip('.')}")
+        for p, r in _pdf_tables(path)
+        if len(r) >= 5 and re.fullmatch(r"\d+\.?", r[0])
+    ]
 
 
 def hcm_ksk(path: Path, cfg: dict) -> list[dict]:
     """Bảng 11 cột: TT, Tên, Số GPHĐ, Số nhà và đường, Phường/xã, 5 cột loại hình, Hình thức."""
     so_huu = {"Công lập": "Public", "Tư nhân": "Private"}
-    return [_row(r[1], f"{r[3]}, {r[4]}", so_huu.get(r[10], ""), vi_tri=f"tr.{p} TT {r[0]}")
-            for p, r in _pdf_tables(path) if len(r) == 11 and r[0].isdigit()]
+    return [
+        _row(r[1], f"{r[3]}, {r[4]}", so_huu.get(r[10], ""), vi_tri=f"tr.{p} TT {r[0]}")
+        for p, r in _pdf_tables(path)
+        if len(r) == 11 and r[0].isdigit()
+    ]
 
 
 def danang_ksk(path: Path, cfg: dict) -> list[dict]:
@@ -72,6 +85,7 @@ def gialai_cv(path: Path, cfg: dict) -> list[dict]:
 def html_table(path: Path, cfg: dict) -> list[dict]:
     """Bảng HTML đầu tiên; cot_ten, cot_dia_chi (danh sách) đánh số từ 0."""
     from bs4 import BeautifulSoup
+
     soup = BeautifulSoup(path.read_text(encoding="utf-8", errors="ignore"), "html.parser")
     out = []
     for i, tr in enumerate(soup.find("table").find_all("tr")):
@@ -86,6 +100,7 @@ def html_table(path: Path, cfg: dict) -> list[dict]:
 def xlsx_table(path: Path, cfg: dict) -> list[dict]:
     """Sheet `sheet` (mặc định sheet đầu); hàng tiêu đề có cột 'Tên cơ sở', 'Địa chỉ', tùy chọn 'Số văn bản'."""
     import openpyxl
+
     wb = openpyxl.load_workbook(path, read_only=True, data_only=True)
     ws = wb[cfg["sheet"]] if cfg.get("sheet") else wb.worksheets[0]
     rows = list(ws.iter_rows(values_only=True))
@@ -93,29 +108,45 @@ def xlsx_table(path: Path, cfg: dict) -> list[dict]:
     cols = [clean(c) for c in rows[head]]
     ten, dc = cols.index("Tên cơ sở"), cols.index("Địa chỉ")
     vb = cols.index("Số văn bản") if "Số văn bản" in cols else None
-    return [_row(r[ten], r[dc], cfg.get("so_huu", ""),
-                 vi_tri=f"dòng {head + 1 + k}" + (f" (VB {clean(r[vb])})" if vb is not None else ""))
-            for k, r in enumerate(rows[head + 1:], start=1) if r and r[ten]]
+    return [
+        _row(
+            r[ten],
+            r[dc],
+            cfg.get("so_huu", ""),
+            vi_tri=f"dòng {head + 1 + k}" + (f" (VB {clean(r[vb])})" if vb is not None else ""),
+        )
+        for k, r in enumerate(rows[head + 1 :], start=1)
+        if r and r[ten]
+    ]
+
 
 def html_js_data(path: Path, cfg: dict) -> list[dict]:
-    """Mảng `const data = [...]` trong script của trang (trang đơn vị trực thuộc Sở Y tế Đà Nẵng nạp danh sách bằng JS)."""
+    """Mảng `const data = [...]` trong script của trang.
+    Trang đơn vị trực thuộc Sở Y tế Đà Nẵng nạp danh sách bằng JS."""
     import json
+
     text = path.read_text(encoding="utf-8")
-    body = text[text.index("[", text.index("const data =")):]
+    body = text[text.index("[", text.index("const data =")) :]
     # Một phần mảng viết kiểu object literal của JS: khóa không có ngoặc kép, dấu phẩy cuối
-    body = re.sub(r'([{,]\s*)([A-Za-z_]\w*)\s*:', r'\1"\2":', body)
+    body = re.sub(r"([{,]\s*)([A-Za-z_]\w*)\s*:", r'\1"\2":', body)
     body = re.sub(r",(\s*[}\]])", r"\1", body)
     items, _ = json.JSONDecoder().raw_decode(body)
-    return [_row(it[cfg["truong_ten"]], it.get(cfg.get("truong_dia_chi", ""), ""), cfg.get("so_huu", ""),
-                 vi_tri=f"STT {it.get('stt', k)}") for k, it in enumerate(items, start=1)]
+    return [
+        _row(
+            it[cfg["truong_ten"]],
+            it.get(cfg.get("truong_dia_chi", ""), ""),
+            cfg.get("so_huu", ""),
+            vi_tri=f"STT {it.get('stt', k)}",
+        )
+        for k, it in enumerate(items, start=1)
+    ]
 
 
 def html_list(path: Path, cfg: dict) -> list[dict]:
     """Danh sách trong khối `khoi` (class), chia mục La Mã; chỉ đọc mục có tên chứa một chuỗi trong `muc` (nếu khai).
-
-Vị trí ghi cả tên mục vì nguồn HCM đánh trùng số mục.
-"""
+    Vị trí ghi cả tên mục vì nguồn HCM đánh trùng số mục."""
     from bs4 import BeautifulSoup
+
     soup = BeautifulSoup(path.read_text(encoding="utf-8", errors="ignore"), "html.parser")
     lines = [clean(s) for s in soup.find(class_=cfg["khoi"]).get_text("\n").split("\n")]
     out, muc = [], ""
@@ -126,10 +157,17 @@ Vị trí ghi cả tên mục vì nguồn HCM đánh trùng số mục.
         if cfg.get("muc") and not any(m in muc for m in cfg["muc"]):
             continue
         m = re.match(r"^(?:(\d+)\.\s*)?(.+?)[;.]?$", line)
-        out.append(_row(m.group(2), so_huu=cfg.get("so_huu", ""),
-                        vi_tri=f"mục '{muc}'" + (f" số {m.group(1)}" if m.group(1) else "")))
+        out.append(
+            _row(
+                m.group(2),
+                so_huu=cfg.get("so_huu", ""),
+                vi_tri=f"mục '{muc}'" + (f" số {m.group(1)}" if m.group(1) else ""),
+            )
+        )
     return out
 
 
-PARSERS = {f.__name__: f for f in (byt_xep_cap, hcm_ksk, danang_ksk, gialai_cv, html_table, xlsx_table,
-                                       html_js_data, html_list)}
+PARSERS = {
+    f.__name__: f
+    for f in (byt_xep_cap, hcm_ksk, danang_ksk, gialai_cv, html_table, xlsx_table, html_js_data, html_list)
+}

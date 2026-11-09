@@ -5,57 +5,56 @@ name_vi: Lao thanh quản
 name_en: Laryngeal tuberculosis
 icd10_code: A15.5
 disease_group: ent
-description: Lao thanh quản là bệnh viêm thanh quản đặc hiệu do vi trùng lao (Mycobacterium
-  tuberculosis). Lao thanh quản (LTQ) là một thể lao ngoài phổi thứ phát sau lao sơ
-  nhiễm, bệnh tích khu trú ở thanh quản. Tỷ lệ mắc LTQ đứng hàng thứ 4-5 trong nhóm
-  bệnh lý lao ngoài phổi, nguy cơ lây nhiễm cao, di chứng lao thanh quản để lại là
-  ảnh hưởng đến giọng nói, nuốt và thở.
+description: Lao thanh quản là bệnh viêm thanh quản đặc hiệu do vi trùng lao (Mycobacterium tuberculosis).
+  Lao thanh quản (LTQ) là một thể lao ngoài phổi thứ phát sau lao sơ nhiễm, bệnh tích khu trú ở thanh
+  quản. Tỷ lệ mắc LTQ đứng hàng thứ 4-5 trong nhóm bệnh lý lao ngoài phổi, nguy cơ lây nhiễm cao, di chứng
+  lao thanh quản để lại là ảnh hưởng đến giọng nói, nuốt và thở.
 relations:
 - symptom_code: hoarseness_dysphonia_stridor
   polarity: SUPPORTS
-  weight: 0.97
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: laryngeal_tuberculosis_monochorditis
   polarity: SUPPORTS
-  weight: 0.97
+  weight: 0.9
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: cough_dry
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: voice_pitch_timbre_alteration
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: laryngeal_paresthesia_throat_clearing
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: anemia_pallor_jaundice
   polarity: SUPPORTS
-  weight: 0.76
+  weight: 0.3
   is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: weight_loss_anorexia
   polarity: SUPPORTS
-  weight: 0.74
+  weight: 0.3
   is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: fever_low_grade
   polarity: SUPPORTS
-  weight: 0.72
+  weight: 0.3
   is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT

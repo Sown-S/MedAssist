@@ -5,63 +5,62 @@ name_vi: Bệnh vảy nến
 name_en: Psoriasis
 icd10_code: L40.0
 disease_group: dermatology
-description: Vảy nến là bệnh mạn tính, tiến triển từng đợt, dai dẳng, căn nguyên của
-  bệnh chưa rõ. Bệnh thường gặp ở Việt Nam và các nước trên thế giới. Tỷ lệ bệnh vảy
-  nến chiếm khoảng 2-3% dân số tùy theo từng khu vực. Ở Việt Nam, theo số liệu thống
-  kê tại Bệnh viện Da liễu Trung ương năm 2010, tỷ lệ bệnh nhân vảy nến chiếm khoảng
-  2,2% tổng số bệnh nhân đến khám bệnh.
+description: Vảy nến là bệnh mạn tính, tiến triển từng đợt, dai dẳng, căn nguyên của bệnh chưa rõ. Bệnh
+  thường gặp ở Việt Nam và các nước trên thế giới. Tỷ lệ bệnh vảy nến chiếm khoảng 2-3% dân số tùy theo
+  từng khu vực. Ở Việt Nam, theo số liệu thống kê tại Bệnh viện Da liễu Trung ương năm 2010, tỷ lệ bệnh
+  nhân vảy nến chiếm khoảng 2,2% tổng số bệnh nhân đến khám bệnh.
 relations:
 - symptom_code: psoriasis_auspitz_brocq_koebner
   polarity: SUPPORTS
-  weight: 0.98
+  weight: 0.9
   is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: scaly_plaque_hyperkeratosis
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: psoriatic_plaque_nail_pitting
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: pruritus_intense_skin_itch
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: maculopapular_rash
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: conjunctivitis_uveitis_red_eye
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: myalgia_arthralgia
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: erythroderma_generalized_exfoliation
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.3
   is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: palmoplantar_keratoderma_fissures
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.3
   is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT

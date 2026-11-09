@@ -1,9 +1,11 @@
 import uuid
 from datetime import datetime
+from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from app.schemas.inventory import MoneyOut
+from app.schemas.common import CleanStr
+from app.schemas.inventory import Money, MoneyOut
 from app.schemas.service import UnbilledOrderItem
 
 
@@ -34,15 +36,9 @@ class InvoiceOut(BaseModel):
     cancel_reason: str | None
     created_at: datetime
     items: list[InvoiceItemOut]
-    unbilled_items: list[UnbilledOrderItem] = Field(default_factory=list,
-                                                    description="Chỉ định ngoài danh mục chưa tính tiền, quầy thêm tay")
-
-
-from decimal import Decimal
-from typing import Literal
-
-from app.schemas.common import CleanStr
-from app.schemas.inventory import Money
+    unbilled_items: list[UnbilledOrderItem] = Field(
+        default_factory=list, description="Chỉ định ngoài danh mục chưa tính tiền, quầy thêm tay"
+    )
 
 
 class DispenseRequest(BaseModel):
@@ -59,9 +55,10 @@ class ParaclinicalLine(BaseModel):
 
 
 class InvoiceEdit(BaseModel):
-    """Bỏ trống một trường = giữ nguyên. paraclinical_items = danh sách MỚI thay toàn bộ dòng nhập tay
+    """Bỏ trống một trường = giữ nguyên. paraclinical_items = danh sách mới thay toàn bộ dòng nhập tay
     (dòng từ phiếu chỉ định không nằm trong danh sách này). consultation_service_id: đổi dịch vụ khám
     (tên và giá theo danh mục, consultation_fee nếu gửi kèm thì ghi đè giá)."""
+
     model_config = ConfigDict(extra="forbid")
     consultation_fee: Money | None = None
     consultation_service_id: uuid.UUID | None = None
@@ -75,6 +72,7 @@ class PaymentRequest(BaseModel):
 
 class BillingResult(BaseModel):
     """Kết quả cấp phát / thu tiền: lượt khám đã kết thúc chưa, hóa đơn hiện tại."""
+
     visit_finished: bool
     invoice: InvoiceOut | None
 

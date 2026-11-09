@@ -5,62 +5,61 @@ name_vi: U tuyến nước bọt
 name_en: Salivary gland tumors
 icd10_code: D11.9
 disease_group: ent
-description: Các khối u tuyến nước bọt chiếm vào khoảng 0,2 - 0,6 % các loại khối
-  u và 2- 4 % các khối u vùng đầu cổ. Tỷ lệ mắc hàng năm u tuyến nước bọt trên toàn
-  thế giới khoảng 0,4 - 6,5 ca/100.000 dân. Ở Việt Nam ước tính có khoảng 0,6 - 0,7
-  ca u tuyến nước bọt mới mắc/100.000 dân.
+description: Các khối u tuyến nước bọt chiếm vào khoảng 0,2 - 0,6 % các loại khối u và 2- 4 % các khối
+  u vùng đầu cổ. Tỷ lệ mắc hàng năm u tuyến nước bọt trên toàn thế giới khoảng 0,4 - 6,5 ca/100.000 dân.
+  Ở Việt Nam ước tính có khoảng 0,6 - 0,7 ca u tuyến nước bọt mới mắc/100.000 dân.
 relations:
 - symptom_code: salivary_thyroid_gland_nodule
   polarity: SUPPORTS
-  weight: 0.96
+  weight: 0.9
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: nasal_polyp_sinonasal_mass
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: head_neck_mass_fistula_trauma
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: granular_hypertrophic_pharyngitis
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: nasal_obstruction_stuffiness
   polarity: SUPPORTS
-  weight: 0.9
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: tonsillitis_adenoid_pharyngitis
   polarity: SUPPORTS
-  weight: 0.9
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: deep_neck_space_abscess_trismus
   polarity: SUPPORTS
-  weight: 0.9
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: nasal_septal_deviation_spur
   polarity: SUPPORTS
-  weight: 0.89
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: lymphadenopathy_splenomegaly
   polarity: SUPPORTS
-  weight: 0.76
+  weight: 0.3
   is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT

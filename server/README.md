@@ -94,7 +94,7 @@ cd "D:\Projects\Github Repo\CDSS"
 python -m venv venv
 .\venv\Scripts\activate
 cd server
-pip install -r requirements.txt
+pip install -r requirements-dev.txt    # requirements.txt + pytest, ruff
 ```
 
 ### 2.5. Tạo bảng (Alembic)
@@ -202,7 +202,7 @@ docker compose -f deploy/docker-compose.dev.yml --env-file deploy/.env up -d    
 .\venv\Scripts\activate
 git fetch origin                    # đồng bộ nhánh theo CONTRIBUTING.md mục 1
 cd server
-pip install -r requirements.txt     # chỉ cần khi requirements.txt đổi (vô hại nếu chạy thừa)
+pip install -r requirements-dev.txt # chỉ cần khi requirements đổi (vô hại nếu chạy thừa)
 alembic upgrade head                # chỉ cần khi có migration mới (vô hại nếu chạy thừa)
 uvicorn app.main:app --reload
 ```
@@ -272,10 +272,35 @@ python -m scripts.seed_drugs --no-batches        # chỉ danh mục (khi cài m�
 python -m scripts.seed_drugs --deactivate-others # ngừng dùng thuốc không còn trong drugs.csv (không xóa)
 ```
 
+Cơ sở nhận chuyển tuyến (`server/data/hospitals.csv`, tạo bằng `tools/hospital_data/`):
+
+```powershell
+python -m scripts.seed_referral_facilities                      # chạy lại thì cập nhật, không tạo trùng
+python -m scripts.seed_referral_facilities --deactivate-others  # ngừng dùng cơ sở không còn trong file
+```
+
 - Đi qua `inventory_service` bằng tài khoản `system` → có kiểm tra dữ liệu và ghi nhật ký như nhập tay.
 - Dòng **chưa có giá** bị bỏ qua và in ra danh sách (CSDL bắt buộc giá bán).
 - **Chạy lại không cập nhật** thuốc đã có (giá, tên...). Sửa thuốc đã có: giao diện / `PATCH /api/v1/drugs/{id}`.
 - Tạo / cập nhật `drugs.csv` (đối chiếu văn bản, thêm thuốc, giá): công cụ ở `tools/drug_data/` — xem README trong đó.
+
+### Đánh giá AI trên bộ test đóng băng (`scripts.run_eval`)
+
+Chạy trên CSDL đã có tri thức Active (máy dev sau `import_okf`, hoặc môi trường eval). Đọc `evaluation/testset/`,
+tính red-flag recall, mức ưu tiên đúng, luật khớp, top-1/top-3 và P/R/F1 chẩn đoán phân biệt, P/R/F1 trích xuất,
+độ trễ; cảnh báo khi bộ test có ít hơn 30 ca cờ đỏ hoặc dùng mã không còn trong tri thức.
+
+```powershell
+python -m scripts.run_eval --mode RuleOnly --skip-extraction   # chỉ luật, không cần LLM
+python -m scripts.run_eval                                      # RuleOnly + Full + trích xuất, LLM theo LLM_PROVIDER
+python -m scripts.run_eval --limit 3 --out ..\evaluation\results\thu
+python -m scripts.run_eval --extraction-only --extraction-cases <file ca phát triển>.jsonl --extraction-strategy phrases
+```
+
+Kết quả (`summary.md`, `results.json`, `cases.csv`) ghi vào `evaluation/results/<thời điểm>/`. `LLM_PROVIDER=fake`
+chỉ để kiểm tra luồng chạy, không dùng số liệu của nó cho báo cáo. `summary.md` ghi model, phiên bản prompt, số ca
+trích xuất trả rỗng và số ca vượt 30 s để so các cách trích xuất. Chỉnh thuật toán bằng bộ ca phát triển
+(`--extraction-cases`); bộ đóng băng chỉ dùng để chấm cuối.
 
 ### Dữ liệu cho môi trường kiểm thử (`scripts.seed_eval`)
 
@@ -332,6 +357,8 @@ python -m scripts.seed_services
 | `LLM_PROVIDER` | | `ollama` | `fake` = LLM giả lập (dev, CI, demo; cấm ở prod), `none` = không gọi LLM |
 | `OLLAMA_BASE_URL` / `OLLAMA_MODEL` | | `http://127.0.0.1:11434` / `hf.co/aisingapore/Gemma-SEA-LION-v3-9B-IT-GGUF:Q4_K_M` | LLM cục bộ cho worker (một model cho trích xuất và reasoning) |
 | `OLLAMA_KEEP_ALIVE` | | `5m` | Thời gian Ollama giữ model trong VRAM sau mỗi request; máy admin dùng `24h` |
+| `AI_EXTRACTION_STRATEGY` | | `legacy` | Cách trích xuất triệu chứng: `legacy` (gửi toàn catalog) hoặc `phrases` (ứng viên theo từng cụm) |
+| `AI_EXTRACTION_CANDIDATES_PER_PHRASE` | | `4` | Số ứng viên mỗi cụm khi dùng `phrases` (1–50) |
 | `AI_ASSESSMENT_TIMEOUT_SECONDS` | | `90` | Ngân sách một lần đánh giá, tính từ lúc xếp hàng |
 | `WORKER_LEASE_SECONDS` / `WORKER_MAX_ATTEMPTS` | | `150` / `2` | Hạn thuê việc; số lần thử trước khi `Failed` |
 | `TEST_DATABASE_URL` / `TEST_MIGRATION_DATABASE_URL` | | tự suy ra | Ghi đè DB cho pytest (thường không cần) |
@@ -347,7 +374,7 @@ Tiền tố `/api/v1`. Chi tiết tham số và schema: **Swagger `/docs`** (lu�
 
 | Nhóm | Đường dẫn | Vai trò |
 |---|---|---|
-| Xác thực | `POST auth/login`, `auth/refresh`, `auth/logout`, `auth/change-password`; `GET auth/me`; `GET auth/password-policy` (không cần đăng nhập) | Mọi người |
+| Xác thực | `POST auth/login`, `auth/refresh`, `auth/logout`, `auth/change-password`; `GET auth/me`; `GET auth/password-policy`, `GET auth/client-config` (thông tin phòng khám, thời gian tự đăng xuất; không cần đăng nhập) | Mọi người |
 | Tài khoản | `GET/POST admin/users`; `GET/PATCH admin/users/{id}`; `POST admin/users/{id}/reset-password`, `…/unlock` | Admin |
 | Phòng | `GET rooms` (`include_inactive`); `POST admin/rooms`; `PATCH admin/rooms/{id}` | Mọi vai trò xem; Admin sửa. Gán bác sĩ vào phòng bằng `room_id` của tài khoản |
 | Nhật ký | `GET admin/audit-logs`; `GET admin/audit-logs/export` (xlsx mặc định, csv) | Admin |
@@ -387,7 +414,7 @@ Quy ước chung: tiền trả về **dạng số** (VNĐ); mọi GET dữ liệ
 | `ValidationError ... DATABASE_URL Field required` (khi chạy uvicorn/alembic) hoặc `Thiếu DATABASE_URL trong server/.env` (khi chạy pytest) | Chưa tạo `server/.env`, hoặc đang đứng sai thư mục | [Mục 2.2](#22-tạo-2-file-env-mật-khẩu-ngẫu-nhiên); chạy lệnh trong `server/` |
 | `API phải kết nối bằng medassist_app...` / `Migration phải chạy bằng medassist_owner` | Đổi nhầm vai trò trong `server/.env` | `DATABASE_URL` dùng `medassist_app`, `MIGRATION_DATABASE_URL` dùng `medassist_owner` |
 | `pip install` báo `No matching distribution` | Khác phiên bản Python | Dùng Python 3.14 như máy Sơn |
-| `pip install` lỗi đọc `requirements.txt` (ký tự lạ) | File bị ghi UTF-16 (PowerShell `>`) | Ghi lại: `python -m pip freeze \| Out-File -Encoding ascii requirements.txt` |
+| `pip install` lỗi đọc `requirements.txt` (ký tự lạ) | File bị ghi UTF-16 (PowerShell `>`) | Ghi lại: `python -m pip freeze \| Out-File -Encoding ascii requirements.txt`, rồi bỏ các gói đã có trong `requirements-dev.txt` (pytest, ruff...) |
 | `alembic check` báo có thay đổi | Sửa model mà chưa có revision | Báo Sơn — mọi thay đổi bảng đi qua migration |
 | Đăng nhập trả `429` `RATE_LIMITED` | Sai mật khẩu 5 lần trong 15 phút | Đợi 5 phút, hoặc Admin `unlock` / `reset-password` |
 | API trả `403` `PASSWORD_CHANGE_REQUIRED` | Tài khoản do Admin tạo hoặc vừa đặt lại mật khẩu | Đổi mật khẩu (`auth/change-password`) rồi đăng nhập lại |
@@ -426,7 +453,8 @@ server/
 ├── Dockerfile         # image dùng chung cho api, worker, migrate trên máy admin
 ├── .env.example
 ├── pytest.ini
-└── requirements.txt
+├── requirements.txt       # thư viện chạy thật (image Docker)
+└── requirements-dev.txt   # + pytest, ruff cho máy dev và CI
 ```
 
 Tài liệu liên quan: ERD v1.9, Architecture v1.7, *Quy định thư mục v6*, *Cấu trúc dự kiến v6*; `server/data/README.md`;

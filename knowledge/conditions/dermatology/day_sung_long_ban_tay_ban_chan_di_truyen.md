@@ -5,58 +5,51 @@ name_vi: Dày sừng lòng bàn tay, bàn chân di truyền
 name_en: Hereditary palmoplantar keratoderma
 icd10_code: Q82.8
 disease_group: dermatology
-description: 'Dày sừng lòng bàn tay chân có thể do di truyền, do mắc phải, tuy nhiên
-  đa số là do di truyền. Bệnh thường có tính chất gia đình và phần lớn là do đột biến
-  gen mã hoá cấu trúc thành phần của tế bào sừng, có thể là di truyền trội, di truyền
-  lặn hay liên quan đến nhiễm sắc thể X gồm dày sừng lòng bàn tay bàn chân có hiện
-  thượng ly gai: đột biến gen keratin 9 và 16.'
+description: 'Dày sừng lòng bàn tay chân có thể do di truyền, do mắc phải, tuy nhiên đa số là do di truyền.
+  Bệnh thường có tính chất gia đình và phần lớn là do đột biến gen mã hoá cấu trúc thành phần của tế bào
+  sừng, có thể là di truyền trội, di truyền lặn hay liên quan đến nhiễm sắc thể X gồm dày sừng lòng bàn
+  tay bàn chân có hiện thượng ly gai: đột biến gen keratin 9 và 16.'
 relations:
 - symptom_code: palmoplantar_keratoderma_fissures
   polarity: SUPPORTS
-  weight: 0.98
+  weight: 0.9
   is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: epidermolysis_bullosa_mechanobullous
   polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
-  source_key: moh_qd_75_2015
-  source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: paederus_kissing_blister_dermatitis
-  polarity: SUPPORTS
-  weight: 0.97
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: atopic_dermatitis_flexural_eczema
   polarity: SUPPORTS
-  weight: 0.97
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: pustular_furuncle_folliculitis
   polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: vesicular_blister_rash
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: scaly_plaque_hyperkeratosis
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: pigmentary_macule_patch
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 excerpts:

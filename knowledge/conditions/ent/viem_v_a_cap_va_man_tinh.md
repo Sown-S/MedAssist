@@ -5,105 +5,104 @@ name_vi: Viêm V.A cấp và mạn tính
 name_en: Acute and chronic adenoiditis
 icd10_code: J35.2
 disease_group: ent
-description: V.A (Végétations Adénoides) là một tổ chức lympho nằm ở vòm họng, là
-  một phần thuộc vòng bạch huyết Waldeyer, còn gọi là amiđan Luschka. V.A phát triển
-  mạnh ở lứa tuổi nhỏ và bắt đầu thoái triển từ 5-6 tuổi trở đi. Viêm V.A cấp tính
-  là viêm nhiễm cấp tính, xuất tiết hoặc có mủ ở amiđan Lushka ngay từ nhỏ, cũng có
-  thể gặp ở trẻ lớn và người lớn (nhưng rất hiếm).
+description: V.A (Végétations Adénoides) là một tổ chức lympho nằm ở vòm họng, là một phần thuộc vòng
+  bạch huyết Waldeyer, còn gọi là amiđan Luschka. V.A phát triển mạnh ở lứa tuổi nhỏ và bắt đầu thoái
+  triển từ 5-6 tuổi trở đi. Viêm V.A cấp tính là viêm nhiễm cấp tính, xuất tiết hoặc có mủ ở amiđan Lushka
+  ngay từ nhỏ, cũng có thể gặp ở trẻ lớn và người lớn (nhưng rất hiếm).
 relations:
 - symptom_code: adenoid_facies_mouth_breathing
-  polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
-  source_key: moh_qd_5643_2015
-  source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: tonsillitis_adenoid_pharyngitis
-  polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
-  source_key: moh_qd_5643_2015
-  source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: nasal_obstruction_stuffiness
   polarity: SUPPORTS
   weight: 0.9
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
+- symptom_code: tonsillitis_adenoid_pharyngitis
+  polarity: SUPPORTS
+  weight: 0.6
+  is_key: false
+  source_key: moh_qd_5643_2015
+  source_edition: Quyết định số 5643/QĐ-BYT
+- symptom_code: nasal_obstruction_stuffiness
+  polarity: SUPPORTS
+  weight: 0.6
+  is_key: false
+  source_key: moh_qd_5643_2015
+  source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: fever_high
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.3
   is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: hearing_loss_deafness
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: tinnitus_ear_fullness
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: otalgia_ear_pain
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: rhinorrhea_nasal_congestion
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: cough_dry
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: middle_meatus_mucopurulent_discharge
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: turbinate_hypertrophy_pallor
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: tachypnea_accessory_muscle_retractions
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: cyanosis_hypoxemia_central_peripheral
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: weight_loss_anorexia
   polarity: SUPPORTS
-  weight: 0.76
+  weight: 0.3
   is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: anemia_pallor_jaundice
   polarity: SUPPORTS
-  weight: 0.76
+  weight: 0.3
   is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: fever_low_grade
   polarity: SUPPORTS
-  weight: 0.72
+  weight: 0.3
   is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT

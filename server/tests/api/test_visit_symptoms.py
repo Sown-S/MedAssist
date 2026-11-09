@@ -1,4 +1,5 @@
 """PUT/GET /visits/{id}/symptoms: y tá xác nhận triệu chứng (HITL), đầu vào của AI."""
+
 import uuid
 
 import pytest
@@ -6,9 +7,14 @@ import pytest
 
 @pytest.fixture
 def visit_id(client, nurse):
-    pid = client.post("/api/v1/patients", headers=nurse, json={
-        "full_name": f"Triệu Chứng {uuid.uuid4().hex[:6]}", "date_of_birth": "1990-05-01", "gender": "Female"}).json()["patient_id"]
-    return client.post("/api/v1/visits", headers=nurse, json={"patient_id": pid, "chief_complaint": "Sốt ho"}).json()["visit_id"]
+    pid = client.post(
+        "/api/v1/patients",
+        headers=nurse,
+        json={"full_name": f"Triệu Chứng {uuid.uuid4().hex[:6]}", "date_of_birth": "1990-05-01", "gender": "Female"},
+    ).json()["patient_id"]
+    return client.post("/api/v1/visits", headers=nurse, json={"patient_id": pid, "chief_complaint": "Sốt ho"}).json()[
+        "visit_id"
+    ]
 
 
 def _put(client, headers, vid, items):
@@ -16,8 +22,15 @@ def _put(client, headers, vid, items):
 
 
 def test_put_and_get(client, nurse, visit_id, wk_knowledge):
-    r = _put(client, nurse, visit_id, [{"symptom_code": "wk_fever_high", "state": "PRESENT"},
-                                       {"symptom_code": "wk_cough_dry", "state": "ABSENT", "source": "Extracted"}])
+    r = _put(
+        client,
+        nurse,
+        visit_id,
+        [
+            {"symptom_code": "wk_fever_high", "state": "PRESENT"},
+            {"symptom_code": "wk_cough_dry", "state": "ABSENT", "source": "Extracted"},
+        ],
+    )
     assert r.status_code == 200, r.text
     got = {s["symptom_code"]: s for s in client.get(f"/api/v1/visits/{visit_id}/symptoms", headers=nurse).json()}
     assert got["wk_fever_high"]["state"] == "PRESENT" and got["wk_fever_high"]["symptom_name"] == "Sốt cao"
@@ -25,8 +38,12 @@ def test_put_and_get(client, nurse, visit_id, wk_knowledge):
 
 
 def test_removed_code_becomes_unknown(client, nurse, visit_id, wk_knowledge):
-    _put(client, nurse, visit_id, [{"symptom_code": "wk_fever_high", "state": "PRESENT"},
-                                   {"symptom_code": "wk_sore_throat", "state": "PRESENT"}])
+    _put(
+        client,
+        nurse,
+        visit_id,
+        [{"symptom_code": "wk_fever_high", "state": "PRESENT"}, {"symptom_code": "wk_sore_throat", "state": "PRESENT"}],
+    )
     rows = _put(client, nurse, visit_id, [{"symptom_code": "wk_fever_high", "state": "PRESENT"}]).json()
     assert {s["symptom_code"]: s["state"] for s in rows} == {"wk_fever_high": "PRESENT", "wk_sore_throat": "UNKNOWN"}
 
@@ -34,8 +51,12 @@ def test_removed_code_becomes_unknown(client, nurse, visit_id, wk_knowledge):
 def test_unknown_and_duplicate_codes(client, nurse, visit_id, wk_knowledge):
     r = _put(client, nurse, visit_id, [{"symptom_code": "khong_co_ma_nay", "state": "PRESENT"}])
     assert r.status_code == 422 and r.json()["error"]["code"] == "UNKNOWN_SYMPTOM"
-    r = _put(client, nurse, visit_id, [{"symptom_code": "wk_fever_high", "state": "PRESENT"},
-                                       {"symptom_code": "wk_fever_high", "state": "ABSENT"}])
+    r = _put(
+        client,
+        nurse,
+        visit_id,
+        [{"symptom_code": "wk_fever_high", "state": "PRESENT"}, {"symptom_code": "wk_fever_high", "state": "ABSENT"}],
+    )
     assert r.status_code == 422
     r = _put(client, nurse, visit_id, [{"symptom_code": "wk_fever_high", "state": "MAYBE"}])
     assert r.status_code == 422
@@ -49,9 +70,22 @@ def test_closed_visit_and_roles(client, nurse, login, visit_id, wk_knowledge):
     assert client.get(f"/api/v1/visits/{uuid.uuid4()}/symptoms", headers=nurse).status_code == 404
 
 
+def test_examining_only_own_physician(client, nurse, doctor, doctor2, examining, wk_knowledge):
+    vid = examining()
+    item = [{"symptom_code": "wk_fever_high", "state": "PRESENT"}]
+    for other in (doctor2, nurse):
+        r = _put(client, other, vid, item)
+        assert r.status_code == 409 and r.json()["error"]["code"] == "NOT_YOUR_VISIT"
+    assert _put(client, doctor, vid, item).status_code == 200
+
+
 def test_audit_counts_only(client, nurse, visit_id, wk_knowledge, logs):
-    _put(client, nurse, visit_id, [{"symptom_code": "wk_fever_high", "state": "PRESENT"},
-                                   {"symptom_code": "wk_cough_dry", "state": "UNKNOWN"}])
+    _put(
+        client,
+        nurse,
+        visit_id,
+        [{"symptom_code": "wk_fever_high", "state": "PRESENT"}, {"symptom_code": "wk_cough_dry", "state": "UNKNOWN"}],
+    )
     row = [r for r in logs(action="UPDATE", entity="visit") if r.new_values.get("symptoms_confirmed")][-1]
     assert row.new_values["symptoms_confirmed"] == {"PRESENT": 1, "ABSENT": 0, "UNKNOWN": 1}
     assert "wk_fever_high" not in str(row.new_values)

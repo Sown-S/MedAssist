@@ -7,8 +7,8 @@ import { useAiHealth } from '../api/connectivity'
 
 // Server tự kết thúc lượt trích xuất sau 30 giây tính từ POST (kể cả lúc xếp hàng). Client đếm từ lúc bấm và chờ thêm
 // 5 giây để bù khoảng hỏi lại 2 giây và độ trễ mạng. Thanh tiến trình chạy theo thời gian, đầy ở mốc 30 giây.
-export const SERVER_LIMIT_S = 30
-export const EXTRACTION_TIMEOUT_MS = 35000
+const SERVER_LIMIT_S = 30
+const EXTRACTION_TIMEOUT_MS = 35000
 // Bước đang chạy lấy từ status server trả về (Queued / Running).
 const STEPS = [
   ['saving', 'Description saved'],
@@ -211,7 +211,12 @@ export default function SymptomPanel({ value, onChange, text, onText, disabled =
               <Icon name="alert" /> {translate('The description changed after the last suggestion — run it again.')}
             </span>
           )}
-          {job.status === 'done' && !proposals.length && job.count === 0 && !askAgain.length && <span className="ai-soft">{translate('No catalog symptoms found — use the checklist below.')}</span>}
+          {/* Rỗng có thể do mô hình bỏ sót hoặc không khớp được danh mục: không được đọc thành “bệnh nhân không có triệu chứng”. */}
+          {job.status === 'done' && !proposals.length && job.count === 0 && !askAgain.length && (
+            <p className="sym-warn">
+              <Icon name="alert" /> {translate('The model did not recognise any symptom in the description. This does not mean the patient has none — ask again and pick in the list below.')}
+            </p>
+          )}
           {askAgain.length > 0 && (
             <p className="sym-warn">
               <Icon name="alert" /> {translate('Not sure — ask the patient again:')} {askAgain.map((u) => u.name || translate(symptomName(u.symptom_code))).join(', ')}

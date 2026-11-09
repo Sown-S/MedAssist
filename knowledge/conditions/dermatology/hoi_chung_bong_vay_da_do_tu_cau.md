@@ -5,86 +5,79 @@ name_vi: Hội chứng bong vảy da do tụ cầu
 name_en: Staphylococcal Scalded Skin Syndrome - SSSS
 icd10_code: L00
 disease_group: dermatology
-description: Hội chứng bong vảy da do tụ cầu hay bệnh Ritter được bác sĩ người Đức
-  Gotfried Ritter von Rittershain mô tả lần đầu vào năm 1878. Bệnh hay gặp ở trẻ nhỏ
-  do độc tố của tụ cầu vàng gây ra và có thể gây thành dịch ở trẻ sơ sinh trong bệnh
-  viện.
+description: Hội chứng bong vảy da do tụ cầu hay bệnh Ritter được bác sĩ người Đức Gotfried Ritter von
+  Rittershain mô tả lần đầu vào năm 1878. Bệnh hay gặp ở trẻ nhỏ do độc tố của tụ cầu vàng gây ra và có
+  thể gây thành dịch ở trẻ sơ sinh trong bệnh viện.
 relations:
 - symptom_code: staphylococcal_scalded_skin_exfoliation
   polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
-  source_key: moh_qd_75_2015
-  source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: pemphigus_flaccid_bulla_nikolsky_pos
-  polarity: SUPPORTS
-  weight: 0.98
+  weight: 0.9
   is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: sjs_ten_epidermal_necrolysis_mucosal
   polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: erythroderma_generalized_exfoliation
   polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: vesicular_blister_rash
   polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: scaly_plaque_hyperkeratosis
   polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: honey_crusted_impetigo_erosion
   polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: fever_high
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: pustular_furuncle_folliculitis
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: conjunctivitis_uveitis_red_eye
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: sore_throat_dysphagia
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: epidemiological_exposure_vector_travel
   polarity: SUPPORTS
-  weight: 0.76
+  weight: 0.3
   is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: fatigue_malaise
   polarity: SUPPORTS
-  weight: 0.7
+  weight: 0.3
   is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT

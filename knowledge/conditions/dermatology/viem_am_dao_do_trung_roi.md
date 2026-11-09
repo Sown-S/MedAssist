@@ -5,46 +5,45 @@ name_vi: Viêm âm đạo do trùng roi
 name_en: Trichomoniasis
 icd10_code: A59.0
 disease_group: dermatology
-description: Bệnh lây truyền chủ yếu qua đường tình dục, gây viêm âm đạo ở nữ và viêm
-  niệu đạo ở nam. Tuy nhiên, nhiều trường hợp không biểu hiện triệu chứng. Phụ nữ
-  thường biểu hiện triệu chứng nhiều hơn và có liên quan đến vỡ màng ối sớm. Trùng
-  roi sinh dục có nguy cơ làm tăng khả năng lây truyền HIV lên 2-3 lần. Theo WHO,
-  hàng năm trên thế giới có khoảng 180 triệu trường hợp mới nhiễm trùng roi.
+description: Bệnh lây truyền chủ yếu qua đường tình dục, gây viêm âm đạo ở nữ và viêm niệu đạo ở nam.
+  Tuy nhiên, nhiều trường hợp không biểu hiện triệu chứng. Phụ nữ thường biểu hiện triệu chứng nhiều hơn
+  và có liên quan đến vỡ màng ối sớm. Trùng roi sinh dục có nguy cơ làm tăng khả năng lây truyền HIV lên
+  2-3 lần. Theo WHO, hàng năm trên thế giới có khoảng 180 triệu trường hợp mới nhiễm trùng roi.
 relations:
 - symptom_code: genital_ulcer_chancre_discharge
   polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: gonorrhea_purulent_urethritis_dysuria
   polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: chlamydial_trichomonal_vaginitis_cervicitis
   polarity: SUPPORTS
-  weight: 0.98
+  weight: 0.9
   is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: vulvovaginal_oral_candidiasis_curd
   polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: pruritus_intense_skin_itch
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: nausea_vomiting_diarrhea
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 excerpts:

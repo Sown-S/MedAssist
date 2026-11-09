@@ -5,87 +5,86 @@ name_vi: Hen phế quản
 name_en: Asthma
 icd10_code: J45.9
 disease_group: respiratory
-description: Hen phế quản (HPQ) là một bệnh có đặc điểm là viêm mạn tính niêm mạc
-  phế quản làm tăng phản ứng của phế quản thường xuyên với nhiều tác nhân kích thích,
-  dẫn đến co thắt lan toả cơ trơn phế quản. Sự co thắt phế quản không cố định, thường
-  có thể hồi phục tự nhiên hoặc sau khi dùng thuốc giãn phế quản. Trên lâm sàng, HPQ
-  biểu hiện với các triệu chứng như thở khò khè, khó thở, nặng ngực và ho.
+description: Hen phế quản (HPQ) là một bệnh có đặc điểm là viêm mạn tính niêm mạc phế quản làm tăng phản
+  ứng của phế quản thường xuyên với nhiều tác nhân kích thích, dẫn đến co thắt lan toả cơ trơn phế quản.
+  Sự co thắt phế quản không cố định, thường có thể hồi phục tự nhiên hoặc sau khi dùng thuốc giãn phế
+  quản. Trên lâm sàng, HPQ biểu hiện với các triệu chứng như thở khò khè, khó thở, nặng ngực và ho.
 relations:
 - symptom_code: wheezing_bronchospasm
   polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_1851_2020
   source_edition: Quyết định số 1851/QĐ-BYT
 - symptom_code: nocturnal_asthma_dyspnea
   polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_1851_2020
   source_edition: Quyết định số 1851/QĐ-BYT
 - symptom_code: asthma_reversible_airflow_limitation
   polarity: SUPPORTS
-  weight: 0.98
+  weight: 0.9
   is_key: true
   source_key: moh_qd_1851_2020
   source_edition: Quyết định số 1851/QĐ-BYT
 - symptom_code: asthma_atopy_trigger_allergen_exercise
   polarity: SUPPORTS
-  weight: 0.97
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_1851_2020
   source_edition: Quyết định số 1851/QĐ-BYT
 - symptom_code: peak_expiratory_flow_variability
   polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_1851_2020
   source_edition: Quyết định số 1851/QĐ-BYT
 - symptom_code: rhinorrhea_nasal_congestion
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_1851_2020
   source_edition: Quyết định số 1851/QĐ-BYT
 - symptom_code: conjunctivitis_uveitis_red_eye
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_1851_2020
   source_edition: Quyết định số 1851/QĐ-BYT
 - symptom_code: cough_dry
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_1851_2020
   source_edition: Quyết định số 1851/QĐ-BYT
 - symptom_code: cough_productive_sputum
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_1851_2020
   source_edition: Quyết định số 1851/QĐ-BYT
 - symptom_code: dyspnea_chronic_exertional
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_1851_2020
   source_edition: Quyết định số 1851/QĐ-BYT
 - symptom_code: chest_tightness_pleuritic_pain
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_1851_2020
   source_edition: Quyết định số 1851/QĐ-BYT
 - symptom_code: difficulty_speaking_phrases_orthopnea
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_1851_2020
   source_edition: Quyết định số 1851/QĐ-BYT
 - symptom_code: sweating_profuse
   polarity: SUPPORTS
-  weight: 0.72
+  weight: 0.3
   is_key: false
   source_key: moh_qd_1851_2020
   source_edition: Quyết định số 1851/QĐ-BYT

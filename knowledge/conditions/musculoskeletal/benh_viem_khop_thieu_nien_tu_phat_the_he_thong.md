@@ -5,159 +5,158 @@ name_vi: Bệnh viêm khớp thiếu niên tự phát thể hệ thống
 name_en: Juvenile Idiopathic Arthritis with systemic onset
 icd10_code: M08.2
 disease_group: musculoskeletal
-description: Viêm khớp thiếu niên tự phát thể hệ thống chiếm 5 - 15 % nhóm bệnh viêm
-  khớp thiếu niên tự phát. Đây là biểu hiện tổn thương nội tạng của bệnh với sốt cao
-  đặc trưng, kèm các tổn thương lan tỏa ngoài khớp (da, mạch máu, tim, phổi, gan,
-  lách, hạch ...). Viêm khớp thường thoáng qua, nhưng các tổn thương ngoài khớp thường
-  nặng và kéo dài có thể gây tử vong cho trẻ.
+description: Viêm khớp thiếu niên tự phát thể hệ thống chiếm 5 - 15 % nhóm bệnh viêm khớp thiếu niên tự
+  phát. Đây là biểu hiện tổn thương nội tạng của bệnh với sốt cao đặc trưng, kèm các tổn thương lan tỏa
+  ngoài khớp (da, mạch máu, tim, phổi, gan, lách, hạch ...). Viêm khớp thường thoáng qua, nhưng các tổn
+  thương ngoài khớp thường nặng và kéo dài có thể gây tử vong cho trẻ.
 relations:
 - symptom_code: myalgia_arthralgia
   polarity: SUPPORTS
-  weight: 0.97
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: maculopapular_rash
   polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: symmetric_polyarthritis_hands
   polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: jia_systemic_polyarticular_enthesitis
   polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: osteoporosis_vertebral_collapse_kyphosis
   polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: fever_prolonged
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: salmon_pink_evanescent_rash
-  polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
-  source_key: moh_qd_361_2014
-  source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: petechiae_mucosal_bleeding
-  polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
-  source_key: moh_qd_361_2014
-  source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: bone_pain_fracture_lesion
-  polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
-  source_key: moh_qd_361_2014
-  source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: shoulder_periarthritis_restricted
-  polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
-  source_key: moh_qd_361_2014
-  source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: sle_alopecia_nephritis_cytopenia
-  polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
-  source_key: moh_qd_361_2014
-  source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: dermatomyositis_shawls_mechanic_hands
-  polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
-  source_key: moh_qd_361_2014
-  source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: pyomyositis_psoas_muscle_abscess
-  polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
-  source_key: moh_qd_361_2014
-  source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: knee_osteoarthritis_wood_planing_osteophyte
-  polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
-  source_key: moh_qd_361_2014
-  source_edition: Quyết định số 361/QĐ-BYT
-- symptom_code: fever_high
   polarity: SUPPORTS
   weight: 0.9
   is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
+- symptom_code: petechiae_mucosal_bleeding
+  polarity: SUPPORTS
+  weight: 0.6
+  is_key: false
+  source_key: moh_qd_361_2014
+  source_edition: Quyết định số 361/QĐ-BYT
+- symptom_code: bone_pain_fracture_lesion
+  polarity: SUPPORTS
+  weight: 0.6
+  is_key: false
+  source_key: moh_qd_361_2014
+  source_edition: Quyết định số 361/QĐ-BYT
+- symptom_code: shoulder_periarthritis_restricted
+  polarity: SUPPORTS
+  weight: 0.6
+  is_key: false
+  source_key: moh_qd_361_2014
+  source_edition: Quyết định số 361/QĐ-BYT
+- symptom_code: sle_alopecia_nephritis_cytopenia
+  polarity: SUPPORTS
+  weight: 0.6
+  is_key: false
+  source_key: moh_qd_361_2014
+  source_edition: Quyết định số 361/QĐ-BYT
+- symptom_code: dermatomyositis_shawls_mechanic_hands
+  polarity: SUPPORTS
+  weight: 0.6
+  is_key: false
+  source_key: moh_qd_361_2014
+  source_edition: Quyết định số 361/QĐ-BYT
+- symptom_code: pyomyositis_psoas_muscle_abscess
+  polarity: SUPPORTS
+  weight: 0.3
+  is_key: false
+  source_key: moh_qd_361_2014
+  source_edition: Quyết định số 361/QĐ-BYT
+- symptom_code: knee_osteoarthritis_wood_planing_osteophyte
+  polarity: SUPPORTS
+  weight: 0.6
+  is_key: false
+  source_key: moh_qd_361_2014
+  source_edition: Quyết định số 361/QĐ-BYT
+- symptom_code: fever_high
+  polarity: SUPPORTS
+  weight: 0.6
+  is_key: false
+  source_key: moh_qd_361_2014
+  source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: joint_swelling_warmth_redness_effusion
   polarity: SUPPORTS
-  weight: 0.89
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: nausea_vomiting_diarrhea
   polarity: SUPPORTS
-  weight: 0.85
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: lymphadenopathy_splenomegaly
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.3
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: conjunctivitis_uveitis_red_eye
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: serositis_pleural_pericardial
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: periarticular_tendon_bursa_tenderness
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: anemia_pallor_jaundice
   polarity: SUPPORTS
-  weight: 0.76
+  weight: 0.3
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: chills_rigors
   polarity: SUPPORTS
-  weight: 0.75
+  weight: 0.3
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: weight_loss_anorexia
   polarity: SUPPORTS
-  weight: 0.74
+  weight: 0.3
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: fatigue_malaise
   polarity: SUPPORTS
-  weight: 0.68
+  weight: 0.3
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT

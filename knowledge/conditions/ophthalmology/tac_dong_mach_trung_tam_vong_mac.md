@@ -5,58 +5,57 @@ name_vi: Tắc động mạch trung tâm võng mạc
 name_en: Central retinal artery occlusion
 icd10_code: H34.1
 disease_group: ophthalmology
-description: Tắc động mạch võng mạc là hiện tượng tắc nghẽn động mạch hay một trên
-  nhiều nhánh của động mạch trung tâm võng mạc gây ra thiếu máu tổ chức võng mạc.
-  Tắc động mạch trung tâm võng mạc là một tai biến nặng nề về chức năng mắt khiến
-  dòng máu không đến nuôi dưỡng võng mạc được gây ra bệnh cảnh mù một mắt đột ngột,
-  không hồi phục dù có được điều trị cấp cứu kịp thời. Bệnh hay gặp trên người có
-  bệnh lý tim mạch.
+description: Tắc động mạch võng mạc là hiện tượng tắc nghẽn động mạch hay một trên nhiều nhánh của động
+  mạch trung tâm võng mạc gây ra thiếu máu tổ chức võng mạc. Tắc động mạch trung tâm võng mạc là một tai
+  biến nặng nề về chức năng mắt khiến dòng máu không đến nuôi dưỡng võng mạc được gây ra bệnh cảnh mù
+  một mắt đột ngột, không hồi phục dù có được điều trị cấp cứu kịp thời. Bệnh hay gặp trên người có bệnh
+  lý tim mạch.
 relations:
 - symptom_code: central_retinal_artery_cherry_red_spot
-  polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
-  source_key: moh_qd_40_2015
-  source_edition: Quyết định số 40/QĐ-BYT
-- symptom_code: visual_acuity_decreased_blur
-  polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
-  source_key: moh_qd_40_2015
-  source_edition: Quyết định số 40/QĐ-BYT
-- symptom_code: conjunctival_ciliary_injection_discharge
-  polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
-  source_key: moh_qd_40_2015
-  source_edition: Quyết định số 40/QĐ-BYT
-- symptom_code: retinal_vitreous_optic_disc_lesion
-  polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
-  source_key: moh_qd_40_2015
-  source_edition: Quyết định số 40/QĐ-BYT
-- symptom_code: open_angle_glaucoma_rnfl_visual_field
-  polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
-  source_key: moh_qd_40_2015
-  source_edition: Quyết định số 40/QĐ-BYT
-- symptom_code: macular_edema_oct_thickening
-  polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
-  source_key: moh_qd_40_2015
-  source_edition: Quyết định số 40/QĐ-BYT
-- symptom_code: ocular_pain_photophobia_tearing
   polarity: SUPPORTS
   weight: 0.9
   is_key: true
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
+- symptom_code: visual_acuity_decreased_blur
+  polarity: SUPPORTS
+  weight: 0.6
+  is_key: false
+  source_key: moh_qd_40_2015
+  source_edition: Quyết định số 40/QĐ-BYT
+- symptom_code: conjunctival_ciliary_injection_discharge
+  polarity: SUPPORTS
+  weight: 0.6
+  is_key: false
+  source_key: moh_qd_40_2015
+  source_edition: Quyết định số 40/QĐ-BYT
+- symptom_code: retinal_vitreous_optic_disc_lesion
+  polarity: SUPPORTS
+  weight: 0.6
+  is_key: false
+  source_key: moh_qd_40_2015
+  source_edition: Quyết định số 40/QĐ-BYT
+- symptom_code: open_angle_glaucoma_rnfl_visual_field
+  polarity: SUPPORTS
+  weight: 0.3
+  is_key: false
+  source_key: moh_qd_40_2015
+  source_edition: Quyết định số 40/QĐ-BYT
+- symptom_code: macular_edema_oct_thickening
+  polarity: SUPPORTS
+  weight: 0.6
+  is_key: false
+  source_key: moh_qd_40_2015
+  source_edition: Quyết định số 40/QĐ-BYT
+- symptom_code: ocular_pain_photophobia_tearing
+  polarity: SUPPORTS
+  weight: 0.6
+  is_key: false
+  source_key: moh_qd_40_2015
+  source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: anemia_pallor_jaundice
   polarity: SUPPORTS
-  weight: 0.76
+  weight: 0.3
   is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT

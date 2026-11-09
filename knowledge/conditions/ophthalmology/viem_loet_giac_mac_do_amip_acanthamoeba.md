@@ -5,43 +5,43 @@ name_vi: Viêm loét giác mạc do amip (acanthamoeba)
 name_en: Acanthamoeba keratitis
 icd10_code: B60.1
 disease_group: ophthalmology
-description: Loét giác mạc do acanthamoeba là hiện tượng mất tổ chức giác mạc do hoại
-  tử gây ra bởi một quá trình viêm trên giác mạc do acanthamoeba.
+description: Loét giác mạc do acanthamoeba là hiện tượng mất tổ chức giác mạc do hoại tử gây ra bởi một
+  quá trình viêm trên giác mạc do acanthamoeba.
 relations:
 - symptom_code: corneal_ulcer_hypopyon_keratitis
   polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: acanthamoeba_ring_infiltrate_keratitis
   polarity: SUPPORTS
-  weight: 0.98
+  weight: 0.9
   is_key: true
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: visual_acuity_decreased_blur
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: bacterial_corneal_ulcer_stromal_abscess
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: herpetic_dendritic_geographic_keratitis
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: ocular_pain_photophobia_tearing
   polarity: SUPPORTS
-  weight: 0.9
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 excerpts:

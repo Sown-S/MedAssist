@@ -1,4 +1,5 @@
-"""Phòng khám, phòng xét nghiệm (ERD v1.9). Mọi vai trò xem; Admin thêm, sửa, ngừng dùng."""
+"""Phòng khám, phòng xét nghiệm (ERD §2.1a). Mọi vai trò xem; Admin thêm, sửa, ngừng dùng."""
+
 import uuid
 
 from fastapi import APIRouter, Depends, Query
@@ -16,8 +17,9 @@ _admin = require_roles("Admin", audit_entity="room")
 
 
 @router.get("/rooms", response_model=list[RoomOut])
-def list_rooms(include_inactive: bool = Query(False), _: User = Depends(get_current_user),
-               db: Session = Depends(get_db)):
+def list_rooms(
+    include_inactive: bool = Query(False), _: User = Depends(get_current_user), db: Session = Depends(get_db)
+):
     return room_service.list_rooms(db, include_inactive=include_inactive)
 
 

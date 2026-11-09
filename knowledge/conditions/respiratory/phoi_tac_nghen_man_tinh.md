@@ -5,100 +5,99 @@ name_vi: Phổi tắc nghẽn mạn tính
 name_en: Chronic obstructive pulmonary disease
 icd10_code: J44.9
 disease_group: respiratory
-description: Bệnh phổi tắc nghẽn mạn tính (BPTNMT) là bệnh hô hấp phổ biến có thể
-  phòng và điều trị. Bệnh đặc trưng bởi các triệu chứng hô hấp dai dẳng và giới hạn
-  luồng khí, là hậu quả của những bất thường của đường thở và/hoặc phế nang thường
-  do phơi nhiễm với các phân tử hoặc khí độc hại, trong đó khói thuốc lá, thuốc lào
-  là yếu tố nguy cơ chính, ô nhiễm không khí và khói chất đốt cũng là yếu tố nguy
+description: Bệnh phổi tắc nghẽn mạn tính (BPTNMT) là bệnh hô hấp phổ biến có thể phòng và điều trị. Bệnh
+  đặc trưng bởi các triệu chứng hô hấp dai dẳng và giới hạn luồng khí, là hậu quả của những bất thường
+  của đường thở và/hoặc phế nang thường do phơi nhiễm với các phân tử hoặc khí độc hại, trong đó khói
+  thuốc lá, thuốc lào là yếu tố nguy cơ chính, ô nhiễm không khí và khói chất đốt cũng là yếu tố nguy
   cơ quan trọng gây BPTNMT.
 relations:
 - symptom_code: cough_productive_sputum
   polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_4562_2018
   source_edition: Quyết định số 4562/QĐ-BYT
 - symptom_code: dyspnea_chronic_exertional
   polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_4562_2018
   source_edition: Quyết định số 4562/QĐ-BYT
 - symptom_code: fixed_postbronchodilator_fev1_fvc_under_70
   polarity: SUPPORTS
-  weight: 0.98
+  weight: 0.9
   is_key: true
   source_key: moh_qd_4562_2018
   source_edition: Quyết định số 4562/QĐ-BYT
 - symptom_code: cough_dry
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_4562_2018
   source_edition: Quyết định số 4562/QĐ-BYT
 - symptom_code: wheezing_bronchospasm
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_4562_2018
   source_edition: Quyết định số 4562/QĐ-BYT
 - symptom_code: history_smoking_dust_exposure
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_4562_2018
   source_edition: Quyết định số 4562/QĐ-BYT
 - symptom_code: copd_barrel_chest_pursed_lip_breathing
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_4562_2018
   source_edition: Quyết định số 4562/QĐ-BYT
 - symptom_code: copd_acute_exacerbation_sputum_purulence
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_4562_2018
   source_edition: Quyết định số 4562/QĐ-BYT
 - symptom_code: tachypnea_accessory_muscle_retractions
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_4562_2018
   source_edition: Quyết định số 4562/QĐ-BYT
 - symptom_code: pulmonary_crackles_rales_consolidation
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_4562_2018
   source_edition: Quyết định số 4562/QĐ-BYT
 - symptom_code: decreased_breath_sounds_hyperresonance
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_4562_2018
   source_edition: Quyết định số 4562/QĐ-BYT
 - symptom_code: chronic_cor_pulmonale_edema_jugular_vein
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_4562_2018
   source_edition: Quyết định số 4562/QĐ-BYT
 - symptom_code: cyanosis_hypoxemia_central_peripheral
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_4562_2018
   source_edition: Quyết định số 4562/QĐ-BYT
 - symptom_code: chest_tightness_pleuritic_pain
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_4562_2018
   source_edition: Quyết định số 4562/QĐ-BYT
 - symptom_code: recurrent_lower_respiratory_infections
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_4562_2018
   source_edition: Quyết định số 4562/QĐ-BYT

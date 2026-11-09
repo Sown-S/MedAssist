@@ -9,6 +9,7 @@ from app.validation.knowledge_validators import ConditionCode
 
 class DiagnosisCreate(BaseModel):
     """Chọn mã bệnh từ danh sách Active (tên, ICD-10 lấy theo danh mục nếu bỏ trống) hoặc nhập tự do."""
+
     model_config = ConfigDict(extra="forbid")
     condition_code: ConditionCode | None = None
     diagnosis_name: CleanStr | None = Field(default=None, min_length=1, max_length=255)
@@ -16,7 +17,8 @@ class DiagnosisCreate(BaseModel):
     is_primary: bool = True
     clinical_notes: str | None = Field(default=None, max_length=4000)
     assessment_id: uuid.UUID | None = Field(
-        default=None, description="Lần chạy AI mà bác sĩ đang xem; bỏ trống thì server lấy lần mới nhất")
+        default=None, description="Lần chạy AI mà bác sĩ đang xem; bỏ trống thì server lấy lần mới nhất"
+    )
 
 
 class DiagnosisUpdate(BaseModel):

@@ -5,63 +5,74 @@ name_vi: Bệnh lỵ trực khuẩn
 name_en: Bacillary dysentery
 icd10_code: A03.9
 disease_group: infectious
-description: Bệnh do Shigella là tình trạng viêm nhiễm cấp tính ở đường tiêu hóa do
-  trực khuẩn Shigella gây nên với hội chứng lỵ điển hình là đau quặn bụng, mót rặn
-  và đi ngoài phân lỏng như nước rửa thịt. Biểu hiện lâm sàng của bệnh do Shigella
-  có thể thay đổi từ thể tiêu chảy nhẹ phân lỏng nước cho đến các thể nặng nề với
-  đau bụng quặn, mót rặn, tiêu phân nhày máu, sốt và dấu hiệu nhiễm trùng nhiễm độc.
+description: Bệnh do Shigella là tình trạng viêm nhiễm cấp tính ở đường tiêu hóa do trực khuẩn Shigella
+  gây nên với hội chứng lỵ điển hình là đau quặn bụng, mót rặn và đi ngoài phân lỏng như nước rửa thịt.
+  Biểu hiện lâm sàng của bệnh do Shigella có thể thay đổi từ thể tiêu chảy nhẹ phân lỏng nước cho đến
+  các thể nặng nề với đau bụng quặn, mót rặn, tiêu phân nhày máu, sốt và dấu hiệu nhiễm trùng nhiễm độc.
 relations:
 - symptom_code: dysentery_tenesmus_bloody_stool
-  polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
-  source_key: moh_qd_5642_2015
-  source_edition: Quyết định số 5642/QĐ-BYT
-- symptom_code: acute_infectious_watery_diarrhea_dehydration
-  polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
-  source_key: moh_qd_5642_2015
-  source_edition: Quyết định số 5642/QĐ-BYT
-- symptom_code: encephalopathy_delirium_convulsion
-  polarity: SUPPORTS
-  weight: 0.91
-  is_key: true
-  source_key: moh_qd_5642_2015
-  source_edition: Quyết định số 5642/QĐ-BYT
-- symptom_code: fever_high
   polarity: SUPPORTS
   weight: 0.9
   is_key: true
   source_key: moh_qd_5642_2015
   source_edition: Quyết định số 5642/QĐ-BYT
+- symptom_code: watery_diarrhea
+  polarity: SUPPORTS
+  weight: 0.6
+  is_key: false
+  source_key: moh_qd_5642_2015
+  source_edition: Quyết định số 5642/QĐ-BYT
+- symptom_code: reduced_urine_output
+  polarity: SUPPORTS
+  weight: 0.6
+  is_key: false
+  source_key: moh_qd_5642_2015
+  source_edition: Quyết định số 5642/QĐ-BYT
+- symptom_code: sym_altered_consciousness
+  polarity: SUPPORTS
+  weight: 0.3
+  is_key: false
+  source_key: moh_qd_5642_2015
+  source_edition: Quyết định số 5642/QĐ-BYT
+- symptom_code: sym_seizures
+  polarity: SUPPORTS
+  weight: 0.3
+  is_key: false
+  source_key: moh_qd_5642_2015
+  source_edition: Quyết định số 5642/QĐ-BYT
+- symptom_code: fever_high
+  polarity: SUPPORTS
+  weight: 0.6
+  is_key: false
+  source_key: moh_qd_5642_2015
+  source_edition: Quyết định số 5642/QĐ-BYT
 - symptom_code: nausea_vomiting_diarrhea
   polarity: SUPPORTS
-  weight: 0.85
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5642_2015
   source_edition: Quyết định số 5642/QĐ-BYT
 - symptom_code: intoxication_coated_tongue_dry_lips
   polarity: SUPPORTS
-  weight: 0.78
+  weight: 0.3
   is_key: false
   source_key: moh_qd_5642_2015
   source_edition: Quyết định số 5642/QĐ-BYT
 - symptom_code: chills_rigors
   polarity: SUPPORTS
-  weight: 0.75
+  weight: 0.3
   is_key: false
   source_key: moh_qd_5642_2015
   source_edition: Quyết định số 5642/QĐ-BYT
 - symptom_code: weight_loss_anorexia
   polarity: SUPPORTS
-  weight: 0.74
+  weight: 0.3
   is_key: false
   source_key: moh_qd_5642_2015
   source_edition: Quyết định số 5642/QĐ-BYT
 - symptom_code: fatigue_malaise
   polarity: SUPPORTS
-  weight: 0.68
+  weight: 0.3
   is_key: false
   source_key: moh_qd_5642_2015
   source_edition: Quyết định số 5642/QĐ-BYT

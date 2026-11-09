@@ -57,5 +57,9 @@ def reasoning_json_schema(condition_codes: list[str] | None = None) -> dict[str,
     return schema
 
 
-def extraction_json_schema() -> dict[str, Any]:
-    return ExtractionOutput.model_json_schema()
+def extraction_json_schema(symptom_codes: list[str] | None = None) -> dict[str, Any]:
+    """Ràng buộc mã được sinh theo snapshot catalog của từng lần trích xuất."""
+    schema = ExtractionOutput.model_json_schema()
+    if symptom_codes is not None:
+        schema["$defs"]["ExtractedSymptom"]["properties"]["symptom_code"]["enum"] = list(symptom_codes)
+    return schema

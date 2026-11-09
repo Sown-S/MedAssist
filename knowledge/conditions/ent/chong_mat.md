@@ -5,86 +5,80 @@ name_vi: Chóng mặt
 name_en: Vertigo
 icd10_code: H81.9
 disease_group: ent
-description: Chóng mặt là một ảo giác hoàn toàn trái ngược về mặt vận động hoặc về
-  tư thế của người bệnh. Từ chóng mặt dùng để chỉ tất cả những cảm giác mất thăng
-  bằng có nguồn gốc từ cơ quan tiền đình. Chóng mặt có thể biểu hiện dưới dạng những
-  cảm giác quay đảo của chính người bệnh hoặc đồ vật xung quanh hoặc cả hai.
+description: Chóng mặt là một ảo giác hoàn toàn trái ngược về mặt vận động hoặc về tư thế của người bệnh.
+  Từ chóng mặt dùng để chỉ tất cả những cảm giác mất thăng bằng có nguồn gốc từ cơ quan tiền đình. Chóng
+  mặt có thể biểu hiện dưới dạng những cảm giác quay đảo của chính người bệnh hoặc đồ vật xung quanh hoặc
+  cả hai.
 relations:
 - symptom_code: dizziness_vertigo
   polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: spontaneous_nystagmus_vestibular
   polarity: SUPPORTS
-  weight: 0.97
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: hearing_loss_deafness
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: otorrhea_ear_discharge
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: tympanic_membrane_lesion
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: fetid_cholesteatoma_otorrhea
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
-  source_key: moh_qd_5643_2015
-  source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: rotatory_vertigo_meniere
-  polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: temporal_bone_fracture_hemotympanum
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: sensorineural_hearing_loss
   polarity: SUPPORTS
-  weight: 0.9
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: tinnitus_ear_fullness
   polarity: SUPPORTS
-  weight: 0.88
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: nausea_vomiting_diarrhea
   polarity: SUPPORTS
-  weight: 0.85
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: anemia_pallor_jaundice
   polarity: SUPPORTS
-  weight: 0.78
+  weight: 0.3
   is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: intoxication_coated_tongue_dry_lips
   polarity: SUPPORTS
-  weight: 0.76
+  weight: 0.3
   is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT

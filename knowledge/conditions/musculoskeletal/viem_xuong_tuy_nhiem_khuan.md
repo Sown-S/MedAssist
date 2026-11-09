@@ -5,49 +5,49 @@ name_vi: Viêm xương tủy nhiễm khuẩn
 name_en: Infectious osteomyelitis
 icd10_code: M86.9
 disease_group: musculoskeletal
-description: Viêm xương tủy (Osteomyelitis), hay còn gọi là cốt tủy viêm, là một bệnh
-  nhiễm trùng của xương (vỏ hoặc tủy xương), có thể là cấp tính hoặc mạn tính, do
-  nhiều loại vi sinh vật gây nên, nhưng thường gặp nhất là vi khuẩn.
+description: Viêm xương tủy (Osteomyelitis), hay còn gọi là cốt tủy viêm, là một bệnh nhiễm trùng của
+  xương (vỏ hoặc tủy xương), có thể là cấp tính hoặc mạn tính, do nhiều loại vi sinh vật gây nên, nhưng
+  thường gặp nhất là vi khuẩn.
 relations:
 - symptom_code: osteomyelitis_bone_tenderness_fistula
   polarity: SUPPORTS
-  weight: 0.98
+  weight: 0.9
   is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: bone_pain_fracture_lesion
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: pyomyositis_psoas_muscle_abscess
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: fever_high
   polarity: SUPPORTS
-  weight: 0.9
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: skin_cellulitis_pus_abscess
   polarity: SUPPORTS
-  weight: 0.9
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: chills_rigors
   polarity: SUPPORTS
-  weight: 0.75
+  weight: 0.3
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: fatigue_malaise
   polarity: SUPPORTS
-  weight: 0.68
+  weight: 0.3
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT

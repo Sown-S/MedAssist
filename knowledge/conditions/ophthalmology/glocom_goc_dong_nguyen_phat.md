@@ -5,50 +5,50 @@ name_vi: Glôcôm góc đóng nguyên phát
 name_en: Primary angle-closure glaucoma
 icd10_code: H40.2
 disease_group: ophthalmology
-description: Glôcôm góc đóng nguyên phát là một tình trạng rối loạn về giải phẫu do
-  mống mắt ngoại vi áp ra trước che lấp vùng bè và gây nghẽn góc tiền phòng. Những
-  tổn thương thần kinh thị giác do bệnh glôcôm gây ra là không có khả năng hồi phục.
-  Vì vậy việc phát hiện sớm và điều trị kịp thời là rất quan trọng.
+description: Glôcôm góc đóng nguyên phát là một tình trạng rối loạn về giải phẫu do mống mắt ngoại vi
+  áp ra trước che lấp vùng bè và gây nghẽn góc tiền phòng. Những tổn thương thần kinh thị giác do bệnh
+  glôcôm gây ra là không có khả năng hồi phục. Vì vậy việc phát hiện sớm và điều trị kịp thời là rất quan
+  trọng.
 relations:
 - symptom_code: intraocular_pressure_glaucoma_cupping
   polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: acute_angle_closure_mid_dilated_pupil
   polarity: SUPPORTS
-  weight: 0.98
+  weight: 0.9
   is_key: true
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: visual_acuity_decreased_blur
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: ocular_pain_photophobia_tearing
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: nausea_vomiting_diarrhea
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: corneal_edema_descemet_folds
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: sweating_profuse
   polarity: SUPPORTS
-  weight: 0.72
+  weight: 0.3
   is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT

@@ -86,6 +86,24 @@ class OllamaClient:
         timeout_seconds: float | None,
     ) -> bytes:
         """Gửi request cấu trúc không streaming và trả envelope thô."""
+        options = {"temperature": 0}
+        payload = {
+            "model": self.model,
+            "prompt": prompt,
+            "format": dict(schema),
+            "stream": False,
+            "keep_alive": self.keep_alive,
+            "options": options,
+        }
+        if schema.get("title") in {"ExtractionOutput", "PhraseExtractionOutput"}:
+            options["num_ctx"] = 8192
+            # Không cho Ollama âm thầm bỏ đầu catalog/chỉ dẫn khi quá context.
+            # Quá giới hạn phải thành lỗi để extractor dùng fallback an toàn.
+            payload["truncate"] = False
+            if schema.get("title") == "PhraseExtractionOutput":
+                # Chặn sinh vô hạn; done_reason=length bị client loại, không nhận
+                # JSON một phần. Ollama kiểm token thực tế, không suy từ ký tự.
+                options["num_predict"] = 768
         try:
             async with httpx.AsyncClient(
                 transport=self._transport,
@@ -94,14 +112,7 @@ class OllamaClient:
             ) as client:
                 response = await client.post(
                     self._url,
-                    json={
-                        "model": self.model,
-                        "prompt": prompt,
-                        "format": dict(schema),
-                        "stream": False,
-                        "keep_alive": self.keep_alive,
-                        "options": {"temperature": 0},
-                    },
+                    json=payload,
                     timeout=timeout_seconds,
                 )
                 if not response.is_success:

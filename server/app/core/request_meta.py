@@ -1,4 +1,5 @@
 """IP và user-agent của request, dùng cho AUDIT_LOG."""
+
 import ipaddress
 from functools import lru_cache
 
@@ -23,11 +24,8 @@ def _is_trusted(host: str | None) -> bool:
 
 
 def client_ip(request: Request) -> str | None:
-    """IP thật của máy client.
-
-    Chỉ đọc X-Forwarded-For khi request đến từ proxy tin cậy (Caddy); ngược lại ai cũng
-    tự đặt header đó để giả IP trong nhật ký.
-    """
+    """IP thật của máy client. Chỉ đọc X-Forwarded-For khi request đến từ proxy tin cậy (Caddy),
+    không thì ai cũng tự đặt header đó để giả IP trong nhật ký."""
     peer = request.client.host if request.client else None
     if _is_trusted(peer):
         forwarded = request.headers.get("x-forwarded-for")
@@ -39,6 +37,7 @@ def client_ip(request: Request) -> str | None:
 def user_agent(request: Request) -> str | None:
     ua = request.headers.get("user-agent")
     return ua[:255] if ua else None
+
 
 def path_template(request: Request) -> str:
     """Đường dẫn đầy đủ với tham số đường dẫn thay bằng tên, vd /api/v1/patients/{patient_id}.

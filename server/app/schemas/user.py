@@ -55,6 +55,7 @@ class UserCreate(BaseModel):
 
 class UserUpdate(BaseModel):
     """Không có username: tên đăng nhập không đổi sau khi tạo. Mật khẩu đổi qua endpoint riêng."""
+
     model_config = ConfigDict(extra="forbid")
     full_name: CleanStr | None = Field(default=None, min_length=1, max_length=100)
     role: Role | None = None
@@ -86,7 +87,7 @@ class UserOut(BaseModel):
     room_code: str | None = None
     room_name: str | None = None
     created_at: datetime
-    # Tính từ audit_log, không phải cột (ERD v1.9 mục 2.1)
+    # Tính từ audit_log, không phải cột (ERD §2.1)
     created_by: str | None = None
     last_login_at: datetime | None = None
     locked_until: datetime | None = None

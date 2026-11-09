@@ -5,45 +5,44 @@ name_vi: Bệnh lichen phẳng
 name_en: Lichen planus
 icd10_code: L43.9
 disease_group: dermatology
-description: Lichen phẳng được Erasmus Wilson mô tả đầu tiên vào năm 1869, là tình
-  trạng viêm da cấp tính hoặc mạn tính với các thương tổn đặc trưng là sẩn phẳng,
-  hình đa giác, màu đỏ tím và ngứa. Khoảng 0,5-1% dân số mắc bệnh với tỉ lệ giữa nam
-  và nữ ngang nhau. Lứa tuổi hay gặp từ 30-60 tuổi và ít gặp ở trẻ em. Bệnh có thể
-  cấp tính hoặc diễn biến mạn tính trong thời gian dài, nhiều năm và có thể ổn định.
+description: Lichen phẳng được Erasmus Wilson mô tả đầu tiên vào năm 1869, là tình trạng viêm da cấp tính
+  hoặc mạn tính với các thương tổn đặc trưng là sẩn phẳng, hình đa giác, màu đỏ tím và ngứa. Khoảng 0,5-1%
+  dân số mắc bệnh với tỉ lệ giữa nam và nữ ngang nhau. Lứa tuổi hay gặp từ 30-60 tuổi và ít gặp ở trẻ
+  em. Bệnh có thể cấp tính hoặc diễn biến mạn tính trong thời gian dài, nhiều năm và có thể ổn định.
 relations:
 - symptom_code: lichen_planus_wickham_purple_papules
   polarity: SUPPORTS
-  weight: 0.98
+  weight: 0.9
   is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: pruritus_intense_skin_itch
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: maculopapular_rash
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: vesicular_blister_rash
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: verrucous_papule_nodule_ulcer
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: lymphadenopathy_splenomegaly
   polarity: SUPPORTS
-  weight: 0.76
+  weight: 0.3
   is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT

@@ -1,19 +1,8 @@
-"""Dependency ghi VIEW cho mọi GET dữ liệu bệnh nhân (US04, US09) — phần "Audit Middleware"
-của Architecture v1.7, gắn theo route.
-
-Dùng trong router:
-    @router.get("/patients/{patient_id}")
-    def get_patient(patient_id: uuid.UUID,
-                    user: User = Depends(audit_view("patient", roles=CLINICAL_ROLES,
-                                                    id_param="patient_id"))):
-        ...
-
-    # Endpoint polling (hàng đợi, trạng thái AI): gộp 1 dòng / người / đối tượng / 5 phút
-    Depends(audit_view("visit", roles=CLINICAL_ROLES, dedupe_seconds=300))
-
-Dòng VIEW được ghi TRƯỚC khi handler chạy, bằng session riêng và commit ngay, nên có cả
-lượt xem không thành công (404). Sai vai trò: ghi lượt bị từ chối rồi trả 403.
+"""Dependency ghi VIEW cho mọi GET dữ liệu bệnh nhân (US04, US09), gắn theo route.
+Ghi trước handler bằng session riêng, commit ngay: có cả lượt 404 và lượt sai vai trò (403).
+Cách dùng, gộp dòng của endpoint polling: docs/thiet-ke-backend.md §1.
 """
+
 import uuid
 from collections.abc import Callable
 
@@ -27,7 +16,7 @@ from app.services import audit_service as audit
 # Vai trò được xem dữ liệu bệnh nhân. Admin không thuộc nhóm này (chỉ xem nhật ký, kho, báo cáo).
 CLINICAL_ROLES: tuple[str, ...] = ("Physician", "Nurse")
 
-DEFAULT_POLL_WINDOW = 300   # giây
+DEFAULT_POLL_WINDOW = 300  # giây
 
 
 def audit_view(
@@ -48,12 +37,13 @@ def audit_view(
             try:
                 entity_id = uuid.UUID(str(raw_id))
             except ValueError:
-                entity_id = None     # route sẽ tự trả 422; vẫn ghi lại lượt thử
+                entity_id = None  # route sẽ tự trả 422; vẫn ghi lại lượt thử
 
         if user.role not in roles:
             record_denied(request, user, entity, entity_id)
-            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
-                                detail="Bạn không có quyền thực hiện thao tác này")
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN, detail="Bạn không có quyền thực hiện thao tác này"
+            )
 
         path = path_template(request)
         if dedupe_seconds > 0:

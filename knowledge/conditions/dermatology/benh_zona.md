@@ -5,105 +5,86 @@ name_vi: Bệnh zona
 name_en: Herpes zoster
 icd10_code: B02.9
 disease_group: dermatology
-description: Bệnh zona hay herpes zoster là bệnh nhiễm trùng da với biểu hiện là các
-  ban đỏ, mụn nước, bọng nước tập trung thành đám, thành chùm dọc theo đường phân
-  bố của thần kinh ngoại biên. Bệnh do sự tái hoạt của virút Varicella zoster (VZV)
-  tiềm ẩn ở rễ thần kinh cảm giác cạnh cột sống. Bệnh hay gặp ở những người già, những
-  người suy giảm miễn dịch, đặc biệt ở người nhiễm HIV/AIDS.
+description: Bệnh zona hay herpes zoster là bệnh nhiễm trùng da với biểu hiện là các ban đỏ, mụn nước,
+  bọng nước tập trung thành đám, thành chùm dọc theo đường phân bố của thần kinh ngoại biên. Bệnh do sự
+  tái hoạt của virút Varicella zoster (VZV) tiềm ẩn ở rễ thần kinh cảm giác cạnh cột sống. Bệnh hay gặp
+  ở những người già, những người suy giảm miễn dịch, đặc biệt ở người nhiễm HIV/AIDS.
 relations:
 - symptom_code: herpetic_dermatomal_pain_blister
   polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
-  source_key: moh_qd_75_2015
-  source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: leprosy_anesthetic_hypopigmented_nerve
-  polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
-  source_key: moh_qd_75_2015
-  source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: pemphigus_flaccid_bulla_nikolsky_pos
-  polarity: SUPPORTS
-  weight: 0.98
+  weight: 0.9
   is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: vesicular_blister_rash
   polarity: SUPPORTS
-  weight: 0.97
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: staphylococcal_scalded_skin_exfoliation
   polarity: SUPPORTS
-  weight: 0.97
-  is_key: true
-  source_key: moh_qd_75_2015
-  source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: paederus_kissing_blister_dermatitis
-  polarity: SUPPORTS
-  weight: 0.97
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: maculopapular_rash
   polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: nausea_vomiting_diarrhea
   polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: dizziness_vertigo
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: verrucous_papule_nodule_ulcer
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: conjunctivitis_uveitis_red_eye
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: sore_throat_dysphagia
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: limb_numbness_paresthesia_tingling
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: varicella_polymorphous_centripetal_vesicles
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: headache_dull
   polarity: SUPPORTS
-  weight: 0.72
+  weight: 0.3
   is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: fatigue_malaise
   polarity: SUPPORTS
-  weight: 0.68
+  weight: 0.3
   is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT

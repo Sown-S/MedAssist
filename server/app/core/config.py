@@ -1,7 +1,5 @@
-"""
-Cấu hình tập trung
-Nguồn: biến môi trường hệ điều hành > file server/.env > giá trị mặc định.
-"""
+"""Cấu hình tập trung. Thứ tự ưu tiên: biến môi trường > file server/.env > giá trị mặc định."""
+
 from pathlib import Path
 from typing import Literal
 
@@ -9,32 +7,32 @@ from pydantic import Field, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from sqlalchemy.engine import make_url
 
-SERVER_DIR = Path(__file__).resolve().parents[2]   # .../server
+SERVER_DIR = Path(__file__).resolve().parents[2]  # .../server
 
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=SERVER_DIR / ".env",
-        env_file_encoding="utf-8-sig",   # chịu được BOM do Notepad/PowerShell thêm vào
+        env_file_encoding="utf-8-sig",  # chịu được BOM do Notepad/PowerShell thêm vào
         extra="ignore",
     )
 
     PROJECT_NAME: str = "MedAssist API"
-    VERSION: str = "0.2.2"
+    VERSION: str = "0.2.3"
     ENVIRONMENT: Literal["dev", "prod"] = "dev"
 
-    # API, worker, script nạp OKF — vai trò medassist_app (ERD v1.8 mục 6.2)
+    # API, worker, script nạp OKF: vai trò medassist_app (ERD §6.2)
     DATABASE_URL: str
-    # CHỈ Alembic dùng — vai trò medassist_owner. API không cần nên để trống được.
+    # Chỉ Alembic dùng (vai trò medassist_owner). API không cần nên để trống được.
     MIGRATION_DATABASE_URL: str | None = None
 
-    # JWT (token ngắn hạn — Kế hoạch v7, Sprint 2). Khóa bí mật >= 32 ký tự, chỉ nằm trong .env
+    # JWT ngắn hạn. Khóa bí mật >= 32 ký tự, chỉ nằm trong .env
     JWT_SECRET_KEY: str = Field(min_length=32)
     JWT_ALGORITHM: Literal["HS256"] = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = Field(default=15, ge=1, le=60)
-    REFRESH_TOKEN_EXPIRE_HOURS: int = Field(default=8, ge=1, le=24)     # một ca làm việc
+    REFRESH_TOKEN_EXPIRE_HOURS: int = Field(default=8, ge=1, le=24)  # một ca làm việc
 
-    # Giới hạn đăng nhập sai (ERD v1.8 điểm mở #1), đếm từ các dòng LOGIN_FAILED của audit_log
+    # Giới hạn đăng nhập sai, đếm từ các dòng LOGIN_FAILED của audit_log (docs/thiet-ke-backend.md §7)
     LOGIN_WINDOW_MINUTES: int = Field(default=15, ge=1)
     LOGIN_LOCK_MINUTES: int = Field(default=5, ge=1)
     LOGIN_MAX_FAILURES_PER_USER: int = Field(default=5, ge=1)
@@ -53,19 +51,21 @@ class Settings(BaseSettings):
     def is_prod(self) -> bool:
         return self.ENVIRONMENT == "prod"
 
-    # --- AI: worker đánh giá và LLM cục bộ (Ollama) ---------------------------------
-    # Máy không có Ollama (dev, CI, demo):
+    # AI: worker đánh giá và LLM cục bộ (Ollama). Máy không có Ollama (dev, CI, demo):
     #   fake: LLM giả lập tất định, chạy đủ luồng Ready/Full; cấm ở prod, nhật ký AI ghi model_name="fake".
     #   none: không gọi LLM, mọi lần chạy kết thúc Degraded/RuleOnly (Node 2 tất định).
     LLM_PROVIDER: Literal["ollama", "fake", "none"] = "ollama"
     OLLAMA_BASE_URL: str = "http://127.0.0.1:11434"
-    # Một model cho cả trích xuất và reasoning (Huy chốt 20/10): Gemma2 9B Q4_K_M, 5.8 GB, vừa GPU 6 GB
+    # Một model cho cả trích xuất và reasoning: Gemma2 9B Q4_K_M, 5.8 GB, vừa GPU 6 GB
     OLLAMA_MODEL: str = "hf.co/aisingapore/Gemma-SEA-LION-v3-9B-IT-GGUF:Q4_K_M"
     # Gửi kèm mỗi request; máy admin đặt 24h để model luôn nằm sẵn trong VRAM
     OLLAMA_KEEP_ALIVE: str = "5m"
-    AI_ASSESSMENT_TIMEOUT_SECONDS: float = Field(default=90, gt=0, le=90)   # tính từ lúc xếp hàng
+    # AI-23: legacy gửi toàn catalog; phrases tìm ứng viên theo từng cụm. Chỉ bật phrases khi đạt nghiệm thu.
+    AI_EXTRACTION_STRATEGY: Literal["legacy", "phrases"] = "legacy"
+    AI_EXTRACTION_CANDIDATES_PER_PHRASE: int = Field(default=4, ge=1, le=50)
+    AI_ASSESSMENT_TIMEOUT_SECONDS: float = Field(default=90, gt=0, le=90)  # tính từ lúc xếp hàng
     WORKER_POLL_SECONDS: float = Field(default=1.0, gt=0)
-    WORKER_LEASE_SECONDS: int = Field(default=150, ge=30)                   # > timeout đánh giá
+    WORKER_LEASE_SECONDS: int = Field(default=150, ge=30)  # > timeout đánh giá
     WORKER_SWEEP_SECONDS: int = Field(default=30, ge=5)
     WORKER_MAX_ATTEMPTS: int = Field(default=2, ge=1, le=5)
 
@@ -94,7 +94,6 @@ class Settings(BaseSettings):
         if url.username != "medassist_owner":
             raise ValueError("Migration phải chạy bằng medassist_owner (lược đồ tự dừng nếu sai vai trò)")
         return v
-
 
     @model_validator(mode="after")
     def _check_prod(self) -> "Settings":

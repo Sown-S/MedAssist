@@ -5,75 +5,62 @@ name_vi: Bệnh viêm da dạng herpes của duhring-brocq
 name_en: Dermatitis Herpetiformis
 icd10_code: L13.0
 disease_group: dermatology
-description: Bệnh được xếp vào nhóm bệnh da bọng nước. Thương tổn chủ yếu là những
-  bọng nước nhỏ tập trung thành đám, thành cụm trên nền da đỏ như bệnh herpes nên
-  được gọi là "Viêm da dạng herpes của Duhring-Brocq". Bệnh gặp chủ yếu ở người da
-  trắng, tỷ lệ 10-39/100.000 dân, ít gặp hơn ở người da đen. Ở Mỹ, bệnh gặp khoảng
-  1/10.000 dân với tỉ lệ nam so với nữ là 2/1.
+description: Bệnh được xếp vào nhóm bệnh da bọng nước. Thương tổn chủ yếu là những bọng nước nhỏ tập trung
+  thành đám, thành cụm trên nền da đỏ như bệnh herpes nên được gọi là "Viêm da dạng herpes của Duhring-Brocq".
+  Bệnh gặp chủ yếu ở người da trắng, tỷ lệ 10-39/100.000 dân, ít gặp hơn ở người da đen. Ở Mỹ, bệnh gặp
+  khoảng 1/10.000 dân với tỉ lệ nam so với nữ là 2/1.
 relations:
 - symptom_code: vesicular_blister_rash
   polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: duhring_brocq_herpetiform_pruritic
   polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
-  source_key: moh_qd_75_2015
-  source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: dress_syndrome_facial_edema_eosinophilia
-  polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
-  source_key: moh_qd_75_2015
-  source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: varicella_polymorphous_centripetal_vesicles
-  polarity: SUPPORTS
-  weight: 0.98
+  weight: 0.9
   is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: bullous_pemphigoid_tense_bulla
   polarity: SUPPORTS
-  weight: 0.97
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: maculopapular_rash
   polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: urticarial_wheal_angioedema
   polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: pruritus_intense_skin_itch
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: weight_loss_anorexia
   polarity: SUPPORTS
-  weight: 0.74
+  weight: 0.3
   is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: fever_low_grade
   polarity: SUPPORTS
-  weight: 0.72
+  weight: 0.3
   is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: fatigue_malaise
   polarity: SUPPORTS
-  weight: 0.68
+  weight: 0.3
   is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT

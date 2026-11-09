@@ -1,20 +1,8 @@
-"""Danh mục thuốc thiết yếu — Thông tư 19/2018/TT-BYT, Phụ lục I (nguồn: Cơ sở dữ liệu quốc gia về VBPL).
-
-Chạy trong tools/. Đường dẫn nguồn ở config.toml. vbpl.vn chặn công cụ tự động, nên cách chắc chắn là tải
-file bằng nút "Tải về" trên trình duyệt rồi thả vào inbox/. Đọc thẳng .docx/.html; .doc Word 97-2003 tự chuyển
-bằng Word (hoặc LibreOffice); .pdf chỉ lưu làm minh chứng.
-
-    python -m drug_data.tt19_catalog run            # cả chuỗi dưới đây (đường dẫn đọc từ config.toml)
-    python -m drug_data.tt19_catalog fetch          # lưu minh chứng: file trong inbox/ hoặc tải theo config.toml
-    python -m drug_data.tt19_catalog extract        # trích Phụ lục I -> output/tt19_2018_phu_luc_1.csv
-    python -m drug_data.tt19_catalog check          # đối chiếu server/data/drugs.csv với Phụ lục I
-    python -m drug_data.tt19_catalog candidates     # thuốc ngoại trú chưa có -> output/drug_candidates.csv
-    python -m drug_data.tt19_catalog merge [--auto] # gộp dòng chon = x (--auto: + mọi ứng viên đủ thông tin)
-
-Công cụ chỉ GHI vào server/data/drugs.csv; không import gì từ server/app.
-
-Văn bản quy phạm pháp luật không thuộc đối tượng bảo hộ quyền tác giả (Luật SHTT, Điều 15).
+"""Danh mục thuốc thiết yếu: Thông tư 19/2018/TT-BYT, Phụ lục I (nguồn: CSDL quốc gia về VBPL). Chỉ ghi drugs.csv,
+không import từ server/app. Văn bản QPPL không thuộc đối tượng bảo hộ quyền tác giả (Luật SHTT, Điều 15).
+Cách chạy (tải tay vào inbox/, lệnh run, fetch, extract, check, candidates, merge): tools/drug_data/README.md.
 """
+
 import argparse
 import csv
 import difflib
@@ -33,11 +21,11 @@ REPO_DIR = TOOL_DIR.parents[1]
 OUTPUT_DIR = TOOL_DIR / "output"
 SOURCE_DIR = TOOL_DIR / "sources" / "tt19_2018"
 CONFIG_FILE = TOOL_DIR / "config.toml"
-MIN_EXPECTED_DRUGS = 400        # Phụ lục I có ~480 thuốc; ít hơn ngưỡng này = đọc sai bảng
-DOCX_FILE = SOURCE_DIR / "tt19_2018_chuyen_doi.docx"          # chỉ khi nguồn là .doc Word 97-2003
+MIN_EXPECTED_DRUGS = 400  # Phụ lục I có ~480 thuốc; ít hơn ngưỡng này = đọc sai bảng
+DOCX_FILE = SOURCE_DIR / "tt19_2018_chuyen_doi.docx"  # chỉ khi nguồn là .doc Word 97-2003
 MANIFEST = SOURCE_DIR / "manifest.json"
 APPENDIX_CSV = OUTPUT_DIR / "tt19_2018_phu_luc_1.csv"
-DRUGS_CSV = REPO_DIR / "server" / "data" / "drugs.csv"          # đầu ra cuối cùng, server/scripts/seed_drugs đọc
+DRUGS_CSV = REPO_DIR / "server" / "data" / "drugs.csv"  # đầu ra cuối cùng, server/scripts/seed_drugs đọc
 CANDIDATES_CSV = OUTPUT_DIR / "drug_candidates.csv"
 CHECK_REPORT = OUTPUT_DIR / "tt19_check_report.csv"
 SOURCE_LABEL = "TT 19/2018/TT-BYT, Phụ lục I, STT {stt}"
@@ -45,10 +33,11 @@ USER_AGENT = "MedAssist-C1SE28/0.1 (do an tot nghiep; thu thap van ban phap luat
 APPENDIX_FIELDS = ["stt", "nhom", "nhom_con", "ten_thuoc", "duong_dung", "dang_bao_che", "ham_luong", "dau_sao"]
 
 
-# ============================================================================ cấu hình
+# --- Cấu hình -------------------------------------------------------------------------------------
 def load_config() -> dict:
     """config.toml (commit) + config.local.toml (KHÔNG commit, ghi đè từng khóa: email cá nhân...)."""
     import tomllib
+
     if not CONFIG_FILE.exists():
         raise SystemExit(f"Thiếu {CONFIG_FILE}")
     with open(CONFIG_FILE, "rb") as f:
@@ -61,7 +50,7 @@ def load_config() -> dict:
     return cfg
 
 
-# ============================================================================ tiện ích chung
+# --- Tiện ích chung -------------------------------------------------------------------------------
 def _clean(text: str) -> str:
     return re.sub(r"\s+", " ", (text or "").replace("\u00a0", " ")).strip()
 
@@ -79,9 +68,11 @@ def _sha256(path: Path) -> str:
     return h.hexdigest()
 
 
-_NEXT_STEP = {"tt19_2018_phu_luc_1.csv": "python -m drug_data.tt19_catalog fetch, rồi extract",
-              "drug_candidates.csv": "python -m drug_data.tt19_catalog candidates",
-              "price_review.csv": "python -m drug_data.fetch_prices search --contact ten@email.com"}
+_NEXT_STEP = {
+    "tt19_2018_phu_luc_1.csv": "python -m drug_data.tt19_catalog fetch, rồi extract",
+    "drug_candidates.csv": "python -m drug_data.tt19_catalog candidates",
+    "price_review.csv": "python -m drug_data.fetch_prices search --contact ten@email.com",
+}
 
 
 def read_csv(path: Path) -> tuple[list[str], list[dict]]:
@@ -102,7 +93,7 @@ def write_csv(path: Path, fields: list[str], rows: list[dict], *, excel: bool = 
         w.writerows(rows)
 
 
-# ============================================================================ fetch (nhận file tải tay)
+# --- fetch (nhận file tải tay) --------------------------------------------------------------------
 SUPPORTED = (".html", ".htm", ".docx", ".doc")
 
 
@@ -112,11 +103,11 @@ def detect_kind(path: Path) -> str:
     if head[:2] == b"PK":
         return "docx"
     if head[:4] == b"\xd0\xcf\x11\xe0":
-        return "doc-ole"                                   # Word 97-2003
+        return "doc-ole"  # Word 97-2003
     if head[:5] == b"%PDF-":
         return "pdf"
     if b"<html" in head.lower() or b"<table" in head.lower() or head.lstrip()[:1] == b"<":
-        return "html"                                      # kể cả .doc thực chất là HTML
+        return "html"  # kể cả .doc thực chất là HTML
     return "khac"
 
 
@@ -126,14 +117,16 @@ def convert_to_docx(src: Path, dst: Path) -> str:
         try:
             import win32com.client  # type: ignore
         except ImportError:
-            raise SystemExit("File .doc dạng Word cũ. Cách đơn giản nhất: mở trang toàn văn trên trình duyệt, "
-                             "Ctrl+S lưu dạng .html rồi chạy lại fetch --file <file .html>. "
-                             "(Hoặc mở .doc bằng Word -> Lưu thành .docx.)") from None
+            raise SystemExit(
+                "File .doc dạng Word cũ. Cách đơn giản nhất: mở trang toàn văn trên trình duyệt, "
+                "Ctrl+S lưu dạng .html rồi chạy lại fetch --file <file .html>. "
+                "(Hoặc mở .doc bằng Word -> Lưu thành .docx.)"
+            ) from None
         word = win32com.client.DispatchEx("Word.Application")
         word.Visible = False
         try:
             doc = word.Documents.Open(str(src.resolve()), ReadOnly=True, ConfirmConversions=False)
-            doc.SaveAs2(str(dst.resolve()), FileFormat=16)   # 16 = .docx
+            doc.SaveAs2(str(dst.resolve()), FileFormat=16)  # 16 = .docx
             doc.Close(False)
         finally:
             word.Quit()
@@ -141,8 +134,11 @@ def convert_to_docx(src: Path, dst: Path) -> str:
     soffice = shutil.which("soffice") or shutil.which("libreoffice")
     if not soffice:
         raise SystemExit("File .doc dạng Word cũ: lưu trang toàn văn dạng .html hoặc mở bằng Word lưu thành .docx.")
-    subprocess.run([soffice, "--headless", "--convert-to", "docx", "--outdir", str(dst.parent), str(src)],
-                   check=True, capture_output=True)
+    subprocess.run(
+        [soffice, "--headless", "--convert-to", "docx", "--outdir", str(dst.parent), str(src)],
+        check=True,
+        capture_output=True,
+    )
     produced = dst.parent / (src.stem + ".docx")
     if produced != dst:
         produced.replace(dst)
@@ -157,7 +153,7 @@ def source_file() -> Path:
     return SOURCE_DIR / m["file_trich_xuat"]
 
 
-_ORDER = {"docx": 0, "html": 1, "doc-ole": 2}               # ưu tiên file dễ đọc bảng nhất
+_ORDER = {"docx": 0, "html": 1, "doc-ole": 2}  # ưu tiên file dễ đọc bảng nhất
 
 
 def _collect_sources(cfg: dict, explicit: str | None) -> tuple[list[Path], str]:
@@ -191,38 +187,56 @@ def _collect_sources(cfg: dict, explicit: str | None) -> tuple[list[Path], str]:
         if got:
             return got, "Script tải tự động"
         print("Không tải tự động được:\n  " + "\n  ".join(errors))
-    raise SystemExit(f"Chưa có file nguồn. Mở trang tải về ({cfg.get('trang_tai_ve', 'xem config.toml')}), "
-                     f"bấm tải file .doc/.docx (và .pdf nếu muốn lưu kèm), chép vào {inbox}, rồi chạy lại.")
+    raise SystemExit(
+        f"Chưa có file nguồn. Mở trang tải về ({cfg.get('trang_tai_ve', 'xem config.toml')}), "
+        f"bấm tải file .doc/.docx (và .pdf nếu muốn lưu kèm), chép vào {inbox}, rồi chạy lại."
+    )
 
 
 def cmd_fetch(args) -> int:
     cfg = load_config().get("tt19", {})
     files, how = _collect_sources(cfg, getattr(args, "file", None))
-    if SOURCE_DIR.exists():                                  # làm mới minh chứng, giữ thư mục
+    if SOURCE_DIR.exists():  # làm mới minh chứng, giữ thư mục
         for old in SOURCE_DIR.glob("tt19_2018_*"):
             old.unlink()
     SOURCE_DIR.mkdir(parents=True, exist_ok=True)
-    manifest = {"van_ban": "Thông tư 19/2018/TT-BYT ngày 30/08/2018 — Ban hành danh mục thuốc thiết yếu",
-                "co_quan_ban_hanh": "Bộ Y tế", "trang_van_ban": cfg.get("trang_van_ban"),
-                "trang_tai_ve": cfg.get("trang_tai_ve"), "cach_lay": how,
-                "thoi_diem_ghi_nhan": datetime.now(timezone.utc).isoformat(timespec="seconds"), "files": []}
+    manifest = {
+        "van_ban": "Thông tư 19/2018/TT-BYT ngày 30/08/2018 — Ban hành danh mục thuốc thiết yếu",
+        "co_quan_ban_hanh": "Bộ Y tế",
+        "trang_van_ban": cfg.get("trang_van_ban"),
+        "trang_tai_ve": cfg.get("trang_tai_ve"),
+        "cach_lay": how,
+        "thoi_diem_ghi_nhan": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "files": [],
+    }
     readable = []
     for src in files:
         kind = detect_kind(src)
         dest = SOURCE_DIR / f"tt19_2018_goc_{len(manifest['files']) + 1}{src.suffix.lower()}"
         shutil.copyfile(src, dest)
-        manifest["files"].append({"file": dest.name, "ten_file_ban_dau": src.name, "dinh_dang": kind,
-                                  "bytes": dest.stat().st_size, "sha256": _sha256(dest)})
+        manifest["files"].append(
+            {
+                "file": dest.name,
+                "ten_file_ban_dau": src.name,
+                "dinh_dang": kind,
+                "bytes": dest.stat().st_size,
+                "sha256": _sha256(dest),
+            }
+        )
         if kind in _ORDER:
             readable.append((_ORDER[kind], dest, kind))
     shutil.rmtree(SOURCE_DIR / "_tai_ve", ignore_errors=True)
     if not readable:
-        raise SystemExit("Đã lưu minh chứng nhưng không có file đọc được bảng (PDF thường là ảnh scan). "
-                         "Tải thêm bản .doc hoặc .docx từ trang tải về vào inbox/ rồi chạy lại.")
+        raise SystemExit(
+            "Đã lưu minh chứng nhưng không có file đọc được bảng (PDF thường là ảnh scan). "
+            "Tải thêm bản .doc hoặc .docx từ trang tải về vào inbox/ rồi chạy lại."
+        )
     _, best, kind = min(readable, key=lambda x: (x[0], x[1].name))
     if kind == "doc-ole":
         manifest["chuyen_doi_docx"] = convert_to_docx(best, DOCX_FILE)
-        manifest["files"].append({"file": DOCX_FILE.name, "sha256": _sha256(DOCX_FILE), "ghi_chu": f"chuyển từ {best.name}"})
+        manifest["files"].append(
+            {"file": DOCX_FILE.name, "sha256": _sha256(DOCX_FILE), "ghi_chu": f"chuyển từ {best.name}"}
+        )
         best = DOCX_FILE
     manifest["file_trich_xuat"] = best.name
     MANIFEST.write_text(json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8")
@@ -234,6 +248,7 @@ def cmd_fetch(args) -> int:
 
 def urlparse_path(url: str) -> str:
     from urllib.parse import urlparse
+
     return urlparse(url).path
 
 
@@ -242,12 +257,18 @@ def _download(client, url: str, dest: Path) -> dict:
     r.raise_for_status()
     dest.parent.mkdir(parents=True, exist_ok=True)
     dest.write_bytes(r.content)
-    return {"url": url, "file": dest.name, "http_status": r.status_code, "bytes": len(r.content),
-            "sha256": _sha256(dest), "content_type": r.headers.get("content-type"),
-            "last_modified": r.headers.get("last-modified")}
+    return {
+        "url": url,
+        "file": dest.name,
+        "http_status": r.status_code,
+        "bytes": len(r.content),
+        "sha256": _sha256(dest),
+        "content_type": r.headers.get("content-type"),
+        "last_modified": r.headers.get("last-modified"),
+    }
 
 
-# ============================================================================ extract
+# --- extract --------------------------------------------------------------------------------------
 _ROMAN = re.compile(r"^[IVXL]+\.\s")
 _SUB = re.compile(r"^(\d+|[a-zđ])\.\s|^♦")
 
@@ -271,7 +292,7 @@ def tables_from_html(text: str) -> list[list[list[str]]]:
     class P(HTMLParser):
         def __init__(self):
             super().__init__(convert_charrefs=True)
-            self.stack, self.tables = [], []          # stack: mỗi bảng đang mở = {'rows','row','cell','spans'}
+            self.stack, self.tables = [], []  # stack: mỗi bảng đang mở = {'rows','row','cell','spans'}
 
         def handle_starttag(self, tag, attrs):
             a = dict(attrs)
@@ -308,13 +329,13 @@ def tables_from_html(text: str) -> list[list[list[str]]]:
     parser.feed(text)
     grids = []
     for rows in parser.tables:
-        grid, pending = [], {}                       # pending[col] = số dòng còn bị rowspan chiếm
+        grid, pending = [], {}  # pending[col] = số dòng còn bị rowspan chiếm
         for cells in rows:
             out, col = [], 0
             queue = list(cells)
             while queue or any(c >= col and n > 0 for c, n in pending.items()):
                 if pending.get(col, 0) > 0:
-                    out.append("")                    # ô bị rowspan từ dòng trên chiếm chỗ
+                    out.append("")  # ô bị rowspan từ dòng trên chiếm chỗ
                     pending[col] -= 1
                     col += 1
                     continue
@@ -335,6 +356,7 @@ def tables_from_html(text: str) -> list[list[list[str]]]:
 
 def tables_from_docx(path: Path) -> list[list[list[str]]]:
     from docx import Document
+
     return [[[_clean(c.text) for c in r.cells] for r in t.rows] for t in Document(str(path)).tables]
 
 
@@ -352,24 +374,33 @@ def parse_appendix(path: Path) -> list[dict]:
         if header_idx is None:
             continue
         head = [c.upper() for c in rows[header_idx]]
-        col = {k: next(i for i, c in enumerate(head) if key in c) for k, key in
-               (("ten", "TÊN THUỐC"), ("duong", "ĐƯỜNG DÙNG"), ("dang", "DẠNG BÀO CHẾ"), ("ham", "HÀM LƯỢNG"))}
+        col = {
+            k: next(i for i, c in enumerate(head) if key in c)
+            for k, key in (
+                ("ten", "TÊN THUỐC"),
+                ("duong", "ĐƯỜNG DÙNG"),
+                ("dang", "DẠNG BÀO CHẾ"),
+                ("ham", "HÀM LƯỢNG"),
+            )
+        }
         tt_cols = [i for i, c in enumerate(head) if c in ("TT", "STT")]
+
         # Bảng gốc có 2 cột TT: một cột đánh số LIÊN TỤC cả phụ lục, một cột đánh số lại trong từng nhóm.
         # Cột liên tục = cột có giá trị lớn nhất; STT trong drugs.csv (cột source) theo cột này.
         def _max_num(i):
-            nums = [int(r[i]) for r in rows[header_idx + 1:] if i < len(r) and re.fullmatch(r"\d+", r[i] or "")]
+            nums = [int(r[i]) for r in rows[header_idx + 1 :] if i < len(r) and re.fullmatch(r"\d+", r[i] or "")]
             return max(nums, default=0)
+
         if tt_cols:
             tt_cols = [max(tt_cols, key=_max_num)]
         out, nhom, nhom_con = [], "", ""
         cur = {"stt": None, "ten": "", "duong": ""}
-        for r in rows[header_idx + 1:]:
+        for r in rows[header_idx + 1 :]:
             values = {c for c in r if c}
             if not values or all(re.fullmatch(r"\(\d\)", c) for c in values):
-                continue                                         # dòng trống / dòng đánh số cột (1)..(5)
+                continue  # dòng trống / dòng đánh số cột (1)..(5)
             if len(values) == 1 and not re.fullmatch(r"\d+", next(iter(values))):
-                title = next(iter(values))                      # dòng tiêu đề nhóm (ô gộp ngang)
+                title = next(iter(values))  # dòng tiêu đề nhóm (ô gộp ngang)
                 if _ROMAN.match(title):
                     nhom, nhom_con = title, ""
                 elif _SUB.match(title):
@@ -377,7 +408,7 @@ def parse_appendix(path: Path) -> list[dict]:
                 continue
             stt = next((r[i] for i in tt_cols if re.fullmatch(r"\d+", r[i] or "")), "")
             if stt and cur["stt"] is not None and int(stt) < int(cur["stt"]):
-                break                                           # STT giảm = sang phụ lục khác
+                break  # STT giảm = sang phụ lục khác
             if stt and stt != cur["stt"]:
                 cur = {"stt": stt, "ten": r[col["ten"]], "duong": r[col["duong"]]}
             elif cur["stt"] is None:
@@ -385,7 +416,7 @@ def parse_appendix(path: Path) -> list[dict]:
             else:
                 # dòng tiếp của CÙNG thuốc: ô gộp dọc để trống (HTML) hoặc lặp lại nội dung (Word -> .docx)
                 if r[col["ten"]]:
-                    cur["ten"] = r[col["ten"]]                  # dạng muối khác của cùng STT
+                    cur["ten"] = r[col["ten"]]  # dạng muối khác của cùng STT
                 if r[col["duong"]]:
                     cur["duong"] = r[col["duong"]]
             ten, duong = cur["ten"], cur["duong"]
@@ -393,13 +424,24 @@ def parse_appendix(path: Path) -> list[dict]:
             if not dang and not ham:
                 continue
             star = "(*)" in ten or "(*)" in duong
-            out.append({"stt": cur["stt"], "nhom": nhom, "nhom_con": nhom_con,
-                        "ten_thuoc": _clean(ten.replace("(*)", "")), "duong_dung": _clean(duong.replace("(*)", "")),
-                        "dang_bao_che": dang, "ham_luong": ham, "dau_sao": "x" if star else ""})
+            out.append(
+                {
+                    "stt": cur["stt"],
+                    "nhom": nhom,
+                    "nhom_con": nhom_con,
+                    "ten_thuoc": _clean(ten.replace("(*)", "")),
+                    "duong_dung": _clean(duong.replace("(*)", "")),
+                    "dang_bao_che": dang,
+                    "ham_luong": ham,
+                    "dau_sao": "x" if star else "",
+                }
+            )
         if out:
             return out
-    raise SystemExit(f"Không tìm thấy bảng Phụ lục I (cột 'TÊN THUỐC') trong {path.name}. "
-                     "Kiểm tra file đã lưu đúng trang TOÀN VĂN của Thông tư 19/2018/TT-BYT.")
+    raise SystemExit(
+        f"Không tìm thấy bảng Phụ lục I (cột 'TÊN THUỐC') trong {path.name}. "
+        "Kiểm tra file đã lưu đúng trang TOÀN VĂN của Thông tư 19/2018/TT-BYT."
+    )
 
 
 def cmd_extract(args) -> int:
@@ -410,15 +452,19 @@ def cmd_extract(args) -> int:
     print(f"Đã trích {n} thuốc ({len(rows)} dạng bào chế) -> {APPENDIX_CSV.name}")
     gaps = sorted(set(range(1, max(stts) + 1)) - stts) if stts else []
     if gaps:
-        print(f"  STT 1..{max(stts)}: thiếu {len(gaps)} số ({', '.join(map(str, gaps[:30]))}"
-              f"{', ...' if len(gaps) > 30 else ''}) — dòng chỉ có tiêu đề/không có dạng bào chế, hoặc ô STT lỗi")
+        print(
+            f"  STT 1..{max(stts)}: thiếu {len(gaps)} số ({', '.join(map(str, gaps[:30]))}"
+            f"{', ...' if len(gaps) > 30 else ''}) — dòng chỉ có tiêu đề/không có dạng bào chế, hoặc ô STT lỗi"
+        )
     if n < MIN_EXPECTED_DRUGS:
-        print("CẢNH BÁO: Phụ lục I có khoảng 480 thuốc — số trích được quá ít. Chạy "
-              "'python -m drug_data.tt19_catalog inspect' để kiểm tra.")
+        print(
+            "CẢNH BÁO: Phụ lục I có khoảng 480 thuốc — số trích được quá ít. Chạy "
+            "'python -m drug_data.tt19_catalog inspect' để kiểm tra."
+        )
     return 0
 
 
-# ============================================================================ check
+# --- check ----------------------------------------------------------------------------------------
 _STT_RE = re.compile(r"Phụ lục I, STT (\d+)")
 
 
@@ -437,12 +483,19 @@ def name_match(ours: str, theirs: str) -> tuple[str, float]:
 
 def form_category(text: str) -> str:
     s = strip_accents(text)
-    for cat, keys in (("hit", ("hit", "khi dung", "binh xit")), ("xit_mui", ("xit mui",)),
-                      ("nho_mat", ("nho mat", "tra mat")), ("nho_mui", ("nho mui",)),
-                      ("dan", ("vien dan", "dat truc trang")), ("kem", ("kem", "mo", "lotion", "gel")),
-                      ("sirô", ("siro", "si ro")), ("hon_dich", ("hon dich", "com pha")),
-                      ("bot", ("bot", "goi", "com")), ("dung_dich", ("dung dich", "dd ")),
-                      ("vien", ("vien", "nang"))):
+    for cat, keys in (
+        ("hit", ("hit", "khi dung", "binh xit")),
+        ("xit_mui", ("xit mui",)),
+        ("nho_mat", ("nho mat", "tra mat")),
+        ("nho_mui", ("nho mui",)),
+        ("dan", ("vien dan", "dat truc trang")),
+        ("kem", ("kem", "mo", "lotion", "gel")),
+        ("sirô", ("siro", "si ro")),
+        ("hon_dich", ("hon dich", "com pha")),
+        ("bot", ("bot", "goi", "com")),
+        ("dung_dich", ("dung dich", "dd ")),
+        ("vien", ("vien", "nang")),
+    ):
         if any(k in s for k in keys):
             return cat
     return "khac"
@@ -451,8 +504,9 @@ def form_category(text: str) -> str:
 def _numbers(text: str) -> set[str]:
     """Các con số trong chuỗi hàm lượng: '5.000 IU' -> 5000, '62,5mg' -> 62.5 (kiểu viết Việt Nam)."""
     from decimal import Decimal
-    s = re.sub(r"(?<=\d)\.(?=\d{3}(?!\d))", "", text or "")     # dấu chấm hàng nghìn
-    s = re.sub(r"(?<=\d),(?=\d)", ".", s)                         # dấu phẩy thập phân
+
+    s = re.sub(r"(?<=\d)\.(?=\d{3}(?!\d))", "", text or "")  # dấu chấm hàng nghìn
+    s = re.sub(r"(?<=\d),(?=\d)", ".", s)  # dấu phẩy thập phân
     return {format(Decimal(n).normalize(), "f") for n in re.findall(r"\d+(?:\.\d+)?", s)}
 
 
@@ -470,8 +524,13 @@ def check_rows(drugs: list[dict], appendix: list[dict]) -> list[dict]:
         by_stt.setdefault(r["stt"], []).append(r)
     report = []
     for d in drugs:
-        out = {"generic_name": d["generic_name"], "trade_name": d["trade_name"], "strength": d["strength"],
-               "dosage_form": d["dosage_form"], "source": d.get("source", "")}
+        out = {
+            "generic_name": d["generic_name"],
+            "trade_name": d["trade_name"],
+            "strength": d["strength"],
+            "dosage_form": d["dosage_form"],
+            "source": d.get("source", ""),
+        }
         m = _STT_RE.search(d.get("source") or "")
         if not m or m.group(1) not in by_stt:
             report.append({**out, "ket_qua": "FAIL", "ghi_chu": "Không có STT hợp lệ trong Phụ lục I"})
@@ -482,11 +541,14 @@ def check_rows(drugs: list[dict], appendix: list[dict]) -> list[dict]:
         cat = _our_category(d["dosage_form"])
         same_form = [c for c in cands if cat in _their_categories(c["dang_bao_che"], c["duong_dung"])]
         if not same_form:
-            notes.append("dạng bào chế không thấy trong STT này: "
-                         + "; ".join(sorted({c["dang_bao_che"] for c in cands})))
+            notes.append(
+                "dạng bào chế không thấy trong STT này: " + "; ".join(sorted({c["dang_bao_che"] for c in cands}))
+            )
         elif not any(_numbers(d["strength"]) <= _numbers(c["ham_luong"]) for c in same_form if c["ham_luong"]):
-            notes.append("hàm lượng không thấy nguyên văn: "
-                         + "; ".join(sorted({c["ham_luong"] or "(văn bản không ghi)" for c in same_form})))
+            notes.append(
+                "hàm lượng không thấy nguyên văn: "
+                + "; ".join(sorted({c["ham_luong"] or "(văn bản không ghi)" for c in same_form}))
+            )
         if status == "OK" and notes:
             status = "WARN"
         report.append({**out, "ket_qua": status, "ghi_chu": " | ".join(notes)})
@@ -497,8 +559,12 @@ def cmd_check(args) -> int:
     _, drugs = read_csv(DRUGS_CSV)
     _, appendix = read_csv(APPENDIX_CSV)
     report = check_rows(drugs, appendix)
-    write_csv(CHECK_REPORT, ["ket_qua", "generic_name", "trade_name", "strength", "dosage_form", "source", "ghi_chu"],
-              report, excel=True)
+    write_csv(
+        CHECK_REPORT,
+        ["ket_qua", "generic_name", "trade_name", "strength", "dosage_form", "source", "ghi_chu"],
+        report,
+        excel=True,
+    )
     counts = {k: sum(r["ket_qua"] == k for r in report) for k in ("OK", "WARN", "FAIL")}
     print(f"OK {counts['OK']}, WARN {counts['WARN']}, FAIL {counts['FAIL']} -> {CHECK_REPORT.name}")
     for r in report:
@@ -507,17 +573,69 @@ def cmd_check(args) -> int:
     return 1 if counts["FAIL"] else 0
 
 
-# ============================================================================ candidates / merge
-OUTPATIENT_ROUTES = ("uong", "dung ngoai", "nho mat", "nho mui", "nho tai", "xit mui", "tra mat",
-                     "duong ho hap", "truc trang", "dung tai cho", "dat duoi luoi")
-EXCLUDED_GROUPS = ("gay me", "giai doc", "ung thu", "parkinson", "che pham mau", "chan doan", "sinh pham",
-                   "thuc de", "tham phan", "roi loan tam than", "tre so sinh thieu thang", "thuoc khac",
-                   "gian co", "co giat")
-EXCLUDED_SUBGROUPS = ("lao", "phong", "sot ret", "pneumocytis", "sao chep nguoc", "protease", "lieu co dinh",
-                      "giam dau loai opi", "cham soc giam nhe", "tranh thai", "androgen", "estrogen", "rung trung", "progesteron",
-                      "dai thao nhat", "giun chi", "san la")
-DRUG_FIELDS = ["generic_name", "trade_name", "strength", "dosage_form", "unit", "sale_price", "reorder_level",
-               "drug_class", "import_price", "batch_quantity", "shelf_life_days", "source"]
+# --- candidates / merge ---------------------------------------------------------------------------
+OUTPATIENT_ROUTES = (
+    "uong",
+    "dung ngoai",
+    "nho mat",
+    "nho mui",
+    "nho tai",
+    "xit mui",
+    "tra mat",
+    "duong ho hap",
+    "truc trang",
+    "dung tai cho",
+    "dat duoi luoi",
+)
+EXCLUDED_GROUPS = (
+    "gay me",
+    "giai doc",
+    "ung thu",
+    "parkinson",
+    "che pham mau",
+    "chan doan",
+    "sinh pham",
+    "thuc de",
+    "tham phan",
+    "roi loan tam than",
+    "tre so sinh thieu thang",
+    "thuoc khac",
+    "gian co",
+    "co giat",
+)
+EXCLUDED_SUBGROUPS = (
+    "lao",
+    "phong",
+    "sot ret",
+    "pneumocytis",
+    "sao chep nguoc",
+    "protease",
+    "lieu co dinh",
+    "giam dau loai opi",
+    "cham soc giam nhe",
+    "tranh thai",
+    "androgen",
+    "estrogen",
+    "rung trung",
+    "progesteron",
+    "dai thao nhat",
+    "giun chi",
+    "san la",
+)
+DRUG_FIELDS = [
+    "generic_name",
+    "trade_name",
+    "strength",
+    "dosage_form",
+    "unit",
+    "sale_price",
+    "reorder_level",
+    "drug_class",
+    "import_price",
+    "batch_quantity",
+    "shelf_life_days",
+    "source",
+]
 CANDIDATE_FIELDS = ["chon", "stt", "nhom", "nhom_con", "duong_dung", "ham_luong_goc"] + DRUG_FIELDS
 
 
@@ -532,9 +650,14 @@ def _split_strengths(text: str) -> list[str]:
 
 def _guess_unit(form: str, route: str) -> str:
     s = strip_accents(form + " " + route)
-    for unit, keys in (("bình", ("hit", "khi dung")), ("lọ", ("nho mat", "nho mui", "nho tai", "xit mui")),
-                       ("tuýp", ("kem", "mo", "tra mat")), ("viên", ("vien",)), ("gói", ("bot", "com")),
-                       ("chai", ("dung dich", "siro", "si ro", "hon dich", "lotion"))):
+    for unit, keys in (
+        ("bình", ("hit", "khi dung")),
+        ("lọ", ("nho mat", "nho mui", "nho tai", "xit mui")),
+        ("tuýp", ("kem", "mo", "tra mat")),
+        ("viên", ("vien",)),
+        ("gói", ("bot", "com")),
+        ("chai", ("dung dich", "siro", "si ro", "hon dich", "lotion")),
+    ):
         if any(k in s for k in keys):
             return unit
     return ""
@@ -557,13 +680,28 @@ def build_candidates(drugs: list[dict], appendix: list[dict]) -> list[dict]:
         for strength in _split_strengths(r["ham_luong"]):
             if any((r["stt"], c, frozenset(_numbers(strength))) in have for c in cats):
                 continue
-            out.append({"chon": "", "stt": r["stt"], "nhom": r["nhom"], "nhom_con": r["nhom_con"],
-                        "duong_dung": r["duong_dung"], "ham_luong_goc": r["ham_luong"],
-                        "generic_name": r["ten_thuoc"], "trade_name": "", "strength": strength,
-                        "dosage_form": r["dang_bao_che"].lower(), "unit": _guess_unit(r["dang_bao_che"], r["duong_dung"]),
-                        "sale_price": "", "reorder_level": "0", "drug_class": re.sub(r"^(\d+|[a-zđ])\.\s*|^♦\s*", "", r["nhom_con"] or r["nhom"]),
-                        "import_price": "", "batch_quantity": "", "shelf_life_days": "",
-                        "source": SOURCE_LABEL.format(stt=r["stt"])})
+            out.append(
+                {
+                    "chon": "",
+                    "stt": r["stt"],
+                    "nhom": r["nhom"],
+                    "nhom_con": r["nhom_con"],
+                    "duong_dung": r["duong_dung"],
+                    "ham_luong_goc": r["ham_luong"],
+                    "generic_name": r["ten_thuoc"],
+                    "trade_name": "",
+                    "strength": strength,
+                    "dosage_form": r["dang_bao_che"].lower(),
+                    "unit": _guess_unit(r["dang_bao_che"], r["duong_dung"]),
+                    "sale_price": "",
+                    "reorder_level": "0",
+                    "drug_class": re.sub(r"^(\d+|[a-zđ])\.\s*|^♦\s*", "", r["nhom_con"] or r["nhom"]),
+                    "import_price": "",
+                    "batch_quantity": "",
+                    "shelf_life_days": "",
+                    "source": SOURCE_LABEL.format(stt=r["stt"]),
+                }
+            )
     return out
 
 
@@ -573,8 +711,10 @@ def cmd_candidates(args) -> int:
     rows = build_candidates(drugs, appendix)
     write_csv(CANDIDATES_CSV, CANDIDATE_FIELDS, rows, excel=True)
     auto = sum(auto_eligible(r) for r in rows)
-    print(f"{len(rows)} ứng viên -> {CANDIDATES_CSV.name} ({auto} đủ thông tin để 'merge --auto'). "
-          "Hoặc ghi 'x' ở cột 'chon', điền trade_name/unit rồi chạy 'merge'.")
+    print(
+        f"{len(rows)} ứng viên -> {CANDIDATES_CSV.name} ({auto} đủ thông tin để 'merge --auto'). "
+        "Hoặc ghi 'x' ở cột 'chon', điền trade_name/unit rồi chạy 'merge'."
+    )
     return 0
 
 
@@ -584,8 +724,9 @@ def auto_eligible(c: dict) -> bool:
     return bool(_clean(c.get("unit", ""))) and bool(strength) and not re.match(r"(?i)^từ\s", strength)
 
 
-def merge_candidates(drugs_fields: list[str], drugs: list[dict], candidates: list[dict],
-                     auto: bool = False) -> tuple[list[dict], list[str]]:
+def merge_candidates(
+    drugs_fields: list[str], drugs: list[dict], candidates: list[dict], auto: bool = False
+) -> tuple[list[dict], list[str]]:
     key = lambda d: tuple(_clean(d[k]).lower() for k in ("generic_name", "trade_name", "strength", "dosage_form"))  # noqa: E731
     existing = {key(d) for d in drugs}
     added, problems = [], []
@@ -620,7 +761,7 @@ def cmd_merge(args) -> int:
     return 0
 
 
-# ============================================================================ CLI
+# --- CLI ------------------------------------------------------------------------------------------
 def main(argv=None) -> int:
     p = argparse.ArgumentParser(description="Danh mục thuốc thiết yếu TT 19/2018/TT-BYT")
     sub = p.add_subparsers(dest="cmd", required=True)
@@ -629,15 +770,28 @@ def main(argv=None) -> int:
     sub.add_parser("inspect", help="Ghi các dòng đầu của từng bảng trong file nguồn -> output/tt19_bang_mau.txt")
     r = sub.add_parser("run", help="Chạy cả chuỗi: fetch, extract, check, candidates, merge --auto")
     r.add_argument("--no-merge", action="store_true", help="Dừng sau candidates (không tự thêm thuốc)")
-    for name, h in (("extract", "Trích Phụ lục I ra CSV"), ("check", "Đối chiếu drugs.csv"),
-                    ("candidates", "Sinh danh sách ứng viên")):
+    for name, h in (
+        ("extract", "Trích Phụ lục I ra CSV"),
+        ("check", "Đối chiếu drugs.csv"),
+        ("candidates", "Sinh danh sách ứng viên"),
+    ):
         sub.add_parser(name, help=h)
     m = sub.add_parser("merge", help="Gộp ứng viên đã chọn")
-    m.add_argument("--auto", action="store_true",
-                   help="Thêm cả mọi ứng viên đoán được đơn vị và có hàm lượng cụ thể (không cần đánh dấu)")
+    m.add_argument(
+        "--auto",
+        action="store_true",
+        help="Thêm cả mọi ứng viên đoán được đơn vị và có hàm lượng cụ thể (không cần đánh dấu)",
+    )
     args = p.parse_args(argv)
-    return {"fetch": cmd_fetch, "extract": cmd_extract, "check": cmd_check, "candidates": cmd_candidates,
-            "merge": cmd_merge, "run": cmd_run, "inspect": cmd_inspect}[args.cmd](args)
+    return {
+        "fetch": cmd_fetch,
+        "extract": cmd_extract,
+        "check": cmd_check,
+        "candidates": cmd_candidates,
+        "merge": cmd_merge,
+        "run": cmd_run,
+        "inspect": cmd_inspect,
+    }[args.cmd](args)
 
 
 def cmd_inspect(args) -> int:
@@ -652,8 +806,12 @@ def cmd_inspect(args) -> int:
         for n, rows in enumerate(tables):
             f.write(f"\n===== Bảng {n}: {len(rows)} dòng x {max((len(r) for r in rows), default=0)} cột\n")
             picks = list(range(min(12, len(rows))))
-            picks += [i for i in range(len(rows)) if i >= 12 and any(re.fullmatch(r"\d+", c or "") and c in
-                      ("14", "15", "16", "17", "18") for c in rows[i])][:8]
+            picks += [
+                i
+                for i in range(len(rows))
+                if i >= 12
+                and any(re.fullmatch(r"\d+", c or "") and c in ("14", "15", "16", "17", "18") for c in rows[i])
+            ][:8]
             for i in picks:
                 f.write(f"[{i}] " + " | ".join(rows[i]) + "\n")
     print(f"Đã ghi {out}")
@@ -661,8 +819,12 @@ def cmd_inspect(args) -> int:
 
 
 def cmd_run(args) -> int:
-    steps = [("fetch", cmd_fetch, argparse.Namespace(file=None)), ("extract", cmd_extract, args),
-             ("check", cmd_check, args), ("candidates", cmd_candidates, args)]
+    steps = [
+        ("fetch", cmd_fetch, argparse.Namespace(file=None)),
+        ("extract", cmd_extract, args),
+        ("check", cmd_check, args),
+        ("candidates", cmd_candidates, args),
+    ]
     if not args.no_merge:
         steps.append(("merge --auto", cmd_merge, argparse.Namespace(auto=True)))
     for name, fn, a in steps:

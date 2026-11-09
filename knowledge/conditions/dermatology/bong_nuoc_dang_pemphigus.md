@@ -5,62 +5,56 @@ name_vi: Bọng nước dạng pemphigus
 name_en: Pemphigoid
 icd10_code: L12.0
 disease_group: dermatology
-description: Là bệnh da bọng nước tự miễn, tiến triển mạn tính, ít khi có tổn thương
-  niêm mạc, hay gặp ở người lớn tuổi. Bệnh gặp ở hai giới như nhau và không có sự
-  khác biệt về chủng tộc. Bệnh thường gặp ở độ tuổi 50-70, hiếm gặp ở trẻ em.
+description: Là bệnh da bọng nước tự miễn, tiến triển mạn tính, ít khi có tổn thương niêm mạc, hay gặp
+  ở người lớn tuổi. Bệnh gặp ở hai giới như nhau và không có sự khác biệt về chủng tộc. Bệnh thường gặp
+  ở độ tuổi 50-70, hiếm gặp ở trẻ em.
 relations:
 - symptom_code: pemphigus_flaccid_bulla_nikolsky_pos
   polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
-  source_key: moh_qd_75_2015
-  source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: dress_syndrome_facial_edema_eosinophilia
-  polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: vesicular_blister_rash
   polarity: SUPPORTS
-  weight: 0.97
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: bullous_pemphigoid_tense_bulla
   polarity: SUPPORTS
-  weight: 0.97
+  weight: 0.9
   is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: basal_cell_carcinoma_pearly_telangiectasia
   polarity: SUPPORTS
-  weight: 0.97
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: urticarial_wheal_angioedema
   polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: pruritus_intense_skin_itch
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: maculopapular_rash
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: verrucous_papule_nodule_ulcer
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 excerpts:

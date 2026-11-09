@@ -2,11 +2,12 @@ import { createContext, useContext, useEffect, useRef, useState } from 'react'
 import { ROLES } from '../api/accountStore'
 import * as authApi from '../api/authApi'
 import { setSessionExpiredHandler, setPasswordChangeRequiredHandler } from '../api/client'
-import { getSettings } from '../api/settingsStore'
+import { getSettings, loadClientConfig } from '../api/settingsStore'
+import { claimDrafts, clearDrafts } from '../api/draftStore'
 
 const AuthContext = createContext(null)
 
-export function toSessionUser(account) {
+function toSessionUser(account) {
   const r = ROLES[account.roleKey]
   const words = account.fullName.trim().split(/\s+/)
   return {
@@ -35,14 +36,19 @@ export function AuthProvider({ children }) {
   }
   function startSession(account) {
     setNotice('')
+    claimDrafts(account.id)
     setUser(toSessionUser(account))
+    loadClientConfig()
   }
+  // Tự đăng xuất / hết phiên / bắt đổi mật khẩu: giữ bản nháp phiếu khám để đăng nhập lại là khám tiếp.
   function endSession(notice = '') {
     authApi.logout()
     setNotice(notice)
     setUser(null)
   }
+  // Đăng xuất chủ động: bác sĩ đã xong mọi ca (App chặn khi còn ca) → xoá bản nháp trên máy.
   function logout() {
+    clearDrafts()
     endSession()
   }
   function signOutAfterPasswordChange() {

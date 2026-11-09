@@ -5,50 +5,50 @@ name_vi: Viêm họng mạn tính
 name_en: Chronic pharyngitis
 icd10_code: J31.2
 disease_group: ent
-description: 'Viêm họng mạn tính là tình trạng viêm họng kéo dài, thể hiện dưới ba
-  hình thức chính là: xuất tiết, quá phát và teo. Các bệnh tích có thể lan toả hoặc
-  khu trú. Thể điển hình của viêm họng mạn tính và viêm họng mạn tính toả lan, viêm
-  họng mạn tính khu trú gồm có viêm VA mạn tính và viêm amiđan mạn tính (bài riêng).'
+description: 'Viêm họng mạn tính là tình trạng viêm họng kéo dài, thể hiện dưới ba hình thức chính là:
+  xuất tiết, quá phát và teo. Các bệnh tích có thể lan toả hoặc khu trú. Thể điển hình của viêm họng mạn
+  tính và viêm họng mạn tính toả lan, viêm họng mạn tính khu trú gồm có viêm VA mạn tính và viêm amiđan
+  mạn tính (bài riêng).'
 relations:
 - symptom_code: granular_hypertrophic_pharyngitis
   polarity: SUPPORTS
-  weight: 0.97
+  weight: 0.9
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: laryngeal_paresthesia_throat_clearing
   polarity: SUPPORTS
-  weight: 0.89
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: sore_throat_dysphagia
   polarity: SUPPORTS
-  weight: 0.86
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: nasal_obstruction_stuffiness
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: nausea_vomiting_diarrhea
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: vocal_abuse_phonotrauma_strain
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: fatigue_malaise
   polarity: SUPPORTS
-  weight: 0.68
+  weight: 0.3
   is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT

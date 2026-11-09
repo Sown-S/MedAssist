@@ -1,8 +1,7 @@
 """Nối chẩn đoán với lần chạy AI (FR02): assessment_id, matches_top_suggestion, physician_decision
-ghi cùng transaction, v_ai_decision_reconciliation luôn rỗng.
-
-Worker chưa ghi nhật ký AI, nên test chèn sẵn dòng ai_assessment_log giả lập.
+ghi cùng transaction, v_ai_decision_reconciliation luôn rỗng. Test chèn sẵn dòng ai_assessment_log, không chạy worker.
 """
+
 import datetime
 import uuid
 
@@ -20,14 +19,25 @@ def conditions(users):
     """Ba bệnh Active trong một bản phát hành thử (commit; DB test được dựng lại mỗi phiên)."""
     with SessionLocal() as db:
         if db.scalar(select(Condition).where(Condition.condition_code == CODES[0])) is None:
-            rel = KnowledgeRelease(label="TEST-AI-DECISION", status="Active", created_by=users["admin"].user_id,
-                                   approved_by=users["bs"].user_id,
-                                   approved_at=datetime.datetime.now(datetime.UTC))
+            rel = KnowledgeRelease(
+                label="TEST-AI-DECISION",
+                status="Active",
+                created_by=users["admin"].user_id,
+                approved_by=users["bs"].user_id,
+                approved_at=datetime.datetime.now(datetime.UTC),
+            )
             db.add(rel)
             db.flush()
             for code in CODES:
-                db.add(Condition(condition_code=code, name_vi=code.replace("_", " "), status="Active",
-                                 release_id=rel.release_id, created_by=users["admin"].user_id))
+                db.add(
+                    Condition(
+                        condition_code=code,
+                        name_vi=code.replace("_", " "),
+                        status="Active",
+                        release_id=rel.release_id,
+                        created_by=users["admin"].user_id,
+                    )
+                )
             db.commit()
     return CODES
 
@@ -35,22 +45,31 @@ def conditions(users):
 @pytest.fixture
 def ai_run(users):
     """ai_run(visit_id, top=[...], status=..., run_type=...) -> assessment_id của dòng nhật ký giả lập."""
+
     def _make(visit_id, top=None, status="Completed", run_type="Assessment", queued_offset_s=0):
         candidates = None if top is None else [{"condition_code": c, "label": "Reference Suggestion"} for c in top]
         with SessionLocal() as db:
             run = AiAssessmentLog(
-                visit_id=uuid.UUID(visit_id), run_type=run_type, status=status,
+                visit_id=uuid.UUID(visit_id),
+                run_type=run_type,
+                status=status,
                 mode={"Completed": "Full", "Degraded": "RuleOnly", "Skipped": "RuleOnly"}.get(status),
                 candidates=candidates,
                 queued_at=datetime.datetime.now(datetime.UTC) + datetime.timedelta(seconds=queued_offset_s),
                 started_at=datetime.datetime.now(datetime.UTC) if status == "Running" else None,
-                lease_until=(datetime.datetime.now(datetime.UTC) + datetime.timedelta(minutes=2)
-                             if status == "Running" else None),
-                completed_at=(datetime.datetime.now(datetime.UTC)
-                              if status in ("Completed", "Degraded", "Skipped", "Failed") else None))
+                lease_until=(
+                    datetime.datetime.now(datetime.UTC) + datetime.timedelta(minutes=2) if status == "Running" else None
+                ),
+                completed_at=(
+                    datetime.datetime.now(datetime.UTC)
+                    if status in ("Completed", "Degraded", "Skipped", "Failed")
+                    else None
+                ),
+            )
             db.add(run)
             db.commit()
             return str(run.assessment_id)
+
     return _make
 
 
@@ -70,7 +89,7 @@ def _dx(client, doctor, vid, **body):
     return r.json()
 
 
-# ---------------------------------------------------------------------------- tính khớp gợi ý
+# --- Tính khớp gợi ý ------------------------------------------------------------------------------
 def test_accept_top_suggestion(client, doctor, examining, conditions, ai_run):
     vid = examining()
     aid = ai_run(vid, top=[CODES[0], CODES[1]])
@@ -106,18 +125,18 @@ def test_no_suggestion(client, doctor, examining, conditions, ai_run, top, statu
 
 def test_no_ai_run_at_all(client, doctor, examining, conditions):
     vid = examining()
-    with engine.begin() as conn:      # chỉ còn lần trích xuất, không có lần đánh giá nào
+    with engine.begin() as conn:  # chỉ còn lần trích xuất, không có lần đánh giá nào
         conn.execute(text("UPDATE ai_assessment_log SET run_type = 'Extraction' WHERE visit_id = :v"), {"v": vid})
     dx = _dx(client, doctor, vid, condition_code=CODES[0])
     assert dx["assessment_id"] is None and dx["matches_top_suggestion"] is None
 
 
-# ---------------------------------------------------------------------------- chọn lần chạy
+# --- Chọn lần chạy --------------------------------------------------------------------------------
 def test_server_picks_latest_visible_run(client, doctor, examining, conditions, ai_run):
     vid = examining()
-    ai_run(vid, top=[CODES[1]], queued_offset_s=-60)                       # lần cũ
-    newest = ai_run(vid, top=[CODES[0]], queued_offset_s=-10)              # lần mới nhất có gợi ý
-    ai_run(vid, top=None, status="Queued")                                 # đang chờ, chưa có gì để xem
+    ai_run(vid, top=[CODES[1]], queued_offset_s=-60)  # lần cũ
+    newest = ai_run(vid, top=[CODES[0]], queued_offset_s=-10)  # lần mới nhất có gợi ý
+    ai_run(vid, top=None, status="Queued")  # đang chờ, chưa có gì để xem
     dx = _dx(client, doctor, vid, condition_code=CODES[0])
     assert dx["assessment_id"] == newest and dx["matches_top_suggestion"] is True
 
@@ -148,31 +167,32 @@ def test_assessment_must_belong_to_visit(client, doctor, examining, conditions, 
         aid = ai_run(vid, top=None, run_type="Extraction")
     else:
         aid = str(uuid.uuid4())
-    r = client.post(f"/api/v1/visits/{vid}/diagnoses", headers=doctor,
-                    json={"condition_code": CODES[0], "assessment_id": aid})
+    r = client.post(
+        f"/api/v1/visits/{vid}/diagnoses", headers=doctor, json={"condition_code": CODES[0], "assessment_id": aid}
+    )
     assert r.status_code == 422 and r.json()["error"]["code"] == "ASSESSMENT_NOT_FOR_VISIT"
 
 
-# ---------------------------------------------------------------------------- đồng bộ khi chẩn đoán chính đổi
+# --- Đồng bộ khi chẩn đoán chính đổi --------------------------------------------------------------
 def test_decision_follows_primary_changes(client, doctor, examining, conditions, ai_run):
     vid = examining()
     aid = ai_run(vid, top=[CODES[0]])
-    a = _dx(client, doctor, vid, condition_code=CODES[1], assessment_id=aid)          # chính, ChoseOther
+    a = _dx(client, doctor, vid, condition_code=CODES[1], assessment_id=aid)  # chính, ChoseOther
     assert _log(aid).physician_decision == "ChoseOther"
 
     b = _dx(client, doctor, vid, condition_code=CODES[0], assessment_id=aid, is_primary=False)
-    assert _log(aid).physician_decision == "ChoseOther"                                 # b chỉ là phụ
+    assert _log(aid).physician_decision == "ChoseOther"  # b chỉ là phụ
 
     r = client.patch(f"/api/v1/diagnoses/{b['diagnosis_id']}", headers=doctor, json={"is_primary": True})
     assert r.status_code == 200
-    assert _log(aid).physician_decision == "AcceptedTop"                                # b thành chính
+    assert _log(aid).physician_decision == "AcceptedTop"  # b thành chính
     assert _reconciliation_rows() == []
 
-    client.post(f"/api/v1/diagnoses/{b['diagnosis_id']}/retract", headers=doctor)       # a lên lại chính
+    client.post(f"/api/v1/diagnoses/{b['diagnosis_id']}/retract", headers=doctor)  # a lên lại chính
     assert _log(aid).physician_decision == "ChoseOther"
     assert _reconciliation_rows() == []
 
-    client.post(f"/api/v1/diagnoses/{a['diagnosis_id']}/retract", headers=doctor)       # không còn chẩn đoán
+    client.post(f"/api/v1/diagnoses/{a['diagnosis_id']}/retract", headers=doctor)  # không còn chẩn đoán
     log = _log(aid)
     assert log.physician_decision is None and log.decided_by is None and log.decided_at is None
     assert _reconciliation_rows() == []
@@ -184,7 +204,7 @@ def test_old_run_cleared_when_primary_moves_to_new_run(client, doctor, examining
     _dx(client, doctor, vid, condition_code=CODES[0], assessment_id=old)
     assert _log(old).physician_decision == "AcceptedTop"
     new = ai_run(vid, top=[CODES[1]])
-    _dx(client, doctor, vid, condition_code=CODES[1], assessment_id=new)                 # chính mới, lần chạy mới
+    _dx(client, doctor, vid, condition_code=CODES[1], assessment_id=new)  # chính mới, lần chạy mới
     assert _log(new).physician_decision == "AcceptedTop"
     assert _log(old).physician_decision is None
     assert _reconciliation_rows() == []

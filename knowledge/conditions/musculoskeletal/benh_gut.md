@@ -5,50 +5,49 @@ name_vi: Bệnh gút
 name_en: gout
 icd10_code: M10.9
 disease_group: musculoskeletal
-description: Bệnh gút là bệnh viêm khớp do vi tinh thể, đặc trưng bởi những đợt viêm
-  khớp cấp tái phát, có lắng đọng tinh thể muối urat natri trong các mô, gây ra do
-  tăng acid uric trong máu. Đây là bệnh do rối loạn chuyển hóa nhân purin, thuộc nhóm
-  bệnh rối loạn chuyển hóa.
+description: Bệnh gút là bệnh viêm khớp do vi tinh thể, đặc trưng bởi những đợt viêm khớp cấp tái phát,
+  có lắng đọng tinh thể muối urat natri trong các mô, gây ra do tăng acid uric trong máu. Đây là bệnh
+  do rối loạn chuyển hóa nhân purin, thuộc nhóm bệnh rối loạn chuyển hóa.
 relations:
 - symptom_code: acute_podagra_tophi
   polarity: SUPPORTS
-  weight: 0.98
+  weight: 0.9
   is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: gout_hyperuricemia_colchicine_response
   polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: myalgia_arthralgia
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: asymmetric_oligoarthritis_lower
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: joint_range_of_motion_limitation
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: periarticular_tendon_bursa_tenderness
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: fever_low_grade
   polarity: SUPPORTS
-  weight: 0.74
+  weight: 0.3
   is_key: false
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT

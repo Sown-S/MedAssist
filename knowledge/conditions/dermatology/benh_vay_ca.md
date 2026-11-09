@@ -5,69 +5,63 @@ name_vi: Bệnh vảy cá
 name_en: Ichthyosis
 icd10_code: Q80.9
 disease_group: dermatology
-description: Là một nhóm bệnh da di truyền hoặc mắc phải có biểu hiện đặc trưng là
-  nhiều vảy da lan tỏa. Ichthyosis là một thuật ngữ xuất phát từ “ichthy” trong tiếng
-  Hy Lạp nghĩa là “cá”. Bệnh vảy cá di truyền thường xuất hiện ngay từ lúc mới sinh
-  hoặc những tháng đầu hoặc những năm đầu sau khi sinh và tồn tại suốt cuộc đời.
+description: Là một nhóm bệnh da di truyền hoặc mắc phải có biểu hiện đặc trưng là nhiều vảy da lan tỏa.
+  Ichthyosis là một thuật ngữ xuất phát từ “ichthy” trong tiếng Hy Lạp nghĩa là “cá”. Bệnh vảy cá di truyền
+  thường xuất hiện ngay từ lúc mới sinh hoặc những tháng đầu hoặc những năm đầu sau khi sinh và tồn tại
+  suốt cuộc đời.
 relations:
 - symptom_code: scaly_plaque_hyperkeratosis
   polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: atopic_dermatitis_flexural_eczema
   polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: palmoplantar_keratoderma_fissures
   polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: epidermolysis_bullosa_mechanobullous
   polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: ichthyosis_fish_scale_hyperkeratosis
   polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
-  source_key: moh_qd_75_2015
-  source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: tinea_capitis_kerion_alopecia
-  polarity: SUPPORTS
-  weight: 0.96
+  weight: 0.9
   is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: chlamydial_trichomonal_vaginitis_cervicitis
   polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: pustular_furuncle_folliculitis
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: vesicular_blister_rash
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: erythroderma_generalized_exfoliation
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 excerpts:

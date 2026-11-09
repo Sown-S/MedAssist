@@ -5,116 +5,127 @@ name_vi: Bệnh sốt mò
 name_en: Scrub typhus
 icd10_code: A75.3
 disease_group: infectious
-description: Sốt mò (scrub typhus) là một bệnh truyền nhiễm cấp tính lưu hành ở Việt
-  Nam. Bệnh có biểu hiện đa dạng, bao gồm sốt, vết loét ngoài da, phát ban, sưng hạch,
-  tổn thương nhiều cơ quan và phủ tạng, có thể dẫn tới tử vong nếu không được điều
-  trị thích hợp và kịp thời.
+description: Sốt mò (scrub typhus) là một bệnh truyền nhiễm cấp tính lưu hành ở Việt Nam. Bệnh có biểu
+  hiện đa dạng, bao gồm sốt, vết loét ngoài da, phát ban, sưng hạch, tổn thương nhiều cơ quan và phủ tạng,
+  có thể dẫn tới tử vong nếu không được điều trị thích hợp và kịp thời.
 relations:
 - symptom_code: fever_high
   polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5642_2015
   source_edition: Quyết định số 5642/QĐ-BYT
 - symptom_code: eschar_ulcer_bite_lesion
-  polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
-  source_key: moh_qd_5642_2015
-  source_edition: Quyết định số 5642/QĐ-BYT
-- symptom_code: eosinophilic_meningitis_paresthesia_headache
-  polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
-  source_key: moh_qd_5642_2015
-  source_edition: Quyết định số 5642/QĐ-BYT
-- symptom_code: seasonal_flu_abrupt_fever_myalgia_coryza
-  polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
-  source_key: moh_qd_5642_2015
-  source_edition: Quyết định số 5642/QĐ-BYT
-- symptom_code: viral_hepatitis_jaundice_dark_urine_ast_alt
-  polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
-  source_key: moh_qd_5642_2015
-  source_edition: Quyết định số 5642/QĐ-BYT
-- symptom_code: pulmonary_crackles_rales_consolidation
-  polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
-  source_key: moh_qd_5642_2015
-  source_edition: Quyết định số 5642/QĐ-BYT
-- symptom_code: maculopapular_rash
   polarity: SUPPORTS
   weight: 0.9
   is_key: true
   source_key: moh_qd_5642_2015
   source_edition: Quyết định số 5642/QĐ-BYT
+- symptom_code: eosinophilic_meningitis_paresthesia_headache
+  polarity: SUPPORTS
+  weight: 0.6
+  is_key: false
+  source_key: moh_qd_5642_2015
+  source_edition: Quyết định số 5642/QĐ-BYT
+- symptom_code: myalgia_arthralgia
+  polarity: SUPPORTS
+  weight: 0.6
+  is_key: false
+  source_key: moh_qd_5642_2015
+  source_edition: Quyết định số 5642/QĐ-BYT
+- symptom_code: cough_dry
+  polarity: SUPPORTS
+  weight: 0.6
+  is_key: false
+  source_key: moh_qd_5642_2015
+  source_edition: Quyết định số 5642/QĐ-BYT
+- symptom_code: rhinorrhea_nasal_congestion
+  polarity: SUPPORTS
+  weight: 0.6
+  is_key: false
+  source_key: moh_qd_5642_2015
+  source_edition: Quyết định số 5642/QĐ-BYT
+- symptom_code: viral_hepatitis_jaundice_dark_urine_ast_alt
+  polarity: SUPPORTS
+  weight: 0.6
+  is_key: false
+  source_key: moh_qd_5642_2015
+  source_edition: Quyết định số 5642/QĐ-BYT
+- symptom_code: pulmonary_crackles_rales_consolidation
+  polarity: SUPPORTS
+  weight: 0.6
+  is_key: false
+  source_key: moh_qd_5642_2015
+  source_edition: Quyết định số 5642/QĐ-BYT
+- symptom_code: maculopapular_rash
+  polarity: SUPPORTS
+  weight: 0.6
+  is_key: false
+  source_key: moh_qd_5642_2015
+  source_edition: Quyết định số 5642/QĐ-BYT
 - symptom_code: petechiae_mucosal_bleeding
   polarity: SUPPORTS
-  weight: 0.88
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5642_2015
   source_edition: Quyết định số 5642/QĐ-BYT
 - symptom_code: fever_prolonged
   polarity: SUPPORTS
-  weight: 0.86
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5642_2015
   source_edition: Quyết định số 5642/QĐ-BYT
 - symptom_code: lymphadenopathy_splenomegaly
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.3
   is_key: false
   source_key: moh_qd_5642_2015
   source_edition: Quyết định số 5642/QĐ-BYT
 - symptom_code: serositis_pleural_pericardial
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_5642_2015
   source_edition: Quyết định số 5642/QĐ-BYT
 - symptom_code: hepatomegaly_right_hypochondriac_tenderness
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_5642_2015
   source_edition: Quyết định số 5642/QĐ-BYT
 - symptom_code: epidemiological_exposure_vector_travel
   polarity: SUPPORTS
-  weight: 0.8
+  weight: 0.6
   is_key: false
   source_key: moh_qd_5642_2015
   source_edition: Quyết định số 5642/QĐ-BYT
 - symptom_code: anemia_pallor_jaundice
   polarity: SUPPORTS
-  weight: 0.76
+  weight: 0.3
   is_key: false
   source_key: moh_qd_5642_2015
   source_edition: Quyết định số 5642/QĐ-BYT
 - symptom_code: splenomegaly_left_hypochondriac_mass
   polarity: SUPPORTS
-  weight: 0.76
+  weight: 0.3
   is_key: false
   source_key: moh_qd_5642_2015
   source_edition: Quyết định số 5642/QĐ-BYT
 - symptom_code: chills_rigors
   polarity: SUPPORTS
-  weight: 0.75
+  weight: 0.3
   is_key: false
   source_key: moh_qd_5642_2015
   source_edition: Quyết định số 5642/QĐ-BYT
 - symptom_code: headache_dull
   polarity: SUPPORTS
-  weight: 0.72
+  weight: 0.3
   is_key: false
   source_key: moh_qd_5642_2015
   source_edition: Quyết định số 5642/QĐ-BYT
 - symptom_code: fatigue_malaise
   polarity: SUPPORTS
-  weight: 0.68
+  weight: 0.3
   is_key: false
   source_key: moh_qd_5642_2015
   source_edition: Quyết định số 5642/QĐ-BYT

@@ -5,50 +5,50 @@ name_vi: Nhiễm chlamydia trachomatis sinh dục-tiết niệu
 name_en: Chlamydia trachomatis infections
 icd10_code: A56.2
 disease_group: dermatology
-description: Chlamydia là tác nhân gây mù loà và bệnh lây truyền qua đường tình dục
-  (LTQĐTD). Có ba biến thể sinh học khác nhau của Chlamydia biến thể trachoma-serovars
-  A, B và C gây bệnh mắt hột. Chlamydia trachomatis gây các bệnh đường sinh dục ở
-  người mà chủ yếu gây viêm niệu đạo có triệu chứng và không triệu chứng.
+description: Chlamydia là tác nhân gây mù loà và bệnh lây truyền qua đường tình dục (LTQĐTD). Có ba biến
+  thể sinh học khác nhau của Chlamydia biến thể trachoma-serovars A, B và C gây bệnh mắt hột. Chlamydia
+  trachomatis gây các bệnh đường sinh dục ở người mà chủ yếu gây viêm niệu đạo có triệu chứng và không
+  triệu chứng.
 relations:
 - symptom_code: gonorrhea_purulent_urethritis_dysuria
   polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: genital_ulcer_chancre_discharge
   polarity: SUPPORTS
-  weight: 0.97
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: chlamydial_trichomonal_vaginitis_cervicitis
   polarity: SUPPORTS
-  weight: 0.97
+  weight: 0.9
   is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: nausea_vomiting_diarrhea
   polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: conjunctivitis_uveitis_red_eye
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: myalgia_arthralgia
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: lymphadenopathy_splenomegaly
   polarity: SUPPORTS
-  weight: 0.78
+  weight: 0.3
   is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT

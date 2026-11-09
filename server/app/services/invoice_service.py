@@ -1,11 +1,8 @@
-"""Hóa đơn (US06). Lượt 6b: tự tạo hóa đơn Pending khi lượt khám sang Prescribed, hủy khi mở lại đơn.
-Lượt 6c: sửa phí khám / dòng nhập tay, lập lại khi bỏ qua thuốc, thu tiền, Finished.
-ERD v2.1: dòng cận lâm sàng lấy từ phiếu chỉ định, phí khám lấy từ danh mục dịch vụ.
-
-Bất biến do CSDL giữ: total = 3 khoản phí; mỗi khoản phí = tổng các dòng cùng loại (constraint trigger,
-kiểm ở cuối transaction); dòng thuốc thuộc đơn của CÙNG lượt khám; tối đa một hóa đơn chưa hủy / lượt.
-Không xóa dòng hóa đơn (app không có quyền DELETE): sửa = hủy hóa đơn rồi lập hóa đơn mới.
+"""Hóa đơn (US06, ERD §2.19, §4.4): tự tạo khi lượt khám sang Prescribed, sửa, lập lại, thu tiền.
+Sửa hóa đơn = hủy rồi lập mới (app không có quyền DELETE); bất biến về phí do CSDL giữ.
+Chi tiết: docs/thiet-ke-backend.md §5.4.
 """
+
 import uuid
 from decimal import Decimal
 
@@ -42,6 +39,7 @@ def default_consultation(db: Session, package_name: str | None) -> tuple[str, De
     """Phí khám: 0 nếu gói đã chỉ định có dịch vụ khám; không thì theo dịch vụ ở
     billing.consultation_service_code, thiếu dịch vụ đó thì theo billing.default_consultation_fee."""
     from app.services.settings_service import get_value
+
     if package_name:
         return f"{CONSULTATION_NAME} (trong gói {package_name})"[:150], Decimal(0)
     code = get_value(db, "billing.consultation_service_code")
@@ -51,43 +49,88 @@ def default_consultation(db: Session, package_name: str | None) -> tuple[str, De
     return CONSULTATION_NAME, Decimal(get_value(db, "billing.default_consultation_fee"))
 
 
-def create_for_visit(db: Session, visit: Visit, actor: User, *, consultation_fee: Decimal | None = None,
-                     consultation_name: str | None = None, extra_lines: list[dict] | None = None) -> Invoice:
+def create_for_visit(
+    db: Session,
+    visit: Visit,
+    actor: User,
+    *,
+    consultation_fee: Decimal | None = None,
+    consultation_name: str | None = None,
+    extra_lines: list[dict] | None = None,
+) -> Invoice:
     """Lập hóa đơn Pending: một dòng phí khám + một dòng cho mỗi thuốc chưa bị bỏ qua của đơn
     Confirmed (nếu có) + dòng cận lâm sàng từ phiếu chỉ định + các dòng nhập tay truyền vào."""
-    from app.services import service_order_service   # import vòng: service_order_service lập lại hóa đơn
+    from app.services import service_order_service  # import vòng: service_order_service lập lại hóa đơn
+
     ordered, package_name = service_order_service.billable(db, visit.visit_id)
     if consultation_fee is None:
         consultation_name, consultation_fee = default_consultation(db, package_name)
-    lines = [dict(item_type="Consultation", item_name=consultation_name or CONSULTATION_NAME, quantity=1,
-                  unit_price=Decimal(consultation_fee), prescription_item_id=None)]
-    rx = db.scalar(select(Prescription).where(Prescription.visit_id == visit.visit_id,
-                                              Prescription.status.in_(("Confirmed", "Dispensed"))))
+    lines = [
+        dict(
+            item_type="Consultation",
+            item_name=consultation_name or CONSULTATION_NAME,
+            quantity=1,
+            unit_price=Decimal(consultation_fee),
+            prescription_item_id=None,
+        )
+    ]
+    rx = db.scalar(
+        select(Prescription).where(
+            Prescription.visit_id == visit.visit_id, Prescription.status.in_(("Confirmed", "Dispensed"))
+        )
+    )
     if rx is not None:
-        rows = db.execute(select(PrescriptionItem, Drug).join(Drug, Drug.drug_id == PrescriptionItem.drug_id)
-                          .where(PrescriptionItem.prescription_id == rx.prescription_id,
-                                 PrescriptionItem.dispense_status != "Skipped")
-                          .order_by(Drug.generic_name, PrescriptionItem.item_id)).all()
+        rows = db.execute(
+            select(PrescriptionItem, Drug)
+            .join(Drug, Drug.drug_id == PrescriptionItem.drug_id)
+            .where(
+                PrescriptionItem.prescription_id == rx.prescription_id, PrescriptionItem.dispense_status != "Skipped"
+            )
+            .order_by(Drug.generic_name, PrescriptionItem.item_id)
+        ).all()
         for item, drug in rows:
-            lines.append(dict(item_type="Drug", item_name=drug_label(drug), quantity=item.quantity,
-                              unit_price=drug.sale_price, prescription_item_id=item.item_id))
+            lines.append(
+                dict(
+                    item_type="Drug",
+                    item_name=drug_label(drug),
+                    quantity=item.quantity,
+                    unit_price=drug.sale_price,
+                    prescription_item_id=item.item_id,
+                )
+            )
     lines += ordered + (extra_lines or [])
 
     fees = {"Consultation": Decimal(0), "Paraclinical": Decimal(0), "Drug": Decimal(0)}
     for ln in lines:
         ln["subtotal"] = Decimal(ln["unit_price"]) * ln["quantity"]
         fees[ln["item_type"]] += ln["subtotal"]
-    invoice = Invoice(visit_id=visit.visit_id, issued_by=actor.user_id, invoice_code=_next_code(db),
-                      consultation_fee=fees["Consultation"], paraclinical_fee=fees["Paraclinical"],
-                      drug_fee=fees["Drug"], total_amount=sum(fees.values()))
+    invoice = Invoice(
+        visit_id=visit.visit_id,
+        issued_by=actor.user_id,
+        invoice_code=_next_code(db),
+        consultation_fee=fees["Consultation"],
+        paraclinical_fee=fees["Paraclinical"],
+        drug_fee=fees["Drug"],
+        total_amount=sum(fees.values()),
+    )
     db.add(invoice)
     db.flush()
     for ln in lines:
         db.add(InvoiceItem(invoice_id=invoice.invoice_id, **ln))
     db.flush()
-    audit.record(db, action="CREATE", entity="invoice", entity_id=invoice.invoice_id, actor_id=actor.user_id,
-                 new_values={"invoice_code": invoice.invoice_code, "visit_id": str(visit.visit_id),
-                             "total_amount": invoice.total_amount, "lines": len(lines)})
+    audit.record(
+        db,
+        action="CREATE",
+        entity="invoice",
+        entity_id=invoice.invoice_id,
+        actor_id=actor.user_id,
+        new_values={
+            "invoice_code": invoice.invoice_code,
+            "visit_id": str(visit.visit_id),
+            "total_amount": invoice.total_amount,
+            "lines": len(lines),
+        },
+    )
     return invoice
 
 
@@ -96,22 +139,52 @@ def cancel(db: Session, invoice: Invoice, reason: str, actor: User) -> None:
     invoice.cancelled_at = func.now()
     invoice.cancel_reason = reason
     db.flush()
-    audit.record(db, action="UPDATE", entity="invoice", entity_id=invoice.invoice_id, actor_id=actor.user_id,
-                 old_values={"payment_status": "Pending"},
-                 new_values={"payment_status": "Cancelled", "reason": reason})
+    audit.record(
+        db,
+        action="UPDATE",
+        entity="invoice",
+        entity_id=invoice.invoice_id,
+        actor_id=actor.user_id,
+        old_values={"payment_status": "Pending"},
+        new_values={"payment_status": "Cancelled", "reason": reason},
+    )
 
 
 def to_out(db: Session, invoice: Invoice) -> dict:
-    items = db.scalars(select(InvoiceItem).where(InvoiceItem.invoice_id == invoice.invoice_id)
-                       .order_by(InvoiceItem.item_type, InvoiceItem.item_name)).all()
+    items = db.scalars(
+        select(InvoiceItem)
+        .where(InvoiceItem.invoice_id == invoice.invoice_id)
+        .order_by(InvoiceItem.item_type, InvoiceItem.item_name)
+    ).all()
     db.refresh(invoice)
     from app.services import service_order_service
-    return {**{c: getattr(invoice, c) for c in (
-        "invoice_id", "visit_id", "invoice_code", "consultation_fee", "paraclinical_fee", "drug_fee",
-        "total_amount", "payment_method", "payment_status", "paid_at", "cancelled_at", "cancel_reason",
-        "created_at")}, "items": items, "unbilled_items": service_order_service.unbilled(
-            db, invoice.visit_id,
-            [i.item_name for i in items if i.item_type == "Paraclinical" and i.service_order_id is None])}
+
+    return {
+        **{
+            c: getattr(invoice, c)
+            for c in (
+                "invoice_id",
+                "visit_id",
+                "invoice_code",
+                "consultation_fee",
+                "paraclinical_fee",
+                "drug_fee",
+                "total_amount",
+                "payment_method",
+                "payment_status",
+                "paid_at",
+                "cancelled_at",
+                "cancel_reason",
+                "created_at",
+            )
+        },
+        "items": items,
+        "unbilled_items": service_order_service.unbilled(
+            db,
+            invoice.visit_id,
+            [i.item_name for i in items if i.item_type == "Paraclinical" and i.service_order_id is None],
+        ),
+    }
 
 
 def current_for_visit(db: Session, visit_id: uuid.UUID) -> Invoice:
@@ -121,25 +194,48 @@ def current_for_visit(db: Session, visit_id: uuid.UUID) -> Invoice:
     return invoice
 
 
-# ============================================================================ Lượt 6c: sửa, lập lại, thu tiền
+# --- Sửa, lập lại, thu tiền -----------------------------------------------------------------------
 def _paraclinical_lines(db: Session, invoice: Invoice) -> list[dict]:
     """Chỉ dòng nhập tay; dòng từ phiếu chỉ định được lập lại theo chỉ định còn hiệu lực."""
-    return [dict(item_type="Paraclinical", item_name=i.item_name, quantity=i.quantity, unit_price=i.unit_price,
-                 prescription_item_id=None)
-            for i in db.scalars(select(InvoiceItem).where(InvoiceItem.invoice_id == invoice.invoice_id,
-                                                          InvoiceItem.item_type == "Paraclinical",
-                                                          InvoiceItem.service_order_id.is_(None))
-                                .order_by(InvoiceItem.item_name))]
+    return [
+        dict(
+            item_type="Paraclinical",
+            item_name=i.item_name,
+            quantity=i.quantity,
+            unit_price=i.unit_price,
+            prescription_item_id=None,
+        )
+        for i in db.scalars(
+            select(InvoiceItem)
+            .where(
+                InvoiceItem.invoice_id == invoice.invoice_id,
+                InvoiceItem.item_type == "Paraclinical",
+                InvoiceItem.service_order_id.is_(None),
+            )
+            .order_by(InvoiceItem.item_name)
+        )
+    ]
 
 
 def _consultation_name(db: Session, invoice: Invoice) -> str | None:
-    return db.scalar(select(InvoiceItem.item_name).where(InvoiceItem.invoice_id == invoice.invoice_id,
-                                                         InvoiceItem.item_type == "Consultation").limit(1))
+    return db.scalar(
+        select(InvoiceItem.item_name)
+        .where(InvoiceItem.invoice_id == invoice.invoice_id, InvoiceItem.item_type == "Consultation")
+        .limit(1)
+    )
 
 
-def reissue(db: Session, visit: Visit, old: Invoice, reason: str, actor: User, *,
-            consultation_fee: Decimal | None = None, consultation_name: str | None = None,
-            paraclinical: list[dict] | None = None) -> Invoice:
+def reissue(
+    db: Session,
+    visit: Visit,
+    old: Invoice,
+    reason: str,
+    actor: User,
+    *,
+    consultation_fee: Decimal | None = None,
+    consultation_name: str | None = None,
+    paraclinical: list[dict] | None = None,
+) -> Invoice:
     """Hủy hóa đơn Pending cũ và lập hóa đơn mới (app không có quyền DELETE dòng hóa đơn).
     Mặc định giữ nguyên dòng phí khám và các dòng nhập tay; dòng thuốc lập lại theo đơn (bỏ dòng Skipped),
     dòng cận lâm sàng lập lại theo phiếu chỉ định."""
@@ -148,8 +244,9 @@ def reissue(db: Session, visit: Visit, old: Invoice, reason: str, actor: User, *
     keep_para = _paraclinical_lines(db, old) if paraclinical is None else paraclinical
     method = old.payment_method
     cancel(db, old, reason, actor)
-    new = create_for_visit(db, visit, actor, consultation_fee=keep_fee, consultation_name=keep_name,
-                           extra_lines=keep_para)
+    new = create_for_visit(
+        db, visit, actor, consultation_fee=keep_fee, consultation_name=keep_name, extra_lines=keep_para
+    )
     new.payment_method = method
     db.flush()
     return new

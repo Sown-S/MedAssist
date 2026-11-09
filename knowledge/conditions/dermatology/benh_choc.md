@@ -5,62 +5,55 @@ name_vi: Bệnh chốc
 name_en: Impetigo
 icd10_code: L01.0
 disease_group: dermatology
-description: Chốc là một bệnh nhiễm khuẩn da rất phổ biến, đặc trưng bởi các thương
-  tổn cơ bản là bọng nước nông, rải rác, nhanh chóng hoá mủ, dập vỡ đóng vảy tiết.
-  Bệnh hay gặp ở trẻ nhỏ.
+description: Chốc là một bệnh nhiễm khuẩn da rất phổ biến, đặc trưng bởi các thương tổn cơ bản là bọng
+  nước nông, rải rác, nhanh chóng hoá mủ, dập vỡ đóng vảy tiết. Bệnh hay gặp ở trẻ nhỏ.
 relations:
 - symptom_code: honey_crusted_impetigo_erosion
   polarity: SUPPORTS
-  weight: 0.98
+  weight: 0.9
   is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: porphyria_cutanea_tarda_photo_blisters
   polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: vesicular_blister_rash
   polarity: SUPPORTS
-  weight: 0.97
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: melasma_symmetric_facial_hyperpigmentation
   polarity: SUPPORTS
-  weight: 0.97
-  is_key: true
-  source_key: moh_qd_75_2015
-  source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: cutaneous_tuberculosis_lupus_vulgaris
-  polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: maculopapular_rash
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: pigmentary_macule_patch
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: atopic_dermatitis_flexural_eczema
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: pruritus_intense_skin_itch
   polarity: SUPPORTS
-  weight: 0.89
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 excerpts:

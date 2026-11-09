@@ -1,4 +1,5 @@
 """scripts/create_user.py: tạo tài khoản từ dòng lệnh, các nhánh từ chối, ghi audit bằng 'system'."""
+
 import sys
 import uuid
 
@@ -15,11 +16,13 @@ from scripts import create_user
 @pytest.fixture
 def run(monkeypatch, users):
     """run(argv, passwords) -> mã thoát. passwords: hai lần nhập mật khẩu."""
+
     def _run(argv: list[str], passwords: tuple[str, str] = ("Matkhau123", "Matkhau123")) -> int:
         answers = iter(passwords)
         monkeypatch.setattr(create_user.getpass, "getpass", lambda _prompt="": next(answers))
         monkeypatch.setattr(sys, "argv", ["create_user", *argv])
         return create_user.main()
+
     return _run
 
 
@@ -29,8 +32,7 @@ def _name():
 
 def test_creates_user_and_audits_as_system(run, capsys):
     username = _name()
-    assert run(["--username", username, "--full-name", "Quản trị viên", "--role", "Admin",
-                "--email", "a@b.vn"]) == 0
+    assert run(["--username", username, "--full-name", "Quản trị viên", "--role", "Admin", "--email", "a@b.vn"]) == 0
     assert "Đã tạo Admin" in capsys.readouterr().out
     with SessionLocal() as db:
         u = db.scalar(select(User).where(User.username == username))
@@ -40,11 +42,14 @@ def test_creates_user_and_audits_as_system(run, capsys):
         assert log.new_values["source"] == "scripts.create_user" and "password" not in str(log.new_values)
 
 
-@pytest.mark.parametrize("argv_name, passwords, message", [
-    ("system", ("Matkhau123", "Matkhau123"), "tài khoản hệ thống"),
-    (None, ("Matkhau123", "Khac12345"), "không khớp"),
-    (None, ("ngan", "ngan"), "ít nhất"),
-])
+@pytest.mark.parametrize(
+    "argv_name, passwords, message",
+    [
+        ("system", ("Matkhau123", "Matkhau123"), "tài khoản hệ thống"),
+        (None, ("Matkhau123", "Khac12345"), "không khớp"),
+        (None, ("ngan", "ngan"), "ít nhất"),
+    ],
+)
 def test_rejections(run, capsys, argv_name, passwords, message):
     username = argv_name or _name()
     assert run(["--username", username, "--full-name", "X", "--role", "Nurse"], passwords) == 1

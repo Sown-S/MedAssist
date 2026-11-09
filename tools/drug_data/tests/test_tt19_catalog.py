@@ -1,4 +1,5 @@
-"""scripts/tt19_catalog.py: trích Phụ lục I, đối chiếu drugs.csv, ứng viên, gộp. Không truy cập mạng."""
+"""drug_data/tt19_catalog.py: trích Phụ lục I, đối chiếu drugs.csv, ứng viên, gộp. Không truy cập mạng."""
+
 import csv
 
 import pytest
@@ -29,14 +30,17 @@ def test_parse_inherits_merged_cells_and_sections(appendix):
     by = lambda stt: [r for r in appendix if r["stt"] == stt]  # noqa: E731
     para = by("18")
     assert [(r["duong_dung"], r["dang_bao_che"]) for r in para] == [
-        ("Uống", "Viên"), ("Uống", "Bột pha dung dịch"), ("Đặt trực tràng", "Viên đạn")]
+        ("Uống", "Viên"),
+        ("Uống", "Bột pha dung dịch"),
+        ("Đặt trực tràng", "Viên đạn"),
+    ]
     assert all(r["ten_thuoc"] == "Paracetamol" and r["dau_sao"] == "x" for r in para)
     assert para[0]["nhom"].startswith("II.") and para[0]["nhom_con"].startswith("1.")
     dexa = by("36")
     assert dexa[1]["ten_thuoc"] == "Dexamethason phosphat (natri)" and dexa[1]["duong_dung"] == "Tiêm"
     assert by("323")[0]["ham_luong"] == "" and by("323")[0]["dang_bao_che"] == "Bột pha dung dịch"
     assert by("97")[0]["nhom_con"] == "♦ Thuốc nhóm Nitroimidazol"
-    assert max(int(r["stt"]) for r in appendix) == 479            # không đọc lẫn Phụ lục II
+    assert max(int(r["stt"]) for r in appendix) == 479  # không đọc lẫn Phụ lục II
 
 
 def test_every_drug_in_catalog_matches_appendix(appendix):
@@ -51,8 +55,14 @@ def test_every_drug_in_catalog_matches_appendix(appendix):
 
 
 def test_check_flags_wrong_reference(appendix):
-    bad = {"generic_name": "Paracetamol", "trade_name": "X", "strength": "500 mg", "dosage_form": "viên nén",
-           "unit": "viên", "source": "TT 19/2018/TT-BYT, Phụ lục I, STT 77"}
+    bad = {
+        "generic_name": "Paracetamol",
+        "trade_name": "X",
+        "strength": "500 mg",
+        "dosage_form": "viên nén",
+        "unit": "viên",
+        "source": "TT 19/2018/TT-BYT, Phụ lục I, STT 77",
+    }
     (row,) = tt.check_rows([bad], appendix)
     assert row["ket_qua"] == "FAIL"
     wrong_strength = {**bad, "strength": "650 mg", "source": "TT 19/2018/TT-BYT, Phụ lục I, STT 18"}
@@ -64,12 +74,12 @@ def test_candidates_filter_and_explode(appendix):
     _, drugs = _drugs()
     cands = tt.build_candidates(drugs, appendix)
     keys = {(c["stt"], c["strength"]) for c in cands}
-    assert ("18", "100 mg") in keys                     # paracetamol 100 mg chưa có
+    assert ("18", "100 mg") in keys  # paracetamol 100 mg chưa có
     assert ("18", "500 mg") not in {(c["stt"], c["strength"]) for c in cands if c["dosage_form"] == "viên"}
-    assert not any(c["stt"] in {"21", "109", "336"} for c in cands)    # opi, phong, tránh thai bị loại
+    assert not any(c["stt"] in {"21", "109", "336"} for c in cands)  # opi, phong, tránh thai bị loại
     assert not any("tiêm" in c["duong_dung"].lower() for c in cands)
     salb = [c for c in cands if c["stt"] == "448"]
-    assert {c["strength"] for c in salb} == {"4 mg"}    # 2 mg, 0,4 mg/ml, 100 mcg đã có; tiêm bị loại
+    assert {c["strength"] for c in salb} == {"4 mg"}  # 2 mg, 0,4 mg/ml, 100 mcg đã có; tiêm bị loại
     assert all(c["source"].startswith("TT 19/2018/TT-BYT, Phụ lục I, STT ") for c in cands)
     assert {c["unit"] for c in cands if c["stt"] == "269"} <= {"tuýp"}
 
@@ -109,14 +119,17 @@ def workspace(tmp_path, monkeypatch):
     inbox = tmp_path / "inbox"
     inbox.mkdir()
     cfg = tmp_path / "config.toml"
-    cfg.write_text(f'''[tt19]
+    cfg.write_text(
+        f'''[tt19]
 trang_van_ban = "https://vbpl.vn/van-ban/chi-tiet/tt19--132228?tabs=hien-thi-pdf"
 trang_tai_ve = "https://vbpl.vn/van-ban/chi-tiet/tt19--132228?tabs=tai-ve"
 tai_truc_tiep = []
 thu_muc_tai_tay = "{inbox.as_posix()}"
-''', encoding="utf-8")
+''',
+        encoding="utf-8",
+    )
     monkeypatch.setattr(tt, "CONFIG_FILE", cfg)
-    monkeypatch.setattr(tt, "MIN_EXPECTED_DRUGS", 50)          # bảng dựng lại chỉ có các STT cần thiết
+    monkeypatch.setattr(tt, "MIN_EXPECTED_DRUGS", 50)  # bảng dựng lại chỉ có các STT cần thiết
     monkeypatch.setattr(tt, "SOURCE_DIR", tmp_path / "src")
     monkeypatch.setattr(tt, "DOCX_FILE", tmp_path / "src" / "tt19_2018_chuyen_doi.docx")
     monkeypatch.setattr(tt, "MANIFEST", tmp_path / "src" / "manifest.json")
@@ -141,7 +154,7 @@ def test_run_from_inbox_without_arguments(workspace):
     assert m["trang_tai_ve"].endswith("tabs=tai-ve") and m["file_trich_xuat"].endswith(".docx")
     assert all(len(f["sha256"]) == 64 for f in m["files"])
     with open(workspace / "drugs.csv", encoding="utf-8") as f:
-        assert len(list(csv.DictReader(f))) > 100                      # merge --auto đã thêm thuốc
+        assert len(list(csv.DictReader(f))) > 100  # merge --auto đã thêm thuốc
     assert (workspace / "cand.csv").read_bytes().startswith(b"\xef\xbb\xbf")
 
 
@@ -180,8 +193,12 @@ def test_pdf_only_is_saved_but_asks_for_doc(workspace):
 
 def test_empty_inbox_and_blocked_download_explain_next_step(workspace):
     cfg = workspace / "config.toml"
-    cfg.write_text(cfg.read_text(encoding="utf-8").replace(
-        "tai_truc_tiep = []", 'tai_truc_tiep = ["http://khong-ton-tai.invalid/tt19.doc"]'), encoding="utf-8")
+    cfg.write_text(
+        cfg.read_text(encoding="utf-8").replace(
+            "tai_truc_tiep = []", 'tai_truc_tiep = ["http://khong-ton-tai.invalid/tt19.doc"]'
+        ),
+        encoding="utf-8",
+    )
     with pytest.raises(SystemExit, match="Chưa có file nguồn.*tabs=tai-ve"):
         tt.main(["fetch"])
 
@@ -194,7 +211,7 @@ def test_html_page_parses_same_as_docx(tmp_path, appendix, rowspan):
 
 
 def test_doc_that_is_really_html_is_read_directly(tmp_path, appendix):
-    disguised = tmp_path / "19_2018_TT-BYT_393919.doc"          # vbpl hay trả HTML dưới đuôi .doc
+    disguised = tmp_path / "19_2018_TT-BYT_393919.doc"  # vbpl hay trả HTML dưới đuôi .doc
     build_html(disguised)
     assert tt.detect_kind(disguised) == "html"
     assert tt.parse_appendix(disguised) == appendix
@@ -210,18 +227,23 @@ def test_extract_without_fetch_gives_hint(tmp_path, monkeypatch):
 def test_doc_to_docx_conversion_keeps_table(tmp_path, appendix):
     """File gốc trên vbpl là .doc: chuyển .docx -> .doc rồi dùng convert_to_docx (LibreOffice ở máy không có Word)."""
     import subprocess
+
     src_docx = tmp_path / "goc.docx"
     build_docx(src_docx)
-    subprocess.run(["soffice", "--headless", "--convert-to", "doc", "--outdir", str(tmp_path), str(src_docx)],
-                   check=True, capture_output=True)
+    subprocess.run(
+        ["soffice", "--headless", "--convert-to", "doc", "--outdir", str(tmp_path), str(src_docx)],
+        check=True,
+        capture_output=True,
+    )
     doc = tmp_path / "goc.doc"
-    assert doc.read_bytes()[:4] == b"\xd0\xcf\x11\xe0"            # định dạng Word 97-2003 (OLE2)
+    assert doc.read_bytes()[:4] == b"\xd0\xcf\x11\xe0"  # định dạng Word 97-2003 (OLE2)
     out = tmp_path / "chuyen.docx"
     assert tt.detect_kind(doc) == "doc-ole"
     assert tt.convert_to_docx(doc, out) == "LibreOffice"
     again = tt.parse_appendix(out)
-    assert [(r["stt"], r["dang_bao_che"], r["ham_luong"]) for r in again] == \
-           [(r["stt"], r["dang_bao_che"], r["ham_luong"]) for r in appendix]
+    assert [(r["stt"], r["dang_bao_che"], r["ham_luong"]) for r in again] == [
+        (r["stt"], r["dang_bao_che"], r["ham_luong"]) for r in appendix
+    ]
 
 
 def test_merge_auto_adds_only_complete_candidates(appendix):
@@ -233,10 +255,10 @@ def test_merge_auto_adds_only_complete_candidates(appendix):
     no_unit = {**cands[0], "unit": ""}
     assert not tt.auto_eligible(rng) and not tt.auto_eligible(no_unit)
     added, problems = tt.merge_candidates(fields, drugs, cands, auto=True)
-    assert len(added) == len({(a["generic_name"], a["strength"], a["dosage_form"]) for a in added})   # không trùng
+    assert len(added) == len({(a["generic_name"], a["strength"], a["dosage_form"]) for a in added})  # không trùng
     assert all(a["unit"] and a["sale_price"] == "" for a in added)
     again, _ = tt.merge_candidates(fields, drugs + added, cands, auto=True)
-    assert again == []                                                    # chạy lại không thêm gì
+    assert again == []  # chạy lại không thêm gì
 
 
 def test_missing_file_gives_hint_not_traceback(tmp_path):

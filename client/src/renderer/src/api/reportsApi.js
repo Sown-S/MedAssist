@@ -2,9 +2,9 @@
 // Không có Precision / Recall: phòng khám không có nhãn đúng — các chỉ số đó đo trên bộ test trong evaluation/.
 // Chỉ số tổng hợp, không có dữ liệu bệnh nhân nên Admin xem được.
 import { apiGet } from './client'
+import { ymd } from '../utils/format'
 
 const p2 = (n) => String(n).padStart(2, '0')
-const ymd = (d) => `${d.getFullYear()}-${p2(d.getMonth() + 1)}-${p2(d.getDate())}`
 
 export const PERIODS = [
   { key: 'today', label: 'Today' },

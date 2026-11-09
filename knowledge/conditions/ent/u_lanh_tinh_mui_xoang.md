@@ -5,56 +5,56 @@ name_vi: U lành tính mũi xoang
 name_en: Benign sinonasal tumor
 icd10_code: D14.2
 disease_group: ent
-description: Là u lành rất thường gặp, có thể đơn thuần ở hốc mũi, có thể trong các
-  xoang mặt hay cả ở mũi và xoang. Polyp mũi thực ra không phải là khối u mà là thoái
-  hoá cục bộ của niêm mạc mũi hay xoang mà chủ yếu là lớp tổ chức đệm.
+description: Là u lành rất thường gặp, có thể đơn thuần ở hốc mũi, có thể trong các xoang mặt hay cả ở
+  mũi và xoang. Polyp mũi thực ra không phải là khối u mà là thoái hoá cục bộ của niêm mạc mũi hay xoang
+  mà chủ yếu là lớp tổ chức đệm.
 relations:
 - symptom_code: nasal_obstruction_stuffiness
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: nasal_polyp_sinonasal_mass
-  polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
-  source_key: moh_qd_5643_2015
-  source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: middle_meatus_mucopurulent_discharge
-  polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
-  source_key: moh_qd_5643_2015
-  source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: juvenile_nasopharyngeal_angiofibroma
-  polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
-  source_key: moh_qd_5643_2015
-  source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: facial_sinus_pain_anosmia
   polarity: SUPPORTS
   weight: 0.9
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
+- symptom_code: middle_meatus_mucopurulent_discharge
+  polarity: SUPPORTS
+  weight: 0.6
+  is_key: false
+  source_key: moh_qd_5643_2015
+  source_edition: Quyết định số 5643/QĐ-BYT
+- symptom_code: juvenile_nasopharyngeal_angiofibroma
+  polarity: SUPPORTS
+  weight: 0.3
+  is_key: false
+  source_key: moh_qd_5643_2015
+  source_edition: Quyết định số 5643/QĐ-BYT
+- symptom_code: facial_sinus_pain_anosmia
+  polarity: SUPPORTS
+  weight: 0.6
+  is_key: false
+  source_key: moh_qd_5643_2015
+  source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: nasal_septal_deviation_spur
   polarity: SUPPORTS
-  weight: 0.89
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: epistaxis_nasal_bleeding
   polarity: SUPPORTS
-  weight: 0.88
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: rhinorrhea_nasal_congestion
   polarity: SUPPORTS
-  weight: 0.86
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 excerpts:

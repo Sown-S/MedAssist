@@ -5,27 +5,26 @@ name_vi: Liệt dây thần kinh VII ngoại biên
 name_en: Peripheral facial nerve palsy
 icd10_code: G51.0
 disease_group: ent
-description: Liệt dây thần kinh VII ngoại biên hay còn gọi là liệt mặt ngoại biên
-  là mất vận động hoàn toàn hay một phần các cơ của nửa mặt, mà nguyên nhân của nó
-  là do tổn thương dây thần kinh mặt, trái ngược với liệt mặt trung ương là tổn thương
-  liên quan đến não.
+description: Liệt dây thần kinh VII ngoại biên hay còn gọi là liệt mặt ngoại biên là mất vận động hoàn
+  toàn hay một phần các cơ của nửa mặt, mà nguyên nhân của nó là do tổn thương dây thần kinh mặt, trái
+  ngược với liệt mặt trung ương là tổn thương liên quan đến não.
 relations:
 - symptom_code: facial_nerve_palsy_bell
   polarity: SUPPORTS
-  weight: 0.98
+  weight: 0.9
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: otorrhea_ear_discharge
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: salivary_thyroid_gland_nodule
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 excerpts:

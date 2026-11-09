@@ -5,75 +5,74 @@ name_vi: Nấm tóc
 name_en: Tinea capitis
 icd10_code: B35.0
 disease_group: dermatology
-description: Nấm tóc là tình trạng viêm, gây thương tổn tóc, nang tóc da đầu và vùng
-  da xung quanh do nấm. Bệnh chủ yếu gặp ở trẻ nhỏ mà hiếm gặp hơn ở người lớn. Bệnh
-  phân bổ rộng khắp trên thế giới. Tuy nhiên, nấm tóc hay gặp ở vùng nông thôn hơn
-  thành thị. Bệnh thường mang tính lây truyền và gặp ở các thành viên trong gia đình
-  hoặc cùng lớp học.
+description: Nấm tóc là tình trạng viêm, gây thương tổn tóc, nang tóc da đầu và vùng da xung quanh do
+  nấm. Bệnh chủ yếu gặp ở trẻ nhỏ mà hiếm gặp hơn ở người lớn. Bệnh phân bổ rộng khắp trên thế giới. Tuy
+  nhiên, nấm tóc hay gặp ở vùng nông thôn hơn thành thị. Bệnh thường mang tính lây truyền và gặp ở các
+  thành viên trong gia đình hoặc cùng lớp học.
 relations:
 - symptom_code: fungal_ringworm_nail_hair_lesion
   polarity: SUPPORTS
-  weight: 0.98
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: tinea_capitis_kerion_alopecia
   polarity: SUPPORTS
-  weight: 0.98
+  weight: 0.9
   is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: vesicular_blister_rash
   polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: scaly_plaque_hyperkeratosis
   polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: honey_crusted_impetigo_erosion
   polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: seborrheic_dermatitis_greasy_scales
   polarity: SUPPORTS
-  weight: 0.96
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: maculopapular_rash
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: pustular_furuncle_folliculitis
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: skin_cellulitis_pus_abscess
   polarity: SUPPORTS
-  weight: 0.95
-  is_key: true
+  weight: 0.3
+  is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: lymphadenopathy_splenomegaly
   polarity: SUPPORTS
-  weight: 0.76
+  weight: 0.3
   is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: fatigue_malaise
   polarity: SUPPORTS
-  weight: 0.68
+  weight: 0.3
   is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT

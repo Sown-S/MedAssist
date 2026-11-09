@@ -1,4 +1,5 @@
-"""Danh mục dịch vụ, gói khám, phiếu chỉ định cận lâm sàng (ERD v2.1)."""
+"""Danh mục dịch vụ, gói khám, phiếu chỉ định cận lâm sàng (ERD §2.18a, §2.18b, §2.10b)."""
+
 import uuid
 from datetime import datetime
 from decimal import Decimal
@@ -12,8 +13,9 @@ from app.schemas.inventory import Money, MoneyOut
 Code = Annotated[str, Field(min_length=1, max_length=20, pattern=r"^[A-Za-z0-9_-]+$")]
 GroupKey = Annotated[str, Field(min_length=1, max_length=30, pattern=r"^[a-z0-9_]+$")]
 RefValue = Annotated[Decimal, Field(max_digits=12, decimal_places=3)]
-RefOut = Annotated[Decimal, PlainSerializer(lambda v: int(v) if v == v.to_integral_value() else float(v),
-                                            return_type=int | float)]
+RefOut = Annotated[
+    Decimal, PlainSerializer(lambda v: int(v) if v == v.to_integral_value() else float(v), return_type=int | float)
+]
 
 
 class _RefRange(BaseModel):
@@ -30,7 +32,9 @@ class ServiceCreate(_RefRange):
     code: Code
     name: CleanStr = Field(min_length=1, max_length=150)
     kind: Literal["Service", "Lab"]
-    group_key: GroupKey = Field(description="Service: consult/procedure/injection/diagnostic; Lab: hematology/biochemistry/...")
+    group_key: GroupKey = Field(
+        description="Service: consult/procedure/injection/diagnostic; Lab: hematology/biochemistry/..."
+    )
     unit: CleanStr | None = Field(default=None, max_length=30)
     price: Money
     ref_low: RefValue | None = None
@@ -41,6 +45,7 @@ class ServiceCreate(_RefRange):
 
 class ServiceUpdate(_RefRange):
     """Không đổi được mã và loại. Bỏ trống một trường = giữ nguyên."""
+
     model_config = ConfigDict(extra="forbid")
     name: CleanStr | None = Field(default=None, min_length=1, max_length=150)
     group_key: GroupKey | None = None
@@ -118,14 +123,16 @@ class PackageOut(BaseModel):
     updated_at: datetime
 
 
-# ---------------------------------------------------------------------------- phiếu chỉ định
+# --- Phiếu chỉ định -------------------------------------------------------------------------------
 class ServiceOrderCreate(BaseModel):
     """Chọn từ danh mục (service_ids), một gói (package_id) và/hoặc gõ tên ngoài danh mục (other_items)."""
+
     model_config = ConfigDict(extra="forbid")
     service_ids: list[uuid.UUID] = Field(default_factory=list, max_length=50)
     package_id: uuid.UUID | None = None
-    other_items: list[Annotated[CleanStr, Field(min_length=1, max_length=150)]] = Field(default_factory=list,
-                                                                                          max_length=10)
+    other_items: list[Annotated[CleanStr, Field(min_length=1, max_length=150)]] = Field(
+        default_factory=list, max_length=10
+    )
     diagnosis: CleanStr | None = Field(default=None, max_length=500)
     note: CleanStr | None = Field(default=None, max_length=500)
     send_out: bool = Field(default=True, description="Đồng thời đánh dấu bệnh nhân đi xét nghiệm (lab_out_at)")
@@ -200,6 +207,7 @@ class ServiceOrderOut(BaseModel):
 
 class UnbilledOrderItem(BaseModel):
     """Chỉ định ngoài danh mục: chưa có giá nên không tự vào hóa đơn, quầy thêm tay."""
+
     item_id: uuid.UUID
     order_id: uuid.UUID
     item_name: str

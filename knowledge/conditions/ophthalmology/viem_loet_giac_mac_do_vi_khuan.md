@@ -5,38 +5,38 @@ name_vi: Viêm loét giác mạc do vi khuẩn
 name_en: Bacterial keratitis
 icd10_code: H16.0
 disease_group: ophthalmology
-description: Viêm loét giác mạc do vi khuẩn (bacterial keratitis) là hiện tượng mất
-  tổ chức giác mạc do hoại tử gây ra bởi một quá trình viêm trên giác mạc do vi khuẩn,
-  là một nguyên nhân thường gặp gây mù loà.
+description: Viêm loét giác mạc do vi khuẩn (bacterial keratitis) là hiện tượng mất tổ chức giác mạc do
+  hoại tử gây ra bởi một quá trình viêm trên giác mạc do vi khuẩn, là một nguyên nhân thường gặp gây mù
+  loà.
 relations:
 - symptom_code: corneal_ulcer_hypopyon_keratitis
   polarity: SUPPORTS
-  weight: 0.97
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: bacterial_corneal_ulcer_stromal_abscess
   polarity: SUPPORTS
-  weight: 0.96
+  weight: 0.9
   is_key: true
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: visual_acuity_decreased_blur
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: conjunctival_ciliary_injection_discharge
   polarity: SUPPORTS
-  weight: 0.92
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 - symptom_code: ocular_pain_photophobia_tearing
   polarity: SUPPORTS
-  weight: 0.9
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_40_2015
   source_edition: Quyết định số 40/QĐ-BYT
 excerpts:

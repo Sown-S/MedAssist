@@ -12,9 +12,12 @@ import '@fontsource/ibm-plex-mono/600.css'
 import '@fontsource/ibm-plex-mono/700.css'
 import './global.css'
 import { loadServerConfig } from './api/serverConfig'
+import { loadClientConfig } from './api/settingsStore'
 
 // HashRouter vì bản build chạy từ app:// của Electron, không có server phục vụ các route như /doctor.
-loadServerConfig().then(() =>
+// Thông tin phòng khám, tự đăng xuất: nạp nền, không chờ — mất kết nối thì dùng bản đệm trên máy.
+loadServerConfig().then(() => {
+  loadClientConfig()
   ReactDOM.createRoot(document.getElementById('root')).render(
     <React.StrictMode>
       <HashRouter>
@@ -22,4 +25,4 @@ loadServerConfig().then(() =>
       </HashRouter>
     </React.StrictMode>
   )
-)
+})

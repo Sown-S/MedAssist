@@ -5,39 +5,39 @@ name_vi: Viêm mũi xoang dị ứng
 name_en: Allergic rhinosinusitis
 icd10_code: J30.4
 disease_group: ent
-description: Viêm mũi xoang dị ứng là tình trạng viêm niêm mạc mũi-xoang biểu hiện
-  bằng các triệu chứng hắt hơi, ngạt, ngứa và chảy mũi, qua trung gian kháng thể và
-  xảy ra do tiếp xúc với dị nguyên trong không khí Viêm mũi xoang dị ứng có hai loại
-  viêm mũi xoang dị ứng theo mùa. Viêm mũi xoang dị ứng quanh năm.
+description: Viêm mũi xoang dị ứng là tình trạng viêm niêm mạc mũi-xoang biểu hiện bằng các triệu chứng
+  hắt hơi, ngạt, ngứa và chảy mũi, qua trung gian kháng thể và xảy ra do tiếp xúc với dị nguyên trong
+  không khí Viêm mũi xoang dị ứng có hai loại viêm mũi xoang dị ứng theo mùa. Viêm mũi xoang dị ứng quanh
+  năm.
 relations:
 - symptom_code: allergic_sneezing_nasal_itch
   polarity: SUPPORTS
-  weight: 0.92
+  weight: 0.9
   is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: nasal_obstruction_stuffiness
   polarity: SUPPORTS
-  weight: 0.9
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: maculopapular_rash
   polarity: SUPPORTS
-  weight: 0.9
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: turbinate_hypertrophy_pallor
   polarity: SUPPORTS
-  weight: 0.9
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: rhinorrhea_nasal_congestion
   polarity: SUPPORTS
-  weight: 0.86
-  is_key: true
+  weight: 0.6
+  is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 excerpts:
