@@ -211,7 +211,12 @@ export default function SymptomPanel({ value, onChange, text, onText, disabled =
               <Icon name="alert" /> {translate('The description changed after the last suggestion — run it again.')}
             </span>
           )}
-          {job.status === 'done' && !proposals.length && job.count === 0 && !askAgain.length && <span className="ai-soft">{translate('No catalog symptoms found — use the checklist below.')}</span>}
+          {/* Rỗng có thể do mô hình bỏ sót hoặc không khớp được danh mục: không được đọc thành “bệnh nhân không có triệu chứng”. */}
+          {job.status === 'done' && !proposals.length && job.count === 0 && !askAgain.length && (
+            <p className="sym-warn">
+              <Icon name="alert" /> {translate('The model did not recognise any symptom in the description. This does not mean the patient has none — ask again and pick in the list below.')}
+            </p>
+          )}
           {askAgain.length > 0 && (
             <p className="sym-warn">
               <Icon name="alert" /> {translate('Not sure — ask the patient again:')} {askAgain.map((u) => u.name || translate(symptomName(u.symptom_code))).join(', ')}

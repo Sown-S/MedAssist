@@ -72,12 +72,22 @@ export function groupSymptoms(list) {
   return [...groups, { key: 'other', label: 'Other', items: rest }].filter((g) => g.items.length)
 }
 
-// So khớp không dấu: “dau bung” tìm ra “Đau bụng”.
-export function searchSymptoms(list, query, limit = 8) {
-  const q = fold(query)
-  if (!q) return []
-  const words = q.split(' ')
-  return list.filter((s) => words.every((w) => fold(s.label).includes(w))).slice(0, limit)
+// So khớp không dấu theo đầu từ: “dau bung” tìm ra “Đau bụng”. Không khớp giữa từ, và bỏ từ nối “hoặc” khỏi tên
+// (KB-2026.10 có “… hoặc …” trong phần lớn tên, nên gõ “ho” từng khớp gần hết danh mục).
+// Thứ tự: tên mở đầu đúng các từ đã gõ → tên có đủ các từ nguyên vẹn → còn lại (từ cuối có thể đang gõ dở).
+const CONNECTORS = new Set(['hoac'])
+const wordsOf = (label) => fold(label).split(/[^a-z0-9]+/).filter((w) => w && !CONNECTORS.has(w))
+export function searchSymptoms(list, query) {
+  const q = fold(query).split(/[^a-z0-9]+/).filter(Boolean)
+  if (!q.length) return []
+  const hits = []
+  list.forEach((s, i) => {
+    const words = wordsOf(s.label)
+    if (!q.every((w) => words.some((x) => x.startsWith(w)))) return
+    const rank = q.every((w, j) => words[j] === w) ? 0 : q.every((w) => words.includes(w)) ? 1 : 2
+    hits.push({ s, rank, i })
+  })
+  return hits.sort((a, b) => a.rank - b.rank || a.i - b.i).map((h) => h.s)
 }
 
 // Bỏ UNKNOWN vì đó là mặc định.
