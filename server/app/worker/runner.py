@@ -7,24 +7,32 @@ import asyncio
 import datetime
 import logging
 import time
+import uuid
 from collections.abc import Callable
 from typing import Any
 
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from app.ai.extraction import feature_extractor
+from app.ai.extraction.candidate_index import CandidateIndexCache
+from app.ai.extraction.dispatch import ExtractionOptions, run_extraction
+from app.ai.extraction.phrase_selector import SelectionResult
 from app.ai.llm.errors import LLMConnectionError
 from app.ai.llm.prompts import REASONING_PROMPT_VERSION
 from app.ai.pipeline.graph import run_pipeline
 from app.ai.pipeline.node1_red_flag_gate import run_node1
+from app.ai.snapshot_reader import SnapshotReader
 from app.core.config import settings
 from app.core.database import SessionLocal
-from app.models import Patient, Visit
+from app.models import AiAssessmentLog, Patient, Visit
 from app.services import ai_queue_service as q
+from app.services import audit_service
 from app.services.knowledge_reader import DbKnowledgeReader
 from app.worker.test_mode import assessment_test_mode
 
 log = logging.getLogger("medassist.worker")
+_phrase_index_cache = CandidateIndexCache()
 
 
 class DisabledLLMClient:
@@ -80,7 +88,27 @@ async def _process_extraction(
     llm_client,
     model_name: str | None,
     session_factory: Callable[[], Session],
+    *,
+    attempt_count: int | None = None,
 ) -> None:
+    # Sơn bổ sung hai khóa settings khi PR sẵn. Khi chưa có khóa, giữ đường cũ.
+    options = ExtractionOptions(
+        strategy=getattr(settings, "AI_EXTRACTION_STRATEGY", "legacy"),
+        per_phrase_limit=getattr(settings, "AI_EXTRACTION_CANDIDATES_PER_PHRASE", 4),
+    )
+    if options.strategy == "phrases":
+        await _process_phrase_extraction(
+            assessment_id,
+            visit_id,
+            queued_at,
+            reader,
+            llm_client,
+            model_name,
+            session_factory,
+            attempt_count=attempt_count,
+            options=options,
+        )
+        return
     started = time.monotonic()
     try:
         reader.refresh()
@@ -88,7 +116,7 @@ async def _process_extraction(
             visit = rdb.get(Visit, visit_id)
             patient = rdb.get(Patient, visit.patient_id)
             gate = run_node1({"input_features": q.build_input_features(rdb, visit)}, reader)
-            suggestions = await feature_extractor.extract_symptoms(
+            result = await run_extraction(
                 visit.free_text_description or "",
                 reader,
                 llm_client,
@@ -96,6 +124,7 @@ async def _process_extraction(
                 gate_state=gate,
                 identifiers=_known_identifiers(patient),
                 timeout_seconds=_remaining_budget(queued_at, feature_extractor.EXTRACTION_TIMEOUT_SECONDS),
+                options=options,
             )
             rdb.rollback()
     except asyncio.CancelledError:
@@ -110,11 +139,104 @@ async def _process_extraction(
         q.write_extraction(
             wdb,
             assessment_id,
-            list(suggestions),
+            list(result.suggestions),
             model_name=model_name,
-            prompt_version=feature_extractor.EXTRACTION_PROMPT_VERSION,
+            prompt_version=result.prompt_version,
             latency_total_ms=int((time.monotonic() - started) * 1000),
         )
+        wdb.commit()
+
+
+async def _process_phrase_extraction(
+    assessment_id,
+    visit_id,
+    queued_at,
+    reader,
+    llm_client,
+    model_name,
+    session_factory,
+    *,
+    attempt_count,
+    options,
+) -> None:
+    """Đường opt-in; ghim snapshot, lỗi kỹ thuật thành Failed thay vì Completed []."""
+    started = time.monotonic()
+    pinned = None
+    gate = None
+    try:
+        pinned = SnapshotReader(reader.refresh())
+        with session_factory() as rdb:
+            visit = rdb.get(Visit, visit_id)
+            patient = rdb.get(Patient, visit.patient_id)
+            gate = run_node1({"input_features": q.build_input_features(rdb, visit)}, pinned)
+            result = await run_extraction(
+                visit.free_text_description or "",
+                pinned,
+                llm_client,
+                rdb,
+                gate_state=gate,
+                identifiers=_known_identifiers(patient),
+                timeout_seconds=_remaining_budget(queued_at, feature_extractor.EXTRACTION_TIMEOUT_SECONDS),
+                cache=_phrase_index_cache,
+                options=options,
+            )
+            rdb.rollback()
+    except asyncio.CancelledError:
+        raise
+    except Exception as exc:
+        # Chỉ ghi loại lỗi; traceback/str(exc) có thể chứa dữ liệu đầu vào.
+        result = SelectionResult(False, type(exc).__name__)
+        log.warning("Trích xuất theo cụm lỗi: %s (%s)", assessment_id, type(exc).__name__)
+    with session_factory() as wdb:
+        # Khóa bản ghi và kiểm attempt để kết quả cũ không ghi đè lần đã retry.
+        run = wdb.get(AiAssessmentLog, assessment_id, with_for_update=True)
+        if run is None or run.status != "Running" or (attempt_count is not None and run.attempt_count != attempt_count):
+            wdb.rollback()
+            return
+        if result.completed and _remaining_budget(queued_at, 30) <= 0:
+            result = SelectionResult(False, "EXTRACTION_TIMEOUT")
+        run.model_name, run.prompt_version = model_name, result.prompt_version
+        run.validation_result = {"valid": result.completed, "reason": result.failure_code}
+        run.llm_output_raw = None
+        run.latency_total_ms = int((time.monotonic() - started) * 1000)
+        if gate is not None:
+            run.rule_hits = q._rule_record(gate["rule_hits"], gate["complete_now"], pinned)
+        if pinned is not None:
+            release_id = pinned.active_release().get("release_id")
+            if release_id:
+                run.knowledge_release_id = uuid.UUID(str(release_id))
+        if result.completed:
+            q.write_extraction(
+                wdb,
+                assessment_id,
+                list(result.suggestions),
+                model_name=model_name,
+                prompt_version=result.prompt_version,
+                latency_total_ms=run.latency_total_ms,
+            )
+        else:
+            code = result.failure_code or "EXTRACTION_INCOMPLETE"
+            if code == "RED_FLAG_SKIPPED":
+                run.status, run.error_detail = "Skipped", code
+                run.lease_until, run.completed_at = None, func.now()
+            else:
+                q.write_failure(wdb, assessment_id, code)
+            run.candidates = []
+            audit_service.record(
+                wdb,
+                action="AI_ASSESSMENT",
+                entity="visit",
+                entity_id=visit_id,
+                actor_id=run.triggered_by or q.SYSTEM_USER_ID,
+                new_values={
+                    "assessment_id": str(assessment_id),
+                    "run_type": "Extraction",
+                    "status": run.status,
+                    "reason": code,
+                    "model_name": model_name,
+                    "prompt_version": result.prompt_version,
+                },
+            )
         wdb.commit()
 
 
@@ -133,7 +255,16 @@ async def process_one(
         db.commit()
 
     if run_type == "Extraction":
-        await _process_extraction(assessment_id, visit_id, queued_at, reader, llm_client, model_name, session_factory)
+        await _process_extraction(
+            assessment_id,
+            visit_id,
+            queued_at,
+            reader,
+            llm_client,
+            model_name,
+            session_factory,
+            attempt_count=attempt_count,
+        )
         return True
 
     started = time.monotonic()
