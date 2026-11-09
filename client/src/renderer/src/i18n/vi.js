@@ -1463,7 +1463,8 @@ export const VI = {
   'Picked by nurse': 'Y tá chọn',
   'Dangerous sign not in the list': 'Dấu hiệu nguy hiểm ngoài danh mục',
   'e.g. multiple trauma, heavy bleeding — describe it in the patient’s description': 'ví dụ: đa chấn thương, mất máu nhiều — ghi rõ trong lời kể',
-  'No catalog symptoms found — use the checklist below.': 'Không thấy triệu chứng nào trong danh mục — dùng danh sách bên dưới.',
+  'The model did not recognise any symptom in the description. This does not mean the patient has none — ask again and pick in the list below.':
+    'Mô hình chưa nhận ra triệu chứng nào trong lời kể. Điều này không có nghĩa là bệnh nhân không có triệu chứng — hãy hỏi lại và chọn trong danh sách bên dưới.',
   'Suggested — confirm before use': 'Đề xuất — cần xác nhận trước khi dùng',
   'Not sure — ask the patient again:': 'Chưa rõ — cần hỏi lại bệnh nhân:',
   'Confirm all': 'Xác nhận tất cả',
@@ -1924,6 +1925,7 @@ export const PATTERNS = [
   [/^at most (\d+) s left$/, 'còn tối đa $1 giây'],
   [/^(\d+) s$/, '$1 giây'],
   [/^(\d+) selected$/, '$1 đã chọn'],
+  [/^Show (\d+) more$/, 'Hiện thêm $1 mục'],
   [/^e\.g\. (.+)$/, 'VD: $1'],
   [/^Too many failed sign-ins\. Try again in (\d+) minutes\.$/, 'Đăng nhập sai quá nhiều lần. Thử lại sau $1 phút.'],
   [/^At least (\d+) characters$/, 'Tối thiểu $1 ký tự'],

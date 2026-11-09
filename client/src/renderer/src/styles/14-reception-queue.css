@@ -66,6 +66,7 @@
 .sym-search-box{min-width:0;}
 .sym-results{border:1px solid rgba(34,211,238,.3);border-radius:10px;padding:4px 6px;margin-top:6px;display:flex;flex-direction:column;gap:2px;}
 .sym-results .ai-soft{margin:6px;font-size:12.5px;}
+.sym-results .sym-more{align-self:flex-start;margin:2px 4px 4px;}
 .sym-section.confirmed{border-color:rgba(34,211,238,.3);}
 .sym-group.static{cursor:default;color:var(--accent);}
 .sym-group.static:hover{color:var(--accent);}

@@ -106,13 +106,12 @@ def test_vietnamese_note_returns_three_statuses_pending_nurse_confirmation(catal
                for row in result)
     assert catalogue.calls == [["signal_a", "signal_b", "signal_c"]]
     assert len(client.calls) == 1
-    assert client.calls[0]["schema"] == extraction_json_schema()
+    assert client.calls[0]["schema"] == extraction_json_schema([row["symptom_code"] for row in ROWS])
     assert 0 < client.calls[0]["timeout_seconds"] <= 5
     assert client.response == original
     assert payload(client) == {
         "text": NOTE,
-        "catalogue": [{"symptom_code": row["symptom_code"], "symptom_name": row["symptom_name"]}
-                      for row in ROWS],
+        "catalogue": {row["symptom_code"]: row["symptom_name"] for row in ROWS},
     }
 
 
@@ -579,7 +578,7 @@ def test_reader_failures_are_not_misreported_as_an_empty_extraction(catalogue):
     assert client.calls == catalogue.calls == []
 
 
-def test_large_active_catalogue_is_filtered_to_top_relevant_candidates(catalogue):
+def test_large_active_catalogue_keeps_all_codes_and_prioritises_relevant_candidates(catalogue):
     large_rows = list(ROWS) + [
         {"symptom_code": f"extra_signal_{idx:02d}", "symptom_name": f"Biểu hiện phụ {idx:02d}", "status": "Active"}
         for idx in range(100)
@@ -590,10 +589,10 @@ def test_large_active_catalogue_is_filtered_to_top_relevant_candidates(catalogue
     result = extract(catalogue, client, reader=FakeKnowledgeReader(symptoms=large_rows))
 
     sent_cat = payload(client)["catalogue"]
-    sent_codes = {row["symptom_code"] for row in sent_cat}
+    sent_codes = set(sent_cat)
     assert len(client.calls) == 1
-    assert len(sent_cat) == feature_extractor._MAX_PROMPT_CATALOGUE
-    assert {"signal_a", "signal_b", "signal_c"} <= sent_codes
+    assert sent_codes == {row["symptom_code"] for row in large_rows}
+    assert {"signal_a", "signal_b", "signal_c"} <= set(list(sent_cat)[:20])
     assert codes_and_statuses(result) == {
         "signal_a": "PRESENT", "signal_b": "ABSENT", "signal_c": "UNKNOWN",
     }
@@ -618,7 +617,7 @@ def test_colloquial_and_unaccented_synonyms_rank_into_top_candidates(catalogue, 
             assert data["text"] == text
             return {"symptoms": [
                 {"symptom_code": "zzz_target", "status": status}
-                for row in data["catalogue"] if row["symptom_code"] == "zzz_target"
+                for code in data["catalogue"] if code == "zzz_target"
             ]}
 
     client = Client()
@@ -635,3 +634,59 @@ def test_colloquial_and_unaccented_synonyms_rank_into_top_candidates(catalogue, 
 def test_colloquial_expansion_does_not_match_accent_stripped_lookalikes(note, expanded):
     result = feature_extractor._expand_colloquial_text(note)
     assert (result != note.lower()) is expanded
+
+
+def test_zero_lexical_overlap_code_is_still_sent_and_can_be_proposed(catalogue):
+    rows = [{"symptom_code": f"aaa_{i:02d}", "symptom_name": "Dấu hiệu khác"} for i in range(40)]
+    rows.append({"symptom_code": "zzz_target", "symptom_name": "Thuật ngữ chuyên môn"})
+    catalogue.active = {r["symptom_code"] for r in rows}
+    client = MockLLMClient({"symptoms": [{"symptom_code": "zzz_target", "status": "UNKNOWN"}]})
+    result = extract(catalogue, client, reader=FakeKnowledgeReader(symptoms=rows), text="Cách diễn đạt riêng")
+    assert len(payload(client)["catalogue"]) == 41
+    assert codes_and_statuses(result) == {"zzz_target": "UNKNOWN"}
+
+
+@pytest.mark.parametrize("note,expected_name", [
+    ("Khong tho kho khe", "Tho kho khe"),
+    ("Không thở khò khè", "Thở khò khè"),
+])
+def test_catalogue_representation_matches_accent_style_without_mutating_text_or_reader(catalogue, note, expected_name):
+    rows = [{"symptom_code": "signal_a", "symptom_name": "Thở khò khè"}]
+    original = deepcopy(rows)
+    client = MockLLMClient({"symptoms": [{"symptom_code": "signal_a", "status": "ABSENT"}]})
+    result = extract(catalogue, client, text=note, reader=FakeKnowledgeReader(symptoms=rows))
+    assert payload(client) == {"catalogue": {"signal_a": expected_name}, "text": note}
+    assert rows == original
+    assert codes_and_statuses(result) == {"signal_a": "ABSENT"}
+
+
+def test_compact_catalogue_preserves_distinct_codes_with_same_folded_name(catalogue):
+    rows = [{"symptom_code": "signal_a", "symptom_name": "Ói"},
+            {"symptom_code": "signal_b", "symptom_name": "Ơi"}]
+    client = MockLLMClient({"symptoms": []})
+    extract(catalogue, client, text="chuoi khong dau", reader=FakeKnowledgeReader(symptoms=rows))
+    assert payload(client)["catalogue"] == {"signal_a": "Oi", "signal_b": "Oi"}
+
+
+def test_extraction_prompt_versions_remain_available():
+    assert "extraction-v1" in load_prompt("extraction-v1")
+    assert EXTRACTION_PROMPT_VERSION == "extraction-v2"
+    assert "phủ định=ABSENT" in load_prompt(EXTRACTION_PROMPT_VERSION)
+
+
+def test_request_schema_constrains_generation_to_every_active_code(catalogue):
+    rows = [{"symptom_code": f"signal_{i:03d}", "symptom_name": f"Dấu hiệu {i}"}
+            for i in range(300)]
+    client = MockLLMClient({"symptoms": []})
+    extract(catalogue, client, reader=FakeKnowledgeReader(symptoms=rows))
+    code_schema = client.calls[0]["schema"]["$defs"]["ExtractedSymptom"]["properties"]["symptom_code"]
+    assert set(code_schema["enum"]) == {row["symptom_code"] for row in rows}
+    assert "signal_299" in code_schema["enum"]
+
+
+def test_catalogue_schema_is_request_local():
+    first = extraction_json_schema(["signal_a"])
+    first["$defs"]["ExtractedSymptom"]["properties"]["symptom_code"]["enum"].append("signal_b")
+    second = extraction_json_schema(["signal_c"])
+    assert second["$defs"]["ExtractedSymptom"]["properties"]["symptom_code"]["enum"] == ["signal_c"]
+    assert "enum" not in extraction_json_schema()["$defs"]["ExtractedSymptom"]["properties"]["symptom_code"]
