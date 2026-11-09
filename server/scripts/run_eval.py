@@ -15,8 +15,12 @@ from pathlib import Path
 from statistics import mean, median
 
 from app.ai.extraction import feature_extractor
-from app.ai.llm.prompts import EXTRACTION_PROMPT_VERSION, REASONING_PROMPT_VERSION
+from app.ai.extraction.candidate_index import CandidateIndexCache
+from app.ai.extraction.dispatch import ExtractionOptions
+from app.ai.extraction.dispatch import run_extraction as dispatch_extraction
+from app.ai.llm.prompts import REASONING_PROMPT_VERSION
 from app.ai.pipeline.node1_red_flag_gate import run_node1
+from app.ai.snapshot_reader import SnapshotReader
 from app.core.config import settings
 from app.core.database import SessionLocal
 from app.services.assessment_service import evaluate_case_offline
@@ -142,8 +146,12 @@ def extraction_metrics(
         "cases": len(rows),
         "code_and_state": _prf(pair_tp, pair_fp, pair_fn),
         "code_only": _prf(code_tp, code_fp, code_fn),
-        "exact_cases": sum(r["expected"] == r["predicted"] for r in rows),
-        # Trả rỗng khi ca có triệu chứng: thường do quá hạn hoặc LLM lỗi (extractor trả []).
+        # Ca thất bại không tính khớp dù expected và predicted cùng rỗng.
+        "exact_cases": sum(r["expected"] == r["predicted"] and r.get("completed") is not False for r in rows),
+        "completed_cases": sum(r.get("completed") is True for r in rows),
+        "failed_cases": {r["case_id"]: r.get("failure_code") for r in rows if r.get("completed") is False},
+        # legacy trả [] không phân biệt được rỗng hợp lệ với lỗi/quá hạn (completed=None).
+        "unclassified_cases": [r["case_id"] for r in rows if r.get("completed") is None],
         "empty_cases": [r["case_id"] for r in rows if r["expected"] and not r["predicted"]],
         "over_budget_cases": [r["case_id"] for r in rows if r["latency_ms"] > budget_ms],
         "latency": _latency([r["latency_ms"] for r in rows]),
@@ -187,15 +195,17 @@ def run_clinical(cases: list[dict], reader: DbKnowledgeReader, mode: str, llm_cl
     return rows
 
 
-def run_extraction(cases: list[dict], reader: DbKnowledgeReader, llm_client) -> list[dict]:
+def run_extraction(cases: list[dict], reader: SnapshotReader, llm_client, options: ExtractionOptions) -> list[dict]:
+    """Mỗi ca nhận đủ 30 s vì đo trực tiếp, không qua hàng đợi (queue wait = 0)."""
+    cache = CandidateIndexCache()
     rows = []
     for case in cases:
-        reader.refresh()
         gate = run_node1({"input_features": input_features({"age_years": case.get("age_years")})}, reader)
         started = time.monotonic()
         with SessionLocal() as db:
-            suggestions = asyncio.run(
-                feature_extractor.extract_symptoms(
+            # identifiers=[]: ca tổng hợp, không có định danh bệnh nhân thật.
+            result = asyncio.run(
+                dispatch_extraction(
                     case["clinical_note"],
                     reader,
                     llm_client,
@@ -203,6 +213,8 @@ def run_extraction(cases: list[dict], reader: DbKnowledgeReader, llm_client) -> 
                     gate_state=gate,
                     identifiers=[],
                     timeout_seconds=feature_extractor.EXTRACTION_TIMEOUT_SECONDS,
+                    options=options,
+                    cache=cache,
                 )
             )
         rows.append(
@@ -210,7 +222,11 @@ def run_extraction(cases: list[dict], reader: DbKnowledgeReader, llm_client) -> 
                 "case_id": case["id"],
                 "disease_group": case.get("disease_group"),
                 "expected": dict(case["expected_symptoms"]),
-                "predicted": {s["symptom_code"]: s["status"] for s in suggestions},
+                "predicted": {s["symptom_code"]: s["status"] for s in result.suggestions},
+                "strategy": result.strategy,
+                "prompt_version": result.prompt_version,
+                "completed": result.completed,
+                "failure_code": result.failure_code,
                 "latency_ms": round((time.monotonic() - started) * 1000, 1),
             }
         )
@@ -257,11 +273,18 @@ def render_summary(meta: dict, clinical: dict, extraction: dict | None, warnings
             "",
             f"## Trích xuất triệu chứng ({extraction['cases']} ca)",
             "",
+            "Độ trễ đo trực tiếp từng ca, không có thời gian chờ hàng đợi (queue wait = 0); không phải số đo đầu-cuối.",
+            "",
             "| Chỉ số | Giá trị |",
             "|---|---|",
             f"| Mã + trạng thái: P / R / F1 | {_pct(cs['precision'])} / {_pct(cs['recall'])} / {_pct(cs['f1'])} |",
             f"| Chỉ mã: P / R / F1 | {_pct(co['precision'])} / {_pct(co['recall'])} / {_pct(co['f1'])} |",
             f"| Ca khớp hoàn toàn | {extraction['exact_cases']}/{extraction['cases']} |",
+            f"| Hoàn tất kỹ thuật | {extraction['completed_cases']}/{extraction['cases']} |",
+            "| Thất bại (mã lý do) | "
+            + (", ".join(f"{k}: {v}" for k, v in extraction["failed_cases"].items()) or "không")
+            + " |",
+            f"| Rỗng chưa phân loại (legacy) | {', '.join(extraction['unclassified_cases']) or 'không'} |",
             f"| Ca trả rỗng dù có triệu chứng | {', '.join(extraction['empty_cases']) or 'không'} |",
             f"| Ca vượt {feature_extractor.EXTRACTION_TIMEOUT_SECONDS:.0f} s | "
             f"{', '.join(extraction['over_budget_cases']) or 'không'} |",
@@ -282,17 +305,35 @@ def main(argv: list[str] | None = None) -> int:
         type=Path,
         help="File JSONL ca trích xuất thay cho bộ đóng băng (bộ ca phát triển, cùng định dạng)",
     )
+    p.add_argument(
+        "--extraction-strategy",
+        choices=["legacy", "phrases"],
+        default=settings.AI_EXTRACTION_STRATEGY,
+        help="Cách trích xuất; mặc định theo AI_EXTRACTION_STRATEGY",
+    )
+    p.add_argument(
+        "--candidates-per-phrase",
+        type=int,
+        default=settings.AI_EXTRACTION_CANDIDATES_PER_PHRASE,
+        help="Số ứng viên mỗi cụm (chỉ dùng với phrases)",
+    )
     p.add_argument("--limit", type=int, help="Chỉ chạy N ca đầu mỗi bộ (thử nhanh)")
     p.add_argument("--out", type=Path, help="Thư mục kết quả (mặc định evaluation/results/<thời điểm>)")
     args = p.parse_args(argv)
     if args.extraction_only and args.skip_extraction:
         p.error("--extraction-only và --skip-extraction loại trừ nhau")
+    if args.candidates_per_phrase < 1:
+        p.error("--candidates-per-phrase phải là số nguyên dương")
+    options = ExtractionOptions(strategy=args.extraction_strategy, per_phrase_limit=args.candidates_per_phrase)
 
     clinical_cases = (
         [] if args.extraction_only else read_jsonl(args.testset / "clinical_cases_labeled.jsonl")[: args.limit]
     )
     extraction_file = args.extraction_cases or args.testset / "symptom_extraction_testset.jsonl"
     extraction_cases = read_jsonl(extraction_file)[: args.limit]
+    if args.extraction_only and not extraction_cases:
+        print(f"Không có ca trích xuất trong {extraction_file}.", file=sys.stderr)
+        return 1
     manifest_path = args.testset / "manifest_freeze.json"
     manifest = json.loads(manifest_path.read_text(encoding="utf-8")) if manifest_path.exists() else {}
 
@@ -327,7 +368,9 @@ def main(argv: list[str] | None = None) -> int:
 
     clinical_rows = {m: run_clinical(clinical_cases, reader, m, llm_client) for m in modes}
     extraction_rows = (
-        run_extraction(extraction_cases, reader, llm_client) if with_llm and not args.skip_extraction else None
+        run_extraction(extraction_cases, SnapshotReader(snapshot), llm_client, options)
+        if with_llm and not args.skip_extraction and extraction_cases
+        else None
     )
 
     run_at = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
@@ -339,9 +382,13 @@ def main(argv: list[str] | None = None) -> int:
         "llm_provider": settings.LLM_PROVIDER,
         "model": model_name,
         "reasoning_prompt": REASONING_PROMPT_VERSION,
-        "extraction_prompt": EXTRACTION_PROMPT_VERSION,
         "server_version": settings.VERSION,
     }
+    if extraction_rows:
+        meta["extraction_strategy"] = options.strategy
+        if options.strategy == "phrases":
+            meta["candidates_per_phrase"] = options.per_phrase_limit
+        meta["extraction_prompt"] = ", ".join(sorted({r["prompt_version"] for r in extraction_rows}))
     if args.extraction_cases:
         meta["extraction_cases"] = args.extraction_cases.name
     clinical = {m: clinical_metrics(rows) for m, rows in clinical_rows.items()}
