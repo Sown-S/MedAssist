@@ -91,7 +91,6 @@ async def _process_extraction(
     *,
     attempt_count: int | None = None,
 ) -> None:
-    # Sơn bổ sung hai khóa settings khi PR sẵn. Khi chưa có khóa, giữ đường cũ.
     options = ExtractionOptions(
         strategy=getattr(settings, "AI_EXTRACTION_STRATEGY", "legacy"),
         per_phrase_limit=getattr(settings, "AI_EXTRACTION_CANDIDATES_PER_PHRASE", 4),
@@ -193,7 +192,7 @@ async def _process_phrase_extraction(
         if run is None or run.status != "Running" or (attempt_count is not None and run.attempt_count != attempt_count):
             wdb.rollback()
             return
-        if result.completed and _remaining_budget(queued_at, 30) <= 0:
+        if result.completed and _remaining_budget(queued_at, feature_extractor.EXTRACTION_TIMEOUT_SECONDS) <= 0:
             result = SelectionResult(False, "EXTRACTION_TIMEOUT")
         run.model_name, run.prompt_version = model_name, result.prompt_version
         run.validation_result = {"valid": result.completed, "reason": result.failure_code}
