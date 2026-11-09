@@ -41,12 +41,20 @@ def test_clinical_metrics():
 
 def test_extraction_metrics():
     rows = [
-        {"expected": {"a": "PRESENT", "b": "ABSENT"}, "predicted": {"a": "PRESENT", "b": "PRESENT"}, "latency_ms": 5},
-        {"expected": {"c": "PRESENT"}, "predicted": {"c": "PRESENT"}, "latency_ms": 7},
+        {
+            "case_id": "E1",
+            "expected": {"a": "PRESENT", "b": "ABSENT"},
+            "predicted": {"a": "PRESENT", "b": "PRESENT"},
+            "latency_ms": 5,
+        },
+        {"case_id": "E2", "expected": {"c": "PRESENT"}, "predicted": {"c": "PRESENT"}, "latency_ms": 7},
+        {"case_id": "E3", "expected": {"d": "PRESENT"}, "predicted": {}, "latency_ms": 31000},
+        {"case_id": "E4", "expected": {}, "predicted": {}, "latency_ms": 3},
     ]
-    m = extraction_metrics(rows)
-    assert (m["code_and_state"]["tp"], m["code_and_state"]["fp"], m["code_and_state"]["fn"]) == (2, 1, 1)
-    assert m["code_only"]["f1"] == 1.0 and m["exact_cases"] == 1
+    m = extraction_metrics(rows, budget_ms=30000)
+    assert (m["code_and_state"]["tp"], m["code_and_state"]["fp"], m["code_and_state"]["fn"]) == (2, 1, 2)
+    assert m["exact_cases"] == 2
+    assert m["empty_cases"] == ["E3"] and m["over_budget_cases"] == ["E3"]
 
 
 def test_inputs_and_unknown_codes():

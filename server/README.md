@@ -294,10 +294,13 @@ tính red-flag recall, mức ưu tiên đúng, luật khớp, top-1/top-3 và P/
 python -m scripts.run_eval --mode RuleOnly --skip-extraction   # chỉ luật, không cần LLM
 python -m scripts.run_eval                                      # RuleOnly + Full + trích xuất, LLM theo LLM_PROVIDER
 python -m scripts.run_eval --limit 3 --out ..\evaluation\results\thu
+python -m scripts.run_eval --extraction-only --extraction-cases <file ca phát triển>.jsonl
 ```
 
 Kết quả (`summary.md`, `results.json`, `cases.csv`) ghi vào `evaluation/results/<thời điểm>/`. `LLM_PROVIDER=fake`
-chỉ để kiểm tra luồng chạy, không dùng số liệu của nó cho báo cáo.
+chỉ để kiểm tra luồng chạy, không dùng số liệu của nó cho báo cáo. `summary.md` ghi model, phiên bản prompt, số ca
+trích xuất trả rỗng và số ca vượt 30 s để so các cách trích xuất. Chỉnh thuật toán bằng bộ ca phát triển
+(`--extraction-cases`); bộ đóng băng chỉ dùng để chấm cuối.
 
 ### Dữ liệu cho môi trường kiểm thử (`scripts.seed_eval`)
 
