@@ -15,6 +15,7 @@ from pathlib import Path
 from statistics import mean, median
 
 from app.ai.extraction import feature_extractor
+from app.ai.llm.prompts import EXTRACTION_PROMPT_VERSION, REASONING_PROMPT_VERSION
 from app.ai.pipeline.node1_red_flag_gate import run_node1
 from app.core.config import settings
 from app.core.database import SessionLocal
@@ -118,7 +119,9 @@ def clinical_metrics(rows: list[dict]) -> dict:
     }
 
 
-def extraction_metrics(rows: list[dict]) -> dict:
+def extraction_metrics(
+    rows: list[dict], budget_ms: float = feature_extractor.EXTRACTION_TIMEOUT_SECONDS * 1000
+) -> dict:
     """So khớp cặp (mã, trạng thái) và riêng mã; ``rows`` có expected, predicted (dict mã -> trạng thái)."""
     pair_tp = pair_fp = pair_fn = code_tp = code_fp = code_fn = 0
     for r in rows:
@@ -140,6 +143,9 @@ def extraction_metrics(rows: list[dict]) -> dict:
         "code_and_state": _prf(pair_tp, pair_fp, pair_fn),
         "code_only": _prf(code_tp, code_fp, code_fn),
         "exact_cases": sum(r["expected"] == r["predicted"] for r in rows),
+        # Trả rỗng khi ca có triệu chứng: thường do quá hạn hoặc LLM lỗi (extractor trả []).
+        "empty_cases": [r["case_id"] for r in rows if r["expected"] and not r["predicted"]],
+        "over_budget_cases": [r["case_id"] for r in rows if r["latency_ms"] > budget_ms],
         "latency": _latency([r["latency_ms"] for r in rows]),
     }
 
@@ -256,7 +262,11 @@ def render_summary(meta: dict, clinical: dict, extraction: dict | None, warnings
             f"| Mã + trạng thái: P / R / F1 | {_pct(cs['precision'])} / {_pct(cs['recall'])} / {_pct(cs['f1'])} |",
             f"| Chỉ mã: P / R / F1 | {_pct(co['precision'])} / {_pct(co['recall'])} / {_pct(co['f1'])} |",
             f"| Ca khớp hoàn toàn | {extraction['exact_cases']}/{extraction['cases']} |",
-            f"| Độ trễ mean / p95 (ms) | {lat.get('mean_ms', 0):.0f} / {lat.get('p95_ms', 0):.0f} |",
+            f"| Ca trả rỗng dù có triệu chứng | {', '.join(extraction['empty_cases']) or 'không'} |",
+            f"| Ca vượt {feature_extractor.EXTRACTION_TIMEOUT_SECONDS:.0f} s | "
+            f"{', '.join(extraction['over_budget_cases']) or 'không'} |",
+            f"| Độ trễ p50 / p95 / max (ms) | {lat.get('p50_ms', 0):.0f} / {lat.get('p95_ms', 0):.0f} / "
+            f"{lat.get('max_ms', 0):.0f} |",
         ]
     return "\n".join(lines) + "\n"
 
@@ -266,12 +276,23 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--testset", type=Path, default=DEFAULT_TESTSET)
     p.add_argument("--mode", choices=["RuleOnly", "Full", "both"], default="both")
     p.add_argument("--skip-extraction", action="store_true", help="Bỏ qua bộ test trích xuất (cần LLM)")
+    p.add_argument("--extraction-only", action="store_true", help="Chỉ chạy bộ test trích xuất")
+    p.add_argument(
+        "--extraction-cases",
+        type=Path,
+        help="File JSONL ca trích xuất thay cho bộ đóng băng (bộ ca phát triển, cùng định dạng)",
+    )
     p.add_argument("--limit", type=int, help="Chỉ chạy N ca đầu mỗi bộ (thử nhanh)")
     p.add_argument("--out", type=Path, help="Thư mục kết quả (mặc định evaluation/results/<thời điểm>)")
     args = p.parse_args(argv)
+    if args.extraction_only and args.skip_extraction:
+        p.error("--extraction-only và --skip-extraction loại trừ nhau")
 
-    clinical_cases = read_jsonl(args.testset / "clinical_cases_labeled.jsonl")[: args.limit]
-    extraction_cases = read_jsonl(args.testset / "symptom_extraction_testset.jsonl")[: args.limit]
+    clinical_cases = (
+        [] if args.extraction_only else read_jsonl(args.testset / "clinical_cases_labeled.jsonl")[: args.limit]
+    )
+    extraction_file = args.extraction_cases or args.testset / "symptom_extraction_testset.jsonl"
+    extraction_cases = read_jsonl(extraction_file)[: args.limit]
     manifest_path = args.testset / "manifest_freeze.json"
     manifest = json.loads(manifest_path.read_text(encoding="utf-8")) if manifest_path.exists() else {}
 
@@ -282,15 +303,18 @@ def main(argv: list[str] | None = None) -> int:
         print("CSDL chưa có tri thức Active: chạy scripts.import_okf trước.", file=sys.stderr)
         return 1
     llm_client, model_name = make_llm_client()
-    modes = ["RuleOnly", "Full"] if args.mode == "both" else [args.mode]
+    modes = [] if args.extraction_only else ["RuleOnly", "Full"] if args.mode == "both" else [args.mode]
     with_llm = settings.LLM_PROVIDER != "none"
+    if args.extraction_only and not with_llm:
+        print("LLM_PROVIDER=none: trích xuất cần LLM.", file=sys.stderr)
+        return 1
     if "Full" in modes and not with_llm:
         print("LLM_PROVIDER=none: bỏ chế độ Full và phần trích xuất.", file=sys.stderr)
         modes = [m for m in modes if m != "Full"]
 
     warnings = []
     rf_cases = sum(c["expected_priority"] == "Emergency" for c in clinical_cases)
-    if rf_cases < MIN_RED_FLAG_CASES:
+    if clinical_cases and rf_cases < MIN_RED_FLAG_CASES:
         warnings.append(f"Bộ test có {rf_cases} ca cờ đỏ, ít hơn {MIN_RED_FLAG_CASES} ca Proposal cam kết.")
     for name, missing in (
         ("ca lâm sàng", unknown_codes(clinical_cases, "symptoms", active_symptoms)),
@@ -314,8 +338,12 @@ def main(argv: list[str] | None = None) -> int:
         "knowledge_release": (snapshot.release or {}).get("label"),
         "llm_provider": settings.LLM_PROVIDER,
         "model": model_name,
+        "reasoning_prompt": REASONING_PROMPT_VERSION,
+        "extraction_prompt": EXTRACTION_PROMPT_VERSION,
         "server_version": settings.VERSION,
     }
+    if args.extraction_cases:
+        meta["extraction_cases"] = args.extraction_cases.name
     clinical = {m: clinical_metrics(rows) for m, rows in clinical_rows.items()}
     extraction = extraction_metrics(extraction_rows) if extraction_rows is not None else None
 
