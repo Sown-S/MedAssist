@@ -95,11 +95,15 @@ class OllamaClient:
             "keep_alive": self.keep_alive,
             "options": options,
         }
-        if schema.get("title") == "ExtractionOutput":
+        if schema.get("title") in {"ExtractionOutput", "PhraseExtractionOutput"}:
             options["num_ctx"] = 8192
             # Không cho Ollama âm thầm bỏ đầu catalog/chỉ dẫn khi quá context.
             # Quá giới hạn phải thành lỗi để extractor dùng fallback an toàn.
             payload["truncate"] = False
+            if schema.get("title") == "PhraseExtractionOutput":
+                # Chặn sinh vô hạn; done_reason=length bị client loại, không nhận
+                # JSON một phần. Ollama kiểm token thực tế, không suy từ ký tự.
+                options["num_predict"] = 768
         try:
             async with httpx.AsyncClient(
                 transport=self._transport,
