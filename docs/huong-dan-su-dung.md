@@ -15,6 +15,7 @@ Chú ý chung:
 - Sai mật khẩu 5 lần trong 15 phút thì tài khoản bị khóa tạm 5 phút; quản trị viên mở khóa được.
 - Mất kết nối tới máy chủ: app hiện băng cảnh báo và **chỉ cho xem**, mọi nút ghi bị khóa; có mạng lại thì tự mở.
 - Không thao tác trong một khoảng thời gian (Cài đặt › Bảo mật, áp dụng cho mọi máy) thì app tự đăng xuất, vì máy dùng chung có dữ liệu bệnh nhân.
+- Băng **Đã có bản X.Y.Z** (màn đăng nhập): trên trang Releases có bản mới hơn; bấm **Mở trang phát hành** để tải, app không tự cài. Băng **Phiên bản ứng dụng khác máy chủ**: máy này chưa cập nhật cùng bản với máy chủ, hãy cài bản mới trước khi dùng để tránh lỗi.
 
 ## 2. Lễ tân
 
@@ -43,6 +44,7 @@ Chú ý chung:
 |---|---|
 | Phòng khám | Mỗi bác sĩ gắn với một phòng cố định; đăng nhập là khám ở phòng đó. Chưa có phòng thì app cảnh báo: nhờ quản trị viên gắn phòng |
 | Cờ đỏ | Thông báo đỏ: chọn **Chuyển tuyến** (mở giấy chuyển tuyến) hoặc **Khám tại phòng khám** |
+| Cảnh báo cụm ca | Băng vàng ở trang chủ khi một chẩn đoán hoặc triệu chứng đã xác nhận tăng đột biến trong những ngày gần đây (so với trung bình các kỳ trước). Chỉ để tham khảo, không kèm tên bệnh nhân |
 | Mời bệnh nhân | **Mời bệnh nhân tiếp theo** (**Alt+N**): người đã check-in đứng đầu theo thứ tự Cấp cứu → Ưu tiên → số thứ tự |
 | Khám | Xem chip triệu chứng lễ tân đã xác nhận, sinh hiệu, dị ứng, bệnh nền; ghi bệnh sử, khám; xem **hồ sơ khám cũ** ở tab Lịch sử |
 | Gợi ý tham khảo | Thẻ AI: *Đang phân tích* → *Đầy đủ* (có lý do) hoặc *Chỉ theo luật* (AI lỗi / quá giờ). Ca cờ đỏ không có gợi ý. Mỗi gợi ý có triệu chứng ủng hộ, phản bác, còn thiếu |
@@ -64,11 +66,11 @@ Quản trị viên **không xem được dữ liệu bệnh nhân** (hồ sơ hi
 | Tài khoản nhân viên | Tạo tài khoản (người dùng tự đổi mật khẩu ở lần đầu); **gắn phòng khám ngay khi tạo tài khoản bác sĩ** (chưa có phòng thì lễ tân không mời bệnh nhân vào được); khóa / mở khóa, đặt lại mật khẩu |
 | Phòng khám | Thêm phòng, đổi tên, ngừng dùng (không xóa) |
 | Kho | Danh mục thuốc; **nhập lô** (số lô, hạn dùng, số lượng, giá nhập); thẻ kho; cảnh báo sắp hết hạn / dưới ngưỡng |
-| Cài đặt | Phí khám, khoảng an toàn hạn dùng, khổ giấy in, các tham số hệ thống |
+| Cài đặt | Phí khám, khoảng an toàn hạn dùng, khổ giấy in, các tham số hệ thống; tab **Vận hành** có ngưỡng **Cảnh báo cụm ca**: số ngày theo dõi (1–30, mặc định 7), số ca tối thiểu (mặc định 5), hệ số so với các kỳ trước (mặc định 2) |
 | Cấu hình AI / tri thức | Xem các bản phát hành tri thức; soạn nháp, gửi bác sĩ duyệt; **tắt khẩn cấp** một bệnh / triệu chứng / luật (có hiệu lực ngay, bật lại phải qua duyệt); xem nhật ký chạy AI |
 | Báo cáo | Lượt khám, doanh thu đã thu, hiệu quả AI theo khoảng ngày |
 | Lịch sử hoạt động | Nhật ký mọi thao tác (chỉ ghi thêm), lọc, xuất Excel / CSV |
-| Theo dõi hệ thống | Trang chủ hiện trạng thái CSDL và AI của máy chủ |
+| Theo dõi hệ thống | Trang chủ hiện trạng thái CSDL và AI của máy chủ, kèm băng **Cảnh báo cụm ca** khi có chẩn đoán / triệu chứng tăng đột biến |
 
 ## 5. Câu hỏi thường gặp
 
@@ -80,3 +82,5 @@ Quản trị viên **không xem được dữ liệu bệnh nhân** (hồ sơ hi
 | Chốt đơn báo thiếu thuốc | Kho không đủ thuốc còn hạn qua hết đợt dùng; đổi thuốc hoặc nhờ nhập thêm lô |
 | Không sửa được lời kể | Lượt đã check-in; chỉ còn đo lại sinh hiệu được |
 | Báo lỗi có "mã yêu cầu" | Ghi lại mã đó gửi quản trị viên để tra nhật ký máy chủ |
+| Băng "Đã có bản mới" không hiện dù đã có bản mới | Máy không có Internet hoặc chưa mở lại app; app chỉ kiểm tra một lần khi khởi động |
+| Không thấy cảnh báo cụm ca | Chưa đủ số ca tối thiểu hoặc chưa vượt hệ số so với các kỳ trước (Cài đặt › Vận hành); lễ tân không có mục này |
