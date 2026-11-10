@@ -13,7 +13,7 @@ x-server-env: &server-env
   OLLAMA_BASE_URL: http://ollama:11434
   OLLAMA_MODEL: ${OLLAMA_MODEL:?Thiếu OLLAMA_MODEL trong deploy/.env}
   OLLAMA_KEEP_ALIVE: 24h            # worker gửi kèm mỗi request: giữ model trong VRAM
-  AI_EXTRACTION_STRATEGY: ${AI_EXTRACTION_STRATEGY:-legacy}
+  AI_EXTRACTION_STRATEGY: ${AI_EXTRACTION_STRATEGY:-phrases}
   AI_EXTRACTION_CANDIDATES_PER_PHRASE: ${AI_EXTRACTION_CANDIDATES_PER_PHRASE:-4}
 
 services:

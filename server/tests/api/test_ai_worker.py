@@ -484,7 +484,10 @@ NOTE = "Sốt cao 2 ngày, không ho khan, chưa rõ đau họng."
 
 
 @pytest.fixture
-def text_visit(client, nurse, make_visit):
+def text_visit(client, nurse, make_visit, monkeypatch):
+    # Kiểm hàng đợi trích xuất bằng đường legacy; đường phrases có test riêng ở tests/unit/ai.
+    monkeypatch.setattr(runner.settings, "AI_EXTRACTION_STRATEGY", "legacy")
+
     def _make(note=NOTE):
         vid = make_visit({})
         r = client.patch(f"/api/v1/visits/{vid}", headers=nurse, json={"free_text_description": note})
