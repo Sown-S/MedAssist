@@ -211,3 +211,38 @@ def test_development_dataset_is_separate_and_well_formed():
     assert len(cases) == 26
     assert all(case["id"].startswith("dev-r") for case in cases)
     assert all(set(case["expected_symptoms"].values()) <= {"PRESENT", "ABSENT", "UNKNOWN"} for case in cases)
+
+
+def test_accented_minimal_pairs_and_clinical_words_do_not_collide_via_strip_accents():
+    source = reader([
+        {
+            "symptom_code": "dermatophytosis_annular_active_border",
+            "symptom_name": "Mảng đỏ hình tròn giới hạn rõ (Nấm sợi, nấm da)",
+        },
+        {
+            "symptom_code": "melasma_symmetric_facial_hyperpigmentation",
+            "symptom_name": "Dát tăng sắc tố màu nâu đối xứng ở gò má (Rám má, nám da)",
+        },
+        {
+            "symptom_code": "urinary_retention",
+            "symptom_name": "Bí tiểu",
+        },
+        {
+            "symptom_code": "myalgia",
+            "symptom_name": "Đau mỏi cơ",
+        },
+    ])
+    index = CandidateIndexCache().get(source)
+    nam_soi = index.search("bị nấm da", limit=2)
+    nam_ma = index.search("bị nám da", limit=2)
+    assert nam_soi[0].symptom_code == "dermatophytosis_annular_active_border"
+    assert nam_ma[0].symptom_code == "melasma_symmetric_facial_hyperpigmentation"
+    # Truy vấn không dấu vẫn tìm được cả hai ứng viên qua nhánh không dấu.
+    unaccented = {row.symptom_code for row in index.search("bi nam da", limit=2)}
+    assert unaccented == {
+        "dermatophytosis_annular_active_border",
+        "melasma_symmetric_facial_hyperpigmentation",
+    }
+    # Các từ y khoa trùng hình thức không dấu với từ chức năng ('bí'/'bị', 'cơ'/'có') không bị mất.
+    assert index.search("bí tiểu", limit=1)[0].symptom_code == "urinary_retention"
+    assert index.search("đau cơ", limit=1)[0].symptom_code == "myalgia"

@@ -96,7 +96,10 @@ class OllamaClient:
             "options": options,
         }
         if schema.get("title") in {"ExtractionOutput", "PhraseExtractionOutput"}:
-            options["num_ctx"] = 8192
+            if schema.get("title") == "ExtractionOutput":
+                options["num_ctx"] = 8192
+            # Phrases dùng context mặc định như reasoning để tránh đổi context
+            # và nạp lại model giữa hai bước. Legacy vẫn cần toàn catalog.
             # Không cho Ollama âm thầm bỏ đầu catalog/chỉ dẫn khi quá context.
             # Quá giới hạn phải thành lỗi để extractor dùng fallback an toàn.
             payload["truncate"] = False
