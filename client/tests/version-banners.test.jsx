@@ -43,3 +43,17 @@ describe('Banner phiên bản', () => {
     expect(screen.getByText(`App version (${version}) differs from the server (0.0.1), update to avoid errors`)).toBeTruthy()
   })
 })
+
+describe('Banner phiên bản ở màn đăng nhập', () => {
+  it('lệch version với máy chủ: hiện ngay trên màn đăng nhập, chưa cần đăng nhập', async () => {
+    vi.doMock('../src/renderer/src/context/AuthContext', () => ({
+      useAuth: () => ({ authenticate: vi.fn(), startSession: vi.fn(), logout: vi.fn(), notice: '' })
+    }))
+    vi.doMock('../src/renderer/src/api/accountStore', () => ({ usePasswordMinLength: () => 8 }))
+    serverVersion = '0.0.1'
+    const { default: Login } = await import('../src/renderer/src/pages/Login.jsx')
+    render(<Login />)
+    expect(screen.getByText(`App version (${version}) differs from the server (0.0.1), update to avoid errors`)).toBeTruthy()
+    expect(document.querySelector('.login-banners + .login-card')).toBeTruthy()
+  })
+})
