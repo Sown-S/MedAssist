@@ -379,6 +379,7 @@ Tiền tố `/api/v1`. Chi tiết tham số và schema: **Swagger `/docs`** (lu�
 | Phòng | `GET rooms` (`include_inactive`); `POST admin/rooms`; `PATCH admin/rooms/{id}` | Mọi vai trò xem; Admin sửa. Gán bác sĩ vào phòng bằng `room_id` của tài khoản |
 | Nhật ký | `GET admin/audit-logs`; `GET admin/audit-logs/export` (xlsx mặc định, csv) | Admin |
 | Báo cáo, nhật ký AI | `GET reports/summary` (`date_from`, `date_to`, mặc định hôm nay); `GET admin/ai-logs` (lọc ngày, `run_type`, `status`, `mode`; chỉ metadata) | Admin |
+| Cảnh báo cụm ca | `GET reports/clusters` (`date_to`, mặc định hôm nay): chẩn đoán đã xác nhận hoặc triệu chứng PRESENT có ≥ M bệnh nhân trong N ngày và gấp R lần trung bình 4 kỳ trước; ngưỡng ở khóa `alerts.cluster`; chỉ số đếm | Admin, Physician |
 | Tham số | `GET admin/settings`; `PUT admin/settings/{key}` | Admin |
 | Bệnh nhân | `GET/POST patients`; `GET patients/lookup` (mã, SĐT, CCCD, năm sinh); `GET/PATCH patients/{id}`; `GET patients/{id}/visits` | Nurse tạo/sửa; Physician, Nurse xem |
 | Hồ sơ khám (EMR) | `GET patients/{id}/history`; `GET visits/{id}/record` | Physician, Nurse |

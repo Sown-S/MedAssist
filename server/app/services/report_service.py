@@ -4,12 +4,12 @@ của lần chạy AI; không trả visit_id, input_features, llm_output_raw."""
 import datetime
 from typing import Any
 
-from sqlalchemy import Date, Select, and_, cast, func, or_, select
+from sqlalchemy import Date, Integer, Select, and_, case, cast, func, or_, select
 from sqlalchemy.orm import Session
 
 from app.exceptions import AppError
-from app.models import AiAssessmentLog, Invoice, KnowledgeRelease, Visit
-from app.services import queue_service
+from app.models import AiAssessmentLog, Diagnosis, Invoice, KnowledgeRelease, Symptom, Visit, VisitSymptom
+from app.services import queue_service, settings_service
 
 MAX_RANGE_DAYS = 366
 VISIT_STATUSES = ("Waiting", "CheckedIn", "Examining", "Prescribed", "Finished", "Cancelled")
@@ -125,6 +125,84 @@ def summary(db: Session, date_from: datetime.date | None, date_to: datetime.date
         "visits": _visits(db, d1, d2),
         "revenue": _revenue(db, d1, d2),
         "ai": _ai(db, d1, d2),
+    }
+
+
+CLUSTER_BASELINE_PERIODS = 4
+
+
+def _cluster_counts(db: Session, key, name, source: Select, period_from: datetime.date, n: int, d1, d2) -> dict:
+    """{key: (tên, số bệnh nhân kỳ này, tổng số bệnh nhân của các kỳ trước)}; mỗi kỳ đếm riêng."""
+    period = case(
+        (Visit.queue_date >= period_from, 0),
+        else_=(cast(period_from - Visit.queue_date - 1, Integer) // n) + 1,
+    )
+    rows = db.execute(
+        source.with_only_columns(key, func.max(name), period, func.count(func.distinct(Visit.patient_id)))
+        .where(Visit.status != "Cancelled", Visit.queue_date.between(d1, d2), key.is_not(None))
+        .group_by(key, period)
+    ).all()
+    out: dict[str, list] = {}
+    for k, nm, p, cnt in rows:
+        entry = out.setdefault(k, [nm, 0, 0])
+        entry[1 if p == 0 else 2] += cnt
+    return out
+
+
+def clusters(db: Session, date_to: datetime.date | None) -> dict:
+    """Chẩn đoán đã xác nhận hoặc triệu chứng PRESENT tăng bất thường trong N ngày; chỉ trả số đếm."""
+    cfg = settings_service.get_value(db, "alerts.cluster")
+    n, min_cases, ratio = cfg["window_days"], cfg["min_cases"], cfg["ratio"]
+    period_to = date_to or db.scalar(select(func.current_date()))
+    period_from = period_to - datetime.timedelta(days=n - 1)
+    baseline_from = period_from - datetime.timedelta(days=n * CLUSTER_BASELINE_PERIODS)
+    dx_key = func.coalesce(
+        Diagnosis.condition_code, Diagnosis.icd10_code, func.lower(func.trim(Diagnosis.diagnosis_name))
+    )
+    sources = {
+        "diagnosis": _cluster_counts(
+            db,
+            dx_key,
+            Diagnosis.diagnosis_name,
+            select(Diagnosis.diagnosis_id)
+            .join(Visit, Visit.visit_id == Diagnosis.visit_id)
+            .where(Diagnosis.confirmed_by_physician),
+            period_from,
+            n,
+            baseline_from,
+            period_to,
+        ),
+        "symptom": _cluster_counts(
+            db,
+            VisitSymptom.symptom_code,
+            Symptom.symptom_name,
+            select(VisitSymptom.visit_symptom_id)
+            .join(Visit, Visit.visit_id == VisitSymptom.visit_id)
+            .join(Symptom, Symptom.symptom_id == VisitSymptom.symptom_id)
+            .where(VisitSymptom.state == "PRESENT"),
+            period_from,
+            n,
+            baseline_from,
+            period_to,
+        ),
+    }
+    alerts = []
+    for kind, counts in sources.items():
+        for code, (name, cases, base_total) in counts.items():
+            baseline_avg = base_total / CLUSTER_BASELINE_PERIODS
+            if cases >= min_cases and cases >= ratio * baseline_avg:
+                alerts.append(
+                    {"kind": kind, "code": code, "name": name, "cases": cases, "baseline_avg": round(baseline_avg, 2)}
+                )
+    alerts.sort(key=lambda a: (-a["cases"], a["kind"], a["code"]))
+    return {
+        "window_days": n,
+        "min_cases": min_cases,
+        "ratio": ratio,
+        "period_from": period_from,
+        "period_to": period_to,
+        "baseline_from": baseline_from,
+        "alerts": alerts,
     }
 
 

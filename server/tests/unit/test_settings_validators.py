@@ -29,6 +29,7 @@ def test_defaults_are_valid_and_cover_all_keys():
         "billing.default_consultation_fee": 0,
         "billing.consultation_service_code": "DV01",
         "security.idle_logout_minutes": 15,
+        "alerts.cluster": {"window_days": 7, "min_cases": 5, "ratio": 2.0},
     }
 
 
@@ -88,6 +89,11 @@ def test_valid_values(key, value, expected):
         ("clinic.profile", "PK A"),
         ("billing.consultation_service_code", "DV 01"),
         ("billing.consultation_service_code", 1),
+        ("alerts.cluster", {"window_days": 0, "min_cases": 5, "ratio": 2}),
+        ("alerts.cluster", {"window_days": 7, "min_cases": 1, "ratio": 2}),
+        ("alerts.cluster", {"window_days": 7, "min_cases": 5, "ratio": 0.5}),
+        ("alerts.cluster", {"window_days": 7, "min_cases": 5}),
+        ("alerts.cluster", {"window_days": 7, "min_cases": 5, "ratio": 2, "x": 1}),
     ],
 )
 def test_invalid_values(key, value):

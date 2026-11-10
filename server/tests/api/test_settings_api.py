@@ -17,6 +17,7 @@ def test_list_shows_defaults(client, users, admin):
         "billing.default_consultation_fee",
         "billing.consultation_service_code",
         "security.idle_logout_minutes",
+        "alerts.cluster",
     }
     assert all("description" in r for r in rows.values())
 
