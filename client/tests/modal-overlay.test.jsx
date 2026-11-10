@@ -1,6 +1,7 @@
 import { describe, it, expect, afterEach, vi } from 'vitest'
 import { render, cleanup, fireEvent } from '@testing-library/react'
 import Modal, { ModalHeader } from '../src/renderer/src/components/Modal.jsx'
+import ConfirmModal from '../src/renderer/src/components/ConfirmModal.jsx'
 
 afterEach(() => cleanup())
 
@@ -27,5 +28,16 @@ describe('Modal', () => {
     open(onClose)
     fireEvent.click(document.querySelector('.modal-close'))
     expect(onClose).toHaveBeenCalledTimes(1)
+  })
+})
+
+describe('ConfirmModal', () => {
+  it('bấm ra vùng mờ không huỷ; chỉ nút Hủy mới huỷ', () => {
+    const onCancel = vi.fn()
+    render(<ConfirmModal open message="Xoá dòng thuốc?" onConfirm={() => {}} onCancel={onCancel} />)
+    fireEvent.click(document.querySelector('.modal-overlay'))
+    expect(onCancel).not.toHaveBeenCalled()
+    fireEvent.click(document.querySelector('.confirm-actions .btn-ghost'))
+    expect(onCancel).toHaveBeenCalledTimes(1)
   })
 })
