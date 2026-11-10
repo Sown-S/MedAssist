@@ -1,16 +1,16 @@
 """AI-23: không mất span, không trộn snapshot, không suy trạng thái từ điểm tìm kiếm."""
 
-from dataclasses import FrozenInstanceError, replace
-from copy import deepcopy
 import re
+from copy import deepcopy
+from dataclasses import FrozenInstanceError, replace
 from time import monotonic
 
 import pytest
 
-from app.ai.extraction.candidate_index import CandidateIndexCache
-from app.ai.extraction.phrase_splitter import IncompleteSegmentation, split_phrases
 from app.ai.extraction import phrase_retrieval
+from app.ai.extraction.candidate_index import CandidateIndexCache
 from app.ai.extraction.phrase_retrieval import RetrievalDeadlineExceeded, retrieve_phrases
+from app.ai.extraction.phrase_splitter import IncompleteSegmentation, split_phrases
 from tests.unit.ai.fakes import FakeKnowledgeReader
 from tests.unit.ai.manual_phrase_retrieval_probe import load_cases, measure_mentions
 
@@ -55,6 +55,26 @@ def test_long_clause_windows_overlap_and_keep_tail():
     groups = split_phrases(text, window_words=12, overlap_words=4)
     assert groups[-1].text.endswith("đau đầu")
     assert all(left.end > right.start for left, right in zip(groups, groups[1:]))
+
+
+def test_numbered_items_keep_the_number_with_the_sentence_and_original_offsets():
+    text = "1. Ho khan, không khó thở.\n2. Nhiệt độ 38.5, không buồn nôn."
+    groups = split_phrases(text)
+    assert len(groups) == 4
+    assert groups[0].text == "1. Ho khan"
+    assert groups[2].text == "2. Nhiệt độ 38.5"
+    for phrase in groups:
+        assert phrase.text == text[phrase.start:phrase.end]
+        assert phrase.context == text[phrase.context_start:phrase.context_end]
+    assert groups[1].context == "1. Ho khan, không khó thở"
+    assert groups[3].context == "2. Nhiệt độ 38.5, không buồn nôn"
+
+
+def test_inline_numbers_and_decimal_temperature_still_split_normally():
+    groups = split_phrases("Ho 2 ngày. Nhiệt độ 38.5.")
+    assert len(groups) == 2
+    assert groups[0].text == "Ho 2 ngày"
+    assert groups[1].text == "Nhiệt độ 38.5"
 
 
 @pytest.mark.parametrize("text,kwargs", [

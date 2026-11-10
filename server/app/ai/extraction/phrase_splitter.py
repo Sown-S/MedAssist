@@ -1,13 +1,14 @@
 """Tách cụm bằng code, giữ nguyên span/ngữ cảnh; không gán trạng thái lâm sàng."""
 
-from dataclasses import dataclass, field
 import re
+from dataclasses import dataclass, field
 
-SPLITTER_VERSION = "phrase-spans-v1"
+SPLITTER_VERSION = "phrase-spans-v2"
 # Giữ dấu thập phân trong cả hai cách viết 38.5 và 38,5.
 _SENTENCE = re.compile(r"[;!?\r\n]+|(?<!\d)\.|\.(?!\d)")
 _CLAUSE = re.compile(r"(?<!\d),|,(?!\d)|\b(?:và|va|nhưng|nhung|kèm|kem)\b", re.IGNORECASE)
 _WORDS = re.compile(r"\w+", re.UNICODE)
+_NUMBERED_ITEM = re.compile(r"(?m)^[ \t]*\d+\.(?=[ \t]+\S)")
 
 
 class IncompleteSegmentation(ValueError):
@@ -53,7 +54,10 @@ def split_phrases(
         raise IncompleteSegmentation("Extraction text exceeds segmentation budget.")
     phrases = []
     sentence_start = 0
-    sentence_ends = [(match.start(), match.end()) for match in _SENTENCE.finditer(masked_text)]
+    # Dấu chấm của số thứ tự không tạo câu riêng. Giữ nguyên ký tự/offset.
+    item_dots = {match.end() - 1 for match in _NUMBERED_ITEM.finditer(masked_text)}
+    sentence_ends = [(match.start(), match.end()) for match in _SENTENCE.finditer(masked_text)
+                     if match.start() not in item_dots]
     sentence_ends.append((len(masked_text), len(masked_text)))
     for sentence_end, next_start in sentence_ends:
         context_start, context_end = _trim(masked_text, sentence_start, sentence_end)

@@ -26,6 +26,16 @@ Caller ghim `SnapshotReader(reader.refresh())`, chạy Node 1 trước, truyền
 trong hạn 30 giây. Dispatcher không tự retry hoặc chuyển sang legacy khi lỗi.
 
 Kết quả có `strategy`, `prompt_version`, `completed`, `failure_code`, `suggestions`.
+
+Từ 4 nhóm chọn mã, phrases dùng `extraction-phrases-compact-v3`: Gemma trả
+ID ngắn và trạng thái, sau đó code giải mã theo ứng viên riêng của từng nhóm
+trước validation Active/HITL. Các cụm trùng hoàn toàn cả nội dung, ngữ cảnh và
+ứng viên dùng chung lựa chọn; mọi span gốc vẫn được kiểm khi giải mã. Định nghĩa
+và câu ngữ cảnh chỉ gửi một lần. Dưới 4 nhóm tiếp tục dùng prompt v2.
+Giữ một lần gọi model và deadline 30 giây từ lúc xếp hàng. Giới hạn tài nguyên
+vẫn có hiệu lực: 1024 span truy xuất, 64 nhóm compact khác nhau và request
+24.000 byte; Ollama kiểm context thực tế với truncate=false. Các giới hạn này
+không cam kết mọi lời kể hợp lệ ở API đều xử lý trong 30 giây.
 Nhánh phrases phân biệt rỗng hợp lệ (`completed=True`) với thất bại (`False`).
 Legacy trả list nên rỗng được đánh dấu `completed=None`,
 `LEGACY_EMPTY_UNCLASSIFIED`: chưa biết là không triệu chứng hay lỗi/timeout.

@@ -1,11 +1,11 @@
 """Chuẩn bị ứng viên từng cụm; chưa nối đường extraction mặc định trong worker."""
 
+import math
 from collections.abc import Sequence
 from dataclasses import dataclass, field
-import math
 from time import monotonic
 
-from app.ai.extraction.candidate_index import CandidateIndexCache, Candidate
+from app.ai.extraction.candidate_index import Candidate, CandidateIndexCache
 from app.ai.extraction.feature_extractor import _redact_identifiers
 from app.ai.extraction.phrase_splitter import Phrase, split_phrases
 from app.ai.interfaces import KnowledgeReader
@@ -49,13 +49,18 @@ def retrieve_phrases(
 
     check_deadline()
     masked = _redact_identifiers(text, identifiers)
-    phrases = split_phrases(masked)
+    # Lời kể lặp có thể có nhiều span nhưng ít nhóm chọn mã khác nhau.
+    # Giữ đủ span; bước tạo request kiểm kích thước sau khi chia sẻ ngữ cảnh.
+    phrases = split_phrases(masked, max_phrases=1024)
     check_deadline()
     index = cache.get(reader)
     check_deadline()
     groups = []
+    matches = {}
     for phrase in phrases:
         check_deadline()
-        groups.append(PhraseCandidates(phrase, index.search(phrase.text, limit=per_phrase_limit)))
+        if phrase.text not in matches:
+            matches[phrase.text] = index.search(phrase.text, limit=per_phrase_limit)
+        groups.append(PhraseCandidates(phrase, matches[phrase.text]))
     check_deadline()
     return RetrievalPlan(index.snapshot_key, index.catalogue_sha256, masked, tuple(groups))
