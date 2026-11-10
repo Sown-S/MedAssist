@@ -2,11 +2,30 @@
 
 import datetime
 import uuid
+from typing import Literal
 
 from pydantic import BaseModel
 
 from app.schemas.common import Page
 from app.schemas.inventory import MoneyOut
+
+
+class ClusterAlert(BaseModel):
+    kind: Literal["diagnosis", "symptom"]
+    code: str
+    name: str
+    cases: int
+    baseline_avg: float
+
+
+class ClusterReport(BaseModel):
+    window_days: int
+    min_cases: int
+    ratio: float
+    period_from: datetime.date
+    period_to: datetime.date
+    baseline_from: datetime.date
+    alerts: list[ClusterAlert]
 
 
 class VisitStats(BaseModel):

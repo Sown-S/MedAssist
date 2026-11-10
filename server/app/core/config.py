@@ -18,7 +18,7 @@ class Settings(BaseSettings):
     )
 
     PROJECT_NAME: str = "MedAssist API"
-    VERSION: str = "0.2.3"
+    VERSION: str = "0.2.4"
     ENVIRONMENT: Literal["dev", "prod"] = "dev"
 
     # API, worker, script nạp OKF: vai trò medassist_app (ERD §6.2)

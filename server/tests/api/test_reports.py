@@ -4,11 +4,11 @@ import datetime
 import uuid
 
 import pytest
-from sqlalchemy import update
+from sqlalchemy import select, update
 
 from app.core.config import settings
 from app.core.database import SessionLocal
-from app.models import AiAssessmentLog
+from app.models import AiAssessmentLog, Diagnosis, User, Visit
 from app.services import health_service
 from tests.api.intake import save_intake
 
@@ -69,6 +69,103 @@ def past_runs(examining):
     _run(vid, decision="NoSuggestion", status="Failed")
     _run(vid, run_type="Extraction", candidates=[{"symptom_code": "s_ho"}])
     return vid
+
+
+# --- /reports/clusters ----------------------------------------------------------------------------
+CLUSTER_DAY = datetime.date(2020, 6, 30)  # kỳ hiện tại 24/06-30/06, các kỳ trước 27/05-23/06
+
+
+def _dx(visit_id, icd, *, confirmed=True):
+    with SessionLocal() as db:
+        db.add(
+            Diagnosis(
+                visit_id=uuid.UUID(visit_id),
+                physician_id=db.scalar(select(User.user_id).where(User.username == "bs")),
+                icd10_code=icd,
+                diagnosis_name=f"Bệnh thử {icd}",
+                is_primary=False,
+                confirmed_by_physician=confirmed,
+                confirmed_at=datetime.datetime.now(datetime.UTC) if confirmed else None,
+            )
+        )
+        db.commit()
+
+
+def _move(visit_id, day, patient_of=None):
+    with SessionLocal() as db:
+        v = db.get(Visit, uuid.UUID(visit_id))
+        v.queue_date = day
+        if patient_of:
+            v.patient_id = db.get(Visit, uuid.UUID(patient_of)).patient_id
+        db.commit()
+
+
+@pytest.fixture
+def cluster_settings(client, admin):
+    client.put(
+        "/api/v1/admin/settings/alerts.cluster",
+        headers=admin,
+        json={"value": {"window_days": 7, "min_cases": 2, "ratio": 2}},
+    )
+    yield
+    client.put(
+        "/api/v1/admin/settings/alerts.cluster",
+        headers=admin,
+        json={"value": {"window_days": 7, "min_cases": 5, "ratio": 2}},
+    )
+
+
+def test_clusters(client, admin, doctor, nurse, examining, wk_knowledge, cluster_settings):
+    v = [examining() for _ in range(10)]
+    for vid in v[:2]:
+        r = client.put(
+            f"/api/v1/visits/{vid}/symptoms",
+            headers=doctor,
+            json={
+                "symptoms": [
+                    {"symptom_code": "wk_fever_high", "state": "PRESENT"},
+                    {"symptom_code": "wk_cough_dry", "state": "ABSENT"},
+                ]
+            },
+        )
+        assert r.status_code == 200, r.text
+        _dx(vid, "Z99.1")
+        _move(vid, datetime.date(2020, 6, 29))
+    _dx(v[2], "Z99.1", confirmed=False)
+    # Z99.2: 2 bệnh nhân kỳ này; cùng 2 người đó có mặt ở 3 kỳ trước -> trung bình 1,5/kỳ, cần >= 3 ca.
+    for vid in v[2:]:
+        _dx(vid, "Z99.2")
+    _move(v[2], datetime.date(2020, 6, 24))
+    _move(v[3], datetime.date(2020, 6, 30))
+    for i, day in enumerate((datetime.date(2020, 6, 20), datetime.date(2020, 6, 13), datetime.date(2020, 6, 6))):
+        _move(v[4 + 2 * i], day, patient_of=v[2])
+        _move(v[5 + 2 * i], day, patient_of=v[3])
+
+    assert client.get("/api/v1/reports/clusters", headers=nurse).status_code == 403
+    r = client.get("/api/v1/reports/clusters", headers=doctor, params={"date_to": CLUSTER_DAY.isoformat()})
+    assert r.status_code == 200, r.text
+    body = r.json()
+    assert (body["period_from"], body["period_to"], body["baseline_from"]) == ("2020-06-24", "2020-06-30", "2020-05-27")
+    got = {(a["kind"], a["code"]): a for a in body["alerts"]}
+    assert got[("diagnosis", "Z99.1")] == {
+        "kind": "diagnosis",
+        "code": "Z99.1",
+        "name": "Bệnh thử Z99.1",
+        "cases": 2,
+        "baseline_avg": 0.0,
+    }
+    assert got[("symptom", "wk_fever_high")]["cases"] == 2
+    assert ("diagnosis", "Z99.2") not in got and ("symptom", "wk_cough_dry") not in got
+    assert client.get("/api/v1/reports/clusters", headers=admin, params={"date_to": "2020-06-30"}).json() == body
+
+    client.put(
+        "/api/v1/admin/settings/alerts.cluster",
+        headers=admin,
+        json={"value": {"window_days": 7, "min_cases": 2, "ratio": 1}},
+    )
+    body = client.get("/api/v1/reports/clusters", headers=doctor, params={"date_to": "2020-06-30"}).json()
+    z2 = next(a for a in body["alerts"] if a["code"] == "Z99.2")
+    assert (z2["cases"], z2["baseline_avg"]) == (2, 1.5)  # mỗi kỳ đếm riêng: 2 + 2 + 2 trên 4 kỳ
 
 
 # --- /reports/summary -----------------------------------------------------------------------------
