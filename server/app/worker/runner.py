@@ -92,8 +92,8 @@ async def _process_extraction(
     attempt_count: int | None = None,
 ) -> None:
     options = ExtractionOptions(
-        strategy=getattr(settings, "AI_EXTRACTION_STRATEGY", "legacy"),
-        per_phrase_limit=getattr(settings, "AI_EXTRACTION_CANDIDATES_PER_PHRASE", 4),
+        strategy=settings.AI_EXTRACTION_STRATEGY,
+        per_phrase_limit=settings.AI_EXTRACTION_CANDIDATES_PER_PHRASE,
     )
     if options.strategy == "phrases":
         await _process_phrase_extraction(

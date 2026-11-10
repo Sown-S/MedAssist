@@ -17,6 +17,7 @@ import { useQueue, isMine, inRoom, atLabs } from './api/queueStore'
 import { translate } from './i18n'
 import { useServerOnline, useServerSlow } from './api/connectivity'
 import { LeaveVisitModal } from './pages/doctor/doctorShared'
+import VersionBanners from './components/VersionBanners'
 
 // Tab theo vai trò. Lịch hẹn, sổ quỹ, chốt ca nằm ngoài phạm vi; xét nghiệm làm thủ công nên không có tab Cận lâm sàng.
 const TABS = [
@@ -101,6 +102,8 @@ export function Shell() {
           </div>
         </div>
       )}
+
+      <VersionBanners />
 
       {/* Lỗi trong một trang chỉ thay trang đó; thanh trên vẫn dùng được, đổi trang là dựng lại. */}
       <ErrorBoundary resetKey={location.pathname + location.search}>

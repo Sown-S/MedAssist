@@ -5,6 +5,7 @@ import { readFileSync, writeFileSync, existsSync, readdirSync } from 'fs'
 import { X509Certificate } from 'crypto'
 import { verifyAgainstCAs } from './certPin'
 import { profileFromArgs } from './profile'
+import { fetchLatestRelease, RELEASES_URL } from './updateCheck'
 import { is } from '@electron-toolkit/utils'
 
 // Bản build tải giao diện qua giao thức riêng app://medassist (không dùng file://): Origin gửi lên server là
@@ -79,6 +80,12 @@ function registerIpc() {
     if ('serverUrl' in patch) await session.defaultSession.closeAllConnections()
     return next
   })
+  // Bản mới trên GitHub: mỗi lần mở app chỉ gọi 1 lần (giới hạn 60 lần/giờ mỗi IP), lần hỏi sau dùng lại kết quả.
+  // Không có Internet / lỗi → null, giao diện không báo gì.
+  let latestRelease = null
+  ipcMain.handle('update:check', () => (latestRelease ??= fetchLatestRelease((url, init) => net.fetch(url, init), app.getVersion())))
+  // Không nhận đường dẫn từ renderer: chỉ mở đúng trang Releases của dự án.
+  ipcMain.handle('update:open', () => shell.openExternal(RELEASES_URL))
 }
 
 function createWindow() {

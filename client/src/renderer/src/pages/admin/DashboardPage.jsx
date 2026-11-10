@@ -12,6 +12,7 @@ import { getSettings } from '../../api/settingsStore'
 import { rangeOf, reportPath, fillDays, vnd, percent } from '../../api/reportsApi'
 import { translate } from '../../i18n'
 import { fmtDateTime } from './inventory/shared'
+import ClusterAlerts from '../../components/ClusterAlerts'
 
 // by_status chỉ có trạng thái đang có lượt (hôm nay chưa ai check-in thì không có khoá CheckedIn) → thiếu là 0.
 export const countOf = (byStatus, ...keys) => keys.reduce((n, k) => n + (Number(byStatus?.[k]) || 0), 0)
@@ -170,6 +171,7 @@ export default function DashboardPage({ onNavigate }) {
         </div>
       </div>
 
+      <ClusterAlerts />
       {!ready && <LoadingBlock />}
       {e1 && <ErrorBlock message={translate('Could not load today’s figures') + ': ' + e1} />}
       {accountsError && <ErrorBlock message={translate('Could not load staff accounts') + ': ' + translate(accountsError)} />}

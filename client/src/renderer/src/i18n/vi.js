@@ -1,6 +1,7 @@
 // Bản dịch tiếng Việt. Khoá = đúng chuỗi tiếng Anh đang hiển thị trên giao diện (đã bỏ khoảng trắng 2 đầu).
 // Chuỗi nào không có ở đây sẽ giữ nguyên tiếng Anh. Chuỗi có phần thay đổi (tên, số...) khai ở PATTERNS.
 export const VI = {
+  'Open release page': 'Mở trang phát hành',
   // ===== Vai trò, đăng nhập, tài khoản =====
   Doctor: 'Bác sĩ',
   Receptionist: 'Lễ tân',
@@ -1538,6 +1539,19 @@ export const VI = {
   'Expiry safety buffer': 'Khoảng an toàn hạn dùng',
   'When a prescription is confirmed, only batches that stay valid until today + the course length (or this many days, whichever is longer) are used.': 'Khi chốt đơn, chỉ dùng lô còn hạn tới hôm nay + số ngày dùng thuốc (hoặc số ngày này, lấy số lớn hơn).',
   'Enter 0–365 days.': 'Nhập 0–365 ngày.',
+  // Cảnh báo cụm ca (tab Vận hành)
+  'Case cluster alerts': 'Cảnh báo cụm ca',
+  'Cluster window (days)': 'Số ngày theo dõi',
+  'Minimum cases': 'Số ca tối thiểu',
+  'Ratio to previous periods': 'Hệ số so với các kỳ trước',
+  'Physicians and administrators see a warning on their dashboard when a diagnosis or confirmed symptom clusters in this many recent days.':
+    'Bác sĩ và quản trị viên thấy cảnh báo trên trang tổng quan khi một chẩn đoán hoặc triệu chứng đã xác nhận tăng đột biến trong số ngày gần nhất này.',
+  'Fewer cases than this never raise an alert.': 'Ít ca hơn số này thì không cảnh báo.',
+  'The count must be at least this many times the average of the previous periods of the same length.':
+    'Số ca phải gấp ít nhất bấy nhiêu lần trung bình các kỳ trước có cùng độ dài.',
+  'Enter 1–30 days.': 'Nhập 1–30 ngày.',
+  'Enter a whole number from 2 to 1000.': 'Nhập số nguyên từ 2 đến 1000.',
+  'Enter a number from 1 to 10.': 'Nhập số từ 1 đến 10.',
   // ===== Cài đặt AI qua máy chủ, HTTPS =====
   'Free-text extraction': 'Trích xuất mô tả tự do',
   'AI assessment': 'Đánh giá AI',
@@ -1988,4 +2002,10 @@ export const PATTERNS = [
   [/^Visit created — queue number (\d+)$/, 'Đã tiếp đón — số thứ tự $1'],
   // Tủ thuốc
   [/^(-?\d+) days left$/, 'còn $1 ngày'],
+  // Cảnh báo cụm ca (ClusterAlerts)
+  [/^Diagnosis (.+): (\d+) cases in (\d+) days \(previous periods averaged (.+)\)$/, 'Chẩn đoán $1: $2 ca trong $3 ngày (trung bình các kỳ trước $4)'],
+  [/^Symptom (.+): (\d+) cases in (\d+) days \(previous periods averaged (.+)\)$/, 'Triệu chứng $1: $2 ca trong $3 ngày (trung bình các kỳ trước $4)'],
+  // Phiên bản (VersionBanners)
+  [/^Version (.+) is available$/, 'Đã có bản $1'],
+  [/^App version \((.+)\) differs from the server \((.+)\), update to avoid errors$/, 'Phiên bản ứng dụng ($1) khác máy chủ ($2), hãy cập nhật để tránh lỗi'],
 ]

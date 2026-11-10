@@ -1,7 +1,8 @@
 import { contextBridge, ipcRenderer } from 'electron'
 
 // Cầu nối duy nhất giữa giao diện và Electron (giao diện không truy cập Node.js trực tiếp).
-// secureStore: token mã hoá bằng safeStorage của hệ điều hành; config: cấu hình riêng của máy này.
+// secureStore: token mã hoá bằng safeStorage của hệ điều hành; config: cấu hình riêng của máy này;
+// updates: bản mới trên GitHub (main process gọi, chỉ thông báo) và mở trang Releases.
 const api = {
   secureStore: {
     get: (key) => ipcRenderer.invoke('secure:get', key),
@@ -11,6 +12,10 @@ const api = {
   config: {
     get: () => ipcRenderer.invoke('config:get'),
     set: (patch) => ipcRenderer.invoke('config:set', patch)
+  },
+  updates: {
+    check: () => ipcRenderer.invoke('update:check'),
+    openReleases: () => ipcRenderer.invoke('update:open')
   }
 }
 

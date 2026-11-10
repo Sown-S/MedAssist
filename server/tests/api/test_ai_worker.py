@@ -11,6 +11,7 @@ from sqlalchemy import select, text, update
 from app.ai.extraction import feature_extractor
 from app.ai.llm.client import LLMClient
 from app.ai.llm.fake_client import FakeLLMClient
+from app.ai.llm.prompts import PHRASE_EXTRACTION_PROMPT_VERSION
 from app.core.database import SessionLocal
 from app.models import AiAssessmentLog, Patient, TriageRule, User, Visit
 from app.services import ai_queue_service as q
@@ -530,7 +531,7 @@ def test_extraction_api_then_worker_returns_suggestions_only(client, nurse, text
     assert all(s["label"] == "Reference Suggestion" and s["requires_confirmation"] for s in body["suggestions"])
 
     run = _extractions(vid)[-1]
-    assert run.model_name == "fake" and run.prompt_version == feature_extractor.EXTRACTION_PROMPT_VERSION
+    assert run.model_name == "fake" and run.prompt_version == PHRASE_EXTRACTION_PROMPT_VERSION
     assert _visit(vid).ai_status == ai_status_before
     assert client.get(f"/api/v1/visits/{vid}/symptoms", headers=nurse).json() == []
 
@@ -583,6 +584,7 @@ def test_extraction_claimed_before_assessment_and_supersedes_queued(client, nurs
 
 
 def test_extraction_failure_keeps_visit_ai_status(client, nurse, text_visit, monkeypatch):
+    monkeypatch.setattr(runner.settings, "AI_EXTRACTION_STRATEGY", "legacy")
     vid = text_visit()
     client.post(f"/api/v1/visits/{vid}/symptom-extraction", headers=nurse)
     ai_status_before = _visit(vid).ai_status

@@ -357,7 +357,7 @@ python -m scripts.seed_services
 | `LLM_PROVIDER` | | `ollama` | `fake` = LLM giả lập (dev, CI, demo; cấm ở prod), `none` = không gọi LLM |
 | `OLLAMA_BASE_URL` / `OLLAMA_MODEL` | | `http://127.0.0.1:11434` / `hf.co/aisingapore/Gemma-SEA-LION-v3-9B-IT-GGUF:Q4_K_M` | LLM cục bộ cho worker (một model cho trích xuất và reasoning) |
 | `OLLAMA_KEEP_ALIVE` | | `5m` | Thời gian Ollama giữ model trong VRAM sau mỗi request; máy admin dùng `24h` |
-| `AI_EXTRACTION_STRATEGY` | | `legacy` | Cách trích xuất triệu chứng: `legacy` (gửi toàn catalog) hoặc `phrases` (ứng viên theo từng cụm) |
+| `AI_EXTRACTION_STRATEGY` | | `phrases` | Cách trích xuất triệu chứng: `phrases` (ứng viên theo từng cụm) hoặc `legacy` (gửi toàn catalog, vượt context với kho hiện tại) |
 | `AI_EXTRACTION_CANDIDATES_PER_PHRASE` | | `4` | Số ứng viên mỗi cụm khi dùng `phrases` (1–50) |
 | `AI_ASSESSMENT_TIMEOUT_SECONDS` | | `90` | Ngân sách một lần đánh giá, tính từ lúc xếp hàng |
 | `WORKER_LEASE_SECONDS` / `WORKER_MAX_ATTEMPTS` | | `150` / `2` | Hạn thuê việc; số lần thử trước khi `Failed` |
