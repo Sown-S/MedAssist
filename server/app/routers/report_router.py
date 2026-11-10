@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 from app.core.audit_view import DEFAULT_POLL_WINDOW, audit_view
 from app.core.database import get_db
 from app.models import User
-from app.schemas.report import AiLogPage, ReportSummary
+from app.schemas.report import AiLogPage, ClusterReport, ReportSummary
 from app.services import report_service
 
 router = APIRouter(tags=["reports"])
@@ -26,6 +26,16 @@ def report_summary(
 ):
     """Lượt khám, doanh thu đã thu, hiệu quả AI trong [date_from, date_to]. Mặc định hôm nay."""
     return report_service.summary(db, date_from, date_to)
+
+
+@router.get("/reports/clusters", response_model=ClusterReport)
+def report_clusters(
+    date_to: datetime.date | None = None,
+    _: User = Depends(audit_view("report", roles=("Admin", "Physician"), dedupe_seconds=DEFAULT_POLL_WINDOW)),
+    db: Session = Depends(get_db),
+):
+    """Cảnh báo cụm ca (`alerts.cluster`) tính đến date_to, mặc định hôm nay. Chỉ số đếm, không có bệnh nhân."""
+    return report_service.clusters(db, date_to)
 
 
 @router.get("/admin/ai-logs", response_model=AiLogPage)
