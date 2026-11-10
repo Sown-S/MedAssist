@@ -1,6 +1,7 @@
 // Bản dịch tiếng Việt. Khoá = đúng chuỗi tiếng Anh đang hiển thị trên giao diện (đã bỏ khoảng trắng 2 đầu).
 // Chuỗi nào không có ở đây sẽ giữ nguyên tiếng Anh. Chuỗi có phần thay đổi (tên, số...) khai ở PATTERNS.
 export const VI = {
+  'Open release page': 'Mở trang phát hành',
   // ===== Vai trò, đăng nhập, tài khoản =====
   Doctor: 'Bác sĩ',
   Receptionist: 'Lễ tân',
@@ -2004,4 +2005,7 @@ export const PATTERNS = [
   // Cảnh báo cụm ca (ClusterAlerts)
   [/^Diagnosis (.+): (\d+) cases in (\d+) days \(previous periods averaged (.+)\)$/, 'Chẩn đoán $1: $2 ca trong $3 ngày (trung bình các kỳ trước $4)'],
   [/^Symptom (.+): (\d+) cases in (\d+) days \(previous periods averaged (.+)\)$/, 'Triệu chứng $1: $2 ca trong $3 ngày (trung bình các kỳ trước $4)'],
+  // Phiên bản (VersionBanners)
+  [/^Version (.+) is available$/, 'Đã có bản $1'],
+  [/^App version \((.+)\) differs from the server \((.+)\), update to avoid errors$/, 'Phiên bản ứng dụng ($1) khác máy chủ ($2), hãy cập nhật để tránh lỗi'],
 ]
