@@ -1,17 +1,18 @@
 """Một lần Gemma chọn mã trong ứng viên từng cụm; chưa bật mặc định."""
 
 import asyncio
-from collections.abc import Sequence
-from dataclasses import dataclass, field
 import json
 import math
+from collections.abc import Sequence
+from dataclasses import dataclass, field, replace
 from time import monotonic
 
 from pydantic import ValidationError
 from sqlalchemy.orm import Session
 
+from app.ai.extraction import compact_selection
 from app.ai.extraction.candidate_index import CandidateIndexCache
-from app.ai.extraction.feature_extractor import _validated_suggestions, SymptomSuggestion
+from app.ai.extraction.feature_extractor import SymptomSuggestion, _validated_suggestions
 from app.ai.extraction.phrase_retrieval import RetrievalPlan, retrieve_phrases
 from app.ai.extraction.phrase_splitter import IncompleteSegmentation
 from app.ai.extraction.selection_groups import group_for_selection
@@ -100,6 +101,8 @@ async def select_phrase_symptoms(
 ) -> SelectionResult:
     """Node 1 -> truy xuất -> một generate_json -> validation Active/HITL, chung deadline."""
     started = monotonic()
+    prompt_version = PHRASE_EXTRACTION_PROMPT_VERSION
+    compact = False
     if (gate_state.get("is_red_flag") is True or gate_state.get("ai_status") == "Skipped"
             or gate_state.get("priority_rule") == "Emergency" or gate_state.get("priority_final") == "Emergency"):
         return SelectionResult(False, "RED_FLAG_SKIPPED")
@@ -121,23 +124,32 @@ async def select_phrase_symptoms(
             return SelectionResult(True)
         if not plan.groups:
             return SelectionResult(True)
-        prompt, schema = selection_request(plan)
+        # Với nhiều nhóm, ID ngắn giảm token sinh. Kết quả vẫn giải mã về
+        # đúng mã ứng viên của từng nhóm trước validator hiện có.
+        compact = len(plan.groups) >= 4
+        if compact:
+            prompt_version = compact_selection.PROMPT_VERSION
+            prompt, schema = compact_selection.selection_request(plan)
+        else:
+            prompt, schema = selection_request(plan)
         remaining = deadline - monotonic()
         if remaining <= 0:
-            return SelectionResult(False, "EXTRACTION_TIMEOUT")
+            return SelectionResult(False, "EXTRACTION_TIMEOUT", prompt_version=prompt_version)
         async with asyncio.timeout(remaining):
             output = await llm_client.generate_json(prompt=prompt, schema=schema, timeout_seconds=remaining)
+            if compact:
+                output = compact_selection.decode_selection(output, plan)
     except IncompleteSegmentation:
-        return SelectionResult(False, "REQUEST_BUDGET_EXCEEDED")
+        return SelectionResult(False, "REQUEST_BUDGET_EXCEEDED", prompt_version=prompt_version)
     except TimeoutError:
-        return SelectionResult(False, "EXTRACTION_TIMEOUT")
+        return SelectionResult(False, "EXTRACTION_TIMEOUT", prompt_version=prompt_version)
     except LLMError as exc:
-        return SelectionResult(False, type(exc).__name__)
+        return SelectionResult(False, type(exc).__name__, prompt_version=prompt_version)
     if monotonic() >= deadline:
-        return SelectionResult(False, "EXTRACTION_TIMEOUT")
+        return SelectionResult(False, "EXTRACTION_TIMEOUT", prompt_version=prompt_version)
     if cache.get(knowledge_reader).snapshot_key != plan.snapshot_key:
-        return SelectionResult(False, "KNOWLEDGE_SNAPSHOT_CHANGED")
-    result = validate_selection(output, plan)
+        return SelectionResult(False, "KNOWLEDGE_SNAPSHOT_CHANGED", prompt_version=prompt_version)
+    result = replace(validate_selection(output, plan), prompt_version=prompt_version)
     if not result.completed:
         return result
     if result.suggestions:
@@ -146,5 +158,7 @@ async def select_phrase_symptoms(
         except AppError as exc:
             if exc.code != "UNKNOWN_SYMPTOM":
                 raise
-            return SelectionResult(False, "UNKNOWN_SYMPTOM")
-    return result if monotonic() < deadline else SelectionResult(False, "EXTRACTION_TIMEOUT")
+            return SelectionResult(False, "UNKNOWN_SYMPTOM", prompt_version=prompt_version)
+    return result if monotonic() < deadline else SelectionResult(
+        False, "EXTRACTION_TIMEOUT", prompt_version=prompt_version,
+    )
