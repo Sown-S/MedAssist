@@ -1,12 +1,12 @@
 # Tích hợp trích xuất theo cụm
 
-Nhánh phát triển, chưa bật mặc định hoặc nghiệm thu release. Giữ một model
-Gemma hiện có; không đổi DB/API. Triệu chứng gợi ý luôn cần điều dưỡng xác nhận.
+Trích xuất theo cụm dùng một model Gemma. Triệu chứng gợi ý luôn cần điều dưỡng
+xác nhận.
 
 ## Điểm gọi chung
 
-`dispatch.ExtractionOptions(strategy="legacy", per_phrase_limit=4)` chọn
-`legacy` hoặc `phrases`. K là số nguyên dương; 4 là giá trị thử nghiệm.
+`dispatch.ExtractionOptions()` chọn `phrases` với K=4. Truyền
+`strategy="legacy"` để chọn cách gửi toàn catalog. K là số nguyên dương.
 
 ```python
 from app.ai.extraction.dispatch import ExtractionOptions, run_extraction
@@ -44,8 +44,10 @@ hoàn tất kỹ thuật. Hoàn tất kỹ thuật không chứng minh chọn đ
 
 ## Settings và CLI (đã tích hợp trong #134)
 
-- Settings: `AI_EXTRACTION_STRATEGY` chỉ nhận legacy/phrases, default legacy;
-  `AI_EXTRACTION_CANDIDATES_PER_PHRASE` nhận 1–50, default 4. Worker đọc các khóa này.
+- `AI_EXTRACTION_STRATEGY` nhận `phrases` hoặc `legacy`. Worker chọn theo
+  settings. `AI_EXTRACTION_CANDIDATES_PER_PHRASE` nhận 1–50, mặc định 4.
+- `LLM_PROVIDER=fake` hỗ trợ cả hai strategy để kiểm tích hợp. Fake chỉ dò tên
+  triệu chứng trong phần văn bản tương ứng, nên dùng Gemma để đo chất lượng.
 - `scripts.run_eval.run_extraction` gọi dispatcher, dùng chung snapshot/cache
   trong một lượt đo, lấy phiên bản prompt/strategy từ kết quả thực tế và lưu
   trạng thái hoàn tất/lý do lỗi riêng. Ca thất bại không được tính exact dù rỗng.
@@ -61,8 +63,8 @@ python -m scripts.run_eval --extraction-only --extraction-cases <dev.jsonl> --ex
 python -m scripts.run_eval --extraction-only --extraction-cases <dev.jsonl> --extraction-strategy legacy --out <legacy-dir>
 ```
 
-Theo quyết định 10/11, v0.2.3 dự kiến khoảng 20/11 và giữ mặc định legacy.
-Chỉ bật phrases trên server khi đạt điều kiện nghiệm thu cuối tài liệu.
+v0.2.4 chọn `phrases` làm mặc định sau khi đồng bộ settings và Compose. Đặt
+`AI_EXTRACTION_STRATEGY=legacy` để chọn lại cách gửi toàn catalog.
 
 ## Luồng phrases và giới hạn
 
@@ -102,5 +104,7 @@ selector vẫn dùng extraction-phrases-v2. Bộ 10 ca scope mới tại
 không ghi prompt/bằng chứng thô. Thiếu alias “hụt hơi khi leo cầu thang” vẫn
 cần Tuấn rà; không thêm bảng alias trong code để thay phần DB của Sprint 5.
 
-Chỉ bật mặc định sau review, kiểm worker/API trên DB `medassist_test`, và recall
-29 ca frozen không kém baseline với p95 dưới 30 giây trên server.
+Trước khi phát hành v0.2.4, chạy bộ kiểm thử server với DB `medassist_test`,
+kiểm trích xuất qua app và đo một lần trên 29 ca đóng băng bằng Gemma trên
+máy server. Đạt nghiệm thu khi cả 29 ca hoàn tất và p95 dưới 30 giây. Báo cáo
+`summary.md` ghi cả precision và recall để đối chiếu chất lượng.

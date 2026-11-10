@@ -49,12 +49,13 @@ def test_one_branch_receives_same_gate_reader_identifiers_and_remaining_budget(m
     assert "PRIVATE_" not in repr(result) and "cough_dry" not in repr(result)
 
 
-def test_default_is_legacy_and_empty_has_unknown_completion(monkeypatch):
+def test_explicit_legacy_empty_has_unknown_completion(monkeypatch):
     async def empty(*args, **kwargs):
         return []
     monkeypatch.setattr(dispatch.feature_extractor, "extract_symptoms", empty)
     result = asyncio.run(dispatch.run_extraction(
         "", None, None, None, gate_state={}, identifiers=[], timeout_seconds=30,
+        options=dispatch.ExtractionOptions(strategy="legacy"),
     ))
     assert result.strategy == "legacy" and result.completed is None
     assert result.failure_code == "LEGACY_EMPTY_UNCLASSIFIED" and not result.suggestions
@@ -62,7 +63,7 @@ def test_default_is_legacy_and_empty_has_unknown_completion(monkeypatch):
 
 @pytest.mark.parametrize("completed,reason", [(True, None), (False, "UNMAPPED_PHRASE"),
                                              (False, "EXTRACTION_TIMEOUT"), (False, "RED_FLAG_SKIPPED")])
-def test_phrase_empty_retains_actual_outcome_without_legacy_fallback(monkeypatch, completed, reason):
+def test_default_phrases_retains_actual_outcome_without_legacy_fallback(monkeypatch, completed, reason):
     async def phrase(*args, **kwargs):
         return SelectionResult(completed, reason)
     async def forbidden(*args, **kwargs):
@@ -71,8 +72,8 @@ def test_phrase_empty_retains_actual_outcome_without_legacy_fallback(monkeypatch
     monkeypatch.setattr(dispatch.feature_extractor, "extract_symptoms", forbidden)
     result = asyncio.run(dispatch.run_extraction(
         "", None, None, None, gate_state={}, identifiers=[], timeout_seconds=1,
-        options=dispatch.ExtractionOptions("phrases"),
     ))
+    assert result.strategy == "phrases"
     assert result.completed is completed and result.failure_code == reason
     assert result.suggestions == ()
 

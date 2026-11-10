@@ -14,7 +14,7 @@ from app.ai.pipeline.state import PipelineState
 
 @dataclass(frozen=True)
 class ExtractionOptions:
-    strategy: Literal["legacy", "phrases"] = "legacy"
+    strategy: Literal["legacy", "phrases"] = "phrases"
     per_phrase_limit: int = 4
 
     def __post_init__(self):

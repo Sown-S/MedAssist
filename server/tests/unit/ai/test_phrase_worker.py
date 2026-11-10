@@ -1,4 +1,4 @@
-"""Worker opt-in: real selector and queue writers, fake sessions; no DB/Ollama."""
+"""Kiểm worker trích xuất với selector thật và session giả."""
 
 import asyncio
 import datetime
@@ -168,9 +168,8 @@ def test_valid_empty_result_is_completed(env):
     assert env.run.validation_result["valid"] is True
 
 
-@pytest.mark.parametrize("explicit", [False, True])
-def test_default_or_legacy_setting_uses_original_extractor(env, monkeypatch, explicit):
-    monkeypatch.setattr(runner, "settings", SimpleNamespace(**({"AI_EXTRACTION_STRATEGY": "legacy"} if explicit else {})))
+def test_explicit_legacy_setting_uses_original_extractor(env, monkeypatch):
+    monkeypatch.setattr(runner.settings, "AI_EXTRACTION_STRATEGY", "legacy")
     calls = []
     async def legacy(*args, **kwargs):
         calls.append(kwargs)
@@ -183,7 +182,7 @@ def test_default_or_legacy_setting_uses_original_extractor(env, monkeypatch, exp
 
 
 def test_unknown_strategy_is_configuration_error(env, monkeypatch):
-    monkeypatch.setattr(runner, "settings", SimpleNamespace(AI_EXTRACTION_STRATEGY="typo"))
+    monkeypatch.setattr(runner.settings, "AI_EXTRACTION_STRATEGY", "typo")
     with pytest.raises(ValueError, match="strategy"):
         asyncio.run(env.process())
     assert not env.sessions
