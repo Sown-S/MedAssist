@@ -210,7 +210,7 @@ def test_phrase_schema_requests_strict_context_and_rejects_length_output(context
     def handler(request):
         body = json.loads(request.content)
         assert body["truncate"] is False
-        assert "num_ctx" not in body["options"]
+        assert body["options"]["num_ctx"] == 8192
         assert body["options"]["num_predict"] == 768
         return httpx.Response(200, json={"done": True, "done_reason": "length", "response": json.dumps(VALID)})
     client = LLMClient(model="synthetic-local", transport=httpx.MockTransport(handler))

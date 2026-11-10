@@ -212,18 +212,11 @@ def _validated_suggestions(output: object, allowed: set[str]) -> list[SymptomSug
 
 
 _PRIORITY_CATALOGUE_SIZE = 20
-_STOP_WORDS_ACCENTED = frozenset({
-    "và", "hoặc", "có", "không", "bị", "là", "ở", "tại", "các", "vùng",
-    "bệnh", "nhân", "ngày", "nay", "khi", "do", "đó", "kèm", "theo", "trên",
-    "dưới", "trong", "ngoài", "một", "hai", "ba", "bốn", "năm", "sáu",
-    "bảy", "tám", "chín", "mười", "nhiều", "ít", "rõ", "hơn", "gây",
-    "làm", "thấy", "khám", "redacted",
-})
 _STOP_WORDS = frozenset({
-    "va", "hoac", "co", "khong", "bi", "la", "o", "cac", "vung",
-    "benh", "nhan", "ngay", "nay", "khi", "kem", "theo", "tren",
-    "duoi", "trong", "ngoai", "mot", "hai", "bon",
-    "bay", "tam", "chin", "muoi", "nhieu", "it", "ro", "hon",
+    "va", "hoac", "co", "khong", "bi", "la", "o", "tai", "cac", "vung",
+    "benh", "nhan", "ngay", "nay", "khi", "do", "kem", "theo", "tren",
+    "duoi", "trong", "ngoai", "mot", "hai", "ba", "bon", "nam", "sau",
+    "bay", "tam", "chin", "muoi", "nhieu", "it", "ro", "hon", "gay",
     "lam", "thay", "kham", "redacted",
 })
 
@@ -285,24 +278,10 @@ def _lexical_features(value: str, *, expand_synonyms: bool = False) -> tuple[set
     lowered = _expand_colloquial_text(value) if expand_synonyms else value.lower()
     words = re.findall(r"\w+", lowered)
     unaccented = [_strip_accents(w) for w in words]
-    unaccented_text = all(w == uw for w, uw in zip(words, unaccented))
-    stop = _STOP_WORDS if unaccented_text else _STOP_WORDS_ACCENTED
-    word_set = {
-        w for w, uw in zip(words, unaccented)
-        if len(uw) >= 2 and (uw if unaccented_text else w) not in stop
-    }
-    unacc_set = {
-        uw for w, uw in zip(words, unaccented)
-        if len(uw) >= 2
-        and (uw if unaccented_text else w) not in stop
-        and (not expand_synonyms or unaccented_text or w == uw)
-    }
+    word_set = {w for w, uw in zip(words, unaccented) if len(uw) >= 2 and uw not in _STOP_WORDS}
+    unacc_set = {uw for uw in unaccented if len(uw) >= 2 and uw not in _STOP_WORDS}
     bigrams = {f"{words[i]} {words[i + 1]}" for i in range(len(words) - 1)}
-    unacc_bigrams = {
-        f"{unaccented[i]} {unaccented[i + 1]}"
-        for i in range(len(unaccented) - 1)
-        if not expand_synonyms or unaccented_text or (words[i] == unaccented[i] and words[i + 1] == unaccented[i + 1])
-    }
+    unacc_bigrams = {f"{unaccented[i]} {unaccented[i + 1]}" for i in range(len(unaccented) - 1)}
     return word_set, unacc_set, bigrams, unacc_bigrams
 
 
