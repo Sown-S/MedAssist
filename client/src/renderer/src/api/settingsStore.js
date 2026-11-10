@@ -48,7 +48,11 @@ const DEFAULT_SETTINGS = {
     shelfBufferDays: 0,
     defaultThreshold: 50,
     consultFee: 80000,
-    methods: ['cash', 'transfer']
+    methods: ['cash', 'transfer'],
+    // Cảnh báo cụm ca (alerts.cluster trên server): N ngày, ít nhất M ca, gấp R lần trung bình các kỳ trước.
+    clusterDays: 7,
+    clusterMinCases: 5,
+    clusterRatio: 2
   }
 }
 
@@ -142,7 +146,7 @@ export function changedPaths(draft) {
 }
 
 // Tham số nghiệp vụ trên server (GET / PUT /admin/settings, chỉ Admin): ngưỡng sắp hết hạn, khoảng an toàn hạn dùng,
-// thông tin phòng khám in trên phiếu, phí khám mặc định, thời gian tự đăng xuất.
+// thông tin phòng khám in trên phiếu, phí khám mặc định, cảnh báo cụm ca, thời gian tự đăng xuất.
 const SERVER_SETTINGS = [
   { key: 'inventory.near_expiry_days', paths: ['ops.nearDays'], get: (v) => Math.round(Number(v.ops.nearDays)), set: (v, x) => ({ ...v, ops: { ...v.ops, nearDays: x } }) },
   { key: 'inventory.min_remaining_shelf_days', paths: ['ops.shelfBufferDays'], get: (v) => Math.round(Number(v.ops.shelfBufferDays)), set: (v, x) => ({ ...v, ops: { ...v.ops, shelfBufferDays: x } }) },
@@ -152,6 +156,13 @@ const SERVER_SETTINGS = [
     paths: [...Object.keys(CLINIC_FIELDS).map((k) => 'clinic.' + k), 'print.showLogo', 'print.header', 'print.footer'],
     get: profileToServer,
     set: (v, x) => ({ ...v, clinic: clinicFromServer(x), print: printFromServer(x) })
+  },
+  {
+    key: 'alerts.cluster',
+    paths: ['ops.clusterDays', 'ops.clusterMinCases', 'ops.clusterRatio'],
+    // Server kiểm số ngày / số ca là số nguyên (strict) → làm tròn trước khi gửi.
+    get: (v) => ({ window_days: Math.round(Number(v.ops.clusterDays)), min_cases: Math.round(Number(v.ops.clusterMinCases)), ratio: Number(v.ops.clusterRatio) }),
+    set: (v, x) => ({ ...v, ops: { ...v.ops, clusterDays: x?.window_days ?? 7, clusterMinCases: x?.min_cases ?? 5, clusterRatio: x?.ratio ?? 2 } })
   },
   {
     key: 'security.idle_logout_minutes',

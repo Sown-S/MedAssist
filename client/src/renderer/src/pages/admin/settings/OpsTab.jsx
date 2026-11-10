@@ -2,7 +2,7 @@ import { PAYMENT_METHODS } from '../../../api/settingsStore'
 import { fmtMoney } from '../inventory/shared'
 import { Field } from './Field'
 
-// Tab “Vận hành”: ngưỡng kho, phí khám và phương thức thanh toán. form = { fp, num, val, set } của SettingsPage.
+// Tab “Vận hành”: ngưỡng kho, cảnh báo cụm ca, phí khám và phương thức thanh toán. form = { fp, num, val, set } của SettingsPage.
 export function OpsTab({ form }) {
   const { fp, num, val, set } = form
   return (
@@ -25,6 +25,19 @@ export function OpsTab({ form }) {
         </Field>
         <Field {...fp('ops.defaultThreshold')} hint="Pre-filled when a new drug is added; each drug can still have its own threshold.">
           <input {...num('ops.defaultThreshold')} min="0" />
+        </Field>
+      </div>
+
+      <div className="section-label">Case cluster alerts</div>
+      <div className="set-grid">
+        <Field {...fp('ops.clusterDays')} hint="Physicians and administrators see a warning on their dashboard when a diagnosis or confirmed symptom clusters in this many recent days.">
+          <input {...num('ops.clusterDays')} min="1" max="30" />
+        </Field>
+        <Field {...fp('ops.clusterMinCases')} hint="Fewer cases than this never raise an alert.">
+          <input {...num('ops.clusterMinCases')} min="2" max="1000" />
+        </Field>
+        <Field {...fp('ops.clusterRatio')} hint="The count must be at least this many times the average of the previous periods of the same length.">
+          <input {...num('ops.clusterRatio')} min="1" max="10" step="0.1" />
         </Field>
       </div>
 
