@@ -19,38 +19,76 @@ from app.ai.interfaces import KnowledgeReader
 
 INDEX_VERSION = "lexical-phrases-v1"
 # Chỉ bỏ từ chức năng ở truy vấn, không đổi lời kể/context gửi bước chọn mã.
-_STOP = frozenset("va hoac nhung kem co khong chua ro bi la thi cua voi khi luc da dang "
-                  "duoc mot cac nhieu rat ngay hom nay toi benh nhan redacted".split())
+# Tách bản có dấu để không xóa nhầm từ y khoa ('da', 'cơ', 'cổ', 'bí', 'khí', 'rát', 'thị', 'lực').
+_STOP_ACCENTED = frozenset(
+    "và hoặc nhưng kèm có không chưa rõ bị là thì của với khi lúc đã đang "
+    "được một các nhiều rất ngày hôm nay tôi bệnh nhân redacted".split()
+)
+_STOP = frozenset(
+    "va hoac nhung khong chua la cua duoc mot cac nhieu hom nay toi benh nhan redacted".split()
+)
 
 
 def _tokens(value: str) -> tuple[str, ...]:
     return tuple(re.findall(r"[^\W_]+", _normalise(value).casefold()))
 
 
-def _features(value: str) -> frozenset[str]:
+def _is_stop(word: str, plain: str, *, unaccented_text: bool) -> bool:
+    return (plain in _STOP) if unaccented_text else (word in _STOP_ACCENTED)
+
+
+def _features(value: str, *, is_query: bool = False) -> frozenset[str]:
     words = _tokens(value)
     folded = tuple(_strip_accents(word) for word in words)
+    unaccented_text = all(word == plain for word, plain in zip(words, folded))
     result = set()
     for word, plain in zip(words, folded):
-        if plain in _STOP or len(plain) < 2 or plain.isdigit():
+        if _is_stop(word, plain, unaccented_text=unaccented_text) or len(plain) < 2 or plain.isdigit():
             continue
         result.add("a:" + word)
-        result.add("f:" + plain)
-    for first, second in zip(folded, folded[1:]):
-        if first not in _STOP and second not in _STOP and not first.isdigit() and not second.isdigit():
-            result.add("b:" + first + " " + second)
+        if not is_query or unaccented_text:
+            result.add("f:" + plain)
+    for (w1, p1), (w2, p2) in zip(zip(words, folded), zip(words[1:], folded[1:])):
+        if (
+            not _is_stop(w1, p1, unaccented_text=unaccented_text)
+            and not _is_stop(w2, p2, unaccented_text=unaccented_text)
+            and not p1.isdigit()
+            and not p2.isdigit()
+        ):
+            result.add("ab:" + w1 + " " + w2)
+            if not is_query or unaccented_text:
+                result.add("b:" + p1 + " " + p2)
     return frozenset(result)
 
 
-def _grams(value: str) -> frozenset[str]:
-    # N-gram trong từng từ: hỗ trợ gõ sai nhẹ, không nhận là đồng nghĩa.
-    words = {_strip_accents(word) for word in _tokens(value)} - _STOP
-    return frozenset(word[i:i + 3] for word in words if not word.isdigit()
-                     for i in range(max(0, len(word) - 2)))
+def _grams(value: str, *, is_query: bool = False) -> frozenset[str]:
+    # N-gram trong từng từ: hỗ trợ gõ sai nhẹ, không làm trùng cặp tối thiểu có dấu (nấm/nám).
+    words = _tokens(value)
+    folded = tuple(_strip_accents(word) for word in words)
+    unaccented_text = all(word == plain for word, plain in zip(words, folded))
+    tokens = set()
+    for word, plain in zip(words, folded):
+        if _is_stop(word, plain, unaccented_text=unaccented_text) or plain.isdigit():
+            continue
+        tokens.add("a:" + word)
+        if not is_query or unaccented_text:
+            tokens.add("f:" + plain)
+    return frozenset(
+        prefix + token[i : i + 3]
+        for item in tokens
+        for prefix, token in ((item[:2], item[2:]),)
+        for i in range(max(0, len(token) - 2))
+    )
 
 
 def _feature_weight(feature: str) -> float:
-    return 1.5 if feature.startswith("b:") else (1.0 if feature.startswith("a:") else 0.65)
+    if feature.startswith("ab:"):
+        return 1.65
+    if feature.startswith("b:"):
+        return 1.5
+    if feature.startswith("a:"):
+        return 1.0
+    return 0.65
 
 
 @dataclass(frozen=True)
@@ -82,7 +120,7 @@ class CandidateIndex:
         """Tìm trong toàn chỉ mục; caller chọn K bằng số đo, không có K production mặc định."""
         if not isinstance(phrase, str) or type(limit) is not int or limit <= 0:
             raise ValueError("Invalid candidate query or limit.")
-        features, grams = _features(phrase), _grams(phrase)
+        features, grams = _features(phrase, is_query=True), _grams(phrase, is_query=True)
         lexical = defaultdict(float)
         for feature in sorted(features):
             for doc_id in self.postings.get(feature, ()):
