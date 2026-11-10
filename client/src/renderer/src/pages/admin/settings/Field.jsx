@@ -30,7 +30,10 @@ export const FIELDS = {
   'ops.shelfBufferDays': ['Expiry safety buffer', 'now'],
   'ops.defaultThreshold': ['Default minimum stock', 'now'],
   'ops.consultFee': ['Default consultation fee', 'now'],
-  'ops.methods': ['Payment methods', 'now']
+  'ops.methods': ['Payment methods', 'now'],
+  'ops.clusterDays': ['Cluster window (days)', 'now'],
+  'ops.clusterMinCases': ['Minimum cases', 'now'],
+  'ops.clusterRatio': ['Ratio to previous periods', 'now']
 }
 
 export function Field({ path, hint, error, changed, wide, children }) {

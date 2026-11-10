@@ -31,5 +31,9 @@ export function validate(d) {
   if (!int(d.ops.shelfBufferDays ?? 0) || (d.ops.shelfBufferDays ?? 0) < 0 || (d.ops.shelfBufferDays ?? 0) > 365) e['ops.shelfBufferDays'] = 'Enter 0–365 days.'
   if (!int(d.ops.consultFee) || d.ops.consultFee < 0) e['ops.consultFee'] = 'Enter an amount in đồng.'
   if (!d.ops.methods.length) e['ops.methods'] = 'Enable at least one payment method.'
+  const inRange = (v, lo, hi, whole) => String(v ?? '').trim() !== '' && (!whole || int(v)) && Number(v) >= lo && Number(v) <= hi
+  if (!inRange(d.ops.clusterDays, 1, 30, true)) e['ops.clusterDays'] = 'Enter 1–30 days.'
+  if (!inRange(d.ops.clusterMinCases, 2, 1000, true)) e['ops.clusterMinCases'] = 'Enter a whole number from 2 to 1000.'
+  if (!inRange(d.ops.clusterRatio, 1, 10, false)) e['ops.clusterRatio'] = 'Enter a number from 1 to 10.'
   return e
 }
