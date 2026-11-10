@@ -4,6 +4,7 @@ import { changePassword } from "../api/authApi";
 import { usePasswordMinLength } from "../api/accountStore";
 import { LANGUAGES, getLang, setLang } from "../i18n";
 import ServerAddress from "../components/ServerAddress";
+import VersionBanners from "../components/VersionBanners";
 import AppIcon from "../components/Icon";
 import Button from "../components/Button";
 import { Icon, ICONS } from "./LoginIcons";
@@ -92,6 +93,11 @@ export default function Login() {
                 : "Please set a password of your own before continuing."
               : "Sign in to the MedAssist clinic management system"}
           </p>
+        </div>
+
+        {/* Bản mới trên GitHub / lệch version với máy chủ: hiện ngay khi kết nối, trước khi đăng nhập. */}
+        <div className="login-banners">
+          <VersionBanners margin="0 0 12px" />
         </div>
 
         <div className="login-card">

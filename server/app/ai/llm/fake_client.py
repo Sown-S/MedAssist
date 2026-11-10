@@ -33,11 +33,13 @@ class FakeLLMClient:
             return _reasoning(payload)
         if title == "ExtractionOutput":
             return _extraction(payload)
+        if title == "PhraseExtractionOutput":
+            return _phrase_extraction(payload)
         raise LLMConfigurationError("Fake LLM does not support this schema.")
 
 
 def _payload(prompt: str) -> dict[str, Any]:
-    # Prompt = chỉ dẫn tĩnh + "\n" + một dòng JSON (node3_reasoning, feature_extractor).
+    # Prompt = chỉ dẫn tĩnh + "\n" + một dòng JSON.
     try:
         value = json.loads(prompt.rsplit("\n", 1)[-1])
     except ValueError:
@@ -91,3 +93,25 @@ def _extraction(payload: dict[str, Any]) -> dict[str, Any]:
         if status is not None:
             symptoms.append({"symptom_code": row["symptom_code"], "status": status})
     return {"symptoms": symptoms}
+
+
+def _phrase_extraction(payload: dict[str, Any]) -> dict[str, Any]:
+    catalogue = payload["catalogue"]
+    # Bản compact gửi ngữ cảnh qua bảng câu và dùng ID ngắn trong catalogue.
+    compact = "sentences" in payload
+    short_status = {"PRESENT": "P", "ABSENT": "A", "UNKNOWN": "U"}
+    result = {"unmapped": []}
+    for key, group in payload["groups"].items():
+        text = _fold(group["phrase"])
+        selected = []
+        for code in group["codes"]:
+            name = _fold(catalogue[code]).strip()
+            status = _status(text, name) if name else None
+            if status is None:
+                continue
+            if compact:
+                selected.append(f"{code}:{short_status[status]}")
+            else:
+                selected.append({"symptom_code": code, "status": status})
+        result[key] = selected
+    return result

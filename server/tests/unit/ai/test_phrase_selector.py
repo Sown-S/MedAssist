@@ -1,21 +1,20 @@
 """Một lượt chọn mã: enum từng cụm, schema đầy đủ, Active/HITL và deadline."""
 
 import asyncio
-from copy import deepcopy
 import json
+from copy import deepcopy
 from time import monotonic
 
 import httpx
 import pytest
 
-from app.ai.extraction.candidate_index import CandidateIndexCache
 from app.ai.extraction import phrase_selector as selector
+from app.ai.extraction.candidate_index import CandidateIndexCache
 from app.ai.extraction.phrase_retrieval import retrieve_phrases
 from app.ai.llm.client import LLMClient, LLMHTTPError, LLMResponseError
 from app.ai.pipeline.node1_red_flag_gate import run_node1
 from app.exceptions import AppError
 from tests.unit.ai.fakes import FakeKnowledgeReader
-
 
 ROWS = [{"symptom_code": "cough_dry", "symptom_name": "Ho khan"},
         {"symptom_code": "vertigo", "symptom_name": "Chóng mặt xoay tròn"}]
@@ -64,7 +63,8 @@ def test_one_call_keeps_codes_per_group_and_returns_hitl(context):
     assert result.completed and result.failure_code is None
     assert len(client.calls) == 1
     assert result.suggestions == (
-        {"symptom_code": "cough_dry", "status": "PRESENT", "label": "Reference Suggestion", "requires_confirmation": True},
+        {"symptom_code": "cough_dry", "status": "PRESENT", "label": "Reference Suggestion",
+         "requires_confirmation": True},
         {"symptom_code": "vertigo", "status": "ABSENT", "label": "Reference Suggestion", "requires_confirmation": True},
     )
     assert context[2] == [["cough_dry", "vertigo"]]
@@ -184,8 +184,37 @@ def test_cancellation_propagates(context):
 def test_expired_and_over_budget_inputs_do_not_call_llm(context):
     client = Client()
     assert run(context, client, timeout=0).failure_code == "EXTRACTION_TIMEOUT"
-    assert run(context, client, text="Ho khan;" * 13).failure_code == "REQUEST_BUDGET_EXCEEDED"
+    assert run(context, client, text="Ho khan;" * 1025).failure_code == "REQUEST_BUDGET_EXCEEDED"
     assert client.calls == []
+
+
+@pytest.mark.parametrize("repeats", [4, 13, 150, 499])
+def test_long_repeated_note_is_complete_with_one_compact_call(context, repeats):
+    client = Client({"p1": ["c1:P"], "unmapped": []})
+    result = run(context, client, text="Ho khan;" * repeats)
+    assert result.completed and len(client.calls) == 1
+    assert result.prompt_version == "extraction-phrases-compact-v3"
+    assert len(result.suggestions) == 1 and result.suggestions[0]["symptom_code"] == "cough_dry"
+    payload = json.loads(client.calls[0]["prompt"].rsplit("\n", 1)[-1])
+    assert len(payload["groups"]) == 1
+
+
+def test_invalid_compact_selection_never_reaches_active_validation(context):
+    client = Client({"p1": ["c99:P"], "unmapped": []})
+    result = run(context, client, text="Ho khan;" * 13)
+    assert not result.completed and result.failure_code == "LLMResponseError"
+    assert result.prompt_version == "extraction-phrases-compact-v3"
+    assert context[2] == [] and len(client.calls) == 1
+
+
+def test_more_than_twelve_distinct_groups_are_all_validated(context):
+    note = ";".join(f"Ho khan lần {index}" for index in range(13))
+    output = {f"p{index}": ["c1:P"] for index in range(1, 14)}
+    client = Client({**output, "unmapped": []})
+    result = run(context, client, text=note)
+    assert result.completed and len(client.calls) == 1
+    assert len(client.calls[0]["schema"]["required"]) == 14
+    assert context[2] == [["cough_dry"]]
 
 
 def test_byte_guard_is_fail_closed(context, monkeypatch):
@@ -210,7 +239,7 @@ def test_phrase_schema_requests_strict_context_and_rejects_length_output(context
     def handler(request):
         body = json.loads(request.content)
         assert body["truncate"] is False
-        assert body["options"]["num_ctx"] == 8192
+        assert "num_ctx" not in body["options"]
         assert body["options"]["num_predict"] == 768
         return httpx.Response(200, json={"done": True, "done_reason": "length", "response": json.dumps(VALID)})
     client = LLMClient(model="synthetic-local", transport=httpx.MockTransport(handler))

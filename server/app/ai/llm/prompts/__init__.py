@@ -8,6 +8,7 @@ REASONING_PROMPT_VERSION = "reasoning-v3"
 EXTRACTION_PROMPT_VERSION = "extraction-v2"
 PHRASE_EXTRACTION_PROMPT_VERSION = "extraction-phrases-v2"
 _FILES = {
+    "extraction-phrases-compact-v3": "extraction_phrases_compact_v3.txt",
     "reasoning-v1": "reasoning_v1.txt",
     "reasoning-v2": "reasoning_v2.txt",
     REASONING_PROMPT_VERSION: "reasoning_v3.txt",

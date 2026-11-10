@@ -1,16 +1,16 @@
 """AI-23: không mất span, không trộn snapshot, không suy trạng thái từ điểm tìm kiếm."""
 
-from dataclasses import FrozenInstanceError, replace
-from copy import deepcopy
 import re
+from copy import deepcopy
+from dataclasses import FrozenInstanceError, replace
 from time import monotonic
 
 import pytest
 
-from app.ai.extraction.candidate_index import CandidateIndexCache
-from app.ai.extraction.phrase_splitter import IncompleteSegmentation, split_phrases
 from app.ai.extraction import phrase_retrieval
+from app.ai.extraction.candidate_index import CandidateIndexCache
 from app.ai.extraction.phrase_retrieval import RetrievalDeadlineExceeded, retrieve_phrases
+from app.ai.extraction.phrase_splitter import IncompleteSegmentation, split_phrases
 from tests.unit.ai.fakes import FakeKnowledgeReader
 from tests.unit.ai.manual_phrase_retrieval_probe import load_cases, measure_mentions
 
@@ -55,6 +55,26 @@ def test_long_clause_windows_overlap_and_keep_tail():
     groups = split_phrases(text, window_words=12, overlap_words=4)
     assert groups[-1].text.endswith("đau đầu")
     assert all(left.end > right.start for left, right in zip(groups, groups[1:]))
+
+
+def test_numbered_items_keep_the_number_with_the_sentence_and_original_offsets():
+    text = "1. Ho khan, không khó thở.\n2. Nhiệt độ 38.5, không buồn nôn."
+    groups = split_phrases(text)
+    assert len(groups) == 4
+    assert groups[0].text == "1. Ho khan"
+    assert groups[2].text == "2. Nhiệt độ 38.5"
+    for phrase in groups:
+        assert phrase.text == text[phrase.start:phrase.end]
+        assert phrase.context == text[phrase.context_start:phrase.context_end]
+    assert groups[1].context == "1. Ho khan, không khó thở"
+    assert groups[3].context == "2. Nhiệt độ 38.5, không buồn nôn"
+
+
+def test_inline_numbers_and_decimal_temperature_still_split_normally():
+    groups = split_phrases("Ho 2 ngày. Nhiệt độ 38.5.")
+    assert len(groups) == 2
+    assert groups[0].text == "Ho 2 ngày"
+    assert groups[1].text == "Nhiệt độ 38.5"
 
 
 @pytest.mark.parametrize("text,kwargs", [
@@ -211,3 +231,38 @@ def test_development_dataset_is_separate_and_well_formed():
     assert len(cases) == 26
     assert all(case["id"].startswith("dev-r") for case in cases)
     assert all(set(case["expected_symptoms"].values()) <= {"PRESENT", "ABSENT", "UNKNOWN"} for case in cases)
+
+
+def test_accented_minimal_pairs_and_clinical_words_do_not_collide_via_strip_accents():
+    source = reader([
+        {
+            "symptom_code": "dermatophytosis_annular_active_border",
+            "symptom_name": "Mảng đỏ hình tròn giới hạn rõ (Nấm sợi, nấm da)",
+        },
+        {
+            "symptom_code": "melasma_symmetric_facial_hyperpigmentation",
+            "symptom_name": "Dát tăng sắc tố màu nâu đối xứng ở gò má (Rám má, nám da)",
+        },
+        {
+            "symptom_code": "urinary_retention",
+            "symptom_name": "Bí tiểu",
+        },
+        {
+            "symptom_code": "myalgia",
+            "symptom_name": "Đau mỏi cơ",
+        },
+    ])
+    index = CandidateIndexCache().get(source)
+    nam_soi = index.search("bị nấm da", limit=2)
+    nam_ma = index.search("bị nám da", limit=2)
+    assert nam_soi[0].symptom_code == "dermatophytosis_annular_active_border"
+    assert nam_ma[0].symptom_code == "melasma_symmetric_facial_hyperpigmentation"
+    # Truy vấn không dấu vẫn tìm được cả hai ứng viên qua nhánh không dấu.
+    unaccented = {row.symptom_code for row in index.search("bi nam da", limit=2)}
+    assert unaccented == {
+        "dermatophytosis_annular_active_border",
+        "melasma_symmetric_facial_hyperpigmentation",
+    }
+    # Các từ y khoa trùng hình thức không dấu với từ chức năng ('bí'/'bị', 'cơ'/'có') không bị mất.
+    assert index.search("bí tiểu", limit=1)[0].symptom_code == "urinary_retention"
+    assert index.search("đau cơ", limit=1)[0].symptom_code == "myalgia"

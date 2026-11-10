@@ -77,6 +77,9 @@ table.dt tr:last-child td{border-bottom:none;}
 .warn-banner.danger .txt{font-size:13.5px;color:#FCA5A5;}
 .warn-banner.caution .txt{font-size:13.5px;color:#FCD34D;}
 .warn-banner .txt b{display:block;font-size:13.5px;margin-bottom:2px;color:var(--ink);}
+/* Cảnh báo cụm ca: mỗi chẩn đoán / triệu chứng một dòng */
+.cluster-alerts{margin:0 0 14px;}
+.cluster-alerts .txt span{display:block;line-height:1.5;}
 
 .consult-footer{display:flex;justify-content:flex-end;gap:10px;margin-top:16px;padding-top:14px;border-top:1px solid var(--border);}
 

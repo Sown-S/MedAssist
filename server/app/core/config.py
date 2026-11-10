@@ -18,7 +18,7 @@ class Settings(BaseSettings):
     )
 
     PROJECT_NAME: str = "MedAssist API"
-    VERSION: str = "0.2.3"
+    VERSION: str = "0.2.4"
     ENVIRONMENT: Literal["dev", "prod"] = "dev"
 
     # API, worker, script nạp OKF: vai trò medassist_app (ERD §6.2)
@@ -60,8 +60,8 @@ class Settings(BaseSettings):
     OLLAMA_MODEL: str = "hf.co/aisingapore/Gemma-SEA-LION-v3-9B-IT-GGUF:Q4_K_M"
     # Gửi kèm mỗi request; máy admin đặt 24h để model luôn nằm sẵn trong VRAM
     OLLAMA_KEEP_ALIVE: str = "5m"
-    # AI-23: legacy gửi toàn catalog; phrases tìm ứng viên theo từng cụm. Chỉ bật phrases khi đạt nghiệm thu.
-    AI_EXTRACTION_STRATEGY: Literal["legacy", "phrases"] = "legacy"
+    # AI-23: phrases tìm ứng viên theo từng cụm; legacy gửi toàn catalog, vượt context với kho hiện tại.
+    AI_EXTRACTION_STRATEGY: Literal["legacy", "phrases"] = "phrases"
     AI_EXTRACTION_CANDIDATES_PER_PHRASE: int = Field(default=4, ge=1, le=50)
     AI_ASSESSMENT_TIMEOUT_SECONDS: float = Field(default=90, gt=0, le=90)  # tính từ lúc xếp hàng
     WORKER_POLL_SECONDS: float = Field(default=1.0, gt=0)
