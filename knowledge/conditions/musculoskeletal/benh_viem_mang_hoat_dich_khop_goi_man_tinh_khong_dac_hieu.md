@@ -10,8 +10,8 @@ description: Viêm khớp không đặc hiệu được định nghĩa là bất
 relations:
 - symptom_code: knee_effusion_crepitus_locking
   polarity: SUPPORTS
-  weight: 0.6
-  is_key: false
+  weight: 0.9
+  is_key: true
   source_key: moh_qd_361_2014
   source_edition: Quyết định số 361/QĐ-BYT
 - symptom_code: joint_swelling_warmth_redness_effusion

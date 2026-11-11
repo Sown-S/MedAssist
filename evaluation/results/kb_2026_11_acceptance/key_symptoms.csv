@@ -1,0 +1,10 @@
+﻿condition_code,symptom_code,weight_old,weight_new,source_key,lý do,ghi chú
+nhot,pustular_furuncle_folliculitis,0.6,0.9,moh_qd_75_2015,Trích dẫn mô tả sẩn viêm nang lông tiến triển thành tổn thương có mủ phù hợp thành phần nhọt của mã hiện có.,CHƯA RÀ LÂM SÀNG
+viem_nang_long,pustular_furuncle_folliculitis,0.6,0.9,moh_qd_75_2015,"Trích dẫn mô tả sẩn nhỏ tại nang lông và vảy tiết, phù hợp thành phần viêm nang lông của mã hiện có.",CHƯA RÀ LÂM SÀNG
+viem_mui_xoang_man_tinh,middle_meatus_mucopurulent_discharge,0.6,0.9,moh_qd_5643_2015,Trích dẫn mô tả mủ nhầy ở khe giữa cùng triệu chứng kéo dài trên 12 tuần; mã phản ánh dấu hiệu thực thể nhưng không mã hóa thời gian.,CHƯA RÀ LÂM SÀNG
+viem_tai_giua_man_tinh,otorrhea_ear_discharge,0.6,0.9,moh_qd_5643_2015,"Trích dẫn mô tả chảy mủ tai kéo dài/tái diễn; mã chảy tai hiện có không mã hóa thời gian, cần bác sĩ duyệt mức phân biệt.",CHƯA RÀ LÂM SÀNG
+viem_tai_giua_man_tre_em,otorrhea_ear_discharge,0.6,0.9,moh_qd_5643_2015,"Trích dẫn nêu các đợt chảy tai nhiều tuần, tái phát khi viêm mũi/VA; mã chảy tai không mã hóa thời gian, cần bác sĩ duyệt.",CHƯA RÀ LÂM SÀNG
+viem_thanh_quan_man_tinh,vocal_cord_nodule_polyp_reinke,0.6,0.9,moh_qd_5643_2015,"Trích dẫn nêu hạt xơ/phù Reinke là thể tổn thương thực thể trong viêm thanh quản mạn; dấu hiệu chỉ có ở một số thể, cần bác sĩ duyệt.",CHƯA RÀ LÂM SÀNG
+benh_thuong_han,typhoid_stepwise_fever_bradycardia_tuphos,0.6,0.9,moh_qd_5642_2015,"Trích dẫn mô tả sốt tăng dần rồi sốt cao nguyên, rối loạn tiêu hóa và nhiễm độc phù hợp mã đặc trưng thương hàn.",CHƯA RÀ LÂM SÀNG
+benh_viem_mang_hoat_dich_khop_goi_man_tinh_khong_dac_hieu,knee_effusion_crepitus_locking,0.6,0.9,moh_qd_361_2014,"Trích dẫn mô tả sưng đau một/hai khớp gối, đa số có tràn dịch; mã gộp thêm dấu hiệu khác nên cần rà lâm sàng.",CHƯA RÀ LÂM SÀNG
+hoi_chung_dau_that_lung,mechanical_spinal_pain_stiffness,0.6,0.9,moh_qd_361_2014,"Trích dẫn chẩn đoán mô tả đau cột sống thắt lưng kiểu cơ học, nghỉ ngơi có đỡ.",CHƯA RÀ LÂM SÀNG

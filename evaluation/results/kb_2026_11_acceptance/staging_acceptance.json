@@ -1,0 +1,42 @@
+{
+  "database": "medassist_kb202611_stage_20261111",
+  "source_database": "medassist_kb202610_stage_20261108",
+  "source_is_reconstructed_staging": true,
+  "source_medassist_accessed": false,
+  "release": "KB-2026.11",
+  "approval_scope": "STAGING technical simulation only; no clinical approval asserted",
+  "approver_test_account": "kb_stage_physician_test",
+  "before": {
+    "symptom": 299,
+    "condition": 169,
+    "relation": 1744,
+    "excerpt": 172,
+    "rule": 12
+  },
+  "after": {
+    "symptom": 299,
+    "condition": 153,
+    "relation": 1522,
+    "excerpt": 156,
+    "rule": 12
+  },
+  "retired_total": {
+    "symptom": 0,
+    "condition": 18,
+    "relation": 231,
+    "excerpt": 16,
+    "rule": 0
+  },
+  "disk_reconciliation": {
+    "errors": [],
+    "changes": 0,
+    "missing": 0
+  },
+  "disk_expected": {
+    "condition": 153,
+    "symptom": 299,
+    "relation": 1522,
+    "excerpt": 156,
+    "rule": 12
+  }
+}

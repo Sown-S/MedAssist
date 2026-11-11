@@ -92,7 +92,7 @@ condition_logic:
 # Cờ đỏ: Triệu chứng nguy hiểm nằm ngoài phạm vi danh mục chuẩn
 CẤP CỨU: Bệnh nhân có triệu chứng nguy hiểm bất thường ngoài phạm vi danh mục chuẩn (QĐ 1840/QĐ-BYT mục III.1), dừng gợi ý AI để Bác sĩ khám trực tiếp ngay.
 
-## Bao phủ khi thu hẹp phạm vi KB-2026.09
+## Bao phủ khi thu hẹp phạm vi (từ KB-2026.09)
 
 Các dấu hiệu cấp được xác nhận tại tiếp đón sẽ dừng DDx: hóa chất vào mắt, giảm thị lực đột ngột, chấn thương đầu mặt nặng, vết thương xuyên cổ, sặc đột ngột, co cứng hàm/toàn thân; sốt kèm dấu màng não; bong da rộng kèm tổn thương niêm mạc; chi lạnh ẩm kèm tiểu ít mới xuất hiện. Giữ nguyên các cổng suy hô hấp, sốc, ý thức, co giật và thần kinh.
 

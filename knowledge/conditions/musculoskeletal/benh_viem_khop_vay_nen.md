@@ -3,7 +3,7 @@ schema: okf_condition_v1
 condition_code: benh_viem_khop_vay_nen
 name_vi: Bệnh viêm khớp vẩy nến
 name_en: Psoriatic arthritis
-icd10_code: M89.9
+icd10_code: L40.5
 disease_group: musculoskeletal
 description: 'Viêm khớp vảy nến là tình trạng viêm khớp có liên quan với bệnh vảy nến. Tỷ lệ viêm khớp
   vảy nến chiếm 10-30% bệnh nhân bị vảy nến: 80% trường hợp có viêm khớp xuất hiện sau tổn thương vảy
