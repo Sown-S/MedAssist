@@ -978,6 +978,6 @@ symptoms:
   category: ophthalmology
 ---
 
-## Tương thích cổng an toàn KB-2026.09
+## Tương thích cổng an toàn (từ KB-2026.09)
 
 Giữ các mã nguy hiểm cũ cho hội chứng xâm nhập và chấn thương mắt để dữ liệu đầu vào trước đây vẫn được chặn ở Node 1; không coi việc bỏ mã bệnh khỏi DDx là đủ bảo vệ. Các mã quan sát mạn tính như giảm thị lực chung, tăng nhãn áp chung, khối u vùng đầu cổ và sẹo hẹp thanh khí quản không tự động gắn Emergency.

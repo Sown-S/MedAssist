@@ -11,8 +11,8 @@ description: Viêm tai giữa (VTG) mạn tính được định nghĩa là tìn
 relations:
 - symptom_code: otorrhea_ear_discharge
   polarity: SUPPORTS
-  weight: 0.6
-  is_key: false
+  weight: 0.9
+  is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: tympanic_membrane_lesion

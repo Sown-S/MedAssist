@@ -16,18 +16,6 @@ relations:
   is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: epidermolysis_bullosa_mechanobullous
-  polarity: SUPPORTS
-  weight: 0.3
-  is_key: false
-  source_key: moh_qd_75_2015
-  source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: porphyria_cutanea_tarda_photo_blisters
-  polarity: SUPPORTS
-  weight: 0.3
-  is_key: false
-  source_key: moh_qd_75_2015
-  source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: verrucous_papule_nodule_ulcer
   polarity: SUPPORTS
   weight: 0.6
