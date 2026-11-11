@@ -1,0 +1,14 @@
+{
+  "database": "medassist_kb202611_stage_seed_20261111",
+  "exit_code": 1,
+  "args": [
+    "--skip-knowledge",
+    "--skip-catalogs"
+  ],
+  "scope": "Demo flow with existing KB; no drug/service/referral catalogs loaded. Not full demo catalog acceptance.",
+  "removed_demo_ids": [
+    "DEMO2-100",
+    "DEMO2-119",
+    "DEMO2-120"
+  ]
+}

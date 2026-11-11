@@ -1,0 +1,156 @@
+{
+  "baseline": {
+    "cases": 82,
+    "red_flag": {
+      "cases": 48,
+      "enough_cases": true,
+      "recall": 1.0,
+      "meets_target": true,
+      "missed": [],
+      "false_alarms": 0
+    },
+    "priority": {
+      "accuracy": 1.0,
+      "under_triage": [],
+      "confusion": {
+        "Emergency->Emergency": 48,
+        "HighPriority->HighPriority": 3,
+        "Routine->Routine": 31
+      }
+    },
+    "rules": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "tp": 73,
+      "fp": 0,
+      "fn": 0
+    },
+    "differential": {
+      "cases": 18,
+      "top1_accuracy": 0.8333333333333334,
+      "top3_accuracy": 0.9444444444444444,
+      "macro_precision": 0.5,
+      "macro_recall": 0.8981481481481481,
+      "macro_f1": 0.6203703703703703
+    },
+    "latency": {
+      "mean_ms": 8.476829268292683,
+      "p50_ms": 0.4,
+      "p95_ms": 19.9,
+      "max_ms": 61.5
+    }
+  },
+  "current": {
+    "cases": 82,
+    "red_flag": {
+      "cases": 48,
+      "enough_cases": true,
+      "recall": 1.0,
+      "meets_target": true,
+      "missed": [],
+      "false_alarms": 0
+    },
+    "priority": {
+      "accuracy": 1.0,
+      "under_triage": [],
+      "confusion": {
+        "Emergency->Emergency": 48,
+        "HighPriority->HighPriority": 3,
+        "Routine->Routine": 31
+      }
+    },
+    "rules": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "tp": 73,
+      "fp": 0,
+      "fn": 0
+    },
+    "differential": {
+      "cases": 18,
+      "top1_accuracy": 0.8333333333333334,
+      "top3_accuracy": 0.9444444444444444,
+      "macro_precision": 0.5,
+      "macro_recall": 0.8981481481481481,
+      "macro_f1": 0.6203703703703703
+    },
+    "latency": {
+      "mean_ms": 7.36219512195122,
+      "p50_ms": 0.4,
+      "p95_ms": 17.2,
+      "max_ms": 56.7
+    }
+  },
+  "ddx_labeled_cases": 18,
+  "covered_conditions": 27,
+  "total_conditions": 153,
+  "ranking_changes": [
+    {
+      "case_id": "CLIN-002",
+      "old_top": [
+        "soi",
+        "cum_mua",
+        "hoi_chung_dress"
+      ],
+      "new_top": [
+        "soi",
+        "cum_mua",
+        "viem_mui_xoang_di_ung"
+      ]
+    },
+    {
+      "case_id": "CLIN-004",
+      "old_top": [
+        "benh_sot_ret_khang_thuoc",
+        "sot_ret",
+        "hoi_chung_dress"
+      ],
+      "new_top": [
+        "benh_sot_ret_khang_thuoc",
+        "sot_ret",
+        "viem_hong_cap_tinh"
+      ]
+    },
+    {
+      "case_id": "CLIN-005",
+      "old_top": [
+        "phoi_tac_nghen_man_tinh",
+        "hen_phe_quan",
+        "viem_phu_ne_thanh_thiet_cap_tinh"
+      ],
+      "new_top": [
+        "phoi_tac_nghen_man_tinh",
+        "hen_phe_quan",
+        "viem_thanh_quan_cap_tinh"
+      ]
+    },
+    {
+      "case_id": "CLIN-017",
+      "old_top": [
+        "viem_tai_giua_man_tinh",
+        "chong_mat",
+        "viem_tai_giua_man_tinh_co_cholesteatoma"
+      ],
+      "new_top": [
+        "viem_tai_giua_man_tinh",
+        "viem_tai_giua_man_tre_em",
+        "viem_tai_giua_man_tinh_co_cholesteatoma"
+      ]
+    },
+    {
+      "case_id": "CLIN-078",
+      "old_top": [
+        "nang_va_ro_khe_mang_ii",
+        "viem_hong_cap_tinh",
+        "ngat_mui"
+      ],
+      "new_top": [
+        "nang_va_ro_khe_mang_ii",
+        "viem_hong_cap_tinh",
+        "hong_thanh_quan_viem_mui_hong_cap_tinh"
+      ]
+    }
+  ]
+}

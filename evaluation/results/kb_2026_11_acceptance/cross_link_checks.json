@@ -1,0 +1,201 @@
+{
+  "audited_symptoms": 299,
+  "symptoms_with_parentheses": 122,
+  "old_candidates_retained_for_review": 395,
+  "decisions": {
+    "CẦN BÁC SĨ QUYẾT": 597,
+    "GIỮ": 112,
+    "XÓA": 23
+  },
+  "removed_pairs": [
+    [
+      "benh_choc",
+      "porphyria_cutanea_tarda_photo_blisters"
+    ],
+    [
+      "benh_da_do_anh_sang",
+      "epidermolysis_bullosa_mechanobullous"
+    ],
+    [
+      "benh_da_do_anh_sang",
+      "porphyria_cutanea_tarda_photo_blisters"
+    ],
+    [
+      "benh_da_nghe_nghiep",
+      "porphyria_cutanea_tarda_photo_blisters"
+    ],
+    [
+      "benh_giang_mai",
+      "epidermolysis_bullosa_mechanobullous"
+    ],
+    [
+      "benh_hat_com",
+      "epidermolysis_bullosa_mechanobullous"
+    ],
+    [
+      "benh_hat_com",
+      "porphyria_cutanea_tarda_photo_blisters"
+    ],
+    [
+      "benh_pellagra",
+      "porphyria_cutanea_tarda_photo_blisters"
+    ],
+    [
+      "benh_vay_ca",
+      "epidermolysis_bullosa_mechanobullous"
+    ],
+    [
+      "benh_zona",
+      "staphylococcal_scalded_skin_exfoliation"
+    ],
+    [
+      "day_sung_long_ban_tay_ban_chan_di_truyen",
+      "epidermolysis_bullosa_mechanobullous"
+    ],
+    [
+      "do_da_toan_than",
+      "epidermolysis_bullosa_mechanobullous"
+    ],
+    [
+      "liet_co_mo_thanh_quan",
+      "temporal_bone_fracture_hemotympanum"
+    ],
+    [
+      "nhot",
+      "sjs_ten_epidermal_necrolysis_mucosal"
+    ],
+    [
+      "sam_da",
+      "epidermolysis_bullosa_mechanobullous"
+    ],
+    [
+      "sam_da",
+      "porphyria_cutanea_tarda_photo_blisters"
+    ],
+    [
+      "san_ngua",
+      "porphyria_cutanea_tarda_photo_blisters"
+    ],
+    [
+      "u_mem_lay",
+      "epidermolysis_bullosa_mechanobullous"
+    ],
+    [
+      "u_mem_lay",
+      "porphyria_cutanea_tarda_photo_blisters"
+    ],
+    [
+      "vay_phan_hong_gibert",
+      "porphyria_cutanea_tarda_photo_blisters"
+    ],
+    [
+      "viem_da_dau_chi_ruot",
+      "sjs_ten_epidermal_necrolysis_mucosal"
+    ],
+    [
+      "viem_da_tiep_xuc_do_con_trung",
+      "porphyria_cutanea_tarda_photo_blisters"
+    ],
+    [
+      "viem_nang_long",
+      "epidermolysis_bullosa_mechanobullous"
+    ]
+  ],
+  "acceptance_examples": {
+    "still_quotidian_spiking_fever_arthralgia": {
+      "before": [
+        "viem_co_ap_xe_co_nhiem_khuan"
+      ],
+      "remaining_before_NV2": []
+    },
+    "porphyria_cutanea_tarda_photo_blisters": {
+      "before": [
+        "benh_choc",
+        "benh_da_do_anh_sang",
+        "benh_da_nghe_nghiep",
+        "benh_hat_com",
+        "benh_pellagra",
+        "benh_porphyrin_da",
+        "sam_da",
+        "san_ngua",
+        "u_mem_lay",
+        "vay_phan_hong_gibert",
+        "viem_da_tiep_xuc_do_con_trung"
+      ],
+      "remaining_before_NV2": [
+        "benh_choc",
+        "benh_da_do_anh_sang",
+        "benh_da_nghe_nghiep",
+        "benh_hat_com",
+        "benh_pellagra",
+        "benh_porphyrin_da",
+        "sam_da",
+        "san_ngua",
+        "u_mem_lay",
+        "vay_phan_hong_gibert",
+        "viem_da_tiep_xuc_do_con_trung"
+      ]
+    },
+    "epidermolysis_bullosa_mechanobullous": {
+      "before": [
+        "benh_da_do_anh_sang",
+        "benh_giang_mai",
+        "benh_hat_com",
+        "benh_vay_ca",
+        "day_sung_long_ban_tay_ban_chan_di_truyen",
+        "do_da_toan_than",
+        "ly_thuong_bi_bong_nuoc_bam_sinh",
+        "sam_da",
+        "u_mem_lay",
+        "viem_nang_long"
+      ],
+      "remaining_before_NV2": [
+        "benh_da_do_anh_sang",
+        "benh_giang_mai",
+        "benh_hat_com",
+        "benh_vay_ca",
+        "day_sung_long_ban_tay_ban_chan_di_truyen",
+        "do_da_toan_than",
+        "ly_thuong_bi_bong_nuoc_bam_sinh",
+        "sam_da",
+        "u_mem_lay",
+        "viem_nang_long"
+      ]
+    },
+    "sjs_ten_epidermal_necrolysis_mucosal": {
+      "before": [
+        "do_da_toan_than",
+        "hoi_chung_bong_vay_da_do_tu_cau",
+        "hong_ban_da_dang",
+        "nhot",
+        "viem_da_dau_chi_ruot"
+      ],
+      "remaining_before_NV2": [
+        "do_da_toan_than",
+        "hong_ban_da_dang",
+        "nhot",
+        "viem_da_dau_chi_ruot"
+      ]
+    },
+    "staphylococcal_scalded_skin_exfoliation": {
+      "before": [
+        "benh_zona",
+        "do_da_toan_than",
+        "hoi_chung_bong_vay_da_do_tu_cau"
+      ],
+      "remaining_before_NV2": [
+        "benh_zona",
+        "do_da_toan_than"
+      ]
+    },
+    "temporal_bone_fracture_hemotympanum": {
+      "before": [
+        "chong_mat",
+        "liet_co_mo_thanh_quan"
+      ],
+      "remaining_before_NV2": [
+        "liet_co_mo_thanh_quan"
+      ]
+    }
+  }
+}
