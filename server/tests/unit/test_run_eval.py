@@ -57,6 +57,35 @@ def test_extraction_metrics():
     assert m["empty_cases"] == ["E3"] and m["over_budget_cases"] == ["E3"]
 
 
+def test_extraction_metrics_completion():
+    rows = [
+        {"case_id": "P1", "expected": {}, "predicted": {}, "completed": True, "failure_code": None, "latency_ms": 1},
+        {
+            "case_id": "P2",
+            "expected": {},
+            "predicted": {},
+            "completed": False,
+            "failure_code": "TIMEOUT",
+            "latency_ms": 1,
+        },
+        {"case_id": "L1", "expected": {}, "predicted": {}, "completed": None, "failure_code": "X", "latency_ms": 1},
+        {
+            "case_id": "P3",
+            "expected": {"a": "PRESENT"},
+            "predicted": {},
+            "completed": False,
+            "failure_code": "UNMAPPED",
+            "latency_ms": 1,
+        },
+    ]
+    m = extraction_metrics(rows)
+    assert m["exact_cases"] == 2  # P2 thất bại không tính khớp
+    assert m["completed_cases"] == 1
+    assert m["failed_cases"] == {"P2": "TIMEOUT", "P3": "UNMAPPED"}
+    assert m["unclassified_cases"] == ["L1"]
+    assert m["code_only"]["fn"] == 1  # ca chưa hoàn tất vẫn trong mẫu số recall
+
+
 def test_inputs_and_unknown_codes():
     f = input_features({"age_years": 3, "symptoms": {"a": "PRESENT"}, "vital_signs": {"spo2_pct": 95}})
     assert f == {"symptoms": {"a": "PRESENT"}, "vital_signs": {"spo2_pct": 95}, "age_years": 3, "age_months": 36}

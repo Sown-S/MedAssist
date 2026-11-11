@@ -294,7 +294,7 @@ tính red-flag recall, mức ưu tiên đúng, luật khớp, top-1/top-3 và P/
 python -m scripts.run_eval --mode RuleOnly --skip-extraction   # chỉ luật, không cần LLM
 python -m scripts.run_eval                                      # RuleOnly + Full + trích xuất, LLM theo LLM_PROVIDER
 python -m scripts.run_eval --limit 3 --out ..\evaluation\results\thu
-python -m scripts.run_eval --extraction-only --extraction-cases <file ca phát triển>.jsonl
+python -m scripts.run_eval --extraction-only --extraction-cases <file ca phát triển>.jsonl --extraction-strategy phrases
 ```
 
 Kết quả (`summary.md`, `results.json`, `cases.csv`) ghi vào `evaluation/results/<thời điểm>/`. `LLM_PROVIDER=fake`
@@ -357,6 +357,8 @@ python -m scripts.seed_services
 | `LLM_PROVIDER` | | `ollama` | `fake` = LLM giả lập (dev, CI, demo; cấm ở prod), `none` = không gọi LLM |
 | `OLLAMA_BASE_URL` / `OLLAMA_MODEL` | | `http://127.0.0.1:11434` / `hf.co/aisingapore/Gemma-SEA-LION-v3-9B-IT-GGUF:Q4_K_M` | LLM cục bộ cho worker (một model cho trích xuất và reasoning) |
 | `OLLAMA_KEEP_ALIVE` | | `5m` | Thời gian Ollama giữ model trong VRAM sau mỗi request; máy admin dùng `24h` |
+| `AI_EXTRACTION_STRATEGY` | | `phrases` | Cách trích xuất triệu chứng: `phrases` (ứng viên theo từng cụm) hoặc `legacy` (gửi toàn catalog, vượt context với kho hiện tại) |
+| `AI_EXTRACTION_CANDIDATES_PER_PHRASE` | | `4` | Số ứng viên mỗi cụm khi dùng `phrases` (1–50) |
 | `AI_ASSESSMENT_TIMEOUT_SECONDS` | | `90` | Ngân sách một lần đánh giá, tính từ lúc xếp hàng |
 | `WORKER_LEASE_SECONDS` / `WORKER_MAX_ATTEMPTS` | | `150` / `2` | Hạn thuê việc; số lần thử trước khi `Failed` |
 | `TEST_DATABASE_URL` / `TEST_MIGRATION_DATABASE_URL` | | tự suy ra | Ghi đè DB cho pytest (thường không cần) |
@@ -377,6 +379,7 @@ Tiền tố `/api/v1`. Chi tiết tham số và schema: **Swagger `/docs`** (lu�
 | Phòng | `GET rooms` (`include_inactive`); `POST admin/rooms`; `PATCH admin/rooms/{id}` | Mọi vai trò xem; Admin sửa. Gán bác sĩ vào phòng bằng `room_id` của tài khoản |
 | Nhật ký | `GET admin/audit-logs`; `GET admin/audit-logs/export` (xlsx mặc định, csv) | Admin |
 | Báo cáo, nhật ký AI | `GET reports/summary` (`date_from`, `date_to`, mặc định hôm nay); `GET admin/ai-logs` (lọc ngày, `run_type`, `status`, `mode`; chỉ metadata) | Admin |
+| Cảnh báo cụm ca | `GET reports/clusters` (`date_to`, mặc định hôm nay): chẩn đoán đã xác nhận hoặc triệu chứng PRESENT có ≥ M bệnh nhân trong N ngày và gấp R lần trung bình 4 kỳ trước; ngưỡng ở khóa `alerts.cluster`; chỉ số đếm | Admin, Physician |
 | Tham số | `GET admin/settings`; `PUT admin/settings/{key}` | Admin |
 | Bệnh nhân | `GET/POST patients`; `GET patients/lookup` (mã, SĐT, CCCD, năm sinh); `GET/PATCH patients/{id}`; `GET patients/{id}/visits` | Nurse tạo/sửa; Physician, Nurse xem |
 | Hồ sơ khám (EMR) | `GET patients/{id}/history`; `GET visits/{id}/record` | Physician, Nurse |

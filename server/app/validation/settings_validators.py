@@ -50,6 +50,17 @@ class _IdleLogoutMinutes(BaseModel):
     value: int = Field(ge=0, le=480, strict=True)  # 0 = không tự đăng xuất
 
 
+class ClusterAlerts(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    window_days: int = Field(ge=1, le=30, strict=True)
+    min_cases: int = Field(ge=2, le=1000, strict=True)
+    ratio: float = Field(ge=1, le=10)
+
+
+class _ClusterAlerts(BaseModel):
+    value: ClusterAlerts
+
+
 class _ConsultationServiceCode(BaseModel):
     value: str = Field(max_length=20, pattern=r"^[A-Za-z0-9_-]*$")  # rỗng = dùng phí khám mặc định
 
@@ -80,6 +91,12 @@ SETTINGS: dict[str, tuple[type[BaseModel], Any, str]] = {
         _IdleLogoutMinutes,
         15,
         "Số phút không thao tác thì client tự đăng xuất; 0 = tắt",
+    ),
+    "alerts.cluster": (
+        _ClusterAlerts,
+        {"window_days": 7, "min_cases": 5, "ratio": 2.0},
+        "Cảnh báo cụm ca: trong N ngày có ít nhất M bệnh nhân cùng chẩn đoán/triệu chứng và gấp R lần "
+        "trung bình các kỳ N ngày trước",
     ),
 }
 

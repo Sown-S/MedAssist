@@ -13,3 +13,5 @@
 .login-field input:focus{outline:none;border-color:var(--accent);}
 .login-err{background:var(--warn-soft);color:#FCA5A5;font-size:12px;padding:8px 11px;border-radius:9px;margin-bottom:12px;display:none;}
 .login-err.show{display:block;}
+.login-banners{width:100%;}
+.login-banners:empty{display:none;}

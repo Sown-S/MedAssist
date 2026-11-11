@@ -6,12 +6,15 @@ import os
 import pytest
 from pydantic import ValidationError
 
+from app.ai.extraction import compact_selection, dispatch
 from app.ai.llm.errors import LLMConfigurationError, LLMTimeoutError
 from app.ai.llm.fake_client import FakeLLMClient
 from app.ai.llm.output_schemas import ReasoningOutput, reasoning_json_schema
+from app.ai.llm.prompts import PHRASE_EXTRACTION_PROMPT_VERSION
 from app.ai.pipeline.node3_reasoning import run_node3
 from app.core.config import Settings
-from tests.unit.ai.test_extraction import catalogue, codes_and_statuses, extract  # noqa: F401
+from tests.unit.ai.fakes import FakeKnowledgeReader
+from tests.unit.ai.test_extraction import ROWS, catalogue, codes_and_statuses, extract, gated_state  # noqa: F401
 from tests.unit.ai.test_node3 import retrieved_state
 
 
@@ -39,6 +42,25 @@ def test_extraction_reads_present_absent_unknown_from_note(catalogue):  # noqa: 
 
 def test_extraction_matches_whole_words_only(catalogue):  # noqa: F811
     assert extract(catalogue, FakeLLMClient(), text="Dặn cho uống nhiều nước.") == []
+
+
+@pytest.mark.parametrize(("text", "prompt_version"), [
+    ("Sốt 2 ngày. Không ho. Chưa rõ khó thở.", PHRASE_EXTRACTION_PROMPT_VERSION),
+    ("Sốt 2 ngày. Không ho. Chưa rõ khó thở. Dặn cho uống nước.", compact_selection.PROMPT_VERSION),
+])
+def test_fake_extraction_through_default_dispatch(catalogue, text, prompt_version):  # noqa: F811
+    result = asyncio.run(dispatch.run_extraction(
+        text, FakeKnowledgeReader(symptoms=ROWS), FakeLLMClient(), catalogue.db,
+        gate_state=gated_state(), identifiers=[], timeout_seconds=5,
+    ))
+
+    assert result.strategy == "phrases"
+    assert result.completed is True and result.failure_code is None
+    assert result.prompt_version == prompt_version
+    assert codes_and_statuses(result.suggestions) == {
+        "signal_a": "PRESENT", "signal_b": "ABSENT", "signal_c": "UNKNOWN",
+    }
+    assert all(row["requires_confirmation"] for row in result.suggestions)
 
 
 def test_unsupported_schema_and_exhausted_budget():

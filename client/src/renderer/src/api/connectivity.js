@@ -28,13 +28,25 @@ function readAi(body) {
   }
 }
 
+// Version máy chủ theo /health (đọc kèm mỗi lần hỏi, không gọi thêm): khác version client thì giao diện cảnh báo.
+let serverVersion = null
+function readVersion(body) {
+  const v = typeof body?.version === 'string' ? body.version : null
+  if (v && v !== serverVersion) {
+    serverVersion = v
+    emit()
+  }
+}
+
 async function probe() {
   let ok = false
   try {
     const res = await fetch(getBaseUrl() + '/health', { signal: AbortSignal.timeout(TIMEOUT_MS), cache: 'no-store' })
     // /health trả 503 khi CSDL lỗi: máy chủ vẫn trả lời nhưng không ghi được → coi như mất kết nối.
     ok = res.ok
-    readAi(await res.json().catch(() => null))
+    const body = await res.json().catch(() => null)
+    readAi(body)
+    readVersion(body)
   } catch {
     ok = false
   }
@@ -67,4 +79,10 @@ export const useServerSlow = () => useSyncExternalStore(subscribeSlow, isServerS
 export function useAiHealth() {
   useEffect(start, [])
   return useSyncExternalStore(subscribe, () => ai)
+}
+
+// Version máy chủ đọc từ /health; null khi chưa kết nối được lần nào hoặc server cũ không báo.
+export function useServerVersion() {
+  useEffect(start, [])
+  return useSyncExternalStore(subscribe, () => serverVersion)
 }

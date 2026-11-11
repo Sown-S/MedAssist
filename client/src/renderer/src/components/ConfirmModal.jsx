@@ -2,7 +2,7 @@ import Icon from './Icon'
 export default function ConfirmModal({ open, message, onConfirm, onCancel }) {
   if (!open) return null
   return (
-    <div className="modal-overlay show center" onClick={(e) => e.target === e.currentTarget && onCancel()}>
+    <div className="modal-overlay show center">
       <div className="confirm-box">
         <div className="ic">
   <Icon name="alert" />
