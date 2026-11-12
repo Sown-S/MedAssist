@@ -1,7 +1,7 @@
 /* Sổ quỹ */
 
 .cash-filters{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:14px;}
-.cash-filters select,.cash-filters input{padding:8px 10px;border:1px solid var(--border);border-radius:9px;font-size:13.5px;background:var(--field-bg);color:var(--ink);font-family:'Plus Jakarta Sans Variable',sans-serif;}
+.cash-filters select,.cash-filters input{padding:8px 10px;border:1px solid var(--border);border-radius:9px;font-size:13.5px;background:var(--field-bg);color:var(--ink);font-family:var(--font);}
 .cash-filters select option{background:var(--solid);}
 .cash-filters .grow{flex:1;min-width:180px;}
-.notif-item.urgent b{color:#FCA5A5;}
+.notif-item.urgent b{color:var(--warn-ink);}

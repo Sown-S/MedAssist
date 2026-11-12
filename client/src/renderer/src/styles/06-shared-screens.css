@@ -5,24 +5,24 @@
 #appShell.show{display:block;}
 
 /* Hộp xác nhận / tìm kiếm */
-.confirm-box{background:var(--solid);border:1px solid var(--border);border-radius:18px;padding:20px 22px;width:300px;text-align:center;box-shadow:0 30px 70px -20px rgba(0,0,0,.6);}
+.confirm-box{background:var(--solid);border:1px solid var(--border);border-radius:18px;padding:20px 22px;width:300px;text-align:center;box-shadow:0 30px 70px -20px rgba(16,24,40,.16);}
 .confirm-box .ic{font-size:23px;margin-bottom:8px;}
 .confirm-box p{font-size:14.5px;margin:0 0 16px;color:var(--ink);}
 .confirm-actions{display:flex;gap:8px;}
 .confirm-actions .btn{flex:1;}
 
 /* Cờ đỏ */
-.redflag-overlay{position:fixed;inset:0;background:rgba(69,10,10,.82);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;z-index:80;padding:20px;}
+.redflag-overlay{position:fixed;inset:0;background:var(--warn-soft);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;z-index:80;padding:20px;}
 .redflag-overlay.show{display:flex;}
-.redflag-box{background:var(--solid);border:1px solid rgba(239,68,68,.3);border-radius:20px;padding:30px 28px;width:460px;max-width:100%;border-top:6px solid var(--warn);text-align:center;box-shadow:0 30px 70px -20px rgba(0,0,0,.6);}
+.redflag-box{background:var(--solid);border:1px solid rgba(239,68,68,.3);border-radius:20px;padding:30px 28px;width:460px;max-width:100%;border-top:6px solid var(--warn);text-align:center;box-shadow:0 30px 70px -20px rgba(16,24,40,.16);}
 .redflag-box .ic{font-size:40px;margin-bottom:10px;}
-.redflag-box h3{color:#FCA5A5;font-size:19px;margin:0 0 8px;}
+.redflag-box h3{color:var(--warn-ink);font-size:19px;margin:0 0 8px;}
 .redflag-box p{font-size:14.5px;color:var(--ink);margin:0 0 6px;line-height:1.5;}
 .redflag-box .note{font-size:12.5px;color:var(--ink-soft);margin-bottom:18px;}
 .redflag-actions{display:flex;flex-direction:column;gap:8px;}
 
 /* Thuốc thiết yếu */
-.essential-chip{font-size:10.5px;font-weight:700;background:var(--warn-soft);color:#FCA5A5;padding:2px 6px;border-radius:20px;margin-left:6px;}
+.essential-chip{font-size:10.5px;font-weight:700;background:var(--warn-soft);color:var(--warn-ink);padding:2px 6px;border-radius:20px;margin-left:6px;}
 
 /* Báo cáo */
 .report-toolbar{display:flex;gap:10px;align-items:center;margin-bottom:16px;}
@@ -32,7 +32,7 @@
 .report-grid .card-title{margin-bottom:8px;}
 .bar-row{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
 .bar-row .lbl{width:110px;font-size:13px;color:var(--ink-soft);}
-.bar-track{flex:1;height:12px;background:rgba(255,255,255,.08);border-radius:20px;overflow:hidden;}
+.bar-track{flex:1;height:12px;background:rgba(16,24,40,0.044);border-radius:20px;overflow:hidden;}
 .bar-fill{height:100%;background:var(--primary);border-radius:20px;}
 .bar-row .num{width:86px;text-align:right;font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--ink);}
 
@@ -50,8 +50,8 @@
 
 /* Chọn ICD-10 / đơn mẫu */
 .icd-picker{position:relative;}
-.icd-picker>input{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:9px;font-size:14.5px;font-family:'Plus Jakarta Sans Variable',sans-serif;background:var(--field-bg);color:var(--ink);}
-.icd-list{display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--solid);border:1px solid var(--border);border-radius:12px;box-shadow:0 20px 50px -14px rgba(0,0,0,.6);z-index:10;overflow:hidden;}
+.icd-picker>input{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:9px;font-size:14.5px;font-family:var(--font);background:var(--field-bg);color:var(--ink);}
+.icd-list{display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--solid);border:1px solid var(--border);border-radius:12px;box-shadow:0 20px 50px -14px rgba(16,24,40,.16);z-index:10;overflow:hidden;}
 .icd-list.show{display:block;}
 .icd-opt{padding:9px 12px;font-size:13.5px;cursor:pointer;border-bottom:1px solid var(--border);color:var(--ink);}
 .icd-opt:last-child{border-bottom:none;}
@@ -59,12 +59,12 @@
 .icd-opt b{font-family:'IBM Plex Mono',monospace;color:var(--accent);margin-right:6px;font-size:12.5px;}
 
 /* Toast, spinner, ô trống */
-.toast{position:fixed;right:20px;bottom:20px;background:var(--solid);border:1px solid var(--border);color:#fff;padding:12px 16px;border-radius:12px;font-size:13.5px;display:none;align-items:center;gap:9px;z-index:90;box-shadow:0 20px 50px -14px rgba(0,0,0,.6);}
+.toast{position:fixed;right:20px;bottom:20px;background:var(--solid);border:1px solid var(--border);color:var(--ink);box-shadow:var(--shadow-lg);padding:12px 16px;border-radius:12px;font-size:13.5px;display:none;align-items:center;gap:9px;z-index:90;box-shadow:0 20px 50px -14px rgba(16,24,40,.16);}
 .toast.show{display:flex;}
-.toast .ic{color:#4ADE80;}
+.toast .ic{color:var(--success-ink);}
 .toast.error{border-color:rgba(239,68,68,.55);}
-.toast.error .ic{color:#FCA5A5;font-weight:700;}
-.spinner{width:16px;height:16px;border-radius:50%;border:2px solid rgba(255,255,255,.25);border-top-color:#fff;animation:spin .7s linear infinite;display:inline-block;}
+.toast.error .ic{color:var(--warn-ink);font-weight:700;}
+.spinner{width:16px;height:16px;border-radius:50%;border:2px solid rgba(16,24,40,0.12);border-top-color:currentColor;animation:spin .7s linear infinite;display:inline-block;}
 @keyframes spin{to{transform:rotate(360deg);}}
 /* Spinner trong nút theo màu chữ của nút (dùng được cho nút đậm lẫn nút ghost); nút đang chạy không bị mờ như disabled. */
 .btn-spinner{width:13px;height:13px;border-color:currentColor;border-right-color:transparent;opacity:.85;vertical-align:-2px;margin-right:7px;}
@@ -75,7 +75,7 @@
 .empty-state b{display:block;color:var(--ink);font-size:14.5px;margin-bottom:3px;}
 .empty-state p{font-size:13px;margin:0;}
 .field-error{border-color:var(--warn) !important;background:rgba(239,68,68,.08) !important;}
-.field-error-msg{font-size:12px;color:#FCA5A5;margin-top:3px;display:none;}
+.field-error-msg{font-size:12px;color:var(--warn-ink);margin-top:3px;display:none;}
 .field-error-msg.show{display:block;}
 
 /* Nhãn “ngoài phạm vi” */

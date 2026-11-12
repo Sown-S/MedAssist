@@ -1,7 +1,7 @@
 /* Tab trong trang, thẻ bệnh nhân, modal, form, bảng, badge, khung khám, cảnh báo, hoá đơn */
 
-.itabs{display:inline-flex;gap:4px;background:rgba(255,255,255,.04);padding:3px;border-radius:10px;margin-bottom:13px;}
-.itab{padding:6px 13px;border-radius:7px;font-size:13.5px;font-weight:600;cursor:pointer;color:var(--ink-soft);border:none;background:transparent;font-family:'Plus Jakarta Sans Variable',sans-serif;}
+.itabs{display:inline-flex;gap:4px;background:rgba(16,24,40,0.022);padding:3px;border-radius:10px;margin-bottom:13px;}
+.itab{padding:6px 13px;border-radius:7px;font-size:13.5px;font-weight:600;cursor:pointer;color:var(--ink-soft);border:none;background:transparent;font-family:var(--font);}
 .itab.active{background:var(--primary);color:#fff;}
 .ipanel{display:none;}
 .ipanel.active{display:block;}
@@ -15,7 +15,7 @@
 .p-meta{font-size:12.5px;color:var(--ink-soft);}
 .p-right{display:flex;align-items:center;gap:8px;}
 .time{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-soft);}
-.flag-priority{display:flex;align-items:center;gap:4px;background:var(--priority-soft);color:#FCD34D;padding:3px 9px;border-radius:20px;font-size:11.5px;font-weight:700;}
+.flag-priority{display:flex;align-items:center;gap:4px;background:var(--priority-soft);color:var(--priority-ink);padding:3px 9px;border-radius:20px;font-size:11.5px;font-weight:700;}
 .chevron{font-size:12px;color:var(--ink-soft);transition:transform .2s;}
 .p-card.open .chevron{transform:rotate(90deg);}
 .p-detail{max-height:0;overflow:hidden;transition:max-height .25s ease;background:rgba(0,0,0,.15);}
@@ -28,7 +28,7 @@
 
 .modal-overlay{position:fixed;inset:0;background:rgba(2,6,23,.72);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:none;align-items:flex-start;justify-content:center;z-index:60;padding:40px 20px;overflow-y:auto;}
 .modal-overlay.show{display:flex;}
-.modal-box{background:var(--solid);border:1px solid var(--border);border-radius:20px;padding:26px 26px 22px;width:660px;max-width:100%;box-shadow:0 30px 70px -20px rgba(0,0,0,.6);}
+.modal-box{background:var(--solid);border:1px solid var(--border);border-radius:20px;padding:26px 26px 22px;width:660px;max-width:100%;box-shadow:0 30px 70px -20px rgba(16,24,40,.16);}
 .modal-box.wide{width:760px;}
 .modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;}
 .modal-head h3{margin:0;font-size:17.5px;color:var(--ink);}
@@ -39,8 +39,8 @@
 .field{display:flex;flex-direction:column;gap:5px;}
 .field.full{grid-column:1/-1;}
 .field label{font-size:13px;color:var(--ink-soft);font-weight:600;}
-.field input,.field textarea,.field select{padding:9px 11px;border:1px solid var(--border);border-radius:9px;font-family:'Plus Jakarta Sans Variable',sans-serif;font-size:14.5px;background:var(--field-bg);color:var(--ink);}
-.field input::placeholder,.field textarea::placeholder{color:#64748B;}
+.field input,.field textarea,.field select{padding:9px 11px;border:1px solid var(--border);border-radius:9px;font-family:var(--font);font-size:14.5px;background:var(--field-bg);color:var(--ink);}
+.field input::placeholder,.field textarea::placeholder{color:#8A97A3;}
 .field input:focus,.field textarea:focus,.field select:focus{outline:none;border-color:var(--accent);}
 .form-actions{margin-top:16px;display:flex;justify-content:flex-end;gap:10px;}
 
@@ -49,16 +49,16 @@ table.dt th{text-align:left;font-size:11.5px;color:var(--ink-soft);text-transfor
 table.dt td{padding:8px 9px;border-bottom:1px solid var(--border);color:var(--ink);}
 table.dt tr:last-child td{border-bottom:none;}
 .badge{font-size:11.5px;font-weight:700;padding:3px 8px;border-radius:20px;white-space:nowrap;}
-.badge.ok{background:rgba(34,197,94,.16);color:#4ADE80;}
-.badge.low{background:var(--warn-soft);color:#FCA5A5;}
+.badge.ok{background:rgba(34,197,94,.16);color:var(--success-ink);}
+.badge.low{background:var(--warn-soft);color:var(--warn-ink);}
 
 .doc-layout{display:grid;grid-template-columns:250px 1fr 1fr;gap:16px;align-items:start;}
 .consult-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--border);}
 .consult-head h2{margin:0 0 3px;font-size:19px;color:var(--ink);}
 .consult-head .sub{font-size:13px;color:var(--ink-soft);}
-.status-chip{font-size:11.5px;font-weight:700;padding:5px 11px;border-radius:20px;background:var(--primary-soft);color:#93C5FD;font-family:'IBM Plex Mono',monospace;white-space:nowrap;}
+.status-chip{font-size:11.5px;font-weight:700;padding:5px 11px;border-radius:20px;background:var(--primary-soft);color:var(--primary-ink);font-family:'IBM Plex Mono',monospace;white-space:nowrap;}
 
-.ai-box{border:1.5px dashed rgba(34,211,238,.45);background:rgba(34,211,238,.07);border-radius:12px;padding:12px 14px;margin-bottom:14px;display:flex;gap:9px;}
+.ai-box{border:1.5px dashed rgba(24,119,242,.45);background:rgba(24,119,242,.07);border-radius:12px;padding:12px 14px;margin-bottom:14px;display:flex;gap:9px;}
 .ai-box .icon{font-size:16px;}
 .ai-box .label{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;color:var(--accent);letter-spacing:.05em;text-transform:uppercase;margin-bottom:3px;}
 .ai-box .content{font-size:14px;color:var(--ink);}
@@ -74,8 +74,8 @@ table.dt tr:last-child td{border-bottom:none;}
 .warn-banner.danger{background:var(--warn-soft);border:1px solid rgba(239,68,68,.35);}
 .warn-banner.caution{background:var(--priority-soft);border:1px solid rgba(245,158,11,.35);}
 .warn-banner .icon{font-size:16px;}
-.warn-banner.danger .txt{font-size:13.5px;color:#FCA5A5;}
-.warn-banner.caution .txt{font-size:13.5px;color:#FCD34D;}
+.warn-banner.danger .txt{font-size:13.5px;color:var(--warn-ink);}
+.warn-banner.caution .txt{font-size:13.5px;color:var(--priority-ink);}
 .warn-banner .txt b{display:block;font-size:13.5px;margin-bottom:2px;color:var(--ink);}
 /* Cảnh báo cụm ca: mỗi chẩn đoán / triệu chứng một dòng */
 .cluster-alerts{margin:0 0 14px;}

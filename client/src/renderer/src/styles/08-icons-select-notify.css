@@ -5,8 +5,8 @@
 .confirm-box .ic{color:var(--priority);}
 .redflag-box .ic{color:var(--warn);}
 .warn-banner .icon,.ai-box .icon{display:flex;padding-top:1px;}
-.warn-banner.danger .icon{color:#FCA5A5;}
-.warn-banner.caution .icon{color:#FCD34D;}
+.warn-banner.danger .icon{color:var(--warn-ink);}
+.warn-banner.caution .icon{color:var(--priority-ink);}
 .ai-box .icon{color:var(--accent);}
 
 /* Ô select: thay mũi tên gốc của trình duyệt */

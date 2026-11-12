@@ -116,7 +116,7 @@ export function EditWaitingModal({ visit, onClose }) {
           <Icon name="zap" /> {translate('Condition worsened while waiting? Update the symptoms and vital signs — the priority is re-assessed when you save.')}
         </p>
         {vit.warnings.length > 0 && (
-          <p className="ai-soft" style={{ color: '#FCD34D', fontSize: 12.5, margin: '4px 0 0' }}>
+          <p className="ai-soft" style={{ color: 'var(--priority-ink)', fontSize: 12.5, margin: '4px 0 0' }}>
             <Icon name="alert" /> {translate('Unusual value — please double-check')}: {vit.warnings.map((w) => translate(w)).join(' · ')}
           </p>
         )}

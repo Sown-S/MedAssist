@@ -1,6 +1,6 @@
 /* Trang chủ quản trị, chọn ngôn ngữ ở đăng nhập */
 
-.badge.warn{background:var(--priority-soft);color:#FCD34D;}
+.badge.warn{background:var(--priority-soft);color:var(--priority-ink);}
 .dash-grid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:14px;margin-bottom:14px;align-items:stretch;}
 /* Vùng nội dung Admin đã trừ sidebar 232px: dưới ~1200px cột phải quá hẹp → xếp một cột. */
 @media (max-width:1200px){.dash-grid{grid-template-columns:minmax(0,1fr);}}
@@ -15,14 +15,14 @@
 .signout-row .alert-txt{flex:1;min-width:0;}
 .signout-row .btn{flex-shrink:0;}
 .alert-ic{display:flex;font-size:19px;}
-.alert-ic.critical{color:#FCA5A5;}
-.alert-ic.warning{color:#FCD34D;}
+.alert-ic.critical{color:var(--warn-ink);}
+.alert-ic.warning{color:var(--priority-ink);}
 .alert-txt{display:flex;flex-direction:column;gap:2px;flex:1;min-width:0;}
 .alert-txt b{font-size:14px;font-weight:600;color:var(--ink);}
 .alert-txt span{font-size:12.5px;color:var(--ink-soft);}
 .status-row{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--border);}
 .dash-click{cursor:pointer;transition:border-color .15s;}
-.dash-click:hover{border-color:rgba(255,255,255,.25);}
+.dash-click:hover{border-color:rgba(16,24,40,0.12);}
 .dash-link{margin-left:auto;font-size:13px;font-weight:600;color:var(--ink-soft);}
 .mini-chart{display:flex;align-items:stretch;gap:2px;height:230px;padding-top:4px;}
 .mini-col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;min-width:0;}
@@ -38,6 +38,6 @@
 
 /* Chọn ngôn ngữ ở trang đăng nhập */
 .login-lang{display:flex;justify-content:center;gap:6px;margin-top:14px;}
-.login-lang button{padding:5px 12px;border-radius:8px;border:1px solid transparent;background:none;color:#CBD5E1;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;}
+.login-lang button{padding:5px 12px;border-radius:8px;border:1px solid transparent;background:none;color:var(--ink-2);font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;}
 .login-lang button:hover{background:var(--surface-hover);}
 .login-lang button.active{border-color:var(--border);background:var(--surface-alt);color:#fff;}

@@ -198,7 +198,7 @@ export default function ConsultForm({ visit, user, onDone, onNext }) {
 
         <ReminderPanel visit={visit} />
         {tried && problem && (
-          <p className="ai-soft" style={{ color: '#FCD34D', fontSize: 12.5, margin: '12px 0 0' }}>
+          <p className="ai-soft" style={{ color: 'var(--priority-ink)', fontSize: 12.5, margin: '12px 0 0' }}>
             {translate(problem)}
           </p>
         )}

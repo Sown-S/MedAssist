@@ -22,16 +22,16 @@
 .dq-item .btn-sm{padding:5px 9px;font-size:12px;}
 .doc-ta{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:9px;font-size:14px;font-family:inherit;background:var(--field-bg);color:var(--ink);resize:vertical;}
 .doc-ta:focus{outline:none;border-color:var(--accent);}
-.req{color:#F87171;}
-.field-error .icd-picker>input{border-color:#F87171;}
+.req{color:var(--warn-ink);}
+.field-error .icd-picker>input{border-color:var(--warn-ink);}
 .rx-quick{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:12px;margin:-2px 0 12px;}
-.chip-btn{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;border:1px solid var(--border);background:var(--surface);color:var(--ink-soft);font:600 12px 'Plus Jakarta Sans Variable';cursor:pointer;}
+.chip-btn{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;border:1px solid var(--border);background:var(--surface);color:var(--ink-soft);font:600 12px var(--font);cursor:pointer;}
 .chip-btn:hover{color:var(--ink);border-color:var(--primary);}
-.chip-btn.accent{color:#67E8F9;border-color:rgba(34,211,238,.35);}
+.chip-btn.accent{color:var(--primary-ink);border-color:rgba(24,119,242,.35);}
 .chip-btn svg{width:13px;height:13px;}
 .rx-lines{display:flex;flex-direction:column;gap:8px;}
 .rx-line{padding:10px 12px;border:1px solid var(--border);border-radius:11px;background:var(--surface);}
-.rx-line.bad{border-color:rgba(248,113,113,.6);}
+.rx-line.bad{border-color:rgba(220,38,38,.6);}
 .rx-line-top{display:flex;align-items:center;gap:8px;}
 .rx-line-top b{font-size:14px;color:var(--ink);flex:1;min-width:0;}
 .rx-ess{display:inline-flex;align-items:center;gap:4px;font-size:11.5px;color:var(--ink-soft);cursor:pointer;}
@@ -42,7 +42,7 @@
 .rx-line-fields input{padding:7px 9px;border:1px solid var(--border);border-radius:8px;background:var(--field-bg);color:var(--ink);font-size:13.5px;font-family:inherit;}
 .rx-usage{flex:1;min-width:0;}
 .rx-reminder{display:flex;gap:10px;align-items:flex-start;margin:12px 0 0;padding:10px 12px;border-radius:11px;background:var(--surface-alt);border:1px dashed var(--border);font-size:13px;color:var(--ink);}
-.rx-reminder>svg{width:17px;height:17px;flex-shrink:0;color:#FCD34D;margin-top:2px;}
+.rx-reminder>svg{width:17px;height:17px;flex-shrink:0;color:var(--priority-ink);margin-top:2px;}
 .rx-reminder>div{display:flex;flex-direction:column;gap:3px;}
 .rx-reminder small{font-size:12px;color:var(--ink-soft);}
 .drug-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px;}
@@ -70,7 +70,7 @@
 .dq-h svg{width:14px;height:14px;transition:transform .2s ease;transform:rotate(-90deg);}
 .dq-group.open>.dq-h svg{transform:none;}
 .dq-empty{font-size:12px;color:var(--ink-soft);margin:2px 4px 8px;}
-.dq-note{font-size:11.5px;color:#FCD34D;margin:6px 2px 4px;line-height:1.4;}
+.dq-note{font-size:11.5px;color:var(--priority-ink);margin:6px 2px 4px;line-height:1.4;}
 .dq-item.static{cursor:default;}
 .dq-item.static:hover{border-color:var(--border);}
 .dq-item.done{opacity:.8;}
@@ -117,5 +117,5 @@ table.dt.lab-res-table td:first-child{width:52%;color:var(--ink-soft);}
 .lab-entry-row input:focus{outline:none;border-color:var(--accent);}
 
 .exp-days{font-size:11px;font-family:'IBM Plex Mono',monospace;color:var(--ink-soft);margin-left:4px;}
-.exp-days.near{color:#FCD34D;}
-.exp-days.soon{color:#FCA5A5;font-weight:700;}
+.exp-days.near{color:var(--priority-ink);}
+.exp-days.soon{color:var(--warn-ink);font-weight:700;}

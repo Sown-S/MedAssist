@@ -4,20 +4,20 @@
 table.dt th.num,table.dt td.num{text-align:right;}
 .inv-sort{cursor:pointer;user-select:none;}
 .inv-sort:hover{color:var(--ink);}
-.inv-sort.on{color:#BFDBFE;}
+.inv-sort.on{color:var(--primary-ink);}
 .inv-sort-ic{font-size:10px;opacity:.7;}
 .inv-table td{vertical-align:top;}
 .inv-drug{display:flex;gap:6px;align-items:flex-start;}
 .inv-drug > .icn{margin-top:3px;color:var(--ink-soft);}
 .inv-status{display:flex;flex-direction:column;gap:4px;align-items:flex-start;}
 .inv-exp{white-space:nowrap;}
-.inv-exp.warn{color:#FCD34D;}
-.inv-exp.bad{color:#FCA5A5;font-weight:600;}
-.inv-plus{color:#86EFAC;}
-.inv-minus{color:#FCA5A5;}
-.essential-chip.inv-ctrl{background:rgba(168,85,247,.18);color:#D8B4FE;}
-.inv-open td{background:rgba(59,130,246,.06);border-bottom-color:transparent;}
-.inv-batches > td{background:rgba(255,255,255,.03);padding:10px 14px 14px 32px;}
+.inv-exp.warn{color:var(--priority-ink);}
+.inv-exp.bad{color:var(--warn-ink);font-weight:600;}
+.inv-plus{color:var(--success-ink);}
+.inv-minus{color:var(--warn-ink);}
+.essential-chip.inv-ctrl{background:rgba(168,85,247,.18);color:var(--violet);}
+.inv-open td{background:rgba(24,119,242,.06);border-bottom-color:transparent;}
+.inv-batches > td{background:rgba(16,24,40,0.017);padding:10px 14px 14px 32px;}
 .inv-batch-box table.dt{font-size:13px;}
 .inv-batch-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px;font-size:13.5px;}
 .inv-expired td{background:rgba(239,68,68,.07);}
@@ -25,11 +25,11 @@ table.dt th.num,table.dt td.num{text-align:right;}
 .rx-drop{position:absolute;top:100%;left:0;right:0;z-index:20;margin-top:4px;}
 .rx-drop .icd-opt{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
 .rx-stock{display:flex;align-items:center;gap:4px;font-size:11.5px;margin-top:3px;font-weight:600;}
-.rx-stock.danger{color:#FCA5A5;}
-.rx-stock.caution{color:#FCD34D;}
+.rx-stock.danger{color:var(--warn-ink);}
+.rx-stock.caution{color:var(--priority-ink);}
 
 /* Nhà cung cấp */
-.sp-warn{color:#FCD34D;font-weight:600;}
+.sp-warn{color:var(--priority-ink);font-weight:600;}
 .rc-facts{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:12px;font-size:13px;color:var(--ink-soft);}
 .rc-facts b{color:var(--ink);}
 

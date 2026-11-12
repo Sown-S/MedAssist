@@ -18,7 +18,7 @@ export function VitalsTab({ visit, vitals, onChange, tried, needWeight, vitalErr
         errorKeys={tried ? new Set([...vitalErr.map((e) => e.key), ...(needWeight ? ['weight_kg'] : [])]) : new Set()}
         requireWeight={isChild(visit)}
       />
-      {vitalErr.length > 0 && <p className="ai-soft" style={{ color: '#FCA5A5', fontSize: 12.5 }}>{vitalErr.map((e) => translate(e.msg)).join(' · ')}</p>}
+      {vitalErr.length > 0 && <p className="ai-soft" style={{ color: 'var(--warn-ink)', fontSize: 12.5 }}>{vitalErr.map((e) => translate(e.msg)).join(' · ')}</p>}
       {isChild(visit) && <p className="ai-soft" style={{ fontSize: 12.5 }}>Children under 12: weight is required to finalize a prescription — doses are calculated per kg.</p>}
     </div>
   )

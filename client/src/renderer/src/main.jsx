@@ -4,7 +4,12 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { HashRouter } from 'react-router-dom'
 import App from './App'
-import '@fontsource-variable/plus-jakarta-sans'
+// Be Vietnam Pro đóng gói cùng app (máy trong LAN không tải font từ Internet).
+import '@fontsource/be-vietnam-pro/400.css'
+import '@fontsource/be-vietnam-pro/500.css'
+import '@fontsource/be-vietnam-pro/600.css'
+import '@fontsource/be-vietnam-pro/700.css'
+import '@fontsource/be-vietnam-pro/800.css'
 // Đóng gói font cùng app: máy không cài IBM Plex Mono sẽ hiện font có chân.
 import '@fontsource/ibm-plex-mono/400.css'
 import '@fontsource/ibm-plex-mono/500.css'
