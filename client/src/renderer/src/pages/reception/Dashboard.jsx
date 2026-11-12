@@ -1,6 +1,6 @@
 import Icon from '../../components/Icon'
 import { translate } from '../../i18n'
-import { useQueue, isQueued, isPendingFlag } from '../../api/queueStore'
+import { useQueue, isQueued, isPendingFlag, isIntakeOpen, inRoom, atLabs, ST } from '../../api/queueStore'
 import { ticketNo } from '../../components/queuePrint'
 import CallPanel from './CallPanel'
 import { dmy } from './shared'
@@ -10,7 +10,7 @@ import { money, ymd } from '../../utils/format'
 
 // Chờ thu tiền lấy từ GET /billing/awaiting (có hoá đơn và số tiền).
 
-export default function Dashboard({ go, readOnly, onRegister, onSearch, onPay }) {
+export default function Dashboard({ go, readOnly, onPay }) {
   const { visits, redFlags } = useQueue()
   const awaiting = useAwaiting()
   const serverInvoices = useTodayInvoices()
@@ -27,91 +27,78 @@ export default function Dashboard({ go, readOnly, onRegister, onSearch, onPay })
   const rxCount = serverRx.list.length
   const waiting = visits.filter(isQueued).length
 
-  const cards = [
+  // Ô số liệu: nhãn trên, số dưới trái, icon góc dưới phải. Ca cấp cứu chưa bác sĩ xem → ô đỏ nổi bật.
+  const tiles = [
+    { go: 'queue', icon: 'users', tone: 'g', title: 'Waiting queue', value: waiting },
+    { go: 'queue', icon: 'siren', tone: 'r', title: 'Emergency cases', value: redFlags.length, alert: redFlags.some((r) => isPendingFlag(r) && !r.doctorReview) },
+    { go: 'prescriptions', icon: 'fileText', tone: 'b', title: 'Prescriptions today', value: rxCount },
     {
-      key: 'invoices',
-      icon: 'banknote',
-      tone: 'cyan',
-      title: 'Invoices & payments',
-      value: todayInv.length,
-      sub: `${translate('Collected today')}: ${money(revenue)} · ${unpaid.length} ${translate('not paid')} · ${processing} ${translate('waiting for transfer')} · ${paid} ${translate('paid')}`,
-      link: 'Click to manage payments →'
-    },
-    {
-      key: 'prescriptions',
-      icon: 'clipboard',
-      tone: 'violet',
-      title: 'Prescriptions today',
-      value: rxCount,
-      sub: translate('Prescribed by doctors today'),
-      link: 'Click to view prescriptions →'
-    },
-    {
-      key: 'queue',
-      icon: 'users',
-      tone: 'green',
-      title: 'Waiting queue',
-      value: waiting,
-      sub: translate('Waiting for consultation'),
-      link: 'Click to manage the queue →'
-    },
-    {
-      key: 'queue',
-      icon: 'ban',
-      tone: 'red',
-      title: 'Red-flag cases',
-      value: redFlags.length,
-      // Theo trạng thái lượt trên server: đã chuyển tuyến / đã vào khám tại phòng khám / còn chờ.
-      sub:
-        `${redFlags.filter((r) => r.outcome === 'referred').length} ${translate('referred')} · ` +
-        `${redFlags.filter((r) => r.outcome === 'seen').length} ${translate('seen at the clinic')} · ` +
-        `${redFlags.filter(isPendingFlag).length} ${translate('waiting for a doctor')}`,
-      link: 'Click to see the cases →',
-      alert: redFlags.some((r) => isPendingFlag(r) && !r.doctorReview)
+      go: 'invoices',
+      icon: 'wallet',
+      tone: 'b',
+      title: 'Collected today',
+      value: money(revenue),
+      hint: `${unpaid.length} ${translate('not paid')} · ${processing} ${translate('waiting for transfer')} · ${paid} ${translate('paid')}`
     }
   ]
 
+  // F2 đăng ký mới, F3 tìm bệnh nhân nằm ở đầu trang (lời chào); bảng điều khiển giữ các việc thu tiền.
   const actions = [
-    { icon: 'user', title: 'Register new patient', sub: 'Create a record and issue a number · F2', run: onRegister, write: true },
-    { icon: 'search', title: 'Find patient & check in', sub: 'By name, phone or record ID · F3', run: onSearch },
     { icon: 'banknote', title: 'Process payments', sub: 'Cash or bank transfer for finished visits', run: () => go('invoices', 'unpaid') },
-    { icon: 'clipboard', title: 'View prescriptions', sub: 'Doctor’s prescriptions — view only', run: () => go('prescriptions') },
+    { icon: 'fileText', title: 'View prescriptions', sub: 'Doctor’s prescriptions — view only', run: () => go('prescriptions') },
     { icon: 'clock', title: 'Confirm transfers', sub: 'Invoices waiting for the money to arrive', run: () => go('invoices', 'processing') },
-    { icon: 'folder', title: 'Invoice history', sub: 'Review paid and cancelled invoices', run: () => go('invoices', 'paid') },
-    { icon: 'users', title: 'Today’s queue', sub: 'Where each patient is right now', run: () => go('queue') }
+    { icon: 'history', title: 'Invoice history', sub: 'Review paid and cancelled invoices', run: () => go('invoices', 'paid') }
   ]
+
+  // Hàng chờ hôm nay theo từng bước (lượt đang tiếp đón dở chưa tính).
+  const steps = [
+    { key: 'c0', icon: 'clock', label: 'Not checked in', n: visits.filter((v) => v.status === ST.WAITING && !isIntakeOpen(v)).length },
+    { key: 'c1', icon: 'userCheck', label: 'Checked in', n: visits.filter((v) => v.status === ST.CHECKED_IN).length },
+    { key: 'c2', icon: 'stethoscope', label: 'In consultation', n: visits.filter(inRoom).length },
+    { key: 'c3', icon: 'flask', label: 'Out for lab tests', n: visits.filter(atLabs).length },
+    { key: 'c4', icon: 'wallet', label: 'Awaiting payment', n: visits.filter((v) => v.status === ST.PRESCRIBED).length },
+    { key: 'c5', icon: 'circleCheck', label: 'Completed', n: visits.filter((v) => v.status === ST.FINISHED).length }
+  ]
+  const totalSteps = steps.reduce((t, s) => t + s.n, 0)
+  const unpaidTotal = unpaid.reduce((t, v) => t + (Number(v.total) || 0), 0)
 
   return (
     <>
-      <div className="dash-cards">
-        {cards.map((c, i) => (
-          <button key={i} className={'dash-card ' + c.tone + (c.alert ? ' alert' : '')} onClick={() => go(c.key)}>
-            <span className="head">
-              <Icon name={c.icon} /> {c.title}
-            </span>
-            <span className="val">{c.value}</span>
-            <span className="sub">{c.sub}</span>
-            <span className="link">{c.link}</span>
-          </button>
-        ))}
-      </div>
-
-      <h2 className="dash-h">Quick actions</h2>
-      <div className="dash-actions">
-        {actions.map((a) => (
-          <button key={a.title} className="dash-action" disabled={a.write && readOnly} onClick={a.run}>
-            <Icon name={a.icon} />
-            <span>
-              <b>{a.title}</b>
-              <small>{a.sub}</small>
+      <div className="kpis rk">
+        {tiles.map((c) => (
+          <button key={c.title} className={'tile rt ' + c.tone + (c.alert ? ' alert' : '')} onClick={() => go(c.go)} title={c.hint}>
+            <span className="tl">{translate(c.title)}</span>
+            <span className="rt-b">
+              <b className="rt-n val">{c.value}</b>
+              <span className="chip">
+                <Icon name={c.icon} />
+              </span>
             </span>
           </button>
         ))}
       </div>
 
-      <div className="dash-bottom">
+      <div className="card">
+        <div className="card-title">Control panel</div>
+        <div className="quick q4">
+          {actions.map((a) => (
+            <button key={a.title} className="qa qv" onClick={a.run}>
+              <span className="ico">
+                <Icon name={a.icon} />
+              </span>
+              <span>
+                <b>{translate(a.title)}</b>
+                <small>{translate(a.sub)}</small>
+              </span>
+              <Icon name="arrowUpRight" className="qa-go" />
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="dash-bottom three">
         <CallPanel readOnly={readOnly} />
-        <div className="card">
+        <div className="card pay-card">
           <div className="card-title">
             Waiting for dispensing &amp; payment <span className="cnt">{unpaid.length}</span>
           </div>
@@ -132,10 +119,42 @@ export default function Dashboard({ go, readOnly, onRegister, onSearch, onPay })
             </div>
           ))}
           {!unpaid.length && <p className="ai-soft" style={{ fontSize: 14 }}>Nobody is waiting to pay.</p>}
-          <div style={{ display: 'flex', gap: 8, marginTop: 10 }}>
+          <div className="pay-foot">
+            {unpaid.length > 0 && (
+              <span>
+                {translate('Total awaiting payment')} <b className="mono">{money(unpaidTotal)}</b>
+              </span>
+            )}
             <button className="btn btn-ghost btn-sm" onClick={() => go('invoices')}>
               All invoices →
             </button>
+          </div>
+        </div>
+        <div className="card">
+          <div className="card-title">
+            <span>Today’s queue</span>
+          </div>
+          <div className="pipe">
+            <div className="pipe-top">
+              <b className="mono">{totalSteps}</b>
+              <span>{translate('visits today')}</span>
+            </div>
+            <div className="pipe-bar" aria-hidden="true">
+              {totalSteps ? steps.filter((s) => s.n).map((s) => <i key={s.key} className={s.key} style={{ flex: s.n }} />) : <i style={{ flex: 1, background: 'var(--border)' }} />}
+            </div>
+            <div className="pipe-g">
+              {steps.map((s) => (
+                <div key={s.key} className={s.key}>
+                  <span className="pi">
+                    <Icon name={s.icon} />
+                  </span>
+                  <span>
+                    <b className="mono">{s.n}</b>
+                    <small>{translate(s.label)}</small>
+                  </span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>

@@ -62,6 +62,17 @@ describe('Bản nháp phiếu khám trên máy (draftStore)', () => {
   })
 })
 
+// Nút Đăng xuất nằm trong menu tài khoản trên thanh trên cùng.
+async function openSignOut() {
+  const acct = await waitFor(() => {
+    const b = document.querySelector('.acct')
+    if (!b) throw new Error('chưa có menu tài khoản')
+    return b
+  })
+  fireEvent.click(acct)
+  fireEvent.click(await screen.findByText('Sign out', { selector: '.logout-btn' }))
+}
+
 describe('Đăng xuất của bác sĩ', () => {
   beforeAll(() => installFakeServer())
   afterEach(() => cleanup())
@@ -70,7 +81,7 @@ describe('Đăng xuất của bác sĩ', () => {
   it('còn bệnh nhân trong phòng → không đăng xuất được, có nút mở lượt khám', async () => {
     await syncQueue()
     renderPage(<Shell />, { user: DOC_A, path: '/doctor' })
-    fireEvent.click(await screen.findByText('Sign out', { selector: '.logout-btn' }))
+    await openSignOut()
     expect(await screen.findByText('Finish your visits before signing out')).toBeTruthy()
     const row = screen.getByText('Nguyễn Văn An', { selector: '.signout-row b' }).closest('.signout-row')
     expect(row.textContent).toContain('In my room')
@@ -82,7 +93,7 @@ describe('Đăng xuất của bác sĩ', () => {
   it('bệnh nhân đi xét nghiệm không quay lại → đóng lượt ngay từ hộp thoại', async () => {
     await syncQueue()
     renderPage(<Shell />, { user: DOC_B, path: '/doctor' })
-    fireEvent.click(await screen.findByText('Sign out', { selector: '.logout-btn' }))
+    await openSignOut()
     const row = (await screen.findByText('Hoàng Thị Em', { selector: '.signout-row b' })).closest('.signout-row')
     expect(row.textContent).toContain('Out for lab tests')
     fireEvent.click(screen.getByText('Did not come back'))
@@ -93,7 +104,7 @@ describe('Đăng xuất của bác sĩ', () => {
     saveDraft('v-old', { exam: 'nháp' })
     await flush()
     renderPage(<Shell />, { user: DESK, path: '/reception' })
-    fireEvent.click(await screen.findByText('Sign out', { selector: '.logout-btn' }))
+    await openSignOut()
     await waitFor(() => expect(getDraft('v-old')).toBeUndefined())
     expect(localStorage.getItem(KEY)).toBeNull()
   })

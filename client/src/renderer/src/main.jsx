@@ -18,6 +18,9 @@ import '@fontsource/ibm-plex-mono/700.css'
 import './global.css'
 import { loadServerConfig } from './api/serverConfig'
 import { loadClientConfig } from './api/settingsStore'
+import { applySidebarTheme } from './api/sidebarTheme'
+
+applySidebarTheme()
 
 // HashRouter vì bản build chạy từ app:// của Electron, không có server phục vụ các route như /doctor.
 // Thông tin phòng khám, tự đăng xuất: nạp nền, không chờ — mất kết nối thì dùng bản đệm trên máy.

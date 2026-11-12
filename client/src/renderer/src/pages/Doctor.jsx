@@ -1,7 +1,7 @@
 import { useSearchParams } from 'react-router-dom'
 import Icon from '../components/Icon'
 import { useAuth } from '../context/AuthContext'
-import { useQueue, useQueueSync, isMine, reviewRedFlag, inRoom, inviteAgain, isPendingFlag, ST } from '../api/queueStore'
+import { useQueue, useQueueSync, reviewRedFlag, inviteAgain, isPendingFlag, ST } from '../api/queueStore'
 import { useToast } from '../context/ToastContext'
 import { useTakePatient } from './doctor/doctorShared'
 import { translate } from '../i18n'
@@ -11,6 +11,7 @@ import ConsultView from './doctor/ConsultView'
 import DrugCabinetView from './doctor/DrugCabinetView'
 import PrescriptionsLive from './reception/PrescriptionsLive'
 import PatientLookup from './doctor/PatientLookup'
+import HomeGreeting from '../components/HomeGreeting'
 
 const VIEWS = {
   home: { icon: 'home', tab: 'Overview', title: 'Doctor dashboard', sub: 'Today’s queue, your patients and prescriptions at a glance' },
@@ -30,7 +31,6 @@ export default function Doctor() {
   const view = VIEWS[params.get('view')] ? params.get('view') : 'home'
   const visitId = params.get('visit')
   const go = (v, visit) => setParams(v === 'home' ? {} : { view: v, ...(visit ? { visit } : {}) })
-  const inRoomCount = visits.filter((v) => inRoom(v) && isMine(v, user)).length
   const { showToast } = useToast()
   const { take, dialog } = useTakePatient((id) => go('consult', id))
   // Ca cờ đỏ là lượt Cấp cứu đang chờ — bác sĩ mời vào khám ngay, chuyển tuyến làm trong phòng khám.
@@ -43,13 +43,34 @@ export default function Doctor() {
   }
 
   return (
-    <div className="page">
-      <div className="page-head">
-        <div>
-          <h1>{VIEWS[view].title}</h1>
-          <p>{VIEWS[view].sub}</p>
-        </div>
-      </div>
+    <div className={'page' + (view === 'home' ? ' rhome' : '')}>
+      {view === 'home' ? (
+        <HomeGreeting
+          crumb="Doctor"
+          name={user.name}
+          extra={
+            user.room && (
+              <span className="gpill">
+                <Icon name="stethoscope" />
+                <span>{user.room}</span>
+              </span>
+            )
+          }
+        >
+          <button className="btn btn-ghost" onClick={() => go('consult')}>
+            <Icon name="stethoscope" /> Consultation room
+          </button>
+        </HomeGreeting>
+      ) : (
+        view !== 'consult' && (
+          <div className="page-head">
+            <div>
+              <h1>{VIEWS[view].title}</h1>
+              <p>{VIEWS[view].sub}</p>
+            </div>
+          </div>
+        )
+      )}
 
       {pendingRF.map((r) => (
         <div className="redflag-alert" key={r.id}>
@@ -80,28 +101,7 @@ export default function Doctor() {
         </div>
       ))}
 
-      <div className="doc-nav-row">
-      <div className="ai-seg doc-nav">
-        {Object.entries(VIEWS).map(([k, v]) => (
-          <button key={k} className={view === k ? 'active' : ''} onClick={() => go(k)}>
-            <Icon name={v.icon} /> <span>{v.tab}</span>
-            {k === 'consult' && inRoomCount > 0 && <span className="doc-nav-cnt">{inRoomCount}</span>}
-          </button>
-        ))}
-      </div>
-      <span className="doc-nav-right">
-        {user.room ? (
-          <span className="doc-room" title={translate('Your consultation room')}>
-            <Icon name="stethoscope" /> {user.room}
-          </span>
-        ) : (
-          <span className="doc-room warn" title={translate('Reception cannot direct patients to you until you have a room.')}>
-            <Icon name="alert" /> No room assigned — ask an administrator
-          </span>
-        )}
-      </span>
-      </div>
-
+      {/* Đổi màn bằng menu bên trái (components/SideNav.jsx); phòng khám của bác sĩ hiện ở cuối menu. */}
       {view === 'home' && <DoctorHome go={go} />}
       {view === 'consult' && <ConsultView visitId={visitId} onSelect={(id) => go('consult', id)} />}
       {view === 'prescriptions' && <PrescriptionsLive initialDoctorId={user.id} initialDoctorName={user.name} onRecalled={(id) => go('consult', id)} />}

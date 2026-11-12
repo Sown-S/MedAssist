@@ -1,7 +1,5 @@
-import { useRef, useState } from 'react'
 import { useAuth } from '../context/AuthContext'
-import Modal, { ModalHeader } from '../components/Modal'
-import AdminSidebar from '../components/AdminSidebar'
+import { useAdminNav } from '../context/AdminNavContext'
 import DashboardPage from './admin/DashboardPage'
 import KnowledgeLive from './admin/knowledge/KnowledgeLive'
 import InventoryPage from './admin/InventoryPage'
@@ -31,22 +29,9 @@ export default function Admin() {
   const { user } = useAuth()
   // Bác sĩ vào khu Admin bằng tài khoản của mình chỉ thấy mục Duyệt tri thức (server ghi đúng người duyệt).
   const reviewer = user?.roleKey === 'doctor'
-  const [page, setPage] = useState(reviewer ? 'ai-review' : 'dash')
-  const [params, setParams] = useState(null)
+  // Trang đang mở và cơ chế hỏi trước khi rời trang chưa lưu nằm ở AdminNavContext (menu bên trái dùng chung).
+  const { page, params, navigate, setLeaveGuard } = useAdminNav()
   const Current = PAGES[page] ?? (page.startsWith('cat-') ? CatalogDetailPage : DashboardPage)
-  // Trang có thay đổi chưa lưu đăng ký một hàm trả true khi đang dở → hỏi trước khi rời trang.
-  const leaveGuard = useRef(null)
-  const [pendingNav, setPendingNav] = useState(null)
-  function go(id, p) {
-    leaveGuard.current = null
-    setPendingNav(null)
-    setPage(id)
-    setParams(p)
-  }
-  function navigate(id, p = null) {
-    if (leaveGuard.current?.()) return setPendingNav({ id, p })
-    go(id, p)
-  }
 
   if (reviewer)
     return (
@@ -56,31 +41,8 @@ export default function Admin() {
     )
 
   return (
-    <div className="admin-shell">
-      <AdminSidebar page={page} onNavigate={navigate} />
-      <main className="admin-main">
-        <Current
-          key={page + JSON.stringify(params)}
-          params={params}
-          catalogKey={page.slice(4)}
-          onNavigate={navigate}
-          setLeaveGuard={(fn) => (leaveGuard.current = fn)}
-        />
-      </main>
-      <Modal open={!!pendingNav} onClose={() => setPendingNav(null)}>
-        <ModalHeader title="Unsaved changes" onClose={() => setPendingNav(null)} />
-        <div className="modal-body">
-          <p className="ai-soft">You have changes that have not been saved. Leave this page and discard them?</p>
-        </div>
-        <div className="modal-foot">
-          <button className="btn btn-ghost" onClick={() => setPendingNav(null)}>
-            Stay on this page
-          </button>
-          <button className="btn btn-danger" onClick={() => go(pendingNav.id, pendingNav.p)}>
-            Discard &amp; leave
-          </button>
-        </div>
-      </Modal>
+    <div className="page admin-main">
+      <Current key={page + JSON.stringify(params)} params={params} catalogKey={page.slice(4)} onNavigate={navigate} setLeaveGuard={setLeaveGuard} />
     </div>
   )
 }

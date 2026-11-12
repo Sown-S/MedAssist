@@ -45,6 +45,21 @@ export async function lookupPatients(term, limit = 20) {
 
 export const getPatient = async (id) => toPatient(await apiGet(`${V1}/patients/${id}`))
 
+// Danh sách hồ sơ (trang Bệnh nhân của Lễ tân): GET /patients không kèm điều kiện = tất cả, mới nhất trước.
+export async function listPatients({ limit = 20, offset = 0 } = {}) {
+  const r = await apiGet(`${V1}/patients?limit=${limit}&offset=${offset}`)
+  return { total: r.total, items: r.items.map((x) => ({ ...toPatient(x), dob: dmyDob(x.date_of_birth) })) }
+}
+
+// Lịch sử khám của một bệnh nhân, mới nhất trước.
+export async function patientVisits(patientId, { limit = 20, offset = 0 } = {}) {
+  const r = await apiGet(`${V1}/patients/${patientId}/visits?limit=${limit}&offset=${offset}`)
+  return {
+    total: r.total,
+    items: r.items.map((v) => ({ id: v.visit_id, at: v.visit_date, reason: v.chief_complaint, status: v.status, referred: v.outcome === 'Referred' }))
+  }
+}
+
 // 409 POSSIBLE_DUPLICATE (trùng họ tên + ngày sinh) → trả { duplicates }; người dùng xác nhận thì gửi lại với confirmDuplicate.
 export async function createPatient(f, { confirmDuplicate = false } = {}) {
   const body = {

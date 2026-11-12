@@ -7,6 +7,7 @@ import { LANGUAGES, getLang, setLang, translate } from '../i18n'
 import { useNavigate } from 'react-router-dom'
 import { useQueue, isMine, inRoom, atLabs, isPendingFlag } from '../api/queueStore'
 import { useInventory, stockOf } from '../api/inventoryStore'
+import { SIDEBAR_THEMES, getSidebarTheme, setSidebarTheme } from '../api/sidebarTheme'
 
 // Thông báo tính tại máy từ hàng chờ và kho.
 const hm = (iso) => new Date(iso).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit', hour12: false })
@@ -30,10 +31,13 @@ const HELP = {
   ]
 }
 
-export default function TopActions({ user }) {
+export default function TopActions({ user, onSignOut }) {
   const [open, setOpen] = useState(null)
   const [unread, setUnread] = useState(true)
+  const [theme, setTheme] = useState(getSidebarTheme)
   const bellRef = useRef(null)
+  const langRef = useRef(null)
+  const acctRef = useRef(null)
   const { redFlags, visits } = useQueue()
   const inv = useInventory()
   const navigate = useNavigate()
@@ -64,12 +68,19 @@ export default function TopActions({ user }) {
     showToast('Language updated')
   }
 
+  // Các menu thả xuống (chuông, ngôn ngữ, tài khoản) đóng khi bấm ra ngoài.
   useEffect(() => {
-    if (open !== 'bell') return
-    const close = (e) => !bellRef.current?.contains(e.target) && setOpen(null)
+    const ref = { bell: bellRef, lang: langRef, acct: acctRef }[open]
+    if (!ref) return
+    const close = (e) => !ref.current?.contains(e.target) && setOpen(null)
     document.addEventListener('mousedown', close)
     return () => document.removeEventListener('mousedown', close)
   }, [open])
+
+  function chooseTheme(key) {
+    setTheme(key)
+    setSidebarTheme(key)
+  }
 
   return (
     <>
@@ -109,12 +120,65 @@ export default function TopActions({ user }) {
           </div>
         )}
       </div>
+      <div className="notif-wrap" ref={langRef}>
+        <button className="icon-btn" title="Language" aria-label={translate('Language')} onClick={() => setOpen(open === 'lang' ? null : 'lang')}>
+          <Icon name="languages" />
+        </button>
+        {open === 'lang' && (
+          <div className="top-menu">
+            <div className="notif-head">Language</div>
+            {LANGUAGES.map((l) => (
+              <button
+                key={l.code}
+                className={getLang() === l.code ? 'on' : ''}
+                onClick={() => {
+                  setOpen(null)
+                  chooseLanguage(l.code)
+                }}
+              >
+                <Icon name={getLang() === l.code ? 'check' : 'circle'} />
+                <span>{l.name}</span>
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
       <button className="icon-btn" title="Help" onClick={() => setOpen('help')}>
         <Icon name="help" />
       </button>
       <button className="icon-btn" title="Settings" onClick={() => setOpen('settings')}>
         <Icon name="settings" />
       </button>
+      <div className="notif-wrap" ref={acctRef}>
+        <button className="acct" onClick={() => setOpen(open === 'acct' ? null : 'acct')} aria-haspopup="menu" aria-expanded={open === 'acct'}>
+          <span className="avatar">{user.av}</span>
+          <span className="who">
+            <b>{user.name}</b>
+            <span>{user.role}</span>
+          </span>
+          <Icon name="chevronDown" />
+        </button>
+        {open === 'acct' && (
+          <div className="top-menu right" role="menu">
+            <div className="notif-head">Account</div>
+            <button role="menuitem" onClick={() => setOpen('password')}>
+              <Icon name="key" />
+              <span>Change password</span>
+            </button>
+            <button
+              role="menuitem"
+              className="danger logout-btn"
+              onClick={() => {
+                setOpen(null)
+                onSignOut?.()
+              }}
+            >
+              <Icon name="logOut" />
+              Sign out
+            </button>
+          </div>
+        )}
+      </div>
 
       <Modal open={open === 'help'} onClose={() => setOpen(null)}>
         <ModalHeader title="Help" onClose={() => setOpen(null)} />
@@ -163,6 +227,32 @@ export default function TopActions({ user }) {
         </div>
         <p className="help-intro" style={{ marginTop: 10 }}>
           The display language is saved on this computer only. Times are shown in Vietnam time (GMT+7).
+        </p>
+        <div className="section-label">Menu bar appearance</div>
+        <div className="thm" role="radiogroup" aria-label={translate('Menu bar appearance')}>
+          {SIDEBAR_THEMES.map((t) => (
+            <button key={t.key} type="button" role="radio" aria-checked={theme === t.key} className={theme === t.key ? 'on' : ''} onClick={() => chooseTheme(t.key)}>
+              <span className="pv">
+                <span className="ps" style={{ background: t.bg, color: t.ink }}>
+                  <i className="act" />
+                  <i />
+                  <i />
+                  <i />
+                </span>
+                <span className="pm">
+                  <i />
+                  <i />
+                </span>
+              </span>
+              <span className="nm">
+                <Icon name={theme === t.key ? 'circleCheck' : 'circle'} />
+                <span>{translate(t.label)}</span>
+              </span>
+            </button>
+          ))}
+        </div>
+        <p className="help-intro" style={{ marginTop: 8 }}>
+          Applied right away on this computer only.
         </p>
       </Modal>
 

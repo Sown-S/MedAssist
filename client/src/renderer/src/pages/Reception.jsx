@@ -11,6 +11,9 @@ import { translate } from '../i18n'
 import Dashboard from './reception/Dashboard'
 import QueueView from './reception/QueueView'
 import BillingLiveView from './reception/BillingLiveView'
+import PatientsView from './reception/PatientsView'
+import HomeGreeting from '../components/HomeGreeting'
+import { useAuth } from '../context/AuthContext'
 import { hhmm } from './reception/shared'
 import useCallAnnouncer from '../components/useCallAnnouncer'
 import { useServerOnline } from '../api/connectivity'
@@ -18,9 +21,12 @@ import { useServerOnline } from '../api/connectivity'
 // Công cụ cho nhà phát triển (giả lập mất mạng…): chỉ hiện khi VITE_DEV_TOOLS=true.
 const DEV_TOOLS = import.meta.env.VITE_DEV_TOOLS === 'true'
 
+const STALE_SEEN_KEY = 'medassist_stale_seen'
+
 const VIEWS = {
   home: { title: 'Reception dashboard', sub: 'Today’s queue, prescriptions and payments at a glance' },
   queue: { title: 'Waiting queue', sub: 'Call patients by the number they hold and follow each step' },
+  patients: { title: 'Patients', sub: 'All patient records — search, view visit history and check a patient in' },
   invoices: { title: 'Invoices & payments', sub: 'Revenue by day, week and month — who has paid, who is waiting for a transfer and who has not paid yet' },
   prescriptions: { title: 'Prescriptions', sub: 'Doctors’ prescriptions by day, week or month — view only, to check invoices' }
 }
@@ -43,13 +49,27 @@ function useOnline() {
 export default function Reception() {
   useQueueSync() // hỏi lại hàng đợi vài giây một lần
   useEffect(() => void syncStale(), [])
+  const { user } = useAuth()
   const { redFlags, stale = [] } = useQueue()
   const [staleOpen, setStaleOpen] = useState(false)
+  const [staleSeen, setStaleSeen] = useState(() => sessionStorage.getItem(STALE_SEEN_KEY) === '1')
+  const hideStale = () => {
+    sessionStorage.setItem(STALE_SEEN_KEY, '1')
+    setStaleSeen(true)
+  }
   // Tiếng “ding” ở quầy mỗi khi bác sĩ mời bệnh nhân.
   useCallAnnouncer()
   const [params, setParams] = useSearchParams()
   const view = VIEWS[params.get('view')] ? params.get('view') : 'home'
   const go = (v, status) => setParams(v === 'home' ? {} : { view: v, ...(status ? { status } : {}) })
+  // Chuông thông báo mở danh sách lượt tồn bằng ?stale=1.
+  useEffect(() => {
+    if (params.get('stale') !== '1') return
+    setStaleOpen(true)
+    const next = new URLSearchParams(params)
+    next.delete('stale')
+    setParams(next, { replace: true })
+  }, [params, setParams])
 
   const serverOnline = useServerOnline()
   const online = useOnline() && serverOnline
@@ -80,27 +100,32 @@ export default function Reception() {
     return () => window.removeEventListener('keydown', onKey)
   }, [intake, searchOpen, redFlag, paying, readOnly])
 
+  const actions = (
+    <>
+      <button className="btn btn-ghost s-ico" onClick={() => setSearchOpen(true)} title={translate('Find patient') + ' (F3 / Ctrl+K)'} aria-label={translate('Find patient')}>
+        <Icon name="search" />
+      </button>
+      <button className="btn btn-primary" disabled={readOnly} onClick={() => setIntake({ patient: null })} title="F2">
+        <Icon name="plus" /> Register new patient <kbd>F2</kbd>
+      </button>
+    </>
+  )
+
   return (
-    <div className="page">
-      <div className="page-head">
-        <div>
-          {view !== 'home' && (
-            <button className="btn btn-ghost btn-sm back-btn" onClick={() => go('home')}>
-              <Icon name="arrowLeft" /> <span>Back to dashboard</span>
-            </button>
-          )}
-          <h1>{VIEWS[view].title}</h1>
-          <p>{VIEWS[view].sub}</p>
+    <div className={'page' + (view === 'home' ? ' rhome' : '')}>
+      {view === 'home' ? (
+        <HomeGreeting crumb="Receptionist" name={user.name} extra={<span className="gpill"><Icon name="door" /><span>{translate('Reception desk')}</span></span>}>
+          {actions}
+        </HomeGreeting>
+      ) : (
+        <div className="page-head">
+          <div>
+            <h1>{VIEWS[view].title}</h1>
+            <p>{VIEWS[view].sub}</p>
+          </div>
+          <div className="dash-acts">{actions}</div>
         </div>
-        <div style={{ display: 'flex', gap: 8 }}>
-          <button className="btn btn-ghost" onClick={() => setSearchOpen(true)} title="F3 / Ctrl+K">
-            <Icon name="search" /> Find patient <kbd>F3</kbd>
-          </button>
-          <button className="btn btn-primary" disabled={readOnly} onClick={() => setIntake({ patient: null })} title="F2">
-            + Register new patient <kbd>F2</kbd>
-          </button>
-        </div>
-      </div>
+      )}
 
       {DEV_TOOLS && (
         <div className="dev-tools">
@@ -139,19 +164,23 @@ export default function Reception() {
         </div>
       ))}
 
-      {stale.length > 0 && (
-        <div className="warn-banner show caution" style={{ marginTop: 0, marginBottom: 14 }}>
-          <div className="icon">
+      {/* Lượt tồn từ ngày trước: popup đỏ cạnh chuông thông báo; bỏ qua thì vẫn còn trong danh sách của chuông. */}
+      {stale.length > 0 && !staleSeen && (
+        <div className="bell-pop" role="alert">
+          <div className="bp-ico">
             <Icon name="clock" />
           </div>
-          <div className="txt" style={{ flex: 1 }}>
+          <div className="bp-t">
             <b>
               {stale.length} {translate('open visits from previous days')}
             </b>
             <span>{translate('Close them with a reason, or collect payment if the patient came back.')}</span>
+            <button className="btn btn-sm bp-go" onClick={() => (hideStale(), setStaleOpen(true))}>
+              {translate('Review')}
+            </button>
           </div>
-          <button className="btn btn-sm" onClick={() => setStaleOpen(true)}>
-            {translate('Review')}
+          <button className="bp-x" onClick={hideStale} title={translate('Close')} aria-label={translate('Close')}>
+            <Icon name="x" />
           </button>
         </div>
       )}
@@ -170,9 +199,10 @@ export default function Reception() {
       )}
 
       {view === 'home' && (
-        <Dashboard go={go} readOnly={readOnly} onRegister={() => setIntake({ patient: null })} onSearch={() => setSearchOpen(true)} onPay={pay} />
+        <Dashboard go={go} readOnly={readOnly} onPay={pay} />
       )}
       {view === 'queue' && <QueueView readOnly={readOnly} onPay={pay} />}
+      {view === 'patients' && <PatientsView readOnly={readOnly} onCheckIn={(p) => setIntake({ patient: p })} />}
       {/* Server liệt kê hoá đơn theo ngày. */}
       {view === 'invoices' && <BillingLiveView mode="invoices" readOnly={readOnly} onPay={(v) => pay({ ...v, tab: 'pay' })} />}
       {view === 'prescriptions' && <BillingLiveView mode="prescriptions" readOnly={readOnly} onPay={pay} />}
