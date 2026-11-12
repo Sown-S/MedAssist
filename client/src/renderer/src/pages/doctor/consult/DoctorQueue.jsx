@@ -87,7 +87,7 @@ export default function DoctorQueue({ visits, user, mine, current, onSelect, tak
               <div key={g.key} className={'dq-group' + (on ? ' open' : '')}>
                 <button className="dq-h" onClick={() => toggle(g.key)} aria-expanded={on}>
                   <span>{g.title}</span> <span className="cnt">{g.list.length}</span>
-                  <Icon name="chevronDown" />
+                  <Icon name="chevronRight" />
                 </button>
                 <div className="collapse">
                   <div>

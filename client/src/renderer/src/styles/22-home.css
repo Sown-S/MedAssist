@@ -92,3 +92,30 @@
 /* Màn vừa (cửa sổ 1360): 2 cột */
 @media (max-width:1500px){.dash-bottom.three{grid-template-columns:repeat(2,minmax(0,1fr));}.dash-bottom.three>.card:last-child{grid-column:1/-1;}.dash-bottom.three .pipe-g{grid-template-columns:repeat(3,minmax(0,1fr));}}
 @media (max-width:1280px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr));}.quick.q4{grid-template-columns:repeat(2,minmax(0,1fr));}.btn.s-ico{width:44px;}}
+
+/* Trang chủ bác sĩ: 6 ô xếp 3 cột, bảng điều khiển dạng hàng ngang */
+.kpis.k3{grid-template-columns:repeat(3,minmax(0,1fr));}
+.kpis.dk .tile.rt{min-height:118px;padding:16px 20px;gap:6px;}
+.kpis.dk .tile.rt .chip{width:40px;height:40px;}
+.kpis.dk .tile.rt .rt-n{font-size:30px;}
+.quick.qrow .qa.qv{flex-direction:row;align-items:center;padding:16px 40px 16px 16px;}
+.quick.qrow .qa.qv .qa-go{top:50%;margin-top:-9px;}
+@media (max-width:1280px){.kpis.k3{grid-template-columns:repeat(2,minmax(0,1fr));}}
+
+/* ---- Màn khám: cột hàng chờ theo mẫu (nhóm xổ xuống, chữ hoa mảnh, mũi tên ›) ---- */
+.dq{top:84px;max-height:calc(100vh - 110px);padding:14px 12px 10px;}
+.dq-top{margin-bottom:8px;}
+.dq-top .btn-primary{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:42px;font-size:15px;}
+.dq-note{font-size:14px;line-height:1.45;color:var(--priority-ink);margin:2px 2px 6px;}
+.dq-group+.dq-group{border-top:1px solid var(--border);}
+.dq-group .dq-h{margin:0;padding:13px 8px;font-size:14px;font-weight:500;letter-spacing:.03em;color:var(--ink-soft);}
+.dq-group .dq-h:hover{background:var(--surface-hover);color:var(--ink);}
+.dq-group.open>.dq-h{color:var(--primary-ink);}
+.dq-h .cnt{font-size:13px;min-width:26px;text-align:center;color:var(--ink-2);background:#EEF1F4;letter-spacing:0;}
+.dq-group.open>.dq-h .cnt{background:var(--primary-soft);color:var(--primary-ink);}
+.dq-h svg{width:16px;height:16px;transform:none;}
+.dq-group.open>.dq-h svg{transform:rotate(90deg);}
+.dq-item{padding:10px 12px;}
+.dq-main b{font-size:15px;}
+.dq-main small{font-size:13px;}
+.dq-no{color:var(--primary-ink);}

@@ -5,7 +5,9 @@ import { usePasswordMinLength } from "../api/accountStore";
 import { LANGUAGES, getLang, setLang } from "../i18n";
 import ServerAddress from "../components/ServerAddress";
 import VersionBanners from "../components/VersionBanners";
-import AppIcon from "../components/Icon";
+import AppIcon, { Logo } from "../components/Icon";
+import { translate } from "../i18n";
+import loginPhoto from "../assets/login-doctors.jpg";
 import Button from "../components/Button";
 import { Icon, ICONS } from "./LoginIcons";
 
@@ -78,20 +80,19 @@ export default function Login() {
 
   return (
     <div className="login-screen">
+      <LoginHero />
+      <section className="login-right">
       <div className="login-wrap">
         <div className="login-head">
-          <div className="login-logo">
-            <Icon>{ICONS.logo}</Icon>
-          </div>
           <h2 className="login-title">
-            {pending ? "Set a New Password" : "Welcome Back"}
+            {pending ? "Set a New Password" : "Sign in"}
           </h2>
           <p className="sub">
             {pending
               ? pending.expired
                 ? "Your password has expired — please set a new one."
                 : "Please set a password of your own before continuing."
-              : "Sign in to the MedAssist clinic management system"}
+              : "Choose your role and sign in with the account you were given"}
           </p>
         </div>
 
@@ -250,6 +251,94 @@ export default function Login() {
           ))}
         </div>
       </div>
+      </section>
     </div>
+  );
+}
+
+// Nửa trái màn đăng nhập (kiểu trang đăng nhập Facebook): logo, tiêu đề lớn, ảnh ghép giới thiệu hệ thống.
+// Ảnh: Pexels 14438786 (giấy phép Pexels, dùng miễn phí). Các thẻ là minh hoạ tĩnh, không phải dữ liệu thật.
+function LoginHero() {
+  return (
+    <section className="login-left" aria-hidden="true">
+      <div className="login-brand">
+        <Logo />
+        <span className="t">
+          Med<b>Assist</b>
+        </span>
+      </div>
+      <div className="fbx">
+        <div className="fbx-t">
+          <h1>
+            {translate("The right patient,")} <span>{translate("at the right time.")}</span>
+          </h1>
+          <p>{translate("Bright ethics, solid expertise, complete trust.")}</p>
+        </div>
+        <div className="fbx-c">
+          <div className="cx-photo">
+            <div className="cx-bar">
+              <i />
+            </div>
+            <img src={loginPhoto} alt="" />
+            <span className="cx-time">
+              <AppIcon name="clock" />
+              08:30 · {translate("No.")} 012
+            </span>
+          </div>
+          <div className="cx-card cx-queue">
+            <h4>
+              <AppIcon name="grid" />
+              {translate("Clinic management")}
+            </h4>
+            {[
+              ["userCheck", "Lean operations", "Receptionist"],
+              ["stethoscope", "Digital-first care", "Doctor"],
+              ["package", "Optimisation", "Admin"],
+            ].map(([ic, t, r]) => (
+              <div className="row" key={t}>
+                <span>
+                  <AppIcon name={ic} />
+                  {translate(t)}
+                </span>
+                <span className="plain">{translate(r)}</span>
+              </div>
+            ))}
+          </div>
+          <div className="cx-card cx-vitals">
+            <h4>
+              <AppIcon name="sparkles" />
+              {translate("On-premise AI assistant")}
+            </h4>
+            <div className="v">
+              <span>{translate("Model")}</span>
+              <b>Gemma SEA-LION 9B</b>
+            </div>
+            <div className="v">
+              <span>{translate("Knowledge")}</span>
+              <b>{translate("Local data")}</b>
+            </div>
+            <div className="v">
+              <span>{translate("Data")}</span>
+              <b className="ok">
+                <AppIcon name="shieldCheck" />
+                {translate("Tightly controlled")}
+              </b>
+            </div>
+          </div>
+          <div className="cx-dot cx-ai">
+            <AppIcon name="sparkles" />
+          </div>
+          <div className="cx-dot cx-heart">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M9 3.5h6a1 1 0 0 1 1 1V8h3.5a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1H16v3.5a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1V16H4.5a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1H8V4.5a1 1 0 0 1 1-1z" fill="#fff" />
+            </svg>
+          </div>
+          <div className="cx-ring">
+            <Logo />
+          </div>
+        </div>
+      </div>
+      <div className="cx-by">MedAssist</div>
+    </section>
   );
 }

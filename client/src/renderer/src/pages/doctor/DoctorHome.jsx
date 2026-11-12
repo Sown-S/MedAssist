@@ -34,41 +34,32 @@ export default function DoctorHome({ go }) {
   const recent = serverWeek.list.map((r) => ({ ...r, day: ymd(new Date(r.at)), rxAt: r.at }))
   const lowStock = inv.drugs.filter((d) => d.active && d.kind === 'drug' && stockOf(d, inv.batches).statuses.some((s) => s === 'out' || s === 'low')).length
 
-  const cards = [
+  // Ô số liệu; chi tiết (người kế tiếp, đơn hôm nay/tuần…) nằm ở tooltip và ở các thẻ bên dưới.
+  const tiles = [
     {
-      tone: 'cyan',
+      tone: 'g',
       icon: 'users',
       title: 'Waiting for consultation',
       value: waiting.length,
-      sub: ready[0] ? translate('Next') + ': ' + no(ready[0].ticket) + ' — ' + ready[0].name : waiting.length ? translate('Nobody checked in yet') : translate('No one is waiting.'),
-      link: 'Click to see the waiting list →',
+      hint: ready[0] ? translate('Next') + ': ' + no(ready[0].ticket) + ' — ' + ready[0].name : waiting.length ? translate('Nobody checked in yet') : translate('No one is waiting.'),
       run: () => setWaitOpen('')
     },
+    { icon: 'door', title: 'In my room', value: mine.length, hint: mine[0] ? mine[0].name : translate('No patient in your room'), run: () => go('consult', mine[0]?.id) },
+    { icon: 'flask', title: 'Lab tests', value: labs.length, hint: `${labs.length} ${translate('patients out for lab tests')}`, run: () => setLabOpen(true) },
     {
-      tone: 'green',
-      icon: 'stethoscope',
-      title: 'In my room',
-      value: mine.length,
-      sub: mine[0] ? mine[0].name : translate('No patient in your room'),
-      link: mine[0] ? 'Click to continue the consultation →' : 'Click to open the consultation room →',
-      run: () => go('consult', mine[0]?.id)
-    },
-    {
-      tone: 'violet',
-      icon: 'clipboard',
+      icon: 'fileText',
       title: 'My prescriptions',
       value: rxWeek,
-      sub: `${rxToday.length} ${translate('prescriptions today')} · ${rxWeek} ${translate('prescriptions this week')}`,
-      link: 'Click to view prescriptions →',
+      hint: `${rxToday.length} ${translate('prescriptions today')} · ${rxWeek} ${translate('prescriptions this week')}`,
       run: () => go('prescriptions')
     },
+    { icon: 'pill', title: 'Drug cabinet', value: inv.drugs.filter((d) => d.active && d.kind === 'drug').length, run: () => go('drugs') },
     {
-      tone: lowStock ? 'red' : 'cyan',
-      icon: 'box',
-      title: 'Drug cabinet',
-      value: inv.drugs.filter((d) => d.active && d.kind === 'drug').length,
-      sub: lowStock ? `${lowStock} ${translate('drugs low or out of stock')}` : translate('All drugs in stock'),
-      link: 'Click to look up drugs →',
+      tone: lowStock ? 'r' : '',
+      icon: 'package',
+      title: 'Drugs low or out of stock',
+      value: lowStock,
+      hint: lowStock ? `${lowStock} ${translate('drugs low or out of stock')}` : translate('All drugs in stock'),
       run: () => go('drugs'),
       alert: lowStock > 0
     }
@@ -81,38 +72,43 @@ export default function DoctorHome({ go }) {
       run: next
     },
     { icon: 'stethoscope', title: 'Consultation room', sub: 'Examine, diagnose and prescribe', run: () => go('consult') },
-    { icon: 'clipboard', title: 'My prescriptions', sub: 'By day, week or month', run: () => go('prescriptions') },
-    { icon: 'box', title: 'Drug cabinet', sub: 'Stock, expiry and price of each drug', run: () => go('drugs') },
+    { icon: 'fileText', title: 'My prescriptions', sub: 'By day, week or month', run: () => go('prescriptions') },
     { icon: 'flask', title: 'Lab tests', sub: `${labs.length} ${translate('patients out for lab tests')}`, run: () => setLabOpen(true) }
   ]
 
   return (
     <>
       <ClusterAlerts />
-      <div className="dash-cards">
-        {cards.map((c) => (
-          <button key={c.title} className={'dash-card ' + c.tone + (c.alert ? ' alert' : '')} onClick={c.run}>
-            <span className="head">
-              <Icon name={c.icon} /> {c.title}
+      <div className="kpis k3 dk">
+        {tiles.map((c) => (
+          <button key={c.title} className={'tile rt ' + (c.tone || 'b') + (c.alert ? ' alert' : '')} onClick={c.run} title={c.hint}>
+            <span className="tl">{translate(c.title)}</span>
+            <span className="rt-b">
+              <b className="rt-n val">{c.value}</b>
+              <span className="chip">
+                <Icon name={c.icon} />
+              </span>
             </span>
-            <span className="val">{c.value}</span>
-            <span className="sub">{c.sub}</span>
-            <span className="link">{c.link}</span>
           </button>
         ))}
       </div>
 
-      <h2 className="dash-h">Quick actions</h2>
-      <div className="dash-actions">
-        {actions.map((a) => (
-          <button key={a.title} className="dash-action" onClick={a.run}>
-            <Icon name={a.icon} />
-            <span>
-              <b>{a.title}</b>
-              <small>{a.sub}</small>
-            </span>
-          </button>
-        ))}
+      <div className="card">
+        <div className="card-title">Control panel</div>
+        <div className="quick q4 qrow">
+          {actions.map((a) => (
+            <button key={a.title} className="qa qv" onClick={a.run}>
+              <span className="ico">
+                <Icon name={a.icon} />
+              </span>
+              <span>
+                <b>{translate(a.title)}</b>
+                <small>{translate(a.sub)}</small>
+              </span>
+              <Icon name="arrowUpRight" className="qa-go" />
+            </button>
+          ))}
+        </div>
       </div>
 
       <div className="dash-bottom">
