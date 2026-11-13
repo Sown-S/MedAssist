@@ -72,34 +72,38 @@ export default function Doctor() {
         )
       )}
 
-      {pendingRF.map((r) => (
-        <div className="redflag-alert" key={r.id}>
-          <Icon name="ban" />
-          <div className="txt">
-            <b>
-              <span>
-                {translate('Red-flag case — top of the queue (Emergency), see the patient now')}
-              </span>{' '}
-              · {r.name}
-              {r.age !== '' && r.age != null ? ', ' + r.age : ''} · {hhmm(r.at)}
-            </b>
-            <span>{translate(r.signs) || '—'}</span>
-            <span className="hint">
-              {translate('Emergency — top of the queue. Call the patient in now; refer to hospital from the consultation if needed.')}
-              {r.by && translate('Recorded by') + ' ' + r.by}
-              {r.allergies ? ' · ' + translate('Drug allergy') + ': ' + translate(r.allergies) : ''}
-            </span>
-          </div>
-          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-            <button className="btn btn-sm" onClick={() => seeNow(r)}>
-              <Icon name="stethoscope" /> See the patient now
-            </button>
-            <button className="btn btn-ghost btn-sm" onClick={() => reviewRedFlag(r.id, 'seen', user)}>
-              Dismiss
-            </button>
-          </div>
+      {/* Ca cờ đỏ chưa bác sĩ nào xem: popup đỏ cạnh chuông thông báo (Mời khám ngay / Bỏ qua). */}
+      {pendingRF.length > 0 && (
+        <div className="bell-stack">
+          {pendingRF.map((r) => (
+            <div className="bell-pop redflag-alert" role="alert" key={r.id}>
+              <div className="bp-ico">
+                <Icon name="siren" />
+              </div>
+              <div className="bp-t">
+                <b>
+                  {translate('Red-flag case — top of the queue (Emergency), see the patient now')} · {r.name}
+                  {r.age !== '' && r.age != null ? ', ' + r.age : ''} · {hhmm(r.at)}
+                </b>
+                <span>{translate(r.signs) || '—'}</span>
+                <p className="hint">
+                  {translate('Emergency — top of the queue. Call the patient in now; refer to hospital from the consultation if needed.')}{' '}
+                  {r.by && translate('Recorded by') + ' ' + r.by}
+                  {r.allergies ? ' · ' + translate('Drug allergy') + ': ' + translate(r.allergies) : ''}
+                </p>
+                <span className="bp-acts">
+                  <button className="btn btn-sm bp-go" onClick={() => seeNow(r)}>
+                    <Icon name="stethoscope" /> See the patient now
+                  </button>
+                  <button className="btn btn-ghost btn-sm" onClick={() => reviewRedFlag(r.id, 'seen', user)}>
+                    Dismiss
+                  </button>
+                </span>
+              </div>
+            </div>
+          ))}
         </div>
-      ))}
+      )}
 
       {/* Đổi màn bằng menu bên trái (components/SideNav.jsx); phòng khám của bác sĩ hiện ở cuối menu. */}
       {view === 'home' && <DoctorHome go={go} />}

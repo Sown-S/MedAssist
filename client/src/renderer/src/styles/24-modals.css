@@ -1,0 +1,48 @@
+/* Hộp thoại theo mẫu: form tiếp đón 2 cột, trợ giúp có bảng phím tắt, popup cạnh chuông */
+
+/* ---- Khung hộp thoại chung ---- */
+.modal-overlay{background:rgba(16,24,40,.45);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);}
+.modal-box{border-radius:16px;box-shadow:var(--shadow-lg);padding:24px 26px 20px;}
+.modal-box.xl{width:min(1180px,calc(100vw - 32px));}
+.modal-head h3{font-size:19px;font-weight:600;}
+.modal-close{border-radius:50%;}
+
+/* ---- Tiếp đón: hai cột ---- */
+.intake{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);margin:0 -26px;border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
+.intake>section{padding:18px 22px;max-height:calc(100vh - 230px);overflow:auto;}
+.intake>section+section{border-left:1px solid var(--border);background:var(--surface-alt);}
+.intake .form-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+.intake .section-label{display:flex;align-items:center;gap:8px;font-size:13px;}
+.intake+.form-actions,.modal-box.xl .form-actions{margin-top:16px;}
+@media (max-width:980px){.intake{grid-template-columns:1fr;}.intake>section+section{border-left:0;border-top:1px solid var(--border);}}
+
+/* ---- Trợ giúp ---- */
+.help-sec{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);}
+.help-sec:last-of-type{border-bottom:0;}
+.help-sec .ico{width:36px;height:36px;border-radius:8px;display:grid;place-items:center;flex:none;background:var(--primary-soft);color:var(--primary);}
+.help-sec b{display:block;font-size:15.5px;color:var(--ink);}
+.help-sec span{font-size:14px;color:var(--ink-soft);}
+.keys{display:grid;grid-template-columns:auto 1fr;gap:10px 16px;align-items:center;margin-top:6px;}
+.keys kbd{justify-self:start;font-family:inherit;font-size:13px;font-weight:600;border:1px solid var(--border-strong);border-bottom-width:2px;background:var(--surface);color:var(--ink-2);border-radius:6px;padding:2px 8px;white-space:nowrap;}
+.keys span{font-size:14.5px;color:var(--ink-2);}
+.help-foot{display:flex;justify-content:flex-end;margin-top:16px;}
+
+/* ---- Popup cạnh chuông: xếp chồng nhiều thông báo ---- */
+.bell-stack{position:fixed;top:72px;right:232px;z-index:45;width:380px;display:flex;flex-direction:column;gap:10px;max-height:calc(100vh - 90px);overflow:auto;padding:8px 2px 2px;}
+.bell-stack .bell-pop{position:relative;top:auto;right:auto;width:auto;}
+.bell-stack .bell-pop+.bell-pop::before{display:none;}
+.bell-pop .bp-t .hint{font-size:13px;color:var(--warn-ink);margin:0 0 10px;}
+.bell-pop .bp-acts{display:flex;gap:8px;flex-wrap:wrap;}
+.bell-pop .bp-acts .btn-ghost{background:var(--surface);}
+.bell-more{align-self:flex-end;font-size:13px;color:var(--ink-soft);background:var(--surface);border:1px solid var(--border);border-radius:999px;padding:4px 10px;box-shadow:var(--shadow);}
+
+/* ---- Lưới chấm góc trên phải vùng nội dung ---- */
+.app-main{position:relative;isolation:isolate;}
+.app-main::before{content:"";position:absolute;right:40px;top:84px;width:220px;height:140px;z-index:-1;pointer-events:none;background-image:radial-gradient(rgba(24,119,242,.28) 1.4px,transparent 1.6px);background-size:16px 16px;-webkit-mask:linear-gradient(225deg,#000,transparent 85%);mask:linear-gradient(225deg,#000,transparent 85%);}
+
+/* Ô số liệu: số bên trái, icon sát mép phải */
+.rt-b{width:100%;}
+.bell-pop .bp-ico .icn{width:18px;height:18px;display:block;}
+.bell-pop .bp-x .icn{width:16px;height:16px;}
+.bell-stack .bell-pop.redflag-alert{align-items:flex-start;color:var(--ink);}
+.bell-stack .bell-pop .bp-t>span{color:var(--ink-2);}

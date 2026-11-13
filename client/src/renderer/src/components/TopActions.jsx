@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { Fragment, useEffect, useRef, useState } from 'react'
 import Icon from './Icon'
 import Modal, { ModalHeader } from './Modal'
 import ChangePasswordModal from './ChangePasswordModal'
@@ -12,18 +12,31 @@ import { SIDEBAR_THEMES, getSidebarTheme, setSidebarTheme } from '../api/sidebar
 // Thông báo tính tại máy từ hàng chờ và kho.
 const hm = (iso) => new Date(iso).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit', hour12: false })
 
+// Phím tắt theo vai trò — hiện thành bảng phím trong hộp Trợ giúp.
+const SHORTCUTS = {
+  doctor: [
+    ['Alt+N', 'Call next patient'],
+    ['Alt+L', 'Order lab tests'],
+    ['Ctrl+Enter', 'Finalize the visit']
+  ],
+  reception: [
+    ['F2', 'Register new patient'],
+    ['F3 / Ctrl+K', 'Find patient']
+  ],
+  admin: [['Esc', 'Close the dialog']]
+}
+const HELP_ICON = { Consultation: 'stethoscope', 'Lab tests': 'flask', 'Red-flag cases': 'siren', Prescribing: 'fileText', 'Your room': 'door', Reception: 'users', Reports: 'chart', Admin: 'settings' }
+
 const HELP = {
   doctor: [
     ['Consultation', 'Pick a patient from the queue, record SOAP notes, confirm the ICD-10 diagnosis and prescribe.'],
     ['Lab tests', 'Order lab tests from the consultation room and print the order sheet. The patient brings back paper results; note the key results before finalizing.'],
     ['Red-flag cases', 'Cases recorded by reception appear in red on top of your pages — decide whether to refer or see the patient at the clinic.'],
     ['Prescribing', 'Enter Morning / Noon / Afternoon / Evening doses and the number of days — quantity and directions fill in automatically. Children under 12 need a weight.'],
-    ['Your room', 'Each doctor works in a fixed room set by the administrator in Staff accounts — no shifts to start or end. Leaving the room: “Return to queue”. Patient gone: “Patient left”.'],
-    ['Keyboard shortcuts', 'Alt+N — call the next patient · Alt+L — order lab tests · Ctrl+Enter — finalize the visit']
+    ['Your room', 'Each doctor works in a fixed room set by the administrator in Staff accounts — no shifts to start or end. Leaving the room: “Return to queue”. Patient gone: “Patient left”.']
   ],
   reception: [
-    ['Reception', 'Register or find patients, check them in, follow the queue and collect payments.'],
-    ['Keyboard shortcuts', 'F2 — register a new patient · F3 or Ctrl+K — find a patient']
+    ['Reception', 'Register or find patients, check them in, follow the queue and collect payments.']
   ],
   admin: [
     ['Reports', 'Revenue, visit counts and AI module performance.'],
@@ -184,15 +197,34 @@ export default function TopActions({ user, onSignOut }) {
         <ModalHeader title="Help" onClose={() => setOpen(null)} />
         <p className="help-intro">What you can do as {user.role}:</p>
         {HELP[user.roleKey].map(([name, text]) => (
-          <div className="pref-row" key={name}>
-            <b>{name}</b>
-            <span>{text}</span>
+          <div className="help-sec" key={name}>
+            <span className="ico">
+              <Icon name={HELP_ICON[name] ?? 'help'} />
+            </span>
+            <span>
+              <b>{translate(name)}</b>
+              <span>{translate(text)}</span>
+            </span>
           </div>
         ))}
+        <div className="section-label">Keyboard shortcuts</div>
+        <div className="keys">
+          {SHORTCUTS[user.roleKey].map(([k, d]) => (
+            <Fragment key={k}>
+              <kbd>{k}</kbd>
+              <span>{translate(d)}</span>
+            </Fragment>
+          ))}
+        </div>
         <p className="help-intro" style={{ marginTop: 14 }}>
           Forgot your password or need another account? Ask an administrator to reset or create it under Admin →
           Staff accounts.
         </p>
+        <div className="help-foot">
+          <button className="btn btn-primary" onClick={() => setOpen(null)}>
+            Got it
+          </button>
+        </div>
       </Modal>
 
       <Modal open={open === 'settings'} onClose={() => setOpen(null)}>

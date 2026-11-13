@@ -8,7 +8,7 @@ export default function Modal({ open, onClose, wide, children }) {
   // Portal ra <body>: phần tử cha có backdrop-filter sẽ “nhốt” position: fixed bên trong nó.
   return createPortal(
     <div className="modal-overlay show">
-      <div className={'modal-box' + (wide ? ' wide' : '')}>{children}</div>
+      <div className={'modal-box' + (wide ? (wide === 'xl' ? ' wide xl' : ' wide') : '')}>{children}</div>
     </div>,
     document.body
   )

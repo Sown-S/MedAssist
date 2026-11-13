@@ -191,9 +191,13 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
   const err = (k) => touched && errors[k]
 
   return (
-    <Modal open={open} onClose={close} wide>
+    <Modal open={open} onClose={close} wide="xl">
       <ModalHeader title={existing ? translate('New visit') + ' — ' + existing.name : 'Register new patient & create visit'} onClose={close} />
 
+      {/* Hai cột như mẫu: trái thông tin bệnh nhân, phải triệu chứng và sinh hiệu. */}
+      <div className="intake">
+      <section>
+      {existing && <div className="section-label" style={{ marginTop: 0 }}>Patient details</div>}
       {existing ? (
         <>
           <div className="pl-summary">
@@ -217,26 +221,6 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
       )}
 
       {dupes && !existing && <DuplicateBanner dupes={dupes} allowNew={!idTaken} onPick={pickRecord} onCreateNew={() => handleSave(true)} />}
-
-      <div className="section-label">Symptoms</div>
-      <SymptomPanel
-        value={syms}
-        onChange={setSyms}
-        text={form.reason}
-        onText={(t) => setForm((f) => ({ ...f, reason: t }))}
-        onExtract={extract}
-        onVitals={(list, from) => setVitalProps({ list, from })}
-      />
-
-      <div className="section-label">Vital signs</div>
-      <VitalProposals
-        list={vitalProps.list}
-        form={form}
-        onApply={(fill) => setForm((f) => ({ ...f, ...fill }))}
-        onDrop={(keys) => setVitalProps((v) => ({ ...v, list: v.list.filter((p) => !keys.includes(p.key)) }))}
-        stale={extractionStale(vitalProps.from, form.reason)}
-      />
-      <VitalsFields value={form} onChange={(k, v) => setForm((f) => ({ ...f, [k]: v }))} errorKeys={touched ? vit.errorKeys : new Set()} requireWeight={child} />
       <div className="form-grid intake-extra" style={{ marginTop: 10 }}>
         {pregnancyAsked && (
           <div className="field">
@@ -262,6 +246,28 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
           <span>Print queue ticket</span>
         </label>
       </div>
+      </section>
+
+      <section>
+      <div className="section-label" style={{ marginTop: 0 }}>Symptoms</div>
+      <SymptomPanel
+        value={syms}
+        onChange={setSyms}
+        text={form.reason}
+        onText={(t) => setForm((f) => ({ ...f, reason: t }))}
+        onExtract={extract}
+        onVitals={(list, from) => setVitalProps({ list, from })}
+      />
+
+      <div className="section-label">Vital signs</div>
+      <VitalProposals
+        list={vitalProps.list}
+        form={form}
+        onApply={(fill) => setForm((f) => ({ ...f, ...fill }))}
+        onDrop={(keys) => setVitalProps((v) => ({ ...v, list: v.list.filter((p) => !keys.includes(p.key)) }))}
+        stale={extractionStale(vitalProps.from, form.reason)}
+      />
+      <VitalsFields value={form} onChange={(k, v) => setForm((f) => ({ ...f, [k]: v }))} errorKeys={touched ? vit.errorKeys : new Set()} requireWeight={child} />
       {touched && vit.errors.length > 0 && (
         <p className="ai-soft" style={{ color: 'var(--warn-ink)', fontSize: 12.5, margin: '4px 0 8px' }}>
           <Icon name="ban" /> {vit.errors.map((w) => translate(w)).join(' · ')}
@@ -272,6 +278,8 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
           <Icon name="alert" /> {translate('Unusual value — please double-check')}: {vWarn.map((w) => translate(w)).join(' · ')}
         </p>
       )}
+      </section>
+      </div>
 
       <div className="form-actions">
         <button className="btn btn-ghost" style={{ color: 'var(--warn)', borderColor: '#F3C9C9' }} onClick={() => onRedFlag(redFlagInfo())}>

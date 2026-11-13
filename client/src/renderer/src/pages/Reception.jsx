@@ -137,51 +137,56 @@ export default function Reception() {
         </div>
       )}
 
-      {alerts.map((r) => (
-        <div className="redflag-alert" key={r.id}>
-          <Icon name="ban" />
-          <div className="txt">
-            <b>
-              <span>Red-flag case</span> · {r.name} · {hhmm(r.at)}
-            </b>
-            <span>{translate(r.signs) || '—'}</span>
-            <span className="hint">
-              {r.outcome === 'queued'
-                ? translate('Emergency — placed at the top of the queue; doctors have been alerted. Transfer to hospital if the patient gets worse.')
-                : r.outcome === 'assess'
-                ? translate('Waiting for a doctor to assess — keep the patient at the desk.')
-                : r.outcome === 'seen'
-                  ? translate('Doctor') + ' ' + r.doctorReview.by + ' ' + translate('will see the patient at the clinic — check them in as Priority.')
-                  : translate('Emergency — send the patient to hospital now (call 115 if needed); do not wait for a doctor. Doctors have been alerted.') +
-                    (r.doctorReview ? ' ' + translate('Confirmed by doctor') + ' ' + r.doctorReview.by + '.' : '')}
-            </span>
-          </div>
-          {r.outcome !== 'assess' && (
-            <button className="btn btn-sm" onClick={() => acknowledgeRedFlag(r.id)}>
-              {r.outcome === 'seen' ? translate('Done') : translate('Patient guided')}
-            </button>
+      {/* Ca cờ đỏ và lượt tồn từ ngày trước: popup đỏ xếp chồng cạnh chuông thông báo. */}
+      {(alerts.length > 0 || (stale.length > 0 && !staleSeen)) && (
+        <div className="bell-stack">
+          {alerts.map((r) => (
+            <div className="bell-pop redflag-alert" role="alert" key={r.id}>
+              <div className="bp-ico">
+                <Icon name="siren" />
+              </div>
+              <div className="bp-t">
+                <b>
+                  {translate('Red-flag case')} · {r.name} · {hhmm(r.at)}
+                </b>
+                <span>{translate(r.signs) || '—'}</span>
+                <p className="hint">
+                  {r.outcome === 'queued'
+                    ? translate('Emergency — placed at the top of the queue; doctors have been alerted. Transfer to hospital if the patient gets worse.')
+                    : r.outcome === 'assess'
+                    ? translate('Waiting for a doctor to assess — keep the patient at the desk.')
+                    : r.outcome === 'seen'
+                      ? translate('Doctor') + ' ' + r.doctorReview.by + ' ' + translate('will see the patient at the clinic — check them in as Priority.')
+                      : translate('Emergency — send the patient to hospital now (call 115 if needed); do not wait for a doctor. Doctors have been alerted.') +
+                        (r.doctorReview ? ' ' + translate('Confirmed by doctor') + ' ' + r.doctorReview.by + '.' : '')}
+                </p>
+                {r.outcome !== 'assess' && (
+                  <button className="btn btn-sm bp-go" onClick={() => acknowledgeRedFlag(r.id)}>
+                    {r.outcome === 'seen' ? translate('Done') : translate('Patient guided')}
+                  </button>
+                )}
+              </div>
+            </div>
+          ))}
+          {stale.length > 0 && !staleSeen && (
+            <div className="bell-pop" role="alert">
+              <div className="bp-ico">
+                <Icon name="clock" />
+              </div>
+              <div className="bp-t">
+                <b>
+                  {stale.length} {translate('open visits from previous days')}
+                </b>
+                <span>{translate('Close them with a reason, or collect payment if the patient came back.')}</span>
+                <button className="btn btn-sm bp-go" onClick={() => (hideStale(), setStaleOpen(true))}>
+                  {translate('Review')}
+                </button>
+              </div>
+              <button className="bp-x" onClick={hideStale} title={translate('Close')} aria-label={translate('Close')}>
+                <Icon name="x" />
+              </button>
+            </div>
           )}
-        </div>
-      ))}
-
-      {/* Lượt tồn từ ngày trước: popup đỏ cạnh chuông thông báo; bỏ qua thì vẫn còn trong danh sách của chuông. */}
-      {stale.length > 0 && !staleSeen && (
-        <div className="bell-pop" role="alert">
-          <div className="bp-ico">
-            <Icon name="clock" />
-          </div>
-          <div className="bp-t">
-            <b>
-              {stale.length} {translate('open visits from previous days')}
-            </b>
-            <span>{translate('Close them with a reason, or collect payment if the patient came back.')}</span>
-            <button className="btn btn-sm bp-go" onClick={() => (hideStale(), setStaleOpen(true))}>
-              {translate('Review')}
-            </button>
-          </div>
-          <button className="bp-x" onClick={hideStale} title={translate('Close')} aria-label={translate('Close')}>
-            <Icon name="x" />
-          </button>
         </div>
       )}
 

@@ -33,6 +33,9 @@ export const VI = {
   'visits today': 'lượt khám hôm nay',
   'Drugs low or out of stock': 'Thuốc sắp hết / đã hết',
   'compared with the day before': 'so với hôm trước',
+  'Finalize the visit': 'Hoàn tất khám',
+  'Close the dialog': 'Đóng hộp thoại',
+  'Got it': 'Đã hiểu',
   'Choose your role and sign in with the account you were given': 'Chọn vai trò và đăng nhập bằng tài khoản được cấp',
   'The right patient,': 'Khám đúng người,',
   'at the right time.': 'đúng lúc, đúng ca.',
@@ -1011,7 +1014,6 @@ export const VI = {
   'caps': 'viên nang',
   'Register or find patients, check them in, follow the queue and collect payments.': 'Đăng ký hoặc tìm bệnh nhân, tiếp đón, theo dõi hàng chờ và thu tiền.',
   'Keyboard shortcuts': 'Phím tắt',
-  'F2 — register a new patient · F3 or Ctrl+K — find a patient': 'F2 — đăng ký bệnh nhân mới · F3 hoặc Ctrl+K — tìm bệnh nhân',
   // ===== Hàng chờ tiếp đón, ca cờ đỏ, Sổ quỹ, chốt ca =====
   'Reception dashboard': 'Bảng điều khiển lễ tân',
   'Today’s queue, prescriptions and payments at a glance': 'Hàng chờ, đơn thuốc và thanh toán hôm nay trong một màn hình',
@@ -1276,7 +1278,6 @@ export const VI = {
   'No notifications.': 'Không có thông báo.',
   'Enter Morning / Noon / Afternoon / Evening doses and the number of days — quantity and directions fill in automatically. Children under 12 need a weight.':
     'Nhập liều Sáng / Trưa / Chiều / Tối và số ngày — số lượng và cách dùng tự điền. Trẻ dưới 12 tuổi cần cân nặng.',
-  'Alt+N — call the next patient · Alt+L — order lab tests · Ctrl+Enter — finalize the visit': 'Alt+N — mời bệnh nhân tiếp theo · Alt+L — chỉ định xét nghiệm · Ctrl+Enter — chốt đơn',
   // ===== Bác sĩ đợt 2: an toàn kê đơn (thuốc N/H, giới hạn ngày, trùng đơn cũ) =====
   'the prescription of': 'đơn ngày',
   // ===== Bác sĩ đợt 3: tra cứu hồ sơ, ghi bổ sung, giấy tờ =====
