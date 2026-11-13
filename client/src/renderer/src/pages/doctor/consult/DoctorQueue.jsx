@@ -98,7 +98,7 @@ export default function DoctorQueue({ visits, user, mine, current, onSelect, tak
                       return (
                         <div
                           key={v.id}
-                          className={'dq-item' + (active ? ' active' : '') + (g.key === 'other' ? ' muted' : '') + (g.key === 'done' ? ' done' : '') + (clickable ? '' : ' static')}
+                          className={'dq-item' + (v.triage === 'emergency' && g.key !== 'done' ? ' p-emerg' : v.priority && g.key !== 'done' ? ' p-prio' : '') + (active ? ' active' : '') + (g.key === 'other' ? ' muted' : '') + (g.key === 'done' ? ' done' : '') + (clickable ? '' : ' static')}
                           onClick={() => onItem(g, v)}
                           title={g.key === 'done' && v.rx.length ? translate('View & review the prescription') : undefined}
                         >

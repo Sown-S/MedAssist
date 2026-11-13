@@ -44,7 +44,7 @@ const SORTS = [
   { key: 'expiry', label: 'Sort: nearest expiry' },
   { key: 'stock', label: 'Sort: lowest stock' }
 ]
-const PAGE_SIZE = 12
+const PAGE_SIZE = 20
 const GROUPS = [
   { key: '', label: 'All groups' },
   { key: 'essential', label: 'Essential' },
@@ -102,8 +102,20 @@ export default function DrugCabinetView({ go }) {
 
   return (
     <>
-      <div className="card" style={{ marginBottom: 16 }}>
-        <div className="cash-filters" style={{ marginBottom: 0 }}>
+      {current && (
+        <div className="ctx-banner">
+          <Icon name="stethoscope" />
+          <span className="txt">
+            <span>Prescribing for</span> <b>{current.name}</b>
+            {current.allergies ? ' · ' + translate('Drug allergy') + ': ' + translate(current.allergies) : ''}
+          </span>
+          <button className="btn btn-ghost btn-sm" onClick={() => go('consult', current.id)}>
+            <Icon name="arrowLeft" /> Back to the consultation
+          </button>
+        </div>
+      )}
+      <div className="card">
+        <div className="cash-filters" style={{ marginBottom: 14 }}>
           <input className="grow" type="search" placeholder="Search by drug name, active ingredient or ATC…" value={q} onChange={filter(setQ)} />
           <select value={atc} onChange={filter(setAtc)} title={translate('Therapeutic class (ATC)')}>
             <option value="">All drug classes (ATC)</option>
@@ -146,70 +158,75 @@ export default function DrugCabinetView({ go }) {
             {list.length} / {active.length} {translate(active.length === 1 ? 'drug' : 'drugs')}
           </span>
         </div>
-        {current && (
-          <p className="ai-soft" style={{ fontSize: 12.5, margin: '10px 0 0' }}>
-            <Icon name="stethoscope" /> <span>Prescribing for</span> <b>{current.name}</b> — <span>use “Add to prescription” on a drug card.</span>
-          </p>
-        )}
-      </div>
-
-      <div className="drug-grid">
-        {pg.rows.map(({ d, s }) => {
-          const main = s.statuses.find((x) => x !== 'ok') ?? 'ok'
-          return (
-            <div className={'drug-card' + (s.usable === 0 ? ' out' : '')} key={d.id}>
-              <div className="drug-top">
-                <div>
-                  <b>{d.name}</b>
-                  <small>
-                    {d.ingredient || '—'}
-                    {d.atc ? ' · ATC ' + d.atc : ''}
-                  </small>
-                </div>
-                <span className={'badge ' + STATUS[main].cls}>{STATUS[main].label}</span>
-              </div>
-              <div className="drug-tags">
-                {d.essential && <span className="essential-chip">Essential</span>}
-                {d.group === 'controlled' && <span className="badge warn">Controlled</span>}
-                {d.kind === 'supply' && <span className="badge muted">Supply</span>}
-              </div>
-              <div className="drug-facts">
-                <span>
-                  <Icon name="box" /> <span>Usable stock</span>: <b className="mono">{s.usable.toLocaleString('vi-VN')}</b> <span>{unitLabel(d.unit)}</span>
-                </span>
-                <span>
-                  <Icon name="calendar" /> <span>Next expiry</span>: <b className="mono">{s.nextExpiry ? fmtDate(s.nextExpiry.expiry) : '—'}</b>
-                  {s.nextExpiry && (
-                    <span className={'exp-days' + (s.nextExpiry.days <= 30 ? ' soon' : s.nextExpiry.days <= near ? ' near' : '')}>{translate(s.nextExpiry.days + ' days left')}</span>
-                  )}
-                </span>
-                <span>
-                  <Icon name="banknote" /> <span>Price</span>: <b className="mono">{fmtMoney(d.price)}</b> / <span>{unitLabel(d.unit)}</span>
-                </span>
-              </div>
-              {current && d.kind === 'drug' && (
-                <button className="btn btn-ghost btn-sm" style={{ marginTop: 'auto' }} disabled={s.usable === 0} onClick={() => add(d)}>
-                  + Add to prescription
-                </button>
-              )}
-            </div>
-          )
-        })}
-      </div>
-      {list.length > PAGE_SIZE && (
-        <div className="card" style={{ marginTop: 14, padding: '4px 10px 10px' }}>
-          <Pager {...pg} onPage={setPage} />
-        </div>
-      )}
-      {!list.length && (
-        <div className="card">
+        {list.length ? (
+          <table className="dt cab-table">
+            <thead>
+              <tr>
+                <th>Drug</th>
+                <th>Labels</th>
+                <th className="r">Usable stock</th>
+                <th>Next expiry</th>
+                <th className="r">Price</th>
+                <th>Status</th>
+                {current && <th />}
+              </tr>
+            </thead>
+            <tbody>
+              {pg.rows.map(({ d, s }) => {
+                const main = s.statuses.find((x) => x !== 'ok') ?? 'ok'
+                return (
+                  <tr key={d.id} className={s.usable === 0 ? 'dimmed' : ''}>
+                    <td>
+                      <b className="cab-name">{d.name}</b>
+                      <small className="cab-sub">
+                        {d.ingredient || '—'}
+                        {d.atc ? ' · ' + d.atc : ''}
+                      </small>
+                    </td>
+                    <td>
+                      <span className="cab-tags">
+                        {d.essential && <span className="tag">Essential</span>}
+                        {d.group === 'controlled' && <span className="tag w">Controlled</span>}
+                        {d.kind === 'supply' && <span className="tag">Supply</span>}
+                        {!d.essential && d.group !== 'controlled' && d.kind !== 'supply' && <span className="plain">—</span>}
+                      </span>
+                    </td>
+                    <td className="r num">
+                      {s.usable.toLocaleString('vi-VN')} <span className="cab-unit">{unitLabel(d.unit)}</span>
+                    </td>
+                    <td className="num">
+                      {s.nextExpiry ? fmtDate(s.nextExpiry.expiry) : '—'}
+                      {s.nextExpiry && s.nextExpiry.days <= near && (
+                        <span className={'exp-days' + (s.nextExpiry.days <= 30 ? ' soon' : ' near')}>{translate(s.nextExpiry.days + ' days left')}</span>
+                      )}
+                    </td>
+                    <td className="r num">{fmtMoney(d.price)}</td>
+                    <td>
+                      {main === 'ok' ? <span className="plain">{translate(STATUS.ok.label)}</span> : <span className={'badge ' + STATUS[main].cls}>{STATUS[main].label}</span>}
+                    </td>
+                    {current && (
+                      <td className="r">
+                        {d.kind === 'drug' && (
+                          <button className="btn btn-ghost btn-sm" disabled={s.usable === 0} onClick={() => add(d)} title={translate('Add to prescription')}>
+                            <Icon name="plus" /> <span>Add</span>
+                          </button>
+                        )}
+                      </td>
+                    )}
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
+        ) : (
           <div className="empty-state">
             <Icon name="box" />
             <b>No drugs match.</b>
             <span>Try another name or clear the filters.</span>
           </div>
-        </div>
-      )}
+        )}
+        {list.length > PAGE_SIZE && <Pager {...pg} onPage={setPage} />}
+      </div>
     </>
   )
 }

@@ -5,6 +5,15 @@ import { dmy, hhmm } from '../../reception/shared'
 import { ClinicalInfoEditor } from './ClinicalInfoEditor'
 import { num, isChild } from './rxDraft'
 
+const initials = (name = '') =>
+  name
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(-2)
+    .map((w) => w[0].toUpperCase())
+    .join('')
+
 const STATUS_CHIP = { waiting: 'WAITING', in_exam: 'IN CONSULTATION', labs: 'WAITING FOR LABS' }
 
 // Đầu phiếu khám: tên, dải sinh hiệu + lần khám trước, ghi chú trả đơn, cờ đỏ / sàn ưu tiên, dị ứng, thông tin lâm sàng.
@@ -12,19 +21,23 @@ export default function ConsultHeader({ visit, vit, prev, alerts }) {
   return (
     <>
       <div className="consult-head">
-        <div>
+        <span className="ava" aria-hidden="true">
+          {initials(visit.name)}
+        </span>
+        <div className="ch-id">
           <h2>
             <span className="p-ticket" style={{ marginRight: 8 }}>
               {String(visit.ticket).padStart(3, '0')}
             </span>
             {visit.name}
+            {visit.triage === 'emergency' ? <span className="badge low">{translate('Emergency')}</span> : visit.priority ? <span className="badge warn">{translate('Priority')}</span> : null}
           </h2>
           <div className="sub">
             {translate(visit.gender)}
             {visit.age !== '' ? ' · ' + visit.age + ' ' + translate('yrs') : ''} · <span className="mono">{visit.patientCode ?? visit.patientId}</span> · <span className="mono">{visit.phone}</span>
           </div>
         </div>
-        <span className="status-chip">{STATUS_CHIP[visit.status]}</span>
+        {STATUS_CHIP[visit.status] && <span className="status-chip">{STATUS_CHIP[visit.status]}</span>}
       </div>
 
       <div className="consult-strip">

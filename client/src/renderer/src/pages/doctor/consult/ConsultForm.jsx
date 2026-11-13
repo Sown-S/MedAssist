@@ -179,7 +179,7 @@ export default function ConsultForm({ visit, user, onDone, onNext }) {
         {tab === 'hist' && <HistoryTab visit={visit} />}
       </div>
 
-      <div className="card">
+      <div className="card rx-card">
         <RxEditor
           rx={d.rx}
           tried={tried}
@@ -202,30 +202,32 @@ export default function ConsultForm({ visit, user, onDone, onNext }) {
             {translate(problem)}
           </p>
         )}
-        <div className="consult-footer">
-          <button className="btn btn-ghost btn-sm" onClick={() => setLeaving(true)} title={translate('The patient left or refused — close the visit without an invoice')}>
-            <Icon name="x" /> Patient left
-          </button>
-          <button className="btn btn-ghost btn-sm" onClick={() => setHanding(true)} title={translate('Leaving the room? Send this patient back to the waiting queue')}>
-            <Icon name="repeat" /> Return to queue
-          </button>
-          {/* Chuyển tuyến kết thúc lượt khám — in giấy và đóng lượt, không có hoá đơn. */}
-          <button className="btn btn-ghost btn-sm" onClick={() => setDocs(true)} title={translate('Refer & end the visit')}>
-            <Icon name="printer" /> Refer to hospital
-          </button>
-          <button className="btn btn-ghost btn-sm" onClick={() => setLabOpen(true)} title="Alt+L">
-            <Icon name="flask" /> Order lab tests
-          </button>
-          <button className="btn btn-ghost btn-sm" onClick={printRx} disabled={!d.rx.length}>
-            <Icon name="printer" /> Print prescription
-          </button>
-          <Button className="btn btn-ghost btn-sm" disabled={finalizing} onClick={() => runFinalize(false)} title="Ctrl+Enter">
-            <Icon name="check" /> Finalize
-          </Button>
-          <Button className="btn btn-primary btn-sm" disabled={finalizing} onClick={() => runFinalize(true)} title="Ctrl+Shift+Enter">
-            <Icon name="megaphone" /> Finalize &amp; call next
-          </Button>
-        </div>
+      </div>
+
+      <div className="consult-footer actbar">
+        <button className="btn btn-ghost btn-sm" onClick={() => setLeaving(true)} title={translate('The patient left or refused — close the visit without an invoice')}>
+          <Icon name="x" /> Patient left
+        </button>
+        <button className="btn btn-ghost btn-sm" onClick={() => setHanding(true)} title={translate('Leaving the room? Send this patient back to the waiting queue')}>
+          <Icon name="repeat" /> Return to queue
+        </button>
+        <button className="btn btn-ghost btn-sm" onClick={printRx} disabled={!d.rx.length}>
+          <Icon name="printer" /> Print prescription
+        </button>
+        <span className="sp" />
+        {/* Chuyển tuyến kết thúc lượt khám — in giấy và đóng lượt, không có hoá đơn. */}
+        <button className="btn btn-ghost btn-sm" onClick={() => setDocs(true)} title={translate('Refer & end the visit')}>
+          <Icon name="printer" /> Refer to hospital
+        </button>
+        <button className="btn btn-ghost btn-sm" onClick={() => setLabOpen(true)} title="Alt+L">
+          <Icon name="flask" /> Order lab tests
+        </button>
+        <Button className="btn btn-ghost btn-sm" disabled={finalizing} onClick={() => runFinalize(false)} title="Ctrl+Enter">
+          <Icon name="check" /> <span>Finalize</span>
+        </Button>
+        <Button className="btn btn-primary btn-sm" disabled={finalizing} onClick={() => runFinalize(true)} title="Ctrl+Shift+Enter">
+          <Icon name="megaphone" /> <span>Finalize &amp; call next</span>
+        </Button>
       </div>
 
       {labOpen && (
