@@ -26,7 +26,8 @@ const VIEWS = {
   home: { title: 'Reception dashboard', sub: 'Today’s queue, prescriptions and payments at a glance' },
   queue: { title: 'Waiting queue', sub: 'Call patients by the number they hold and follow each step' },
   patients: { title: 'Patients', sub: 'All patient records — search, view visit history and check a patient in' },
-  invoices: { title: 'Invoices & payments', sub: 'Revenue by day, week and month — who has paid, who is waiting for a transfer and who has not paid yet' },
+  payments: { title: 'Dispensing & payment', sub: 'Patients waiting at the desk — dispense the prescription and collect payment' },
+  invoices: { title: 'Invoices', sub: 'Revenue by day, week and month — who has paid, who is waiting for a transfer and who has not paid yet' },
   prescriptions: { title: 'Prescriptions', sub: 'Doctors’ prescriptions by day, week or month — view only, to check invoices' }
 }
 
@@ -121,7 +122,6 @@ export default function Reception() {
             <h1>{VIEWS[view].title}</h1>
             <p>{VIEWS[view].sub}</p>
           </div>
-          <div className="dash-acts">{actions}</div>
         </div>
       )}
 
@@ -179,6 +179,7 @@ export default function Reception() {
       {view === 'queue' && <QueueView readOnly={readOnly} onPay={pay} />}
       {view === 'patients' && <PatientsView readOnly={readOnly} onCheckIn={(p) => setIntake({ patient: p })} />}
       {/* Server liệt kê hoá đơn theo ngày. */}
+      {view === 'payments' && <BillingLiveView mode="payments" readOnly={readOnly} onPay={(v) => pay({ ...v, tab: 'pay' })} />}
       {view === 'invoices' && <BillingLiveView mode="invoices" readOnly={readOnly} onPay={(v) => pay({ ...v, tab: 'pay' })} />}
       {view === 'prescriptions' && <BillingLiveView mode="prescriptions" readOnly={readOnly} onPay={pay} />}
 

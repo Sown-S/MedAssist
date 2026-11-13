@@ -21,6 +21,9 @@ export default function BillingLiveView({ mode, readOnly, onPay }) {
 
   if (!awaiting.loaded) return <LoadingBlock />
 
+  // Màn Hoá đơn: chỉ còn hoá đơn theo ngày; danh sách ở quầy nằm ở màn Cấp phát & thu tiền.
+  if (mode === 'invoices') return <InvoiceHistory readOnly={readOnly} onPay={onPay} reloadKey={awaiting.list.length} />
+
   return (
     <>
       {awaiting.error && <ErrorBlock message={awaiting.error.message} />}
@@ -122,7 +125,6 @@ export default function BillingLiveView({ mode, readOnly, onPay }) {
           </tbody>
         </table>
       </div>
-      {mode === 'invoices' && <InvoiceHistory readOnly={readOnly} onPay={onPay} reloadKey={awaiting.list.length} />}
     </>
   )
 }
@@ -146,7 +148,7 @@ function InvoiceHistory({ readOnly, onPay, reloadKey }) {
   const revenue = paid.reduce((s, x) => s + Number(x.total_amount), 0)
 
   return (
-    <div className="card" style={{ marginTop: 14 }}>
+    <div className="card">
       <div className="card-title">
         Invoices by day{' '}
         {list && (

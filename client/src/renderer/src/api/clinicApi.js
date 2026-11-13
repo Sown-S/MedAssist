@@ -46,8 +46,14 @@ export async function lookupPatients(term, limit = 20) {
 export const getPatient = async (id) => toPatient(await apiGet(`${V1}/patients/${id}`))
 
 // Danh sách hồ sơ (trang Bệnh nhân của Lễ tân): GET /patients không kèm điều kiện = tất cả, mới nhất trước.
-export async function listPatients({ limit = 20, offset = 0 } = {}) {
-  const r = await apiGet(`${V1}/patients?limit=${limit}&offset=${offset}`)
+export async function listPatients({ q = '', phone = '', idNumber = '', code = '', birthYear = '', limit = 20, offset = 0 } = {}) {
+  const qs = new URLSearchParams({ limit, offset })
+  if (q) qs.set('q', q)
+  if (phone) qs.set('phone', phone)
+  if (idNumber) qs.set('id_number', idNumber)
+  if (code) qs.set('code', code)
+  if (birthYear) qs.set('birth_year', birthYear)
+  const r = await apiGet(`${V1}/patients?${qs}`)
   return { total: r.total, items: r.items.map((x) => ({ ...toPatient(x), dob: dmyDob(x.date_of_birth) })) }
 }
 

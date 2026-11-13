@@ -43,10 +43,10 @@ export default function Dashboard({ go, readOnly, onPay }) {
 
   // F2 đăng ký mới, F3 tìm bệnh nhân nằm ở đầu trang (lời chào); bảng điều khiển giữ các việc thu tiền.
   const actions = [
-    { icon: 'banknote', title: 'Process payments', sub: 'Cash or bank transfer for finished visits', run: () => go('invoices', 'unpaid') },
+    { icon: 'banknote', title: 'Process payments', sub: 'Cash or bank transfer for finished visits', run: () => go('payments') },
     { icon: 'fileText', title: 'View prescriptions', sub: 'Doctor’s prescriptions — view only', run: () => go('prescriptions') },
-    { icon: 'clock', title: 'Confirm transfers', sub: 'Invoices waiting for the money to arrive', run: () => go('invoices', 'processing') },
-    { icon: 'history', title: 'Invoice history', sub: 'Review paid and cancelled invoices', run: () => go('invoices', 'paid') }
+    { icon: 'clock', title: 'Confirm transfers', sub: 'Invoices waiting for the money to arrive', run: () => go('invoices') },
+    { icon: 'history', title: 'Invoice history', sub: 'Review paid and cancelled invoices', run: () => go('invoices') }
   ]
 
   // Hàng chờ hôm nay theo từng bước (lượt đang tiếp đón dở chưa tính).
@@ -123,7 +123,7 @@ export default function Dashboard({ go, readOnly, onPay }) {
                 {translate('Total awaiting payment')} <b className="mono">{money(unpaidTotal)}</b>
               </span>
             )}
-            <button className="btn btn-ghost btn-sm" onClick={() => go('invoices')}>
+            <button className="btn btn-ghost btn-sm" onClick={() => go('payments')}>
               All invoices →
             </button>
           </div>

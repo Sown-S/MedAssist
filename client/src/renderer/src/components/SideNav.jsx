@@ -15,7 +15,8 @@ const MENUS = {
       { view: 'home', icon: 'dashboard', label: 'Home' },
       { view: 'queue', icon: 'users', label: 'Waiting queue', count: 'queue' },
       { view: 'patients', icon: 'contact', label: 'Patients' },
-      { view: 'invoices', icon: 'banknote', label: 'Invoices & payments' },
+      { view: 'payments', icon: 'banknote', label: 'Dispensing & payment' },
+      { view: 'invoices', icon: 'clipboard', label: 'Invoices' },
       { view: 'prescriptions', icon: 'fileText', label: 'Prescriptions' }
     ]
   },

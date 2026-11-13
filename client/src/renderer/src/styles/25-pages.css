@@ -95,3 +95,23 @@ table.dt tr.clickable:hover td{background:var(--surface-alt);}
 .notif-ico .icn{width:16px;height:16px;}
 .notif-panel{border-radius:12px;box-shadow:var(--shadow-lg);background:var(--surface);border:1px solid var(--border);}
 .notif-head{text-transform:uppercase;font-size:13px;letter-spacing:.04em;color:var(--ink-soft);}
+
+/* ---- Bệnh nhân (lễ tân) ---- */
+.pt-filters{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:14px;}
+.pt-filters .pt-q{flex:0 1 320px;height:40px;border:1px solid var(--border);border-radius:8px;padding:0 12px;background:var(--surface);}
+.pt-filters .pt-q input{font-size:15px;}
+.pt-in{height:40px;width:170px;border:1px solid var(--border);border-radius:8px;padding:0 12px;font:15px var(--font);color:var(--ink);background:var(--surface);}
+.pt-in:focus,.pt-filters .pt-q:focus-within{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-soft);}
+.pt-in.pt-year{width:120px;}
+.pt-clear{color:var(--primary-ink);}
+.pt-table td{font-size:15.5px;}
+.pt-code{color:var(--ink-soft);font-variant-numeric:tabular-nums;}
+.pt-who{display:inline-flex;align-items:center;gap:10px;}
+.pt-who b{font-weight:500;}
+.pt-who .avatar{width:34px;height:34px;font-size:13px;}
+.pt-age{color:var(--ink-soft);font-size:13.5px;}
+.pt-acts{display:flex;align-items:center;justify-content:flex-end;gap:8px;}
+.pt-acts .icon-btn{width:34px;height:34px;display:grid;place-items:center;padding:0;color:var(--ink-2);}
+.pt-acts .icon-btn .icn{width:18px;height:18px;}
+.pt-pager{display:flex;align-items:center;justify-content:space-between;margin-top:14px;font-size:14px;color:var(--ink-soft);}
+.pt-pager-btns{display:flex;gap:8px;}
