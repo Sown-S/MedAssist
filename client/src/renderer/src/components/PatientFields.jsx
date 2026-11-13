@@ -81,7 +81,7 @@ export function NewPatientFields({ form, field, err, onDob }) {
   return (
     <>
       <div className="section-label" style={{ marginTop: 0 }}>
-        Patient details
+        <Icon name="user" /> <span>Patient details</span>
       </div>
       <div className="form-grid">
         <div className="field">

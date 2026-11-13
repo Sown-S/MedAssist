@@ -1,5 +1,5 @@
 import { describe, it, expect, afterAll, afterEach, beforeAll, beforeEach, vi } from 'vitest'
-import { screen, cleanup, waitFor, fireEvent } from '@testing-library/react'
+import { screen, cleanup, waitFor, fireEvent, within } from '@testing-library/react'
 import { renderPage } from './render.jsx'
 import Reception from '../src/renderer/src/pages/Reception.jsx'
 import Doctor from '../src/renderer/src/pages/Doctor.jsx'
@@ -147,8 +147,9 @@ describe('Luồng chính trên giao diện', () => {
     await syncQueue()
     renderPage(<Reception />, { user: DESK, path: '/reception?view=queue' })
     await rendered()
-    fireEvent.click(await screen.findByText('Trần Thị Bình'))
-    fireEvent.click(await screen.findByText('Mark present — check in'))
+    // Hàng chờ dạng bảng: nút check-in nằm ngay trên dòng của bệnh nhân.
+    const row = (await screen.findAllByText('Trần Thị Bình')).map((el) => el.closest('tr')).find(Boolean)
+    fireEvent.click(within(row).getByText('Mark present — check in'))
     await waitFor(() => expect(calls).toContainEqual(expect.objectContaining({ method: 'PATCH', path: '/api/v1/visits/v-wait/check-in' })))
   })
 

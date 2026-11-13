@@ -26,18 +26,30 @@ export default function BillingLiveView({ mode, readOnly, onPay }) {
       {awaiting.error && <ErrorBlock message={awaiting.error.message} />}
       <div className="inv-stats">
         <div className="inv-stat static">
+          <span className="is-ico">
+            <Icon name="users" />
+          </span>
           <span className="val">{list.length}</span>
           <span className="lbl">Waiting at the desk</span>
         </div>
         <div className="inv-stat static">
+          <span className="is-ico">
+            <Icon name="package" />
+          </span>
           <span className="val">{toDispense}</span>
           <span className="lbl">Waiting to dispense</span>
         </div>
         <div className="inv-stat static">
+          <span className="is-ico">
+            <Icon name="clock" />
+          </span>
           <span className="val">{toCollect}</span>
           <span className="lbl">Not paid</span>
         </div>
         <div className="inv-stat static">
+          <span className="is-ico">
+            <Icon name="wallet" />
+          </span>
           <span className="val mono">{money(value)}</span>
           <span className="lbl">To collect</span>
         </div>

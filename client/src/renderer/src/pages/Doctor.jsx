@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import Icon from '../components/Icon'
 import { useAuth } from '../context/AuthContext'
@@ -27,6 +28,8 @@ export default function Doctor() {
   const { visits, redFlags } = useQueue()
   // Ca cờ đỏ chưa bác sĩ nào xem — hiện trên mọi màn của Bác sĩ.
   const pendingRF = redFlags.filter((r) => isPendingFlag(r) && !r.doctorReview)
+  // Đóng popup chỉ ẩn trong phiên; ca vẫn nằm trong danh sách của chuông tới khi được xử lý.
+  const [hiddenRF, setHiddenRF] = useState([])
   const [params, setParams] = useSearchParams()
   const view = VIEWS[params.get('view')] ? params.get('view') : 'home'
   const visitId = params.get('visit')
@@ -73,9 +76,9 @@ export default function Doctor() {
       )}
 
       {/* Ca cờ đỏ chưa bác sĩ nào xem: popup đỏ cạnh chuông thông báo (Mời khám ngay / Bỏ qua). */}
-      {pendingRF.length > 0 && (
+      {pendingRF.some((r) => !hiddenRF.includes(r.id)) && (
         <div className="bell-stack">
-          {pendingRF.map((r) => (
+          {pendingRF.filter((r) => !hiddenRF.includes(r.id)).map((r) => (
             <div className="bell-pop redflag-alert" role="alert" key={r.id}>
               <div className="bp-ico">
                 <Icon name="siren" />
@@ -100,6 +103,9 @@ export default function Doctor() {
                   </button>
                 </span>
               </div>
+              <button className="bp-x" onClick={() => setHiddenRF((h) => [...h, r.id])} title={translate('Close')} aria-label={translate('Close')}>
+                <Icon name="x" />
+              </button>
             </div>
           ))}
         </div>

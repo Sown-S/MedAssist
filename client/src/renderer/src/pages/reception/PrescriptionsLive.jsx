@@ -82,18 +82,30 @@ export default function PrescriptionsLive({ initialDoctorId = '', initialDoctorN
     <>
       <div className="inv-stats">
         <div className="inv-stat static">
+          <span className="is-ico">
+            <Icon name="fileText" />
+          </span>
           <span className="val">{list.length}</span>
           <span className="lbl">Prescriptions</span>
         </div>
         <button className={'inv-stat paid' + (status === 'paid' ? ' active' : '')} onClick={() => setStatus(status === 'paid' ? '' : 'paid')}>
+          <span className="is-ico">
+            <Icon name="circleCheck" />
+          </span>
           <span className="val">{count('paid')}</span>
           <span className="lbl">Paid</span>
         </button>
         <button className={'inv-stat unpaid' + (status === 'unpaid' ? ' active' : '')} onClick={() => setStatus(status === 'unpaid' ? '' : 'unpaid')}>
+          <span className="is-ico">
+            <Icon name="clock" />
+          </span>
           <span className="val">{count('unpaid')}</span>
           <span className="lbl">Not paid</span>
         </button>
         <div className="inv-stat static">
+          <span className="is-ico">
+            <Icon name="wallet" />
+          </span>
           <span className="val mono">{money(value)}</span>
           <span className="lbl">Invoice total</span>
         </div>

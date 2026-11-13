@@ -221,26 +221,33 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
       )}
 
       {dupes && !existing && <DuplicateBanner dupes={dupes} allowNew={!idTaken} onPick={pickRecord} onCreateNew={() => handleSave(true)} />}
-      <div className="form-grid intake-extra" style={{ marginTop: 10 }}>
-        {pregnancyAsked && (
-          <div className="field">
-            <label>Pregnancy</label>
-            <select {...field('pregnancy')}>
-              <option value="">Not asked</option>
-              <option value="no">Not pregnant</option>
-              <option value="yes">Pregnant</option>
-            </select>
+      {pregnancyAsked && (
+        <>
+          <div className="section-label">
+            <Icon name="heartPulse" /> <span>Pregnancy</span>
           </div>
-        )}
-        <div className="field">
-          <label>Queue number</label>
-          <input
-            type="text"
-            readOnly
-            value={visit ? ticketNo(visit.queue_number) : '—'}
-            title={translate('Issued by the server when the visit is saved')}
-          />
-        </div>
+          <div className="seg-btns" role="radiogroup" aria-label={translate('Pregnancy')}>
+            {[
+              ['', 'Not asked'],
+              ['no', 'Not pregnant'],
+              ['yes', 'Pregnant']
+            ].map(([v, l]) => (
+              <button key={v} type="button" role="radio" aria-checked={form.pregnancy === v} className={form.pregnancy === v ? 'on' : ''} onClick={() => setForm((f) => ({ ...f, pregnancy: v }))}>
+                {translate(l)}
+              </button>
+            ))}
+          </div>
+        </>
+      )}
+      <div className="section-label">
+        <Icon name="clipboard" /> <span>Queue number</span>
+      </div>
+      <div className="qno">
+        <span className="n mono">{visit ? ticketNo(visit.queue_number) : '—'}</span>
+        <span className="qno-t">
+          <b>{visit ? translate('Queue number') + ' ' + ticketNo(visit.queue_number) : translate('Issued when saved')}</b>
+          <small>{translate('Issued by the server when the visit is saved')}</small>
+        </span>
         <label className="intake-print">
           <input type="checkbox" checked={print} onChange={(e) => setPrint(e.target.checked)} />
           <span>Print queue ticket</span>
@@ -249,7 +256,9 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
       </section>
 
       <section>
-      <div className="section-label" style={{ marginTop: 0 }}>Symptoms</div>
+      <div className="section-label" style={{ marginTop: 0 }}>
+        <Icon name="fileText" /> <span>Symptoms</span>
+      </div>
       <SymptomPanel
         value={syms}
         onChange={setSyms}
@@ -259,7 +268,9 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
         onVitals={(list, from) => setVitalProps({ list, from })}
       />
 
-      <div className="section-label">Vital signs</div>
+      <div className="section-label">
+        <Icon name="heartPulse" /> <span>Vital signs</span>
+      </div>
       <VitalProposals
         list={vitalProps.list}
         form={form}
@@ -282,6 +293,11 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
       </div>
 
       <div className="form-actions">
+        {!existing && (
+          <span className="fa-hint">
+            <Icon name="help" /> {translate('Fill in the name, date of birth and phone number first.')}
+          </span>
+        )}
         <button className="btn btn-ghost" style={{ color: 'var(--warn)', borderColor: '#F3C9C9' }} onClick={() => onRedFlag(redFlagInfo())}>
           <Icon name="ban" /> Emergency warning signs
         </button>

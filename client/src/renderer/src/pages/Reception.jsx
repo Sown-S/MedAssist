@@ -6,7 +6,7 @@ import RedFlagModal from '../components/RedFlagModal'
 import SearchModal from '../components/SearchModal'
 import StaleVisitsModal from '../components/StaleVisitsModal'
 import Icon from '../components/Icon'
-import { useQueue, useQueueSync, syncStale, acknowledgeRedFlag, isPendingFlag } from '../api/queueStore'
+import { useQueue, useQueueSync, syncStale } from '../api/queueStore'
 import { translate } from '../i18n'
 import Dashboard from './reception/Dashboard'
 import QueueView from './reception/QueueView'
@@ -14,7 +14,6 @@ import BillingLiveView from './reception/BillingLiveView'
 import PatientsView from './reception/PatientsView'
 import HomeGreeting from '../components/HomeGreeting'
 import { useAuth } from '../context/AuthContext'
-import { hhmm } from './reception/shared'
 import useCallAnnouncer from '../components/useCallAnnouncer'
 import { useServerOnline } from '../api/connectivity'
 
@@ -50,7 +49,7 @@ export default function Reception() {
   useQueueSync() // hỏi lại hàng đợi vài giây một lần
   useEffect(() => void syncStale(), [])
   const { user } = useAuth()
-  const { redFlags, stale = [] } = useQueue()
+  const { stale = [] } = useQueue()
   const [staleOpen, setStaleOpen] = useState(false)
   const [staleSeen, setStaleSeen] = useState(() => sessionStorage.getItem(STALE_SEEN_KEY) === '1')
   const hideStale = () => {
@@ -81,7 +80,6 @@ export default function Reception() {
   const [searchOpen, setSearchOpen] = useState(false)
   const [redFlag, setRedFlag] = useState(null)
   const [paying, setPaying] = useState(null)
-  const alerts = redFlags.filter((r) => isPendingFlag(r) && !r.ack)
   const pay = setPaying
 
   // Phím tắt: F2 đăng ký mới, F3 / Ctrl+K tra cứu.
@@ -137,37 +135,9 @@ export default function Reception() {
         </div>
       )}
 
-      {/* Ca cờ đỏ và lượt tồn từ ngày trước: popup đỏ xếp chồng cạnh chuông thông báo. */}
-      {(alerts.length > 0 || (stale.length > 0 && !staleSeen)) && (
+      {/* Lượt tồn từ ngày trước: popup đỏ cạnh chuông. Ca cờ đỏ nằm ở chuông, ô Ca cấp cứu và trang Hàng chờ. */}
+      {stale.length > 0 && !staleSeen && (
         <div className="bell-stack">
-          {alerts.map((r) => (
-            <div className="bell-pop redflag-alert" role="alert" key={r.id}>
-              <div className="bp-ico">
-                <Icon name="siren" />
-              </div>
-              <div className="bp-t">
-                <b>
-                  {translate('Red-flag case')} · {r.name} · {hhmm(r.at)}
-                </b>
-                <span>{translate(r.signs) || '—'}</span>
-                <p className="hint">
-                  {r.outcome === 'queued'
-                    ? translate('Emergency — placed at the top of the queue; doctors have been alerted. Transfer to hospital if the patient gets worse.')
-                    : r.outcome === 'assess'
-                    ? translate('Waiting for a doctor to assess — keep the patient at the desk.')
-                    : r.outcome === 'seen'
-                      ? translate('Doctor') + ' ' + r.doctorReview.by + ' ' + translate('will see the patient at the clinic — check them in as Priority.')
-                      : translate('Emergency — send the patient to hospital now (call 115 if needed); do not wait for a doctor. Doctors have been alerted.') +
-                        (r.doctorReview ? ' ' + translate('Confirmed by doctor') + ' ' + r.doctorReview.by + '.' : '')}
-                </p>
-                {r.outcome !== 'assess' && (
-                  <button className="btn btn-sm bp-go" onClick={() => acknowledgeRedFlag(r.id)}>
-                    {r.outcome === 'seen' ? translate('Done') : translate('Patient guided')}
-                  </button>
-                )}
-              </div>
-            </div>
-          ))}
           {stale.length > 0 && !staleSeen && (
             <div className="bell-pop" role="alert">
               <div className="bp-ico">
