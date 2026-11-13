@@ -2,7 +2,6 @@ import Icon from '../../components/Icon'
 import { translate } from '../../i18n'
 import { useQueue, isQueued, isPendingFlag, isIntakeOpen, inRoom, atLabs, ST } from '../../api/queueStore'
 import { ticketNo } from '../../components/queuePrint'
-import CallPanel from './CallPanel'
 import { dmy } from './shared'
 import { useAwaiting, fromAwaiting, useTodayInvoices } from '../../api/billingApi'
 import { usePrescriptions } from '../../api/prescriptionApi'
@@ -96,8 +95,7 @@ export default function Dashboard({ go, readOnly, onPay }) {
         </div>
       </div>
 
-      <div className="dash-bottom three">
-        <CallPanel readOnly={readOnly} />
+      <div className="dash-bottom two">
         <div className="card pay-card">
           <div className="card-title">
             Waiting for dispensing &amp; payment <span className="cnt">{unpaid.length}</span>

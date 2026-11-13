@@ -148,3 +148,28 @@ div.stat-card.tile.rt:hover{transform:none;box-shadow:var(--shadow);border-color
 .lc-x span:first-child{text-align:left;}
 .lc-x span:last-child{text-align:right;}
 @media (max-width:1500px){.kpis.k5{grid-template-columns:repeat(3,minmax(0,1fr));}}
+
+/* ---- Trang chủ lấp đầy màn hình: hai thẻ dưới kéo dài tới đáy, ô và chữ to hơn ---- */
+.page.rhome{display:flex;flex-direction:column;min-height:calc(100vh - 64px);}
+.page.rhome>.dash-bottom{flex:1;}
+.dash-bottom.two{grid-template-columns:repeat(2,minmax(0,1fr));margin-top:22px;align-items:stretch;gap:22px;}
+.dash-bottom.two>.card{display:flex;flex-direction:column;}
+.kpis.rk .tile.rt{min-height:170px;padding:24px 26px;}
+.kpis.rk .tile.rt .tl{font-size:22px;}
+.kpis.rk .tile.rt .rt-n{font-size:40px;}
+.kpis.rk .tile.rt .chip{width:52px;height:52px;}
+.kpis.rk .tile.rt .chip .icn{width:26px;height:26px;}
+.rhome .card-title{font-size:18px;}
+.rhome .qa b{font-size:17px;}
+.rhome .qa small{font-size:15px;}
+.rhome .qa.qv{padding:22px;}
+.rhome .pay-row{padding:14px 0;font-size:16px;}
+.rhome .pay-row .nm b{font-size:17px;}
+.rhome .pipe-top b{font-size:32px;}
+.rhome .pipe-top span{font-size:15.5px;}
+.dash-bottom.two .pipe-g{grid-template-columns:repeat(3,minmax(0,1fr));}
+.rhome .pipe-g>div{padding:14px 16px;}
+.rhome .pipe-g b{font-size:24px;}
+.rhome .pipe-g small{font-size:14.5px;}
+.rhome .pipe-g .pi{width:42px;height:42px;}
+@media (max-width:1500px){.dash-bottom.two .pipe-g{grid-template-columns:repeat(2,minmax(0,1fr));}}
