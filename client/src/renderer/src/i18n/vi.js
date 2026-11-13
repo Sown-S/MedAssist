@@ -1330,7 +1330,6 @@ export const VI = {
   "High priority": "Ưu tiên",
   "Routine": "Thường",
   "Emergency — placed at the top of the queue; doctors have been alerted": "Cấp cứu — đã đưa lên đầu hàng chờ; bác sĩ đã được báo",
-  "Red-flag case — top of the queue (Emergency), see the patient now": "Ca cờ đỏ — đang ở đầu hàng chờ (Cấp cứu), mời khám ngay",
   "Emergency — placed at the top of the queue; doctors have been alerted. Transfer to hospital if the patient gets worse.": "Cấp cứu — đã đưa lên đầu hàng chờ, bác sĩ đã được báo. Bệnh nhân chuyển nặng thì chuyển viện ngay.",
   "Cases matching a red-flag rule: transferred to hospital at once, or placed at the top of the queue as Emergency. Doctors are alerted in both cases.": "Ca khớp luật cờ đỏ: chuyển viện ngay, hoặc đưa lên đầu hàng chờ ở mức Cấp cứu. Cả hai trường hợp bác sĩ đều được báo.",
   "Transferred — doctors alerted": "Đã chuyển viện — đã báo bác sĩ",
@@ -1925,7 +1924,6 @@ export const VI = {
   'Invitation cancelled — the patient keeps their place in the queue': 'Đã bỏ lời mời — bệnh nhân giữ chỗ trong hàng chờ',
   'Cancels the invitation — the patient keeps their place in the queue': 'Bỏ lời mời — bệnh nhân giữ chỗ trong hàng chờ',
   'See the patient now': 'Mời khám ngay',
-  'Emergency — top of the queue. Call the patient in now; refer to hospital from the consultation if needed.': 'Cấp cứu — đầu hàng chờ. Mời bệnh nhân vào ngay; nếu cần thì chuyển tuyến từ phiếu khám.',
   'Amend / reprint': 'Bổ sung / in lại',
   'amended by': 'bổ sung bởi',
   'Vital signs from the description — confirm before use': 'Sinh hiệu đọc từ lời kể — xác nhận trước khi dùng',
@@ -1955,6 +1953,16 @@ export const VI = {
   'Waiting for dispensing & payment': 'Chờ cấp phát & thu tiền',
   'You can still look up patients and view the queue as last loaded. Registering, check-in and payments are locked until the connection returns, so nothing is saved twice or lost.': 'Vẫn tra cứu bệnh nhân và xem hàng chờ (dữ liệu tải lần cuối) được. Đăng ký, tiếp đón và thu tiền bị khoá cho tới khi có kết nối lại, để không ghi trùng hay mất dữ liệu.',
   'Reports & Statistics': 'Báo cáo & Thống kê',
+  'Last 7 days': "7 ngày gần nhất",
+  'Doctors vs suggestions': "Bác sĩ so với gợi ý",
+  'vs previous day': "so với hôm trước",
+  'No data in this period': "Chưa có dữ liệu trong kỳ này",
+  'Case cluster alert': "Cảnh báo cụm ca",
+  'Open reports': "Mở Báo cáo",
+  'Red-flag case in the queue': "Ca cờ đỏ vừa vào hàng chờ",
+  'Next case': "Ca tiếp theo",
+  'Show less': "Thu gọn",
+  'Show all': "Xem tất cả",
 }
 
 export const PATTERNS = [

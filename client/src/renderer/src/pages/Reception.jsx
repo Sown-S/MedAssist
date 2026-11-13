@@ -12,6 +12,7 @@ import Dashboard from './reception/Dashboard'
 import QueueView from './reception/QueueView'
 import BillingLiveView from './reception/BillingLiveView'
 import PatientsView from './reception/PatientsView'
+import PrescriptionsLive from './reception/PrescriptionsLive'
 import HomeGreeting from '../components/HomeGreeting'
 import { useAuth } from '../context/AuthContext'
 import useCallAnnouncer from '../components/useCallAnnouncer'
@@ -181,7 +182,7 @@ export default function Reception() {
       {/* Server liệt kê hoá đơn theo ngày. */}
       {view === 'payments' && <BillingLiveView mode="payments" readOnly={readOnly} onPay={(v) => pay({ ...v, tab: 'pay' })} />}
       {view === 'invoices' && <BillingLiveView mode="invoices" readOnly={readOnly} onPay={(v) => pay({ ...v, tab: 'pay' })} />}
-      {view === 'prescriptions' && <BillingLiveView mode="prescriptions" readOnly={readOnly} onPay={pay} />}
+      {view === 'prescriptions' && <PrescriptionsLive />}
 
       <IntakeModal open={!!intake} patient={intake?.patient ?? null} onClose={() => setIntake(null)} onRedFlag={setRedFlag} />
       <SearchModal

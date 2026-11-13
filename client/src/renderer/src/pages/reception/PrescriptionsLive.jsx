@@ -10,6 +10,7 @@ import { ticketNo } from '../../components/queuePrint'
 import PeriodPicker from './PeriodPicker'
 import { hhmm, dmy, periodRange, periodLabel, PAY_STATUS } from './shared'
 import { money, fold, ymd } from '../../utils/format'
+import { MiniStat, MiniStats } from '../../components/MiniStat'
 
 const STATUS_FILTERS = [
   { key: '', label: 'All payment statuses' },
@@ -80,36 +81,12 @@ export default function PrescriptionsLive({ initialDoctorId = '', initialDoctorN
 
   return (
     <>
-      <div className="inv-stats">
-        <div className="inv-stat static">
-          <span className="is-ico">
-            <Icon name="fileText" />
-          </span>
-          <span className="val">{list.length}</span>
-          <span className="lbl">Prescriptions</span>
-        </div>
-        <button className={'inv-stat paid' + (status === 'paid' ? ' active' : '')} onClick={() => setStatus(status === 'paid' ? '' : 'paid')}>
-          <span className="is-ico">
-            <Icon name="circleCheck" />
-          </span>
-          <span className="val">{count('paid')}</span>
-          <span className="lbl">Paid</span>
-        </button>
-        <button className={'inv-stat unpaid' + (status === 'unpaid' ? ' active' : '')} onClick={() => setStatus(status === 'unpaid' ? '' : 'unpaid')}>
-          <span className="is-ico">
-            <Icon name="clock" />
-          </span>
-          <span className="val">{count('unpaid')}</span>
-          <span className="lbl">Not paid</span>
-        </button>
-        <div className="inv-stat static">
-          <span className="is-ico">
-            <Icon name="wallet" />
-          </span>
-          <span className="val mono">{money(value)}</span>
-          <span className="lbl">Invoice total</span>
-        </div>
-      </div>
+      <MiniStats>
+        <MiniStat icon="fileText" value={list.length} label="Prescriptions" />
+        <MiniStat icon="circleCheck" tone="s" value={count('paid')} label="Paid" active={status === 'paid'} onClick={() => setStatus(status === 'paid' ? '' : 'paid')} />
+        <MiniStat icon="clock" tone="w" value={count('unpaid')} label="Not paid" active={status === 'unpaid'} onClick={() => setStatus(status === 'unpaid' ? '' : 'unpaid')} />
+        <MiniStat icon="wallet" value={money(value)} label="Invoice total" mono />
+      </MiniStats>
 
       <div className="card">
         <div className="cash-filters">

@@ -3,6 +3,7 @@ import Icon from '../../components/Icon'
 import { useToast } from '../../context/ToastContext'
 import { translate } from '../../i18n'
 import { listRooms, createRoom, updateRoom, ROOM_TYPES } from '../../api/roomStore'
+import { MiniStat, MiniStats } from '../../components/MiniStat'
 
 const EMPTY = { code: '', name: '', type: 'Exam' }
 
@@ -106,22 +107,10 @@ export default function RoomsPage({ onNavigate }) {
       )}
 
       {rooms && (
-        <div className="stat-bar">
-          <div className="stat-card">
-            <div className="dot" />
-            <div className="txt">
-              <span className="val">{exam.length}</span>
-              <span className="lbl">Consultation rooms in use</span>
-            </div>
-          </div>
-          <div className="stat-card">
-            <div className={'dot' + (free ? ' amber' : '')} />
-            <div className="txt">
-              <span className="val">{free}</span>
-              <span className="lbl">Rooms without a doctor</span>
-            </div>
-          </div>
-        </div>
+        <MiniStats>
+          <MiniStat icon="door" value={exam.length} label="Consultation rooms in use" />
+          <MiniStat icon="stethoscope" tone={free ? 'w' : 'n'} value={free} label="Rooms without a doctor" alert={free > 0} />
+        </MiniStats>
       )}
 
       <div className="card">

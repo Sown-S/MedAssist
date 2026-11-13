@@ -6,6 +6,7 @@ import { useAwaiting, fromAwaiting, listInvoices, fromServerMethod } from '../..
 import { translate } from '../../i18n'
 import { hhmm, methodLabel, PAY_STATUS } from './shared'
 import { money, fold, ymd } from '../../utils/format'
+import { MiniStat, MiniStats } from '../../components/MiniStat'
 
 // Hoá đơn / Đơn thuốc của Lễ tân khi chạy với server: các lượt còn việc ở quầy (GET /billing/awaiting).
 // Tab Hoá đơn có thêm lịch sử theo ngày; đơn cũ xem ở lịch sử của từng bệnh nhân.
@@ -14,7 +15,7 @@ export default function BillingLiveView({ mode, readOnly, onPay }) {
   const [q, setQ] = useState('')
   const all = awaiting.list.map(fromAwaiting)
   const needle = fold(q)
-  const list = all.filter((v) => (mode === 'prescriptions' ? v.hasRx : true) && (!needle || fold([v.name, v.invoiceCode ?? ''].join(' ')).includes(needle)))
+  const list = all.filter((v) => (!needle || fold([v.name, v.invoiceCode ?? ''].join(' ')).includes(needle)))
   const toDispense = all.filter((v) => v.pending > 0).length
   const toCollect = all.filter((v) => v.payStatus === 'Pending').length
   const value = list.reduce((s, v) => s + v.total, 0)
@@ -27,36 +28,12 @@ export default function BillingLiveView({ mode, readOnly, onPay }) {
   return (
     <>
       {awaiting.error && <ErrorBlock message={awaiting.error.message} />}
-      <div className="inv-stats">
-        <div className="inv-stat static">
-          <span className="is-ico">
-            <Icon name="users" />
-          </span>
-          <span className="val">{list.length}</span>
-          <span className="lbl">Waiting at the desk</span>
-        </div>
-        <div className="inv-stat static">
-          <span className="is-ico">
-            <Icon name="package" />
-          </span>
-          <span className="val">{toDispense}</span>
-          <span className="lbl">Waiting to dispense</span>
-        </div>
-        <div className="inv-stat static">
-          <span className="is-ico">
-            <Icon name="clock" />
-          </span>
-          <span className="val">{toCollect}</span>
-          <span className="lbl">Not paid</span>
-        </div>
-        <div className="inv-stat static">
-          <span className="is-ico">
-            <Icon name="wallet" />
-          </span>
-          <span className="val mono">{money(value)}</span>
-          <span className="lbl">To collect</span>
-        </div>
-      </div>
+      <MiniStats>
+        <MiniStat icon="users" value={list.length} label="Waiting at the desk" />
+        <MiniStat icon="package" value={toDispense} label="Waiting to dispense" />
+        <MiniStat icon="clock" tone="w" value={toCollect} label="Not paid" />
+        <MiniStat icon="wallet" value={money(value)} label="To collect" mono />
+      </MiniStats>
 
       <div className="card">
         <div className="cash-filters">

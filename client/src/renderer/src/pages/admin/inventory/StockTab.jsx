@@ -8,6 +8,7 @@ import StockCardModal from './StockCardModal'
 import { STATUS, StatusBadges, ExpiryCell, SortTh, Pager, paginate, unitLabel, fmtMoney, fmtNum } from './shared'
 import { BatchTable } from './BatchTable'
 import { stockTotals, exportStock } from './stockSummary'
+import { MiniStat, MiniStats } from '../../../components/MiniStat'
 
 export const PAGE_SIZE = 10
 
@@ -70,46 +71,33 @@ export function StockTab({ inv, user }) {
 
   return (
     <>
-      <div className="ai-summary">
-        <div className="stat-card">
-          <div className="dot" />
-          <div>
-            <div className="val">{fmtMoney(totals.value)}</div>
-            <div className="lbl">Usable stock value (at cost)</div>
-          </div>
-        </div>
-        <button className="stat-card ai-sum-card" onClick={() => reset(setStatus)('low')}>
-          <div className={'dot ' + (totals.low ? 'amber' : '')} />
-          <div>
-            <div className="val">{totals.low}</div>
-            <div className="lbl">Below threshold</div>
-            {totals.out > 0 && (
-              <div className="ai-small ai-soft">
-                <span className="mono">{totals.out}</span> <span>out of stock</span>
-              </div>
-            )}
-          </div>
-        </button>
+      <MiniStats>
+        <MiniStat icon="wallet" value={fmtMoney(totals.value)} label="Usable stock value (at cost)" mono />
+        <MiniStat icon="alert" tone={totals.low ? 'w' : 'n'} value={totals.low} label="Below threshold" onClick={() => reset(setStatus)('low')}>
+          {totals.out > 0 && (
+            <span className="is-sub">
+              <span className="mono">{totals.out}</span> <span>out of stock</span>
+            </span>
+          )}
+        </MiniStat>
         {[30, 60, 90].map((w) => (
-          <button key={w} className="stat-card ai-sum-card" onClick={() => reset(setWin)(w)}>
-            <div className={'dot ' + (w === 30 && totals.w[30] ? 'red' : totals.w[w] ? 'amber' : '')} />
-            <div>
-              <div className="val">{totals.w[w]}</div>
-              <div className="lbl">
+          <MiniStat
+            key={w}
+            icon="clock"
+            tone={w === 30 && totals.w[30] ? 'd' : totals.w[w] ? 'w' : 'n'}
+            value={totals.w[w]}
+            label={
+              <>
                 <span>Batches expiring within</span> <span className="mono">{w}</span> <span>days</span>
-              </div>
-            </div>
-          </button>
+              </>
+            }
+            onClick={() => reset(setWin)(w)}
+          />
         ))}
-        <button className="stat-card ai-sum-card" onClick={() => reset(setStatus)('expired')}>
-          <div className={'dot ' + (totals.expiredQty ? 'red' : '')} />
-          <div>
-            <div className="val">{totals.expiredQty}</div>
-            <div className="lbl">Expired batches to write off</div>
-            {totals.expiredQty > 0 && <div className="ai-small ai-soft mono">{fmtMoney(totals.expiredValue)}</div>}
-          </div>
-        </button>
-      </div>
+        <MiniStat icon="trash" tone={totals.expiredQty ? 'd' : 'n'} value={totals.expiredQty} label="Expired batches to write off" alert={totals.expiredQty > 0} onClick={() => reset(setStatus)('expired')}>
+          {totals.expiredQty > 0 && <span className="is-sub mono">{fmtMoney(totals.expiredValue)}</span>}
+        </MiniStat>
+      </MiniStats>
 
       <div className="ai-toolbar">
         <div className="ai-search">

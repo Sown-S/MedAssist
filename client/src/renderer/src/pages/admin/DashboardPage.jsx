@@ -214,7 +214,9 @@ export default function DashboardPage({ onNavigate }) {
         </button>
       </HomeGreeting>
 
-      <ClusterAlerts />
+      <div className="bell-stack">
+        <ClusterAlerts onOpenReport={() => navigate('/reports')} />
+      </div>
       {!ready && <LoadingBlock />}
       {e1 && <ErrorBlock message={translate('Could not load today’s figures') + ': ' + e1} />}
       {accountsError && <ErrorBlock message={translate('Could not load staff accounts') + ': ' + translate(accountsError)} />}

@@ -9,7 +9,6 @@ import { useNow, periodRange, dmy, hhmm } from '../reception/shared'
 import { useTakePatient, pastVisitsOf, InviteBar } from './doctorShared'
 import { WaitingModal, LabListModal, no, waitTone } from './DoctorHomeModals'
 import { ymd } from '../../utils/format'
-import ClusterAlerts from '../../components/ClusterAlerts'
 
 export default function DoctorHome({ go }) {
   const { user } = useAuth()
@@ -78,7 +77,6 @@ export default function DoctorHome({ go }) {
 
   return (
     <>
-      <ClusterAlerts />
       <div className="kpis k3 dk">
         {tiles.map((c) => (
           <button key={c.title} className={'tile rt ' + (c.tone || 'b') + (c.alert ? ' alert' : '')} onClick={c.run} title={c.hint}>

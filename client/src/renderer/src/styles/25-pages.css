@@ -32,7 +32,15 @@ table.dt tr.clickable:hover td{background:var(--surface-alt);}
 .inv-stat .is-ico .icn{width:18px;height:18px;}
 .inv-stat .val{font-size:22px;font-weight:700;line-height:1.15;color:var(--ink);}
 .inv-stat .lbl{font-size:14px;color:var(--ink-soft);}
-.inv-stat.unpaid .is-ico,.inv-stat:nth-child(3) .is-ico{background:var(--priority-soft);color:var(--priority);}
+.inv-stat.unpaid .is-ico,.inv-stat.t-w .is-ico{background:var(--priority-soft);color:var(--priority);}
+.inv-stat.t-s .is-ico{background:var(--success-soft);color:var(--success);}
+.inv-stat.t-d .is-ico{background:var(--warn-soft);color:var(--warn);}
+.inv-stat.t-n .is-ico{background:var(--surface-alt);color:var(--ink-2);}
+.inv-stat .is-sub{grid-column:2;font-size:12.5px;color:var(--ink-soft);}
+.inv-stat.alert{border-color:color-mix(in srgb,var(--warn) 35%,transparent);}
+button.inv-stat{cursor:pointer;transition:box-shadow .2s,border-color .2s;}
+button.inv-stat:hover{border-color:var(--border-strong);box-shadow:var(--shadow-lg);}
+button.inv-stat.active{border-color:var(--primary);background:var(--primary-soft);}
 .inv-stat.paid .is-ico{background:var(--success-soft);color:var(--success);}
 .inv-stat.unpaid .val,.inv-stat.processing .val,.inv-stat.paid .val{color:var(--ink);}
 .cash-filters{gap:10px;}
