@@ -1969,6 +1969,7 @@ export const VI = {
   'Back to the consultation': "Quay lại phiếu khám",
   'Labels': "Nhãn",
   'Add to prescription': "Thêm vào đơn",
+  'Settings sections': "Các mục cài đặt",
 }
 
 export const PATTERNS = [

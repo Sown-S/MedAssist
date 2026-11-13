@@ -15,12 +15,12 @@ import { OpsTab } from './settings/OpsTab'
 import { IDLE, getAt, setAt, validate } from './settings/settingsForm'
 
 const TABS = [
-  { key: 'clinic', label: 'Clinic' },
-  { key: 'print', label: 'Printing & numbering' },
-  { key: 'security', label: 'Security' },
-  { key: 'connection', label: 'Connection & AI' },
-  { key: 'device', label: 'This computer' },
-  { key: 'ops', label: 'Operations' }
+  { key: 'clinic', label: 'Clinic', icon: 'stethoscope' },
+  { key: 'print', label: 'Printing & numbering', icon: 'printer' },
+  { key: 'security', label: 'Security', icon: 'shieldCheck' },
+  { key: 'connection', label: 'Connection & AI', icon: 'wifi' },
+  { key: 'device', label: 'This computer', icon: 'monitor' },
+  { key: 'ops', label: 'Operations', icon: 'settings' }
 ]
 // Tab “Kết nối & AI” chỉ hiển thị trạng thái, không có giá trị lưu.
 const TAB_OF = (path) => path.split('.')[0]
@@ -95,15 +95,17 @@ export default function SettingsPage({ params, onNavigate, setLeaveGuard }) {
         </div>
       </div>
 
-      <div className="itabs ai-tabs">
-        {TABS.map((t) => (
-          <button key={t.key} className={'itab' + (tab === t.key ? ' active' : '')} onClick={() => setTab(t.key)}>
-            {t.label}
-            {tabChanged(t.key) && <span className="set-dot" title="Unsaved changes" />}
-          </button>
-        ))}
-      </div>
-
+      <div className="set-layout">
+        <nav className="card set-nav" aria-label={translate('Settings sections')}>
+          {TABS.map((t) => (
+            <button key={t.key} className={'set-nav-i' + (tab === t.key ? ' active' : '')} aria-current={tab === t.key ? 'page' : undefined} onClick={() => setTab(t.key)}>
+              <Icon name={t.icon} />
+              <span>{t.label}</span>
+              {tabChanged(t.key) && <span className="set-dot" title="Unsaved changes" />}
+            </button>
+          ))}
+        </nav>
+        <div className="set-main">
       {tab === 'clinic' && <ClinicTab form={form} readOnly={!online} />}
 
       {tab === 'print' && <PrintTab form={form} draft={draft} readOnly={!online} />}
@@ -170,6 +172,9 @@ export default function SettingsPage({ params, onNavigate, setLeaveGuard }) {
           </button>
         </div>
       )}
+
+        </div>
+      </div>
 
       <ReauthModal open={!!reauth} title="Save security settings" confirmLabel="Save" onClose={() => setReauth(null)} onConfirm={doSave}>
         <p className="ai-soft">These settings protect patient data. Confirm with your password.</p>

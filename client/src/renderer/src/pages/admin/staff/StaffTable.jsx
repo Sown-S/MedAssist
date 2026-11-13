@@ -5,6 +5,14 @@ import { translate } from '../../../i18n'
 import { STATUS_FILTERS, isIdle } from './staffShared'
 
 // Bảng tài khoản: tìm, lọc theo vai trò / trạng thái, và các thao tác trên từng dòng.
+const initials = (name = '') =>
+  name
+    .trim()
+    .split(/\s+/)
+    .slice(-2)
+    .map((w) => w[0]?.toUpperCase() ?? '')
+    .join('')
+
 export default function StaffTable({ rows, me, q, setQ, roleFilter, setRoleFilter, statusFilter, setStatusFilter, onEdit, onOwnPw, onUnlock, onReset, onToggle }) {
   const policy = usePasswordPolicy()
   return (
@@ -40,7 +48,6 @@ export default function StaffTable({ rows, me, q, setQ, roleFilter, setRoleFilte
           <table className="dt staff-table">
             <thead>
               <tr>
-                <th>Staff code</th>
                 <th>Full name</th>
                 <th>Username</th>
                 <th>Role</th>
@@ -57,9 +64,14 @@ export default function StaffTable({ rows, me, q, setQ, roleFilter, setRoleFilte
                 const idle = isIdle(a)
                 return (
                   <tr key={a.id} className={a.active ? '' : 'ai-dim'}>
-                    <td className="mono">{a.staffCode || '—'}</td>
                     <td>
-                      <b>{a.fullName}</b> {self && <span className="badge ok">You</span>}
+                      <span className="st-who">
+                        <span className="avatar sm">{initials(a.fullName)}</span>
+                        <span>
+                          <b>{a.fullName}</b> {self && <span className="badge ok">You</span>}
+                          {a.staffCode && <span className="ai-small ai-soft st-code mono">{a.staffCode}</span>}
+                        </span>
+                      </span>
                       {hasDefaultName(a) && <div className="ai-small sp-warn">Default name — change to a real person</div>}
                       {a.fullName.trim().toLowerCase() === a.username.toLowerCase() && (
                         <div className="ai-small sp-warn">Name is the same as the username — enter the real full name</div>
@@ -100,35 +112,35 @@ export default function StaffTable({ rows, me, q, setQ, roleFilter, setRoleFilte
                       {a.lastLoginAt ? <span className="mono">{fmtDateTime(a.lastLoginAt)}</span> : <span className="ai-soft">Never signed in</span>}
                       {idle && <div className="sp-warn">Unused</div>}
                     </td>
-                    <td className="ai-small">
+                    <td className="ai-small" title={a.createdBy ? translate('by') + ' ' + a.createdBy : undefined}>
                       <span className="mono">{fmtDate(a.createdAt)}</span>
-                      {a.createdBy && (
-                        <div className="ai-soft">
-                          <span>by</span> {a.createdBy}
-                        </div>
-                      )}
                     </td>
                     <td>
                       <div className="staff-actions">
-                        <button className="btn btn-ghost btn-sm" onClick={() => onEdit(a)}>
-                          Edit
+                        {!self && a.locked && (
+                          <button className="btn btn-primary btn-sm" onClick={() => onUnlock(a)}>
+                            Unlock
+                          </button>
+                        )}
+                        <button className="icon-btn" onClick={() => onEdit(a)} title={translate('Edit')} aria-label={translate('Edit')}>
+                          <Icon name="pencil" />
                         </button>
                         {self ? (
-                          <button className="btn btn-ghost btn-sm" onClick={onOwnPw}>
-                            Change password
+                          <button className="icon-btn" onClick={onOwnPw} title={translate('Change password')} aria-label={translate('Change password')}>
+                            <Icon name="key" />
                           </button>
                         ) : (
                           <>
-                            {a.locked && (
-                              <button className="btn btn-primary btn-sm" onClick={() => onUnlock(a)}>
-                                Unlock
-                              </button>
-                            )}
-                            <button className="btn btn-ghost btn-sm" onClick={() => onReset(a)}>
-                              Reset password
+                            <button className="icon-btn" onClick={() => onReset(a)} title={translate('Reset password')} aria-label={translate('Reset password')}>
+                              <Icon name="key" />
                             </button>
-                            <button className="btn btn-ghost btn-sm" onClick={() => onToggle(a)}>
-                              {a.active ? 'Disable' : 'Enable'}
+                            <button
+                              className={'icon-btn' + (a.active ? ' danger' : '')}
+                              onClick={() => onToggle(a)}
+                              title={translate(a.active ? 'Disable' : 'Enable')}
+                              aria-label={translate(a.active ? 'Disable' : 'Enable')}
+                            >
+                              <Icon name={a.active ? 'ban' : 'circleCheck'} />
                             </button>
                           </>
                         )}
