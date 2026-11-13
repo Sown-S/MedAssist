@@ -124,76 +124,87 @@ function InvoiceHistory({ readOnly, onPay, reloadKey }) {
   const paid = (list ?? []).filter((x) => x.payment_status === 'Paid')
   const revenue = paid.reduce((s, x) => s + Number(x.total_amount), 0)
 
+  const unpaid = (list ?? []).filter((x) => !['Paid', 'Cancelled'].includes(x.payment_status))
   return (
-    <div className="card">
-      <div className="card-title">
-        Invoices by day{' '}
+    <>
+      {list && (
+        <MiniStats>
+          <MiniStat icon="fileText" value={list.length} label="Invoices" />
+          <MiniStat icon="circleCheck" tone="s" value={paid.length} label="Paid" />
+          <MiniStat icon="clock" tone="w" value={unpaid.length} label="Not paid" />
+          <MiniStat icon="wallet" value={money(revenue)} label="Collected" mono />
+        </MiniStats>
+      )}
+      <div className="card">
+        <div className="card-title">
+          Invoices by day{' '}
+          {list && (
+            <span className="cnt">
+              {paid.length} {translate('paid')} · {money(revenue)}
+            </span>
+          )}
+        </div>
+        <div className="cash-filters">
+          <input type="date" value={date} max={ymd(new Date())} onChange={(e) => setDate(e.target.value || ymd(new Date()))} />
+          <label className="ai-small">
+            <input type="checkbox" checked={withCancelled} onChange={(e) => setWithCancelled(e.target.checked)} /> Show cancelled invoices
+          </label>
+        </div>
+        {error && <ErrorBlock message={error.message} />}
+        {!list && !error && <p className="ai-soft">Loading…</p>}
         {list && (
-          <span className="cnt">
-            {paid.length} {translate('paid')} · {money(revenue)}
-          </span>
+          <table className="dt">
+            <thead>
+              <tr>
+                <th>Invoice</th>
+                <th>No.</th>
+                <th>Patient</th>
+                <th>Issued</th>
+                <th>Method</th>
+                <th>Payment</th>
+                <th className="num">Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              {list.map((x) => {
+                const st = PAY_STATUS[x.payment_status.toLowerCase()] ?? { label: x.payment_status, cls: '' }
+                const cancelled = x.payment_status === 'Cancelled'
+                return (
+                  <tr
+                    key={x.invoice_id}
+                    className={cancelled ? '' : 'clickable'}
+                    style={cancelled ? { opacity: 0.6 } : undefined}
+                    onClick={() => !cancelled && !readOnly && onPay({ id: x.visit_id, ticket: x.queue_number, name: x.patient_name, tab: 'pay' })}
+                  >
+                    <td className="mono">{x.invoice_code}</td>
+                    <td className="mono">{x.queue_number ? ticketNo(x.queue_number) : '—'}</td>
+                    <td>
+                      <b>{x.patient_name}</b>
+                    </td>
+                    <td className="mono">{hhmm(x.created_at)}</td>
+                    <td>{x.payment_status === 'Paid' ? translate(methodLabel(fromServerMethod(x.payment_method))) : '—'}</td>
+                    <td>
+                      <span className={'badge ' + st.cls}>{translate(st.label)}</span>
+                      {x.paid_at && <div className="ai-soft ai-small mono">{hhmm(x.paid_at)}</div>}
+                    </td>
+                    <td className="num mono">{money(Number(x.total_amount))}</td>
+                  </tr>
+                )
+              })}
+              {!list.length && (
+                <tr>
+                  <td colSpan="7">
+                    <div className="empty-state">
+                      <Icon name="clipboard" />
+                      <b>{translate('No invoices on this day.')}</b>
+                    </div>
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
         )}
       </div>
-      <div className="cash-filters">
-        <input type="date" value={date} max={ymd(new Date())} onChange={(e) => setDate(e.target.value || ymd(new Date()))} />
-        <label className="ai-small">
-          <input type="checkbox" checked={withCancelled} onChange={(e) => setWithCancelled(e.target.checked)} /> Show cancelled invoices
-        </label>
-      </div>
-      {error && <ErrorBlock message={error.message} />}
-      {!list && !error && <p className="ai-soft">Loading…</p>}
-      {list && (
-        <table className="dt">
-          <thead>
-            <tr>
-              <th>Invoice</th>
-              <th>No.</th>
-              <th>Patient</th>
-              <th>Issued</th>
-              <th>Method</th>
-              <th>Payment</th>
-              <th className="num">Amount</th>
-            </tr>
-          </thead>
-          <tbody>
-            {list.map((x) => {
-              const st = PAY_STATUS[x.payment_status.toLowerCase()] ?? { label: x.payment_status, cls: '' }
-              const cancelled = x.payment_status === 'Cancelled'
-              return (
-                <tr
-                  key={x.invoice_id}
-                  className={cancelled ? '' : 'clickable'}
-                  style={cancelled ? { opacity: 0.6 } : undefined}
-                  onClick={() => !cancelled && !readOnly && onPay({ id: x.visit_id, ticket: x.queue_number, name: x.patient_name, tab: 'pay' })}
-                >
-                  <td className="mono">{x.invoice_code}</td>
-                  <td className="mono">{x.queue_number ? ticketNo(x.queue_number) : '—'}</td>
-                  <td>
-                    <b>{x.patient_name}</b>
-                  </td>
-                  <td className="mono">{hhmm(x.created_at)}</td>
-                  <td>{x.payment_status === 'Paid' ? translate(methodLabel(fromServerMethod(x.payment_method))) : '—'}</td>
-                  <td>
-                    <span className={'badge ' + st.cls}>{translate(st.label)}</span>
-                    {x.paid_at && <div className="ai-soft ai-small mono">{hhmm(x.paid_at)}</div>}
-                  </td>
-                  <td className="num mono">{money(Number(x.total_amount))}</td>
-                </tr>
-              )
-            })}
-            {!list.length && (
-              <tr>
-                <td colSpan="7">
-                  <div className="empty-state">
-                    <Icon name="clipboard" />
-                    <b>{translate('No invoices on this day.')}</b>
-                  </div>
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      )}
-    </div>
+    </>
   )
 }

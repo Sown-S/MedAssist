@@ -1970,6 +1970,7 @@ export const VI = {
   'Labels': "Nhãn",
   'Add to prescription': "Thêm vào đơn",
   'Settings sections': "Các mục cài đặt",
+  'Collected': "Đã thu",
 }
 
 export const PATTERNS = [
