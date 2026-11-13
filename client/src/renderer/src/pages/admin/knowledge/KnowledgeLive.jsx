@@ -8,6 +8,7 @@ import ItemsTab from './ItemsTab'
 import ReleaseTab from './ReleaseTab'
 import { ReviewPanel } from './ReviewPanel'
 import { ReleaseBadge } from './releaseParts'
+import { MiniStat, MiniStats } from '../../../components/MiniStat'
 import SourcesTab from './SourcesTab'
 import AiLogsTab from './AiLogsTab'
 import { useKnowledge, useNames, groupByKey, errorText } from './shared'
@@ -68,56 +69,63 @@ export default function KnowledgeLive({ reviewOnly = false }) {
       </div>
 
       {!reviewOnly && (
-        <div className="ai-box ai-disclaimer">
-          <div className="icon">
-            <Icon name="alert" />
-          </div>
-          <div className="content">
+        <div className="ctx-banner">
+          <Icon name="alert" />
+          <span className="txt">
             <b>AI suggestions are for reference only and must be confirmed by a doctor.</b>{' '}
             <span>Red-flag and priority-floor rules are decided by these rules alone, never by the AI model.</span>
-          </div>
+          </span>
         </div>
       )}
 
-      <div className="ai-summary">
-        <div className="stat-card">
-          <div className="dot red" />
-          <div>
-            <div className="val">{rules.filter((g) => g.active.values.rule_type === 'RED_FLAG').length}</div>
-            <div className="lbl">Red-flag rules in use</div>
-          </div>
-        </div>
-        <div className="stat-card">
-          <div className="dot amber" />
-          <div>
-            <div className="val">{rules.filter((g) => g.active.values.rule_type === 'PRIORITY_FLOOR').length}</div>
-            <div className="lbl">Priority-floor rules in use</div>
-          </div>
-        </div>
-        <div className="stat-card">
-          <div className="dot" />
-          <div>
-            <div className="val">{count('conditions')}</div>
-            <div className="lbl">Conditions</div>
-            <div className="ai-small ai-soft">
-              <span className="mono">{count('symptoms')}</span> <span>symptoms</span> · <span className="mono">{count('relations')}</span> <span>links</span>
-            </div>
-          </div>
-        </div>
-        <button className="stat-card ai-sum-card" onClick={() => setTab(reviewOnly ? 'review' : 'release')}>
-          <div className={'dot ' + (open?.status === 'PendingApproval' ? 'red' : '')} />
-          <div>
-            <div className="lbl">Open release</div>
-            {open ? (
-              <div>
-                <span className="mono">{open.label}</span> <ReleaseBadge status={open.status} />
+      {!reviewOnly && (
+        <div className="grid-2e">
+          {[
+            ['RED_FLAG', 'Red-flag rules in use', 'siren', 'd'],
+            ['PRIORITY_FLOOR', 'Priority-floor rules in use', 'alert', 'w']
+          ].map(([type, title, icon, tone]) => {
+            const list = rules.filter((g) => g.active.values.rule_type === type)
+            return (
+              <div className="card rule-card" key={type}>
+                <div className="card-title">
+                  {translate(title)} <span className="cnt">{list.length}</span>
+                </div>
+                <div className="rule-list">
+                  {list.map((g) => (
+                    <div className="rule-li" key={g.key}>
+                      <span className={'is-ico t-' + tone}>
+                        <Icon name={icon} />
+                      </span>
+                      <span className="rl-t">
+                        <b>{g.active.values.rule_name || g.key}</b>
+                        <small>{g.active.values.reason_text}</small>
+                      </span>
+                    </div>
+                  ))}
+                  {!list.length && <p className="ai-soft">—</p>}
+                </div>
               </div>
-            ) : (
-              <div className="ai-soft">—</div>
-            )}
-          </div>
-        </button>
-      </div>
+            )
+          })}
+        </div>
+      )}
+
+      <MiniStats>
+        <MiniStat icon="fileText" value={count('conditions')} label="Conditions">
+          <span className="is-sub">
+            <span className="mono">{count('symptoms')}</span> <span>symptoms</span> · <span className="mono">{count('relations')}</span> <span>links</span>
+          </span>
+        </MiniStat>
+        {reviewOnly && <MiniStat icon="siren" tone="d" value={rules.filter((g) => g.active.values.rule_type === 'RED_FLAG').length} label="Red-flag rules in use" />}
+        {reviewOnly && <MiniStat icon="alert" tone="w" value={rules.filter((g) => g.active.values.rule_type === 'PRIORITY_FLOOR').length} label="Priority-floor rules in use" />}
+        <MiniStat
+          icon="history"
+          tone={open?.status === 'PendingApproval' ? 'd' : 'n'}
+          value={open ? open.label : '—'}
+          label={open ? <ReleaseBadge status={open.status} /> : 'Open release'}
+          onClick={() => setTab(reviewOnly ? 'review' : 'release')}
+        />
+      </MiniStats>
 
       <div className="card">
         <div className="itabs ai-tabs">

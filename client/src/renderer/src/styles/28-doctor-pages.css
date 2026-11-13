@@ -44,3 +44,15 @@ table.dt tr.dimmed td{opacity:.6;}
 .pt-row b{font-weight:500;}
 .pt-card .btn{justify-content:center;}
 @media (max-width:1100px){.lookup-grid{grid-template-columns:1fr;}.pt-card{position:static;}}
+/* Cấu hình AI: thẻ luật */
+.rule-card .rule-list{display:flex;flex-direction:column;gap:10px;max-height:300px;overflow:auto;}
+.rule-li{display:flex;align-items:flex-start;gap:10px;}
+.rule-li .is-ico{width:30px;height:30px;border-radius:8px;display:grid;place-items:center;flex:none;}
+.rule-li .is-ico .icn{width:16px;height:16px;}
+.rule-li .is-ico.t-d{background:var(--warn-soft);color:var(--warn);}
+.rule-li .is-ico.t-w{background:var(--priority-soft);color:var(--priority);}
+.rule-li .rl-t{min-width:0;display:flex;flex-direction:column;}
+.rule-li .rl-t b{font-weight:600;font-size:14.5px;}
+.rule-li .rl-t small{font-size:13px;color:var(--ink-soft);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.kb-table{width:100%;}
+.kb-table td:first-child{max-width:190px;word-break:break-all;}
