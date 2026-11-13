@@ -17,3 +17,30 @@ table.dt tr.dimmed td{opacity:.6;}
 .tag.d{background:var(--warn-soft);border-color:transparent;color:var(--warn-ink);}
 .exp-days{display:block;margin:2px 0 0;font-family:var(--font);font-size:12px;}
 .cab-table .btn{white-space:nowrap;display:inline-flex;align-items:center;gap:4px;}
+/* Hồ sơ bệnh nhân */
+.lookup2{display:flex;flex-direction:column;gap:16px;}
+.lookup2>.card{margin:0;}
+.lookup-search .pl-q{display:flex;align-items:center;gap:10px;height:44px;padding:0 14px;border:1px solid var(--border);border-radius:10px;background:var(--surface);}
+.lookup-search .pl-q:focus-within{border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-soft);}
+.lookup-search .pl-q .icn{width:18px;height:18px;color:var(--ink-soft);}
+.lookup-search .pl-q input{flex:1;border:0;outline:0;background:none;font:15.5px var(--font);color:var(--ink);}
+.pl-results{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:6px;margin-top:12px;max-height:320px;overflow:auto;}
+.pl-results .pl-row{display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;column-gap:10px;align-items:center;border:1px solid var(--border);}
+.pl-results .pl-row .avatar{grid-row:1/3;}
+.pl-hint{font-size:13.5px;margin:10px 2px 0;}
+.avatar.sm{width:32px;height:32px;font-size:12.5px;}
+.avatar.lg{width:56px;height:56px;font-size:18px;font-weight:700;}
+.lookup-grid{display:grid;grid-template-columns:320px minmax(0,1fr);gap:16px;align-items:start;}
+.lookup-grid>.card{margin:0;}
+.pt-card{display:flex;flex-direction:column;gap:12px;position:sticky;top:12px;}
+.pt-id{display:flex;align-items:center;gap:12px;}
+.pt-id b{display:block;font-size:19px;font-weight:600;}
+.pt-id .ai-soft{font-size:13px;}
+.pt-rows{display:flex;flex-direction:column;gap:10px;}
+.pt-row{display:flex;align-items:center;gap:10px;}
+.pt-row .is-ico{width:32px;height:32px;border-radius:8px;display:grid;place-items:center;background:var(--surface-alt);color:var(--ink-2);flex:none;}
+.pt-row .is-ico .icn{width:16px;height:16px;}
+.pt-row small{display:block;font-size:12.5px;color:var(--ink-soft);}
+.pt-row b{font-weight:500;}
+.pt-card .btn{justify-content:center;}
+@media (max-width:1100px){.lookup-grid{grid-template-columns:1fr;}.pt-card{position:static;}}

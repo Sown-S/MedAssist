@@ -16,6 +16,7 @@ export default function PatientLookup() {
   const [sel, setSel] = useState(null)
   const [last, setLast] = useState(null) // lượt gần nhất có chẩn đoán — cho giấy chuyển tuyến
   const [docs, setDocs] = useState(false)
+  const [listOpen, setListOpen] = useState(true) // gõ lại thì mở danh sách kết quả, chọn xong thì thu lại
 
   // Gõ xong 300 ms mới hỏi server.
   useEffect(() => {
@@ -32,6 +33,7 @@ export default function PatientLookup() {
 
   async function open(id) {
     setLast(null)
+    setListOpen(false)
     try {
       setSel(await getPatient(id))
     } catch (e) {
@@ -47,42 +49,90 @@ export default function PatientLookup() {
     rx: last?.prescription?.items.map((x) => ({ name: x.drug_label, qty: x.quantity })) ?? []
   }
 
+  const initials = (name = '') =>
+    name
+      .trim()
+      .split(/\s+/)
+      .slice(-2)
+      .map((w) => w[0]?.toUpperCase() ?? '')
+      .join('')
+
   return (
-    <div className="lookup">
-      <div className="card lookup-list">
-        <input className="pl-search" type="search" autoFocus placeholder="Name, phone number, record ID, ID card or birth year…" value={q} onChange={(e) => setQ(e.target.value)} />
+    <div className="lookup2">
+      <div className="card lookup-search">
+        <div className="pl-q">
+          <Icon name="search" />
+          <input
+            type="search"
+            autoFocus
+            placeholder="Name, phone number, record ID, ID card or birth year…"
+            value={q}
+            onChange={(e) => {
+              setQ(e.target.value)
+              setListOpen(true)
+            }}
+          />
+        </div>
         {err && <div className="kb-error">{err}</div>}
-        {results.map((r) => (
-          <button key={r.id} className={'pl-row' + (r.id === p?.id ? ' active' : '')} onClick={() => open(r.id)}>
-            <span className="nm">{r.name}</span>
-            <span className="sub">
-              <span className="mono">{r.code}</span> · {r.dob} · <span className="mono">{r.phone || '—'}</span>
-            </span>
-          </button>
-        ))}
-        {searching && <p className="ai-soft" style={{ fontSize: 13, padding: 8 }}>{translate('Loading…')}</p>}
-        {q.trim() && !searching && !results.length && !err && <p className="ai-soft" style={{ fontSize: 13, padding: 8 }}>No patient matches.</p>}
-        {!q.trim() && <p className="ai-soft" style={{ fontSize: 13, padding: 8 }}>Type at least part of a name, phone number or record ID.</p>}
+        {listOpen && q.trim() && (
+          <div className="pl-results">
+            {results.map((r) => (
+              <button key={r.id} className={'pl-row' + (r.id === p?.id ? ' active' : '')} onClick={() => open(r.id)}>
+                <span className="avatar sm">{initials(r.name)}</span>
+                <span className="nm">{r.name}</span>
+                <span className="sub">
+                  <span className="mono">{r.code}</span> · {r.dob} · <span className="mono">{r.phone || '—'}</span>
+                </span>
+              </button>
+            ))}
+            {searching && <p className="ai-soft pl-hint">{translate('Loading…')}</p>}
+            {!searching && !results.length && !err && <p className="ai-soft pl-hint">No patient matches.</p>}
+          </div>
+        )}
+        {!q.trim() && !p && <p className="ai-soft pl-hint">Type at least part of a name, phone number or record ID.</p>}
       </div>
 
       {p ? (
-        <div className="card">
-          <div className="consult-head">
-            <div>
-              <h2>{p.name}</h2>
-              <div className="sub">
-                {translate(p.gender)} · {p.dob} ({ageOf(p.dob)} {translate('yrs')}) · <span className="mono">{p.code}</span> · <span className="mono">{p.phone || '—'}</span>
+        <div className="lookup-grid">
+          <div className="card pt-card">
+            <div className="pt-id">
+              <span className="avatar lg">{initials(p.name)}</span>
+              <div>
+                <b>{p.name}</b>
+                <span className="ai-soft">
+                  <span className="mono">{p.code}</span> · {p.dob} ({ageOf(p.dob)} {translate('yrs')}) · {translate(p.gender)}
+                </span>
               </div>
             </div>
             {p.pregnancy === 'yes' && <span className="badge warn">{translate('Pregnant')}</span>}
-          </div>
-          <PatientAlerts p={p} />
-          <div className="lookup-actions">
+            <div className="pt-rows">
+              <div className="pt-row">
+                <span className="is-ico">
+                  <Icon name="phone" />
+                </span>
+                <span>
+                  <small>Phone</small>
+                  <b className="mono">{p.phone || '—'}</b>
+                </span>
+              </div>
+              <div className="pt-row">
+                <span className="is-ico">
+                  <Icon name="card" />
+                </span>
+                <span>
+                  <small>ID card number (CCCD)</small>
+                  <b className="mono">{p.idNumber || '—'}</b>
+                </span>
+              </div>
+            </div>
+            <PatientAlerts p={p} />
             <button className="btn btn-ghost btn-sm" onClick={() => setDocs(true)}>
-              <Icon name="repeat" /> Referral letter
+              <Icon name="fileText" /> Referral letter
             </button>
           </div>
-          <ServerHistory key={p.id} patientId={p.id} onLoaded={(h) => setLast(h.items.find((v) => v.diagnoses.length) ?? null)} />
+          <div className="card">
+            <ServerHistory key={p.id} patientId={p.id} onLoaded={(h) => setLast(h.items.find((v) => v.diagnoses.length) ?? null)} />
+          </div>
         </div>
       ) : (
         <div className="card">
