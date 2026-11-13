@@ -43,8 +43,6 @@
 .dq-rail-cnt svg{width:16px;height:16px;}
 .dq-rail-cnt b{color:var(--ink);}
 
-.doc-nav-row{display:flex;align-items:center;gap:10px;justify-content:space-between;flex-wrap:wrap;margin-bottom:18px;}
-.doc-nav-row .doc-nav{margin-bottom:0;}
 
 /* Bỏ về, chẩn đoán phụ, đã về từ xét nghiệm */
 .leave-reasons{display:flex;flex-direction:column;gap:6px;}
@@ -68,11 +66,6 @@
 .lookup-actions{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 4px;}
 
 /* Phòng khám cố định, liều theo cân nặng */
-.doc-nav-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
-.doc-room{display:inline-flex;align-items:center;gap:7px;padding:6px 12px;border-radius:12px;border:1px solid var(--border);background:var(--surface);font-size:13.5px;font-weight:600;color:var(--ink);white-space:nowrap;}
-.doc-room svg{width:15px;height:15px;color:var(--accent);}
-.doc-room.warn{border-color:rgba(245,158,11,.45);background:var(--priority-soft);color:var(--priority-ink);}
-.doc-room.warn svg{color:var(--priority-ink);}
 .rx-daily.over{color:var(--warn-ink);font-weight:700;}
 .rx-stock.info{color:var(--primary-ink);}
 

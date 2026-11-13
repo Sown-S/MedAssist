@@ -119,3 +119,32 @@
 .dq-main b{font-size:15px;}
 .dq-main small{font-size:13px;}
 .dq-no{color:var(--primary-ink);}
+
+/* ---- Trang chủ quản trị: 5 ô, biểu đồ doanh thu dạng đường ---- */
+.kpis.k5{grid-template-columns:repeat(5,minmax(0,1fr));}
+.kpis .stat-card.tile.rt{min-height:126px;padding:18px 20px;}
+.kpis .stat-card .tl{font-size:18px;}
+.kpis .stat-card .rt-n{font-size:28px;}
+div.stat-card.tile.rt{cursor:default;}
+div.stat-card.tile.rt:hover{transform:none;box-shadow:var(--shadow);border-color:var(--border);}
+.lc-h{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:12px;}
+.lc-h b{font-size:26px;font-weight:700;}
+.lc-d{display:inline-flex;align-items:center;gap:4px;font-weight:600;font-size:14px;}
+.lc-d .icn{width:16px;height:16px;}
+.lc-d.up{color:var(--success);}
+.lc-d.down{color:var(--warn);}
+.lc-d.down .icn{transform:scaleY(-1);}
+.lc{position:relative;height:190px;margin:22px 8px 0;}
+.lc svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible;}
+.lc-l{fill:none;stroke:var(--primary);stroke-width:2.5;stroke-linejoin:round;stroke-linecap:round;}
+.lc-grid{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:space-between;}
+.lc-grid i{border-top:1px dashed var(--border);}
+.lc-p{position:absolute;width:10px;height:10px;margin:-5px 0 0 -5px;border-radius:50%;background:var(--surface);border:2px solid var(--primary);cursor:default;transition:transform .15s;}
+.lc-p.last{background:var(--primary);box-shadow:0 0 0 4px var(--primary-soft);}
+.lc-p:hover,.lc-p.on{transform:scale(1.25);}
+.lc-p em{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);font-style:normal;font-size:12px;color:var(--ink-2);white-space:nowrap;padding:1px 6px;border-radius:6px;background:var(--surface);box-shadow:var(--shadow);font-variant-numeric:tabular-nums;}
+.lc-x{display:flex;justify-content:space-between;margin-top:10px;font-size:12px;color:var(--ink-soft);}
+.lc-x span{flex:1;text-align:center;}
+.lc-x span:first-child{text-align:left;}
+.lc-x span:last-child{text-align:right;}
+@media (max-width:1500px){.kpis.k5{grid-template-columns:repeat(3,minmax(0,1fr));}}

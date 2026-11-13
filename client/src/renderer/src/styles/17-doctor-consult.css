@@ -1,8 +1,5 @@
 /* Bác sĩ: hàng đợi, khám, kê đơn, tủ thuốc */
 
-.doc-nav{margin-bottom:18px;}
-.doc-nav button svg{width:16px;height:16px;}
-.doc-nav-cnt{font-family:'IBM Plex Mono',monospace;font-size:11px;background:var(--primary);color:#fff;border-radius:10px;padding:1px 7px;}
 .doc-layout{grid-template-columns:270px minmax(0,1.15fr) minmax(0,1fr);}
 @media (max-width:1250px){.doc-layout{grid-template-columns:260px minmax(0,1fr);}.doc-layout .doc-work>.card:last-of-type{grid-column:2;}}
 .doc-work{display:contents;}

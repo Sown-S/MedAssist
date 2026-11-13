@@ -13,6 +13,8 @@ import { rangeOf, reportPath, fillDays, vnd, percent } from '../../api/reportsAp
 import { translate } from '../../i18n'
 import { fmtDateTime } from './inventory/shared'
 import ClusterAlerts from '../../components/ClusterAlerts'
+import HomeGreeting from '../../components/HomeGreeting'
+import { useAuth } from '../../context/AuthContext'
 
 // by_status chỉ có trạng thái đang có lượt (hôm nay chưa ai check-in thì không có khoá CheckedIn) → thiếu là 0.
 export const countOf = (byStatus, ...keys) => keys.reduce((n, k) => n + (Number(byStatus?.[k]) || 0), 0)
@@ -110,33 +112,72 @@ function ServerActivity({ items, onOpen }) {
 
 const fmtVnd = (n) => n.toLocaleString('vi-VN') + 'đ'
 
+// Doanh thu 7 ngày dạng đường (kiểu biểu đồ chứng khoán): điểm cuối nổi bật, rê chuột vào điểm để xem số.
 function RevenueChart({ days }) {
   const [hover, setHover] = useState(null)
-  const max = Math.max(...days.map((d) => d.amt), 1) // 7 ngày đều chưa thu tiền → không chia cho 0
-  const shown = hover ?? days.length - 1
-
+  const vals = days.map((d) => d.amt)
+  const max = Math.max(...vals, 1) * 1.1 // 7 ngày đều chưa thu tiền → không chia cho 0
+  const n = days.length
+  const x = (i) => (n > 1 ? (i / (n - 1)) * 100 : 50)
+  const y = (v) => (1 - v / max) * 100
+  const line = days.map((d, i) => (i ? 'L' : 'M') + x(i).toFixed(2) + ' ' + y(d.amt).toFixed(2)).join(' ')
+  const last = vals[n - 1] ?? 0
+  const prev = vals[n - 2] ?? 0
+  const diff = last - prev
+  const shown = hover ?? n - 1
   return (
-    <div className="mini-chart" onMouseLeave={() => setHover(null)}>
-      {days.map((d, i) => (
-        <div
-          className={'mini-col' + (i === shown ? ' on' : '')}
-          key={d.day}
-          onMouseEnter={() => setHover(i)}
-          aria-label={`${d.day}: ${fmtVnd(d.amt)}`}
-        >
-          <span className="mini-val">{i === shown ? fmtVnd(d.amt) : ''}</span>
-          <div className="mini-track">
-            <div className="mini-bar" style={{ height: Math.round((d.amt / max) * 100) + '%' }} />
-          </div>
-          <span className="mini-day">{d.day}</span>
+    <div className="lc-wrap">
+      <div className="lc-h">
+        <b className="mono">{fmtVnd(last)}</b>
+        {n > 1 && (
+          <span className={'lc-d ' + (diff >= 0 ? 'up' : 'down')}>
+            <Icon name="trending" />
+            {(diff >= 0 ? '+' : '−') + fmtVnd(Math.abs(diff))}
+          </span>
+        )}
+        <span className="ai-soft">{translate('compared with the day before')}</span>
+      </div>
+      <div className="lc" onMouseLeave={() => setHover(null)}>
+        <div className="lc-grid">
+          <i />
+          <i />
+          <i />
+          <i />
         </div>
-      ))}
+        <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+          <defs>
+            <linearGradient id="lcg" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stopColor="#1877F2" stopOpacity=".22" />
+              <stop offset="1" stopColor="#1877F2" stopOpacity="0" />
+            </linearGradient>
+          </defs>
+          <path d={line + ' L100 100 L0 100 Z'} fill="url(#lcg)" />
+          <path d={line} className="lc-l" vectorEffect="non-scaling-stroke" />
+        </svg>
+        {days.map((d, i) => (
+          <span
+            key={d.day}
+            className={'lc-p' + (i === n - 1 ? ' last' : '') + (i === shown ? ' on' : '')}
+            style={{ left: x(i) + '%', top: y(d.amt) + '%' }}
+            onMouseEnter={() => setHover(i)}
+            aria-label={d.day + ': ' + fmtVnd(d.amt)}
+          >
+            {i === shown && <em>{fmtVnd(d.amt)}</em>}
+          </span>
+        ))}
+      </div>
+      <div className="lc-x">
+        {days.map((d) => (
+          <span key={d.day}>{d.day}</span>
+        ))}
+      </div>
     </div>
   )
 }
 
 export default function DashboardPage({ onNavigate }) {
   const navigate = useNavigate()
+  const { user } = useAuth()
   // Số liệu tổng hợp, không có dữ liệu bệnh nhân nên Admin xem được. Lỗi tải → các ô hiện “—”, phần còn lại vẫn dùng được.
   const days7 = rangeOf('7d')
   const { data: summary, error: e1 } = useApiData(reportPath(rangeOf('today')))
@@ -164,12 +205,14 @@ export default function DashboardPage({ onNavigate }) {
 
   return (
     <div>
-      <div className="page-head">
-        <div>
-          <h1>Admin home</h1>
-          <p>Overview of today's clinic operations</p>
-        </div>
-      </div>
+      <HomeGreeting crumb="Admin" name={user?.name ?? ''}>
+        <button className="btn btn-ghost" onClick={() => navigate('/reports')}>
+          <Icon name="chartLine" /> View reports
+        </button>
+        <button className="btn btn-primary" onClick={() => onNavigate('staff')}>
+          <Icon name="userPlus" /> Create account
+        </button>
+      </HomeGreeting>
 
       <ClusterAlerts />
       {!ready && <LoadingBlock />}
@@ -178,12 +221,12 @@ export default function DashboardPage({ onNavigate }) {
 
       {ready && (
         <>
-          <div className="stat-bar">
-            <StatCard value={summary?.visits.total ?? NA} label="Visits today" />
-            <StatCard value={byStatus ? countOf(byStatus, 'Waiting', 'CheckedIn') : NA} label="Waiting for consultation" />
-            <StatCard value={byStatus ? countOf(byStatus, 'Prescribed') : NA} label="Awaiting payment" />
-            <StatCard value={summary ? vnd(summary.revenue.total) : NA} label="Today's revenue" />
-            <StatCard value={summary?.visits.red_flags ?? NA} label="Red-flag referrals" />
+          <div className="kpis k5">
+            <StatCard value={summary?.visits.total ?? NA} label="Visits today" icon="users" onClick={() => navigate('/reports')} />
+            <StatCard value={byStatus ? countOf(byStatus, 'Waiting', 'CheckedIn') : NA} label="Waiting for consultation" icon="clock" tone="g" />
+            <StatCard value={byStatus ? countOf(byStatus, 'Prescribed') : NA} label="Awaiting payment" icon="banknote" />
+            <StatCard value={summary ? vnd(summary.revenue.total) : NA} label="Today's revenue" icon="wallet" />
+            <StatCard value={summary?.visits.red_flags ?? NA} label="Red-flag referrals" icon="siren" tone="r" alert={summary?.visits.red_flags > 0} />
           </div>
 
           <div className="dash-grid">

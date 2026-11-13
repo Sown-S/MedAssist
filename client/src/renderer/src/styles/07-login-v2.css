@@ -9,10 +9,9 @@
 .login-head{text-align:center;margin-bottom:26px;}
 .login-head .login-title{margin:0 0 8px;color:#fff;}
 .login-head .sub{margin:0;font-size:15.5px;color:#fff;}
-.login-screen .login-field label,.login-screen .role-card,.login-screen .login-note,.login-screen .login-footer{color:#fff;}
-.login-screen .role-card .ic{color:#fff;}
+.login-screen .login-field label,.login-screen .role-card,.login-screen .login-note,.login-screen .login-footer{color:var(--ink);}
+.login-screen .role-card .ic{color:var(--ink-soft);}
 .login-screen .role-card.active .ic{color:var(--accent);}
-.login-logo{width:58px;height:58px;border-radius:18px;margin:0 auto 16px;background:linear-gradient(135deg,var(--primary),var(--accent));display:flex;align-items:center;justify-content:center;color:#fff;box-shadow:0 10px 30px -8px rgba(24,119,242,.5);}
 .login-logo svg{width:32px;height:32px;}
 .login-title{text-align:center;font-family:var(--font);font-size:30px !important;font-weight:700;letter-spacing:-.01em;}
 .login-field label{font-size:13.5px;}

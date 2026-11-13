@@ -4,6 +4,9 @@ import { renderPage } from './render.jsx'
 import Reception from '../src/renderer/src/pages/Reception.jsx'
 import Doctor from '../src/renderer/src/pages/Doctor.jsx'
 import Admin from '../src/renderer/src/pages/Admin.jsx'
+import SideNav from '../src/renderer/src/components/SideNav.jsx'
+import { AdminNavProvider } from '../src/renderer/src/context/AdminNavContext.jsx'
+import { useAuth } from '../src/renderer/src/context/AuthContext.jsx'
 import PaymentModal from '../src/renderer/src/components/PaymentModal.jsx'
 import { syncQueue } from '../src/renderer/src/api/queueStore.js'
 import { DOC_A, DOC_B, DESK, ADMIN } from './helpers'
@@ -12,6 +15,17 @@ import { installFakeServer, resetCalls, calls } from './fakeServer'
 // Test giao diện trên server giả (fakeServer.js): mọi màn chính của 3 vai trò dựng được mà không rơi vào lưới bắt lỗi,
 // và vài thao tác chính gọi đúng API. Lưới an toàn khi sửa / chia nhỏ các file lớn.
 const FAIL = 'Something went wrong on this screen'
+
+// Trang Quản trị kèm menu bên trái dùng chung (như trong App.jsx).
+function AdminWithMenu() {
+  const { user } = useAuth()
+  return (
+    <AdminNavProvider>
+      <SideNav user={user} />
+      <Admin />
+    </AdminNavProvider>
+  )
+}
 
 // Giữ fetch giả suốt cả file: bộ đếm giờ còn sót của test trước (polling hàng đợi, /health) không được gọi ra mạng thật
 // — nếu máy đang bật server, nó trả 401 và làm phiên của test sau bị đăng xuất.
@@ -39,11 +53,11 @@ describe('Các màn chính dựng được', () => {
   })
 
   it('Quản trị › mọi mục trên menu trái', async () => {
-    renderPage(<Admin onNavigate={() => {}} />, { user: ADMIN, path: '/admin' })
+    renderPage(<AdminWithMenu />, { user: ADMIN, path: '/admin' })
     await rendered()
     const items = ['AI configuration', 'Rooms', 'Stock & expiry', 'Catalog management', 'Activity history', 'Staff accounts', 'Settings', 'Roadmap', 'Home']
     for (const label of items) {
-      fireEvent.click(screen.getByText(label, { selector: '.side-item .lb, .side-subitem' }))
+      fireEvent.click(screen.getByText(label, { selector: '.side .nav .t' }))
       await rendered()
     }
   })
@@ -53,9 +67,9 @@ describe('Các màn chính dựng được', () => {
     ['Settings', ['Printing & numbering', 'Security', 'Connection & AI', 'This computer', 'Operations', 'Clinic']],
     ['Stock & expiry', ['Stock movements', 'Stock by batch']]
   ])('Quản trị › %s › từng tab', async (page, tabs) => {
-    renderPage(<Admin onNavigate={() => {}} />, { user: ADMIN, path: '/admin' })
+    renderPage(<AdminWithMenu />, { user: ADMIN, path: '/admin' })
     await rendered()
-    fireEvent.click(screen.getByText(page, { selector: '.side-item .lb' }))
+    fireEvent.click(screen.getByText(page, { selector: '.side .nav .t' }))
     await rendered()
     for (const tab of tabs) {
       fireEvent.click(screen.getByText(tab, { selector: 'button, button *' }))
@@ -113,12 +127,12 @@ describe('Luồng chính trên giao diện', () => {
     expect(screen.queryByText('Hoàng Thị Em')).toBeNull()
   })
 
-  it('lễ tân thấy lượt chờ thanh toán ở Hàng chờ và ca chuyển viện tại quầy ở thẻ Ca cờ đỏ', async () => {
+  it('lễ tân thấy lượt chờ thanh toán ở Hàng chờ và ca chuyển viện tại quầy ở ô Ca cấp cứu', async () => {
     await syncQueue()
     expect(calls).toContainEqual(expect.objectContaining({ method: 'GET', path: '/api/v1/queue?include_closed=true' }))
     renderPage(<Reception />, { user: DESK, path: '/reception' })
     await rendered()
-    expect(await screen.findByText(/1 referred · 0 seen at the clinic · 0 waiting for a doctor/)).toBeTruthy()
+    await waitFor(() => expect(document.querySelector('.tile.rt.r .val').textContent).toBe('1'))
     // Ca đã chuyển viện không hiện thông báo nổi đầu trang.
     expect(document.querySelector('.redflag-alert')).toBeNull()
     cleanup()
