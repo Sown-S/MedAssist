@@ -25,7 +25,7 @@ from app.core.config import settings
 from app.core.database import SessionLocal
 from app.services.assessment_service import evaluate_case_offline
 from app.services.knowledge_reader import DbKnowledgeReader
-from app.worker.runner import make_llm_client
+from app.worker.runner import make_extraction_llm_client, make_llm_client
 
 SERVER_DIR = Path(__file__).resolve().parents[1]
 DEFAULT_TESTSET = SERVER_DIR.parent / "evaluation" / "testset"
@@ -344,6 +344,7 @@ def main(argv: list[str] | None = None) -> int:
         print("CSDL chưa có tri thức Active: chạy scripts.import_okf trước.", file=sys.stderr)
         return 1
     llm_client, model_name = make_llm_client()
+    extraction_client, extraction_model = make_extraction_llm_client((llm_client, model_name))
     modes = [] if args.extraction_only else ["RuleOnly", "Full"] if args.mode == "both" else [args.mode]
     with_llm = settings.LLM_PROVIDER != "none"
     if args.extraction_only and not with_llm:
@@ -368,7 +369,7 @@ def main(argv: list[str] | None = None) -> int:
 
     clinical_rows = {m: run_clinical(clinical_cases, reader, m, llm_client) for m in modes}
     extraction_rows = (
-        run_extraction(extraction_cases, SnapshotReader(snapshot), llm_client, options)
+        run_extraction(extraction_cases, SnapshotReader(snapshot), extraction_client, options)
         if with_llm and not args.skip_extraction and extraction_cases
         else None
     )
@@ -385,6 +386,7 @@ def main(argv: list[str] | None = None) -> int:
         "server_version": settings.VERSION,
     }
     if extraction_rows:
+        meta["extraction_model"] = extraction_model
         meta["extraction_strategy"] = options.strategy
         if options.strategy == "phrases":
             meta["candidates_per_phrase"] = options.per_phrase_limit

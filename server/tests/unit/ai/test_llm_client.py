@@ -95,6 +95,20 @@ def test_extraction_requests_full_context_and_disables_silent_truncation():
     assert sent[0]["options"] == {"temperature": 0, "num_ctx": 8192}
 
 
+def test_num_ctx_is_forwarded_and_legacy_extraction_keeps_full_context():
+    sent = []
+
+    def handler(request):
+        sent.append(json.loads(request.content))
+        return response()
+
+    client = client_for(handler, num_ctx=4096)
+    generate(client)
+    generate(client, schema=extraction_json_schema(["signal_a"]))
+    assert sent[0]["options"] == {"temperature": 0, "num_ctx": 4096}
+    assert sent[1]["options"] == {"temperature": 0, "num_ctx": 8192}
+
+
 @pytest.mark.parametrize("keep_alive", ["10m", 0, -1])
 def test_keep_alive_is_forwarded(keep_alive):
     sent = []

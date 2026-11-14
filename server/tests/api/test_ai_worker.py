@@ -434,6 +434,25 @@ def test_make_llm_client(monkeypatch):
     assert isinstance(client, LLMClient) and model == settings.OLLAMA_MODEL
     monkeypatch.setattr(settings, "OLLAMA_KEEP_ALIVE", "24h")
     assert runner.make_llm_client()[0]._ollama.keep_alive == "24h"
+    assert runner.make_llm_client()[0]._ollama.num_ctx is None
+    monkeypatch.setattr(settings, "OLLAMA_NUM_CTX", 4096)
+    assert runner.make_llm_client()[0]._ollama.num_ctx == 4096
+
+
+def test_make_extraction_llm_client(monkeypatch):
+    from app.core.config import settings
+
+    monkeypatch.setattr(settings, "LLM_PROVIDER", "ollama")
+    reasoning = runner.make_llm_client()
+    for model in ("", "  ", settings.OLLAMA_MODEL):
+        monkeypatch.setattr(settings, "OLLAMA_EXTRACTION_MODEL", model)
+        assert runner.make_extraction_llm_client(reasoning) is reasoning
+    monkeypatch.setattr(settings, "OLLAMA_EXTRACTION_MODEL", "medassist-extract:q4")
+    client, model = runner.make_extraction_llm_client(reasoning)
+    assert model == "medassist-extract:q4" and client.model == "medassist-extract:q4"
+    monkeypatch.setattr(settings, "LLM_PROVIDER", "fake")
+    fake = runner.make_llm_client()
+    assert runner.make_extraction_llm_client(fake) is fake
 
 
 def test_run_forever_processes_then_stops(make_visit, nurse_user, monkeypatch):

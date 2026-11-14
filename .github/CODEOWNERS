@@ -4,6 +4,7 @@
 /client/                @Haiz4chan
 /server/app/ai/         @VuDangHuy2
 /server/tests/unit/ai/  @VuDangHuy2
+/training/              @VuDangHuy2
 /knowledge/             @tuannndt
 /evaluation/            @tuannndt
 /docs/                  @Sown-S @Haiz4chan @VuDangHuy2 @tuannndt
