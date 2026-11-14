@@ -42,7 +42,7 @@ class DisabledLLMClient:
         raise LLMConnectionError("LLM disabled (LLM_PROVIDER=none)")
 
 
-def make_llm_client():
+def make_llm_client(model: str | None = None):
     if settings.LLM_PROVIDER == "none":
         return DisabledLLMClient(), None
     if settings.LLM_PROVIDER == "fake":
@@ -51,12 +51,24 @@ def make_llm_client():
         return FakeLLMClient(), FAKE_MODEL_NAME
     from app.ai.llm.client import LLMClient
 
+    model = model or settings.OLLAMA_MODEL
     return (
         LLMClient(
-            model=settings.OLLAMA_MODEL, base_url=settings.OLLAMA_BASE_URL, keep_alive=settings.OLLAMA_KEEP_ALIVE
+            model=model,
+            base_url=settings.OLLAMA_BASE_URL,
+            keep_alive=settings.OLLAMA_KEEP_ALIVE,
+            num_ctx=settings.OLLAMA_NUM_CTX or None,
         ),
-        settings.OLLAMA_MODEL,
+        model,
     )
+
+
+def make_extraction_llm_client(reasoning: tuple):
+    """Client cho trích xuất: model riêng nếu OLLAMA_EXTRACTION_MODEL khác OLLAMA_MODEL, không thì dùng chung."""
+    model = settings.OLLAMA_EXTRACTION_MODEL.strip()
+    if settings.LLM_PROVIDER != "ollama" or not model or model == settings.OLLAMA_MODEL:
+        return reasoning
+    return make_llm_client(model)
 
 
 def _remaining_budget(queued_at: datetime.datetime, limit: float | None = None) -> float:
@@ -240,9 +252,14 @@ async def _process_phrase_extraction(
 
 
 async def process_one(
-    reader: DbKnowledgeReader, llm_client, model_name: str | None, session_factory: Callable[[], Session] = SessionLocal
+    reader: DbKnowledgeReader,
+    llm_client,
+    model_name: str | None,
+    session_factory: Callable[[], Session] = SessionLocal,
+    *,
+    extraction: tuple | None = None,
 ) -> bool:
-    """Xử lý tối đa một việc. Trả False khi hàng đợi rỗng."""
+    """Xử lý tối đa một việc. Trả False khi hàng đợi rỗng. ``extraction``: (client, tên model) cho trích xuất."""
     with session_factory() as db:
         run = q.claim_next(db)
         if run is None:
@@ -254,13 +271,14 @@ async def process_one(
         db.commit()
 
     if run_type == "Extraction":
+        extraction_client, extraction_model = extraction or (llm_client, model_name)
         await _process_extraction(
             assessment_id,
             visit_id,
             queued_at,
             reader,
-            llm_client,
-            model_name,
+            extraction_client,
+            extraction_model,
             session_factory,
             attempt_count=attempt_count,
         )
@@ -327,15 +345,16 @@ def sweep_once(session_factory: Callable[[], Session] = SessionLocal) -> dict[st
 async def run_forever(stop: asyncio.Event | None = None) -> None:
     stop = stop or asyncio.Event()
     reader = DbKnowledgeReader()
-    llm_client, model_name = make_llm_client()
-    log.info("Worker AI bắt đầu (LLM_PROVIDER=%s)", settings.LLM_PROVIDER)
+    reasoning = make_llm_client()
+    extraction = make_extraction_llm_client(reasoning)
+    log.info("Worker AI bắt đầu (LLM_PROVIDER=%s, trích xuất: %s)", settings.LLM_PROVIDER, extraction[1])
     next_sweep = 0.0
     while not stop.is_set():
         if time.monotonic() >= next_sweep:
             sweep_once()
             next_sweep = time.monotonic() + settings.WORKER_SWEEP_SECONDS
         try:
-            worked = await process_one(reader, llm_client, model_name)
+            worked = await process_one(reader, *reasoning, extraction=extraction)
         except Exception:  # DB tạm mất: không để worker chết
             log.exception("Vòng lặp worker lỗi, thử lại sau")
             worked = False

@@ -62,10 +62,11 @@ class LLMClient:
         model: str,
         base_url: str = "http://127.0.0.1:11434",
         keep_alive: str | int = "5m",
+        num_ctx: int | None = None,
         transport: httpx.AsyncBaseTransport | None = None,
     ) -> None:
         self._ollama = OllamaClient(
-            model=model, base_url=base_url, keep_alive=keep_alive, transport=transport
+            model=model, base_url=base_url, keep_alive=keep_alive, num_ctx=num_ctx, transport=transport
         )
 
     @property
