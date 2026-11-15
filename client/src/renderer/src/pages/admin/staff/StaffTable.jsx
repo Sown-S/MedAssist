@@ -31,9 +31,9 @@ export default function StaffTable({ rows, me, q, setQ, roleFilter, setRoleFilte
               </option>
             ))}
           </select>
-          <div className="ai-seg">
+          <div className="seg">
             {STATUS_FILTERS.map((f) => (
-              <button key={f.key} className={statusFilter === f.key ? 'active' : ''} onClick={() => setStatusFilter(f.key)}>
+              <button key={f.key} className={statusFilter === f.key ? 'on' : ''} onClick={() => setStatusFilter(f.key)}>
                 {f.label}
               </button>
             ))}

@@ -137,14 +137,14 @@ export default function ConsultForm({ visit, user, onDone, onNext }) {
       <div className="card">
         <ConsultHeader visit={visit} vit={vit} prev={prev} alerts={ai.alerts} />
 
-        <div className="itabs" style={{ marginTop: 12 }}>
-          <button className={'itab' + (tab === 'clin' ? ' active' : '')} onClick={() => setTab('clin')}>
+        <div className="seg" style={{ marginTop: 12 }}>
+          <button className={(tab === 'clin' ? 'on' : '')} onClick={() => setTab('clin')}>
             Consultation (SOAP)
           </button>
-          <button className={'itab' + (tab === 'vitals' ? ' active' : '') + (tried && needWeight ? ' itab-err' : '')} onClick={() => setTab('vitals')}>
+          <button className={(tab === 'vitals' ? 'on' : '') + (tried && needWeight ? ' err' : '')} onClick={() => setTab('vitals')}>
             Vitals
           </button>
-          <button className={'itab' + (tab === 'hist' ? ' active' : '')} onClick={() => setTab('hist')}>
+          <button className={(tab === 'hist' ? 'on' : '')} onClick={() => setTab('hist')}>
             History
           </button>
         </div>

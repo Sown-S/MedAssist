@@ -17,12 +17,12 @@ export function MovesTab({ inv }) {
   return (
     <>
       <div className="ai-toolbar">
-        <div className="ai-seg">
-          <button className={type === 'all' ? 'active' : ''} onClick={() => (setType('all'), setPage(1))}>
+        <div className="seg">
+          <button className={type === 'all' ? 'on' : ''} onClick={() => (setType('all'), setPage(1))}>
             All
           </button>
           {Object.entries(MOVE_TYPES).map(([k, v]) => (
-            <button key={k} className={type === k ? 'active' : ''} onClick={() => (setType(k), setPage(1))}>
+            <button key={k} className={type === k ? 'on' : ''} onClick={() => (setType(k), setPage(1))}>
               {v}
             </button>
           ))}

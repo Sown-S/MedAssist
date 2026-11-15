@@ -4,16 +4,16 @@ import { ymd } from '../../utils/format'
 export default function PeriodPicker({ period, date, onChange }) {
   return (
     <div className="period-picker">
-      <div className="ai-seg">
+      <div className="seg">
         {PERIODS.filter((p) => p.key !== 'date').map((p) => (
-          <button key={p.key} className={period === p.key ? 'active' : ''} onClick={() => onChange(p.key, date)}>
+          <button key={p.key} className={period === p.key ? 'on' : ''} onClick={() => onChange(p.key, date)}>
             {p.label}
           </button>
         ))}
       </div>
       <input
         type="date"
-        className={period === 'date' ? 'active' : ''}
+        className={period === 'date' ? 'on' : ''}
         value={period === 'date' ? date : ''}
         max={ymd(new Date())}
         title="Pick a date"

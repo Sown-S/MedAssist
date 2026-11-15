@@ -49,9 +49,9 @@ export default function Reports() {
           <h2>Reports &amp; Statistics</h2>
           <p>Revenue, visits and AI module performance</p>
         </div>
-        <div className="itabs" role="tablist" style={{ marginBottom: 0 }}>
+        <div className="seg" role="tablist" style={{ marginBottom: 0 }}>
           {PERIODS.map((p) => (
-            <button key={p.key} role="tab" aria-selected={period === p.key} className={'itab' + (period === p.key ? ' active' : '')} onClick={() => setPeriod(p.key)}>
+            <button key={p.key} role="tab" aria-selected={period === p.key} className={(period === p.key ? 'on' : '')} onClick={() => setPeriod(p.key)}>
               {p.label}
             </button>
           ))}

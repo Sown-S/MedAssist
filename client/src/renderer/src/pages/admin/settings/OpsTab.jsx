@@ -12,9 +12,9 @@ export function OpsTab({ form }) {
       </div>
       <div className="set-grid">
         <Field {...fp('ops.nearDays')} hint="Batches expiring within this period are flagged on Home and in Stock & expiry.">
-          <div className="ai-seg">
+          <div className="seg">
             {[30, 60, 90].map((n) => (
-              <button key={n} type="button" className={val('ops.nearDays') === n ? 'active' : ''} onClick={() => set('ops.nearDays', n)}>
+              <button key={n} type="button" className={val('ops.nearDays') === n ? 'on' : ''} onClick={() => set('ops.nearDays', n)}>
                 {n} <span>days</span>
               </button>
             ))}

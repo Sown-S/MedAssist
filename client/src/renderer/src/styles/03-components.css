@@ -1,10 +1,5 @@
 /* Tab trong trang, thẻ bệnh nhân, modal, form, bảng, badge, khung khám, cảnh báo, hoá đơn */
 
-.itabs{display:inline-flex;gap:4px;background:rgba(16,24,40,0.022);padding:3px;border-radius:10px;margin-bottom:13px;}
-.itab{padding:6px 13px;border-radius:7px;font-size:13.5px;font-weight:600;cursor:pointer;color:var(--ink-soft);border:none;background:transparent;font-family:var(--font);}
-.itab.active{background:var(--primary);color:#fff;}
-.ipanel{display:none;}
-.ipanel.active{display:block;}
 
 .scroll-list{max-height:340px;overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding-right:2px;}
 
@@ -65,15 +60,3 @@
 .cluster-alerts .txt span{display:block;line-height:1.5;}
 
 .consult-footer{display:flex;justify-content:flex-end;gap:10px;margin-top:16px;padding-top:14px;border-top:1px solid var(--border);}
-
-.invoice-row{display:flex;align-items:center;gap:11px;padding:10px 0;border-bottom:1px solid var(--border);}
-.invoice-row:last-child{border-bottom:none;}
-.invoice-row input[type=checkbox]{width:16px;height:16px;accent-color:var(--primary);flex-shrink:0;}
-.inv-name{flex:1;font-size:14.5px;font-weight:500;color:var(--ink);}
-.inv-sub{font-size:12px;color:var(--ink-soft);}
-.inv-price{font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;white-space:nowrap;color:var(--ink);}
-.sum-line{display:flex;justify-content:space-between;font-size:14px;padding:6px 0;color:var(--ink-soft);align-items:center;}
-.sum-line input{width:90px;text-align:right;padding:5px 7px;border:1px solid var(--border);border-radius:7px;font-size:13.5px;font-family:'IBM Plex Mono',monospace;background:var(--field-bg);color:var(--ink);}
-.sum-total{display:flex;justify-content:space-between;font-size:18px;font-weight:700;padding-top:11px;margin-top:7px;border-top:1px solid var(--border);color:var(--ink);}
-.sum-total .amt{font-family:'IBM Plex Mono',monospace;color:var(--accent);}
-.pay-cols{display:grid;grid-template-columns:1fr 260px;gap:20px;}

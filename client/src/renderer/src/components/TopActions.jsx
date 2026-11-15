@@ -336,9 +336,9 @@ export default function TopActions({ user, onSignOut }) {
           Applied right away on this computer only.
         </p>
         <div className="sec-t">Language</div>
-        <div className="itabs" style={{ marginBottom: 0 }}>
+        <div className="seg" style={{ marginBottom: 0 }}>
           {LANGUAGES.map((l) => (
-            <button key={l.code} className={'itab' + (getLang() === l.code ? ' active' : '')} onClick={() => chooseLanguage(l.code)}>
+            <button key={l.code} className={(getLang() === l.code ? 'on' : '')} onClick={() => chooseLanguage(l.code)}>
               {l.name}
             </button>
           ))}

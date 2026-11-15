@@ -76,13 +76,13 @@ export default function CatalogDetailPage({ catalogKey, params, onNavigate }) {
                 ))}
               </select>
             )}
-            <div className="ai-seg">
+            <div className="seg">
               {[
                 ['active', 'In use'],
                 ['inactive', 'Discontinued'],
                 ['all', 'All']
               ].map(([k, l]) => (
-                <button key={k} className={status === k ? 'active' : ''} onClick={() => reset(setStatus)(k)}>
+                <button key={k} className={status === k ? 'on' : ''} onClick={() => reset(setStatus)(k)}>
                   {l}
                 </button>
               ))}

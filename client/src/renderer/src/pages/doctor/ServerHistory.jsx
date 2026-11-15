@@ -48,7 +48,7 @@ export default function ServerHistory({ patientId, excludeVisitId, onLoaded }) {
     <div>
       <div className="ai-toolbar">
         <div className="sec-t" style={{ margin: 0 }}>
-          Visits <span className="itab-cnt">{Math.max(0, total - (items.some((v) => v.visit_id === excludeVisitId) ? 1 : 0))}</span>
+          Visits <span className="c">{Math.max(0, total - (items.some((v) => v.visit_id === excludeVisitId) ? 1 : 0))}</span>
         </div>
         <label className="ai-small ai-soft" style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
           <input type="checkbox" checked={withCancelled} onChange={(e) => setWithCancelled(e.target.checked)} /> <span>Show cancelled visits</span>

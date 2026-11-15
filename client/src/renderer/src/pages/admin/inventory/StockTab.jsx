@@ -120,9 +120,9 @@ export function StockTab({ inv, user }) {
               </option>
             ))}
           </select>
-          <div className="ai-seg" title="Expiring within">
+          <div className="seg" title="Expiring within">
             {WINDOWS.map((w) => (
-              <button key={w} className={win === w ? 'active' : ''} onClick={() => reset(setWin)(w)}>
+              <button key={w} className={win === w ? 'on' : ''} onClick={() => reset(setWin)(w)}>
                 {w === 0 ? <span>Any expiry</span> : <span className="num">≤{w}d</span>}
               </button>
             ))}

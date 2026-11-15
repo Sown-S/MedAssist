@@ -113,9 +113,9 @@ export function LabListModal({ onResume, onClose }) {
       <ModalHeader title={translate('Lab tests & results')} onClose={onClose} />
       <div className="modal-b">
         <div className="cash-filters" style={{ marginBottom: 12 }}>
-          <div className="itabs" style={{ marginBottom: 0 }}>
+          <div className="seg" style={{ marginBottom: 0 }}>
             {LAB_FILTERS.map((f) => (
-              <button key={f.key} className={'itab' + (filter === f.key ? ' active' : '')} onClick={() => setFilter(f.key)}>
+              <button key={f.key} className={(filter === f.key ? 'on' : '')} onClick={() => setFilter(f.key)}>
                 {f.label}
               </button>
             ))}

@@ -67,40 +67,50 @@ export default function PaymentModal({ open, onClose, patient, initialTab = 'dis
 
   return (
     <Modal open onClose={onClose} wide>
-      <ModalHeader title={translate('Dispensing & payment') + ' — ' + (ticket ? ticket + ' ' : '') + patient.name} onClose={onClose} />
-      {err && <div className="warn-banner danger show" style={{ margin: 12 }}>{err}</div>}
-      {inv === undefined && !err ? (
-        <p className="ai-soft" style={{ padding: 16 }}>Loading…</p>
-      ) : (
-        <>
-          <div className="pay-status-line">
-            <span className={'badge ' + (paid ? 'ok' : 'warn')}>{translate(paid ? 'Paid' : 'Awaiting payment')}</span>
-            <span className={'badge ' + (waiting.length ? 'warn' : 'ok')}>{waiting.length ? waiting.length + ' ' + translate('drugs to dispense') : translate('Dispensing done')}</span>
+      <ModalHeader title={translate('Dispensing & payment') + ' · ' + (ticket ? ticket + ' ' : '') + patient.name} onClose={onClose} />
+      <div className="modal-b">
+        {err && (
+          <div className="banner d" style={{ marginBottom: 12 }}>
+            <Icon name="triangle-alert" />
+            <div className="txt">{err}</div>
           </div>
-          <div className="itabs">
-            <button className={'itab' + (tab === 'dispense' ? ' active' : '')} onClick={() => setTab('dispense')}>
-              <Icon name="box" /> <span>Dispensing</span> {waiting.length > 0 && <span className="itab-cnt">{waiting.length}</span>}
-            </button>
-            <button className={'itab' + (tab === 'pay' ? ' active' : '')} onClick={() => setTab('pay')}>
-              <Icon name="banknote" /> <span>Invoice &amp; payment</span>
-            </button>
-          </div>
-
-          {/* Hai tab luôn được dựng, chỉ ẩn tab không chọn: đổi tab không mất phần đang nhập dở (phí khám, dịch vụ, lý do bỏ qua…). */}
-          <DispenseTab active={tab === 'dispense'} visitId={visitId} items={items} waiting={waiting} paid={paid} rx={rx} patient={patient} ticket={ticket} user={user} act={act} />
-
-          {tab === 'pay' && !inv && <p className="ai-soft" style={{ padding: 16 }}>No invoice for this visit.</p>}
-          {inv && (
-            <div className={'ipanel' + (tab === 'pay' ? ' active' : '')}>
-              <div className="pay-cols">
-                <InvoiceItems visitId={visitId} inv={inv} editable={editable} cat={cat} orders={orders} act={act} onCancelLine={setCancelLine} />
-
-                <PaymentSummary visitId={visitId} inv={inv} paid={paid} editable={editable} items={items} patient={patient} user={user} act={act} onClose={onClose} />
-              </div>
+        )}
+        {inv === undefined && !err ? (
+          <p className="muted small">{translate('Loading…')}</p>
+        ) : (
+          <>
+            <div className="utabs" style={{ margin: '-18px -20px 0' }}>
+              <button className={tab === 'dispense' ? 'on' : ''} onClick={() => setTab('dispense')}>
+                {translate('Dispensing')}
+                {waiting.length > 0 && <span className="badge b-warning" style={{ marginLeft: 8 }}>{waiting.length}</span>}
+              </button>
+              <button className={tab === 'pay' ? 'on' : ''} onClick={() => setTab('pay')}>
+                {translate('Invoice & payment')}
+                {!paid && inv && <span className="badge b-warning" style={{ marginLeft: 8 }}>{translate('Awaiting payment')}</span>}
+              </button>
             </div>
-          )}
-        </>
-      )}
+
+            <div style={{ paddingTop: 14 }}>
+              {/* Hai tab luôn được dựng, chỉ ẩn tab không chọn: đổi tab không mất phần đang nhập dở (phí khám, dịch vụ, lý do bỏ qua…). */}
+              <DispenseTab active={tab === 'dispense'} visitId={visitId} items={items} waiting={waiting} paid={paid} rx={rx} patient={patient} ticket={ticket} user={user} act={act} />
+
+              {tab === 'pay' && !inv && <p className="muted small">{translate('No invoice for this visit.')}</p>}
+              {inv && (
+                <div className={'panel' + (tab === 'pay' ? ' on' : '')}>
+                  <InvoiceItems visitId={visitId} inv={inv} editable={editable} cat={cat} orders={orders} act={act} onCancelLine={setCancelLine} />
+                  <PaymentSummary visitId={visitId} inv={inv} paid={paid} editable={editable} items={items} patient={patient} user={user} act={act} onClose={onClose} />
+                </div>
+              )}
+            </div>
+          </>
+        )}
+      </div>
+      <div className="modal-f">
+        <span className="sp" />
+        <button className="btn btn-outline" onClick={onClose}>
+          {translate('Close')}
+        </button>
+      </div>
       {cancelLine && (
         <CancelOrderItemModal
           item={cancelLine}

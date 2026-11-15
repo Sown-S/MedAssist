@@ -171,13 +171,13 @@ describe('Luồng chính trên giao diện', () => {
 describe('Cấp phát & thu tiền (PaymentModal)', () => {
   it('hai tab dựng được; đổi tab không mất phần đang nhập dở', async () => {
     renderPage(<PaymentModal open onClose={() => {}} patient={{ id: 'v-pay', name: 'Lê Văn Cường', ticket: 7 }} />, { user: DESK, path: '/reception' })
-    expect(await screen.findByText('Paracetamol 500mg', { selector: '.disp-table b' })).toBeTruthy()
+    expect(await screen.findByText('Paracetamol 500mg', { selector: '.panel.on b' })).toBeTruthy()
     expect(screen.getByText('Dispensed', { selector: 'button, button *' })).toBeTruthy()
     fireEvent.click(screen.getByText('Invoice & payment'))
     expect(screen.getByText('Collect payment')).toBeTruthy()
     expect(screen.getByText('HD-PAY', { exact: false })).toBeTruthy()
     // Phí khám lấy từ hoá đơn; gõ dở một dịch vụ ngoài danh mục rồi đổi tab qua lại.
-    expect(document.querySelector('.svc-fee input').value).toBe('30000')
+    expect(screen.getByLabelText('Consultation fee').value).toBe('30000')
     const name = screen.getByPlaceholderText('Other service, e.g. ultrasound at partner clinic')
     fireEvent.change(name, { target: { value: 'Siêu âm' } })
     fireEvent.click(screen.getByText('Dispensing'))

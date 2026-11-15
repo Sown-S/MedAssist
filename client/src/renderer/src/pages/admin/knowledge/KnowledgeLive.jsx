@@ -128,11 +128,11 @@ export default function KnowledgeLive({ reviewOnly = false }) {
       </MiniStats>
 
       <div className="card">
-        <div className="itabs ai-tabs">
+        <div className="utabs">
           {tabs.map((t) => (
             <button
               key={t.key}
-              className={'itab' + (tab === t.key ? ' active' : '')}
+              className={(tab === t.key ? 'on' : '')}
               onClick={() => {
                 setTab(t.key)
                 setAskRelease(0)

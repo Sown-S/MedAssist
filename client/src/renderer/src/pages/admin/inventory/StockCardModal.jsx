@@ -18,12 +18,12 @@ export default function StockCardModal({ drug, moves, onClose }) {
       <ModalHeader title={translate('Stock card') + ' · ' + drug.name} onClose={onClose} />
       <div className="modal-b">
         <div className="ai-toolbar">
-          <div className="ai-seg">
-            <button className={type === 'all' ? 'active' : ''} onClick={() => setType('all')}>
+          <div className="seg">
+            <button className={type === 'all' ? 'on' : ''} onClick={() => setType('all')}>
               All
             </button>
             {Object.entries(MOVE_TYPES).map(([k, v]) => (
-              <button key={k} className={type === k ? 'active' : ''} onClick={() => setType(k)}>
+              <button key={k} className={type === k ? 'on' : ''} onClick={() => setType(k)}>
                 {v}
               </button>
             ))}

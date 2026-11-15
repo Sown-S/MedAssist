@@ -1529,7 +1529,6 @@ export const VI = {
   'Skip': 'Bỏ qua',
   'Dispense all': 'Cấp hết',
   'drugs to dispense': 'thuốc chờ cấp',
-  'Dispensing done': 'Đã cấp phát xong',
   'Reason (e.g. patient declined, out of stock)': 'Lý do (VD bệnh nhân không lấy, hết hàng)',
   'Stock was already deducted (FEFO) when the doctor confirmed the prescription. “Dispensed” does not deduct again; “Skip” returns the stock to the same batches and re-issues the invoice.': 'Kho đã được trừ (FEFO) khi bác sĩ chốt đơn. “Đã cấp” không trừ lần nữa; “Bỏ qua” hoàn kho về đúng lô và lập lại hoá đơn.',
   'No medication to dispense for this visit.': 'Lượt khám này không có thuốc cần cấp.',

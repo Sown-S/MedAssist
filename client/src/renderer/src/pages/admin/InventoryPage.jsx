@@ -26,11 +26,11 @@ export default function InventoryPage({ onNavigate }) {
       </div>
 
       <div className="card">
-        <div className="itabs ai-tabs">
-          <button className={'itab' + (tab === 'stock' ? ' active' : '')} onClick={() => setTab('stock')}>
+        <div className="utabs">
+          <button className={(tab === 'stock' ? 'on' : '')} onClick={() => setTab('stock')}>
             Stock by batch
           </button>
-          <button className={'itab' + (tab === 'moves' ? ' active' : '')} onClick={() => setTab('moves')}>
+          <button className={(tab === 'moves' ? 'on' : '')} onClick={() => setTab('moves')}>
             Stock movements
           </button>
         </div>

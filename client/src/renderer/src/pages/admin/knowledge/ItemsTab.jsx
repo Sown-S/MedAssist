@@ -62,9 +62,9 @@ export default function ItemsTab({ data, names, canEdit, openRelease, onChanged,
       )}
 
       <div className="ai-toolbar">
-        <div className="ai-seg">
+        <div className="seg">
           {KINDS.map((k) => (
-            <button key={k} className={kind === k ? 'active' : ''} onClick={() => setKind(k)}>
+            <button key={k} className={kind === k ? 'on' : ''} onClick={() => setKind(k)}>
               <span>{KIND_META[k].label}</span> <span className="ai-count">{counts[k]}</span>
             </button>
           ))}
