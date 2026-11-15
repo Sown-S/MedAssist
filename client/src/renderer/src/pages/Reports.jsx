@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { LoadingBlock, ErrorBlock } from '../components/DataState'
-import StatCard from '../components/StatCard'
+import { Kpi } from '../components/StatCard'
 import LineChart from '../components/LineChart'
 import { MiniStat, MiniStats } from '../components/MiniStat'
 import Icon from '../components/Icon'
@@ -15,7 +15,7 @@ function HBar({ label, value, of, text, tone = '' }) {
     <div>
       <div className="l">
         <span>{translate(label)}</span>
-        <b>{text ?? pct + '%'}</b>
+        <b className="num">{text ?? pct + '%'}</b>
       </div>
       <div className={'hbar ' + tone}>
         <i style={{ width: pct + '%' }} />
@@ -42,6 +42,7 @@ export default function Reports() {
   const decided = d ? d.accepted_top + d.chose_other + d.no_suggestion : 0
   const sub = translate(PERIOD_SUB[period])
 
+  const when = sub + ' · ' + (range[0] === range[1] ? dmy(range[0]) : dmy(range[0]) + ' → ' + dmy(range[1]))
   return (
     <div className="content view">
       <div className="pg-h">
@@ -49,12 +50,16 @@ export default function Reports() {
           <h2>Reports &amp; Statistics</h2>
           <p>Revenue, visits and AI module performance</p>
         </div>
-        <div className="seg" role="tablist" style={{ marginBottom: 0 }}>
-          {PERIODS.map((p) => (
-            <button key={p.key} role="tab" aria-selected={period === p.key} className={(period === p.key ? 'on' : '')} onClick={() => setPeriod(p.key)}>
-              {p.label}
-            </button>
-          ))}
+        <div className="act">
+          <div className="period">
+            <div className="seg" role="tablist">
+              {PERIODS.map((p) => (
+                <button key={p.key} role="tab" aria-selected={period === p.key} className={period === p.key ? 'on' : ''} onClick={() => setPeriod(p.key)}>
+                  {p.label}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
 
@@ -64,44 +69,46 @@ export default function Reports() {
       {data && !loading && (
         <>
           <div className="kpis">
-            <StatCard icon="users" label="Total visits" value={data.visits.total} />
-            <StatCard icon="wallet" label="Revenue" value={vnd(rev.total)} />
-            <StatCard icon="siren" tone="r" label="Red-flag referrals" value={data.visits.red_flags} alert={data.visits.red_flags > 0} />
-            <StatCard icon="sparkles" label="AI–doctor diagnosis match" value={percent(d.acceptance_rate)} />
+            <Kpi c="p" icon="users" label="Total visits" value={data.visits.total} go={when} />
+            <Kpi c="n" icon="wallet" label="Revenue" value={vnd(rev.total)} go={when} />
+            <Kpi c="d" icon="ambulance" label="Red-flag referrals" value={data.visits.red_flags} go={when} alert={data.visits.red_flags > 0} />
+            <Kpi c="p" icon="brain" label="AI–doctor diagnosis match" value={percent(d.acceptance_rate)} go={when} />
           </div>
-          <p className="ai-soft" style={{ margin: '-12px 0 18px' }}>
-            {sub} · {range[0] === range[1] ? dmy(range[0]) : dmy(range[0]) + ' → ' + dmy(range[1])}
-          </p>
 
           <div className="grid-2e">
             <div className="card">
-              <div className="card-title">
-                Revenue breakdown <span className="cnt">{rev.invoices_paid} {translate('paid invoices')}</span>
+              <div className="card-h">
+                <h3>Revenue breakdown</h3>
+                <span className="plain">
+                  {rev.invoices_paid} {translate('paid invoices')}
+                </span>
               </div>
-              <div className="hbars">
+              <div className="card-b bars">
                 <HBar label="Consultation" value={Number(rev.consultation)} of={Number(rev.total)} text={vnd(rev.consultation)} />
                 <HBar label="Paraclinical" value={Number(rev.paraclinical)} of={Number(rev.total)} text={vnd(rev.paraclinical)} />
                 <HBar label="Medication" value={Number(rev.drug)} of={Number(rev.total)} text={vnd(rev.drug)} tone="w" />
               </div>
             </div>
             <div className="card">
-              <div className="card-title">
-                Revenue by day {period === 'today' && <span className="cnt">{translate('Last 7 days')}</span>}
+              <div className="card-h">
+                <h3>Revenue by day</h3>
+                {period === 'today' && <span className="plain">{translate('Last 7 days')}</span>}
               </div>
-              {byDay ? (
-                <LineChart points={fillDays(byDay, chartRange).map((x) => ({ label: x.day, value: x.amt }))} fmt={vnd} />
-              ) : (
-                <LoadingBlock text="Loading report..." />
-              )}
+              <div className="card-b">
+                {byDay ? <LineChart points={fillDays(byDay, chartRange).map((x) => ({ label: x.day, value: x.amt }))} fmt={vnd} height={220} /> : <LoadingBlock text="Loading report..." />}
+              </div>
             </div>
           </div>
 
           <div className="card">
-            <div className="card-title">AI module</div>
-            <div className="grid-2e" style={{ marginBottom: 0 }}>
+            <div className="card-h">
+              <h3>AI module</h3>
+            </div>
+            <div className="card-b">
+            <div className="grid-2e">
               <div>
                 <div className="sec-t">Assessments</div>
-                <div className="hbars">
+                <div className="bars">
                   <HBar label="Full (rules + model)" value={a.full} of={a.total} />
                   <HBar label="Rule-only (model unavailable)" value={a.rule_only} of={a.total} tone="w" />
                   <HBar label="Failed" value={a.failed} of={a.total} tone="d" />
@@ -110,7 +117,7 @@ export default function Reports() {
               </div>
               <div>
                 <div className="sec-t">Doctors vs suggestions</div>
-                <div className="hbars">
+                <div className="bars">
                   <HBar label="Accepted top suggestion" value={d.accepted_top} of={decided} />
                   <HBar label="Chose another diagnosis" value={d.chose_other} of={decided} tone="n" />
                   <HBar label="No suggestion shown" value={d.no_suggestion} of={decided} tone="n" />
@@ -123,10 +130,10 @@ export default function Reports() {
                 <MiniStat icon="fileText" tone="n" value={ai.extractions.completed + ' / ' + ai.extractions.total} label="Free-text extractions completed" />
               </MiniStats>
             </div>
-            <p className="note-line">
-              <Icon name="alert" />
-              <span>Precision, recall and F1 are measured on the frozen test set, not on clinic data.</span>
+            <p className="muted small" style={{ marginTop: 12 }}>
+              <Icon name="info" /> <span>Precision, recall and F1 are measured on the frozen test set, not on clinic data.</span>
             </p>
+            </div>
           </div>
         </>
       )}
