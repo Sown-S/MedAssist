@@ -68,12 +68,12 @@ export function RowForm({ catalogKey, row, all, cats, inv, onClose }) {
             <Icon name="help" /> <span>A code added here is marked “Custom” so it can be checked against the official list later.</span>
           </p>
         )}
-        <div className="ai-grid3">
+        <div className="fg fg-3">
           {s.fields
             // Server ghi giá mới ngay khi lưu (không có ngày hiệu lực riêng).
             .filter((fd) => !fd.onlyWhenPriceChanges)
             .map((fd) => (
-              <div className="field" key={fd.key} style={fd.wide ? { gridColumn: '1 / -1' } : undefined}>
+              <div className={'field' + (fd.wide ? ' full' : '')} key={fd.key}>
                 <label>
                   {fd.label} {fd.required && <span className="req">*</span>}
                 </label>

@@ -33,10 +33,7 @@ export function StockTab({ inv, user }) {
   const [receive, setReceive] = useState(null)
   const [card, setCard] = useState(null)
 
-  const rows = useMemo(
-    () => inv.drugs.map((d) => ({ d, s: stockOf(d, inv.batches) })).filter(({ d, s }) => d.active || s.usable + s.expired > 0),
-    [inv]
-  )
+  const rows = useMemo(() => inv.drugs.map((d) => ({ d, s: stockOf(d, inv.batches) })).filter(({ d, s }) => d.active || s.usable + s.expired > 0), [inv])
   const term = q.trim().toLowerCase()
   const filtered = rows.filter(({ d, s }) => {
     if (term && ![d.name, d.ingredient, d.atc].some((x) => (x ?? '').toLowerCase().includes(term))) return false
@@ -94,7 +91,14 @@ export function StockTab({ inv, user }) {
             onClick={() => reset(setWin)(w)}
           />
         ))}
-        <MiniStat icon="trash" tone={totals.expiredQty ? 'd' : 'n'} value={totals.expiredQty} label="Expired batches to write off" alert={totals.expiredQty > 0} onClick={() => reset(setStatus)('expired')}>
+        <MiniStat
+          icon="trash"
+          tone={totals.expiredQty ? 'd' : 'n'}
+          value={totals.expiredQty}
+          label="Expired batches to write off"
+          alert={totals.expiredQty > 0}
+          onClick={() => reset(setStatus)('expired')}
+        >
           {totals.expiredQty > 0 && <span className="is-sub num">{fmtMoney(totals.expiredValue)}</span>}
         </MiniStat>
       </MiniStats>
@@ -140,108 +144,106 @@ export function StockTab({ inv, user }) {
         <Empty title="No drugs match" text="Try another keyword or filter." />
       ) : (
         <div className="tbl-wrap">
-          <div className="tbl-wrap">
-            <table className="inv-table">
-              <thead>
-                <tr>
-                  <SortTh k="name" sort={sort} onSort={setSort}>
-                    Drug
-                  </SortTh>
-                  <th>Unit</th>
-                  <SortTh k="usable" sort={sort} onSort={setSort} className="num">
-                    On hand
-                  </SortTh>
-                  <th className="r num">Threshold</th>
-                  <SortTh k="cover" sort={sort} onSort={setSort} className="num">
-                    Days of cover
-                  </SortTh>
-                  <SortTh k="reorder" sort={sort} onSort={setSort} className="num">
-                    Suggested reorder
-                  </SortTh>
-                  <SortTh k="expiry" sort={sort} onSort={setSort}>
-                    Nearest usable expiry
-                  </SortTh>
-                  <SortTh k="value" sort={sort} onSort={setSort} className="num">
-                    Stock value
-                  </SortTh>
-                  <th>Status</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {pg.rows.map(({ d, s }) => (
-                  <Fragment key={d.id}>
-                    <tr className={'row-click' + (open === d.id ? ' inv-open' : '') + (!d.active ? ' ai-dim' : '')} onClick={() => setOpen(open === d.id ? null : d.id)}>
-                      <td>
-                        <div className="inv-drug">
-                          <Icon name={open === d.id ? 'chevronDown' : 'chevronRight'} />
-                          <div>
-                            <b>{d.name}</b>
-                            {d.group === 'controlled' && <span className="essential-chip inv-ctrl">Controlled</span>}
-                            {d.essential && <span className="essential-chip">Essential</span>}
-                            <div className="muted small">
-                              {d.ingredient}
-                              {d.atc && (
-                                <>
-                                  {' · '}
-                                  <span className="num">{d.atc}</span>
-                                </>
-                              )}
-                            </div>
+          <table className="inv-table">
+            <thead>
+              <tr>
+                <SortTh k="name" sort={sort} onSort={setSort}>
+                  Drug
+                </SortTh>
+                <th>Unit</th>
+                <SortTh k="usable" sort={sort} onSort={setSort} className="num">
+                  On hand
+                </SortTh>
+                <th className="r num">Threshold</th>
+                <SortTh k="cover" sort={sort} onSort={setSort} className="num">
+                  Days of cover
+                </SortTh>
+                <SortTh k="reorder" sort={sort} onSort={setSort} className="num">
+                  Suggested reorder
+                </SortTh>
+                <SortTh k="expiry" sort={sort} onSort={setSort}>
+                  Nearest usable expiry
+                </SortTh>
+                <SortTh k="value" sort={sort} onSort={setSort} className="num">
+                  Stock value
+                </SortTh>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {pg.rows.map(({ d, s }) => (
+                <Fragment key={d.id}>
+                  <tr className={'row-click' + (open === d.id ? ' inv-open' : '') + (!d.active ? ' ai-dim' : '')} onClick={() => setOpen(open === d.id ? null : d.id)}>
+                    <td>
+                      <div className="inv-drug">
+                        <Icon name={open === d.id ? 'chevronDown' : 'chevronRight'} />
+                        <div>
+                          <b>{d.name}</b>
+                          {d.group === 'controlled' && <span className="essential-chip inv-ctrl">Controlled</span>}
+                          {d.essential && <span className="essential-chip">Essential</span>}
+                          <div className="muted small">
+                            {d.ingredient}
+                            {d.atc && (
+                              <>
+                                {' · '}
+                                <span className="num">{d.atc}</span>
+                              </>
+                            )}
                           </div>
                         </div>
-                      </td>
-                      <td>{unitLabel(d.unit)}</td>
-                      <td className="r num">
-                        <b className="num">{fmtNum(s.usable)}</b>
-                        {s.expired > 0 && (
-                          <div className="small inv-minus">
-                            + <span className="num">{s.expired}</span> <span>expired</span>
-                          </div>
-                        )}
-                      </td>
-                      <td className="r num">{d.threshold}</td>
-                      <td className="r num">
-                        {s.daysCover == null ? (
-                          <span className="muted">—</span>
-                        ) : (
-                          <span className={s.daysCover < 14 ? 'inv-minus' : ''}>
-                            <span className="num">{s.daysCover}</span> <span className="small">days</span>
-                          </span>
-                        )}
-                      </td>
-                      <td className="r num">{s.reorder ? <b className="num">{fmtNum(s.reorder)}</b> : <span className="muted">—</span>}</td>
-                      <td>
-                        <ExpiryCell batch={s.nextExpiry} />
-                      </td>
-                      <td className="r num">{fmtMoney(s.value)}</td>
-                      <td>
-                        <StatusBadges statuses={s.statuses} />
-                      </td>
-                      <td className="acts-td" onClick={(e) => e.stopPropagation()}>
-                        <button className="btn btn-ghost btn-sm" title="Receive stock" disabled={!d.active} onClick={() => setReceive(d)}>
-                          <Icon name="download" />
-                        </button>
-                        <button className="btn btn-ghost btn-sm" title="Stock card" onClick={() => setCard(d)}>
-                          <Icon name="clipboard" />
-                        </button>
-                        <button className="btn btn-ghost btn-sm" title="Edit drug information" onClick={() => setEdit(d)}>
-                          <Icon name="pencil" />
-                        </button>
+                      </div>
+                    </td>
+                    <td>{unitLabel(d.unit)}</td>
+                    <td className="r num">
+                      <b className="num">{fmtNum(s.usable)}</b>
+                      {s.expired > 0 && (
+                        <div className="small inv-minus">
+                          + <span className="num">{s.expired}</span> <span>expired</span>
+                        </div>
+                      )}
+                    </td>
+                    <td className="r num">{d.threshold}</td>
+                    <td className="r num">
+                      {s.daysCover == null ? (
+                        <span className="muted">—</span>
+                      ) : (
+                        <span className={s.daysCover < 14 ? 'inv-minus' : ''}>
+                          <span className="num">{s.daysCover}</span> <span className="small">days</span>
+                        </span>
+                      )}
+                    </td>
+                    <td className="r num">{s.reorder ? <b className="num">{fmtNum(s.reorder)}</b> : <span className="muted">—</span>}</td>
+                    <td>
+                      <ExpiryCell batch={s.nextExpiry} />
+                    </td>
+                    <td className="r num">{fmtMoney(s.value)}</td>
+                    <td>
+                      <StatusBadges statuses={s.statuses} />
+                    </td>
+                    <td className="acts-td" onClick={(e) => e.stopPropagation()}>
+                      <button className="btn btn-ghost btn-sm" title="Receive stock" disabled={!d.active} onClick={() => setReceive(d)}>
+                        <Icon name="download" />
+                      </button>
+                      <button className="btn btn-ghost btn-sm" title="Stock card" onClick={() => setCard(d)}>
+                        <Icon name="clipboard" />
+                      </button>
+                      <button className="btn btn-ghost btn-sm" title="Edit drug information" onClick={() => setEdit(d)}>
+                        <Icon name="pencil" />
+                      </button>
+                    </td>
+                  </tr>
+                  {open === d.id && (
+                    <tr className="inv-batches">
+                      <td colSpan={10}>
+                        <BatchTable drug={d} stock={s} onReceive={() => setReceive(d)} />
                       </td>
                     </tr>
-                    {open === d.id && (
-                      <tr className="inv-batches">
-                        <td colSpan={10}>
-                          <BatchTable drug={d} stock={s} onReceive={() => setReceive(d)} />
-                        </td>
-                      </tr>
-                    )}
-                  </Fragment>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                  )}
+                </Fragment>
+              ))}
+            </tbody>
+          </table>
           <Pager {...pg} onPage={setPage} />
         </div>
       )}
@@ -249,8 +251,8 @@ export function StockTab({ inv, user }) {
       <p className="muted small foot-note">
         <Icon name="repeat" />{' '}
         <span>
-          Stock is issued on a FEFO basis (first expired, first out). Expired batches are excluded from “On hand” and can no longer be prescribed or sold.
-          Suggested reorder = threshold + 30 days of consumption − usable stock.
+          Stock is issued on a FEFO basis (first expired, first out). Expired batches are excluded from “On hand” and can no longer be prescribed or sold. Suggested reorder = threshold + 30 days of
+          consumption − usable stock.
         </span>
       </p>
 

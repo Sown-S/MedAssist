@@ -122,69 +122,66 @@ export default function DrugCatalogPage({ params, onNavigate }) {
           <Empty title="No drugs match" text="Try another keyword or filter." />
         ) : (
           <div className="tbl-wrap">
-            <div className="tbl-wrap">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Code</th>
-                    <SortTh k="name" sort={sort} onSort={setSort}>
-                      Name
-                    </SortTh>
-                    <th>Active ingredient</th>
-                    <SortTh k="atc" sort={sort} onSort={setSort}>
-                      ATC code
-                    </SortTh>
-                    <th>Unit</th>
-                    <th className="r num">Purchase price</th>
-                    <SortTh k="price" sort={sort} onSort={setSort} className="num">
-                      Selling price
-                    </SortTh>
-                    <th>Flags</th>
-                    <SortTh k="stock" sort={sort} onSort={setSort} className="num">
-                      On hand
-                    </SortTh>
-                    <th>Status</th>
-                    <th>Actions</th>
+            <table>
+              <thead>
+                <tr>
+                  <th>Code</th>
+                  <SortTh k="name" sort={sort} onSort={setSort}>
+                    Name
+                  </SortTh>
+                  <th>Active ingredient</th>
+                  <SortTh k="atc" sort={sort} onSort={setSort}>
+                    ATC code
+                  </SortTh>
+                  <th>Unit</th>
+                  <th className="r num">Purchase price</th>
+                  <SortTh k="price" sort={sort} onSort={setSort} className="num">
+                    Selling price
+                  </SortTh>
+                  <th>Flags</th>
+                  <SortTh k="stock" sort={sort} onSort={setSort} className="num">
+                    On hand
+                  </SortTh>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {pg.rows.map(({ d, s }) => (
+                  <tr key={d.id} className={'row-click' + (!d.active ? ' ai-dim' : '')} onClick={() => setEdit(d)}>
+                    <td className="num">{d.id}</td>
+                    <td>
+                      <b>{d.name}</b>
+                      {d.kind === 'supply' && <div className="muted small">Medical supply</div>}
+                    </td>
+                    <td>{d.ingredient || <span className="muted">—</span>}</td>
+                    <td className="num">{d.atc || <span className="muted">—</span>}</td>
+                    <td>{unitLabel(d.unit)}</td>
+                    <td className="r num">{fmtMoney(d.cost)}</td>
+                    <td className="r num">{fmtMoney(d.price)}</td>
+                    <td>
+                      {d.essential && <span className="essential-chip">Essential</span>}
+                      {d.group === 'controlled' && <span className="essential-chip inv-ctrl">Controlled</span>}
+                    </td>
+                    <td className="r num">{fmtNum(s.usable)}</td>
+                    <td>{d.active ? <span className="badge b-success">In use</span> : <span className="badge b-neutral">Discontinued</span>}</td>
+                    <td className="acts-td" onClick={(e) => e.stopPropagation()}>
+                      <button className="btn btn-ghost btn-sm" title="Edit" onClick={() => setEdit(d)}>
+                        <Icon name="pencil" />
+                      </button>
+                      <button className="btn btn-ghost btn-sm" title={d.active ? 'Discontinue' : 'Re-activate'} onClick={() => setToggle({ d, s })}>
+                        <Icon name={d.active ? 'ban' : 'repeat'} />
+                      </button>
+                    </td>
                   </tr>
-                </thead>
-                <tbody>
-                  {pg.rows.map(({ d, s }) => (
-                    <tr key={d.id} className={'row-click' + (!d.active ? ' ai-dim' : '')} onClick={() => setEdit(d)}>
-                      <td className="num">{d.id}</td>
-                      <td>
-                        <b>{d.name}</b>
-                        {d.kind === 'supply' && <div className="muted small">Medical supply</div>}
-                      </td>
-                      <td>{d.ingredient || <span className="muted">—</span>}</td>
-                      <td className="num">{d.atc || <span className="muted">—</span>}</td>
-                      <td>{unitLabel(d.unit)}</td>
-                      <td className="r num">{fmtMoney(d.cost)}</td>
-                      <td className="r num">{fmtMoney(d.price)}</td>
-                      <td>
-                        {d.essential && <span className="essential-chip">Essential</span>}
-                        {d.group === 'controlled' && <span className="essential-chip inv-ctrl">Controlled</span>}
-                      </td>
-                      <td className="r num">{fmtNum(s.usable)}</td>
-                      <td>{d.active ? <span className="badge b-success">In use</span> : <span className="badge b-neutral">Discontinued</span>}</td>
-                      <td className="acts-td" onClick={(e) => e.stopPropagation()}>
-                        <button className="btn btn-ghost btn-sm" title="Edit" onClick={() => setEdit(d)}>
-                          <Icon name="pencil" />
-                        </button>
-                        <button className="btn btn-ghost btn-sm" title={d.active ? 'Discontinue' : 'Re-activate'} onClick={() => setToggle({ d, s })}>
-                          <Icon name={d.active ? 'ban' : 'repeat'} />
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                ))}
+              </tbody>
+            </table>
             <Pager {...pg} onPage={setPage} />
           </div>
         )}
         <p className="muted small foot-note">
-          <Icon name="help" />{' '}
-          <span>Selling prices here fill invoices automatically; ATC codes mark antibiotics (J01) as prescription-only; the essential flag drives the checkout warning.</span>
+          <Icon name="help" /> <span>Selling prices here fill invoices automatically; ATC codes mark antibiotics (J01) as prescription-only; the essential flag drives the checkout warning.</span>
         </p>
       </div>
 

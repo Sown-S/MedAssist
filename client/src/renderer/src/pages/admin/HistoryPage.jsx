@@ -130,44 +130,42 @@ export default function HistoryPage() {
           {!data && !err && <Skeleton rows={6} cols={5} />}
           {data && (
             <div className="tbl-wrap">
-              <div className="tbl-wrap">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Time</th>
-                      <th>Account</th>
-                      <th>Action</th>
-                      <th>Object</th>
-                      <th>Fields changed</th>
-                      <th>IP</th>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Time</th>
+                    <th>Account</th>
+                    <th>Action</th>
+                    <th>Object</th>
+                    <th>Fields changed</th>
+                    <th>IP</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.items.map((x) => (
+                    <tr key={x.log_id} onClick={() => setOpen(open === x.log_id ? null : x.log_id)} style={{ cursor: 'pointer' }}>
+                      <td className="num">{when(x.created_at)}</td>
+                      <td>{x.username ?? (x.attempted_username ? <span className="sp-warn">{x.attempted_username}</span> : <span className="muted">—</span>)}</td>
+                      <td>
+                        {['low', 'warn'].includes(TONE[x.action_type]) ? (
+                          <span className={'badge ' + TONE[x.action_type]}>{translate(ACTION_LABEL[x.action_type] ?? x.action_type)}</span>
+                        ) : (
+                          translate(ACTION_LABEL[x.action_type] ?? x.action_type)
+                        )}
+                      </td>
+                      <td className="num">
+                        {x.target_entity}
+                        {open === x.log_id && x.entity_id && <div className="muted">{x.entity_id}</div>}
+                      </td>
+                      <td className="muted">
+                        {changes(x) || <span className="muted">—</span>}
+                        {open === x.log_id && (x.old_values || x.new_values) && <pre className="kb-json">{JSON.stringify({ old: x.old_values, new: x.new_values }, null, 2)}</pre>}
+                      </td>
+                      <td className="num">{x.ip_address ?? '—'}</td>
                     </tr>
-                  </thead>
-                  <tbody>
-                    {data.items.map((x) => (
-                      <tr key={x.log_id} onClick={() => setOpen(open === x.log_id ? null : x.log_id)} style={{ cursor: 'pointer' }}>
-                        <td className="num">{when(x.created_at)}</td>
-                        <td>{x.username ?? (x.attempted_username ? <span className="sp-warn">{x.attempted_username}</span> : <span className="muted">—</span>)}</td>
-                        <td>
-                          {['low', 'warn'].includes(TONE[x.action_type]) ? (
-                            <span className={'badge ' + TONE[x.action_type]}>{translate(ACTION_LABEL[x.action_type] ?? x.action_type)}</span>
-                          ) : (
-                            translate(ACTION_LABEL[x.action_type] ?? x.action_type)
-                          )}
-                        </td>
-                        <td className="num">
-                          {x.target_entity}
-                          {open === x.log_id && x.entity_id && <div className="muted">{x.entity_id}</div>}
-                        </td>
-                        <td className="muted">
-                          {changes(x) || <span className="muted">—</span>}
-                          {open === x.log_id && (x.old_values || x.new_values) && <pre className="kb-json">{JSON.stringify({ old: x.old_values, new: x.new_values }, null, 2)}</pre>}
-                        </td>
-                        <td className="num">{x.ip_address ?? '—'}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                  ))}
+                </tbody>
+              </table>
               {!data.items.length && <p className="muted">No entries match.</p>}
             </div>
           )}

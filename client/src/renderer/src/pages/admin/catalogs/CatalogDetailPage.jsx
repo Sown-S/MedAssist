@@ -27,7 +27,7 @@ export default function CatalogDetailPage({ catalogKey, params, onNavigate }) {
   const [status, setStatus] = useState('active')
   const [sub, setSub] = useState('all')
   const [page, setPage] = useState(1)
-  const [edit, setEdit] = useState(params?.openId ? all.find((r) => r.id === params.openId) ?? null : null)
+  const [edit, setEdit] = useState(params?.openId ? (all.find((r) => r.id === params.openId) ?? null) : null)
   const [toggle, setToggle] = useState(null)
 
   const term = q.trim().toLowerCase()
@@ -39,7 +39,6 @@ export default function CatalogDetailPage({ catalogKey, params, onNavigate }) {
   const pg = paginate(list, page, 15)
   const lastUpdate = all.reduce((m, r) => (r.updatedAt > m ? r.updatedAt : m), '')
   const reset = (fn) => (v) => (fn(v), setPage(1))
-
 
   return (
     <div>
@@ -58,7 +57,6 @@ export default function CatalogDetailPage({ catalogKey, params, onNavigate }) {
           <span>Last updated</span> <span className="num">{fmtDateTime(lastUpdate)}</span>
         </div>
       </div>
-
 
       <div className="card">
         <div className="toolbar">
@@ -104,58 +102,55 @@ export default function CatalogDetailPage({ catalogKey, params, onNavigate }) {
           <Empty title="No records match" text="Try another keyword or filter, or import the list from a file." />
         ) : (
           <div className="tbl-wrap">
-            <div className="tbl-wrap">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Code</th>
-                    <th>Name</th>
-                    {columns.map((c) => (
-                      <th key={c.key} className={c.num ? 'num' : ''}>
-                        {c.label}
-                      </th>
-                    ))}
-                    <th>Status</th>
-                    <th>Updated</th>
-                    <th />
-                  </tr>
-                </thead>
-                <tbody>
-                  {pg.rows.map((r) => (
-                    <tr key={r.id} className={'row-click' + (r.active ? '' : ' ai-dim')} onClick={() => setEdit(r)}>
-                      <td className="num">{r.code}</td>
-                      <td>
-                        <b>{r.name}</b>
-                      </td>
-                      {columns.map((c) => (
-                        <td key={c.key} className={c.num ? 'num' : ''}>
-                          {c.render ? c.render(r, cats, inv, c.key) : r[c.key] || <span className="muted">—</span>}
-                        </td>
-                      ))}
-                      <td>{r.active ? <span className="badge b-success">In use</span> : <span className="badge b-neutral">Discontinued</span>}</td>
-                      <td className="small">
-                        <span className="num">{fmtDate(r.updatedAt)}</span>
-                        <div className="muted">{r.updatedBy}</div>
-                      </td>
-                      <td className="acts-td" onClick={(e) => e.stopPropagation()}>
-                        <button className="btn btn-ghost btn-sm" title="Edit" onClick={() => setEdit(r)}>
-                          <Icon name="pencil" />
-                        </button>
-                        <button className="btn btn-ghost btn-sm" title={r.active ? 'Discontinue' : 'Re-activate'} onClick={() => setToggle(r)}>
-                          <Icon name={r.active ? 'ban' : 'repeat'} />
-                        </button>
-                      </td>
-                    </tr>
+            <table>
+              <thead>
+                <tr>
+                  <th>Code</th>
+                  <th>Name</th>
+                  {columns.map((c) => (
+                    <th key={c.key} className={c.num ? 'num' : ''}>
+                      {c.label}
+                    </th>
                   ))}
-                </tbody>
-              </table>
-            </div>
+                  <th>Status</th>
+                  <th>Updated</th>
+                  <th />
+                </tr>
+              </thead>
+              <tbody>
+                {pg.rows.map((r) => (
+                  <tr key={r.id} className={'row-click' + (r.active ? '' : ' ai-dim')} onClick={() => setEdit(r)}>
+                    <td className="num">{r.code}</td>
+                    <td>
+                      <b>{r.name}</b>
+                    </td>
+                    {columns.map((c) => (
+                      <td key={c.key} className={c.num ? 'num' : ''}>
+                        {c.render ? c.render(r, cats, inv, c.key) : r[c.key] || <span className="muted">—</span>}
+                      </td>
+                    ))}
+                    <td>{r.active ? <span className="badge b-success">In use</span> : <span className="badge b-neutral">Discontinued</span>}</td>
+                    <td className="small">
+                      <span className="num">{fmtDate(r.updatedAt)}</span>
+                      <div className="muted">{r.updatedBy}</div>
+                    </td>
+                    <td className="acts-td" onClick={(e) => e.stopPropagation()}>
+                      <button className="btn btn-ghost btn-sm" title="Edit" onClick={() => setEdit(r)}>
+                        <Icon name="pencil" />
+                      </button>
+                      <button className="btn btn-ghost btn-sm" title={r.active ? 'Discontinue' : 'Re-activate'} onClick={() => setToggle(r)}>
+                        <Icon name={r.active ? 'ban' : 'repeat'} />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
             <Pager {...pg} onPage={setPage} />
           </div>
         )}
         <p className="muted small foot-note">
-          <Icon name="lock" />{' '}
-          <span>Records are never deleted — discontinued codes stay readable on old records and invoices. Every change is written to the activity history.</span>
+          <Icon name="lock" /> <span>Records are never deleted — discontinued codes stay readable on old records and invoices. Every change is written to the activity history.</span>
         </p>
       </div>
 
@@ -179,4 +174,3 @@ export default function CatalogDetailPage({ catalogKey, params, onNavigate }) {
 }
 
 export { optLabel }
-

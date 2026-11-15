@@ -10,9 +10,7 @@ export function MovesTab({ inv }) {
   const [page, setPage] = useState(1)
   const name = (id) => inv.drugs.find((d) => d.id === id)?.name ?? id
   const term = q.trim().toLowerCase()
-  const list = inv.moves.filter(
-    (m) => (type === 'all' || m.type === type) && (!term || [name(m.drugId), m.ref, m.lot, m.by].some((x) => (x ?? '').toLowerCase().includes(term)))
-  )
+  const list = inv.moves.filter((m) => (type === 'all' || m.type === type) && (!term || [name(m.drugId), m.ref, m.lot, m.by].some((x) => (x ?? '').toLowerCase().includes(term))))
   const pg = paginate(list, page, 15)
   return (
     <>
@@ -47,41 +45,39 @@ export function MovesTab({ inv }) {
         </div>
       </div>
       <div className="tbl-wrap">
-        <div className="tbl-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Time</th>
-                <th>Voucher no.</th>
-                <th>Drug</th>
-                <th>Type</th>
-                <th>Lot</th>
-                <th className="r num">Quantity</th>
-                <th className="r num">Balance</th>
-                <th>By</th>
+        <table>
+          <thead>
+            <tr>
+              <th>Time</th>
+              <th>Voucher no.</th>
+              <th>Drug</th>
+              <th>Type</th>
+              <th>Lot</th>
+              <th className="r num">Quantity</th>
+              <th className="r num">Balance</th>
+              <th>By</th>
+            </tr>
+          </thead>
+          <tbody>
+            {pg.rows.map((m) => (
+              <tr key={m.id}>
+                <td className="num">{fmtDateTime(m.at)}</td>
+                <td className="num">{m.ref}</td>
+                <td>{name(m.drugId)}</td>
+                <td>
+                  <span className={'badge ' + (m.type === 'in' ? 'ok' : m.type === 'out' ? 'info' : 'warn')}>{MOVE_TYPES[m.type]}</span>
+                </td>
+                <td className="num">{m.lot}</td>
+                <td className={'mono num ' + (m.qty > 0 ? 'inv-plus' : 'inv-minus')}>
+                  {m.qty > 0 ? '+' : ''}
+                  {m.qty}
+                </td>
+                <td className="num num">{m.balance}</td>
+                <td>{m.by}</td>
               </tr>
-            </thead>
-            <tbody>
-              {pg.rows.map((m) => (
-                <tr key={m.id}>
-                  <td className="num">{fmtDateTime(m.at)}</td>
-                  <td className="num">{m.ref}</td>
-                  <td>{name(m.drugId)}</td>
-                  <td>
-                    <span className={'badge ' + (m.type === 'in' ? 'ok' : m.type === 'out' ? 'info' : 'warn')}>{MOVE_TYPES[m.type]}</span>
-                  </td>
-                  <td className="num">{m.lot}</td>
-                  <td className={'mono num ' + (m.qty > 0 ? 'inv-plus' : 'inv-minus')}>
-                    {m.qty > 0 ? '+' : ''}
-                    {m.qty}
-                  </td>
-                  <td className="num num">{m.balance}</td>
-                  <td>{m.by}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+            ))}
+          </tbody>
+        </table>
         <Pager {...pg} onPage={setPage} />
       </div>
     </>

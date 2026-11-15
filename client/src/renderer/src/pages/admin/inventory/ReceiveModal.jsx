@@ -46,8 +46,8 @@ export default function ReceiveModal({ drug, drugs, onClose }) {
     <Modal open onClose={onClose}>
       <ModalHeader title="Receive stock" onClose={onClose} />
       <div className="modal-b">
-        <div className="ai-grid3">
-          <div className="field" style={{ gridColumn: 'span 3' }}>
+        <div className="fg">
+          <div className="field full">
             <label>Drug</label>
             <select className="input" value={f.drugId} onChange={(e) => set('drugId', e.target.value)} disabled={!!drug.id}>
               {drugs

@@ -174,17 +174,51 @@ export function printHeaderHtml(set = getSettings()) {
     '</div></div>'
   )
 }
+// Giấy in theo bản mẫu: chữ Be Vietnam Pro (lấy từ font đã nạp trong app), tiêu đề giữa trang, bảng viền mảnh,
+// đầu bảng nền xám nhạt, khối ký tên. Chỉ dùng đen / xám để in đơn sắc vẫn rõ.
 const PRINT_CSS =
-  'body{font-family:Arial,sans-serif;font-size:12px;color:#000;margin:24px}' +
-  'h1{font-size:18px;margin:0 0 4px}h2{font-size:13px;margin:16px 0 6px}' +
-  '.meta{margin:2px 0}table{width:100%;border-collapse:collapse;margin-top:8px}' +
-  'th,td{border:1px solid #444;padding:4px 6px;text-align:left}th{background:#eee}' +
-  '.num{text-align:right}.blank{min-width:70px}.sign{display:flex;justify-content:space-between;margin-top:40px}' +
-  '.sign div{text-align:center;width:30%}.sign i{display:block;font-size:11px;margin-top:50px}' +
-  '.ph{display:flex;gap:10px;align-items:center;border-bottom:1px solid #000;padding-bottom:6px;margin-bottom:12px;font-size:11px}' +
-  '.ph img{max-height:48px;max-width:90px}.ph b{font-size:13px;text-transform:uppercase}' +
-  '.pf{margin-top:18px;border-top:1px dashed #666;padding-top:6px;text-align:center;font-size:11px;font-style:italic}' +
-  '.thermal body,.thermal{margin:4px;font-size:11px}.thermal .ph{flex-direction:column;text-align:center}.thermal .sign{display:none}'
+  'body{font-family:"Be Vietnam Pro",Arial,sans-serif;font-size:12px;line-height:1.5;color:#1d2129;margin:0}' +
+  'h1{font-size:17px;font-weight:700;text-align:center;text-transform:uppercase;letter-spacing:.04em;margin:6px 0 2px}' +
+  'h1+.sub{text-align:center;color:#5b636e;margin:0 0 12px}' +
+  'h2{font-size:13px;font-weight:600;margin:16px 0 6px}' +
+  '.meta{margin:3px 0}.meta b{font-weight:600}' +
+  'h1+.meta{margin-top:12px}' +
+  'table{width:100%;border-collapse:collapse;margin:12px 0 8px;font-size:inherit}' +
+  'th,td{border:1px solid #c5ccd3;padding:6px 8px;text-align:left;vertical-align:top}' +
+  'th{background:#f0f2f5;font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.03em;color:#3c434d}' +
+  'td small{color:#5b636e}tbody tr.total td{background:#f6f7f9;font-weight:700}' +
+  '.num{text-align:right;font-variant-numeric:tabular-nums}.blank{min-width:90px}' +
+  '.sig{margin-top:22px;margin-left:auto;width:42%;text-align:center}.sig small{display:block;color:#5b636e;margin-bottom:46px}' +
+  '.sign{display:flex;justify-content:space-between;margin-top:36px}' +
+  '.sign div{text-align:center;width:30%;font-weight:600}.sign i{display:block;font-weight:400;font-size:11px;color:#5b636e;margin-top:50px}' +
+  '.ph{display:flex;gap:12px;align-items:center;border-bottom:2px solid #1d2129;padding-bottom:8px;margin-bottom:10px;font-size:11px;color:#3c434d}' +
+  '.ph img{max-height:52px;max-width:96px}.ph b{display:block;font-size:14px;color:#1d2129;text-transform:uppercase;letter-spacing:.02em}' +
+  '.pf{margin-top:20px;border-top:1px dashed #8a929c;padding-top:6px;text-align:center;font-size:11px;font-style:italic;color:#5b636e}' +
+  '.ticket{text-align:center;padding:6px 0}.ticket .lab{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:#3c434d}' +
+  '.ticket .no{font-size:56px;font-weight:800;line-height:1.05;letter-spacing:.02em;margin:4px 0}' +
+  '.ticket .pri{display:inline-block;border:1.5px solid #1d2129;border-radius:999px;padding:1px 10px;font-weight:700;font-size:11px;text-transform:uppercase}' +
+  '.ticket .nm{font-size:14px;font-weight:600;margin-top:8px}.ticket .hint{border-top:1px dashed #8a929c;margin-top:10px;padding-top:6px;color:#3c434d}' +
+  '.thermal body,.thermal{font-size:11px}.thermal .ph{flex-direction:column;text-align:center;gap:4px}.thermal h1{font-size:14px}' +
+  '.thermal th,.thermal td{border:0;border-bottom:1px dashed #8a929c;padding:4px 2px}.thermal th{background:none}.thermal .sign{display:none}.thermal .sig{width:100%}'
+
+// Lấy @font-face Be Vietnam Pro đang nạp trong app (đường dẫn font đổi thành tuyệt đối) để giấy in cùng phông chữ.
+function fontFaceCss() {
+  const out = []
+  for (const sheet of document.styleSheets) {
+    let rules
+    try {
+      rules = sheet.cssRules
+    } catch {
+      continue
+    }
+    for (const r of rules) {
+      if (r.type !== CSSRule.FONT_FACE_RULE || !/Be Vietnam/i.test(r.style.getPropertyValue('font-family'))) continue
+      const base = sheet.href || location.href
+      out.push(r.cssText.replace(/url\((['"]?)([^'")]+)\1\)/g, (_, q, u) => 'url("' + new URL(u, base).href + '")'))
+    }
+  }
+  return out.join('')
+}
 
 // In bằng iframe ẩn vì cửa sổ Electron chặn mở cửa sổ mới (setWindowOpenHandler → deny).
 // Khổ giấy theo loại giấy tờ (doc) là cài đặt riêng máy; set: cài đặt dùng để in — trang Cài đặt truyền bản nháp để in thử.
@@ -206,6 +240,7 @@ export function printHtml(title, body, doc = 'other', set = getSettings()) {
       ';margin:' +
       (thermal ? '3mm' : '12mm') +
       '}' +
+      fontFaceCss() +
       PRINT_CSS +
       '</style></head><body>' +
       printHeaderHtml(set) +
@@ -214,10 +249,12 @@ export function printHtml(title, body, doc = 'other', set = getSettings()) {
       '</body></html>'
   )
   doc_.close()
-  setTimeout(() => {
+  // Chờ phông chữ nạp xong (tối đa 1,5 giây) rồi mới in để chữ không bị thay bằng Arial.
+  const go = () => {
     frame.contentWindow.focus()
     frame.contentWindow.print()
     setTimeout(() => frame.remove(), 1000)
-  }, 100)
+  }
+  Promise.race([doc_.fonts?.ready ?? Promise.resolve(), new Promise((r) => setTimeout(r, 1500))]).then(() => setTimeout(go, 50))
 }
 export const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c])

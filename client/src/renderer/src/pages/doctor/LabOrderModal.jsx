@@ -37,7 +37,7 @@ export function printLabOrder(visit, order) {
     ${order.packageName ? `<p class="meta">${esc(t('Package'))}: <b>${esc(order.packageName)}</b></p>` : ''}
     <table><thead><tr><th>#</th><th>${esc(t('Test name'))}</th><th>${esc(t('Sample'))}</th><th>${esc(t('Result'))}</th></tr></thead><tbody>${rows}</tbody></table>
     ${order.note ? `<p class="meta">${esc(t('Note'))}: ${esc(order.note)}</p>` : ''}
-    <p class="meta" style="margin-top:18px;text-align:right">${esc(dmy(order.at))}<br>${esc(t('Ordering doctor'))}<br><br><b>${esc(order.by)}</b></p>`,
+    <div class="sig">${esc(dmy(order.at))}<br><b>${esc(t('Ordering doctor'))}</b><small>${esc(t('(signature, full name)'))}</small><b>${esc(order.by)}</b></div>`,
     'labOrder'
   )
 }

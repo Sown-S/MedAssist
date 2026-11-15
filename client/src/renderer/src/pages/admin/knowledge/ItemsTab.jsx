@@ -95,61 +95,60 @@ export default function ItemsTab({ data, names, canEdit, openRelease, onChanged,
         <Empty title="Nothing matches" text="Try another type, filter or search keyword." />
       ) : (
         <div className="tbl-wrap">
-          <div className="tbl-wrap">
-            <table className="kb-table">
-              <thead>
-                <tr>
-                  <th>Code</th>
-                  <th>Content</th>
-                  <th>Version</th>
-                  <th>Status</th>
-                  <th />
-                </tr>
-              </thead>
-              <tbody>
-                {list.map((g) => {
-                  const row = g.open ?? g.active ?? g.latest
-                  return (
-                    <tr key={g.key}>
-                      <td className="num small">{g.key}</td>
-                      <td>
-                        <Summary kind={kind} values={row.values} names={names} />
-                      </td>
-                      <td className="num">
-                        v{row.version}
-                        <div className="small muted">{row.release_label}</div>
-                      </td>
-                      <td>
-                        <div className="ai-status">
-                          {g.active ? <StatusBadge status="Active" /> : <StatusBadge status={g.latest.status} />}
-                          {g.open && <StatusBadge status={g.open.status} />}
-                        </div>
-                      </td>
-                      <td className="kb-actions">
-                        {editable && (g.active || g.open) && (
-                          <button className="btn btn-ghost btn-sm" onClick={() => setForm({ group: g })}>
-                            Edit
-                          </button>
-                        )}
-                        {canEdit && g.active && (
-                          <button className="btn btn-ghost btn-sm kb-danger" onClick={() => setOff(g)}>
-                            Turn off now
-                          </button>
-                        )}
-                        <button className="btn btn-ghost btn-sm" onClick={() => setHistoryOf(g)}>
-                          History
+          <table className="kb-table">
+            <thead>
+              <tr>
+                <th>Code</th>
+                <th>Content</th>
+                <th>Version</th>
+                <th>Status</th>
+                <th />
+              </tr>
+            </thead>
+            <tbody>
+              {list.map((g) => {
+                const row = g.open ?? g.active ?? g.latest
+                return (
+                  <tr key={g.key}>
+                    <td className="num small">{g.key}</td>
+                    <td>
+                      <Summary kind={kind} values={row.values} names={names} />
+                    </td>
+                    <td className="num">
+                      v{row.version}
+                      <div className="small muted">{row.release_label}</div>
+                    </td>
+                    <td>
+                      <div className="ai-status">
+                        {g.active ? <StatusBadge status="Active" /> : <StatusBadge status={g.latest.status} />}
+                        {g.open && <StatusBadge status={g.open.status} />}
+                      </div>
+                    </td>
+                    <td className="kb-actions">
+                      {editable && (g.active || g.open) && (
+                        <button className="btn btn-ghost btn-sm" onClick={() => setForm({ group: g })}>
+                          Edit
                         </button>
-                      </td>
-                    </tr>
-                  )
-                })}
-              </tbody>
-            </table>
-          </div>
+                      )}
+                      {canEdit && g.active && (
+                        <button className="btn btn-ghost btn-sm kb-danger" onClick={() => setOff(g)}>
+                          Turn off now
+                        </button>
+                      )}
+                      <button className="btn btn-ghost btn-sm" onClick={() => setHistoryOf(g)}>
+                        History
+                      </button>
+                    </td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
         </div>
       )}
       <p className="muted small foot-note">
-        <Icon name="lock" /> <span>Every change becomes a draft in the open release and only applies after a doctor approves the release. “Turn off now” is the safety switch: it applies immediately.</span>
+        <Icon name="lock" />{' '}
+        <span>Every change becomes a draft in the open release and only applies after a doctor approves the release. “Turn off now” is the safety switch: it applies immediately.</span>
       </p>
 
       <ItemFormModal
@@ -245,7 +244,10 @@ function DeactivateModal({ kind, group, names, onClose, onDone }) {
     setDeps(null)
     setReason('')
     setErr('')
-    previewDeactivate(kind, group.key).then((p) => setDeps(p.dependents), (e) => setErr(errorText(e)))
+    previewDeactivate(kind, group.key).then(
+      (p) => setDeps(p.dependents),
+      (e) => setErr(errorText(e))
+    )
   }, [kind, group])
   if (!group) return null
   const isRedFlag = kind === 'rules' && group.active?.values?.rule_type === 'RED_FLAG'

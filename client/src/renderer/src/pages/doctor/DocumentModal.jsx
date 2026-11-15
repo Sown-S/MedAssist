@@ -35,7 +35,7 @@ function patientMeta(s, t) {
     ${s.history ? `<p class="meta">${esc(t('Chronic conditions'))}: ${esc(t(s.history))}</p>` : ''}`
 }
 const sign = (name, role, t) =>
-  `<p class="meta" style="margin-top:22px;text-align:right">${esc(dmy(new Date().toISOString()))}<br>${esc(t(role))}<br><small>${esc(t('(signature, full name)'))}</small><br><br><b>${esc(name)}</b></p>`
+  `<div class="sig">${esc(dmy(new Date().toISOString()))}<br><b>${esc(t(role))}</b><small>${esc(t('(signature, full name)'))}</small><b>${esc(name)}</b></div>`
 const labsText = (s) =>
   (s.labOrders ?? [])
     .flatMap(labRows)
