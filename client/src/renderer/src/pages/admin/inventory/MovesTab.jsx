@@ -16,7 +16,7 @@ export function MovesTab({ inv }) {
   const pg = paginate(list, page, 15)
   return (
     <>
-      <div className="ai-toolbar">
+      <div className="toolbar">
         <div className="seg">
           <button className={type === 'all' ? 'on' : ''} onClick={() => (setType('all'), setPage(1))}>
             All
@@ -27,7 +27,7 @@ export function MovesTab({ inv }) {
             </button>
           ))}
         </div>
-        <div className="ai-toolbar-right">
+        <div className="toolbar-r">
           <div className="search">
             <Icon name="search" />
             <input className="input" value={q} onChange={(e) => (setQ(e.target.value), setPage(1))} placeholder="Search drug, document, lot, staff…" />
@@ -46,7 +46,7 @@ export function MovesTab({ inv }) {
           </button>
         </div>
       </div>
-      <div className="ai-table-wrap">
+      <div className="tbl-wrap">
         <div className="tbl-wrap">
           <table>
             <thead>

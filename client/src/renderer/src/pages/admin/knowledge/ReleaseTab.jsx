@@ -60,12 +60,12 @@ export default function ReleaseTab({ data, names, onChanged, autoCreate }) {
         </div>
       ) : (
         <div className="card kb-release">
-          <div className="ai-toolbar">
+          <div className="toolbar">
             <div>
               <div className="card-title">
                 <span className="num">{open.label}</span> <ReleaseBadge status={open.status} />
               </div>
-              {open.description && <div className="ai-small ai-soft">{open.description}</div>}
+              {open.description && <div className="small muted">{open.description}</div>}
             </div>
             {open.status === 'Draft' && (
               <button

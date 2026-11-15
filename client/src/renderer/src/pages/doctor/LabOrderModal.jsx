@@ -129,14 +129,14 @@ export default function LabOrderModal({ open, visit, diagnosis, onClose, onSent 
               })}
             </div>
           ))}
-          {!cat.loaded && <p className="ai-soft">{translate('Loading the catalog…')}</p>}
-          {cat.loaded && !groups.length && <p className="ai-soft">{translate('No tests match your search.')}</p>}
+          {!cat.loaded && <p className="muted">{translate('Loading the catalog…')}</p>}
+          {cat.loaded && !groups.length && <p className="muted">{translate('No tests match your search.')}</p>}
         </div>
         <div className="form-grid cols-2" style={{ marginTop: 12 }}>
           <div className="field">
             <label>Other tests (not in the catalog)</label>
             <input className="input" type="text" value={other} onChange={(e) => setOther(e.target.value)} placeholder="e.g. Abdominal ultrasound" />
-            {other.trim() && <small className="ai-soft">{translate('Not in the catalog — no price; reception adds it to the invoice by hand.')}</small>}
+            {other.trim() && <small className="muted">{translate('Not in the catalog — no price; reception adds it to the invoice by hand.')}</small>}
           </div>
           <div className="field">
             <label>Provisional diagnosis</label>
@@ -149,7 +149,7 @@ export default function LabOrderModal({ open, visit, diagnosis, onClose, onSent 
         </div>
       </div>
       <div className="modal-f">
-        <span className="ai-soft" style={{ marginRight: 'auto', alignSelf: 'center' }}>
+        <span className="muted" style={{ marginRight: 'auto', alignSelf: 'center' }}>
           {count} {translate(count === 1 ? 'test selected' : 'tests selected')}
         </span>
         <button className="btn btn-outline" onClick={onClose}>

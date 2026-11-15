@@ -298,12 +298,12 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
             />
             <VitalsFields value={form} onChange={(k, v) => setForm((f) => ({ ...f, [k]: v }))} errorKeys={touched ? vit.errorKeys : new Set()} requireWeight={child} />
             {touched && vit.errors.length > 0 && (
-              <p className="ai-soft" style={{ color: 'var(--warn-ink)', fontSize: 12.5, margin: '4px 0 8px' }}>
+              <p className="small" style={{ color: 'var(--danger)', margin: '4px 0 8px' }}>
                 <Icon name="ban" /> {vit.errors.map((w) => translate(w)).join(' · ')}
               </p>
             )}
             {vWarn.length > 0 && (
-              <p className="ai-soft" style={{ color: 'var(--priority-ink)', fontSize: 12.5, margin: '4px 0 8px' }}>
+              <p className="small" style={{ color: 'var(--warning)', margin: '4px 0 8px' }}>
                 <Icon name="alert" /> {translate('Unusual value — please double-check')}: {vWarn.map((w) => translate(w)).join(' · ')}
               </p>
             )}

@@ -158,8 +158,8 @@ export default function DocumentModal({ subject, onClose, mode = 'print', target
     <Modal open onClose={onClose} wide>
       <ModalHeader title={translate(title) + ' — ' + subject.name} onClose={onClose} />
       <div className="modal-b">
-        {mode === 'doctor' && <p className="ai-hint">The visit ends as “Referred”: no prescription, no invoice. You can add to the letter later from the patient’s record.</p>}
-        {desk && <p className="ai-hint">Send the patient to hospital now (call 115 if needed). The visit is closed as “Referred” and doctors can complete the letter later.</p>}
+        {mode === 'doctor' && <p className="hint">The visit ends as “Referred”: no prescription, no invoice. You can add to the letter later from the patient’s record.</p>}
+        {desk && <p className="hint">Send the patient to hospital now (call 115 if needed). The visit is closed as “Referred” and doctors can complete the letter later.</p>}
         <fieldset className="form-grid cols-2 doc-fields" disabled={mode === 'reprint'}>
           <div className="field">
             <label>

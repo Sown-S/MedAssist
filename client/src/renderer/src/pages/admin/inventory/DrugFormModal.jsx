@@ -64,7 +64,7 @@ export default function DrugFormModal({ drug, onClose }) {
   const field = (k, label, req, props = {}) => (
     <div className="field">
       <label>
-        {label} {req && <span className="ai-req">*</span>}
+        {label} {req && <span className="req">*</span>}
       </label>
       <input className="input" value={f[k]} onChange={(e) => set(k, e.target.value)} {...props} />
     </div>
@@ -84,7 +84,7 @@ export default function DrugFormModal({ drug, onClose }) {
           {field('drug_class', 'Drug group (optional)', false)}
           {field('active_ingredient_code', 'ATC code (optional)', false, { placeholder: 'N02BE01' })}
         </div>
-        <p className="ai-foot-note">The batch purchase price is entered when receiving stock. The system does not check drug interactions or dose limits.</p>
+        <p className="muted small foot-note">The batch purchase price is entered when receiving stock. The system does not check drug interactions or dose limits.</p>
         {err && <div className="banner d">{err}</div>}
       </div>
       <div className="modal-f">

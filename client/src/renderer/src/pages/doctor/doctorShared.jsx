@@ -46,7 +46,7 @@ export function useTakePatient(open) {
             <small>{translate('In consultation ' + minutesSince(busy.busy.statusAt) + ' min')}</small>
           </div>
         </div>
-        <p className="ai-soft" style={{ fontSize: 13.5 }}>
+        <p className="muted small">
           Finalize this visit or send the patient for lab tests before calling the next one, so no one is left half-examined.
         </p>
         {busy.target.priority && (
@@ -170,7 +170,7 @@ export function PatientBrief({ v, past }) {
           {last.rx?.length > 0 && <small>{last.rx.map((x) => `${x.name} × ${x.qty}`).join(', ')}</small>}
         </div>
       ) : (
-        <p className="ai-soft" style={{ fontSize: 12.5, margin: '8px 0 0' }}>
+        <p className="muted small" style={{ margin: '8px 0 0' }}>
           First visit — no earlier records in the system.
         </p>
       )}
@@ -189,7 +189,7 @@ export function LabOrderResults({ order, summary }) {
           {hhmm(order.at)} {dmy(order.at)}
         </span>
         <span>· {order.by}</span>
-        {order.diagnosis && <span className="ai-soft">· {order.diagnosis}</span>}
+        {order.diagnosis && <span className="muted">· {order.diagnosis}</span>}
       </div>
       <div className="tbl-wrap">
         <table className="lab-res-table">
@@ -197,7 +197,7 @@ export function LabOrderResults({ order, summary }) {
             {rows.map((r) => (
               <tr key={r.key} className={r.cancelled ? 'ai-dim' : ''}>
                 <td>{r.cancelled ? <s>{r.name}</s> : r.name}</td>
-                <td className={r.result ? '' : 'ai-soft'}>{r.cancelled ? translate('Cancelled — not done') : r.result || translate('No result yet')}</td>
+                <td className={r.result ? '' : 'muted'}>{r.cancelled ? translate('Cancelled — not done') : r.result || translate('No result yet')}</td>
               </tr>
             ))}
           </tbody>
@@ -227,7 +227,7 @@ export function ReleaseModal({ visit, onClose, onDone }) {
     <Modal open onClose={onClose}>
       <ModalHeader title={translate('Return to queue') + ' — ' + visit.name} onClose={onClose} />
       <div className="modal-b">
-        <p className="ai-soft" style={{ fontSize: 13, marginTop: 0 }}>
+        <p className="muted small" style={{ marginTop: 0 }}>
           The patient goes back to the waiting queue; any doctor can call them in again. Your unfinished notes stay with the visit.
         </p>
       </div>
@@ -260,7 +260,7 @@ export function LeaveVisitModal({ visit, onClose, onDone }) {
     <Modal open onClose={onClose}>
       <ModalHeader title={translate('Patient left') + ' — ' + visit.name} onClose={onClose} />
       <div className="modal-b">
-        <p className="ai-soft" style={{ fontSize: 13, marginTop: 0 }}>
+        <p className="muted small" style={{ marginTop: 0 }}>
           The visit is closed without an invoice. To charge the consultation fee, finalize the visit without drugs instead.
         </p>
         <div className="field">

@@ -181,7 +181,7 @@ export default function StaffPage() {
               <Icon name="user" />
               <div>
                 <b>Your account still has the default name “System Administrator”.</b>
-                <div className="ai-soft ai-small">Change it to your real name so the activity log shows who did what.</div>
+                <div className="muted small">Change it to your real name so the activity log shows who did what.</div>
               </div>
               <button className="btn btn-ghost btn-sm" onClick={() => openEdit(meAccount)}>
                 <Icon name="pencil" /> <span>Edit my details</span>
@@ -194,7 +194,7 @@ export default function StaffPage() {
               <Icon name="users" />
               <div>
                 <b>Create the first accounts for Doctor and Receptionist</b>
-                <div className="ai-soft ai-small">Only the administrator account exists so far. Each staff member should have their own account.</div>
+                <div className="muted small">Only the administrator account exists so far. Each staff member should have their own account.</div>
               </div>
               <button className="btn btn-primary btn-sm" onClick={() => openCreate('doctor')}>
                 + Doctor account
@@ -228,7 +228,7 @@ export default function StaffPage() {
       <AccountFormModal form={form} setForm={setForm} editing={editing} me={me} rooms={rooms} formErr={formErr} onSubmit={submitForm} />
 
       <ReauthModal open={!!reauth} title={reauth?.title ?? ''} confirmLabel={reauth?.confirmLabel} danger={reauth?.danger} onClose={() => setReauth(null)} onConfirm={() => reauth.run()}>
-        {reauth && <p className="ai-soft">{reauth.message}</p>}
+        {reauth && <p className="muted">{reauth.message}</p>}
       </ReauthModal>
 
       {/* Không đóng khi bấm ra ngoài — tránh mất mật khẩu trước khi kịp sao chép. */}

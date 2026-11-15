@@ -60,7 +60,7 @@ export function ClinicTab({ form, readOnly }) {
 
   return (
     <div className="card">
-      <p className="ai-soft ai-small set-intro">Printed on prescriptions, invoices and reports. Shared by every computer in the clinic.</p>
+      <p className="muted small set-intro">Printed on prescriptions, invoices and reports. Shared by every computer in the clinic.</p>
       <fieldset className="set-fieldset" disabled={readOnly}>
         <div className="set-grid">
           <Field {...fp('clinic.name')} wide>
@@ -95,7 +95,7 @@ export function ClinicTab({ form, readOnly }) {
           </Field>
           <Field {...fp('clinic.logo')} wide hint="PNG, JPG, SVG or WebP — resized to 300 px on the longest side.">
             <div className="set-logo">
-              {val('clinic.logo') ? <img src={val('clinic.logo')} alt="" /> : <span className="ai-soft ai-small">No logo</span>}
+              {val('clinic.logo') ? <img src={val('clinic.logo')} alt="" /> : <span className="muted small">No logo</span>}
               <label className="btn btn-ghost btn-sm">
                 <Icon name="paperclip" /> <span>Choose image</span>
                 <input type="file" accept="image/png,image/jpeg,image/svg+xml,image/webp" hidden onChange={onLogo} />

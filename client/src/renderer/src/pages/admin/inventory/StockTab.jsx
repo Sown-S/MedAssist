@@ -99,12 +99,12 @@ export function StockTab({ inv, user }) {
         </MiniStat>
       </MiniStats>
 
-      <div className="ai-toolbar">
+      <div className="toolbar">
         <div className="search">
           <Icon name="search" />
           <input className="input" value={q} onChange={(e) => reset(setQ)(e.target.value)} placeholder="Search by name, active ingredient, ATC code…" />
         </div>
-        <div className="ai-toolbar-right">
+        <div className="toolbar-r">
           <select className="input" value={group} onChange={(e) => reset(setGroup)(e.target.value)}>
             {GROUPS.map((g) => (
               <option key={g.key} value={g.key}>
@@ -139,7 +139,7 @@ export function StockTab({ inv, user }) {
       {pg.total === 0 ? (
         <Empty title="No drugs match" text="Try another keyword or filter." />
       ) : (
-        <div className="ai-table-wrap">
+        <div className="tbl-wrap">
           <div className="tbl-wrap">
             <table className="inv-table">
               <thead>
@@ -179,7 +179,7 @@ export function StockTab({ inv, user }) {
                             <b>{d.name}</b>
                             {d.group === 'controlled' && <span className="essential-chip inv-ctrl">Controlled</span>}
                             {d.essential && <span className="essential-chip">Essential</span>}
-                            <div className="ai-soft ai-small">
+                            <div className="muted small">
                               {d.ingredient}
                               {d.atc && (
                                 <>
@@ -195,7 +195,7 @@ export function StockTab({ inv, user }) {
                       <td className="r num">
                         <b className="num">{fmtNum(s.usable)}</b>
                         {s.expired > 0 && (
-                          <div className="ai-small inv-minus">
+                          <div className="small inv-minus">
                             + <span className="num">{s.expired}</span> <span>expired</span>
                           </div>
                         )}
@@ -203,14 +203,14 @@ export function StockTab({ inv, user }) {
                       <td className="r num">{d.threshold}</td>
                       <td className="r num">
                         {s.daysCover == null ? (
-                          <span className="ai-soft">—</span>
+                          <span className="muted">—</span>
                         ) : (
                           <span className={s.daysCover < 14 ? 'inv-minus' : ''}>
-                            <span className="num">{s.daysCover}</span> <span className="ai-small">days</span>
+                            <span className="num">{s.daysCover}</span> <span className="small">days</span>
                           </span>
                         )}
                       </td>
-                      <td className="r num">{s.reorder ? <b className="num">{fmtNum(s.reorder)}</b> : <span className="ai-soft">—</span>}</td>
+                      <td className="r num">{s.reorder ? <b className="num">{fmtNum(s.reorder)}</b> : <span className="muted">—</span>}</td>
                       <td>
                         <ExpiryCell batch={s.nextExpiry} />
                       </td>
@@ -218,7 +218,7 @@ export function StockTab({ inv, user }) {
                       <td>
                         <StatusBadges statuses={s.statuses} />
                       </td>
-                      <td className="ai-actions" onClick={(e) => e.stopPropagation()}>
+                      <td className="acts-td" onClick={(e) => e.stopPropagation()}>
                         <button className="btn btn-ghost btn-sm" title="Receive stock" disabled={!d.active} onClick={() => setReceive(d)}>
                           <Icon name="download" />
                         </button>
@@ -246,7 +246,7 @@ export function StockTab({ inv, user }) {
         </div>
       )}
 
-      <p className="ai-foot-note">
+      <p className="muted small foot-note">
         <Icon name="repeat" />{' '}
         <span>
           Stock is issued on a FEFO basis (first expired, first out). Expired batches are excluded from “On hand” and can no longer be prescribed or sold.

@@ -63,7 +63,7 @@ export default function DrugPicker({ onPick, disabled, drugs, inputId, title }) 
               </div>
             )
           })}
-          {!matches.length && <div className="icd-opt ai-soft">No drug in the catalog matches.</div>}
+          {!matches.length && <div className="icd-opt muted">No drug in the catalog matches.</div>}
         </div>
       )}
     </div>

@@ -125,9 +125,9 @@ export default function HistoryPage() {
           </div>
 
           {err && <div className="banner d">{err}</div>}
-          {!data && !err && <p className="ai-soft">Loading…</p>}
+          {!data && !err && <p className="muted">Loading…</p>}
           {data && (
-            <div className="ai-table-wrap">
+            <div className="tbl-wrap">
               <div className="tbl-wrap">
                 <table>
                   <thead>
@@ -144,7 +144,7 @@ export default function HistoryPage() {
                     {data.items.map((x) => (
                       <tr key={x.log_id} onClick={() => setOpen(open === x.log_id ? null : x.log_id)} style={{ cursor: 'pointer' }}>
                         <td className="num">{when(x.created_at)}</td>
-                        <td>{x.username ?? (x.attempted_username ? <span className="sp-warn">{x.attempted_username}</span> : <span className="ai-soft">—</span>)}</td>
+                        <td>{x.username ?? (x.attempted_username ? <span className="sp-warn">{x.attempted_username}</span> : <span className="muted">—</span>)}</td>
                         <td>
                           {['low', 'warn'].includes(TONE[x.action_type]) ? (
                             <span className={'badge ' + TONE[x.action_type]}>{translate(ACTION_LABEL[x.action_type] ?? x.action_type)}</span>
@@ -154,10 +154,10 @@ export default function HistoryPage() {
                         </td>
                         <td className="num">
                           {x.target_entity}
-                          {open === x.log_id && x.entity_id && <div className="ai-soft">{x.entity_id}</div>}
+                          {open === x.log_id && x.entity_id && <div className="muted">{x.entity_id}</div>}
                         </td>
                         <td className="muted">
-                          {changes(x) || <span className="ai-soft">—</span>}
+                          {changes(x) || <span className="muted">—</span>}
                           {open === x.log_id && (x.old_values || x.new_values) && <pre className="kb-json">{JSON.stringify({ old: x.old_values, new: x.new_values }, null, 2)}</pre>}
                         </td>
                         <td className="num">{x.ip_address ?? '—'}</td>
@@ -166,7 +166,7 @@ export default function HistoryPage() {
                   </tbody>
                 </table>
               </div>
-              {!data.items.length && <p className="ai-soft">No entries match.</p>}
+              {!data.items.length && <p className="muted">No entries match.</p>}
             </div>
           )}
           <div className="pager">

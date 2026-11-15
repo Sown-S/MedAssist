@@ -5,13 +5,13 @@ export function BatchTable({ drug, stock, onReceive }) {
     <div className="inv-batch-box">
       <div className="inv-batch-head">
         <b>Batches in stock</b>
-        <span className="ai-soft ai-small">
+        <span className="muted small">
           <span>Usable</span> <b className="num">{stock.usable}</b> · <span>Expired</span> <b className="num">{stock.expired}</b> ·{' '}
           <span>Quantities in</span> <b>{unitLabel(drug.unit)}</b>
         </span>
       </div>
       {stock.batches.length === 0 ? (
-        <p className="ai-soft">
+        <p className="muted">
           <span>No stock.</span>{' '}
           {drug.active && (
             <button className="btn btn-ghost btn-sm" onClick={onReceive}>
@@ -47,7 +47,7 @@ export function BatchTable({ drug, stock, onReceive }) {
                   <td className="num">{fmtDate(b.receivedAt)}</td>
                   <td className="r num">{fmtMoney(b.cost)}</td>
                   <td className="r num">{fmtMoney(b.qty * b.cost)}</td>
-                  <td className="ai-actions">
+                  <td className="acts-td">
                     {b.days < 0 ? <span className="badge b-danger">Expired</span> : <span className="badge b-success">Usable</span>}
                   </td>
                 </tr>

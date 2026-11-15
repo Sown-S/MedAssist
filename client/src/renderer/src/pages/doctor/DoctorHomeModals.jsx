@@ -54,7 +54,7 @@ export function WaitingModal({ list, initial, now, past, onTake, onClose }) {
                             <Icon name="megaphone" /> Call into the room
                           </button>
                         ) : (
-                          <span className="ai-soft" style={{ fontSize: 12.5 }}>
+                          <span className="muted small">
                             {translate('Not checked in yet — reception checks the patient in when they are at the desk.')}
                           </span>
                         )}

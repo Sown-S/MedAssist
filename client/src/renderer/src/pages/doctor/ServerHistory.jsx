@@ -133,7 +133,7 @@ function ReferralBox({ record, onSaved }) {
           <Icon name="ban" /> {translate('Referred')}
         </span>
         <b>{f.facility_name}</b>
-        <span className="ai-small ai-soft">
+        <span className="small muted">
           {f.reason}
           {f.transport ? ' · ' + translate(TRANSPORT_LABEL[f.transport] ?? f.transport) : ''}
         </span>
@@ -142,16 +142,16 @@ function ReferralBox({ record, onSaved }) {
         </button>
       </div>
       {f.diagnosis && (
-        <div className="ai-small">
+        <div className="small">
           <span>Diagnosis</span>: {f.diagnosis}
         </div>
       )}
       {f.signs && (
-        <div className="ai-small">
+        <div className="small">
           <span>Warning signs</span>: {f.signs}
         </div>
       )}
-      <div className="ai-small ai-soft">
+      <div className="small muted">
         {translate(f.referred_by_role === 'Nurse' ? 'Recorded by' : 'Doctor')} {f.referred_by_name} · {shortDateTime(f.referred_at)}
         {f.amended_by_name ? ' · ' + translate('amended by') + ' ' + f.amended_by_name + ' ' + shortDateTime(f.amended_at) : ''}
       </div>

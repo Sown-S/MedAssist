@@ -2,7 +2,6 @@
 
 /* Icon đơn sắc (components/Icon.jsx) */
 .icn{width:1.15em;height:1.15em;vertical-align:-.2em;flex-shrink:0;}
-.redflag-box .ic{color:var(--warn);}
 .ai-box .icon{display:flex;padding-top:1px;}
 .ai-box .icon{color:var(--accent);}
 

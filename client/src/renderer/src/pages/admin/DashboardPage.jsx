@@ -110,7 +110,7 @@ function ServerActivity({ items, onOpen }) {
           ))}
           {items && !items.length && (
             <tr>
-              <td colSpan="4" className="ai-soft">
+              <td colSpan="4" className="muted">
                 No activity recorded yet.
               </td>
             </tr>

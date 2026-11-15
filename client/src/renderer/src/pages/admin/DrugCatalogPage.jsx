@@ -71,12 +71,12 @@ export default function DrugCatalogPage({ params, onNavigate }) {
       )}
 
       <div className="card">
-        <div className="ai-toolbar">
+        <div className="toolbar">
           <div className="search">
             <Icon name="search" />
             <input className="input" value={q} onChange={(e) => (setQ(e.target.value), setPage(1))} placeholder="Search by name, active ingredient, ATC code…" />
           </div>
-          <div className="ai-toolbar-right">
+          <div className="toolbar-r">
             <select className="input" value={kind} onChange={(e) => (setKind(e.target.value), setPage(1))}>
               <option value="all">Drugs &amp; supplies</option>
               <option value="drug">Drugs only</option>
@@ -121,7 +121,7 @@ export default function DrugCatalogPage({ params, onNavigate }) {
         {pg.total === 0 ? (
           <Empty title="No drugs match" text="Try another keyword or filter." />
         ) : (
-          <div className="ai-table-wrap">
+          <div className="tbl-wrap">
             <div className="tbl-wrap">
               <table>
                 <thead>
@@ -153,10 +153,10 @@ export default function DrugCatalogPage({ params, onNavigate }) {
                       <td className="num">{d.id}</td>
                       <td>
                         <b>{d.name}</b>
-                        {d.kind === 'supply' && <div className="ai-soft ai-small">Medical supply</div>}
+                        {d.kind === 'supply' && <div className="muted small">Medical supply</div>}
                       </td>
-                      <td>{d.ingredient || <span className="ai-soft">—</span>}</td>
-                      <td className="num">{d.atc || <span className="ai-soft">—</span>}</td>
+                      <td>{d.ingredient || <span className="muted">—</span>}</td>
+                      <td className="num">{d.atc || <span className="muted">—</span>}</td>
                       <td>{unitLabel(d.unit)}</td>
                       <td className="r num">{fmtMoney(d.cost)}</td>
                       <td className="r num">{fmtMoney(d.price)}</td>
@@ -166,7 +166,7 @@ export default function DrugCatalogPage({ params, onNavigate }) {
                       </td>
                       <td className="r num">{fmtNum(s.usable)}</td>
                       <td>{d.active ? <span className="badge b-success">In use</span> : <span className="badge b-neutral">Discontinued</span>}</td>
-                      <td className="ai-actions" onClick={(e) => e.stopPropagation()}>
+                      <td className="acts-td" onClick={(e) => e.stopPropagation()}>
                         <button className="btn btn-ghost btn-sm" title="Edit" onClick={() => setEdit(d)}>
                           <Icon name="pencil" />
                         </button>
@@ -182,7 +182,7 @@ export default function DrugCatalogPage({ params, onNavigate }) {
             <Pager {...pg} onPage={setPage} />
           </div>
         )}
-        <p className="ai-foot-note">
+        <p className="muted small foot-note">
           <Icon name="help" />{' '}
           <span>Selling prices here fill invoices automatically; ATC codes mark antibiotics (J01) as prescription-only; the essential flag drives the checkout warning.</span>
         </p>

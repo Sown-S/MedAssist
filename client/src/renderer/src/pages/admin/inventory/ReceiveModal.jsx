@@ -61,19 +61,19 @@ export default function ReceiveModal({ drug, drugs, onClose }) {
           </div>
           <div className="field">
             <label>
-              Lot number <span className="ai-req">*</span>
+              Lot number <span className="req">*</span>
             </label>
             <input className="input" value={f.lot} onChange={(e) => set('lot', e.target.value)} />
           </div>
           <div className="field">
             <label>
-              Expiry date <span className="ai-req">*</span>
+              Expiry date <span className="req">*</span>
             </label>
             <input type="date" min={todayISO()} value={f.expiry} onChange={(e) => set('expiry', e.target.value)} />
           </div>
           <div className="field">
             <label>
-              Quantity <span className="ai-soft">({d ? unitLabel(d.unit) : ''})</span> <span className="ai-req">*</span>
+              Quantity <span className="muted">({d ? unitLabel(d.unit) : ''})</span> <span className="req">*</span>
             </label>
             <input className="input" type="number" min="1" value={f.qty} onChange={(e) => set('qty', e.target.value)} />
           </div>

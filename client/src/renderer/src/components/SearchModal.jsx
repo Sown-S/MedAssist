@@ -86,9 +86,9 @@ export default function SearchModal({ open, onClose, onCheckIn, readOnly }) {
               </button>
             )
           })}
-          {server.error && <p className="ai-soft" style={{ fontSize: 13.5, padding: 10 }}>{server.error}</p>}
-          {q.trim() && !results.length && !server.error && <p className="ai-soft" style={{ fontSize: 13.5, padding: 10 }}>No patient matches. Register them as a new patient.</p>}
-          {!q.trim() && <p className="ai-soft" style={{ fontSize: 13.5, padding: 10 }}>Type at least part of a name, phone number or record ID.</p>}
+          {server.error && <p className="muted small" style={{ padding: 10 }}>{server.error}</p>}
+          {q.trim() && !results.length && !server.error && <p className="muted small" style={{ padding: 10 }}>No patient matches. Register them as a new patient.</p>}
+          {!q.trim() && <p className="muted small" style={{ padding: 10 }}>Type at least part of a name, phone number or record ID.</p>}
         </div>
         <div className="pl-detail">
           {sel ? (
@@ -113,7 +113,7 @@ export default function SearchModal({ open, onClose, onCheckIn, readOnly }) {
               </button>
             </>
           ) : (
-            <p className="ai-soft" style={{ fontSize: 13.5 }}>Select a patient to see their details.</p>
+            <p className="muted small">Select a patient to see their details.</p>
           )}
         </div>
       </div>

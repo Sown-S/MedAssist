@@ -46,7 +46,7 @@ export function Field({ path, hint, error, changed, wide, children }) {
         {effect !== 'now' && <span className={'badge ' + ef.cls + ' set-effect'}>{ef.label}</span>}
       </label>
       {children}
-      {error ? <small className="set-err">{error}</small> : hint && <small className="ai-soft">{hint}</small>}
+      {error ? <small className="set-err">{error}</small> : hint && <small className="muted">{hint}</small>}
     </div>
   )
 }

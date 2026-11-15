@@ -22,16 +22,16 @@ export default function SecretPanel({ secret, onClose }) {
     <>
       <ModalHeader title={secret.reset ? 'New temporary password' : 'Account created'} onClose={onClose} />
       <div className="modal-b">
-        <p className="ai-soft">
+        <p className="muted">
           <span>Send these sign-in details to</span> <b>{a.fullName}</b> <span>through a private channel. They must change the password at first sign-in.</span>
         </p>
         <div className="staff-secret">
           <div>
-            <div className="ai-small ai-soft">Username</div>
+            <div className="small muted">Username</div>
             <div className="num">{a.username}</div>
           </div>
           <div>
-            <div className="ai-small ai-soft">Temporary password</div>
+            <div className="small muted">Temporary password</div>
             <div className="num staff-secret-pw">{password}</div>
           </div>
           <button type="button" className="btn btn-ghost btn-sm" onClick={copy}>

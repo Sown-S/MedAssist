@@ -198,7 +198,7 @@ function VisitHistoryModal({ patient, onClose }) {
       <ModalHeader title={translate('Visit history') + ' — ' + patient.name} onClose={onClose} />
       <div className="modal-b">
         {rows === null ? (
-          <p className="ai-soft">{translate('Loading…')}</p>
+          <p className="muted">{translate('Loading…')}</p>
         ) : rows.length ? (
           <div className="tbl-wrap">
             <table>
@@ -221,7 +221,7 @@ function VisitHistoryModal({ patient, onClose }) {
             </table>
           </div>
         ) : (
-          <p className="ai-soft">{translate('No visits yet.')}</p>
+          <p className="muted">{translate('No visits yet.')}</p>
         )}
       </div>
     </Modal>

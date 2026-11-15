@@ -164,7 +164,7 @@ export default function KnowledgeLive({ reviewOnly = false }) {
             {tab === 'review' && <ReviewPanel data={data} names={names} onChanged={reload} />}
             {tab === 'ailogs' && <AiLogsTab />}
           </div>
-          <p className="ai-foot-note">
+          <p className="muted small foot-note">
             <Icon name="alert" />{' '}
             <span>{translate('Knowledge is authored in Obsidian (OKF) and imported with import_okf, or edited here. Every change is versioned and written to the activity log.')}</span>
           </p>

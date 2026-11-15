@@ -184,11 +184,7 @@ export const VI = {
   'Emergency warning signs — beyond clinic scope': 'Dấu hiệu cấp cứu — vượt phạm vi xử lý',
   "The recorded symptoms may indicate an emergency condition, outside the scope of the system's advisory triage.":
     'Triệu chứng ghi nhận có khả năng thuộc nhóm bệnh lý cấp cứu, ngoài phạm vi triage tham khảo của hệ thống.',
-  'Recommendation: refer the patient to a higher-level hospital immediately. This is':
-    'Khuyến cáo: chuyển bệnh nhân lên bệnh viện tuyến trên ngay lập tức. Đây',
   not: 'không phải',
-  'the "Priority" queue — the patient will not be added to the clinic\'s consultation queue.':
-    'hàng đợi "Ưu tiên" — bệnh nhân sẽ không được đưa vào hàng đợi khám tại phòng khám.',
   'Go back and edit symptoms': 'Quay lại chỉnh sửa triệu chứng',
   'Patient ID': 'Mã BN',
 
@@ -1967,6 +1963,7 @@ export const VI = {
   'None ordered': "Không chỉ định",
   'changes': "thay đổi",
   'Open →': "Mở →",
+  'Recommendation: refer the patient to a higher-level hospital immediately. This is not the Priority queue — the patient is not added to the clinic consultation queue.': "Khuyến cáo: chuyển bệnh nhân lên bệnh viện tuyến trên ngay lập tức. Đây không phải hàng “Ưu tiên” — bệnh nhân không được đưa vào hàng chờ khám của phòng khám.",
 }
 
 export const PATTERNS = [

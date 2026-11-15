@@ -17,7 +17,6 @@
 .pt-card{display:flex;flex-direction:column;gap:12px;position:sticky;top:12px;}
 .pt-id{display:flex;align-items:center;gap:12px;}
 .pt-id b{display:block;font-size:19px;font-weight:600;}
-.pt-id .ai-soft{font-size:13px;}
 .pt-rows{display:flex;flex-direction:column;gap:10px;}
 .pt-row{display:flex;align-items:center;gap:10px;}
 .pt-row small{display:block;font-size:12.5px;color:var(--ink-soft);}

@@ -141,7 +141,7 @@ export default function RoomsPage({ onNavigate }) {
                       <b>{r.name}</b>
                     </td>
                     <td>{translate(ROOM_TYPES[r.type] ?? r.type)}</td>
-                    <td>{r.type !== 'Exam' ? <span className="ai-soft">—</span> : r.physician ? r.physician.name : <span className="sp-warn">No doctor</span>}</td>
+                    <td>{r.type !== 'Exam' ? <span className="muted">—</span> : r.physician ? r.physician.name : <span className="sp-warn">No doctor</span>}</td>
                     <td>{r.active ? <span className="plain">{translate('In use')}</span> : <span className="badge b-neutral">{translate('Not in use')}</span>}</td>
                     <td>
                       <div className="acts">

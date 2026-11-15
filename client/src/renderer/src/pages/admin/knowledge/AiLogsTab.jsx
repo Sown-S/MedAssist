@@ -49,7 +49,7 @@ export default function AiLogsTab() {
 
   return (
     <div>
-      <p className="ai-soft ai-small" style={{ marginTop: 0 }}>
+      <p className="muted small" style={{ marginTop: 0 }}>
         Every AI run with the knowledge release, model and prompt versions, timing and the doctor’s decision. No patient data is shown.
       </p>
       <div className="form-grid cols-4">
@@ -74,8 +74,8 @@ export default function AiLogsTab() {
           {select('mode', AI_MODES, MODE_LABEL)}
         </div>
       </div>
-      <div className="ai-toolbar" style={{ marginTop: 12 }}>
-        <span className="ai-soft ai-small">
+      <div className="toolbar" style={{ marginTop: 12 }}>
+        <span className="muted small">
           {data ? (
             <>
               <b className="num">{data.total.toLocaleString('vi-VN')}</b> <span>runs</span>
@@ -84,7 +84,7 @@ export default function AiLogsTab() {
             '…'
           )}
         </span>
-        <div className="ai-toolbar-right">
+        <div className="toolbar-r">
           <button className="btn btn-ghost btn-sm" onClick={() => (setDraft(EMPTY), setPage(0), setFilters(EMPTY))}>
             Clear filters
           </button>
@@ -95,9 +95,9 @@ export default function AiLogsTab() {
       </div>
 
       {err && <div className="banner d">{err}</div>}
-      {!data && !err && <p className="ai-soft">Loading…</p>}
+      {!data && !err && <p className="muted">Loading…</p>}
       {data && (
-        <div className="ai-table-wrap" style={{ marginTop: 10 }}>
+        <div className="tbl-wrap" style={{ marginTop: 10 }}>
           <div className="tbl-wrap">
             <table>
               <thead>
@@ -116,23 +116,23 @@ export default function AiLogsTab() {
                   const st = STATUS_META[x.status] ?? { label: x.status, tone: '' }
                   return (
                     <tr key={x.assessment_id + x.run_type} onClick={() => setOpen(open === x.assessment_id ? null : x.assessment_id)} style={{ cursor: 'pointer' }}>
-                      <td className="num ai-small">{shortDateTime(x.queued_at)}</td>
-                      <td className="ai-small">
+                      <td className="num small">{shortDateTime(x.queued_at)}</td>
+                      <td className="small">
                         {translate(RUN_LABEL[x.run_type] ?? x.run_type)}
-                        {x.mode && <div className="ai-soft">{translate(MODE_LABEL[x.mode] ?? x.mode)}</div>}
+                        {x.mode && <div className="muted">{translate(MODE_LABEL[x.mode] ?? x.mode)}</div>}
                       </td>
                       <td>
                         <span className={'badge ' + st.tone}>{translate(st.label)}</span>
                         {x.attempt_count > 1 && (
-                          <div className="ai-soft ai-small">
+                          <div className="muted small">
                             {x.attempt_count} {translate('attempts')}
                           </div>
                         )}
                       </td>
-                      <td className="num ai-small">{x.priority_rule || x.priority_final ? `${x.priority_rule ?? '—'} → ${x.priority_final ?? '—'}` : '—'}</td>
-                      <td className="num ai-small">{x.suggested_codes.length ? x.suggested_codes.join(', ') : '—'}</td>
-                      <td className="num num ai-small">{sec(x.latency_total_ms)}</td>
-                      <td className="ai-small">{x.physician_decision ? translate(DECISION_LABEL[x.physician_decision] ?? x.physician_decision) : <span className="ai-soft">—</span>}</td>
+                      <td className="num small">{x.priority_rule || x.priority_final ? `${x.priority_rule ?? '—'} → ${x.priority_final ?? '—'}` : '—'}</td>
+                      <td className="num small">{x.suggested_codes.length ? x.suggested_codes.join(', ') : '—'}</td>
+                      <td className="num num small">{sec(x.latency_total_ms)}</td>
+                      <td className="small">{x.physician_decision ? translate(DECISION_LABEL[x.physician_decision] ?? x.physician_decision) : <span className="muted">—</span>}</td>
                     </tr>
                   )
                 })}
@@ -170,14 +170,14 @@ export default function AiLogsTab() {
               </div>
             )
           })()}
-          {!data.items.length && <p className="ai-soft">No runs match.</p>}
+          {!data.items.length && <p className="muted">No runs match.</p>}
         </div>
       )}
-      <div className="ai-toolbar" style={{ marginTop: 10 }}>
-        <span className="ai-small ai-soft">
+      <div className="toolbar" style={{ marginTop: 10 }}>
+        <span className="small muted">
           <span>Page</span> <span className="num">{page + 1}</span> / <span className="num">{pages}</span>
         </span>
-        <div className="ai-toolbar-right">
+        <div className="toolbar-r">
           <button className="btn btn-ghost btn-sm" disabled={page === 0} onClick={() => setPage(page - 1)}>
             ← Previous
           </button>

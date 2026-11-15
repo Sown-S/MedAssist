@@ -69,8 +69,12 @@ tr.clickable{cursor:pointer}tr.clickable:hover td{background:var(--surface-2)}
 .card-title{display:flex;align-items:center;gap:8px;font-size:var(--fs-md);font-weight:600;color:var(--ink);margin:0 0 12px}
 .card-title .cnt{font-size:13px;font-weight:600;background:var(--routine-soft);color:var(--ink-2);border-radius:999px;padding:0 8px;line-height:22px}
 /* Thanh lọc cũ (.ai-toolbar) như .toolbar của bản mẫu */
-.ai-toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
-.ai-toolbar-right{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-left:auto}
-.toolbar select.input,.ai-toolbar select.input{width:auto;height:40px}
 .vtab svg.lucide{width:18px;height:18px}.settings>.set-main{min-width:0;display:flex;flex-direction:column;gap:16px}
 .modal>form{display:flex;flex-direction:column;min-height:0;max-height:inherit}
+/* Thanh lọc phía trên bảng và cụm nút bên phải của thanh lọc */
+.toolbar+.tbl-wrap,.toolbar+.empty{margin-top:14px}
+.toolbar-r{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-left:auto}
+/* Ô thao tác cuối dòng bảng */
+td.acts-td{text-align:right;white-space:nowrap}td.acts-td>.btn+.btn{margin-left:6px}
+.foot-note{display:flex;gap:6px;align-items:flex-start;margin-top:12px}.foot-note svg.lucide{width:15px;height:15px;flex:none;margin-top:2px}
+.toolbar select.input{width:auto;height:40px}

@@ -64,7 +64,7 @@ export function RowForm({ catalogKey, row, all, cats, inv, onClose }) {
       <ModalHeader title={isNew ? translate('Add') + ' · ' + translate(s.title) : row.code + ' · ' + row.name} onClose={onClose} />
       <div className="modal-b">
         {catalogKey === 'icd' && isNew && (
-          <p className="ai-hint">
+          <p className="hint">
             <Icon name="help" /> <span>A code added here is marked “Custom” so it can be checked against the official list later.</span>
           </p>
         )}
@@ -75,7 +75,7 @@ export function RowForm({ catalogKey, row, all, cats, inv, onClose }) {
             .map((fd) => (
               <div className="field" key={fd.key} style={fd.wide ? { gridColumn: '1 / -1' } : undefined}>
                 <label>
-                  {fd.label} {fd.required && <span className="ai-req">*</span>}
+                  {fd.label} {fd.required && <span className="req">*</span>}
                 </label>
                 {!isNew && fd.key === 'code' ? (
                   <input className="input" value={f.code} disabled title={translate('The code cannot be changed after it is created.')} />
@@ -87,7 +87,7 @@ export function RowForm({ catalogKey, row, all, cats, inv, onClose }) {
         </div>
 
         {catalogKey === 'packages' && (
-          <p className="ai-hint">
+          <p className="hint">
             <span>Separate price</span> <b className="num">{fmtMoney(packageTotal(f, cats))}</b> · <span>Package price</span>{' '}
             <b className="num">{fmtMoney(Number(f.price) || 0)}</b>
             {packageTotal(f, cats) > (Number(f.price) || 0) && (
@@ -123,11 +123,11 @@ export function RowForm({ catalogKey, row, all, cats, inv, onClose }) {
                 </tbody>
               </table>
             </div>
-            <p className="ai-hint">Invoices and lab orders store the price at the time they are made, so changing the price here does not change old documents.</p>
+            <p className="hint">Invoices and lab orders store the price at the time they are made, so changing the price here does not change old documents.</p>
           </>
         )}
         {!isNew && (
-          <p className="ai-soft ai-small">
+          <p className="muted small">
             <span>Last updated</span> <span className="num">{fmtDateTime(row.updatedAt)}</span> · {row.updatedBy}
           </p>
         )}
@@ -209,7 +209,7 @@ function PackageItems({ value, onChange, cats }) {
               value={it.qty}
               onChange={(e) => onChange(value.map((v, j) => (j === i ? { ...v, qty: Math.max(1, +e.target.value || 1) } : v)))}
             />
-            <span className="num ai-soft">{fmtMoney((r?.price ?? 0) * it.qty)}</span>
+            <span className="num muted">{fmtMoney((r?.price ?? 0) * it.qty)}</span>
             <button type="button" className="btn btn-ghost btn-sm" onClick={() => onChange(value.filter((_, j) => j !== i))}>
               <Icon name="trash" />
             </button>

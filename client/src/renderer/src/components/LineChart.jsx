@@ -27,7 +27,7 @@ export default function LineChart({ points, fmt = String, height = 200, compareL
             {pct != null && ` (${pct}%)`}
           </span>
         )}
-        {prev != null && <span className="ai-soft">{translate(compareLabel)}</span>}
+        {prev != null && <span className="muted">{translate(compareLabel)}</span>}
       </div>
       <div className="lc" style={{ height }}>
         <div className="lc-grid">

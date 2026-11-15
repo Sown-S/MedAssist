@@ -30,7 +30,7 @@ export function PrintTab({ form, draft, readOnly }) {
             </div>
           </fieldset>
           <div>
-            <div className="ai-small ai-soft" style={{ marginBottom: 6 }}>
+            <div className="small muted" style={{ marginBottom: 6 }}>
               Header preview
             </div>
             <div className="set-print-preview" dangerouslySetInnerHTML={{ __html: printHeaderHtml(draft) }} />
@@ -63,7 +63,7 @@ export function PrintTab({ form, draft, readOnly }) {
                       ))}
                     </select>
                   </td>
-                  <td className="ai-actions">
+                  <td className="acts-td">
                     <button className="btn btn-ghost btn-sm" title="Print a test page" onClick={() => printTest(d, draft)}>
                       <Icon name="printer" /> <span>Test</span>
                     </button>
@@ -73,14 +73,14 @@ export function PrintTab({ form, draft, readOnly }) {
             </tbody>
           </table>
         </div>
-        <p className="ai-foot-note">
+        <p className="muted small foot-note">
           <Icon name="settings" /> <span>Saved on this computer only — e.g. the front-desk PC prints receipts on an 80 mm thermal printer, the doctor’s PC prints prescriptions on A5.</span>
         </p>
       </div>
 
       <div className="card" style={{ marginTop: 14 }}>
         <div className="card-title">Document numbering</div>
-        <p className="ai-soft" style={{ fontSize: 13, margin: 0 }}>
+        <p className="muted small" style={{ margin: 0 }}>
           {translate('Read-only: the clinic server numbers documents when they are saved (e.g. invoices HD-20261017-0001) and issues queue numbers, so two computers never get the same number.')}
         </p>
       </div>

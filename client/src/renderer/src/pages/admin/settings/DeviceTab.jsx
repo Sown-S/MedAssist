@@ -14,7 +14,7 @@ export function DeviceTab() {
               <span>Show patient names</span>
             </label>
             <Switch checked={dev.queue.showNames} onChange={(v) => setDevice({ queue: { showNames: v } })} />
-            <small className="ai-soft">Turn off if this screen faces the waiting room — only the number and room are shown.</small>
+            <small className="muted">Turn off if this screen faces the waiting room — only the number and room are shown.</small>
           </div>
           <div className="field set-field">
             <label>

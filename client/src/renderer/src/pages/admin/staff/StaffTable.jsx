@@ -17,12 +17,12 @@ export default function StaffTable({ rows, me, q, setQ, roleFilter, setRoleFilte
   const policy = usePasswordPolicy()
   return (
     <div className="card">
-      <div className="ai-toolbar">
+      <div className="toolbar">
         <div className="search">
           <Icon name="search" />
           <input className="input" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search name, username, staff code, phone…" />
         </div>
-        <div className="ai-toolbar-right">
+        <div className="toolbar-r">
           <select className="select" value={roleFilter} onChange={(e) => setRoleFilter(e.target.value)}>
             <option value="all">All roles</option>
             {Object.entries(ROLES).map(([k, r]) => (
@@ -42,9 +42,9 @@ export default function StaffTable({ rows, me, q, setQ, roleFilter, setRoleFilte
       </div>
 
       {rows.length === 0 ? (
-        <p className="ai-soft">No accounts match.</p>
+        <p className="muted">No accounts match.</p>
       ) : (
-        <div className="ai-table-wrap">
+        <div className="tbl-wrap">
           <div className="tbl-wrap">
             <table className="staff-table">
               <thead>
@@ -70,15 +70,15 @@ export default function StaffTable({ rows, me, q, setQ, roleFilter, setRoleFilte
                           <span className="avatar sm">{initials(a.fullName)}</span>
                           <span>
                             <b>{a.fullName}</b> {self && <span className="badge b-success">You</span>}
-                            {a.staffCode && <span className="ai-small ai-soft st-code num">{a.staffCode}</span>}
+                            {a.staffCode && <span className="small muted st-code num">{a.staffCode}</span>}
                           </span>
                         </span>
-                        {hasDefaultName(a) && <div className="ai-small sp-warn">Default name — change to a real person</div>}
+                        {hasDefaultName(a) && <div className="small sp-warn">Default name — change to a real person</div>}
                         {a.fullName.trim().toLowerCase() === a.username.toLowerCase() && (
-                          <div className="ai-small sp-warn">Name is the same as the username — enter the real full name</div>
+                          <div className="small sp-warn">Name is the same as the username — enter the real full name</div>
                         )}
                         {a.roleKey === 'doctor' && (
-                          <div className="ai-small ai-soft">
+                          <div className="small muted">
                             {a.roomName ? <span>{a.roomName}</span> : <span className="sp-warn">No room</span>}
                             {' · '}
                             {a.licenseNo ? (
@@ -99,7 +99,7 @@ export default function StaffTable({ rows, me, q, setQ, roleFilter, setRoleFilte
                           {!a.active ? <span className="badge b-neutral">Disabled</span> : a.locked ? <span className="badge b-danger" title={translate('Unlocks by itself at') + ' ' + fmtDateTime(a.lockedUntil)}>Locked</span> : <span className="plain">Active</span>}
                           {a.mustChange && <span className="badge b-warning">Password change pending</span>}
                           {a.active && !a.locked && a.failedAttempts > 0 && (
-                            <span className="ai-small sp-warn">
+                            <span className="small sp-warn">
                               <span className="num">
                                 {a.failedAttempts}
                                 {policy && '/' + policy.maxFailed}
@@ -109,11 +109,11 @@ export default function StaffTable({ rows, me, q, setQ, roleFilter, setRoleFilte
                           )}
                         </div>
                       </td>
-                      <td className="ai-small">
-                        {a.lastLoginAt ? <span className="num">{fmtDateTime(a.lastLoginAt)}</span> : <span className="ai-soft">Never signed in</span>}
+                      <td className="small">
+                        {a.lastLoginAt ? <span className="num">{fmtDateTime(a.lastLoginAt)}</span> : <span className="muted">Never signed in</span>}
                         {idle && <div className="sp-warn">Unused</div>}
                       </td>
-                      <td className="ai-small" title={a.createdBy ? translate('by') + ' ' + a.createdBy : undefined}>
+                      <td className="small" title={a.createdBy ? translate('by') + ' ' + a.createdBy : undefined}>
                         <span className="num">{fmtDate(a.createdAt)}</span>
                       </td>
                       <td>

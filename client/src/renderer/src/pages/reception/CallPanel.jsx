@@ -155,7 +155,7 @@ export default function CallPanel({ readOnly, variant }) {
               </span>
             )
           })}
-          {next.length > dev.nextCount && <span className="ai-soft">+{next.length - dev.nextCount}</span>}
+          {next.length > dev.nextCount && <span className="muted">+{next.length - dev.nextCount}</span>}
         </div>
       )}
     </div>

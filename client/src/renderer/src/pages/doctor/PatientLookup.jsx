@@ -92,8 +92,8 @@ export default function PatientLookup() {
                   </span>
                 </button>
               ))}
-              {searching && <p className="ai-soft pl-hint">{translate('Loading…')}</p>}
-              {!searching && !results.length && !err && <p className="ai-soft pl-hint">No patient matches.</p>}
+              {searching && <p className="muted pl-hint">{translate('Loading…')}</p>}
+              {!searching && !results.length && !err && <p className="muted pl-hint">No patient matches.</p>}
             </div>
           )}
           {!q.trim() && !p && (
@@ -113,7 +113,7 @@ export default function PatientLookup() {
               </span>
               <div>
                 <b>{p.name}</b>
-                <span className="ai-soft">
+                <span className="muted">
                   <span className="num">{p.code}</span> · {p.dob} ({ageOf(p.dob)} {translate('yrs')}) · {translate(p.gender)}
                 </span>
               </div>

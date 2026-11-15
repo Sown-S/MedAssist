@@ -110,10 +110,10 @@ export function ReviewPanel({ data, names, onChanged }) {
       <Modal open={rejecting} onClose={() => setRejecting(false)}>
         <ModalHeader title={translate('Reject release') + ' ' + (pending?.label ?? '')} onClose={() => setRejecting(false)} />
         <div className="modal-b">
-          <p className="ai-soft">The release goes back to the administrator with your note.</p>
+          <p className="muted">The release goes back to the administrator with your note.</p>
           <div className="field">
             <label>
-              Reason <span className="ai-req">*</span>
+              Reason <span className="req">*</span>
             </label>
             <textarea className="input" rows={3} value={note} onChange={(e) => setNote(e.target.value)} placeholder="At least 3 characters" />
           </div>

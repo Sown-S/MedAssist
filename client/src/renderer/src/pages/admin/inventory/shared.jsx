@@ -59,16 +59,16 @@ export function StatusBadges({ statuses }) {
 }
 
 export function ExpiryCell({ batch }) {
-  if (!batch) return <span className="ai-soft">—</span>
+  if (!batch) return <span className="muted">—</span>
   const d = batch.days
   const cls = d < 0 ? 'inv-exp bad' : d <= 30 ? 'inv-exp bad' : d <= 90 ? 'inv-exp warn' : 'inv-exp'
   return (
     <span className={cls}>
       <span className="num">{fmtDate(batch.expiry)}</span>{' '}
       {d < 0 ? (
-        <span className="ai-small">(expired)</span>
+        <span className="small">(expired)</span>
       ) : d <= 90 ? (
-        <span className="ai-small">
+        <span className="small">
           (<span className="num">{d}</span> <span>days left</span>)
         </span>
       ) : null}

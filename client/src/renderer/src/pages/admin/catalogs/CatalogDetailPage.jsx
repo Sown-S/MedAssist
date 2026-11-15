@@ -53,19 +53,19 @@ export default function CatalogDetailPage({ catalogKey, params, onNavigate }) {
           <h2>{s.title}</h2>
           <p>{s.desc}</p>
         </div>
-        <div className="ai-soft ai-small">
+        <div className="muted small">
           <span>Last updated</span> <span className="num">{fmtDateTime(lastUpdate)}</span>
         </div>
       </div>
 
 
       <div className="card">
-        <div className="ai-toolbar">
+        <div className="toolbar">
           <div className="search">
             <Icon name="search" />
             <input className="input" value={q} onChange={(e) => reset(setQ)(e.target.value)} placeholder="Search code or name…" />
           </div>
-          <div className="ai-toolbar-right">
+          <div className="toolbar-r">
             {s.filter && (
               <select className="input" value={sub} onChange={(e) => reset(setSub)(e.target.value)}>
                 <option value="all">All groups</option>
@@ -98,11 +98,11 @@ export default function CatalogDetailPage({ catalogKey, params, onNavigate }) {
 
         {lc.error && <div className="banner d">{lc.error}</div>}
         {!lc.loaded ? (
-          <p className="ai-soft">{translate('Loading the catalog…')}</p>
+          <p className="muted">{translate('Loading the catalog…')}</p>
         ) : pg.total === 0 ? (
           <Empty title="No records match" text="Try another keyword or filter, or import the list from a file." />
         ) : (
-          <div className="ai-table-wrap">
+          <div className="tbl-wrap">
             <div className="tbl-wrap">
               <table>
                 <thead>
@@ -128,15 +128,15 @@ export default function CatalogDetailPage({ catalogKey, params, onNavigate }) {
                       </td>
                       {columns.map((c) => (
                         <td key={c.key} className={c.num ? 'num' : ''}>
-                          {c.render ? c.render(r, cats, inv, c.key) : r[c.key] || <span className="ai-soft">—</span>}
+                          {c.render ? c.render(r, cats, inv, c.key) : r[c.key] || <span className="muted">—</span>}
                         </td>
                       ))}
                       <td>{r.active ? <span className="badge b-success">In use</span> : <span className="badge b-neutral">Discontinued</span>}</td>
-                      <td className="ai-small">
+                      <td className="small">
                         <span className="num">{fmtDate(r.updatedAt)}</span>
-                        <div className="ai-soft">{r.updatedBy}</div>
+                        <div className="muted">{r.updatedBy}</div>
                       </td>
-                      <td className="ai-actions" onClick={(e) => e.stopPropagation()}>
+                      <td className="acts-td" onClick={(e) => e.stopPropagation()}>
                         <button className="btn btn-ghost btn-sm" title="Edit" onClick={() => setEdit(r)}>
                           <Icon name="pencil" />
                         </button>
@@ -152,7 +152,7 @@ export default function CatalogDetailPage({ catalogKey, params, onNavigate }) {
             <Pager {...pg} onPage={setPage} />
           </div>
         )}
-        <p className="ai-foot-note">
+        <p className="muted small foot-note">
           <Icon name="lock" />{' '}
           <span>Records are never deleted — discontinued codes stay readable on old records and invoices. Every change is written to the activity history.</span>
         </p>

@@ -8,7 +8,7 @@ const CMP_TEXT = { '<': '<', '<=': '≤', '>': '>', '>=': '≥', '==': '=' }
 const MAX_DEPTH = 5
 
 export function LogicView({ node, names, depth = 0 }) {
-  if (!node) return <span className="ai-soft">—</span>
+  if (!node) return <span className="muted">—</span>
   if (node.op) {
     return (
       <span className="kb-logic-group">
@@ -48,7 +48,7 @@ export function LogicView({ node, names, depth = 0 }) {
         <span>{node.unit === 'months' ? 'months' : 'years'}</span>
       </span>
     )
-  return <span className="num ai-small">{JSON.stringify(node)}</span>
+  return <span className="num small">{JSON.stringify(node)}</span>
 }
 
 const newLeaf = (type, symptoms) =>
@@ -112,7 +112,7 @@ export function LogicEditor({ node, onChange, onRemove, symptoms, names, depth =
             onRemove={() => onChange({ ...node, args: node.args.filter((_, j) => j !== i) })}
           />
         ))}
-        {!node.args.length && <p className="ai-small ai-soft">Add at least one condition.</p>}
+        {!node.args.length && <p className="small muted">Add at least one condition.</p>}
         <div className="kb-logic-add">
           <button type="button" className="btn btn-ghost btn-sm" onClick={() => add('symptom')}>
             + Symptom
@@ -166,7 +166,7 @@ export function LogicEditor({ node, onChange, onRemove, symptoms, names, depth =
       )}
       {node.type === 'age' && (
         <>
-          <span className="ai-small">Age</span>
+          <span className="small">Age</span>
           <CmpSelect value={node.cmp} onChange={(cmp) => set({ cmp })} />
           <input className="kb-num" type="number" step="any" value={node.value} onChange={(e) => set({ value: e.target.value })} />
           <select className="input" value={node.unit} onChange={(e) => set({ unit: e.target.value })}>

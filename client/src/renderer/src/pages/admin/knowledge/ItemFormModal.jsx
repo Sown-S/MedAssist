@@ -68,7 +68,7 @@ export default function ItemFormModal({ open, kind, group, data, names, onClose,
             <div className="field full">
               <label>{KIND_META[kind].keyLabel}</label>
               <input className="input num" value={key} disabled={!creating} onChange={(e) => setKey(e.target.value.trim().toLowerCase())} placeholder="vd: sot_cao" />
-              {creating && <small className="ai-soft">Lowercase letters without accents, digits and underscores; cannot be changed later.</small>}
+              {creating && <small className="muted">Lowercase letters without accents, digits and underscores; cannot be changed later.</small>}
             </div>
           )}
 
@@ -211,7 +211,7 @@ export default function ItemFormModal({ open, kind, group, data, names, onClose,
                   onChange={(v) => set({ condition_logic: v })}
                 />
                 <div className="kb-logic-preview">
-                  <span className="ai-small ai-soft">Preview:</span> <LogicView node={f.condition_logic} names={names} />
+                  <span className="small muted">Preview:</span> <LogicView node={f.condition_logic} names={names} />
                 </div>
               </div>
               {sourceField}
@@ -219,10 +219,10 @@ export default function ItemFormModal({ open, kind, group, data, names, onClose,
           )}
         </div>
         {!sources.length && ['relations', 'excerpts', 'rules'].includes(kind) && (
-          <p className="ai-small sp-warn">No active source yet — add one in the Sources tab first.</p>
+          <p className="small sp-warn">No active source yet — add one in the Sources tab first.</p>
         )}
         {err && <div className="banner d">{err}</div>}
-        <p className="ai-foot-note">Saved as a draft in the open release. It is only used after a doctor approves the release.</p>
+        <p className="muted small foot-note">Saved as a draft in the open release. It is only used after a doctor approves the release.</p>
       </div>
       <div className="modal-f">
         <button className="btn btn-outline" onClick={onClose}>

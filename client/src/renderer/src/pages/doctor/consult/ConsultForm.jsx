@@ -203,7 +203,7 @@ export default function ConsultForm({ visit, user, onDone, onNext }) {
         />
 
         {tried && problem && (
-          <p className="ai-soft" style={{ color: 'var(--priority-ink)', fontSize: 12.5, margin: '12px 0 0' }}>
+          <p className="small" style={{ color: 'var(--warning)', margin: '12px 0 0' }}>
             {translate(problem)}
           </p>
         )}

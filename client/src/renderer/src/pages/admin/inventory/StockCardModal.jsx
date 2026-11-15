@@ -17,7 +17,7 @@ export default function StockCardModal({ drug, moves, onClose }) {
     <Modal open onClose={onClose} wide>
       <ModalHeader title={translate('Stock card') + ' · ' + drug.name} onClose={onClose} />
       <div className="modal-b">
-        <div className="ai-toolbar">
+        <div className="toolbar">
           <div className="seg">
             <button className={type === 'all' ? 'on' : ''} onClick={() => setType('all')}>
               All
@@ -41,7 +41,7 @@ export default function StockCardModal({ drug, moves, onClose }) {
             <Icon name="download" /> <span>Export to Excel (CSV)</span>
           </button>
         </div>
-        <div className="ai-table-wrap" style={{ maxHeight: 420 }}>
+        <div className="tbl-wrap" style={{ maxHeight: 420 }}>
           <div className="tbl-wrap">
             <table>
               <thead>
@@ -71,7 +71,7 @@ export default function StockCardModal({ drug, moves, onClose }) {
                     </td>
                     <td className="num num">{m.balance}</td>
                     <td>{m.by}</td>
-                    <td className="ai-soft ai-small">
+                    <td className="muted small">
                       {m.reason && <span>{reasonLabel(m.reason)}</span>}
                       {m.reason && m.note && ' — '}
                       {m.note}
@@ -82,7 +82,7 @@ export default function StockCardModal({ drug, moves, onClose }) {
             </table>
           </div>
         </div>
-        <p className="ai-hint">
+        <p className="hint">
           <span>Quantities in</span> <b>{unitLabel(drug.unit)}</b>
         </p>
       </div>

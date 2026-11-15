@@ -43,7 +43,7 @@ const KEY_COLS = {
 }
 
 function show(field, v, ctx) {
-  if (v === null || v === undefined || v === '') return <span className="ai-soft">—</span>
+  if (v === null || v === undefined || v === '') return <span className="muted">—</span>
   if (field === 'condition_logic') return <LogicView node={v} names={ctx.names} />
   if (field === 'source_id') return <span>{ctx.sources[v] ?? v}</span>
   if (field === 'condition_code') return <span>{ctx.names.condition[v] ?? v}</span>
@@ -59,8 +59,8 @@ function Change({ c, ctx, onDrop }) {
     <div className="kb-change">
       <div className="kb-change-head">
         <span className={'badge ' + (c.action === 'new' ? 'ok' : 'info')}>{c.action === 'new' ? 'New' : 'Changed'}</span>
-        <span className="ai-soft">{KIND_META[c.kind]?.one}</span>
-        <span className="num ai-small">
+        <span className="muted">{KIND_META[c.kind]?.one}</span>
+        <span className="num small">
           {c.key} · v{c.version}
         </span>
         {onDrop && (
@@ -85,14 +85,14 @@ function Change({ c, ctx, onDrop }) {
           </tbody>
         </table>
       ) : (
-        <span className="ai-small ai-soft">No field differs from the version in use.</span>
+        <span className="small muted">No field differs from the version in use.</span>
       )}
     </div>
   )
 }
 
 export function ChangeList({ detail, ctx, onDrop }) {
-  if (!detail) return <p className="ai-soft">Loading…</p>
+  if (!detail) return <p className="muted">Loading…</p>
   if (!detail.changes.length) return <Empty icon="folder" title="No changes yet" text="Add or edit items in the Knowledge base tab — each saved draft appears here." />
   return (
     <div className="kb-changes">
@@ -106,7 +106,7 @@ export function ChangeList({ detail, ctx, onDrop }) {
 export const ctxOf = (data, names) => ({ names, sources: Object.fromEntries(data.sources.map((s) => [s.source_id, `${s.organization} · ${s.title}`])) })
 
 export function ReleaseHistory({ releases, onView }) {
-  if (!releases.length) return <p className="ai-soft">No release yet.</p>
+  if (!releases.length) return <p className="muted">No release yet.</p>
   return (
     <div className="tbl-wrap">
       <table>
@@ -127,9 +127,9 @@ export function ReleaseHistory({ releases, onView }) {
               <tr key={r.release_id}>
                 <td>
                   <b className="num">{r.label}</b>
-                  {r.description && <div className="ai-small ai-soft">{r.description}</div>}
+                  {r.description && <div className="small muted">{r.description}</div>}
                   {r.review_note && (
-                    <div className="ai-small sp-warn">
+                    <div className="small sp-warn">
                       <span>Doctor's note:</span> {r.review_note}
                     </div>
                   )}
@@ -137,9 +137,9 @@ export function ReleaseHistory({ releases, onView }) {
                 <td>
                   <ReleaseBadge status={r.status} />
                 </td>
-                <td className="ai-small">{shortDateTime(r.created_at)}</td>
-                <td className="ai-small">{shortDateTime(r.submitted_at)}</td>
-                <td className="ai-small">{shortDateTime(r.approved_at)}</td>
+                <td className="small">{shortDateTime(r.created_at)}</td>
+                <td className="small">{shortDateTime(r.submitted_at)}</td>
+                <td className="small">{shortDateTime(r.approved_at)}</td>
                 <td>
                   <button className="btn btn-ghost btn-sm" onClick={() => onView(r)}>
                     View

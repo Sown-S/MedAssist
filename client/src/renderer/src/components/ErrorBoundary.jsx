@@ -29,7 +29,7 @@ export default class ErrorBoundary extends Component {
           </div>
           <b>Something went wrong on this screen</b>
           <span>Data already saved is not affected. Try again, or reload the app if it keeps happening.</span>
-          <code className="ai-small ai-soft">{String(error?.message ?? error)}</code>
+          <code className="small muted">{String(error?.message ?? error)}</code>
           <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
             <button className="btn btn-primary btn-sm" onClick={() => this.setState({ error: null })}>
               <Icon name="repeat" /> Try again

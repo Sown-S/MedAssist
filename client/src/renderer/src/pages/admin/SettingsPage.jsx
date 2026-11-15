@@ -115,14 +115,14 @@ export default function SettingsPage({ params, onNavigate, setLeaveGuard }) {
               <div className="set-grid">
                 {/* Chính sách mật khẩu do server quy định — chỉ hiển thị. */}
                 <Field path="security.policy" wide hint="Fixed on the clinic server — shown for reference only.">
-                  <div className="symptom-box" style={{ padding: '8px 11px', fontSize: 13.5 }}>
+                  <div className="banner n">
                     {policy
                       ? translate(`At least ${policy.minLength} characters`) + (policy.requireMix ? ' · ' + translate('letters and digits') : '')
                       : translate('Cannot read the password policy from the server.')}
                   </div>
                 </Field>
                 <Field path="security.lock" wide hint="Fixed on the clinic server — shown for reference only. Administrators can unlock earlier in Staff accounts.">
-                  <div className="symptom-box" style={{ padding: '8px 11px', fontSize: 13.5 }}>
+                  <div className="banner n">
                     {policy
                       ? translate(`${policy.maxFailed} wrong passwords within ${policy.failedWindow} minutes → the account is locked for ${policy.lockMinutes} minutes.`)
                       : translate('5 wrong passwords within 15 minutes (20 from one computer) → the account is locked for 5 minutes.')}
@@ -138,7 +138,7 @@ export default function SettingsPage({ params, onNavigate, setLeaveGuard }) {
                   </select>
                 </Field>
               </div>
-              <p className="ai-foot-note">
+              <p className="muted small foot-note">
                 <Icon name="lock" /> <span>Saving security settings asks for your password. The server enforces the same rules — the interface only mirrors them.</span>
               </p>
             </div>
@@ -176,7 +176,7 @@ export default function SettingsPage({ params, onNavigate, setLeaveGuard }) {
       </div>
 
       <ReauthModal open={!!reauth} title="Save security settings" confirmLabel="Save" onClose={() => setReauth(null)} onConfirm={doSave}>
-        <p className="ai-soft">These settings protect patient data. Confirm with your password.</p>
+        <p className="muted">These settings protect patient data. Confirm with your password.</p>
         <ul className="perm-diff">
           {[...changed].map((p) => (
             <li key={p}>

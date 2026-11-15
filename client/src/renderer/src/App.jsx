@@ -108,7 +108,7 @@ export function Shell() {
       <Modal open={leaving} onClose={() => setLeaving(false)}>
         <ModalHeader title={translate('Finish your visits before signing out')} onClose={() => setLeaving(false)} />
         <div className="modal-b">
-          <p className="ai-soft" style={{ fontSize: 13.5, marginTop: 0 }}>
+          <p className="muted small" style={{ marginTop: 0 }}>
             {openVisits.length
               ? translate('You still have patients you took. Finalize each visit, return the patient to the queue, or close the visit if the patient left — then you can sign out.')
               : translate('All your visits are finished. Your unsaved notes on this computer will be deleted when you sign out.')}

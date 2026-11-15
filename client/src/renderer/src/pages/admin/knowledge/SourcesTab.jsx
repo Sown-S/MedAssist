@@ -12,8 +12,8 @@ export default function SourcesTab({ data, canEdit, onChanged }) {
   const [adding, setAdding] = useState(false)
   return (
     <>
-      <div className="ai-toolbar">
-        <span className="ai-soft ai-small">Every symptom–condition link, guideline excerpt and rule must cite one of these sources.</span>
+      <div className="toolbar">
+        <span className="muted small">Every symptom–condition link, guideline excerpt and rule must cite one of these sources.</span>
         {canEdit && (
           <button className="btn btn-primary btn-sm" onClick={() => setAdding(true)}>
             + New source
@@ -42,9 +42,9 @@ export default function SourcesTab({ data, canEdit, onChanged }) {
                     <b>{s.organization}</b>
                   </td>
                   <td>{s.title}</td>
-                  <td className="num ai-small">{s.edition ?? '—'}</td>
-                  <td className="ai-small">{s.publication_date ?? '—'}</td>
-                  <td className="ai-small kb-url">{s.url ?? '—'}</td>
+                  <td className="num small">{s.edition ?? '—'}</td>
+                  <td className="small">{s.publication_date ?? '—'}</td>
+                  <td className="small kb-url">{s.url ?? '—'}</td>
                   <td>{s.is_active ? <span className="badge b-success">In use</span> : <span className="badge b-neutral">Not in use</span>}</td>
                 </tr>
               ))}

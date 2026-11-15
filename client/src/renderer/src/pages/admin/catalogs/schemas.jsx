@@ -99,7 +99,7 @@ export const SCHEMAS = {
     ],
     columns: [
       { key: 'type', label: 'Type', render: opt(ADDRESS_TYPES) },
-      { key: 'mergedFrom', label: 'Merged from', render: (r) => r.mergedFrom || <span className="ai-soft">—</span> },
+      { key: 'mergedFrom', label: 'Merged from', render: (r) => r.mergedFrom || <span className="muted">—</span> },
       { key: 'effectiveFrom', label: 'Effective from', render: (r) => <span className="num">{fmtDate(r.effectiveFrom)}</span> }
     ],
     csv: ['code', 'name', 'level', 'type', 'parent', 'mergedFrom', 'effectiveFrom']
@@ -119,7 +119,7 @@ export const SCHEMAS = {
     ],
     columns: [
       // Thêm U+200B để bộ dịch tự động không đổi tên tiếng Anh sang tiếng Việt.
-      { key: 'nameEn', label: 'English name', render: (r) => <span className="ai-soft">{r.nameEn ? r.nameEn + '\u200B' : ''}</span> },
+      { key: 'nameEn', label: 'English name', render: (r) => <span className="muted">{r.nameEn ? r.nameEn + '\u200B' : ''}</span> },
       { key: 'chapter', label: 'Chapter', render: (r) => <span className="num">{r.chapter}</span> },
       { key: 'custom', label: 'Source', render: (r) => (r.custom ? <span className="badge b-warning">Custom</span> : <span className="badge">Standard</span>) }
     ],
@@ -150,7 +150,7 @@ export const SCHEMAS = {
           return last ? (
             <span className="num">
               {fmtDate(last.from)}
-              {h.length > 1 && <span className="ai-soft"> · {fmtMoney(h[h.length - 2].price)} →</span>}
+              {h.length > 1 && <span className="muted"> · {fmtMoney(h[h.length - 2].price)} →</span>}
             </span>
           ) : (
             '—'
@@ -172,7 +172,7 @@ export const SCHEMAS = {
     ],
     columns: [
       { key: 'items', label: 'Included', render: (r, cats) => (r.items ?? []).map((it) => resolveRef(it.ref, cats)?.name ?? it.ref).join(' · ') },
-      { key: 'total', label: 'Separate price', num: true, render: (r, cats) => <span className="num ai-soft">{fmtMoney(packageTotal(r, cats))}</span> },
+      { key: 'total', label: 'Separate price', num: true, render: (r, cats) => <span className="num muted">{fmtMoney(packageTotal(r, cats))}</span> },
       { key: 'price', label: 'Package price', num: true, render: (r) => <b className="num">{fmtMoney(r.price)}</b> }
     ],
     csv: ['code', 'name', 'price']
@@ -202,7 +202,7 @@ export const SCHEMAS = {
         render: (r) => (
           <span className="num">
             {r.low != null && r.high != null ? `${r.low} – ${r.high}` : r.high != null ? `≤ ${r.high}` : r.low != null ? `≥ ${r.low}` : ''}
-            {r.refText && <span className="ai-soft"> {r.refText}</span>}
+            {r.refText && <span className="muted"> {r.refText}</span>}
           </span>
         )
       },

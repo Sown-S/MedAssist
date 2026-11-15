@@ -44,12 +44,12 @@ export function ConnectionTab({ onNavigate }) {
                 <span className={'badge ' + (s.ok ? 'ok' : s.ok === null ? 'muted' : 'low')}>{s.state}</span>
               </div>
             ))}
-            <div className="ai-small ai-soft" style={{ marginTop: 8 }}>
+            <div className="small muted" style={{ marginTop: 8 }}>
               <span>Checked at</span> <span className="num">{fmtDateTime(health.checkedAt)}</span>
             </div>
           </>
         )}
-        <p className="ai-foot-note">
+        <p className="muted small foot-note">
           <Icon name="settings" />{' '}
           <span>The server address is saved on this computer only — each clinic PC sets its own. Home › System status uses this same check.</span>
         </p>
@@ -58,7 +58,7 @@ export function ConnectionTab({ onNavigate }) {
       <div className="card" style={{ marginTop: 14 }}>
         <div className="card-title">AI module</div>
         <div className="set-backup-head">
-          <div className="ai-small ai-soft">
+          <div className="small muted">
             {ai ? (
               <>
                 <span className={'badge ' + (ai.ok ? 'ok' : ai.ok === null ? 'muted' : 'low')}>{ai.state}</span> <span>{ai.detail}</span>
@@ -71,7 +71,7 @@ export function ConnectionTab({ onNavigate }) {
             <Icon name="bulb" /> <span>Open AI configuration</span>
           </button>
         </div>
-        <p className="ai-soft ai-small">Rules and thresholds are managed on the AI configuration page.</p>
+        <p className="muted small">Rules and thresholds are managed on the AI configuration page.</p>
       </div>
 
       <div className="card" style={{ marginTop: 14 }}>

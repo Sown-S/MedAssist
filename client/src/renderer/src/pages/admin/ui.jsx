@@ -34,7 +34,7 @@ export function ConfirmDialog({ open, title, message, children, confirmLabel = '
         {requireNote && (
           <div className="field" style={{ marginTop: 12 }}>
             <label>
-              Reason for this change <span className="ai-req">*</span>
+              Reason for this change <span className="req">*</span>
             </label>
             <textarea className="input"
               rows={3}

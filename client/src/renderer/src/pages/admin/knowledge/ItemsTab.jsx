@@ -61,15 +61,15 @@ export default function ItemsTab({ data, names, canEdit, openRelease, onChanged,
         </div>
       )}
 
-      <div className="ai-toolbar">
+      <div className="toolbar">
         <div className="seg">
           {KINDS.map((k) => (
             <button key={k} className={kind === k ? 'on' : ''} onClick={() => setKind(k)}>
-              <span>{KIND_META[k].label}</span> <span className="ai-count">{counts[k]}</span>
+              <span>{KIND_META[k].label}</span> <span className="badge b-neutral">{counts[k]}</span>
             </button>
           ))}
         </div>
-        <div className="ai-toolbar-right">
+        <div className="toolbar-r">
           <div className="search">
             <Icon name="search" />
             <input className="input" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search by code or name…" />
@@ -92,7 +92,7 @@ export default function ItemsTab({ data, names, canEdit, openRelease, onChanged,
       {list.length === 0 ? (
         <Empty title="Nothing matches" text="Try another type, filter or search keyword." />
       ) : (
-        <div className="ai-table-wrap">
+        <div className="tbl-wrap">
           <div className="tbl-wrap">
             <table className="kb-table">
               <thead>
@@ -109,13 +109,13 @@ export default function ItemsTab({ data, names, canEdit, openRelease, onChanged,
                   const row = g.open ?? g.active ?? g.latest
                   return (
                     <tr key={g.key}>
-                      <td className="num ai-small">{g.key}</td>
+                      <td className="num small">{g.key}</td>
                       <td>
                         <Summary kind={kind} values={row.values} names={names} />
                       </td>
                       <td className="num">
                         v{row.version}
-                        <div className="ai-small ai-soft">{row.release_label}</div>
+                        <div className="small muted">{row.release_label}</div>
                       </td>
                       <td>
                         <div className="ai-status">
@@ -146,7 +146,7 @@ export default function ItemsTab({ data, names, canEdit, openRelease, onChanged,
           </div>
         </div>
       )}
-      <p className="ai-foot-note">
+      <p className="muted small foot-note">
         <Icon name="lock" /> <span>Every change becomes a draft in the open release and only applies after a doctor approves the release. “Turn off now” is the safety switch: it applies immediately.</span>
       </p>
 
@@ -194,7 +194,7 @@ function HistoryModal({ kind, group, names, onClose }) {
       <ModalHeader title={translate('Version history') + ' · ' + group.key} onClose={onClose} />
       <div className="modal-b">
         {err && <div className="banner d">{err}</div>}
-        {!rows && !err && <p className="ai-soft">Loading…</p>}
+        {!rows && !err && <p className="muted">Loading…</p>}
         {rows && (
           <div className="tbl-wrap">
             <table>
@@ -211,15 +211,15 @@ function HistoryModal({ kind, group, names, onClose }) {
                 {rows.map((r) => (
                   <tr key={r.version}>
                     <td className="num">v{r.version}</td>
-                    <td className="num ai-small">{r.release_label}</td>
+                    <td className="num small">{r.release_label}</td>
                     <td>
                       <StatusBadge status={r.status} />
-                      {r.retired_reason && <div className="ai-small ai-soft">{r.retired_reason}</div>}
+                      {r.retired_reason && <div className="small muted">{r.retired_reason}</div>}
                     </td>
                     <td>
                       <Summary kind={kind} values={r.values} names={names} />
                     </td>
-                    <td className="ai-small">{shortDateTime(r.created_at)}</td>
+                    <td className="small">{shortDateTime(r.created_at)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -268,8 +268,8 @@ function DeactivateModal({ kind, group, names, onClose, onDone }) {
           <Summary kind={kind} values={group.active?.values} names={names} />
         </p>
         {isRedFlag && <div className="banner d">Warning: this is a red-flag rule. Turning it off means doctors will NOT be alerted for this emergency sign.</div>}
-        <p className="ai-soft ai-small">Takes effect immediately — no approval needed (safety switch). Turning it back on needs a new version in an approved release.</p>
-        {!deps && !err && <p className="ai-soft">Checking dependent items…</p>}
+        <p className="muted small">Takes effect immediately — no approval needed (safety switch). Turning it back on needs a new version in an approved release.</p>
+        {!deps && !err && <p className="muted">Checking dependent items…</p>}
         {deps && deps.length > 0 && (
           <div className="kb-banner warn">
             <div>
@@ -286,7 +286,7 @@ function DeactivateModal({ kind, group, names, onClose, onDone }) {
         )}
         <div className="field" style={{ marginTop: 12 }}>
           <label>
-            Reason <span className="ai-req">*</span>
+            Reason <span className="req">*</span>
           </label>
           <textarea className="input" rows={3} value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Recorded in the activity log (at least 3 characters)" />
         </div>

@@ -112,19 +112,19 @@ export function EditWaitingModal({ visit, onClose }) {
           stale={extractionStale(vitalProps.from, f.reason)}
         />
         <VitalsFields value={f} onChange={(k, v) => setF((x) => ({ ...x, [k]: v }))} errorKeys={tried ? vit.errorKeys : new Set()} />
-        <p className="ai-soft" style={{ fontSize: 12.5, margin: '6px 0 0' }}>
+        <p className="muted small" style={{ margin: '6px 0 0' }}>
           <Icon name="zap" /> {translate('Condition worsened while waiting? Update the symptoms and vital signs — the priority is re-assessed when you save.')}
         </p>
         {vit.warnings.length > 0 && (
-          <p className="ai-soft" style={{ color: 'var(--priority-ink)', fontSize: 12.5, margin: '4px 0 0' }}>
+          <p className="small" style={{ color: 'var(--warning)', margin: '4px 0 0' }}>
             <Icon name="alert" /> {translate('Unusual value — please double-check')}: {vit.warnings.map((w) => translate(w)).join(' · ')}
           </p>
         )}
       </div>
       <div className="modal-f">
         <button
-          className="btn"
-          style={{ background: 'var(--warn)', color: '#fff', marginRight: 'auto' }}
+          className="btn btn-danger-outline"
+          style={{ marginRight: 'auto' }}
           onClick={() => setReferring(true)}
           title={translate('Accident, critical condition, severe breathing difficulty… — beyond the clinic: transfer now')}
         >
@@ -158,7 +158,7 @@ export function CancelVisitModal({ visit, onClose }) {
     <Modal open onClose={onClose}>
       <ModalHeader title={translate('Cancel visit') + ' — ' + ticketNo(visit.ticket) + ' ' + visit.name} onClose={onClose} />
       <div className="modal-b">
-        <p className="ai-soft" style={{ fontSize: 13, marginTop: 0 }}>
+        <p className="muted small" style={{ marginTop: 0 }}>
           The visit leaves the queue and is kept as “left without finishing” with your reason. The patient record is not deleted.
         </p>
         {pendingFlag && (
@@ -185,7 +185,7 @@ export function CancelVisitModal({ visit, onClose }) {
         <button className="btn btn-outline" onClick={onClose}>
           Back
         </button>
-        <button className="btn btn-primary" style={{ background: 'var(--warn)' }} disabled={pendingFlag || (reason === 'other' && !note.trim())} onClick={submit}>
+        <button className="btn btn-danger" disabled={pendingFlag || (reason === 'other' && !note.trim())} onClick={submit}>
           <Icon name="x" /> Cancel visit
         </button>
       </div>
