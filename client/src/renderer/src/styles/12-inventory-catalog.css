@@ -22,9 +22,6 @@
 .inv-fefo{margin-left:6px;font-size:10.5px;}
 .rx-drop{position:absolute;top:100%;left:0;right:0;z-index:20;margin-top:4px;}
 .rx-drop .icd-opt{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
-.rx-stock{display:flex;align-items:center;gap:4px;font-size:11.5px;margin-top:3px;font-weight:600;}
-.rx-stock.danger{color:var(--warn-ink);}
-.rx-stock.caution{color:var(--priority-ink);}
 
 /* Nhà cung cấp */
 .sp-warn{color:var(--priority-ink);font-weight:600;}

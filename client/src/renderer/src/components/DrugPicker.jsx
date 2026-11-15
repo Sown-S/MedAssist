@@ -1,3 +1,4 @@
+import Icon from './Icon'
 import { useState } from 'react'
 import { useInventory, stockOf } from '../api/inventoryStore'
 import { unitLabel } from '../pages/admin/inventory/shared'
@@ -20,8 +21,10 @@ export default function DrugPicker({ onPick, disabled, drugs, inputId, title }) 
   }
 
   return (
-    <div className="rx-search" style={{ position: 'relative' }}>
-      <input className="input"
+    <div className="search rx-search" style={{ position: 'relative', width: '100%' }}>
+      <Icon name="search" />
+      <input
+        className="input"
         type="text"
         id={inputId}
         title={title}

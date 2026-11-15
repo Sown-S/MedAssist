@@ -10,14 +10,6 @@
 .redflag-alert .hint{font-size:12.5px;color:var(--warn-ink);}
 .redflag-alert .btn{background:var(--warn);color:#fff;border:none;}
 .allergy-chip{font-size:11px;font-weight:700;padding:3px 8px;border-radius:20px;background:var(--warn-soft);color:var(--warn-ink);}
-.pl-alerts{display:flex;flex-direction:column;gap:6px;margin:10px 0;}
-.pl-alerts.compact{margin:0 0 4px;}
-.pl-alert{display:flex;gap:8px;align-items:flex-start;padding:8px 10px;border-radius:9px;font-size:13px;}
-.pl-alert svg{width:15px;height:15px;flex-shrink:0;margin-top:1px;}
-.pl-alert.danger{background:var(--warn-soft);color:var(--warn-ink);}
-.pl-alert.caution{background:var(--priority-soft);color:var(--priority-ink);}
-.pl-alert b{color:var(--ink);}
-.pl-none{font-size:13px;color:var(--ink-soft);margin:10px 0;}
 .pl-search{width:100%;padding:11px 13px;border:1px solid var(--border);border-radius:10px;font-size:15px;background:var(--field-bg);color:var(--ink);font-family:var(--font);margin-bottom:12px;}
 .pl-search:focus{outline:none;border-color:var(--accent);}
 .pl-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;min-height:260px;}

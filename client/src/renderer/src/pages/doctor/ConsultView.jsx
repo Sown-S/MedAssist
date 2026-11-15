@@ -31,14 +31,15 @@ export default function ConsultView({ visitId, onSelect }) {
   }, [])
 
   return (
-    <div className={'doc-layout' + (rail ? ' q-rail' : '')}>
+    <div className={'doc' + (rail ? ' qmin' : '')}>
       <DoctorQueue visits={visits} user={user} mine={mine} current={current} onSelect={onSelect} take={take} next={next} onCloseLab={setClosing} openGroups={openGroups} toggle={toggle} />
       {current ? (
         <ServerVisit key={current.id} visit={current}>
           {(v) => <ConsultForm key={v.id} visit={v} user={user} onDone={() => onSelect(null)} onNext={next} />}
         </ServerVisit>
       ) : (
-        <div className="card doc-empty">
+        <div className="doc-main">
+        <div className="card">
           <div className="empty">
             <div className="ill">
               <Icon name="stethoscope" />
@@ -49,6 +50,7 @@ export default function ConsultView({ visitId, onSelect }) {
               <Icon name="megaphone" /> Call next patient
             </button>
           </div>
+        </div>
         </div>
       )}
       {closing && <LeaveVisitModal visit={closing} onClose={() => setClosing(null)} onDone={() => setClosing(null)} />}

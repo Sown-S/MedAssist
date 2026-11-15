@@ -1,7 +1,6 @@
 /* Lịch sử hoạt động, tài khoản, phân quyền, cài đặt */
 
 /* Lịch sử hoạt động */
-.ai-sug-actions{display:inline-flex;gap:4px;margin-left:auto;}
 
 /* Tài khoản nhân viên */
 .staff-callout{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px;padding:14px 16px;border-color:rgba(251,191,36,.35);}

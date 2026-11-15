@@ -30,136 +30,165 @@ export const DRUG_SEARCH_ID = 'consult-drug-search'
 export default function RxEditor({ rx, tried, srvDrugs, issueOf, issues, short, last, setLine, setDose, onAdd, onTemplate, onRepeat, onRemove }) {
   return (
     <>
-      <div className="card-title" style={{ marginBottom: 8 }}>
-        <Icon name="clipboard" /> Prescription <span className="cnt">{rx.length}</span>
+      <div className="card-h">
+        <h3>
+          {translate('Prescription')} {rx.length > 0 && <span className="plain">· {rx.length}</span>}
+        </h3>
+        <div className="tpl" title={translate('Reference templates — the doctor adjusts the drugs, doses and duration for each patient.')}>
+          {translate('Templates:')}
+          {TEMPLATES.map((t) => (
+            <button key={t.key} type="button" onClick={() => onTemplate(t.key)}>
+              {translate(t.title)}
+            </button>
+          ))}
+          {last && (
+            <button type="button" onClick={onRepeat} title={dmy(last.rxAt)}>
+              <Icon name="repeat" /> {translate('Repeat last prescription')}
+            </button>
+          )}
+        </div>
       </div>
-      <DrugPicker onPick={onAdd} drugs={srvDrugs} inputId={DRUG_SEARCH_ID} title="Alt+T" />
-      <div className="rx-quick">
-        <span className="ai-soft">Templates:</span>
-        {TEMPLATES.map((t) => (
-          <button key={t.key} className="chip-btn" onClick={() => onTemplate(t.key)}>
-            {t.title}
-          </button>
-        ))}
-        {last && (
-          <button className="chip-btn accent" onClick={onRepeat} title={dmy(last.rxAt)}>
-            <Icon name="repeat" /> Repeat last prescription
-          </button>
+      <div className="card-b">
+        <div style={{ marginBottom: 12 }}>
+          <DrugPicker onPick={onAdd} drugs={srvDrugs} inputId={DRUG_SEARCH_ID} title="Alt+T" />
+        </div>
+
+        {rx.length > 0 ? (
+          <div className="tbl-wrap" style={{ maxHeight: 'none' }}>
+            <table className="rx-tbl">
+              <thead>
+                <tr>
+                  <th>Drug</th>
+                  <th>Dose per time</th>
+                  <th>When</th>
+                  <th style={{ width: 80 }}>Days</th>
+                  <th style={{ width: 90 }}>Qty</th>
+                  <th>Directions</th>
+                  <th className="r" />
+                </tr>
+              </thead>
+              <tbody>
+                {rx.map((it) => {
+                  const issue = issueOf(it)
+                  const bad = tried && (!wholeQty(it.qty) || !it.usage.trim())
+                  const daily = perDay(it.dose)
+                  return (
+                    <tr key={it.id} className={bad ? 'pr-danger' : ''}>
+                      <td style={{ minWidth: 170 }}>
+                        <b style={{ fontWeight: 500 }}>{it.name}</b>
+                        {issue ? (
+                          <div className="small" style={{ color: 'var(--danger)' }}>
+                            {issue.text}
+                            {issue.usable != null && (
+                              <>
+                                {' '}
+                                (<span>only</span> <span className="num">{issue.usable}</span> <span>{unitLabel(issue.unit)}</span>)
+                              </>
+                            )}
+                          </div>
+                        ) : (
+                          daily > 0 && (
+                            <div className="muted small">
+                              {daily} {unitVi(it.unit)}/{translate('day')}
+                            </div>
+                          )
+                        )}
+                        <label className="check" style={{ marginTop: 4, fontSize: 13 }} title={translate('Reception warns the patient if they decide not to buy this drug')}>
+                          <input type="checkbox" checked={it.essential} onChange={() => setLine(it.id, { essential: !it.essential })} />
+                          {translate('Must buy — warn reception')}
+                        </label>
+                      </td>
+                      <td>
+                        <div style={{ display: 'flex', gap: 4 }}>
+                          {SLOTS.map(([k, label]) => (
+                            <input
+                              key={k}
+                              className="input num"
+                              style={{ width: 46, textAlign: 'center' }}
+                              type="text"
+                              inputMode="decimal"
+                              title={translate(label)}
+                              aria-label={translate(label)}
+                              value={it.dose?.[k] ?? ''}
+                              onChange={(e) => setDose(it, { [k]: e.target.value })}
+                              placeholder={translate(label).slice(0, 1)}
+                            />
+                          ))}
+                        </div>
+                      </td>
+                      <td>
+                        <select className="input" value={it.dose?.meal ?? 'after'} onChange={(e) => setDose(it, { meal: e.target.value })} aria-label={translate('When')}>
+                          {MEALS.map((m) => (
+                            <option key={m.key} value={m.key}>
+                              {m.label}
+                            </option>
+                          ))}
+                        </select>
+                      </td>
+                      <td>
+                        <input className="input num" type="text" inputMode="numeric" value={it.dose?.days ?? ''} onChange={(e) => setDose(it, { days: e.target.value })} placeholder="7" aria-label={translate('Days')} />
+                      </td>
+                      <td>
+                        <input className="input num" type="number" min="1" step="1" placeholder={translate('Qty')} title={unitLabel(it.unit)} value={it.qty} onChange={(e) => setLine(it.id, { qty: e.target.value })} aria-label={translate('Qty')} />
+                      </td>
+                      <td style={{ minWidth: 220 }}>
+                        <input className="input" type="text" list="rx-usages" placeholder="Directions — filled in from the dose above, or type for “as needed” drugs" value={it.usage} onChange={(e) => setLine(it.id, { usage: e.target.value })} />
+                      </td>
+                      <td>
+                        <button className="btn btn-ghost btn-icon" title={translate('Remove')} aria-label={translate('Remove')} onClick={() => onRemove(it.id)}>
+                          <Icon name="trash-2" />
+                        </button>
+                      </td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+            <datalist id="rx-usages">
+              {USAGES.map((u) => (
+                <option key={u} value={u} />
+              ))}
+            </datalist>
+          </div>
+        ) : (
+          <div className="empty" style={{ padding: '22px 10px' }}>
+            <div className="ill">
+              <Icon name="pill" />
+            </div>
+            <b>No drugs yet</b>
+            <span>Search the catalog, pick a template or repeat the last prescription. A visit can also be completed without drugs.</span>
+          </div>
+        )}
+
+        {short?.length > 0 && (
+          <div className="stock-issue">
+            <Icon name="ban" />
+            <span>
+              <b>{translate('Confirmation blocked — not enough usable stock')}:</b>{' '}
+              {short.map((x, i) => (
+                <span key={x.key}>
+                  {i > 0 && '; '}
+                  {x.name} — {translate(SHORT_REASON[x.reason] ?? x.reason)} ({translate('needs')} <b className="num">{x.need}</b>, {translate('usable')} <b className="num">{x.usable}</b>)
+                </span>
+              ))}
+            </span>
+          </div>
+        )}
+        {issues.length > 0 && (
+          <div className="stock-issue">
+            <Icon name="package-x" />
+            <span>
+              <b>{translate('Stock problem')}:</b>{' '}
+              {issues.map(({ it, issue }, i) => (
+                <span key={it.id}>
+                  {i > 0 && '; '}
+                  {it.name} — {issue.text}
+                </span>
+              ))}
+            </span>
+          </div>
         )}
       </div>
-      <p className="ai-soft" style={{ fontSize: 12, margin: '4px 0 0' }}>
-        Reference templates — the doctor adjusts the drugs, doses and duration for each patient.
-      </p>
-
-      {rx.length > 0 ? (
-        <div className="rx-lines">
-          {rx.map((it) => {
-            const issue = issueOf(it)
-            const bad = tried && (!wholeQty(it.qty) || !it.usage.trim())
-            const daily = perDay(it.dose)
-            return (
-              <div className={'rx-line' + (bad ? ' bad' : '')} key={it.id}>
-                <div className="rx-line-top">
-                  <b>{it.name}</b>
-                  <label className="rx-ess" title={translate('Reception warns the patient if they decide not to buy this drug')}>
-                    <input type="checkbox" checked={it.essential} onChange={() => setLine(it.id, { essential: !it.essential })} /> <span>Must buy — warn reception</span>
-                  </label>
-                  <button className="icon-btn sm danger" title={translate('Remove')} onClick={() => onRemove(it.id)}>
-                    <Icon name="x" />
-                  </button>
-                </div>
-                <div className="rx-dose">
-                  {SLOTS.map(([k, label]) => (
-                    <label key={k}>
-                      <small>{label}</small>
-                      <input className="input" type="text" inputMode="decimal" value={it.dose?.[k] ?? ''} onChange={(e) => setDose(it, { [k]: e.target.value })} placeholder="0" />
-                    </label>
-                  ))}
-                  <label>
-                    <small>Days</small>
-                    <input className="input" type="text" inputMode="numeric" value={it.dose?.days ?? ''} onChange={(e) => setDose(it, { days: e.target.value })} placeholder="7" />
-                  </label>
-                  <label className="meal">
-                    <small>When</small>
-                    <select className="input" value={it.dose?.meal ?? 'after'} onChange={(e) => setDose(it, { meal: e.target.value })}>
-                      {MEALS.map((m) => (
-                        <option key={m.key} value={m.key}>
-                          {m.label}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-                  {daily > 0 && (
-                    <span className="rx-daily">
-                      {daily} {unitVi(it.unit)}/{translate('day')}
-                    </span>
-                  )}
-                </div>
-                <div className="rx-line-fields">
-                  <span className="rx-qty">
-                    <input className="input" type="number" min="1" step="1" placeholder="Qty" value={it.qty} onChange={(e) => setLine(it.id, { qty: e.target.value })} />
-                    <span className="ai-soft">{unitLabel(it.unit)}</span>
-                  </span>
-                  <input className="rx-usage" type="text" list="rx-usages" placeholder="Directions — filled in from the dose above, or type for “as needed” drugs" value={it.usage} onChange={(e) => setLine(it.id, { usage: e.target.value })} />
-                </div>
-                {issue && (
-                  <div className={'rx-stock ' + issue.level}>
-                    <Icon name="alert" /> <span>{issue.text}</span>
-                    {issue.usable != null && (
-                      <>
-                        {' '}
-                        (<span>only</span> <span className="num">{issue.usable}</span> <span>{unitLabel(issue.unit)}</span>)
-                      </>
-                    )}
-                  </div>
-                )}
-              </div>
-            )
-          })}
-          <datalist id="rx-usages">
-            {USAGES.map((u) => (
-              <option key={u} value={u} />
-            ))}
-          </datalist>
-        </div>
-      ) : (
-        <div className="empty" style={{ padding: '22px 10px' }}>
-          <Icon name="clipboard" />
-          <b>No drugs yet</b>
-          <span>Search the catalog, pick a template or repeat the last prescription. A visit can also be completed without drugs.</span>
-        </div>
-      )}
-
-      {short?.length > 0 && (
-        <div className="warn-banner danger show">
-          <div className="icon">
-            <Icon name="ban" />
-          </div>
-          <div className="txt">
-            <b>{translate('Confirmation blocked — not enough usable stock')}</b>
-            {short.map((x) => (
-              <div key={x.key}>
-                <span>{x.name}</span> — <span>{translate(SHORT_REASON[x.reason] ?? x.reason)}</span> ({translate('needs')} <b className="num">{x.need}</b>, {translate('usable')} <b className="num">{x.usable}</b>)
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-      {issues.length > 0 && (
-        <div className="warn-banner danger show">
-          <div className="icon">
-            <Icon name="box" />
-          </div>
-          <div className="txt">
-            <b>Stock problem</b>
-            {issues.map(({ it, issue }) => (
-              <div key={it.id}>
-                <span>{it.name}</span> — <span>{issue.text}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
     </>
   )
 }

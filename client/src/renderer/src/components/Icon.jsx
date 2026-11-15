@@ -207,6 +207,7 @@ const ICONS = {
   stethoscope: Stethoscope,
   ticket: Ticket,
   trash: Trash2,
+  'trash-2': Trash2,
   'trending-up': TrendingUp,
   'triangle-alert': TriangleAlert,
   'undo-2': Undo2,
