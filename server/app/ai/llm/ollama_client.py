@@ -57,6 +57,7 @@ class OllamaClient:
         model: str,
         base_url: str = "http://127.0.0.1:11434",
         keep_alive: str | int = "5m",
+        num_ctx: int | None = None,
         transport: httpx.AsyncBaseTransport | None = None,
     ) -> None:
         if (
@@ -76,6 +77,7 @@ class OllamaClient:
         self._url = _local_url(base_url)
         self.model = model
         self.keep_alive = keep_alive
+        self.num_ctx = num_ctx
         self._transport = transport
 
     async def generate(
@@ -87,6 +89,8 @@ class OllamaClient:
     ) -> bytes:
         """Gửi request cấu trúc không streaming và trả envelope thô."""
         options = {"temperature": 0}
+        if self.num_ctx:
+            options["num_ctx"] = self.num_ctx
         payload = {
             "model": self.model,
             "prompt": prompt,

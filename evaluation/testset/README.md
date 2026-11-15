@@ -79,3 +79,13 @@ Người phụ trách xác nhận **chưa hoàn tất rà soát chéo thực t�
 Bằng chứng: [báo cáo RuleOnly](../results/kb_2026_10_acceptance/rule_only/summary.md), [đối soát staging trước/sau](../results/kb_2026_10_acceptance/staging_acceptance.json), [kết quả rà soát và phép thử riêng](../results/kb_2026_10_acceptance/kb_checks.json).
 
 Hai tệp JSONL và mã băm đóng băng không thay đổi. Báo cáo chạy bằng backend 0.2.2; đây chưa phải bằng chứng phát hành ứng dụng v0.2.3.
+
+## Cập nhật ngày 11/11/2026 — KB-2026.11
+
+KB tham chiếu theo kho: KB-2026.11, 153 bệnh. Kiểm cả hai JSONL không có tham chiếu tới 16 mã bệnh gỡ; hash vẫn `4e7b58cffc3cd950e1411a131919e36976ea94f209c426821886b03708cd368d`. Snapshot manifest cập nhật theo KB; hash/statistics/benchmark_status giữ nguyên.
+
+Đã nhận phiếu Huy và xác nhận Tuấn: 106 ĐỒNG Ý, 5 CẦN SỬA. Ghi nhận rà hoàn tất với vấn đề tồn đọng, không khẳng định toàn bộ ca đạt hay bác sĩ đã duyệt KB. Sửa nhãn thuộc v1.4; luật/trích xuất là việc riêng. Xem `evaluation/review/README_review.md`. RuleOnly chưa chạy tại thời điểm cập nhật; sẽ bổ sung kết quả riêng.
+
+### Kết quả kỹ thuật bổ sung ngày 11/11/2026
+
+RuleOnly KB-2026.11 đã chạy đúng một lần trên staging riêng, LLM_PROVIDER=none, không trích xuất: recall cờ đỏ 48/48, báo nhầm 0, mức ưu tiên 82/82, luật P/R/F1=1/1/1; DDx top-1=15/18, top-3=17/18, bằng các chỉ số đợt .10. Chỉ 18 ca DDx phủ 27/153 bệnh; không chứng minh toàn KB an toàn hoặc đủ độ phủ. Full chưa chạy. Báo cáo: `evaluation/results/kb_2026_11_acceptance/rule_only/so_sanh_voi_KB-2026.10.md`. Hash giữ nguyên, không sửa KB theo kết quả.

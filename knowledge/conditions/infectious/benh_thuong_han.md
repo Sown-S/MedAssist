@@ -11,8 +11,8 @@ description: Bệnh thương hàn (Typhoid fever) là một bệnh cấp tính t
 relations:
 - symptom_code: typhoid_stepwise_fever_bradycardia_tuphos
   polarity: SUPPORTS
-  weight: 0.6
-  is_key: false
+  weight: 0.9
+  is_key: true
   source_key: moh_qd_5642_2015
   source_edition: Quyết định số 5642/QĐ-BYT
 - symptom_code: eosinophilic_meningitis_paresthesia_headache

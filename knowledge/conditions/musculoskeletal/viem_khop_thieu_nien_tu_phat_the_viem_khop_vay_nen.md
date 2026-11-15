@@ -3,7 +3,7 @@ schema: okf_condition_v1
 condition_code: viem_khop_thieu_nien_tu_phat_the_viem_khop_vay_nen
 name_vi: Viêm khớp thiếu niên tự phát thể viêm khớp vẩy nến
 name_en: Juvenile psoriatic arthritis
-icd10_code: M89.0
+icd10_code: M09.0
 disease_group: musculoskeletal
 description: Viêm khớp vẩy nến là một bệnh được xếp vào nhóm bệnh lý cột sống huyết thanh âm tính. Đó
   là bệnh lý kết hợp thương tổn vẩy nến ở da và/ hoặc móng và tình trạng viêm khớp ngoại biên, có kèm

@@ -16,19 +16,13 @@ relations:
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: pustular_furuncle_folliculitis
   polarity: SUPPORTS
-  weight: 0.6
-  is_key: false
+  weight: 0.9
+  is_key: true
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: pityriasis_versicolor_hypo_hyper_macules
   polarity: SUPPORTS
   weight: 0.6
-  is_key: false
-  source_key: moh_qd_75_2015
-  source_edition: Quyết định số 75/QĐ-BYT
-- symptom_code: epidermolysis_bullosa_mechanobullous
-  polarity: SUPPORTS
-  weight: 0.3
   is_key: false
   source_key: moh_qd_75_2015
   source_edition: Quyết định số 75/QĐ-BYT

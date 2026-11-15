@@ -1,0 +1,300 @@
+﻿symptom_code,symptom_name,parentheses,classification,owner_candidates
+fever_high,"Sốt cao (>= 38.5°C hoặc sốt cao đột ngột, liên tục)","["">= 38.5°C hoặc sốt cao đột ngột, liên tục""]",i: ngưỡng/đơn vị đo,chưa xác định chủ trong KB
+fever_low_grade,Sốt nhẹ hoặc sốt vừa (37.5°C - 38.4°C),"[""37.5°C - 38.4°C""]",i: ngưỡng/đơn vị đo,chưa xác định chủ trong KB
+fever_prolonged,Sốt dai dẳng kéo dài nhiều ngày hoặc nhiều tuần,[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+chills_rigors,"Ớn lạnh, gai rét hoặc rét run thành cơn",[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+sweating_profuse,Vã mồ hôi nhiều hoặc ra mồ hôi trộm ban đêm,[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+fatigue_malaise,"Mệt mỏi, uể oải, suy nhược toàn thân",[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+weight_loss_anorexia,"Gầy sút cân, chán ăn, ăn bú kém",[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+headache_dull,Đau nhức đầu âm ỉ hoặc dữ dội,[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+dizziness_vertigo,"Chóng mặt xoay tròn, hoa mắt, mất thăng bằng hoặc động mắt",[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+lymphadenopathy_splenomegaly,"Hạch ngoại vi sưng to (hạch cổ, góc hàm, trước tai, bẹn), gan to hoặc lách to","[""hạch cổ, góc hàm, trước tai, bẹn""]",ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+anemia_pallor_jaundice,"Da xanh xao, niêm mạc nhợt (thiếu máu) hoặc vàng da, vàng mắt","[""thiếu máu""]",ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+meningeal_neck_stiffness_kernig,"Hội chứng màng não: cứng gáy, dấu hiệu Kernig/Brudzinski dương tính, nôn vọt",[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+trismus_tetanic_spasm,"Khít hàm (cứng hàm), co cứng cơ toàn thân và cơn co giật trên nền co cứng (uốn ván)","[""cứng hàm"", ""uốn ván""]",iii: bệnh/hội chứng cụ thể hoặc mã bệnh,chưa xác định chủ trong KB
+eschar_ulcer_bite_lesion,Vết loét ngoài da hình bầu dục có vảy đen (eschar) không đau do ấu trùng mò đốt,"[""eschar""]",ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,benh_sot_mo
+dysentery_tenesmus_bloody_stool,"Hội chứng lỵ: đau quặn bụng từng cơn, mót rặn và đi ngoài phân nhầy máu",[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,benh_ly_truc_khuan
+koplik_spots,Hạt Koplik trắng xám có quầng đỏ ở niêm mạc má,[],iii: bệnh/hội chứng cụ thể hoặc mã bệnh,soi
+visual_acuity_decreased_blur,"Nhìn mờ, giảm thị lực một hoặc hai mắt, quáng gà hoặc thu hẹp thị trường",[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+ocular_pain_photophobia_tearing,"Đau nhức mắt/hốc mắt, cộm chói, sợ ánh sáng và chảy nước mắt",[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+conjunctival_ciliary_injection_discharge,"Đỏ mắt, cương tụ kết mạc hoặc cương tụ rìa, phù mi và nhiều dử mắt/tiết tố mủ",[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+corneal_ulcer_hypopyon_keratitis,"Ổ loét giác mạc (hình cành cây, địa đồ, áp xe vòng), tủa sau giác mạc, Tyndall (+) hoặc mủ tiền phòng","[""hình cành cây, địa đồ, áp xe vòng"", ""+""]",ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+intraocular_pressure_glaucoma_cupping,"Tăng nhãn áp (> 24 mmHg), nhìn đèn có quầng xanh đỏ, tiền phòng nông và lõm teo đĩa thị","[""> 24 mmHg""]",i: ngưỡng/đơn vị đo,chưa xác định chủ trong KB
+diplopia_strabismus_proptosis,"Song thị (nhìn đôi), lác mắt, hạn chế vận nhãn hoặc lồi mắt","[""nhìn đôi""]",ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+retinal_vitreous_optic_disc_lesion,"Đục/xuất huyết dịch kính, bong thanh dịch võng mạc, xuất huyết võng mạc hoặc phù/teo gai thị",[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+hearing_loss_deafness,"Nghe kém, giảm thính lực (dẫn truyền, tiếp nhận hoặc hỗn hợp), điếc","[""dẫn truyền, tiếp nhận hoặc hỗn hợp""]",ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+tinnitus_ear_fullness,"Ù tai (tiếng ve kêu, tiếng trầm/cao), cảm giác đầy nặng trong tai","[""tiếng ve kêu, tiếng trầm/cao""]",ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+otorrhea_ear_discharge,"Chảy dịch tai, chảy mủ tai (nhầy trong, đặc vàng hoặc thối khẳn) hoặc chảy máu tai","[""nhầy trong, đặc vàng hoặc thối khẳn""]",ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+otalgia_ear_pain,"Đau nhức trong tai, đau vùng xương chũm hoặc đau tăng khi kéo vành tai",[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+tympanic_membrane_lesion,"Màng nhĩ thủng, co lõm, phồng đục hoặc có khối cholesteatoma",[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+facial_nerve_palsy_bell,"Liệt mặt ngoại biên (mặt lệch, mắt nhắm không kín, dấu hiệu Charles Bell dương tính)","[""mặt lệch, mắt nhắm không kín, dấu hiệu Charles Bell dương tính""]",iii: bệnh/hội chứng cụ thể hoặc mã bệnh,liet_day_than_kinh_vii_ngoai_bien
+external_ear_swelling_fistula,"Sưng tấy, nhọt, biến dạng vành tai/ống tai ngoài hoặc lỗ rò luân nhĩ",[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+nasal_obstruction_stuffiness,"Ngạt tắc mũi một bên hoặc hai bên, thở bằng miệng, nói giọng mũi kín",[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+rhinorrhea_nasal_congestion,"Sổ mũi, chảy nước mũi trong, dịch nhầy hoặc mủ xanh vàng",[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+allergic_sneezing_nasal_itch,"Ngứa mũi, hắt hơi từng tràng liên tục, niêm mạc mũi nhợt phù nề",[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,viem_mui_xoang_di_ung
+facial_sinus_pain_anosmia,Đau nhức vùng mặt/hốc mắt/trán và giảm hoặc mất khứu giác (mất ngửi),"[""mất ngửi""]",ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+nasal_polyp_sinonasal_mass,"Khối polyp hốc mũi, u nhú, u nhầy hoặc khối u vùng mũi xoang/vòm mũi họng",[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,benh_polyp_mui;u_lanh_tinh_mui_xoang
+epistaxis_nasal_bleeding,Chảy máu mũi (chảy máu cam) tái diễn hoặc xì mũi lẫn máu,"[""chảy máu cam""]",ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+tonsillitis_adenoid_pharyngitis,"Niêm mạc họng đỏ, amidan hoặc VA sưng to có chấm mủ/giả mạc, nuốt đau/vướng",[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+snoring_sleep_apnea,"Ngủ ngáy to, cơn ngừng thở tắc nghẽn khi ngủ (AHI tăng) và buồn ngủ ban ngày","[""AHI tăng""]",iii: bệnh/hội chứng cụ thể hoặc mã bệnh,ngu_ngay_va_hoi_chung_tac_nghen_tho_trong_khi_ngu
+hoarseness_dysphonia_stridor,"Khàn tiếng, mất tiếng, rối loạn giọng hoặc khó thở thanh quản (thở rít thì hít vào)","[""thở rít thì hít vào""]",ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+head_neck_mass_fistula_trauma,"Khối u vùng cổ/lưỡi/tuyến nước bọt/tuyến giáp, lỗ rò bẩm sinh vùng cổ hoặc vết thương đầu cổ",[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+pruritus_intense_skin_itch,"Ngứa da (ngứa râm ran hoặc ngứa dữ dội tăng về đêm, vết cào gãi)","[""ngứa râm ran hoặc ngứa dữ dội tăng về đêm, vết cào gãi""]",ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+maculopapular_rash,"Dát đỏ, hồng ban hoặc phát ban dát sẩn trên da",[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+vesicular_blister_rash,"Phỏng nước, mụn nước hoặc bọng nước nông/sâu, dập vỡ tạo vết trợt và đóng vảy tiết",[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+pustular_furuncle_folliculitis,"Sẩn viêm nang lông, mụn mủ, nhọt có ngòi mủ hoặc nhân trứng cá (comedon)","[""comedon""]",ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+scaly_plaque_hyperkeratosis,"Mảng đỏ da bong vảy (vảy trắng, vảy mỡ, vảy phấn, vảy cá) hoặc dày sừng, lichen hóa","[""vảy trắng, vảy mỡ, vảy phấn, vảy cá""]",ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+urticarial_wheal_angioedema,Sẩn phù mày đay nổi nhanh lặn nhanh hoặc phù mạch (phù Quincke),"[""phù Quincke""]",iii: bệnh/hội chứng cụ thể hoặc mã bệnh,benh_may_day
+verrucous_papule_nodule_ulcer,"Sẩn sùi, hạt cơm, sẩn lõm giữa (u mềm lây), củ lao/phong, u da hoặc loét da mạn tính","[""u mềm lây""]",iii: bệnh/hội chứng cụ thể hoặc mã bệnh,chưa xác định chủ trong KB
+fungal_ringworm_nail_hair_lesion,"Mảng da hình đa cung có mụn nước rìa, dát lang ben, rụng tóc hoặc móng dày mủn",[],iii: bệnh/hội chứng cụ thể hoặc mã bệnh,chưa xác định chủ trong KB
+herpetic_dermatomal_pain_blister,Chùm mụn nước trên nền đỏ phân bố dọc đường đi dây thần kinh kèm đau rát bỏng (Zona),"[""Zona""]",iii: bệnh/hội chứng cụ thể hoặc mã bệnh,benh_zona
+genital_ulcer_chancre_discharge,"Vết trợt/săng sinh dục, sùi mào gà, tiểu buốt, chảy mủ niệu đạo hoặc khí hư âm đạo",[],iii: bệnh/hội chứng cụ thể hoặc mã bệnh,chưa xác định chủ trong KB
+pigmentary_macule_patch,"Dát mất sắc tố trắng (bạch biến) hoặc dát tăng sắc tố nâu/đen (sạm da, rám má, gai đen)","[""bạch biến"", ""sạm da, rám má, gai đen""]",iii: bệnh/hội chứng cụ thể hoặc mã bệnh,chưa xác định chủ trong KB
+oral_mucosal_ulcers,"Loét niêm mạc miệng, lợi, lưỡi (aphthose) hoặc mũi họng","[""aphthose""]",ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,benh_apthose
+malar_butterfly_photosensitivity,"Ban đỏ hình cánh bướm ở mặt, ban dạng đĩa, nhạy cảm ánh sáng",[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,benh_lupus_ban_do_he_thong
+salmon_pink_evanescent_rash,Ban màu cá hồi thoáng qua xuất hiện khi sốt cao,[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,benh_viem_khop_thieu_nien_tu_phat_the_he_thong
+skin_sclerosis_raynaud,"Dày da, xơ cứng da đầu chi/lan tỏa kèm hội chứng Raynaud",[],iii: bệnh/hội chứng cụ thể hoặc mã bệnh,hoi_chung_raynaud
+heliotrope_gottron_sign,Ban đỏ tím quanh mi mắt (Heliotrope) hoặc sẩn Gottron ở khớp ngón tay,"[""Heliotrope""]",ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,viem_bi_co;viem_da_co_va_viem_da_co
+psoriatic_plaque_nail_pitting,"Mảng da vảy nến bong vảy trắng hoặc loạn dưỡng móng (móng rỗ, dày)","[""móng rỗ, dày""]",iii: bệnh/hội chứng cụ thể hoặc mã bệnh,chưa xác định chủ trong KB
+erythema_nodosum_shins,Sẩn cục hồng ban nút rắn đau dưới da mặt trước hai cẳng chân,[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,hong_ban_nut
+skin_cellulitis_pus_abscess,"Da và mô mềm sưng nóng đỏ đau, ổ áp xe hoặc chảy mủ",[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,benh_nhiem_trung_o_da_va_mo_mem
+petechiae_mucosal_bleeding,Chấm xuất huyết dưới da hoặc chảy máu niêm mạc,[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+conjunctivitis_uveitis_red_eye,"Đỏ mắt, viêm kết mạc, viêm màng bồ đào, chảy nước mắt hoặc sợ ánh sáng",[],iii: bệnh/hội chứng cụ thể hoặc mã bệnh,chưa xác định chủ trong KB
+cough_dry,Ho khan hoặc ho từng cơn,[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+cough_productive_sputum,Ho khạc đờm mạn tính hoặc đờm nhầy mủ,[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+sore_throat_dysphagia,"Đau rát họng, nuốt đau hoặc nuốt nghẹn",[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+dyspnea_chronic_exertional,Khó thở khi gắng sức hoặc khó thở tiến triển tăng dần,[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+wheezing_bronchospasm,"Thở khò khè, cò cử, thở rít thì thở ra (nghe phổi có ran rít, ran ngáy)","[""nghe phổi có ran rít, ran ngáy""]",ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+nocturnal_asthma_dyspnea,"Cơn khó thở, ho, nặng ngực xuất hiện về đêm hoặc sáng sớm, thay đổi theo mùa",[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+history_smoking_dust_exposure,"Tiền sử hút thuốc lá, thuốc lào hoặc tiếp xúc khói bụi độc hại lâu năm",[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+serositis_pleural_pericardial,"Tràn dịch màng phổi, tràn dịch màng ngoài tim (viêm đa màng)","[""viêm đa màng""]",ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+nausea_vomiting_diarrhea,"Buồn nôn, nôn ói, đau bụng hoặc tiêu chảy phân lỏng nhiều lần",[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+myalgia_arthralgia,"Đau mỏi cơ, đau nhức khớp",[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+morning_stiffness_over_1h,Cứng khớp buổi sáng kéo dài trên 1 giờ,[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+morning_stiffness_under_30m,Cứng khớp buổi sáng ngắn dưới 30 phút (dấu hiệu phá rỉ khớp),"[""dấu hiệu phá rỉ khớp""]",ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+symmetric_polyarthritis_hands,"Viêm đa khớp đối xứng hai bên (đặc biệt khớp cổ tay, bàn ngón, ngón gần)","[""đặc biệt khớp cổ tay, bàn ngón, ngón gần""]",ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,benh_viem_khop_dang_thap
+asymmetric_oligoarthritis_lower,Viêm một hoặc vài khớp không đối xứng (ưu thế các khớp lớn chi dưới),"[""ưu thế các khớp lớn chi dưới""]",ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+acute_podagra_tophi,Sưng nóng đỏ đau dữ dội đột ngột khớp bàn - ngón chân cái hoặc có hạt Tôphi,[],iii: bệnh/hội chứng cụ thể hoặc mã bệnh,benh_gut
+inflammatory_sacroiliac_back_pain,"Đau cột sống thắt lưng kiểu viêm (>= 3 tháng, giảm khi tập) và đau khớp cùng chậu","["">= 3 tháng, giảm khi tập""]",i: ngưỡng/đơn vị đo,benh_viem_khop_thieu_nien_tu_phat_the_viem_cot_song_dinh;viem_cot_song_dinh_khop
+enthesitis_achilles_heel,"Viêm đau điểm bám tận của gân (gân gót Achilles, cân gan chân)","[""gân gót Achilles, cân gan chân""]",ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+mechanical_spinal_pain_stiffness,"Đau cột sống thắt lưng hoặc cổ kiểu cơ học (tăng khi vận động, giảm khi nghỉ)","[""tăng khi vận động, giảm khi nghỉ""]",ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+sciatica_lasegue_positive,"Đau dọc đường đi dây thần kinh tọa lan xuống chân, dấu hiệu Lasègue và Valleix dương tính",[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,dau_than_kinh_toa
+cervical_radiculopathy_spurling,"Đau cổ gáy lan xuống vai, cánh tay kèm tê bì kiểu rễ (nghiệm pháp Spurling dương tính)","[""nghiệm pháp Spurling dương tính""]",ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,benh_thoai_hoa_cot_song_co;hoi_chung_co_vai_canh_tay
+knee_effusion_crepitus_locking,"Sưng đau khớp gối, tràn dịch khớp gối, tiếng lục khục hoặc dấu hiệu kẹt khớp",[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+hip_groin_pain_limping,"Đau khớp háng/bẹn, đi khập khiễng, hạn chế động tác dạng và xoay trong khớp háng",[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+shoulder_periarthritis_restricted,"Đau vùng khớp vai, giả liệt khớp vai hoặc đông cứng hạn chế vận động khớp vai",[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+tendinitis_finkelstein_trigger_elbow,"Viêm gân cục bộ: đau mỏm trâm quay (Finkelstein +), ngón tay lò xo hoặc đau lồi cầu ngoài","[""Finkelstein +""]",ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+proximal_muscle_weakness_wasting,"Yếu cơ vùng gốc chi đối xứng hai bên, teo cơ tiến triển hoặc giả phì đại bắp chân",[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+bone_pain_fracture_lesion,"Đau nhức xương sâu (tăng về đêm), biến dạng xương, lún xẹp đốt sống hoặc gãy xương bệnh lý","[""tăng về đêm""]",ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+sym_respiratory_failure,"Khó thở nặng, thở co kéo, tím tái (dấu hiệu suy hô hấp cấp)","[""dấu hiệu suy hô hấp cấp""]",ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+sym_shock_circulatory,"Mạch nhanh nhỏ, tụt huyết áp, vã mồ hôi lạnh, chi lạnh ẩm (dấu hiệu sốc)","[""dấu hiệu sốc""]",ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+sym_altered_consciousness,"Lơ mơ, li bì, lú lẫn hoặc hôn mê",[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+sym_seizures,Co giật toàn thân hoặc co giật khu trú,[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+sym_acute_chest_pain,Đau thắt ngực dữ dội hoặc cảm giác đè ép ngực cấp tính,[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+sym_cauda_equina,"Bí tiểu, rối loạn cơ tròn hoặc tê mất cảm giác vùng yên ngựa",[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+sym_progressive_paralysis,Yếu liệt chi tiến triển nhanh hoặc liệt hai chi dưới,[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+sym_septic_arthritis_suspected,Sưng nóng đỏ đau dữ dội một khớp kèm sốt cao rét run,[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+sym_gi_respiratory_bleeding,"Ho ra máu, nôn ra máu hoặc đại tiện phân đen",[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+sym_severe_dehydration,"Nôn liên tục, mắt trũng, dấu véo da mất rất chậm, tiểu rất ít",[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+out_of_scope_symptom,Triệu chứng nguy hiểm hoặc bất thường ngoài danh mục chuẩn,[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+vocal_fatigue_phonasthenia,"Mỏi giọng, nói nhanh mệt, nói hụt hơi hoặc phải gắng sức khi phát âm",[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+voice_pitch_timbre_alteration,"Biến đổi âm sắc, cao độ hoặc cường độ giọng nói (giọng thều thào, giọng đôi, mất âm sắc)","[""giọng thều thào, giọng đôi, mất âm sắc""]",ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+glottic_closure_mucosal_wave_deficit,"Dây thanh khép không kín, giảm hoặc mất sóng niêm mạc dây thanh trên soi hoạt nghiệm thanh quản",[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+vocal_abuse_phonotrauma_strain,"Tiền sử lạm dụng giọng nói (nói nhiều, nói to kéo dài) hoặc căng mỏi cơ vùng cổ - thanh quản","[""nói nhiều, nói to kéo dài""]",ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+laryngeal_paresthesia_throat_clearing,"Cảm giác khô rát, vướng mắc hoặc dị cảm vùng họng - thanh quản, hay phải đằng hắng giọng",[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+conductive_hearing_loss,"Nghe kém dẫn truyền (Rinne âm tính, Weber lệch bên bệnh)","[""Rinne âm tính, Weber lệch bên bệnh""]",ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,xop_xo_tai
+sensorineural_hearing_loss,Nghe kém tiếp nhận thần kinh giác quan (tổn thương ốc tai),"[""tổn thương ốc tai""]",ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+mixed_hearing_loss,Nghe kém hỗn hợp cả dẫn truyền và tiếp nhận,[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+sudden_deafness_onset,Điếc đột ngột xảy ra trong vài giờ đến vài ngày,[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,diec_dot_ngot
+tympanic_marginal_attic_perforation,Thủng màng nhĩ sát khung xương hoặc vùng màng chùng (thượng nhĩ),"[""thượng nhĩ""]",ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+tympanic_retraction_pocket,Túi co kéo màng nhĩ hoặc xẹp nhĩ dính vào thành trong hòm tai,[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+fetid_cholesteatoma_otorrhea,"Chảy mủ tai thối khẳn, có vảy trắng óng ánh như xà cừ (cholesteatoma)","[""cholesteatoma""]",iii: bệnh/hội chứng cụ thể hoặc mã bệnh,viem_tai_giua_man_tinh_co_cholesteatoma
+mastoid_retroauricular_swelling,"Sưng nề đỏ đau vùng xương chũm sau tai, vành tai bị đẩy vểnh ra trước",[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+rotatory_vertigo_meniere,Cơn chóng mặt xoay tròn kịch phát kèm ù tai và giảm thính lực (Ménière),"[""Ménière""]",iii: bệnh/hội chứng cụ thể hoặc mã bệnh,benh_meniere
+spontaneous_nystagmus_vestibular,Rung giật nhãn cầu (động mắt) tự phát hoặc theo tư thế,"[""động mắt""]",ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+temporal_bone_fracture_hemotympanum,"Chảy máu tai, chảy dịch não tủy qua tai hoặc bầm tím vùng chũm (dấu Battle)","[""dấu Battle""]",iii: bệnh/hội chứng cụ thể hoặc mã bệnh,chưa xác định chủ trong KB
+otomycosis_fungal_debris,Ngứa ống tai ngoài kèm mảng nấm trắng xám hoặc đen như giấy ướt,[],iii: bệnh/hội chứng cụ thể hoặc mã bệnh,chưa xác định chủ trong KB
+middle_meatus_mucopurulent_discharge,Mủ nhầy đọng ở khe mũi giữa hoặc chảy xuống thành sau họng,[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+turbinate_hypertrophy_pallor,"Cuốn mũi dưới phù nề, quá phát hoặc đổi màu nhợt nhạt/tím xám",[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+nasal_septal_deviation_spur,"Vẹo vách ngăn mũi, mào hoặc gai vách ngăn gây cản trở thông khí",[],iii: bệnh/hội chứng cụ thể hoặc mã bệnh,chưa xác định chủ trong KB
+fungal_sinus_ball_calcification,Khối nấm xoang đặc như bã đậu và hình ảnh cản quang kim loại trên CT,[],iii: bệnh/hội chứng cụ thể hoặc mã bệnh,viem_mui_xoang_do_nam
+sinonasal_inverted_papilloma,"Khối u nhú hốc mũi sùi như quả dâu, mật độ chắc, dễ chảy máu",[],iii: bệnh/hội chứng cụ thể hoặc mã bệnh,papilloma_u_nhu_mui_xoang
+juvenile_nasopharyngeal_angiofibroma,Chảy máu mũi tái diễn mức độ nhiều ở nam thiếu niên kèm khối u vòm mũi họng,[],iii: bệnh/hội chứng cụ thể hoặc mã bệnh,u_xo_mach_vom_mui_hong
+nasopharyngeal_carcinoma_trotter,"Ù tai một bên, xì mũi lẫn máu nhầy và nổi hạch cổ cao cùng bên (vòm mũi họng)","[""vòm mũi họng""]",iii: bệnh/hội chứng cụ thể hoặc mã bệnh,chưa xác định chủ trong KB
+adenoid_facies_mouth_breathing,"Bộ mặt V.A điển hình: luôn há miệng thở, môi trên vểnh, vòm khẩu cái lõm cao",[],iii: bệnh/hội chứng cụ thể hoặc mã bệnh,viem_v_a_cap_va_man_tinh
+tonsillar_cryptic_exudate_hypertrophy,"Amidan sưng to quá phát, hốc amidan chứa mủ bã đậu hoặc giả mạc",[],iii: bệnh/hội chứng cụ thể hoặc mã bệnh,viem_amidan_cap_va_man_tinh
+granular_hypertrophic_pharyngitis,"Niêm mạc thành sau họng dày đỏ, nhiều tổ chức lympho quá phát thành hạt",[],iii: bệnh/hội chứng cụ thể hoặc mã bệnh,viem_hong_man_tinh
+epiglottitis_drooling_muffled_voice,"Nuốt đau dữ dội, chảy dãi, giọng nói ngậm hạt thị và sưng đỏ thanh thiệt",[],iii: bệnh/hội chứng cụ thể hoặc mã bệnh,viem_phu_ne_thanh_thiet_cap_tinh
+subglottic_croup_barking_cough,"Ho ông ổng như tiếng chó sủa, khàn tiếng và khó thở thanh quản về đêm",[],iii: bệnh/hội chứng cụ thể hoặc mã bệnh,viem_thanh_quan_cap_tinh_ha_thanh_mon
+vocal_cord_nodule_polyp_reinke,"Hạt xơ dây thanh đối xứng, polyp dây thanh hoặc phù Reinke dây thanh",[],iii: bệnh/hội chứng cụ thể hoặc mã bệnh,chưa xác định chủ trong KB
+laryngeal_tuberculosis_monochorditis,"Viêm đỏ một bên dây thanh hoặc sùi loét bờ sụn phễu, đau lan lên tai (lao thanh quản)","[""lao thanh quản""]",iii: bệnh/hội chứng cụ thể hoặc mã bệnh,lao_thanh_quan
+laryngopharyngeal_reflux_globus,"Cảm giác vướng nghẹn họng, đắng miệng, ợ chua và phù nề mép liên phễu",[],iii: bệnh/hội chứng cụ thể hoặc mã bệnh,trao_nguoc_da_day_thuc_quan
+esophageal_foreign_body_odynophagia,"Nuốt đau chói vùng cổ/ngực sau hóc xương, ứ đọng nước bọt ở xoang lê",[],iii: bệnh/hội chứng cụ thể hoặc mã bệnh,chưa xác định chủ trong KB
+laryngotracheal_stenosis_necrosis,"Khó thở hai thì, tràn khí dưới da vùng cổ hoặc sẹo hẹp lòng thanh khí quản",[],iii: bệnh/hội chứng cụ thể hoặc mã bệnh,seo_hep_thanh_khi_quan
+bilateral_vocal_cord_abductor_palsy,"Hai dây thanh khép sát đường giữa không mở được khi hít vào, giọng nói vẫn bảo tồn",[],iii: bệnh/hội chứng cụ thể hoặc mã bệnh,liet_co_mo_thanh_quan
+deep_neck_space_abscess_trismus,"Sưng tấy lan tỏa vùng cổ/sàn miệng, khít hàm, đẩy lệch thành bên họng",[],iii: bệnh/hội chứng cụ thể hoặc mã bệnh,chưa xác định chủ trong KB
+thyroglossal_duct_cyst_elevation,Khối nang vùng giữa cổ trước xương móng di động theo nhịp nuốt và khi thè lưỡi,[],iii: bệnh/hội chứng cụ thể hoặc mã bệnh,nang_ro_giap_luoi
+branchial_cleft_piriform_fistula,"Lỗ rò hoặc nang bẩm sinh bờ trước cơ ức đòn chũm, góc hàm hoặc đáy xoang lê",[],iii: bệnh/hội chứng cụ thể hoặc mã bệnh,nang_va_ro_khe_mang_i;nang_va_ro_khe_mang_ii
+tongue_hypopharyngeal_ulcer_tumor,"Tổn thương sùi loét bờ lưỡi hoặc xoang lê dễ chảy máu, đau lan lên tai, nuốt nghẹn",[],iii: bệnh/hội chứng cụ thể hoặc mã bệnh,chưa xác định chủ trong KB
+salivary_thyroid_gland_nodule,"Khối u vùng tuyến mang tai, tuyến dưới hàm hoặc nhân thùy tuyến giáp",[],iii: bệnh/hội chứng cụ thể hoặc mã bệnh,u_tuyen_nuoc_bot
+amblyopia_crowding_phenomenon,"Thị lực giảm dù đã chỉnh kính tối đa, có hiện tượng đám đông và định thị ngoại tâm",[],iii: bệnh/hội chứng cụ thể hoặc mã bệnh,nhuoc_thi
+orbital_cellulitis_chemosis_proptosis,"Mi mắt sưng nề đỏ căng, phù kết mạc phòi qua khe mi, lồi mắt thẳng trục và đau khi vận nhãn",[],iii: bệnh/hội chứng cụ thể hoặc mã bệnh,viem_to_chuc_hoc_mat
+dacryocystitis_lacrimal_sac_reflux,"Sưng nóng đỏ vùng góc trong mắt dưới dây chằng mi trong, ấn vùng túi lệ có mủ trào ra",[],iii: bệnh/hội chứng cụ thể hoặc mã bệnh,viem_tui_le
+xerophthalmia_bitot_spots_night_blindness,"Quáng gà, khô kết mạc, vệt Bitot trắng xốp và nhuyễn giác mạc do thiếu vitamin A",[],iii: bệnh/hội chứng cụ thể hoặc mã bệnh,kho_mat_do_thieu_vitamin_a
+allergic_conjunctivitis_giant_papillae,"Ngứa mắt dữ dội hai bên, tiết tố dây dai và nhú gai khổng lồ dạng đá lát ở kết mạc sụn mi",[],iii: bệnh/hội chứng cụ thể hoặc mã bệnh,viem_ket_giac_mac_mua_xuan;viem_ket_mac_di_ung_cap_tinh
+pseudomembranous_conjunctivitis_follicles,Kết mạc phù nề có giả mạc trắng xám bóc dễ chảy máu hoặc nhiều hột kết mạc,[],iii: bệnh/hội chứng cụ thể hoặc mã bệnh,viem_ket_mac_cap
+bacterial_corneal_ulcer_stromal_abscess,"Ổ loét giác mạc hoại tử đáy bẩn, bờ nham nhở, thẩm lậu nhu mô đặc và mủ tiền phòng",[],iii: bệnh/hội chứng cụ thể hoặc mã bệnh,viem_loet_giac_mac_do_vi_khuan
+fungal_corneal_ulcer_feathery_satellite,"Ổ loét giác mạc khô, bề mặt gồ cao, bờ tua gai như lông vũ kèm tổn thương vệ tinh",[],iii: bệnh/hội chứng cụ thể hoặc mã bệnh,viem_loet_giac_mac_do_nam
+herpetic_dendritic_geographic_keratitis,Loét giác mạc hình cành cây hoặc hình bản đồ kèm giảm cảm giác giác mạc,[],iii: bệnh/hội chứng cụ thể hoặc mã bệnh,viem_giac_mac_do_herpes
+acanthamoeba_ring_infiltrate_keratitis,"Đau nhức mắt dữ dội không tương xứng tổn thương, viêm quanh thần kinh và áp xe vòng giác mạc",[],iii: bệnh/hội chứng cụ thể hoặc mã bệnh,viem_loet_giac_mac_do_amip_acanthamoeba
+anterior_uveitis_keratic_precipitates,"Cương tụ rìa, tủa sau giác mạc, dấu hiệu Tyndall thủy dịch dương tính và dính bờ đồng tử",[],iii: bệnh/hội chứng cụ thể hoặc mã bệnh,benh_viem_mang_bo_dao_truoc_cap_tinh
+pediatric_uveitis_band_keratopathy,Viêm màng bồ đào âm thầm ở trẻ em kèm thoái hóa giác mạc hình dải băng và đục thể thủy tinh,[],iii: bệnh/hội chứng cụ thể hoặc mã bệnh,viem_mang_bo_dao_cap_tinh_o_tre_em
+acute_angle_closure_mid_dilated_pupil,"Tiền phòng nông, góc tiền phòng đóng, giác mạc phù mờ và đồng tử giãn méo mất phản xạ",[],iii: bệnh/hội chứng cụ thể hoặc mã bệnh,glocom_goc_dong_nguyen_phat
+open_angle_glaucoma_rnfl_visual_field,"Góc tiền phòng mở, lõm teo đĩa thị C/D mở rộng và tổn thương thị trường kiểu glôcôm",[],iii: bệnh/hội chứng cụ thể hoặc mã bệnh,glocom_goc_mo_nguyen_phat
+endophthalmitis_vitreous_pus_loss_reflex,"Mất ánh đồng tử, mủ dịch kính dày đặc, phù mi và cương tụ toàn bộ kết mạc (viêm mủ nội nhãn)","[""viêm mủ nội nhãn""]",iii: bệnh/hội chứng cụ thể hoặc mã bệnh,viem_mu_noi_nhan_ngoai_sinh;viem_mu_noi_nhan_noi_sinh
+sympathetic_ophthalmia_granulomatous,Viêm màng bồ đào hạt lan tỏa hai mắt xuất hiện sau chấn thương xuyên thủng một mắt,[],iii: bệnh/hội chứng cụ thể hoặc mã bệnh,nhan_viem_dong_cam
+vkh_exudative_retinal_detachment,"Viêm màng bồ đào hai mắt kèm bong võng mạc thanh dịch đa ổ, ù tai và bạc lông mi (VKH)","[""VKH""]",iii: bệnh/hội chứng cụ thể hoặc mã bệnh,hoi_chung_vogt_koyanagi_harada
+central_serous_chorioretinopathy_metamorphopsia,"Ám điểm tương đối trung tâm, nhìn hình biến dạng/nhỏ lại và bong thanh dịch vùng hoàng điểm",[],iii: bệnh/hội chứng cụ thể hoặc mã bệnh,benh_hac_vong_mac_trung_tam_thanh_dich
+retinal_vein_occlusion_flame_hemorrhage,"Tĩnh mạch võng mạc giãn ngoằn ngoèo, xuất huyết hình ngọn lửa tỏa rộng và phù hoàng điểm",[],iii: bệnh/hội chứng cụ thể hoặc mã bệnh,benh_tac_tinh_mach_vong_mac
+central_retinal_artery_cherry_red_spot,"Mất thị lực đột ngột không đau, võng mạc phù trắng sữa và dấu hiệu hoàng điểm anh đào",[],iii: bệnh/hội chứng cụ thể hoặc mã bệnh,tac_dong_mach_trung_tam_vong_mac
+optic_neuritis_rapd_retrobulbar_pain,"Giảm thị lực nhanh, đau khi vận nhãn, tổn hại đồng tử hướng tâm (RAPD +) và rối loạn sắc giác","[""RAPD +""]",iii: bệnh/hội chứng cụ thể hoặc mã bệnh,viem_thi_than_kinh
+ocular_motility_cranial_nerve_palsy,"Liệt cơ vận nhãn do tổn thương dây thần kinh III, IV, VI gây lác bất tương hợp và tư thế đầu bù trừ",[],iii: bệnh/hội chứng cụ thể hoặc mã bệnh,chưa xác định chủ trong KB
+thyroid_graves_orbitopathy_lid_retraction,"Co rút mi trên, lồi mắt và phì đại cơ vận nhãn liên quan bệnh lý tuyến giáp (Basedow)","[""Basedow""]",iii: bệnh/hội chứng cụ thể hoặc mã bệnh,chưa xác định chủ trong KB
+corneal_edema_descemet_folds,"Phù giác mạc, nếp gấp màng Descemet và bọng biểu mô giác mạc",[],iii: bệnh/hội chứng cụ thể hoặc mã bệnh,chưa xác định chủ trong KB
+pupil_miosis_posterior_synechiae,"Đồng tử co nhỏ, phản xạ ánh sáng kém và dính bờ đồng tử vào mặt trước thể thủy tinh",[],iii: bệnh/hội chứng cụ thể hoặc mã bệnh,chưa xác định chủ trong KB
+vitreous_haze_floaters,"Nhìn thấy ruồi bay, chấm đen lơ lửng trước mắt và vẩn đục dịch kính",[],iii: bệnh/hội chứng cụ thể hoặc mã bệnh,chưa xác định chủ trong KB
+macular_edema_oct_thickening,"Phù hoàng điểm dạng nang, mất ánh trung tâm hoàng điểm",[],iii: bệnh/hội chứng cụ thể hoặc mã bệnh,chưa xác định chủ trong KB
+cotton_wool_spots_retinal_ischemia,Các xuất tiết bông (cotton-wool spots) và thiếu máu võng mạc trên soi đáy mắt,"[""cotton-wool spots""]",iii: bệnh/hội chứng cụ thể hoặc mã bệnh,chưa xác định chủ trong KB
+neovascular_glaucoma_rubeosis,"Tân mạch mống mắt, tân mạch góc tiền phòng gây tăng nhãn áp thứ phát",[],iii: bệnh/hội chứng cụ thể hoặc mã bệnh,chưa xác định chủ trong KB
+blepharospasm_eyelid_edema,Co quắp mi mắt và phù nề sưng tấy mi mắt,[],iii: bệnh/hội chứng cụ thể hoặc mã bệnh,chưa xác định chủ trong KB
+corneal_perforation_iris_prolapse,Dọa thủng hoặc thủng giác mạc kèm phòi mống mắt và xẹp tiền phòng,[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+color_vision_dyschromatopsia,Rối loạn sắc giác (mù màu đỏ - lục) và giảm độ nhạy cảm tương phản,"[""mù màu đỏ - lục""]",ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+visual_field_scotoma_constriction,"Ám điểm trung tâm, ám điểm hình cung hoặc thu hẹp thị trường hình ống",[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+honey_crusted_impetigo_erosion,Bọng nước nông nhanh dập vỡ tạo vảy tiết màu vàng mật ong đặc trưng (Chốc),"[""Chốc""]",iii: bệnh/hội chứng cụ thể hoặc mã bệnh,benh_choc
+staphylococcal_scalded_skin_exfoliation,Đỏ da lan tỏa đau rát kèm bong trợt thượng bì diện rộng như bỏng nước sôi (SSSS),"[""SSSS""]",iii: bệnh/hội chứng cụ thể hoặc mã bệnh,hoi_chung_bong_vay_da_do_tu_cau
+acne_comedones_nodulocystic,"Nhân trứng cá đóng/mở (mụn đầu trắng, đầu đen), sẩn viêm, mụn mủ và cục/nang vùng mặt lưng","[""mụn đầu trắng, đầu đen""]",iii: bệnh/hội chứng cụ thể hoặc mã bệnh,trung_ca
+cutaneous_tuberculosis_lupus_vulgaris,Củ lao màu vàng nâu (dấu hiệu ấn kính củ thạch táo) hoặc mảng sùi/loét lao da,"[""dấu hiệu ấn kính củ thạch táo""]",iii: bệnh/hội chứng cụ thể hoặc mã bệnh,benh_lao_da
+leprosy_anesthetic_hypopigmented_nerve,Dát da mất cảm giác nóng/lạnh/đau kèm phì đại dây thần kinh ngoại biên (Bệnh phong),"[""Bệnh phong""]",iii: bệnh/hội chứng cụ thể hoặc mã bệnh,benh_phong
+scabies_interdigital_burrows_nocturnal,"Mụn nước ở kẽ ngón tay, ngấn cổ tay, sinh dục kèm đường hầm luống ghẻ và ngứa dữ dội về đêm",[],iii: bệnh/hội chứng cụ thể hoặc mã bệnh,benh_ghe
+pityriasis_versicolor_hypo_hyper_macules,"Dát trắng, hồng hoặc nâu cà phê sữa có vảy mịn như phấn ở ngực lưng (Lang ben)","[""Lang ben""]",iii: bệnh/hội chứng cụ thể hoặc mã bệnh,chưa xác định chủ trong KB
+dermatophytosis_annular_active_border,"Mảng đỏ hình tròn/đa cung giới hạn rõ, bờ gồ cao có mụn nước và lành ở trung tâm (Nấm sợi)","[""Nấm sợi""]",iii: bệnh/hội chứng cụ thể hoặc mã bệnh,benh_da_do_nam_soi
+vulvovaginal_oral_candidiasis_curd,Ngứa rát âm hộ - âm đạo kèm khí hư trắng đục như váng sữa hoặc tưa miệng giả mạc trắng,[],iii: bệnh/hội chứng cụ thể hoặc mã bệnh,benh_da_va_niem_mac_do_candida;viem_am_ho_am_dao_do_nam_candida
+tinea_capitis_kerion_alopecia,"Mảng rụng tóc có vảy xám, tóc gãy ngắn hoặc ổ áp xe tầng tổ ong (Kerion de Cels)","[""Kerion de Cels""]",iii: bệnh/hội chứng cụ thể hoặc mã bệnh,nam_toc
+onychomycosis_subungual_hyperkeratosis,"Bờ tự do móng dày sừng dưới móng, móng mủn đục vàng nâu hoặc bong móng (Nấm móng)","[""Nấm móng""]",iii: bệnh/hội chứng cụ thể hoặc mã bệnh,nam_mong
+paederus_kissing_blister_dermatitis,Vệt đỏ da thành đường kèm mụn nước/mụn mủ rát bỏng và tổn thương đối xứng qua nếp gấp (côn trùng),"[""côn trùng""]",iii: bệnh/hội chứng cụ thể hoặc mã bệnh,viem_da_tiep_xuc_do_con_trung
+molluscum_umbilicated_pearly_papule,"Sẩn chắc màu trắng ngọc hoặc hồng, hình bán cầu có lõm ở chính giữa (U mềm lây)","[""U mềm lây""]",iii: bệnh/hội chứng cụ thể hoặc mã bệnh,u_mem_lay
+pemphigus_flaccid_bulla_nikolsky_pos,"Bọng nước nông nhăn nheo trên da bình thường, dễ vỡ để lại vết trợt lâu lành, Nikolsky dương tính",[],iii: bệnh/hội chứng cụ thể hoặc mã bệnh,pemphigus
+bullous_pemphigoid_tense_bulla,"Bọng nước to căng chắc trên nền da đỏ hoặc sẩn phù ngứa ở người cao tuổi, Nikolsky âm tính",[],iii: bệnh/hội chứng cụ thể hoặc mã bệnh,bong_nuoc_dang_pemphigus
+duhring_brocq_herpetiform_pruritic,"Mụn nước, bọng nước xếp thành chùm trên nền hồng ban đối xứng kèm ngứa rát dữ dội (Duhring-Brocq)","[""Duhring-Brocq""]",iii: bệnh/hội chứng cụ thể hoặc mã bệnh,benh_viem_da_dang_herpes_cua_duhring_brocq
+atopic_dermatitis_flexural_eczema,"Khô da, ngứa mạn tính kèm đám chàm mụn nước hoặc lichen hóa ở nếp gấp khuỷu, khoeo (Viêm da cơ địa)","[""Viêm da cơ địa""]",iii: bệnh/hội chứng cụ thể hoặc mã bệnh,viem_da_co_dia
+allergic_contact_dermatitis_patch_pos,"Dát đỏ, phù nề, mụn nước ngứa khu trú tại vùng tiếp xúc dị nguyên, test áp da dương tính",[],iii: bệnh/hội chứng cụ thể hoặc mã bệnh,viem_da_tiep_xuc_di_ung
+dress_syndrome_facial_edema_eosinophilia,"Đỏ da phù nề mặt, sốt cao, hạch to và tổn thương gan/thận kèm tăng bạch cầu ái toan do thuốc (DRESS)","[""DRESS""]",iii: bệnh/hội chứng cụ thể hoặc mã bệnh,hoi_chung_dress
+erythema_multiforme_target_lesion,"Thương tổn hình bia bắn đồng tâm điển hình (3 vòng màu) ở mu tay, mu chân, đầu gối","[""3 vòng màu""]",iii: bệnh/hội chứng cụ thể hoặc mã bệnh,hong_ban_da_dang
+sjs_ten_epidermal_necrolysis_mucosal,Hoại tử bong trợt thượng bì diện rộng kèm loét trợt chảy máu nhiều hốc tự nhiên (Stevens-Johnson / Lyell),"[""Stevens-Johnson / Lyell""]",iii: bệnh/hội chứng cụ thể hoặc mã bệnh,chưa xác định chủ trong KB
+seborrheic_dermatitis_greasy_scales,"Dát đỏ ranh giới rõ phủ vảy da bóng mỡ màu vàng ở rãnh mũi má, cung mày và da đầu",[],iii: bệnh/hội chứng cụ thể hoặc mã bệnh,viem_da_dau
+pityriasis_rosea_herald_patch_christmas,Đám mảng đỏ hình bầu dục khởi đầu (huy hiệu) và các dát nhỏ xếp theo hướng xương sườn (Gibert),"[""huy hiệu"", ""Gibert""]",iii: bệnh/hội chứng cụ thể hoặc mã bệnh,vay_phan_hong_gibert
+psoriasis_auspitz_brocq_koebner,"Mảng đỏ ranh giới rõ phủ vảy trắng dày như sáp nến, nghiệm pháp cạo Brocq dương tính và hiện tượng Koebner",[],iii: bệnh/hội chứng cụ thể hoặc mã bệnh,benh_vay_nen
+erythroderma_generalized_exfoliation,Đỏ da và bong vảy lan tỏa trên 90% diện tích cơ thể kèm rối loạn thân nhiệt (Đỏ da toàn thân),"[""Đỏ da toàn thân""]",iii: bệnh/hội chứng cụ thể hoặc mã bệnh,do_da_toan_than
+lichen_planus_wickham_purple_papules,"Sẩn đa giác màu tím hoa cà phẳng bóng, có mạng lưới trắng Wickham và ngứa nhiều (Lichen phẳng)","[""Lichen phẳng""]",iii: bệnh/hội chứng cụ thể hoặc mã bệnh,benh_lichen_phang
+syphilis_hard_chancre_roseola_palmoplantar,"Vết trợt nông đáy sạch nền cứng không đau (săng), đào ban hoặc sẩn giang mai lòng bàn tay chân","[""săng""]",iii: bệnh/hội chứng cụ thể hoặc mã bệnh,benh_giang_mai
+gonorrhea_purulent_urethritis_dysuria,"Tiểu buốt, tiểu rắt kèm chảy mủ niệu đạo đặc vàng xanh (giọt mủ ban mai)","[""giọt mủ ban mai""]",iii: bệnh/hội chứng cụ thể hoặc mã bệnh,benh_lau
+genital_herpes_clustered_painful_ulcers,"Chùm mụn nước nhỏ ở sinh dục nhanh vỡ thành các vết trợt đa cung đau rát, hay tái phát",[],iii: bệnh/hội chứng cụ thể hoặc mã bệnh,herpes_sinh_duc
+condyloma_acuminata_cauliflower_papules,Sẩn sùi mềm màu hồng tươi hình mào gà hoặc súp lơ ở vùng sinh dục - hậu môn,[],iii: bệnh/hội chứng cụ thể hoặc mã bệnh,benh_sui_mao_ga_sinh_duc
+basal_cell_carcinoma_pearly_telangiectasia,"U cục bóng lấp lánh, bờ gồ có các hạt xà cừ, giãn mạch bề mặt hoặc loét lâu lành vùng đầu mặt",[],iii: bệnh/hội chứng cụ thể hoặc mã bệnh,chưa xác định chủ trong KB
+melanoma_abcd_asymmetric_pigmented_lesion,"Tổn thương sắc tố không đối xứng, bờ nham nhở, nhiều màu sắc và đường kính > 6mm (ABCDE)","[""ABCDE""]",iii: bệnh/hội chứng cụ thể hoặc mã bệnh,chưa xác định chủ trong KB
+syringoma_periorbital_flesh_papules,Các sẩn nhỏ màu da hoặc hơi vàng đối xứng quanh mi mắt dưới (U ống tuyến mồ hôi),"[""U ống tuyến mồ hôi""]",iii: bệnh/hội chứng cụ thể hoặc mã bệnh,u_ong_tuyen_mo_hoi
+palmoplantar_keratoderma_fissures,"Dày sừng lan tỏa hoặc khu trú lòng bàn tay, lòng bàn chân kèm nứt nẻ đau (Dày sừng lòng bàn tay chân)","[""Dày sừng lòng bàn tay chân""]",iii: bệnh/hội chứng cụ thể hoặc mã bệnh,day_sung_long_ban_tay_ban_chan_di_truyen
+epidermolysis_bullosa_mechanobullous,"Bọng nước xuất hiện ngay tại vùng da bị sang chấn, cọ xát nhẹ từ nhỏ (Ly thượng bì bọng nước)","[""Ly thượng bì bọng nước""]",iii: bệnh/hội chứng cụ thể hoặc mã bệnh,ly_thuong_bi_bong_nuoc_bam_sinh
+pityriasis_rubra_pilaris_islands_sparing,"Sẩn sừng nang lông, đỏ da màu cam kèm các đảo da lành và dày sừng lòng bàn tay chân màu vàng cam",[],iii: bệnh/hội chứng cụ thể hoặc mã bệnh,benh_vay_phan_do_nang_long
+neurofibromatosis_cafe_au_lait_lisch,"Nhiều u mềm trên da, dát màu cà phê sữa (>= 6 dát), tàn nhang hố nách và nốt Lisch mống mắt","["">= 6 dát""]",iii: bệnh/hội chứng cụ thể hoặc mã bệnh,u_xo_than_kinh
+acanthosis_nigricans_velvety_neck_axilla,"Mảng da dày màu nâu đen mượt như nhung ở nếp cổ, hố nách và bẹn (Bệnh gai đen)","[""Bệnh gai đen""]",iii: bệnh/hội chứng cụ thể hoặc mã bệnh,benh_gai_den
+darier_hyperkeratotic_greasy_papules,"Sẩn sừng màu nâu bẩn, thô ráp tập trung ở vùng tiết bã kèm khía chữ V ở bờ móng (Darier)","[""Darier""]",iii: bệnh/hội chứng cụ thể hoặc mã bệnh,di_sung_nang_long
+ichthyosis_fish_scale_hyperkeratosis,Da khô ráp phủ vảy da đa giác bám chặt như vảy cá ở mặt duỗi tứ chi (Bệnh vảy cá),"[""Bệnh vảy cá""]",iii: bệnh/hội chứng cụ thể hoặc mã bệnh,benh_vay_ca
+acrodermatitis_enteropathica_periorificial_zinc,Viêm da bọng nước/vảy tiết quanh các hốc tự nhiên và đầu chi kèm tiêu chảy và rụng tóc do thiếu kẽm,[],iii: bệnh/hội chứng cụ thể hoặc mã bệnh,viem_da_dau_chi_ruot
+cutaneous_sarcoidosis_lupus_pernio,"Sẩn cục màu đỏ tím ở mũi, má (Lupus pernio) hoặc thâm nhiễm trên sẹo cũ (Sarcoidosis da)","[""Lupus pernio"", ""Sarcoidosis da""]",iii: bệnh/hội chứng cụ thể hoặc mã bệnh,sarcoidosis
+vitiligo_chalk_white_depigmented_macules,"Dát trắng như phấn hoặc sữa, ranh giới rõ, không teo da và không vảy, lông trên dát hóa trắng (Bạch biến)","[""Bạch biến""]",iii: bệnh/hội chứng cụ thể hoặc mã bệnh,benh_bach_bien
+melasma_symmetric_facial_hyperpigmentation,"Dát/mảng tăng sắc tố màu nâu đối xứng ở gò má, trán, môi trên liên quan ánh nắng và nội tiết (Rám má)","[""Rám má""]",iii: bệnh/hội chứng cụ thể hoặc mã bệnh,ram_ma
+pellagra_3d_photosensitive_casal_necklace,Viêm da vùng hở đối xứng (vòng cổ Casal) kèm tiêu chảy và rối loạn tâm thần do thiếu vitamin PP,"[""vòng cổ Casal""]",iii: bệnh/hội chứng cụ thể hoặc mã bệnh,benh_pellagra
+porphyria_cutanea_tarda_photo_blisters,"Bọng nước, vết trợt, sẹo hạt kê ở vùng da hở (mu tay) kèm rậm lông mặt và nước tiểu đỏ sẫm (Porphyrin)","[""mu tay"", ""Porphyrin""]",iii: bệnh/hội chứng cụ thể hoặc mã bệnh,benh_porphyrin_da
+parapsoriasis_chronic_scaly_plaques,"Các dát/mảng đỏ bong vảy mỏng mạn tính, hình giọt hoặc mảng lớn kháng trị (Á vảy nến)","[""Á vảy nến""]",iii: bệnh/hội chứng cụ thể hoặc mã bệnh,a_vay_nen_va_vay_phan_dang_lichen
+prurigo_nodularis_excoriated_papules,Các sẩn huyết thanh hoặc cục sần sùi ngứa dữ dội ở mặt duỗi tứ chi để lại sẹo thâm (Sẩn ngứa),"[""Sẩn ngứa""]",iii: bệnh/hội chứng cụ thể hoặc mã bệnh,san_ngua
+discoid_lupus_follicular_plugging_scarring,Mảng đỏ có vảy dày dính (dấu hiệu đinh thảm) và teo da để lại sẹo ở vùng hở (Lupus đỏ mạn),"[""dấu hiệu đinh thảm"", ""Lupus đỏ mạn""]",iii: bệnh/hội chứng cụ thể hoặc mã bệnh,chưa xác định chủ trong KB
+chlamydial_trichomonal_vaginitis_cervicitis,Khí hư nhầy mủ cổ tử cung hoặc khí hư loãng có bọt màu vàng xanh kèm ngứa rát âm đạo,[],iii: bệnh/hội chứng cụ thể hoặc mã bệnh,nhiem_chlamydia_trachomatis_sinh_duc_tiet_nieu;viem_am_dao_do_trung_roi
+photodermatitis_occupational_skin_lesion,"Đỏ da, bọng nước vùng tiếp xúc ánh nắng hoặc hóa chất/dầu mỡ nghề nghiệp",[],iii: bệnh/hội chứng cụ thể hoặc mã bệnh,benh_da_do_anh_sang;benh_da_nghe_nghiep
+rheumatoid_nodules_ulnar_deviation,"Hạt dưới da (hạt thấp) và biến dạng khớp bàn tay hình lưng đĩa, lệch trụ hoặc cổ cò","[""hạt thấp""]",iii: bệnh/hội chứng cụ thể hoặc mã bệnh,chưa xác định chủ trong KB
+sle_alopecia_nephritis_cytopenia,"Rụng tóc không sẹo, tổn thương thận (protein niệu, trụ tế bào) và giảm các dòng tế bào máu (Lupus)","[""protein niệu, trụ tế bào"", ""Lupus""]",iii: bệnh/hội chứng cụ thể hoặc mã bệnh,chưa xác định chủ trong KB
+sclerodactyly_digital_ulcers_telangiectasia,"Da ngón tay dày cứng, loét/sẹo rỗ đầu ngón tay, giãn mao mạch và khó há miệng (Xơ cứng bì)","[""Xơ cứng bì""]",iii: bệnh/hội chứng cụ thể hoặc mã bệnh,benh_xo_cung_bi_toan_the
+still_quotidian_spiking_fever_arthralgia,"Sốt cao thành cơn hàng ngày (>= 39°C) kèm đau khớp, ban cá hồi, đau họng và hạch/lách to (Bệnh Still)","["">= 39°C"", ""Bệnh Still""]",iii: bệnh/hội chứng cụ thể hoặc mã bệnh,chưa xác định chủ trong KB
+dermatomyositis_shawls_mechanic_hands,"Ban đỏ vùng cổ ngực (dấu hiệu khăn quàng), bàn tay thợ cơ khí và yếu cơ gốc chi (Viêm da cơ)","[""dấu hiệu khăn quàng"", ""Viêm da cơ""]",iii: bệnh/hội chứng cụ thể hoặc mã bệnh,chưa xác định chủ trong KB
+jia_systemic_polyarticular_enthesitis,"Viêm khớp kéo dài >= 6 tuần khởi phát ở trẻ dưới 16 tuổi (Thể hệ thống, đa khớp, viêm điểm bám gân)","[""Thể hệ thống, đa khớp, viêm điểm bám gân""]",iii: bệnh/hội chứng cụ thể hoặc mã bệnh,benh_viem_khop_thieu_nien_tu_phat_the_da_khop_co_yeu_to_dang
+ankylosing_spondylitis_schober_chest,Hạn chế vận động cột sống thắt lưng (nghiệm pháp Schober giảm) và giảm độ giãn lồng ngực (VCSDK),"[""nghiệm pháp Schober giảm"", ""VCSDK""]",iii: bệnh/hội chứng cụ thể hoặc mã bệnh,chưa xác định chủ trong KB
+reactive_arthritis_urethritis_conjunctivitis,"Tam chứng viêm khớp không đối xứng chi dưới, viêm niệu đạo và viêm kết mạc sau nhiễm khuẩn (Reiter)","[""Reiter""]",iii: bệnh/hội chứng cụ thể hoặc mã bệnh,benh_viem_khop_phan_ung
+psoriatic_dactylitis_distal_interphalangeal,Viêm ngón tay/ngón chân hình khúc dồi và viêm khớp liên đốt ngón xa kèm tổn thương da/móng vảy nến,[],iii: bệnh/hội chứng cụ thể hoặc mã bệnh,benh_viem_khop_vay_nen;viem_khop_thieu_nien_tu_phat_the_viem_khop_vay_nen
+transient_hip_synovitis_pediatric_limp,"Đau khớp háng và đi khập khiễng cấp tính ở trẻ nhỏ sau nhiễm siêu vi đường hô hấp trên, tự giới hạn",[],iii: bệnh/hội chứng cụ thể hoặc mã bệnh,viem_mang_hoat_dich_khop_hang_thoang_qua
+gout_hyperuricemia_colchicine_response,"Cơn viêm khớp cấp tính dữ dội đạt đỉnh trong 24 giờ, đáp ứng tốt với Colchicin và tăng acid uric máu",[],iii: bệnh/hội chứng cụ thể hoặc mã bệnh,chưa xác định chủ trong KB
+septic_arthritis_purulent_synovial_fluid,"Sưng nóng đỏ đau dữ dội một khớp lớn, hạn chế vận động hoàn toàn và dịch khớp đục mủ",[],iii: bệnh/hội chứng cụ thể hoặc mã bệnh,viem_khop_nhiem_khuan
+pyomyositis_psoas_muscle_abscess,"Sưng đau nhức bắp cơ khu trú, cơ căng cứng, sốt cao và dấu hiệu cơ thắt lưng chậu dương tính (Áp xe cơ)","[""Áp xe cơ""]",iii: bệnh/hội chứng cụ thể hoặc mã bệnh,viem_co_ap_xe_co_nhiem_khuan
+osteomyelitis_bone_tenderness_fistula,"Đau xương khu trú dữ dội, sưng nề phần mềm quanh xương hoặc lỗ rò chảy mủ và mảnh xương chết",[],iii: bệnh/hội chứng cụ thể hoặc mã bệnh,viem_xuong_tuy_nhiem_khuan
+duchene_becker_gowers_calf_hypertrophy,"Dáng đi lạch bạch, nghiệm pháp Gowers dương tính và phì đại giả cơ bắp chân ở trẻ trai (Loạn dưỡng cơ)","[""Loạn dưỡng cơ""]",iii: bệnh/hội chứng cụ thể hoặc mã bệnh,loan_duong_co_tien_trien
+knee_osteoarthritis_wood_planing_osteophyte,"Đau khớp gối kiểu cơ học, dấu hiệu bào gỗ dương tính, biến dạng trục khớp gối (chân vòng kiềng)","[""chân vòng kiềng""]",iii: bệnh/hội chứng cụ thể hoặc mã bệnh,chưa xác định chủ trong KB
+lumbar_spondylosis_paraspinal_spasm,"Đau vùng thắt lưng mạn tính kiểu cơ học, co cứng cơ cạnh sống và lệch vẹo cột sống chống đau",[],iii: bệnh/hội chứng cụ thể hoặc mã bệnh,benh_thoai_hoa_cot_song_that_lung
+radicular_sensory_motor_reflex_deficit,"Tê bì dị cảm theo khoanh da rễ thần kinh, giảm phản xạ gân xương (gối/gót) hoặc yếu cơ ngọn chi","[""gối/gót""]",ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+cervical_vertebrobasilar_insufficiency,"Đau đầu vùng chẩm, chóng mặt, ù tai khi quay cổ do chèn ép động mạch đốt sống thân nền",[],iii: bệnh/hội chứng cụ thể hoặc mã bệnh,chưa xác định chủ trong KB
+de_quervain_radial_styloid_tenosynovitis,Sưng đau mỏm trâm quay cổ tay tăng khi vận động ngón cái và nghiệm pháp Finkelstein dương tính,[],iii: bệnh/hội chứng cụ thể hoặc mã bệnh,viem_gan_vung_mom_tram_quay_co_tay
+trigger_finger_flexor_tendon_nodule,"Ngón tay bị bật hoặc kẹt ở tư thế gấp, sờ thấy hạt xơ trên gân gấp ở khớp bàn ngón tay (Ngón tay lò xo)","[""Ngón tay lò xo""]",iii: bệnh/hội chứng cụ thể hoặc mã bệnh,viem_gan_gap_ngon_tay_ngon_tay_lo_xo
+lateral_epicondylitis_tennis_elbow,"Đau chói vùng lồi cầu ngoài xương cánh tay lan xuống cẳng tay, tăng khi duỗi cổ tay có đối kháng",[],iii: bệnh/hội chứng cụ thể hoặc mã bệnh,ngoai_xuong_canh_tay
+osteoporosis_vertebral_collapse_kyphosis,"Đau lưng cấp hoặc mạn tính, giảm chiều cao, gù lưng và lún xẹp đốt sống sau chấn thương nhẹ (Loãng xương)","[""Loãng xương""]",iii: bệnh/hội chứng cụ thể hoặc mã bệnh,benh_loang_xuong
+avascular_femoral_head_necrosis_groin_pain,"Đau khớp háng sâu vùng bẹn lan xuống mặt trong đùi, hạn chế xoay trong và dạng khớp háng (Hoại tử chỏm)","[""Hoại tử chỏm""]",iii: bệnh/hội chứng cụ thể hoặc mã bệnh,chom_xuong_dui
+giant_cell_bone_tumor_epiphyseal_swelling,"Đau và sưng đầu xương dài quanh khớp gối hoặc đầu dưới xương quay, hình ảnh tiêu xương vỏ mỏng (U tế bào khổng lồ)","[""U tế bào khổng lồ""]",iii: bệnh/hội chứng cụ thể hoặc mã bệnh,benh_u_te_bao_khong_lo
+fibrous_dysplasia_bone_deformity_fracture,"Biến dạng cong xương (xương đùi hình gậy chăn cừu), đau xương và gãy xương bệnh lý (Loạn sản xơ xương)","[""xương đùi hình gậy chăn cừu"", ""Loạn sản xơ xương""]",iii: bệnh/hội chứng cụ thể hoặc mã bệnh,loan_san_xo_xuong
+joint_swelling_warmth_redness_effusion,"Sưng nề, nóng đỏ tại khớp, tràn dịch ổ khớp hoặc dày màng hoạt dịch khi sờ nắn",[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+joint_range_of_motion_limitation,Hạn chế biên độ vận động chủ động và thụ động của khớp hoặc cột sống,[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+joint_deformity_ankylosis_subluxation,"Biến dạng khớp, lệch trục chi, bán trật khớp hoặc dính khớp hoàn toàn",[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+periarticular_tendon_bursa_tenderness,"Điểm đau chói tại chỗ khi ấn vào đầu xương, khe khớp, bao gân hoặc túi thanh dịch",[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+spinal_deformity_scoliosis_loss_lordosis,"Mất đường cong sinh lý cột sống, vẹo cột sống hoặc gù cột sống",[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+limb_numbness_paresthesia_tingling,"Tê bì, kiến bò, châm chích hoặc giảm cảm giác nông ở đầu chi",[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+muscle_tenderness_cramps_myotonia,"Đau mỏi bắp cơ khi bóp, co cứng cơ hoặc teo cơ vùng chi",[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+eosinophilic_meningitis_paresthesia_headache,"Đau đầu dữ dội kéo dài, dị cảm đau rát da và tăng bạch cầu ái toan dịch não tủy sau ăn ốc sống",[],iii: bệnh/hội chứng cụ thể hoặc mã bệnh,chưa xác định chủ trong KB
+varicella_polymorphous_centripetal_vesicles,"Mụn nước nhiều lứa tuổi (dát đỏ, phỏng nước trong, phỏng đục, vảy tiết) mọc nhiều ở thân mình và da đầu (Thủy đậu)","[""dát đỏ, phỏng nước trong, phỏng đục, vảy tiết"", ""Thủy đậu""]",iii: bệnh/hội chứng cụ thể hoặc mã bệnh,benh_thuy_dau
+cerebral_malaria_coma_hemoglobinuria,"Sốt rét ác tính thể não: rối loạn ý thức/hôn mê, co giật, suy thận hoặc đái huyết cầu tố nước tiểu đen",[],iii: bệnh/hội chứng cụ thể hoặc mã bệnh,chưa xác định chủ trong KB
+typhoid_stepwise_fever_bradycardia_tuphos,"Sốt tăng dần hình bậc thang rồi sốt cao liên tục, mạch nhiệt phân ly, bụng chướng có tiếng óc ách hố chậu phải và vẻ mặt li bì (tuphos)","[""tuphos""]",iii: bệnh/hội chứng cụ thể hoặc mã bệnh,chưa xác định chủ trong KB
+avian_influenza_rapid_ards_pneumonia,"Sốt cao, ho, khó thở tiến triển nhanh thành viêm phổi nặng và suy hô hấp cấp ARDS sau tiếp xúc gia cầm (Cúm A H5N6/H7N9)","[""Cúm A H5N6/H7N9""]",iii: bệnh/hội chứng cụ thể hoặc mã bệnh,chưa xác định chủ trong KB
+viral_hepatitis_jaundice_dark_urine_ast_alt,"Mệt mỏi, chán ăn, sợ mỡ, đau tức hạ sườn phải, nước tiểu sẫm màu như nước vối và vàng da vàng mắt (Viêm gan virus)","[""Viêm gan virus""]",iii: bệnh/hội chứng cụ thể hoặc mã bệnh,chưa xác định chủ trong KB
+hfmd_palmoplantar_vesicles_herpangina,"Loét miệng đau kèm phỏng nước hình bầu dục màu xám ở lòng bàn tay, lòng bàn chân, gối, mông (Tay chân miệng)","[""Tay chân miệng""]",iii: bệnh/hội chứng cụ thể hoặc mã bệnh,tay_chan_mieng
+hepatomegaly_right_hypochondriac_tenderness,"Gan to dưới bờ sườn, mật độ mềm hoặc chắc, ấn đau tức vùng hạ sườn phải",[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+splenomegaly_left_hypochondriac_mass,Lách to các độ dưới bờ sườn trái,[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+intoxication_coated_tongue_dry_lips,"Vẻ mặt nhiễm trùng nhiễm độc: môi khô, lưỡi bẩn, hơi thở hôi, mắt trũng",[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+epidemiological_exposure_vector_travel,"Yếu tố dịch tễ tiếp xúc nguồn lây, vùng dịch lưu hành hoặc côn trùng/động vật truyền bệnh",[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+abdominal_distension_borborygmi_pain,"Đau bụng âm ỉ hoặc từng cơn, chướng bụng, đầy hơi hoặc rối loạn tiêu hóa",[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+copd_barrel_chest_pursed_lip_breathing,"Lồng ngực hình thùng, gõ vang, thở chúm môi và kéo dài thì thở ra (COPD)","[""COPD""]",iii: bệnh/hội chứng cụ thể hoặc mã bệnh,chưa xác định chủ trong KB
+copd_acute_exacerbation_sputum_purulence,"Đợt cấp COPD: khó thở tăng lên, lượng đờm tăng và đờm chuyển sang đờm mủ xanh/vàng",[],iii: bệnh/hội chứng cụ thể hoặc mã bệnh,chưa xác định chủ trong KB
+asthma_reversible_airflow_limitation,"Giới hạn luồng khí thở ra biến thiên, đáp ứng nghiệm pháp hồi phục phế quản (FEV1 tăng >= 12% và >= 200ml)","[""FEV1 tăng >= 12% và >= 200ml""]",iii: bệnh/hội chứng cụ thể hoặc mã bệnh,hen_phe_quan
+asthma_atopy_trigger_allergen_exercise,"Cơn khó thở khò khè khởi phát sau tiếp xúc dị nguyên, bụi khói, không khí lạnh hoặc gắng sức trên cơ địa dị ứng",[],iii: bệnh/hội chứng cụ thể hoặc mã bệnh,chưa xác định chủ trong KB
+tachypnea_accessory_muscle_retractions,"Thở nhanh nông, co kéo cơ hô hấp phụ (hõm ức, khoang liên sườn) và phập phồng cánh mũi","[""hõm ức, khoang liên sườn""]",ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+pulmonary_crackles_rales_consolidation,"Nghe phổi có ran ẩm, ran nổ khu trú hoặc hội chứng đông đặc phổi",[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+decreased_breath_sounds_hyperresonance,"Rì rào phế nang giảm hoặc mất, thông khí phổi giảm hai bên",[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+chronic_cor_pulmonale_edema_jugular_vein,"Dấu hiệu tâm phế mạn: phù hai chi dưới, tĩnh mạch cổ nổi, gan to và phản hồi gan - tĩnh mạch cổ dương tính",[],iii: bệnh/hội chứng cụ thể hoặc mã bệnh,chưa xác định chủ trong KB
+cyanosis_hypoxemia_central_peripheral,"Tím môi, tím đầu chi do giảm oxy máu động mạch",[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+chest_tightness_pleuritic_pain,"Cảm giác nặng ngực, bó chặt lồng ngực hoặc đau ngực tăng khi ho và hít sâu",[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+recurrent_lower_respiratory_infections,"Tiền sử nhiễm trùng đường hô hấp dưới (viêm phế quản, viêm phổi) tái diễn nhiều đợt trong năm","[""viêm phế quản, viêm phổi""]",iii: bệnh/hội chứng cụ thể hoặc mã bệnh,chưa xác định chủ trong KB
+fixed_postbronchodilator_fev1_fvc_under_70,Rối loạn thông khí tắc nghẽn không hồi phục hoàn toàn (chỉ số FEV1/FVC < 70% sau nghiệm pháp giãn phế quản),"[""chỉ số FEV1/FVC < 70% sau nghiệm pháp giãn phế quản""]",iii: bệnh/hội chứng cụ thể hoặc mã bệnh,phoi_tac_nghen_man_tinh
+peak_expiratory_flow_variability,Lưu lượng đỉnh thở ra (PEF) dao động lớn trong ngày hoặc cải thiện rõ sau dùng thuốc giãn phế quản,"[""PEF""]",i: ngưỡng/đơn vị đo,chưa xác định chủ trong KB
+difficulty_speaking_phrases_orthopnea,"Khó thở phải ngồi dậy để thở, nói ngắt quãng từng cụm từ hoặc từng từ đơn",[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+reduced_urine_output,Tiểu ít mới xuất hiện,[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+cold_extremities,Tay chân lạnh ẩm mới xuất hiện,[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+thirst,Khát nước nhiều,[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+slow_skin_pinch,Nếp véo da mất chậm,[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+watery_diarrhea,Đi ngoài phân lỏng như nước,[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+palmar_vesicles,Phỏng nước ở lòng bàn tay,[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+plantar_vesicles,Phỏng nước ở lòng bàn chân,[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+sudden_choking,Ho sặc đột ngột khi ăn hoặc chơi,[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+chemical_eye_exposure,Hóa chất bắn vào mắt,[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+acute_visual_loss,Mất hoặc giảm thị lực đột ngột,[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+major_head_face_trauma,Chấn thương nặng vùng đầu mặt mới xảy ra,[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+penetrating_neck_wound,Vết thương xuyên vùng cổ,[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+widespread_skin_peeling,Da bong trợt trên vùng rộng,[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+bleeding_mucosal_erosions,Niêm mạc bị trợt loét chảy máu,[],ii: mô tả/đồng nghĩa hoặc không có tên bệnh cụ thể,chưa xác định chủ trong KB
+airway_penetration_syndrome,"Hội chứng xâm nhập: sặc đột ngột, ho sặc sụa và tím tái khi đang ăn/chơi",[],iii: bệnh/hội chứng cụ thể hoặc mã bệnh,chưa xác định chủ trong KB
+ocular_chemical_burn_limbal_ischemia,"Bỏng kết giác mạc, thiếu máu vùng rìa giác mạc và đục trắng giác mạc như sứ",[],iii: bệnh/hội chứng cụ thể hoặc mã bệnh,chưa xác định chủ trong KB
+traumatic_hyphema_angle_recession,Xuất huyết tiền phòng hoặc xuất huyết dịch kính và lùi góc tiền phòng sau chấn thương đụng dập,[],iii: bệnh/hội chứng cụ thể hoặc mã bệnh,chưa xác định chủ trong KB
+traumatic_optic_neuropathy_defect,Mất thị lực và mất phản xạ đồng tử hướng tâm sau chấn thương đầu mặt/hốc mắt,[],iii: bệnh/hội chứng cụ thể hoặc mã bệnh,chưa xác định chủ trong KB

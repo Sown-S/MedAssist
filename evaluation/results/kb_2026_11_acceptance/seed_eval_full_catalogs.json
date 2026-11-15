@@ -1,0 +1,7 @@
+{
+  "database": "medassist_kb202611_stage_demo_20261111",
+  "exit_code": 0,
+  "args": [
+    "--skip-knowledge"
+  ]
+}
