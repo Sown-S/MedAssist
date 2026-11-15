@@ -48,9 +48,9 @@ export default function DrugCatalogPage({ params, onNavigate }) {
       <div className="breadcrumb">
         Catalog management / <b>Medical catalogs</b> / Drugs &amp; supplies
       </div>
-      <div className="page-head">
+      <div className="pg-h">
         <div>
-          <h1>Drugs &amp; supplies</h1>
+          <h2>Drugs &amp; supplies</h2>
           <p>Master data shared by prescribing and invoices. Stock levels are in Inventory › Stock &amp; expiry.</p>
         </div>
         <button className="btn btn-ghost btn-sm" onClick={() => onNavigate('inventory')}>

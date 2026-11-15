@@ -88,9 +88,9 @@ export default function SettingsPage({ params, onNavigate, setLeaveGuard }) {
 
   return (
     <div className="settings-page">
-      <div className="page-head">
+      <div className="pg-h">
         <div>
-          <h1>System settings</h1>
+          <h2>System settings</h2>
           <p>Settings for the whole clinic. Each change is recorded in the activity log with the old and new value.</p>
         </div>
       </div>

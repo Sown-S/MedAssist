@@ -48,9 +48,9 @@ export default function CatalogDetailPage({ catalogKey, params, onNavigate }) {
         </span>{' '}
         / <b>{s.title}</b>
       </div>
-      <div className="page-head">
+      <div className="pg-h">
         <div>
-          <h1>{s.title}</h1>
+          <h2>{s.title}</h2>
           <p>{s.desc}</p>
         </div>
         <div className="ai-soft ai-small">

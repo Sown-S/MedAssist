@@ -1,4 +1,5 @@
 import {
+  Inbox,
   CircleCheckBig,
   Activity,
   ArrowLeft,
@@ -176,6 +177,8 @@ const ICONS = {
   'message-square-warning': MessageSquareWarning,
   monitor: Monitor,
   package: Package,
+  inbox: Inbox,
+  'x-circle': CircleX,
   'circle-check-big': CircleCheckBig,
   'package-2': Package2,
   'package-plus': PackagePlus,

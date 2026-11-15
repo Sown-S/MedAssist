@@ -31,3 +31,8 @@
 .bell-pop .bp-t .cluster-alerts span{margin:0}
 /* Thẻ đã theo cấu trúc bản mẫu (.card-h + .card-b) không có padding ở khung ngoài */
 .card:has(>.card-h),.card:has(>.card-b){padding:0}
+/* Chưa có ai cần gọi: dải gọi bệnh nhân ở trạng thái nghỉ */
+.calling.idle{background:var(--surface);color:var(--ink-2);border:1px solid var(--border);box-shadow:var(--shadow)}.calling.idle .sep{background:var(--border)}.calling.idle .no{color:var(--ink-3)}
+.pg-h>:not(:first-child){display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+/* Ca cờ đỏ ở bảng Ca cấp cứu: việc lễ tân cần làm ngay dưới badge kết quả */
+.rf-todo{display:flex;flex-direction:column;align-items:flex-start;gap:6px;margin-top:6px;max-width:420px}

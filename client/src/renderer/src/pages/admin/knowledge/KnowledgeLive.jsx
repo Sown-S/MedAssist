@@ -52,9 +52,9 @@ export default function KnowledgeLive({ reviewOnly = false }) {
 
   return (
     <div>
-      <div className="page-head">
+      <div className="pg-h">
         <div>
-          <h1>{reviewOnly ? 'Knowledge review' : 'AI knowledge base'}</h1>
+          <h2>{reviewOnly ? 'Knowledge review' : 'AI knowledge base'}</h2>
           <p>
             {reviewOnly
               ? 'Approve or reject the release drafted by the administrator — you cannot approve a release you drafted'

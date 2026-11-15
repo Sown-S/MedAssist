@@ -62,9 +62,9 @@ export default function CatalogPage({ onNavigate }) {
 
   return (
     <div>
-      <div className="page-head">
+      <div className="pg-h">
         <div>
-          <h1>Catalog management</h1>
+          <h2>Catalog management</h2>
           <p>Administrative &amp; medical catalogs shared across the system — click a row to open it</p>
         </div>
       </div>

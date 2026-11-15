@@ -43,9 +43,9 @@ export default function HistoryPage() {
 
   return (
     <div>
-      <div className="page-head">
+      <div className="pg-h">
         <div>
-          <h1>Activity history</h1>
+          <h2>Activity history</h2>
           <p>Who did what and when — sign-ins, record views, changes, approvals and AI assessments. Entries can never be edited or deleted.</p>
         </div>
         <div className="ai-toolbar-right">

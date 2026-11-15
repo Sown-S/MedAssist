@@ -157,13 +157,14 @@ describe('Luồng chính trên giao diện', () => {
     await syncQueue()
     renderPage(<Reception />, { user: DESK, path: '/reception?view=queue' })
     await rendered()
-    const card = (await screen.findByText('Phạm Văn Dũng')).closest('.p-card')
-    expect(card.classList.contains('dimmed')).toBe(true)
+    const card = (await screen.findByText('Phạm Văn Dũng')).closest('tr')
+    expect(card.classList.contains('dim')).toBe(true)
     expect(card.textContent).toContain('Intake in progress…')
     expect(card.textContent).not.toContain('Mark present')
-    expect(screen.getByText('Waiting', { selector: '.itab span' }).nextElementSibling.textContent).toBe('1')
+    const waitingTab = [...document.querySelectorAll('.seg button')].find((b) => b.firstChild.textContent === 'Waiting')
+    expect(waitingTab.querySelector('.c').textContent).toBe('1')
     // Không lên khung gọi bệnh nhân.
-    expect(document.querySelector('.call-panel').textContent).not.toContain('003')
+    expect(document.querySelector('.calling').textContent).not.toContain('003')
   })
 })
 

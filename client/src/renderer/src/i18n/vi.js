@@ -1328,7 +1328,6 @@ export const VI = {
   "Routine": "Thường",
   "Emergency — placed at the top of the queue; doctors have been alerted": "Cấp cứu — đã đưa lên đầu hàng chờ; bác sĩ đã được báo",
   "Emergency — placed at the top of the queue; doctors have been alerted. Transfer to hospital if the patient gets worse.": "Cấp cứu — đã đưa lên đầu hàng chờ, bác sĩ đã được báo. Bệnh nhân chuyển nặng thì chuyển viện ngay.",
-  "Cases matching a red-flag rule: transferred to hospital at once, or placed at the top of the queue as Emergency. Doctors are alerted in both cases.": "Ca khớp luật cờ đỏ: chuyển viện ngay, hoặc đưa lên đầu hàng chờ ở mức Cấp cứu. Cả hai trường hợp bác sĩ đều được báo.",
   "Transferred — doctors alerted": "Đã chuyển viện — đã báo bác sĩ",
   "Top of the queue (Emergency)": "Đầu hàng chờ (Cấp cứu)",
   "AI analysis in progress…": "AI đang phân tích…",
@@ -1972,6 +1971,11 @@ export const VI = {
   'Collected': "Đã thu",
   'Server connection status': "Trạng thái kết nối máy chủ",
   'Where each patient is right now': "Mỗi bệnh nhân đang ở bước nào",
+  'Invited to': "Mời vào",
+  'doctor called': "bác sĩ vừa mời",
+  'Ready': "Sẵn sàng",
+  'Transferred at once or placed at the top of the queue · doctors are alerted': "Chuyển tuyến ngay hoặc đưa lên đầu hàng chờ · bác sĩ đã được báo",
+  'Signs': "Dấu hiệu",
 }
 
 export const PATTERNS = [

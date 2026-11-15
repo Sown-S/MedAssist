@@ -14,7 +14,7 @@ import { vitalsText } from '../../api/vitals'
 // Số phút chờ bắt đầu thành vàng / đỏ, theo từng chặng.
 const WAIT_LIMITS = { Waiting: [30, 60], CheckedIn: [15, 30], Examining: [30, 45], labs: [30, 60], Prescribed: [10, 20] }
 // Ca cờ đỏ theo kết quả lượt khám (outcome của liveRedFlags): [lớp badge, nhãn].
-const FLAG_BADGE = { referred: ['low', 'Transferred — doctors alerted'], seen: ['ok', 'Seen at the clinic'], queued: ['warn', 'Top of the queue (Emergency)'], left: ['warn', 'Left'] }
+const FLAG_BADGE = { referred: ['b-danger', 'Transferred — doctors alerted'], seen: ['b-success', 'Seen at the clinic'], queued: ['b-warning', 'Top of the queue (Emergency)'], left: ['b-warning', 'Left'] }
 
 export default function QueueView({ readOnly, onPay }) {
   const { visits, redFlags } = useQueue()
@@ -54,11 +54,11 @@ export default function QueueView({ readOnly, onPay }) {
     return { label, level: n >= long ? 'long' : n >= warn ? 'warn' : 'ok' }
   }
 
-  const meta = (v) => [translate(v.gender), v.age !== '' ? v.age + ' ' + translate('yrs') : null, translate(v.reason)].filter(Boolean).join(' · ')
+  const meta = (v) => [v.age !== '' ? v.age + ' ' + translate('yrs') : null, translate(v.gender)].filter(Boolean).join(' · ')
 
   // Nút thao tác gọn trên từng dòng (giữ đúng các việc như trước).
   const iconBtn = (icon, title, onClick, disabled) => (
-    <button className="icon-btn" title={translate(title)} aria-label={translate(title)} disabled={disabled} onClick={onClick}>
+    <button className="btn btn-ghost btn-icon" title={translate(title)} aria-label={translate(title)} disabled={disabled} onClick={onClick}>
       <Icon name={icon} />
     </button>
   )
@@ -66,148 +66,204 @@ export default function QueueView({ readOnly, onPay }) {
     if (isIntakeOpen(v) || atLabs(v)) return null
     if (v.status === ST.WAITING || v.status === ST.CHECKED_IN)
       return (
-        <span className="q-acts">
+        <>
           {v.status === ST.WAITING && (
-            <button className="btn btn-ghost btn-sm q-checkin" disabled={readOnly} onClick={() => checkIn(v)} title={translate('The patient is at the desk and it is nearly their turn')}>
-              <Icon name="userCheck" /> Mark present — check in
+            <button className="btn btn-outline btn-sm" disabled={readOnly} onClick={() => checkIn(v)} title={translate('The patient is at the desk and it is nearly their turn')}>
+              <Icon name="log-in" />
+              {translate('Mark present — check in')}
             </button>
           )}
-          <span className="q-icons">
-            {iconBtn('pencil', v.status === ST.WAITING ? 'Re-measure vitals, flag as priority or report warning signs' : 'Re-measure vitals', () => setEditing(v), readOnly)}
-            {iconBtn('printer', 'Print queue ticket', () => printTicket(v))}
-            {iconBtn('x', 'Patient left before being called, or checked in by mistake', () => setCancelling(v), readOnly)}
-          </span>
-        </span>
+          {iconBtn('pencil', v.status === ST.WAITING ? 'Re-measure vitals, flag as priority or report warning signs' : 'Re-measure vitals', () => setEditing(v), readOnly)}
+          {iconBtn('printer', 'Print queue ticket', () => printTicket(v))}
+          {iconBtn('x-circle', 'Patient left before being called, or checked in by mistake', () => setCancelling(v), readOnly)}
+        </>
       )
     if (v.status === ST.PRESCRIBED)
       return (
-        <button className="btn btn-primary btn-sm" disabled={readOnly} onClick={() => onPay(v)}>
-          <Icon name="box" /> Dispense &amp; collect
+        <button className="btn btn-outline btn-sm" disabled={readOnly} onClick={() => onPay(v)}>
+          <Icon name="package" />
+          {translate('Dispense & collect')}
         </button>
       )
     return null
   }
+  const emergency = (v) => v.triage === 'emergency' && [ST.WAITING, ST.CHECKED_IN].includes(v.status)
   const prioOf = (v) =>
-    v.triage === 'emergency' && [ST.WAITING, ST.CHECKED_IN].includes(v.status) ? (
-      <span className="badge low">{translate('Emergency')}</span>
+    emergency(v) ? (
+      <span className="badge b-danger">{translate('Emergency')}</span>
     ) : v.priority && v.status !== ST.FINISHED ? (
-      <span className="badge warn">{translate('Priority')}</span>
+      <span className="badge b-warning">{translate('Priority')}</span>
     ) : (
       <span className="plain">{translate('Routine')}</span>
     )
+  const rowTone = (v) => (emergency(v) ? 'pr-danger' : v.priority && v.status !== ST.FINISHED ? 'pr-warning' : 'pr-routine')
+  // Bước / bác sĩ: đang được mời / đang khám màu xanh; chờ lâu vàng → đỏ; còn lại chữ thường.
+  const stepOf = (v, w) => {
+    const cls = isInvited(v) || v.status === ST.EXAMINING ? 'b-info' : w.level === 'long' ? 'b-danger' : w.level === 'warn' ? 'b-warning' : null
+    return cls ? <span className={'badge ' + cls}>{w.label}</span> : <span className="plain">{w.label}</span>
+  }
 
   return (
     <>
-      <div className="rec-queue-col">
-        <CallPanel readOnly={readOnly} variant="banner" />
-        <div className="card">
-          <div className="card-title q-head">
-            <span>Today’s queue</span>
-            <div className="itabs q-tabs">
-              {STATUSES.map((s) => (
-                <button key={s.key} className={'itab' + (tab === s.key ? ' active' : '')} onClick={() => setTab(s.key)}>
-                  <span>{s.label}</span> <span className="itab-cnt">{byStatus(s.key).length}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-          <div className="q-table-wrap">
-            <table className="dt q-table">
-              <thead>
-                <tr>
-                  <th>No.</th>
-                  <th>Patient</th>
-                  <th>Priority</th>
-                  <th>Vital signs</th>
-                  <th>Reason</th>
-                  <th>Step / doctor</th>
-                  <th />
-                </tr>
-              </thead>
-              <tbody>
-                {list.map((v) => {
-                  const w = waitOf(v)
-                  return (
-                    <tr key={v.id} className={'p-card q-row' + (isIntakeOpen(v) ? ' dimmed' : '') + (v.triage === 'emergency' ? ' emerg' : v.priority ? ' prio' : '')}>
-                      <td>
-                        <b className="mono q-no" title={translate('Arrival time') + ' ' + hhmm(v.arrivedAt)}>{String(v.ticket).padStart(3, '0')}</b>
-                        <small className="q-sub mono">{hhmm(v.arrivedAt)}</small>
-                      </td>
-                      <td>
-                        <b className="q-name" title={translate('Patient ID') + ': ' + v.patientId}>{v.name}</b>
-                        <small className="q-sub">{meta(v)}</small>
-                        <PatientAlerts p={v} compact />
-                        {v.carriedFrom && (
-                          <span className="badge warn">
-                            {translate('Unpaid from')} {dmy(v.carriedFrom + 'T00:00:00')}
-                          </span>
-                        )}
-                      </td>
-                      <td>{prioOf(v)}</td>
-                      <td className="q-vit">{v.status !== ST.FINISHED && v.status !== ST.PRESCRIBED ? vitalsText(v.vitals) : '—'}</td>
-                      <td className="q-reason">{translate(v.reason) || '—'}</td>
-                      <td>
-                        <span className={'p-wait ' + w.level}>{w.label}</span>
-                        {v.status === ST.CHECKED_IN && <span className="badge ok">{translate('Checked in')}</span>}
-                        {v.doctor && <small className="q-sub">{v.doctor + (v.room ? ' · ' + v.room : '')}</small>}
-                        {v.left && <small className="q-sub">{translate(leftReasonLabel(v.left.reason)) + (v.left.note ? ' — ' + v.left.note : '')}</small>}
-                      </td>
-                      <td className="q-act-cell">{rowActions(v)}</td>
-                    </tr>
-                  )
-                })}
-              </tbody>
-            </table>
-            {!list.length && <p className="ai-soft" style={{ fontSize: 14, margin: '8px 2px' }}>No patients in this step.</p>}
-          </div>
-        </div>
-
-        <div className="card redflag-card">
-          <div className="card-title">
-            <Icon name="siren" /> Emergency cases <span className="cnt">{redFlags.length}</span>
-          </div>
-          <p className="redflag-card-note">Cases matching a red-flag rule: transferred to hospital at once, or placed at the top of the queue as Emergency. Doctors are alerted in both cases.</p>
-          <div className="redflag-grid">
-            {redFlags.map((r) => (
-              <div className="redflag-item" key={r.id}>
-                <div className="top">
-                  <b>{r.name}</b>
-                  <span className="time">{hhmm(r.at)}</span>
-                </div>
-                <div className="signs">{translate(r.signs) || '—'}</div>
-                {isPendingFlag(r) && !r.ack && (
-                  <div className="rf-todo">
-                    <span>
-                      {r.outcome === 'queued'
-                        ? translate('Emergency — placed at the top of the queue; doctors have been alerted. Transfer to hospital if the patient gets worse.')
-                        : r.outcome === 'assess'
-                          ? translate('Waiting for a doctor to assess — keep the patient at the desk.')
-                          : r.outcome === 'seen'
-                            ? translate('Doctor') + ' ' + r.doctorReview.by + ' ' + translate('will see the patient at the clinic — check them in as Priority.')
-                            : translate('Emergency — send the patient to hospital now (call 115 if needed); do not wait for a doctor. Doctors have been alerted.') +
-                              (r.doctorReview ? ' ' + translate('Confirmed by doctor') + ' ' + r.doctorReview.by + '.' : '')}
-                    </span>
-                    {r.outcome !== 'assess' && (
-                      <button className="btn btn-sm rf-ack" disabled={readOnly} onClick={() => acknowledgeRedFlag(r.id)}>
-                        {r.outcome === 'seen' ? translate('Done') : translate('Patient guided')}
-                      </button>
-                    )}
-                  </div>
-                )}
-                <div className="foot">
-                  {r.doctorReview ? (
-                    <span className={'badge ' + (r.doctorReview.decision === 'referred' ? 'low' : 'ok')}>
-                      {translate(r.doctorReview.decision === 'referred' ? 'Referred' : 'Seen at the clinic')} · {r.doctorReview.by}
-                    </span>
-                  ) : (
-                    <span className={'badge ' + FLAG_BADGE[r.outcome][0]}>{translate(FLAG_BADGE[r.outcome][1])}</span>
-                  )}
-                  <span>{r.by}</span>
-                </div>
-              </div>
+      <CallPanel readOnly={readOnly} variant="banner" />
+      <div className="card">
+        <div className="card-h">
+          <h3>Today’s queue</h3>
+          <div className="seg">
+            {STATUSES.map((s) => (
+              <button key={s.key} className={tab === s.key ? 'on' : ''} onClick={() => setTab(s.key)}>
+                {translate(s.label)}
+                <span className="c">{byStatus(s.key).length}</span>
+              </button>
             ))}
           </div>
-          {!redFlags.length && <p className="ai-soft" style={{ fontSize: 14 }}>No red-flag cases today.</p>}
+        </div>
+        <div className="card-b">
+          <div className="tbl-wrap">
+            {list.length ? (
+              <table>
+                <thead>
+                  <tr>
+                    <th>No.</th>
+                    <th>Patient</th>
+                    <th>Priority</th>
+                    <th>Vital signs</th>
+                    <th>Reason</th>
+                    <th>Step / doctor</th>
+                    <th className="r" />
+                  </tr>
+                </thead>
+                <tbody>
+                  {list.map((v) => {
+                    const w = waitOf(v)
+                    return (
+                      <tr key={v.id} className={rowTone(v) + (isIntakeOpen(v) || [ST.FINISHED, ST.CANCELLED].includes(v.status) ? ' dim' : '')}>
+                        <td className="num">
+                          <b style={{ fontSize: 'var(--fs-md)' }} title={translate('Arrival time') + ' ' + hhmm(v.arrivedAt)}>
+                            {String(v.ticket).padStart(3, '0')}
+                          </b>
+                          <div className="muted small">{hhmm(v.arrivedAt)}</div>
+                        </td>
+                        <td>
+                          <div className="who-cell">
+                            <div style={{ minWidth: 0, maxWidth: 180 }}>
+                              <b className="clip" title={translate('Patient ID') + ': ' + v.patientId}>
+                                {v.name}
+                              </b>
+                              <span>{meta(v)}</span>
+                              <PatientAlerts p={v} compact />
+                              {v.carriedFrom && (
+                                <span className="badge b-warning">
+                                  {translate('Unpaid from')} {dmy(v.carriedFrom + 'T00:00:00')}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </td>
+                        <td>{prioOf(v)}</td>
+                        <td style={{ maxWidth: 130 }}>
+                          <div className="vit">{v.status !== ST.FINISHED && v.status !== ST.PRESCRIBED ? vitalsText(v.vitals) : '—'}</div>
+                        </td>
+                        <td style={{ maxWidth: 120 }}>
+                          <div className="clip muted" title={translate(v.reason)}>
+                            {translate(v.reason) || '—'}
+                          </div>
+                        </td>
+                        <td>
+                          {stepOf(v, w)}
+                          {v.doctor && <div className="muted small">{v.doctor + (v.room ? ' · ' + v.room : '')}</div>}
+                          {v.left && <div className="muted small">{translate(leftReasonLabel(v.left.reason)) + (v.left.note ? ' — ' + v.left.note : '')}</div>}
+                        </td>
+                        <td>
+                          <div className="acts">{rowActions(v)}</div>
+                        </td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
+            ) : (
+              <div className="empty">
+                <div className="ill">
+                  <Icon name="inbox" />
+                </div>
+                <b>No patients in this step.</b>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <div className="card">
+        <div className="card-h">
+          <h3>
+            <Icon name="siren" />
+            Emergency cases
+          </h3>
+          <span className="plain">Transferred at once or placed at the top of the queue · doctors are alerted</span>
+        </div>
+        <div className="card-b">
+          <div className="tbl-wrap">
+            {redFlags.length ? (
+              <table>
+                <thead>
+                  <tr>
+                    <th>Patient</th>
+                    <th>Signs</th>
+                    <th>Time</th>
+                    <th>Result</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {redFlags.map((r) => (
+                    <tr key={r.id} className="pr-danger">
+                      <td>
+                        <b style={{ fontWeight: 500 }}>{r.name}</b>
+                        {r.by && <div className="muted small">{r.by}</div>}
+                      </td>
+                      <td className="muted">{translate(r.signs) || '—'}</td>
+                      <td className="num muted">{hhmm(r.at)}</td>
+                      <td>
+                        {r.doctorReview ? (
+                          <span className={'badge ' + (r.doctorReview.decision === 'referred' ? 'b-danger' : 'b-success')}>
+                            {translate(r.doctorReview.decision === 'referred' ? 'Referred' : 'Seen at the clinic')} · {r.doctorReview.by}
+                          </span>
+                        ) : (
+                          <span className={'badge ' + FLAG_BADGE[r.outcome][0]}>{translate(FLAG_BADGE[r.outcome][1])}</span>
+                        )}
+                        {isPendingFlag(r) && !r.ack && (
+                          <div className="rf-todo">
+                            <span className="muted small">
+                              {r.outcome === 'queued'
+                                ? translate('Emergency — placed at the top of the queue; doctors have been alerted. Transfer to hospital if the patient gets worse.')
+                                : r.outcome === 'assess'
+                                  ? translate('Waiting for a doctor to assess — keep the patient at the desk.')
+                                  : r.outcome === 'seen'
+                                    ? translate('Doctor') + ' ' + r.doctorReview.by + ' ' + translate('will see the patient at the clinic — check them in as Priority.')
+                                    : translate('Emergency — send the patient to hospital now (call 115 if needed); do not wait for a doctor. Doctors have been alerted.') +
+                                      (r.doctorReview ? ' ' + translate('Confirmed by doctor') + ' ' + r.doctorReview.by + '.' : '')}
+                            </span>
+                            {r.outcome !== 'assess' && (
+                              <button className="btn btn-danger btn-sm" disabled={readOnly} onClick={() => acknowledgeRedFlag(r.id)}>
+                                {r.outcome === 'seen' ? translate('Done') : translate('Patient guided')}
+                              </button>
+                            )}
+                          </div>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            ) : (
+              <div className="empty">
+                <div className="ill">
+                  <Icon name="inbox" />
+                </div>
+                <b>No red-flag cases today.</b>
+              </div>
+            )}
+          </div>
         </div>
       </div>
       {editing && <EditWaitingModal visit={editing} onClose={() => setEditing(null)} />}

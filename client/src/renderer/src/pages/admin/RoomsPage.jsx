@@ -47,9 +47,9 @@ export default function RoomsPage({ onNavigate }) {
 
   return (
     <div>
-      <div className="page-head">
+      <div className="pg-h">
         <div>
-          <h1>Rooms</h1>
+          <h2>Rooms</h2>
           <p>Consultation rooms and the lab room. Each consultation room has one doctor, assigned in Staff accounts.</p>
         </div>
         <div style={{ display: 'flex', gap: 8 }}>

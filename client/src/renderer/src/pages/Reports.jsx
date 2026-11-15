@@ -44,9 +44,9 @@ export default function Reports() {
 
   return (
     <div className="vflow">
-      <div className="page-head">
+      <div className="pg-h">
         <div>
-          <h1>Reports &amp; Statistics</h1>
+          <h2>Reports &amp; Statistics</h2>
           <p>Revenue, visits and AI module performance</p>
         </div>
         <div className="itabs" role="tablist" style={{ marginBottom: 0 }}>

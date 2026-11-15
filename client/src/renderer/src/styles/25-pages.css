@@ -1,8 +1,6 @@
 /* Các trang danh sách theo mẫu: bảng, ô tóm tắt có icon, tab dạng nút liền, Hàng chờ của lễ tân */
 
 /* ---- Tiêu đề trang ---- */
-.page-head h1{font-size:28px;font-weight:600;}
-.page-head p{font-size:15.5px;}
 
 /* ---- Bảng ---- */
 .card table.dt{border-collapse:separate;border-spacing:0;border:1px solid var(--border);border-radius:10px;overflow:hidden;font-size:15px;}
@@ -47,54 +45,11 @@ button.inv-stat.active{border-color:var(--primary);background:var(--primary-soft
 .cash-filters input[type=search],.cash-filters input.grow{height:40px;border:1px solid var(--border);border-radius:8px;padding:0 12px;font-size:15px;}
 
 /* ---- Hàng chờ (lễ tân) ---- */
-.rec-queue-col{display:flex;flex-direction:column;gap:18px;margin-bottom:18px;}
-.call-banner{display:flex;align-items:center;gap:22px;padding:18px 22px;border-radius:14px;background:linear-gradient(135deg,#1877F2,#2D8CFF);color:#fff;box-shadow:0 14px 30px -14px rgba(24,119,242,.6);}
-.call-banner .cb-l{display:flex;flex-direction:column;padding-right:22px;border-right:1px solid rgba(255,255,255,.35);}
-.call-banner .cb-l span{font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;opacity:.9;}
-.call-banner .cb-l b{font-size:42px;line-height:1.05;font-weight:700;}
-.call-banner .cb-m{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;}
-.call-banner .cb-m b{font-size:22px;font-weight:600;}
-.call-banner .cb-m span{font-size:15px;opacity:.95;}
-.call-banner .cb-r{display:flex;gap:8px;}
-.call-banner .cb-ghost{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.45);color:#fff;}
-.call-banner .cb-ghost:hover{background:rgba(255,255,255,.24);}
-.call-banner .cb-main{background:#fff;color:var(--primary-ink);}
-.call-banner .btn .icn{width:16px;height:16px;}
-.call-banner.idle{background:var(--surface);color:var(--ink-2);border:1px dashed var(--border-strong);box-shadow:none;}
-.call-banner.idle .cb-l{border-right-color:var(--border);}
-.call-banner.idle .cb-l b{color:var(--ink-soft);}
-.call-next-card .card-title{justify-content:space-between;}
-.call-next-card .card-title .ai-soft{font-size:13px;font-weight:400;}
-.cn-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;}
-.cn-item{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid var(--border);border-radius:10px;}
-.cn-item>b{font-size:18px;}
 .cn-t{flex:1;min-width:0;display:flex;flex-direction:column;}
 .cn-t b{font-size:15.5px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .cn-t small{font-size:13px;color:var(--ink-soft);}
-.q-head{flex-wrap:wrap;justify-content:space-between;gap:10px;}
-.q-head .itabs{margin:0;}
-.q-table-wrap{max-height:560px;overflow:auto;}
-.q-table td{vertical-align:middle;}
-.q-row td:first-child{box-shadow:inset 3px 0 0 var(--routine,#94A1AC);}
-.q-row.prio td:first-child{box-shadow:inset 3px 0 0 var(--priority);}
-.q-row.emerg td:first-child{box-shadow:inset 3px 0 0 var(--warn);}
-.q-row.dimmed{opacity:.55;}
 .q-no{display:block;font-size:16px;}
-.q-name{display:block;font-weight:500;}
-.q-sub{display:block;font-size:13px;color:var(--ink-soft);}
-.q-vit,.q-reason{font-size:14px;color:var(--ink-2);max-width:220px;}
-.q-reason{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.q-act-cell{text-align:right;}
-.q-acts{display:inline-flex;flex-direction:column;align-items:flex-end;gap:6px;}
-.q-icons{display:inline-flex;gap:2px;}
-.q-icons .icon-btn{width:34px;height:34px;display:grid;place-items:center;padding:0;color:var(--ink-2);}
-.q-icons .icon-btn .icn{width:18px;height:18px;}
-.redflag-card{border-top:1px solid var(--border);}
-.redflag-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px;}
-.redflag-item{margin:0;background:var(--surface);border:1px solid color-mix(in srgb,var(--warn) 30%,transparent);border-left:3px solid var(--warn);border-radius:10px;}
 @media (max-width:1280px){.cn-row{grid-template-columns:1fr;}}
-.rf-todo{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin:2px 0 8px;padding:8px 10px;border-radius:8px;background:var(--warn-soft);font-size:13px;color:var(--warn-ink);}
-.rf-todo .rf-ack{flex:none;background:var(--warn);color:#fff;}
 /* Danh sách thông báo ở chuông: icon tròn bên trái */
 .notif-item{display:flex;align-items:flex-start;gap:10px;}
 .notif-item>div{flex:1;min-width:0;}

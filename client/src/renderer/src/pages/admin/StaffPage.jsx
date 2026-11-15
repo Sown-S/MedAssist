@@ -160,9 +160,9 @@ export default function StaffPage() {
       <div className="breadcrumb">
         Roles &amp; permissions / <b>Staff accounts</b>
       </div>
-      <div className="page-head">
+      <div className="pg-h">
         <div>
-          <h1>Staff accounts</h1>
+          <h2>Staff accounts</h2>
           <p>Create and manage Doctor, Receptionist and Administrator accounts. Only administrators can create accounts.</p>
         </div>
         <button className="btn btn-primary" onClick={() => openCreate()}>

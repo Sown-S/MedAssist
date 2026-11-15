@@ -72,9 +72,9 @@ export default function Doctor() {
         </HomeGreeting>
       ) : (
         view !== 'consult' && (
-          <div className="page-head">
+          <div className="pg-h">
             <div>
-              <h1>{VIEWS[view].title}</h1>
+              <h2>{VIEWS[view].title}</h2>
               <p>{VIEWS[view].sub}</p>
             </div>
           </div>

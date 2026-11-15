@@ -42,9 +42,9 @@ const ITEMS = [
 export default function RoadmapPage() {
   return (
     <div>
-      <div className="page-head">
+      <div className="pg-h">
         <div>
-          <h1>Future roadmap</h1>
+          <h2>Future roadmap</h2>
           <p>Items outside the current project scope — noted for future expansion after graduation</p>
         </div>
       </div>
