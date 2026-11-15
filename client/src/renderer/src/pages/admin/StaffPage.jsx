@@ -237,7 +237,6 @@ export default function StaffPage() {
       </Modal>
 
       <ChangePasswordModal open={ownPw} onClose={() => setOwnPw(false)} />
-
     </div>
   )
 }

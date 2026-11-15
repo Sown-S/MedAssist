@@ -25,7 +25,10 @@ export default function PatientLookup() {
     setSearching(true)
     const t = setTimeout(() => {
       lookupPatients(term, 30)
-        .then((r) => (setResults(r), setErr('')), (e) => setErr(e.message))
+        .then(
+          (r) => (setResults(r), setErr('')),
+          (e) => setErr(e.message)
+        )
         .finally(() => setSearching(false))
     }, 300)
     return () => clearTimeout(t)
@@ -61,37 +64,43 @@ export default function PatientLookup() {
     <div className="lookup2">
       <div className="card lookup-search">
         <div className="card-b">
-        <div className="search" style={{ width: '100%' }}>
-          <Icon name="search" />
-          <input
-            className="input"
-            type="search"
-            autoFocus
-            placeholder="Name, phone number, record ID, ID card or birth year…"
-            value={q}
-            onChange={(e) => {
-              setQ(e.target.value)
-              setListOpen(true)
-            }}
-          />
-        </div>
-        {err && <div className="banner d">{err}</div>}
-        {listOpen && q.trim() && (
-          <div className="pl-results">
-            {results.map((r) => (
-              <button key={r.id} className={'pl-row' + (r.id === p?.id ? ' active' : '')} onClick={() => open(r.id)}>
-                <span className="ava" style={{ width: 30, height: 30, fontSize: 12 }}>{initials(r.name)}</span>
-                <span className="nm">{r.name}</span>
-                <span className="sub">
-                  <span className="num">{r.code}</span> · {r.dob} · <span className="num">{r.phone || '—'}</span>
-                </span>
-              </button>
-            ))}
-            {searching && <p className="ai-soft pl-hint">{translate('Loading…')}</p>}
-            {!searching && !results.length && !err && <p className="ai-soft pl-hint">No patient matches.</p>}
+          <div className="search" style={{ width: '100%' }}>
+            <Icon name="search" />
+            <input
+              className="input"
+              type="search"
+              autoFocus
+              placeholder="Name, phone number, record ID, ID card or birth year…"
+              value={q}
+              onChange={(e) => {
+                setQ(e.target.value)
+                setListOpen(true)
+              }}
+            />
           </div>
-        )}
-        {!q.trim() && !p && <p className="muted small" style={{ marginTop: 8 }}>Type at least part of a name, phone number or record ID.</p>}
+          {err && <div className="banner d">{err}</div>}
+          {listOpen && q.trim() && (
+            <div className="pl-results">
+              {results.map((r) => (
+                <button key={r.id} className={'pl-row' + (r.id === p?.id ? ' active' : '')} onClick={() => open(r.id)}>
+                  <span className="ava" style={{ width: 30, height: 30, fontSize: 12 }}>
+                    {initials(r.name)}
+                  </span>
+                  <span className="nm">{r.name}</span>
+                  <span className="sub">
+                    <span className="num">{r.code}</span> · {r.dob} · <span className="num">{r.phone || '—'}</span>
+                  </span>
+                </button>
+              ))}
+              {searching && <p className="ai-soft pl-hint">{translate('Loading…')}</p>}
+              {!searching && !results.length && !err && <p className="ai-soft pl-hint">No patient matches.</p>}
+            </div>
+          )}
+          {!q.trim() && !p && (
+            <p className="muted small" style={{ marginTop: 8 }}>
+              Type at least part of a name, phone number or record ID.
+            </p>
+          )}
         </div>
       </div>
 
@@ -99,7 +108,9 @@ export default function PatientLookup() {
         <div className="lookup-grid">
           <div className="card pt-card">
             <div className="pt-id">
-              <span className="ava" style={{ width: 48, height: 48, fontSize: 'var(--fs-md)' }}>{initials(p.name)}</span>
+              <span className="ava" style={{ width: 48, height: 48, fontSize: 'var(--fs-md)' }}>
+                {initials(p.name)}
+              </span>
               <div>
                 <b>{p.name}</b>
                 <span className="ai-soft">

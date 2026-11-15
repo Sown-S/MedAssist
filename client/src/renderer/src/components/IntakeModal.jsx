@@ -80,8 +80,7 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
   const pregnancyAsked = askPregnancy(existing ? existing.gender : form.gender, age)
   // Luật cờ đỏ / ưu tiên chạy ở server khi lưu (POST /visits/{id}/assessment).
   const vitals = vitalsFromForm(form)
-  const draft = () =>
-    existing ?? { name: form.name.trim(), gender: form.gender, age: ageOf(form.dob), allergies: form.allergies.trim(), history: form.history.trim() }
+  const draft = () => existing ?? { name: form.name.trim(), gender: form.gender, age: ageOf(form.dob), allergies: form.allergies.trim(), history: form.history.trim() }
 
   // Tạo hồ sơ + lượt Waiting nếu chưa có; lần sau chỉ cập nhật lời kể và sinh hiệu (chỉ khi còn Waiting).
   async function ensureVisit(force = false) {
@@ -181,7 +180,10 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
   // Đóng khi lượt đã tạo mà chưa lưu xong → huỷ lượt đó để không còn lượt “ma” trong hàng chờ.
   function close() {
     if (visitRef.current && !saved.current)
-      clinic.cancelVisit(visitRef.current.visit_id, 'Huỷ khi đang tiếp đón (chưa lưu)').then(() => syncQueue(), () => {})
+      clinic.cancelVisit(visitRef.current.visit_id, 'Huỷ khi đang tiếp đón (chưa lưu)').then(
+        () => syncQueue(),
+        () => {}
+      )
     onClose()
   }
   async function pickRecord(d) {
@@ -196,106 +198,117 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
 
       {/* Hai cột như mẫu: trái thông tin bệnh nhân, phải triệu chứng và sinh hiệu. */}
       <div className="modal-b flush">
-      <div className="intake">
-      <section>
-      {existing && <div className="sec-t" style={{ marginTop: 0 }}>Patient details</div>}
-      {existing ? (
-        <>
-          <div className="pl-summary">
-            <span className="num">{existing.id}</span>
-            <span>{translate(existing.gender)}</span>
-            <span>
-              {existing.dob} ({ageOf(existing.dob)} {translate('yrs')})
-            </span>
-            <span className="num">{existing.phone}</span>
-            <button className="btn btn-ghost btn-sm" onClick={() => setEditing(!editing)}>
-              <Icon name="pencil" /> {editing ? translate('Close') : translate('Edit details')}
-            </button>
-          </div>
-          {editing && <EditPatient p={existing} onSaved={(p) => (setExisting(p), setEditing(false))} />}
-          <PatientAlerts p={existing} />
-        </>
-      ) : (
-        <>
-          <NewPatientFields form={form} field={field} err={err} onDob={(dob) => setForm((f) => ({ ...f, dob }))} />
-        </>
-      )}
+        <div className="intake">
+          <section>
+            {existing && (
+              <div className="sec-t" style={{ marginTop: 0 }}>
+                Patient details
+              </div>
+            )}
+            {existing ? (
+              <>
+                <div className="pl-summary">
+                  <span className="num">{existing.id}</span>
+                  <span>{translate(existing.gender)}</span>
+                  <span>
+                    {existing.dob} ({ageOf(existing.dob)} {translate('yrs')})
+                  </span>
+                  <span className="num">{existing.phone}</span>
+                  <button className="btn btn-ghost btn-sm" onClick={() => setEditing(!editing)}>
+                    <Icon name="pencil" /> {editing ? translate('Close') : translate('Edit details')}
+                  </button>
+                </div>
+                {editing && <EditPatient p={existing} onSaved={(p) => (setExisting(p), setEditing(false))} />}
+                <PatientAlerts p={existing} />
+              </>
+            ) : (
+              <>
+                <NewPatientFields form={form} field={field} err={err} onDob={(dob) => setForm((f) => ({ ...f, dob }))} />
+              </>
+            )}
 
-      {dupes && !existing && <DuplicateBanner dupes={dupes} allowNew={!idTaken} onPick={pickRecord} onCreateNew={() => handleSave(true)} />}
-      {pregnancyAsked && (
-        <>
-          <div className="sec-t">
-            <Icon name="baby" />
-            <span>Pregnancy</span>
-          </div>
-          <div className="seg" role="radiogroup" aria-label={translate('Pregnancy')}>
-            {[
-              ['', 'Not asked'],
-              ['no', 'Not pregnant'],
-              ['yes', 'Pregnant']
-            ].map(([v, l]) => (
-              <button key={v} type="button" role="radio" aria-checked={form.pregnancy === v} className={form.pregnancy === v ? 'on' : ''} onClick={() => setForm((f) => ({ ...f, pregnancy: v }))}>
-                {translate(l)}
-              </button>
-            ))}
-          </div>
-        </>
-      )}
-      <div className="sec-t">
-        <Icon name="ticket" />
-        <span>Queue number</span>
-      </div>
-      <div className="qno">
-        <span className="n num">{visit ? ticketNo(visit.queue_number) : '—'}</span>
-        <div style={{ flex: 1 }}>
-          <b>{visit ? translate('Queue number') + ' ' + ticketNo(visit.queue_number) : translate('Issued when saved')}</b>
-          <div className="muted small">{translate('Issued by the server when the visit is saved')}</div>
+            {dupes && !existing && <DuplicateBanner dupes={dupes} allowNew={!idTaken} onPick={pickRecord} onCreateNew={() => handleSave(true)} />}
+            {pregnancyAsked && (
+              <>
+                <div className="sec-t">
+                  <Icon name="baby" />
+                  <span>Pregnancy</span>
+                </div>
+                <div className="seg" role="radiogroup" aria-label={translate('Pregnancy')}>
+                  {[
+                    ['', 'Not asked'],
+                    ['no', 'Not pregnant'],
+                    ['yes', 'Pregnant']
+                  ].map(([v, l]) => (
+                    <button
+                      key={v}
+                      type="button"
+                      role="radio"
+                      aria-checked={form.pregnancy === v}
+                      className={form.pregnancy === v ? 'on' : ''}
+                      onClick={() => setForm((f) => ({ ...f, pregnancy: v }))}
+                    >
+                      {translate(l)}
+                    </button>
+                  ))}
+                </div>
+              </>
+            )}
+            <div className="sec-t">
+              <Icon name="ticket" />
+              <span>Queue number</span>
+            </div>
+            <div className="qno">
+              <span className="n num">{visit ? ticketNo(visit.queue_number) : '—'}</span>
+              <div style={{ flex: 1 }}>
+                <b>{visit ? translate('Queue number') + ' ' + ticketNo(visit.queue_number) : translate('Issued when saved')}</b>
+                <div className="muted small">{translate('Issued by the server when the visit is saved')}</div>
+              </div>
+              <label className="check">
+                <input type="checkbox" checked={print} onChange={(e) => setPrint(e.target.checked)} />
+                <span>Print queue ticket</span>
+              </label>
+            </div>
+          </section>
+
+          <section>
+            <div className="sec-t" style={{ marginTop: 0 }}>
+              <Icon name="message-square-text" />
+              <span>Symptoms</span>
+            </div>
+            <SymptomPanel
+              value={syms}
+              onChange={setSyms}
+              text={form.reason}
+              onText={(t) => setForm((f) => ({ ...f, reason: t }))}
+              onExtract={extract}
+              onVitals={(list, from) => setVitalProps({ list, from })}
+            />
+
+            <div className="sec-t">
+              <Icon name="activity" />
+              <span>Vital signs</span>
+            </div>
+            <VitalProposals
+              list={vitalProps.list}
+              form={form}
+              onApply={(fill) => setForm((f) => ({ ...f, ...fill }))}
+              onDrop={(keys) => setVitalProps((v) => ({ ...v, list: v.list.filter((p) => !keys.includes(p.key)) }))}
+              stale={extractionStale(vitalProps.from, form.reason)}
+            />
+            <VitalsFields value={form} onChange={(k, v) => setForm((f) => ({ ...f, [k]: v }))} errorKeys={touched ? vit.errorKeys : new Set()} requireWeight={child} />
+            {touched && vit.errors.length > 0 && (
+              <p className="ai-soft" style={{ color: 'var(--warn-ink)', fontSize: 12.5, margin: '4px 0 8px' }}>
+                <Icon name="ban" /> {vit.errors.map((w) => translate(w)).join(' · ')}
+              </p>
+            )}
+            {vWarn.length > 0 && (
+              <p className="ai-soft" style={{ color: 'var(--priority-ink)', fontSize: 12.5, margin: '4px 0 8px' }}>
+                <Icon name="alert" /> {translate('Unusual value — please double-check')}: {vWarn.map((w) => translate(w)).join(' · ')}
+              </p>
+            )}
+          </section>
         </div>
-        <label className="check">
-          <input type="checkbox" checked={print} onChange={(e) => setPrint(e.target.checked)} />
-          <span>Print queue ticket</span>
-        </label>
-      </div>
-      </section>
-
-      <section>
-      <div className="sec-t" style={{ marginTop: 0 }}>
-        <Icon name="message-square-text" />
-        <span>Symptoms</span>
-      </div>
-      <SymptomPanel
-        value={syms}
-        onChange={setSyms}
-        text={form.reason}
-        onText={(t) => setForm((f) => ({ ...f, reason: t }))}
-        onExtract={extract}
-        onVitals={(list, from) => setVitalProps({ list, from })}
-      />
-
-      <div className="sec-t">
-        <Icon name="activity" />
-        <span>Vital signs</span>
-      </div>
-      <VitalProposals
-        list={vitalProps.list}
-        form={form}
-        onApply={(fill) => setForm((f) => ({ ...f, ...fill }))}
-        onDrop={(keys) => setVitalProps((v) => ({ ...v, list: v.list.filter((p) => !keys.includes(p.key)) }))}
-        stale={extractionStale(vitalProps.from, form.reason)}
-      />
-      <VitalsFields value={form} onChange={(k, v) => setForm((f) => ({ ...f, [k]: v }))} errorKeys={touched ? vit.errorKeys : new Set()} requireWeight={child} />
-      {touched && vit.errors.length > 0 && (
-        <p className="ai-soft" style={{ color: 'var(--warn-ink)', fontSize: 12.5, margin: '4px 0 8px' }}>
-          <Icon name="ban" /> {vit.errors.map((w) => translate(w)).join(' · ')}
-        </p>
-      )}
-      {vWarn.length > 0 && (
-        <p className="ai-soft" style={{ color: 'var(--priority-ink)', fontSize: 12.5, margin: '4px 0 8px' }}>
-          <Icon name="alert" /> {translate('Unusual value — please double-check')}: {vWarn.map((w) => translate(w)).join(' · ')}
-        </p>
-      )}
-      </section>
-      </div>
       </div>
 
       <div className="modal-f">

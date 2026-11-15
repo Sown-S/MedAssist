@@ -4,7 +4,18 @@ import { translate } from '../../i18n'
 import { getAssessment, missingName } from '../../api/clinicApi'
 
 // Chưa có kết quả (đang tải, hoặc lượt chưa được đánh giá — 404).
-const EMPTY = { assessment_id: null, ai_status: 'Pending', mode: null, knowledge_release: null, model_version: null, prompt_version: null, priority: null, alerts: [], complete_now: [], candidates: [] }
+const EMPTY = {
+  assessment_id: null,
+  ai_status: 'Pending',
+  mode: null,
+  knowledge_release: null,
+  model_version: null,
+  prompt_version: null,
+  priority: null,
+  alerts: [],
+  complete_now: [],
+  candidates: []
+}
 
 // Kết quả AI của lượt khám (GET /visits/{id}/assessment, 404 = chưa được đánh giá), hỏi lại mỗi 2 giây tới khi có kết quả cuối.
 export function useAssessment(visit) {
@@ -12,7 +23,11 @@ export function useAssessment(visit) {
   const done = ['Ready', 'Degraded', 'Failed', 'Skipped', 'None'].includes(a.ai_status)
   useEffect(() => {
     if (done) return
-    const tick = () => getAssessment(visit.id).then((r) => setA(r ?? { ...EMPTY, ai_status: 'None' }), () => {})
+    const tick = () =>
+      getAssessment(visit.id).then(
+        (r) => setA(r ?? { ...EMPTY, ai_status: 'None' }),
+        () => {}
+      )
     tick()
     const t = setInterval(tick, 2000)
     return () => clearInterval(t)
@@ -80,21 +95,29 @@ export default function AssessmentCard({ a, decisions, onAccept, onDismiss }) {
           <Icon name="alert" /> {translate('The AI assessment could not be completed — examine and diagnose as usual.')}
         </p>
       )}
-      {a.ai_status === 'Pending' && <p className="muted small" style={{ marginTop: 8 }}>{translate('Waiting for the result — you can keep examining; it appears here automatically.')}</p>}
-      {a.ai_status === 'Preliminary' && <p className="muted small" style={{ marginTop: 8 }}>{translate('Preliminary ranking by the approved rules — the AI explanation will appear here automatically.')}</p>}
+      {a.ai_status === 'Pending' && (
+        <p className="muted small" style={{ marginTop: 8 }}>
+          {translate('Waiting for the result — you can keep examining; it appears here automatically.')}
+        </p>
+      )}
+      {a.ai_status === 'Preliminary' && (
+        <p className="muted small" style={{ marginTop: 8 }}>
+          {translate('Preliminary ranking by the approved rules — the AI explanation will appear here automatically.')}
+        </p>
+      )}
 
       {a.candidates.length > 0 && (
         <div className="sugs">
           {a.candidates.map((c, i) => (
             <div className={'sug' + (decisions[c.condition_code] === 'accepted' ? ' on' : '')} key={c.condition_code}>
-                <span className="rk">{c.rank}</span>
-                <span className="nm">
-                  <b title={c.name_vi}>{c.name_vi}</b>
-                  {c.icd10_code && <span>{'ICD-10 ' + c.icd10_code}</span>}
-                </span>
-                <span className="pc num" title={translate('Match score')}>
-                  {Math.round(c.score * 100)}%
-                </span>
+              <span className="rk">{c.rank}</span>
+              <span className="nm">
+                <b title={c.name_vi}>{c.name_vi}</b>
+                {c.icd10_code && <span>{'ICD-10 ' + c.icd10_code}</span>}
+              </span>
+              <span className="pc num" title={translate('Match score')}>
+                {Math.round(c.score * 100)}%
+              </span>
               <div className="acts">
                 {decisions[c.condition_code] === 'accepted' ? (
                   <span className="badge b-success">{translate('Accepted')}</span>
@@ -138,36 +161,38 @@ export default function AssessmentCard({ a, decisions, onAccept, onDismiss }) {
 
       {a.candidates.length > 0 && (
         <div className="ev-wrap">
-        <div>
-        <div className="ev-grid">
-          {a.candidates.map((c) => (
-            <div className="ev-col" key={c.condition_code}>
-              <b>{c.name_vi}</b>
-              {c.supporting.map((s) => (
-                <div key={'s' + s.symptom_code} className="ev s" title={translate('Supporting finding')}>
-                  <Icon name="circle-check" /> {s.symptom_name}
+          <div>
+            <div className="ev-grid">
+              {a.candidates.map((c) => (
+                <div className="ev-col" key={c.condition_code}>
+                  <b>{c.name_vi}</b>
+                  {c.supporting.map((s) => (
+                    <div key={'s' + s.symptom_code} className="ev s" title={translate('Supporting finding')}>
+                      <Icon name="circle-check" /> {s.symptom_name}
+                    </div>
+                  ))}
+                  {c.contradicting.map((s) => (
+                    <div key={'c' + s.symptom_code} className="ev c" title={translate('Contradicting finding')}>
+                      <Icon name="circle-x" /> {s.symptom_name}
+                    </div>
+                  ))}
+                  {c.missing.map((s) => (
+                    <div key={'m' + s.symptom_code} className="ev m" title={translate('Not yet known')}>
+                      <Icon name="circle-help" /> {translate('Missing')}: {s.symptom_name}
+                    </div>
+                  ))}
+                  {c.explanation && <p className="ai-why">{c.explanation}</p>}
                 </div>
               ))}
-              {c.contradicting.map((s) => (
-                <div key={'c' + s.symptom_code} className="ev c" title={translate('Contradicting finding')}>
-                  <Icon name="circle-x" /> {s.symptom_name}
-                </div>
-              ))}
-              {c.missing.map((s) => (
-                <div key={'m' + s.symptom_code} className="ev m" title={translate('Not yet known')}>
-                  <Icon name="circle-help" /> {translate('Missing')}: {s.symptom_name}
-                </div>
-              ))}
-              {c.explanation && <p className="ai-why">{c.explanation}</p>}
             </div>
-          ))}
-        </div>
-        </div>
+          </div>
         </div>
       )}
 
       {['Ready', 'Degraded'].includes(a.ai_status) && !a.candidates.length && (
-        <p className="muted small" style={{ marginTop: 8 }}>{translate('No condition in the approved knowledge base matches the symptoms recorded at check-in.')}</p>
+        <p className="muted small" style={{ marginTop: 8 }}>
+          {translate('No condition in the approved knowledge base matches the symptoms recorded at check-in.')}
+        </p>
       )}
       {a.complete_now.length > 0 && (
         <p className="hint-w">

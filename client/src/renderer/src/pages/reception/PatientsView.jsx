@@ -70,9 +70,32 @@ export default function PatientsView({ readOnly, onCheckIn }) {
             <input className="input" type="search" value={f.q} onChange={set('q')} placeholder={translate('Full name (with or without accents)')} aria-label={translate('Full name')} />
           </div>
           <input className="input" style={{ width: 160, height: 40 }} value={f.phone} onChange={set('phone')} placeholder={translate('Phone')} aria-label={translate('Phone')} inputMode="numeric" />
-          <input className="input" style={{ width: 150, height: 40 }} value={f.idNumber} onChange={set('idNumber')} placeholder={translate('ID card')} aria-label={translate('ID card')} inputMode="numeric" />
-          <input className="input" style={{ width: 200, height: 40 }} value={f.code} onChange={set('code')} placeholder={translate('Patient code, e.g. BN-3F2A9C1B')} aria-label={translate('Record code')} />
-          <input className="input num" style={{ width: 110, height: 40 }} value={f.birthYear} onChange={set('birthYear')} placeholder={translate('Year of birth')} aria-label={translate('Year of birth')} inputMode="numeric" />
+          <input
+            className="input"
+            style={{ width: 150, height: 40 }}
+            value={f.idNumber}
+            onChange={set('idNumber')}
+            placeholder={translate('ID card')}
+            aria-label={translate('ID card')}
+            inputMode="numeric"
+          />
+          <input
+            className="input"
+            style={{ width: 200, height: 40 }}
+            value={f.code}
+            onChange={set('code')}
+            placeholder={translate('Patient code, e.g. BN-3F2A9C1B')}
+            aria-label={translate('Record code')}
+          />
+          <input
+            className="input num"
+            style={{ width: 110, height: 40 }}
+            value={f.birthYear}
+            onChange={set('birthYear')}
+            placeholder={translate('Year of birth')}
+            aria-label={translate('Year of birth')}
+            inputMode="numeric"
+          />
           <button className="btn btn-ghost btn-sm" disabled={!dirty} onClick={() => (setF(EMPTY), setOffset(0))}>
             {translate('Clear filters')}
           </button>

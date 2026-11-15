@@ -275,30 +275,30 @@ export default function TopActions({ user, onSignOut }) {
       <Modal open={open === 'help'} onClose={() => setOpen(null)}>
         <ModalHeader title="Help" onClose={() => setOpen(null)} />
         <div className="modal-b">
-        <p className="help-intro">What you can do as {user.role}:</p>
-        {HELP[user.roleKey].map(([name, text]) => (
-          <div className="help-sec" key={name}>
-            <span className="ico p">
-              <Icon name={HELP_ICON[name] ?? 'help'} />
-            </span>
-            <span>
-              <b>{translate(name)}</b>
-              <span>{translate(text)}</span>
-            </span>
-          </div>
-        ))}
-        <div className="sec-t">Keyboard shortcuts</div>
-        <div className="keys">
-          {SHORTCUTS[user.roleKey].map(([k, d]) => (
-            <Fragment key={k}>
-              <kbd>{k}</kbd>
-              <span>{translate(d)}</span>
-            </Fragment>
+          <p className="help-intro">What you can do as {user.role}:</p>
+          {HELP[user.roleKey].map(([name, text]) => (
+            <div className="help-sec" key={name}>
+              <span className="ico p">
+                <Icon name={HELP_ICON[name] ?? 'help'} />
+              </span>
+              <span>
+                <b>{translate(name)}</b>
+                <span>{translate(text)}</span>
+              </span>
+            </div>
           ))}
-        </div>
-        <p className="help-intro" style={{ marginTop: 14 }}>
-          Forgot your password or need another account? Ask an administrator to reset or create it under Admin → Staff accounts.
-        </p>
+          <div className="sec-t">Keyboard shortcuts</div>
+          <div className="keys">
+            {SHORTCUTS[user.roleKey].map(([k, d]) => (
+              <Fragment key={k}>
+                <kbd>{k}</kbd>
+                <span>{translate(d)}</span>
+              </Fragment>
+            ))}
+          </div>
+          <p className="help-intro" style={{ marginTop: 14 }}>
+            Forgot your password or need another account? Ask an administrator to reset or create it under Admin → Staff accounts.
+          </p>
         </div>
         <div className="modal-f">
           <button className="btn btn-primary" onClick={() => setOpen(null)}>
@@ -310,59 +310,59 @@ export default function TopActions({ user, onSignOut }) {
       <Modal open={open === 'settings'} onClose={() => setOpen(null)}>
         <ModalHeader title="Settings" onClose={() => setOpen(null)} />
         <div className="modal-b">
-        <div className="sec-t" style={{ marginTop: 0 }}>
-          Menu bar appearance
-        </div>
-        <div className="thm" role="radiogroup" aria-label={translate('Menu bar appearance')}>
-          {SIDEBAR_THEMES.map((t) => (
-            <button key={t.key} type="button" role="radio" aria-checked={theme === t.key} className={theme === t.key ? 'on' : ''} onClick={() => chooseTheme(t.key)}>
-              <span className="pv">
-                <span className="ps" style={{ background: t.bg, color: t.ink }}>
-                  <i className="act" />
-                  <i />
-                  <i />
-                  <i />
-                </span>
-                <span className="pm">
-                  <i />
-                  <i />
-                </span>
-              </span>
-              <span className="nm">
-                <Icon name={theme === t.key ? 'circle-check' : 'circle'} />
-                <span>{translate(t.label)}</span>
-              </span>
-            </button>
-          ))}
-        </div>
-        <p className="muted small" style={{ margin: '8px 0 0' }}>
-          Applied right away on this computer only.
-        </p>
-        <div className="sec-t">Language</div>
-        <div className="seg">
-          {LANGUAGES.map((l) => (
-            <button key={l.code} className={(getLang() === l.code ? 'on' : '')} onClick={() => chooseLanguage(l.code)}>
-              {l.name}
-            </button>
-          ))}
-        </div>
-        <p className="muted small" style={{ margin: '10px 0 0' }}>
-          The display language is saved on this computer only. Times are shown in Vietnam time (GMT+7).
-        </p>
-        <div className="sec-t">Account</div>
-        {[
-          ['Name', user.name],
-          ['Username', user.username],
-          ['Role', user.role]
-        ].map(([k, v]) => (
-          <div className="pref-row inline" key={k}>
-            <span>{k}</span>
-            <b>{v}</b>
+          <div className="sec-t" style={{ marginTop: 0 }}>
+            Menu bar appearance
           </div>
-        ))}
-        <button className="btn btn-outline btn-sm" style={{ marginTop: 10 }} onClick={() => setOpen('password')}>
-          <Icon name="key-round" /> Change password
-        </button>
+          <div className="thm" role="radiogroup" aria-label={translate('Menu bar appearance')}>
+            {SIDEBAR_THEMES.map((t) => (
+              <button key={t.key} type="button" role="radio" aria-checked={theme === t.key} className={theme === t.key ? 'on' : ''} onClick={() => chooseTheme(t.key)}>
+                <span className="pv">
+                  <span className="ps" style={{ background: t.bg, color: t.ink }}>
+                    <i className="act" />
+                    <i />
+                    <i />
+                    <i />
+                  </span>
+                  <span className="pm">
+                    <i />
+                    <i />
+                  </span>
+                </span>
+                <span className="nm">
+                  <Icon name={theme === t.key ? 'circle-check' : 'circle'} />
+                  <span>{translate(t.label)}</span>
+                </span>
+              </button>
+            ))}
+          </div>
+          <p className="muted small" style={{ margin: '8px 0 0' }}>
+            Applied right away on this computer only.
+          </p>
+          <div className="sec-t">Language</div>
+          <div className="seg">
+            {LANGUAGES.map((l) => (
+              <button key={l.code} className={getLang() === l.code ? 'on' : ''} onClick={() => chooseLanguage(l.code)}>
+                {l.name}
+              </button>
+            ))}
+          </div>
+          <p className="muted small" style={{ margin: '10px 0 0' }}>
+            The display language is saved on this computer only. Times are shown in Vietnam time (GMT+7).
+          </p>
+          <div className="sec-t">Account</div>
+          {[
+            ['Name', user.name],
+            ['Username', user.username],
+            ['Role', user.role]
+          ].map(([k, v]) => (
+            <div className="pref-row inline" key={k}>
+              <span>{k}</span>
+              <b>{v}</b>
+            </div>
+          ))}
+          <button className="btn btn-outline btn-sm" style={{ marginTop: 10 }} onClick={() => setOpen('password')}>
+            <Icon name="key-round" /> Change password
+          </button>
         </div>
         <div className="modal-f">
           <button className="btn btn-outline" onClick={() => setOpen(null)}>

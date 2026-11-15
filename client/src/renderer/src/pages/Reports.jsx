@@ -105,34 +105,34 @@ export default function Reports() {
               <h3>AI module</h3>
             </div>
             <div className="card-b">
-            <div className="grid-2e">
-              <div>
-                <div className="sec-t">Assessments</div>
-                <div className="bars">
-                  <HBar label="Full (rules + model)" value={a.full} of={a.total} />
-                  <HBar label="Rule-only (model unavailable)" value={a.rule_only} of={a.total} tone="w" />
-                  <HBar label="Failed" value={a.failed} of={a.total} tone="d" />
-                  <HBar label="Skipped (red flag)" value={a.skipped} of={a.total} tone="n" />
+              <div className="grid-2e">
+                <div>
+                  <div className="sec-t">Assessments</div>
+                  <div className="bars">
+                    <HBar label="Full (rules + model)" value={a.full} of={a.total} />
+                    <HBar label="Rule-only (model unavailable)" value={a.rule_only} of={a.total} tone="w" />
+                    <HBar label="Failed" value={a.failed} of={a.total} tone="d" />
+                    <HBar label="Skipped (red flag)" value={a.skipped} of={a.total} tone="n" />
+                  </div>
+                </div>
+                <div>
+                  <div className="sec-t">Doctors vs suggestions</div>
+                  <div className="bars">
+                    <HBar label="Accepted top suggestion" value={d.accepted_top} of={decided} />
+                    <HBar label="Chose another diagnosis" value={d.chose_other} of={decided} tone="n" />
+                    <HBar label="No suggestion shown" value={d.no_suggestion} of={decided} tone="n" />
+                  </div>
                 </div>
               </div>
-              <div>
-                <div className="sec-t">Doctors vs suggestions</div>
-                <div className="bars">
-                  <HBar label="Accepted top suggestion" value={d.accepted_top} of={decided} />
-                  <HBar label="Chose another diagnosis" value={d.chose_other} of={decided} tone="n" />
-                  <HBar label="No suggestion shown" value={d.no_suggestion} of={decided} tone="n" />
-                </div>
+              <div style={{ marginTop: 18 }}>
+                <MiniStats>
+                  <MiniStat icon="clock" tone="n" value={a.avg_latency_ms == null ? '—' : (a.avg_latency_ms / 1000).toFixed(1).replace('.', ',') + ' s'} label="Average AI assessment time" />
+                  <MiniStat icon="fileText" tone="n" value={ai.extractions.completed + ' / ' + ai.extractions.total} label="Free-text extractions completed" />
+                </MiniStats>
               </div>
-            </div>
-            <div style={{ marginTop: 18 }}>
-              <MiniStats>
-                <MiniStat icon="clock" tone="n" value={a.avg_latency_ms == null ? '—' : (a.avg_latency_ms / 1000).toFixed(1).replace('.', ',') + ' s'} label="Average AI assessment time" />
-                <MiniStat icon="fileText" tone="n" value={ai.extractions.completed + ' / ' + ai.extractions.total} label="Free-text extractions completed" />
-              </MiniStats>
-            </div>
-            <p className="muted small" style={{ marginTop: 12 }}>
-              <Icon name="info" /> <span>Precision, recall and F1 are measured on the frozen test set, not on clinic data.</span>
-            </p>
+              <p className="muted small" style={{ marginTop: 12 }}>
+                <Icon name="info" /> <span>Precision, recall and F1 are measured on the frozen test set, not on clinic data.</span>
+              </p>
             </div>
           </div>
         </>

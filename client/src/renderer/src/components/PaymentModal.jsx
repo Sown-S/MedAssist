@@ -82,11 +82,19 @@ export default function PaymentModal({ open, onClose, patient, initialTab = 'dis
             <div className="utabs" style={{ margin: '-18px -20px 0' }}>
               <button className={tab === 'dispense' ? 'on' : ''} onClick={() => setTab('dispense')}>
                 {translate('Dispensing')}
-                {waiting.length > 0 && <span className="badge b-warning" style={{ marginLeft: 8 }}>{waiting.length}</span>}
+                {waiting.length > 0 && (
+                  <span className="badge b-warning" style={{ marginLeft: 8 }}>
+                    {waiting.length}
+                  </span>
+                )}
               </button>
               <button className={tab === 'pay' ? 'on' : ''} onClick={() => setTab('pay')}>
                 {translate('Invoice & payment')}
-                {!paid && inv && <span className="badge b-warning" style={{ marginLeft: 8 }}>{translate('Awaiting payment')}</span>}
+                {!paid && inv && (
+                  <span className="badge b-warning" style={{ marginLeft: 8 }}>
+                    {translate('Awaiting payment')}
+                  </span>
+                )}
               </button>
             </div>
 

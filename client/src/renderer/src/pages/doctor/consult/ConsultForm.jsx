@@ -92,12 +92,20 @@ export default function ConsultForm({ visit, user, onDone, onNext }) {
     try {
       await syncDiagnoses(visit.id, { primary: d.diagnosis, extra: d.diagnosesExtra ?? [], notes: notes || null, candidates: ai.candidates, assessmentId: ai.assessment_id })
       if (mapped.length) {
-        await savePrescription(visit.id, mapped.map((x) => x.item))
+        await savePrescription(
+          visit.id,
+          mapped.map((x) => x.item)
+        )
         await confirmPrescription(visit.id)
       } else await completeExam(visit.id)
     } catch (e) {
       if (e.code === 'STOCK_SHORTAGE') {
-        setShort(shortageOf(e, mapped.map((x) => x.line)))
+        setShort(
+          shortageOf(
+            e,
+            mapped.map((x) => x.line)
+          )
+        )
         reloadServerDrugs()
       }
       return showToast(e.message || translate('Something went wrong'), 'error')
@@ -157,36 +165,25 @@ export default function ConsultForm({ visit, user, onDone, onNext }) {
           </button>
         </div>
         <div className="card-b">
+          {tab === 'clin' && <SoapPanel visit={visit} d={d} set={set} tried={tried} ai={ai} aiDecision={aiDecision} decideAi={decideAi} />}
 
-        {tab === 'clin' && (
-          <SoapPanel
-            visit={visit}
-            d={d}
-            set={set}
-            tried={tried}
-            ai={ai}
-            aiDecision={aiDecision}
-            decideAi={decideAi}
-          />
-        )}
-
-        {tab === 'vitals' && <VitalsTab visit={visit} vitals={d.vitals} onChange={setVital} tried={tried} needWeight={needWeight} vitalErr={vitalErr} />}
-        {tab === 'hist' && <HistoryTab visit={visit} />}
+          {tab === 'vitals' && <VitalsTab visit={visit} vitals={d.vitals} onChange={setVital} tried={tried} needWeight={needWeight} vitalErr={vitalErr} />}
+          {tab === 'hist' && <HistoryTab visit={visit} />}
         </div>
       </div>
 
-        <LabResultsEntry
-          visit={visit}
-          labOrders={labOrders}
-          labResults={d.labResults}
-          resultOf={resultOf}
-          conclusionOf={conclusionOf}
-          onResult={(key, value) => set({ labResults: { ...d.labResults, [key]: value } })}
-          onConclusion={(id, value) => set({ labConclusions: { ...d.labConclusions, [id]: value } })}
-          onCancelRow={setCancelRow}
-          onSave={() => saveLabResults({ toast: true })}
-          error={so.error}
-        />
+      <LabResultsEntry
+        visit={visit}
+        labOrders={labOrders}
+        labResults={d.labResults}
+        resultOf={resultOf}
+        conclusionOf={conclusionOf}
+        onResult={(key, value) => set({ labResults: { ...d.labResults, [key]: value } })}
+        onConclusion={(id, value) => set({ labConclusions: { ...d.labConclusions, [id]: value } })}
+        onCancelRow={setCancelRow}
+        onSave={() => saveLabResults({ toast: true })}
+        error={so.error}
+      />
 
       <div className="card rx-card">
         <RxEditor
@@ -320,4 +317,3 @@ export default function ConsultForm({ visit, user, onDone, onNext }) {
     </div>
   )
 }
-

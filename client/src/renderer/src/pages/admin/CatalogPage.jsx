@@ -34,8 +34,7 @@ export default function CatalogPage({ onNavigate }) {
   const [q, setQ] = useState('')
 
   const info = (key) => {
-    if (key === '@drugs')
-      return { title: 'Drugs & supplies', desc: 'Active ingredient, ATC code, unit, prices, essential / controlled flags', list: inv.drugs, page: 'drugs', last: latest(inv.drugs) }
+    if (key === '@drugs') return { title: 'Drugs & supplies', desc: 'Active ingredient, ATC code, unit, prices, essential / controlled flags', list: inv.drugs, page: 'drugs', last: latest(inv.drugs) }
     const s = SCHEMAS[key]
     return { title: s.title, desc: s.desc, list: cats[key], page: 'cat-' + key, last: latest(cats[key]) }
   }
@@ -45,8 +44,10 @@ export default function CatalogPage({ onNavigate }) {
     if (t.length < 2) return []
     const out = []
     for (const key of SERVER_KEYS)
-      for (const r of cats[key]) if ([r.code, r.name, r.nameEn].some((x) => (x ?? '').toLowerCase().includes(t))) out.push({ key, page: 'cat-' + key, code: r.code, name: r.name, active: r.active, id: r.id })
-    for (const d of inv.drugs) if ([d.name, d.ingredient, d.atc].some((x) => (x ?? '').toLowerCase().includes(t))) out.push({ key: '@drugs', page: 'drugs', code: d.atc || d.id, name: d.name, active: d.active })
+      for (const r of cats[key])
+        if ([r.code, r.name, r.nameEn].some((x) => (x ?? '').toLowerCase().includes(t))) out.push({ key, page: 'cat-' + key, code: r.code, name: r.name, active: r.active, id: r.id })
+    for (const d of inv.drugs)
+      if ([d.name, d.ingredient, d.atc].some((x) => (x ?? '').toLowerCase().includes(t))) out.push({ key: '@drugs', page: 'drugs', code: d.atc || d.id, name: d.name, active: d.active })
     return out.slice(0, 40)
   }, [q, cats, inv])
 
@@ -55,7 +56,18 @@ export default function CatalogPage({ onNavigate }) {
       return exportCsv(
         `danh-muc-thuoc-${todayISO()}.csv`,
         ['Code', 'Name', 'Active ingredient', 'ATC code', 'Unit', 'Purchase price', 'Selling price', 'Essential', 'Controlled', 'Status'],
-        inv.drugs.map((d) => [d.id, d.name, d.ingredient, d.atc, translate(unitLabel(d.unit)), d.cost, d.price, d.essential ? 'x' : '', d.group === 'controlled' ? 'x' : '', translate(d.active ? 'In use' : 'Discontinued')])
+        inv.drugs.map((d) => [
+          d.id,
+          d.name,
+          d.ingredient,
+          d.atc,
+          translate(unitLabel(d.unit)),
+          d.cost,
+          d.price,
+          d.essential ? 'x' : '',
+          d.group === 'controlled' ? 'x' : '',
+          translate(d.active ? 'In use' : 'Discontinued')
+        ])
       )
     exportCatalog(key, cats[key])
   }
@@ -180,4 +192,3 @@ export default function CatalogPage({ onNavigate }) {
     </div>
   )
 }
-

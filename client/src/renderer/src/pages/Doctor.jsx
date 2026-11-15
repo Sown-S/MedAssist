@@ -52,8 +52,7 @@ export default function Doctor() {
   return (
     <div className="content view">
       <div className={view === 'home' ? 'rhome' : 'vflow'}>
-      {view !== 'home' &&
-        view !== 'consult' && (
+        {view !== 'home' && view !== 'consult' && (
           <div className="pg-h">
             <div>
               <h2>{VIEWS[view].title}</h2>
@@ -62,54 +61,53 @@ export default function Doctor() {
           </div>
         )}
 
-      {/* Popup cạnh chuông: ca cờ đỏ chưa bác sĩ nào xem (mới nhất, kèm số ca còn lại) và cảnh báo cụm ca ở Trang chủ. */}
-      <BellPortal>
-        {topRF && (
-          <div className="bell-pop redflag-alert" role="alert">
-            <div className="ico d">
-              <Icon name="siren" />
-            </div>
-            <div className="bp-t">
-              <b>
-                {translate('Red-flag case in the queue')}: {topRF.name}
-                {topRF.age !== '' && topRF.age != null ? ', ' + topRF.age : ''}
-              </b>
-              <span className="bp-sign">{translate(topRF.signs) || '—'}</span>
-              <small className="bp-meta">
-                {hhmm(topRF.at)}
-                {topRF.by && ' · ' + translate('Recorded by') + ' ' + topRF.by}
-                {topRF.allergies ? ' · ' + translate('Drug allergy') + ': ' + translate(topRF.allergies) : ''}
-              </small>
-              <span className="bp-acts">
-                <button className="btn btn-danger btn-sm" onClick={() => seeNow(topRF)}>
-                  <Icon name="stethoscope" /> See the patient now
-                </button>
-                <button className="btn btn-outline btn-sm" onClick={() => reviewRedFlag(topRF.id, 'seen', user)}>
-                  Dismiss
-                </button>
-                {shownRF.length > 1 && (
-                  <button className="btn btn-outline btn-sm bp-more" onClick={() => setHiddenRF((h) => [...h, topRF.id])}>
-                    {translate('Next case')} (+{shownRF.length - 1})
+        {/* Popup cạnh chuông: ca cờ đỏ chưa bác sĩ nào xem (mới nhất, kèm số ca còn lại) và cảnh báo cụm ca ở Trang chủ. */}
+        <BellPortal>
+          {topRF && (
+            <div className="bell-pop redflag-alert" role="alert">
+              <div className="ico d">
+                <Icon name="siren" />
+              </div>
+              <div className="bp-t">
+                <b>
+                  {translate('Red-flag case in the queue')}: {topRF.name}
+                  {topRF.age !== '' && topRF.age != null ? ', ' + topRF.age : ''}
+                </b>
+                <span className="bp-sign">{translate(topRF.signs) || '—'}</span>
+                <small className="bp-meta">
+                  {hhmm(topRF.at)}
+                  {topRF.by && ' · ' + translate('Recorded by') + ' ' + topRF.by}
+                  {topRF.allergies ? ' · ' + translate('Drug allergy') + ': ' + translate(topRF.allergies) : ''}
+                </small>
+                <span className="bp-acts">
+                  <button className="btn btn-danger btn-sm" onClick={() => seeNow(topRF)}>
+                    <Icon name="stethoscope" /> See the patient now
                   </button>
-                )}
-              </span>
+                  <button className="btn btn-outline btn-sm" onClick={() => reviewRedFlag(topRF.id, 'seen', user)}>
+                    Dismiss
+                  </button>
+                  {shownRF.length > 1 && (
+                    <button className="btn btn-outline btn-sm bp-more" onClick={() => setHiddenRF((h) => [...h, topRF.id])}>
+                      {translate('Next case')} (+{shownRF.length - 1})
+                    </button>
+                  )}
+                </span>
+              </div>
+              <button className="btn btn-ghost btn-icon" onClick={() => setHiddenRF((h) => [...h, topRF.id])} title={translate('Close')} aria-label={translate('Close')}>
+                <Icon name="x" />
+              </button>
             </div>
-            <button className="btn btn-ghost btn-icon" onClick={() => setHiddenRF((h) => [...h, topRF.id])} title={translate('Close')} aria-label={translate('Close')}>
-              <Icon name="x" />
-            </button>
-          </div>
-        )}
-        {view === 'home' && <ClusterAlerts />}
-      </BellPortal>
+          )}
+          {view === 'home' && <ClusterAlerts />}
+        </BellPortal>
 
-      {/* Đổi màn bằng menu bên trái (components/SideNav.jsx); phòng khám của bác sĩ hiện ở cuối menu. */}
-      {view === 'home' && <DoctorHome go={go} />}
-      {view === 'consult' && <ConsultView visitId={visitId} onSelect={(id) => go('consult', id)} />}
-      {view === 'prescriptions' && <PrescriptionsLive initialDoctorId={user.id} initialDoctorName={user.name} onRecalled={(id) => go('consult', id)} />}
-      {view === 'drugs' && <DrugCabinetView go={go} />}
-      {view === 'patients' && <PatientLookup />}
-      {dialog}
-
+        {/* Đổi màn bằng menu bên trái (components/SideNav.jsx); phòng khám của bác sĩ hiện ở cuối menu. */}
+        {view === 'home' && <DoctorHome go={go} />}
+        {view === 'consult' && <ConsultView visitId={visitId} onSelect={(id) => go('consult', id)} />}
+        {view === 'prescriptions' && <PrescriptionsLive initialDoctorId={user.id} initialDoctorName={user.name} onRecalled={(id) => go('consult', id)} />}
+        {view === 'drugs' && <DrugCabinetView go={go} />}
+        {view === 'patients' && <PatientLookup />}
+        {dialog}
       </div>
     </div>
   )

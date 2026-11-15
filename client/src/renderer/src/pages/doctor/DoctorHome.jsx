@@ -60,7 +60,13 @@ export default function DoctorHome({ go }) {
       hint: lowStock ? `${lowStock} ${translate('drugs low or out of stock')}` : translate('All drugs in stock'),
       run: () => go('drugs')
     },
-    { icon: 'stethoscope', title: 'Consultation room', value: user.room ? user.room.replace(/\D+/g, '') || user.room : '—', hint: user.room || translate('No room assigned — ask an administrator'), run: () => go('consult') }
+    {
+      icon: 'stethoscope',
+      title: 'Consultation room',
+      value: user.room ? user.room.replace(/\D+/g, '') || user.room : '—',
+      hint: user.room || translate('No room assigned — ask an administrator'),
+      run: () => go('consult')
+    }
   ]
   const actions = [
     { icon: 'stethoscope', title: 'Consultation room', sub: 'Examine, diagnose and prescribe', run: () => go('consult') },
@@ -70,7 +76,12 @@ export default function DoctorHome({ go }) {
   ]
   const first = waiting[0]
   const callNext = (
-    <button className="btn btn-primary" onClick={next} disabled={!waiting.length} title={translate(mine.length ? 'Finish or send the current patient for lab tests first' : 'Priority first, then by number')}>
+    <button
+      className="btn btn-primary"
+      onClick={next}
+      disabled={!waiting.length}
+      title={translate(mine.length ? 'Finish or send the current patient for lab tests first' : 'Priority first, then by number')}
+    >
       <Icon name="megaphone" />
       {translate('Call next patient')}
       <kbd>Alt+N</kbd>
@@ -146,7 +157,8 @@ export default function DoctorHome({ go }) {
                 {first.triage === 'emergency' ? <span className="badge b-danger">{translate('Emergency')}</span> : first.priority && <span className="badge b-warning">{translate('Priority')}</span>}
                 {first.status === ST.WAITING && <span className="badge b-neutral">{translate('Not checked in')}</span>}
                 <div className="muted small">
-                  {[first.age !== '' ? first.age + ' ' + translate('yrs') : null, translate(first.gender), translate(first.reason)].filter(Boolean).join(' · ')} · {translate('waited')} {minutesSince(first.statusAt, now)} {translate('min')}
+                  {[first.age !== '' ? first.age + ' ' + translate('yrs') : null, translate(first.gender), translate(first.reason)].filter(Boolean).join(' · ')} · {translate('waited')}{' '}
+                  {minutesSince(first.statusAt, now)} {translate('min')}
                 </div>
                 {first.allergies && (
                   <span className="allergy">

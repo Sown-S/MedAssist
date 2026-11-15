@@ -27,10 +27,10 @@ export default function InventoryPage({ onNavigate }) {
 
       <div className="card">
         <div className="utabs">
-          <button className={(tab === 'stock' ? 'on' : '')} onClick={() => setTab('stock')}>
+          <button className={tab === 'stock' ? 'on' : ''} onClick={() => setTab('stock')}>
             Stock by batch
           </button>
-          <button className={(tab === 'moves' ? 'on' : '')} onClick={() => setTab('moves')}>
+          <button className={tab === 'moves' ? 'on' : ''} onClick={() => setTab('moves')}>
             Stock movements
           </button>
         </div>
@@ -42,4 +42,3 @@ export default function InventoryPage({ onNavigate }) {
     </div>
   )
 }
-

@@ -30,20 +30,24 @@ export default function ChangePasswordModal({ open, onClose }) {
       <form onSubmit={submit}>
         <ModalHeader title="Change your password" onClose={onClose} />
         <div className="modal-b">
-          {form.err && <div className="banner d" style={{ marginBottom: 12 }}>{form.err}</div>}
+          {form.err && (
+            <div className="banner d" style={{ marginBottom: 12 }}>
+              {form.err}
+            </div>
+          )}
           <div className="fg">
-          <div className="field full">
-            <label>Current password</label>
-            <input className="input" type="password" autoFocus autoComplete="current-password" value={form.old} onChange={(e) => setForm({ ...form, old: e.target.value })} />
-          </div>
-          <div className="field full">
-            <label>{`New password (at least ${minLength} characters)`}</label>
-            <input className="input" type="password" autoComplete="new-password" value={form.np} onChange={(e) => setForm({ ...form, np: e.target.value })} />
-          </div>
-          <div className="field full">
-            <label>Confirm new password</label>
-            <input className="input" type="password" autoComplete="new-password" value={form.np2} onChange={(e) => setForm({ ...form, np2: e.target.value })} />
-          </div>
+            <div className="field full">
+              <label>Current password</label>
+              <input className="input" type="password" autoFocus autoComplete="current-password" value={form.old} onChange={(e) => setForm({ ...form, old: e.target.value })} />
+            </div>
+            <div className="field full">
+              <label>{`New password (at least ${minLength} characters)`}</label>
+              <input className="input" type="password" autoComplete="new-password" value={form.np} onChange={(e) => setForm({ ...form, np: e.target.value })} />
+            </div>
+            <div className="field full">
+              <label>Confirm new password</label>
+              <input className="input" type="password" autoComplete="new-password" value={form.np2} onChange={(e) => setForm({ ...form, np2: e.target.value })} />
+            </div>
           </div>
         </div>
         <div className="modal-f">

@@ -106,73 +106,72 @@ export default function SettingsPage({ params, onNavigate, setLeaveGuard }) {
           ))}
         </nav>
         <div className="set-main">
-      {tab === 'clinic' && <ClinicTab form={form} readOnly={!online} />}
+          {tab === 'clinic' && <ClinicTab form={form} readOnly={!online} />}
 
-      {tab === 'print' && <PrintTab form={form} draft={draft} readOnly={!online} />}
+          {tab === 'print' && <PrintTab form={form} draft={draft} readOnly={!online} />}
 
-      {tab === 'security' && (
-        <div className="card">
-          <div className="set-grid">
-            {/* Chính sách mật khẩu do server quy định — chỉ hiển thị. */}
-            <Field path="security.policy" wide hint="Fixed on the clinic server — shown for reference only.">
-              <div className="symptom-box" style={{ padding: '8px 11px', fontSize: 13.5 }}>
-                {policy
-                  ? translate(`At least ${policy.minLength} characters`) + (policy.requireMix ? ' · ' + translate('letters and digits') : '')
-                  : translate('Cannot read the password policy from the server.')}
+          {tab === 'security' && (
+            <div className="card">
+              <div className="set-grid">
+                {/* Chính sách mật khẩu do server quy định — chỉ hiển thị. */}
+                <Field path="security.policy" wide hint="Fixed on the clinic server — shown for reference only.">
+                  <div className="symptom-box" style={{ padding: '8px 11px', fontSize: 13.5 }}>
+                    {policy
+                      ? translate(`At least ${policy.minLength} characters`) + (policy.requireMix ? ' · ' + translate('letters and digits') : '')
+                      : translate('Cannot read the password policy from the server.')}
+                  </div>
+                </Field>
+                <Field path="security.lock" wide hint="Fixed on the clinic server — shown for reference only. Administrators can unlock earlier in Staff accounts.">
+                  <div className="symptom-box" style={{ padding: '8px 11px', fontSize: 13.5 }}>
+                    {policy
+                      ? translate(`${policy.maxFailed} wrong passwords within ${policy.failedWindow} minutes → the account is locked for ${policy.lockMinutes} minutes.`)
+                      : translate('5 wrong passwords within 15 minutes (20 from one computer) → the account is locked for 5 minutes.')}
+                  </div>
+                </Field>
+                <Field {...fp('security.idleMinutes')} hint="Recommended on shared clinic computers: patient data stays on screen otherwise.">
+                  <select className="input" value={idleNow} disabled={!online} onChange={(e) => set('security.idleMinutes', Number(e.target.value))}>
+                    {idleOptions.map((x) => (
+                      <option key={x.key} value={x.key}>
+                        {x.label}
+                      </option>
+                    ))}
+                  </select>
+                </Field>
               </div>
-            </Field>
-            <Field path="security.lock" wide hint="Fixed on the clinic server — shown for reference only. Administrators can unlock earlier in Staff accounts.">
-              <div className="symptom-box" style={{ padding: '8px 11px', fontSize: 13.5 }}>
-                {policy
-                  ? translate(`${policy.maxFailed} wrong passwords within ${policy.failedWindow} minutes → the account is locked for ${policy.lockMinutes} minutes.`)
-                  : translate('5 wrong passwords within 15 minutes (20 from one computer) → the account is locked for 5 minutes.')}
-              </div>
-            </Field>
-            <Field {...fp('security.idleMinutes')} hint="Recommended on shared clinic computers: patient data stays on screen otherwise.">
-              <select className="input" value={idleNow} disabled={!online} onChange={(e) => set('security.idleMinutes', Number(e.target.value))}>
-                {idleOptions.map((x) => (
-                  <option key={x.key} value={x.key}>
-                    {x.label}
-                  </option>
-                ))}
-              </select>
-            </Field>
-          </div>
-          <p className="ai-foot-note">
-            <Icon name="lock" /> <span>Saving security settings asks for your password. The server enforces the same rules — the interface only mirrors them.</span>
-          </p>
-        </div>
-      )}
+              <p className="ai-foot-note">
+                <Icon name="lock" /> <span>Saving security settings asks for your password. The server enforces the same rules — the interface only mirrors them.</span>
+              </p>
+            </div>
+          )}
 
-      {tab === 'connection' && <ConnectionTab onNavigate={onNavigate} />}
-      {tab === 'device' && <DeviceTab />}
+          {tab === 'connection' && <ConnectionTab onNavigate={onNavigate} />}
+          {tab === 'device' && <DeviceTab />}
 
-      {tab === 'ops' && <OpsTab form={form} />}
+          {tab === 'ops' && <OpsTab form={form} />}
 
-      {(dirty || errCount > 0) && tab !== 'connection' && (
-        <div className="set-savebar">
-          <span>
-            {errCount > 0 ? (
-              <span className="set-err">
-                <span className="num">{errCount}</span> <span>fields need fixing</span>
+          {(dirty || errCount > 0) && tab !== 'connection' && (
+            <div className="set-savebar">
+              <span>
+                {errCount > 0 ? (
+                  <span className="set-err">
+                    <span className="num">{errCount}</span> <span>fields need fixing</span>
+                  </span>
+                ) : blockedOffline ? (
+                  <span className="set-err">No connection to the clinic server — clinic details and shared settings cannot be saved now.</span>
+                ) : (
+                  <>
+                    <span className="num">{changed.size}</span> <span>unsaved changes</span>
+                  </>
+                )}
               </span>
-            ) : blockedOffline ? (
-              <span className="set-err">No connection to the clinic server — clinic details and shared settings cannot be saved now.</span>
-            ) : (
-              <>
-                <span className="num">{changed.size}</span> <span>unsaved changes</span>
-              </>
-            )}
-          </span>
-          <button className="btn btn-ghost btn-sm" disabled={!dirty} onClick={() => setDraft(saved.values)}>
-            Discard changes
-          </button>
-          <button className="btn btn-primary btn-sm" disabled={!dirty || errCount > 0 || blockedOffline} onClick={save}>
-            <Icon name="save" /> <span>Save</span>
-          </button>
-        </div>
-      )}
-
+              <button className="btn btn-ghost btn-sm" disabled={!dirty} onClick={() => setDraft(saved.values)}>
+                Discard changes
+              </button>
+              <button className="btn btn-primary btn-sm" disabled={!dirty || errCount > 0 || blockedOffline} onClick={save}>
+                <Icon name="save" /> <span>Save</span>
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
@@ -189,4 +188,3 @@ export default function SettingsPage({ params, onNavigate, setLeaveGuard }) {
     </div>
   )
 }
-

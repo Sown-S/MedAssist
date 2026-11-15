@@ -31,7 +31,10 @@ export default function DispenseTab({ active, visitId, items, waiting, paid, rx,
     const t = translate
     const rows = items
       .filter((l) => l.dispense_status !== 'Skipped')
-      .map((l, n) => `<tr><td>${n + 1}</td><td><b>${esc(l.drug_name)}</b><br><small>${esc([l.dosage, l.frequency, l.duration_days + ' ngày'].join(' · '))}</small></td><td class="num">${esc(l.quantity)} ${esc(t(unitLabel(l.unit)))}</td></tr>`)
+      .map(
+        (l, n) =>
+          `<tr><td>${n + 1}</td><td><b>${esc(l.drug_name)}</b><br><small>${esc([l.dosage, l.frequency, l.duration_days + ' ngày'].join(' · '))}</small></td><td class="num">${esc(l.quantity)} ${esc(t(unitLabel(l.unit)))}</td></tr>`
+      )
       .join('')
     if (!rows) return showToast(translate('No drugs to dispense on this invoice.'), 'error')
     printHtml(
@@ -56,7 +59,9 @@ export default function DispenseTab({ active, visitId, items, waiting, paid, rx,
               {translate('Drug allergy')}: {rx.patient_context.allergy_notes}
             </span>
           ) : (
-            <span className="muted">{translate('Drug allergy')}: {translate('none recorded')}</span>
+            <span className="muted">
+              {translate('Drug allergy')}: {translate('none recorded')}
+            </span>
           )}
         </div>
       )}
@@ -92,32 +97,39 @@ export default function DispenseTab({ active, visitId, items, waiting, paid, rx,
                   </td>
                   <td>
                     <div className="acts">
-                    {l.dispense_status === 'Pending' && skipping !== l.item_id && (
-                      <>
-                        <button className="btn btn-outline btn-sm" onClick={() => markDispensed(l)}>
-                          {translate('Dispensed')}
-                        </button>
-                        <button
-                          className="btn btn-ghost btn-sm"
-                          disabled={paid}
-                          title={paid ? translate('Already paid — only “Dispensed” can be recorded now') : ''}
-                          onClick={() => (setSkipping(l.item_id), setSkipReason(''))}
-                        >
-                          {translate('Skip')}
-                        </button>
-                      </>
-                    )}
-                    {skipping === l.item_id && (
-                      <span className="toolbar" style={{ justifyContent: 'flex-end' }}>
-                        <input className="input" type="text" autoFocus placeholder={translate('Reason (e.g. patient declined, out of stock)')} value={skipReason} onChange={(e) => setSkipReason(e.target.value)} />
-                        <button className="btn btn-danger btn-sm" disabled={skipReason.trim().length < 3} onClick={confirmSkip}>
-                          Skip &amp; return stock
-                        </button>
-                        <button className="btn btn-ghost btn-sm" onClick={() => setSkipping(null)}>
-                          Cancel
-                        </button>
-                      </span>
-                    )}
+                      {l.dispense_status === 'Pending' && skipping !== l.item_id && (
+                        <>
+                          <button className="btn btn-outline btn-sm" onClick={() => markDispensed(l)}>
+                            {translate('Dispensed')}
+                          </button>
+                          <button
+                            className="btn btn-ghost btn-sm"
+                            disabled={paid}
+                            title={paid ? translate('Already paid — only “Dispensed” can be recorded now') : ''}
+                            onClick={() => (setSkipping(l.item_id), setSkipReason(''))}
+                          >
+                            {translate('Skip')}
+                          </button>
+                        </>
+                      )}
+                      {skipping === l.item_id && (
+                        <span className="toolbar" style={{ justifyContent: 'flex-end' }}>
+                          <input
+                            className="input"
+                            type="text"
+                            autoFocus
+                            placeholder={translate('Reason (e.g. patient declined, out of stock)')}
+                            value={skipReason}
+                            onChange={(e) => setSkipReason(e.target.value)}
+                          />
+                          <button className="btn btn-danger btn-sm" disabled={skipReason.trim().length < 3} onClick={confirmSkip}>
+                            Skip &amp; return stock
+                          </button>
+                          <button className="btn btn-ghost btn-sm" onClick={() => setSkipping(null)}>
+                            Cancel
+                          </button>
+                        </span>
+                      )}
                     </div>
                   </td>
                 </tr>
@@ -129,7 +141,9 @@ export default function DispenseTab({ active, visitId, items, waiting, paid, rx,
         <p className="muted small">{translate('No medication to dispense for this visit.')}</p>
       )}
       <p className="muted small" style={{ marginTop: 10 }}>
-        <span>Stock was already deducted (FEFO) when the doctor confirmed the prescription. “Dispensed” does not deduct again; “Skip” returns the stock to the same batches and re-issues the invoice.</span>
+        <span>
+          Stock was already deducted (FEFO) when the doctor confirmed the prescription. “Dispensed” does not deduct again; “Skip” returns the stock to the same batches and re-issues the invoice.
+        </span>
       </p>
       <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', marginTop: 12 }}>
         <button className="btn btn-outline btn-sm" onClick={printSlip}>

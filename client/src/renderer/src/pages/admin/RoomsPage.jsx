@@ -96,7 +96,11 @@ export default function RoomsPage({ onNavigate }) {
             </div>
           </div>
           {form.id && <p className="muted small">The code and type of a room cannot be changed.</p>}
-          {formErr && <div className="banner d" style={{ marginBottom: 12 }}>{translate(formErr)}</div>}
+          {formErr && (
+            <div className="banner d" style={{ marginBottom: 12 }}>
+              {translate(formErr)}
+            </div>
+          )}
           <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
             <button type="button" className="btn btn-ghost" onClick={() => setForm(null)}>
               Cancel
@@ -117,59 +121,51 @@ export default function RoomsPage({ onNavigate }) {
 
       <div className="card">
         <div className="card-b">
-        <div className="tbl-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Code</th>
-                <th>Name</th>
-                <th>Type</th>
-                <th>Doctor</th>
-                <th>Status</th>
-                <th />
-              </tr>
-            </thead>
-            <tbody>
-              {(rooms ?? []).map((r) => (
-                <tr key={r.id} className={r.active ? '' : 'ai-dim'}>
-                  <td className="num">{r.code}</td>
-                  <td>
-                    <b>{r.name}</b>
-                  </td>
-                  <td>{translate(ROOM_TYPES[r.type] ?? r.type)}</td>
-                  <td>
-                    {r.type !== 'Exam' ? (
-                      <span className="ai-soft">—</span>
-                    ) : r.physician ? (
-                      r.physician.name
-                    ) : (
-                      <span className="sp-warn">No doctor</span>
-                    )}
-                  </td>
-                  <td>{r.active ? <span className="plain">{translate('In use')}</span> : <span className="badge b-neutral">{translate('Not in use')}</span>}</td>
-                  <td>
-                    <div className="acts">
-                      <button
-                        className="btn btn-ghost btn-sm"
-                        onClick={() => {
-                          setFormErr('')
-                          setForm({ id: r.id, code: r.code, name: r.name, type: r.type })
-                        }}
-                      >
-                        <Icon name="pencil" />
-                        {translate('Rename')}
-                      </button>
-                      <button className="btn btn-ghost btn-sm" onClick={() => toggle(r)}>
-                        {translate(r.active ? 'Stop using' : 'Use again')}
-                      </button>
-                    </div>
-                  </td>
+          <div className="tbl-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Code</th>
+                  <th>Name</th>
+                  <th>Type</th>
+                  <th>Doctor</th>
+                  <th>Status</th>
+                  <th />
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        {rooms && !rooms.length && <p className="muted small">No rooms yet.</p>}
+              </thead>
+              <tbody>
+                {(rooms ?? []).map((r) => (
+                  <tr key={r.id} className={r.active ? '' : 'ai-dim'}>
+                    <td className="num">{r.code}</td>
+                    <td>
+                      <b>{r.name}</b>
+                    </td>
+                    <td>{translate(ROOM_TYPES[r.type] ?? r.type)}</td>
+                    <td>{r.type !== 'Exam' ? <span className="ai-soft">—</span> : r.physician ? r.physician.name : <span className="sp-warn">No doctor</span>}</td>
+                    <td>{r.active ? <span className="plain">{translate('In use')}</span> : <span className="badge b-neutral">{translate('Not in use')}</span>}</td>
+                    <td>
+                      <div className="acts">
+                        <button
+                          className="btn btn-ghost btn-sm"
+                          onClick={() => {
+                            setFormErr('')
+                            setForm({ id: r.id, code: r.code, name: r.name, type: r.type })
+                          }}
+                        >
+                          <Icon name="pencil" />
+                          {translate('Rename')}
+                        </button>
+                        <button className="btn btn-ghost btn-sm" onClick={() => toggle(r)}>
+                          {translate(r.active ? 'Stop using' : 'Use again')}
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          {rooms && !rooms.length && <p className="muted small">No rooms yet.</p>}
         </div>
       </div>
     </div>

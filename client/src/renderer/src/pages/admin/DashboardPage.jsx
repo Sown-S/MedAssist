@@ -31,13 +31,18 @@ function buildAlerts(inv, accounts, failed = []) {
     .forEach((d) => {
       const s = stockOf(d, batches)
       s.batches.forEach((b) => {
-        if (b.days < 0)
-          alerts.push({ level: 'critical', tag: 'Expired', title: `${d.name} has expired`, note: `Lot ${b.lot} · ${b.qty} expired — cannot be prescribed`, to: 'inventory' })
+        if (b.days < 0) alerts.push({ level: 'critical', tag: 'Expired', title: `${d.name} has expired`, note: `Lot ${b.lot} · ${b.qty} expired — cannot be prescribed`, to: 'inventory' })
         else if (b.days <= getSettings().ops.nearDays)
           alerts.push({ level: 'warning', tag: 'Near expiry', title: `${d.name} expires in ${b.days} days`, note: `Lot ${b.lot} · ${b.qty} left`, to: 'inventory' })
       })
       if (s.usable < d.threshold)
-        alerts.push({ level: s.usable === 0 ? 'critical' : 'warning', tag: 'Low stock', title: `${d.name} is below its threshold`, note: `${s.usable} left · threshold ${d.threshold}`, to: 'inventory' })
+        alerts.push({
+          level: s.usable === 0 ? 'critical' : 'warning',
+          tag: 'Low stock',
+          title: `${d.name} is below its threshold`,
+          note: `${s.usable} left · threshold ${d.threshold}`,
+          to: 'inventory'
+        })
     })
   const pending = accounts.filter((a) => a.mustChange)
   if (pending.length)
@@ -115,7 +120,6 @@ function ServerActivity({ items, onOpen }) {
     </div>
   )
 }
-
 
 export default function DashboardPage({ onNavigate }) {
   const navigate = useNavigate()
@@ -196,7 +200,7 @@ export default function DashboardPage({ onNavigate }) {
                     {alerts.map((a, i) => (
                       <div className="r" key={i}>
                         <div className={'ico ' + (a.level === 'critical' ? 'd' : a.to === 'inventory' ? 'w' : 'n')}>
-                          <Icon name={a.level === 'critical' && a.to === 'inventory' ? 'package-x' : a.tag === 'Near expiry' ? 'calendar-clock' : ALERT_ICON[a.to] ?? 'triangle-alert'} />
+                          <Icon name={a.level === 'critical' && a.to === 'inventory' ? 'package-x' : a.tag === 'Near expiry' ? 'calendar-clock' : (ALERT_ICON[a.to] ?? 'triangle-alert')} />
                         </div>
                         <div className="t">
                           <b>{translate(a.title)}</b>
@@ -248,7 +252,11 @@ export default function DashboardPage({ onNavigate }) {
                 </button>
               </div>
               <div className="card-b">
-                {week ? <LineChart points={fillDays(week.revenue.by_day, days7).map((x) => ({ label: x.day, value: x.amt }))} fmt={vnd} height={190} /> : <p className="muted small">{translate('Not available — could not load the report.')}</p>}
+                {week ? (
+                  <LineChart points={fillDays(week.revenue.by_day, days7).map((x) => ({ label: x.day, value: x.amt }))} fmt={vnd} height={190} />
+                ) : (
+                  <p className="muted small">{translate('Not available — could not load the report.')}</p>
+                )}
               </div>
             </div>
 

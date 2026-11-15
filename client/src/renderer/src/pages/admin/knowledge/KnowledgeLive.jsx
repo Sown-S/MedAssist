@@ -110,7 +110,11 @@ export default function KnowledgeLive({ reviewOnly = false }) {
                     ))}
                     {!list.length && <p className="muted small">—</p>}
                   </div>
-                  {type === 'RED_FLAG' && <p className="muted small" style={{ marginTop: 10 }}>Red-flag and priority-floor rules are decided by these rules alone, never by the AI model.</p>}
+                  {type === 'RED_FLAG' && (
+                    <p className="muted small" style={{ marginTop: 10 }}>
+                      Red-flag and priority-floor rules are decided by these rules alone, never by the AI model.
+                    </p>
+                  )}
                 </div>
               </div>
             )
@@ -122,44 +126,48 @@ export default function KnowledgeLive({ reviewOnly = false }) {
         <ReviewPanel data={data} names={names} onChanged={reload} />
       ) : (
         <>
-
-      <div className="card">
-        <div className="utabs">
-          {tabs.map((t) => (
-            <button
-              key={t.key}
-              className={(tab === t.key ? 'on' : '')}
-              onClick={() => {
-                setTab(t.key)
-                setAskRelease(0)
-              }}
-            >
-              <span>{t.label}</span>
-              {t.key === 'review' && open?.status === 'PendingApproval' && <span className="badge b-danger" style={{ marginLeft: 6 }}>1</span>}
-            </button>
-          ))}
-        </div>
-        {tab === 'items' && (
-          <ItemsTab
-            data={data}
-            names={names}
-            canEdit={canEdit}
-            openRelease={open}
-            onChanged={reload}
-            onOpenRelease={() => {
-              setTab('release')
-              setAskRelease((n) => n + 1)
-            }}
-          />
-        )}
-        {tab === 'release' && <ReleaseTab data={data} names={names} onChanged={reload} autoCreate={askRelease} />}
-        {tab === 'sources' && <SourcesTab data={data} canEdit={canEdit} onChanged={reload} />}
-        {tab === 'review' && <ReviewPanel data={data} names={names} onChanged={reload} />}
-        {tab === 'ailogs' && <AiLogsTab />}
-      </div>
-      <p className="ai-foot-note">
-        <Icon name="alert" /> <span>{translate('Knowledge is authored in Obsidian (OKF) and imported with import_okf, or edited here. Every change is versioned and written to the activity log.')}</span>
-      </p>
+          <div className="card">
+            <div className="utabs">
+              {tabs.map((t) => (
+                <button
+                  key={t.key}
+                  className={tab === t.key ? 'on' : ''}
+                  onClick={() => {
+                    setTab(t.key)
+                    setAskRelease(0)
+                  }}
+                >
+                  <span>{t.label}</span>
+                  {t.key === 'review' && open?.status === 'PendingApproval' && (
+                    <span className="badge b-danger" style={{ marginLeft: 6 }}>
+                      1
+                    </span>
+                  )}
+                </button>
+              ))}
+            </div>
+            {tab === 'items' && (
+              <ItemsTab
+                data={data}
+                names={names}
+                canEdit={canEdit}
+                openRelease={open}
+                onChanged={reload}
+                onOpenRelease={() => {
+                  setTab('release')
+                  setAskRelease((n) => n + 1)
+                }}
+              />
+            )}
+            {tab === 'release' && <ReleaseTab data={data} names={names} onChanged={reload} autoCreate={askRelease} />}
+            {tab === 'sources' && <SourcesTab data={data} canEdit={canEdit} onChanged={reload} />}
+            {tab === 'review' && <ReviewPanel data={data} names={names} onChanged={reload} />}
+            {tab === 'ailogs' && <AiLogsTab />}
+          </div>
+          <p className="ai-foot-note">
+            <Icon name="alert" />{' '}
+            <span>{translate('Knowledge is authored in Obsidian (OKF) and imported with import_okf, or edited here. Every change is versioned and written to the activity log.')}</span>
+          </p>
         </>
       )}
     </div>

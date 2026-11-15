@@ -24,7 +24,9 @@ export function useQueueGroups() {
     setOpenGroups(nextOpen)
     try {
       localStorage.setItem(GROUPS_KEY, JSON.stringify(nextOpen))
-    } catch {/* không lưu được thì chỉ nhớ trong phiên */}
+    } catch {
+      /* không lưu được thì chỉ nhớ trong phiên */
+    }
   }
   return [openGroups, toggle]
 }
@@ -59,7 +61,12 @@ export default function DoctorQueue({ visits, user, mine, current, onSelect, tak
           <Icon name="megaphone" />
           <span>{translate('Call next patient')}</span>
         </button>
-        <button className="qcol-btn" onClick={() => toggle('_rail')} title={translate(rail ? 'Show the queue' : 'Collapse the queue')} aria-label={translate(rail ? 'Show the queue' : 'Collapse the queue')}>
+        <button
+          className="qcol-btn"
+          onClick={() => toggle('_rail')}
+          title={translate(rail ? 'Show the queue' : 'Collapse the queue')}
+          aria-label={translate(rail ? 'Show the queue' : 'Collapse the queue')}
+        >
           <Icon name="chevrons-left" />
         </button>
       </div>

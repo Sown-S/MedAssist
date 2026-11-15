@@ -117,125 +117,125 @@ export default function DrugCabinetView({ go }) {
       )}
       <div className="card">
         <div className="card-b">
-        <div className="toolbar" style={{ marginBottom: 14 }}>
-          <div className="search">
-            <Icon name="search" />
-            <input className="input" type="search" placeholder="Search by drug name, active ingredient or ATC…" value={q} onChange={filter(setQ)} />
+          <div className="toolbar" style={{ marginBottom: 14 }}>
+            <div className="search">
+              <Icon name="search" />
+              <input className="input" type="search" placeholder="Search by drug name, active ingredient or ATC…" value={q} onChange={filter(setQ)} />
+            </div>
+            <select className="select" value={atc} onChange={filter(setAtc)} title={translate('Therapeutic class (ATC)')}>
+              <option value="">All drug classes (ATC)</option>
+              {classes.map((c) => (
+                <option key={c} value={c}>
+                  {c} — {translate(ATC_CLASSES[c])}
+                </option>
+              ))}
+              {active.some((d) => !d.atc) && <option value="-">No ATC code</option>}
+            </select>
+            <select className="select" value={group} onChange={filter(setGroup)}>
+              {GROUPS.map((g) => (
+                <option key={g.key} value={g.key}>
+                  {g.label}
+                </option>
+              ))}
+            </select>
+            <select className="select" value={stock} onChange={filter(setStock)}>
+              {STOCK_FILTERS.map((g) => (
+                <option key={g.key} value={g.key}>
+                  {g.label}
+                </option>
+              ))}
+            </select>
+            <select className="select" value={expiry} onChange={filter(setExpiry)}>
+              {EXPIRY_FILTERS.map((g) => (
+                <option key={g.key} value={g.key}>
+                  {g.key === 'near' ? translate('Expiring within') + ' ' + near + ' ' + translate('days') : g.label}
+                </option>
+              ))}
+            </select>
+            <select className="select" value={sort} onChange={filter(setSort)}>
+              {SORTS.map((g) => (
+                <option key={g.key} value={g.key}>
+                  {g.label}
+                </option>
+              ))}
+            </select>
+            <span className="muted small">
+              {list.length} / {active.length} {translate(active.length === 1 ? 'drug' : 'drugs')}
+            </span>
           </div>
-          <select className="select" value={atc} onChange={filter(setAtc)} title={translate('Therapeutic class (ATC)')}>
-            <option value="">All drug classes (ATC)</option>
-            {classes.map((c) => (
-              <option key={c} value={c}>
-                {c} — {translate(ATC_CLASSES[c])}
-              </option>
-            ))}
-            {active.some((d) => !d.atc) && <option value="-">No ATC code</option>}
-          </select>
-          <select className="select" value={group} onChange={filter(setGroup)}>
-            {GROUPS.map((g) => (
-              <option key={g.key} value={g.key}>
-                {g.label}
-              </option>
-            ))}
-          </select>
-          <select className="select" value={stock} onChange={filter(setStock)}>
-            {STOCK_FILTERS.map((g) => (
-              <option key={g.key} value={g.key}>
-                {g.label}
-              </option>
-            ))}
-          </select>
-          <select className="select" value={expiry} onChange={filter(setExpiry)}>
-            {EXPIRY_FILTERS.map((g) => (
-              <option key={g.key} value={g.key}>
-                {g.key === 'near' ? translate('Expiring within') + ' ' + near + ' ' + translate('days') : g.label}
-              </option>
-            ))}
-          </select>
-          <select className="select" value={sort} onChange={filter(setSort)}>
-            {SORTS.map((g) => (
-              <option key={g.key} value={g.key}>
-                {g.label}
-              </option>
-            ))}
-          </select>
-          <span className="muted small">
-            {list.length} / {active.length} {translate(active.length === 1 ? 'drug' : 'drugs')}
-          </span>
-        </div>
-        {list.length ? (
-          <div className="tbl-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Drug</th>
-                  <th>Labels</th>
-                  <th className="r">Usable stock</th>
-                  <th>Next expiry</th>
-                  <th className="r">Price</th>
-                  <th>Status</th>
-                  {current && <th />}
-                </tr>
-              </thead>
-              <tbody>
-                {pg.rows.map(({ d, s }) => {
-                  const main = s.statuses.find((x) => x !== 'ok') ?? 'ok'
-                  return (
-                    <tr key={d.id} className={s.usable === 0 ? 'dim' : ''}>
-                      <td>
-                        <b style={{ fontWeight: 500 }}>{d.name}</b>
-                        <div className="muted small">
-                          {d.ingredient || '—'}
-                          {d.atc ? ' · ' + d.atc : ''}
-                        </div>
-                      </td>
-                      <td>
-                        <span className="acts" style={{ justifyContent: 'flex-start' }}>
-                          {d.essential && <span className="tag">Essential</span>}
-                          {d.group === 'controlled' && <span className="tag w">Controlled</span>}
-                          {d.kind === 'supply' && <span className="tag">Supply</span>}
-                          {!d.essential && d.group !== 'controlled' && d.kind !== 'supply' && <span className="plain">—</span>}
-                        </span>
-                      </td>
-                      <td className="r num">
-                        {s.usable.toLocaleString('vi-VN')} <span>{unitLabel(d.unit)}</span>
-                      </td>
-                      <td className="num">
-                        {s.nextExpiry ? fmtDate(s.nextExpiry.expiry) : '—'}
-                        {s.nextExpiry && s.nextExpiry.days <= near && (
-                          <div className="small" style={{ color: s.nextExpiry.days <= 30 ? 'var(--danger)' : 'var(--warning)' }}>{translate(s.nextExpiry.days + ' days left')}</div>
-                        )}
-                      </td>
-                      <td className="r num">{fmtMoney(d.price)}</td>
-                      <td>
-                        {main === 'ok' ? <span className="plain">{translate(STATUS.ok.label)}</span> : <span className={'badge ' + STATUS[main].cls}>{STATUS[main].label}</span>}
-                      </td>
-                      {current && (
-                        <td className="r">
-                          {d.kind === 'drug' && (
-                            <button className="btn btn-outline btn-sm" disabled={s.usable === 0} onClick={() => add(d)} title={translate('Add to prescription')}>
-                              <Icon name="plus" />
-                              {translate('Add')}
-                            </button>
+          {list.length ? (
+            <div className="tbl-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Drug</th>
+                    <th>Labels</th>
+                    <th className="r">Usable stock</th>
+                    <th>Next expiry</th>
+                    <th className="r">Price</th>
+                    <th>Status</th>
+                    {current && <th />}
+                  </tr>
+                </thead>
+                <tbody>
+                  {pg.rows.map(({ d, s }) => {
+                    const main = s.statuses.find((x) => x !== 'ok') ?? 'ok'
+                    return (
+                      <tr key={d.id} className={s.usable === 0 ? 'dim' : ''}>
+                        <td>
+                          <b style={{ fontWeight: 500 }}>{d.name}</b>
+                          <div className="muted small">
+                            {d.ingredient || '—'}
+                            {d.atc ? ' · ' + d.atc : ''}
+                          </div>
+                        </td>
+                        <td>
+                          <span className="acts" style={{ justifyContent: 'flex-start' }}>
+                            {d.essential && <span className="tag">Essential</span>}
+                            {d.group === 'controlled' && <span className="tag w">Controlled</span>}
+                            {d.kind === 'supply' && <span className="tag">Supply</span>}
+                            {!d.essential && d.group !== 'controlled' && d.kind !== 'supply' && <span className="plain">—</span>}
+                          </span>
+                        </td>
+                        <td className="r num">
+                          {s.usable.toLocaleString('vi-VN')} <span>{unitLabel(d.unit)}</span>
+                        </td>
+                        <td className="num">
+                          {s.nextExpiry ? fmtDate(s.nextExpiry.expiry) : '—'}
+                          {s.nextExpiry && s.nextExpiry.days <= near && (
+                            <div className="small" style={{ color: s.nextExpiry.days <= 30 ? 'var(--danger)' : 'var(--warning)' }}>
+                              {translate(s.nextExpiry.days + ' days left')}
+                            </div>
                           )}
                         </td>
-                      )}
-                    </tr>
-                  )
-                })}
-              </tbody>
-            </table>
-          </div>
-        ) : (
-          <div className="empty">
-            <div className="ill">
-              <Icon name="pill" />
+                        <td className="r num">{fmtMoney(d.price)}</td>
+                        <td>{main === 'ok' ? <span className="plain">{translate(STATUS.ok.label)}</span> : <span className={'badge ' + STATUS[main].cls}>{STATUS[main].label}</span>}</td>
+                        {current && (
+                          <td className="r">
+                            {d.kind === 'drug' && (
+                              <button className="btn btn-outline btn-sm" disabled={s.usable === 0} onClick={() => add(d)} title={translate('Add to prescription')}>
+                                <Icon name="plus" />
+                                {translate('Add')}
+                              </button>
+                            )}
+                          </td>
+                        )}
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
             </div>
-            <b>No drugs match.</b>
-            <span>Try another name or clear the filters.</span>
-          </div>
-        )}
-        {list.length > PAGE_SIZE && <Pager {...pg} onPage={setPage} />}
+          ) : (
+            <div className="empty">
+              <div className="ill">
+                <Icon name="pill" />
+              </div>
+              <b>No drugs match.</b>
+              <span>Try another name or clear the filters.</span>
+            </div>
+          )}
+          {list.length > PAGE_SIZE && <Pager {...pg} onPage={setPage} />}
         </div>
       </div>
     </>

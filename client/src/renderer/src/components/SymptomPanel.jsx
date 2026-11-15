@@ -142,7 +142,14 @@ export default function SymptomPanel({ value, onChange, text, onText, disabled =
           {translate('Patient’s description (free text, Vietnamese)')}
           <span className="req">*</span>
         </label>
-        <textarea className="input" rows="3" disabled={disabled || textLocked} placeholder="Sốt cao 2 ngày, ho có đờm, đau họng, không khó thở…" value={text} onChange={(e) => onText(e.target.value)} />
+        <textarea
+          className="input"
+          rows="3"
+          disabled={disabled || textLocked}
+          placeholder="Sốt cao 2 ngày, ho có đờm, đau họng, không khó thở…"
+          value={text}
+          onChange={(e) => onText(e.target.value)}
+        />
       </div>
 
       {ai.reason !== 'disabled' && (

@@ -84,7 +84,13 @@ export default function SymptomChecklist({ value, onSet, disabled = false }) {
           {query.trim() && (
             <div className="sym-sec open sym-results" style={{ marginTop: 8 }}>
               <div className="sym-grid" style={{ paddingTop: 10 }}>
-                {results.length ? shown.map((s) => <Row key={s.key} s={s} value={value} onSet={onSet} disabled={disabled} />) : <p className="sym-empty" style={{ padding: 0 }}>{translate('No matching symptom.')}</p>}
+                {results.length ? (
+                  shown.map((s) => <Row key={s.key} s={s} value={value} onSet={onSet} disabled={disabled} />)
+                ) : (
+                  <p className="sym-empty" style={{ padding: 0 }}>
+                    {translate('No matching symptom.')}
+                  </p>
+                )}
                 {hidden > 0 && (
                   <button type="button" className="btn btn-ghost btn-sm" onClick={() => setShowAll(true)}>
                     {translate(`Show ${hidden} more`)}

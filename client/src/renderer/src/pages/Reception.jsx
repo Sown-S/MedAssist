@@ -115,90 +115,96 @@ export default function Reception() {
   return (
     <div className="content view">
       <div className={view === 'home' ? 'rhome' : 'vflow'}>
-      {view === 'home' ? (
-        <HomeGreeting crumb="Receptionist" name={user.name} extra={<span className="gpill"><Icon name="door" /><span>{translate('Reception desk')}</span></span>}>
-          {actions}
-        </HomeGreeting>
-      ) : (
-        view !== 'queue' && <div className="pg-h">
-          <div>
-            <h2>{VIEWS[view].title}</h2>
-            <p>{VIEWS[view].sub}</p>
-          </div>
-        </div>
-      )}
-
-      {DEV_TOOLS && (
-        <div className="dev-tools">
-          <span className="badge b-neutral">Developer tool</span>
-          <label>
-            <input type="checkbox" checked={simulateOffline} onChange={(e) => setSimulateOffline(e.target.checked)} />
-            Simulate a network outage
-          </label>
-        </div>
-      )}
-
-      {/* Lượt tồn từ ngày trước: popup đỏ cạnh chuông. Ca cờ đỏ nằm ở chuông, ô Ca cấp cứu và trang Hàng chờ. */}
-      {stale.length > 0 && !staleSeen && (
-        <BellPortal>
-          {stale.length > 0 && !staleSeen && (
-            <div className="bell-pop" role="alert">
-              <div className="ico d">
-                <Icon name="history" />
+        {view === 'home' ? (
+          <HomeGreeting
+            crumb="Receptionist"
+            name={user.name}
+            extra={
+              <span className="gpill">
+                <Icon name="door" />
+                <span>{translate('Reception desk')}</span>
+              </span>
+            }
+          >
+            {actions}
+          </HomeGreeting>
+        ) : (
+          view !== 'queue' && (
+            <div className="pg-h">
+              <div>
+                <h2>{VIEWS[view].title}</h2>
+                <p>{VIEWS[view].sub}</p>
               </div>
-              <div className="bp-t">
-                <b>
-                  {stale.length} {translate('open visits from previous days')}
-                </b>
-                <span>{translate('Close them with a reason, or collect payment if the patient came back.')}</span>
-                <button className="btn btn-danger btn-sm" onClick={() => (hideStale(), setStaleOpen(true))}>
-                  {translate('Review')}
+            </div>
+          )
+        )}
+
+        {DEV_TOOLS && (
+          <div className="dev-tools">
+            <span className="badge b-neutral">Developer tool</span>
+            <label>
+              <input type="checkbox" checked={simulateOffline} onChange={(e) => setSimulateOffline(e.target.checked)} />
+              Simulate a network outage
+            </label>
+          </div>
+        )}
+
+        {/* Lượt tồn từ ngày trước: popup đỏ cạnh chuông. Ca cờ đỏ nằm ở chuông, ô Ca cấp cứu và trang Hàng chờ. */}
+        {stale.length > 0 && !staleSeen && (
+          <BellPortal>
+            {stale.length > 0 && !staleSeen && (
+              <div className="bell-pop" role="alert">
+                <div className="ico d">
+                  <Icon name="history" />
+                </div>
+                <div className="bp-t">
+                  <b>
+                    {stale.length} {translate('open visits from previous days')}
+                  </b>
+                  <span>{translate('Close them with a reason, or collect payment if the patient came back.')}</span>
+                  <button className="btn btn-danger btn-sm" onClick={() => (hideStale(), setStaleOpen(true))}>
+                    {translate('Review')}
+                  </button>
+                </div>
+                <button className="btn btn-ghost btn-icon" onClick={hideStale} title={translate('Close')} aria-label={translate('Close')}>
+                  <Icon name="x" />
                 </button>
               </div>
-              <button className="btn btn-ghost btn-icon" onClick={hideStale} title={translate('Close')} aria-label={translate('Close')}>
-                <Icon name="x" />
-              </button>
+            )}
+          </BellPortal>
+        )}
+
+        {readOnly && (
+          <div className="banner w" style={{ marginTop: 0, marginBottom: 14 }}>
+            <Icon name="alert" />
+            <div className="txt">
+              <b>No connection to the clinic server — read-only mode</b>
+              You can still look up patients and view the queue as last loaded. Registering, check-in and payments are locked until the connection returns, so nothing is saved twice or lost.
             </div>
-          )}
-        </BellPortal>
-      )}
-
-      {readOnly && (
-        <div className="banner w" style={{ marginTop: 0, marginBottom: 14 }}>
-          <Icon name="alert" />
-          <div className="txt">
-            <b>No connection to the clinic server — read-only mode</b>
-            You can still look up patients and view the queue as last loaded. Registering, check-in and payments are locked until the connection
-            returns, so nothing is saved twice or lost.
           </div>
-        </div>
-      )}
+        )}
 
-      {view === 'home' && (
-        <Dashboard go={go} readOnly={readOnly} onPay={pay} />
-      )}
-      {view === 'queue' && <QueueView readOnly={readOnly} onPay={pay} />}
-      {view === 'patients' && <PatientsView readOnly={readOnly} onCheckIn={(p) => setIntake({ patient: p })} />}
-      {/* Server liệt kê hoá đơn theo ngày. */}
-      {view === 'payments' && <BillingLiveView mode="payments" readOnly={readOnly} onPay={(v) => pay({ ...v, tab: 'pay' })} />}
-      {view === 'invoices' && <BillingLiveView mode="invoices" readOnly={readOnly} onPay={(v) => pay({ ...v, tab: 'pay' })} />}
-      {view === 'prescriptions' && <PrescriptionsLive />}
+        {view === 'home' && <Dashboard go={go} readOnly={readOnly} onPay={pay} />}
+        {view === 'queue' && <QueueView readOnly={readOnly} onPay={pay} />}
+        {view === 'patients' && <PatientsView readOnly={readOnly} onCheckIn={(p) => setIntake({ patient: p })} />}
+        {/* Server liệt kê hoá đơn theo ngày. */}
+        {view === 'payments' && <BillingLiveView mode="payments" readOnly={readOnly} onPay={(v) => pay({ ...v, tab: 'pay' })} />}
+        {view === 'invoices' && <BillingLiveView mode="invoices" readOnly={readOnly} onPay={(v) => pay({ ...v, tab: 'pay' })} />}
+        {view === 'prescriptions' && <PrescriptionsLive />}
 
-      <IntakeModal open={!!intake} patient={intake?.patient ?? null} onClose={() => setIntake(null)} onRedFlag={setRedFlag} />
-      <SearchModal
-        open={searchOpen}
-        readOnly={readOnly}
-        onClose={() => setSearchOpen(false)}
-        onCheckIn={(p) => {
-          setSearchOpen(false)
-          setIntake({ patient: p })
-        }}
-      />
-      {paying && (
-        <PaymentModal key={paying.id} open initialTab={paying.tab ?? 'dispense'} onClose={() => setPaying(null)} patient={paying} />
-      )}
-      {staleOpen && <StaleVisitsModal readOnly={readOnly} onClose={() => setStaleOpen(false)} onPay={pay} />}
-      <RedFlagModal open={!!redFlag} patient={redFlag} onClose={() => setRedFlag(null)} onReferred={() => setIntake(null)} />
+        <IntakeModal open={!!intake} patient={intake?.patient ?? null} onClose={() => setIntake(null)} onRedFlag={setRedFlag} />
+        <SearchModal
+          open={searchOpen}
+          readOnly={readOnly}
+          onClose={() => setSearchOpen(false)}
+          onCheckIn={(p) => {
+            setSearchOpen(false)
+            setIntake({ patient: p })
+          }}
+        />
+        {paying && <PaymentModal key={paying.id} open initialTab={paying.tab ?? 'dispense'} onClose={() => setPaying(null)} patient={paying} />}
+        {staleOpen && <StaleVisitsModal readOnly={readOnly} onClose={() => setStaleOpen(false)} onPay={pay} />}
+        <RedFlagModal open={!!redFlag} patient={redFlag} onClose={() => setRedFlag(null)} onReferred={() => setIntake(null)} />
       </div>
     </div>
   )

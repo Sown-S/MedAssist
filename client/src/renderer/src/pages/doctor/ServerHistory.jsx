@@ -60,10 +60,17 @@ export default function ServerHistory({ patientId, excludeVisitId, onLoaded }) {
       {!list.length && !loading && !err && <p className="muted small">{translate('No earlier visits in the system.')}</p>}
       {list.map((v) => {
         const isOpen = open === v.visit_id
-        const title = v.diagnoses.length ? v.diagnoses.find((d) => d.is_primary)?.diagnosis_name ?? v.diagnoses[0].diagnosis_name : translate(VISIT_STATUS_LABEL[v.status] ?? v.status)
+        const title = v.diagnoses.length ? (v.diagnoses.find((d) => d.is_primary)?.diagnosis_name ?? v.diagnoses[0].diagnosis_name) : translate(VISIT_STATUS_LABEL[v.status] ?? v.status)
         return (
           <div key={v.visit_id} className={'visit' + (isOpen ? ' open' : '')}>
-            <div className="visit-h" role="button" tabIndex={0} aria-expanded={isOpen} onClick={() => setOpen(isOpen ? null : v.visit_id)} onKeyDown={(e) => e.key === 'Enter' && setOpen(isOpen ? null : v.visit_id)}>
+            <div
+              className="visit-h"
+              role="button"
+              tabIndex={0}
+              aria-expanded={isOpen}
+              onClick={() => setOpen(isOpen ? null : v.visit_id)}
+              onKeyDown={(e) => e.key === 'Enter' && setOpen(isOpen ? null : v.visit_id)}
+            >
               <div className="ico n">
                 <Icon name="calendar" />
               </div>
@@ -159,8 +166,18 @@ function VisitDetail({ visitId }) {
   useEffect(() => {
     getVisitRecord(visitId).then(setR, (e) => setErr(e.message))
   }, [visitId])
-  if (err) return <div className="hint-w" style={{ gridColumn: '1 / -1' }}>{err}</div>
-  if (!r) return <p className="muted small" style={{ gridColumn: '1 / -1' }}>{translate('Loading…')}</p>
+  if (err)
+    return (
+      <div className="hint-w" style={{ gridColumn: '1 / -1' }}>
+        {err}
+      </div>
+    )
+  if (!r)
+    return (
+      <p className="muted small" style={{ gridColumn: '1 / -1' }}>
+        {translate('Loading…')}
+      </p>
+    )
   const v = r.visit
   const vit = v.vital_signs ? vitalsText(v.vital_signs) : ''
   const payLabel = (st) => (st === 'Paid' ? 'Paid' : st === 'Cancelled' ? 'Cancelled' : 'Awaiting payment')
