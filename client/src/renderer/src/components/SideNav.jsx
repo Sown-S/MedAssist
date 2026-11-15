@@ -171,7 +171,9 @@ export default function SideNav({ user, collapsed, onToggle }) {
                   onKeyDown={(e) => e.key === 'Enter' && open(it)}
                 >
                   <Icon name={it.icon} />
-                  <span className="t">{label}</span>
+                  <span className="t" title={label}>
+                    {label}
+                  </span>
                   {n > 0 && <span className={'cnt' + (it.alert ? ' alert' : '')}>{n}</span>}
                 </a>
               )
