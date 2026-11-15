@@ -8,8 +8,6 @@
 /* ---- Tab dạng nút liền (Hôm nay / Tuần này…) ---- */
 
 /* ---- Ô tóm tắt có icon (Hoá đơn, Đơn thuốc) ---- */
-.cash-filters{gap:10px;}
-.cash-filters input[type=search],.cash-filters input.grow{height:40px;border:1px solid var(--border);border-radius:8px;padding:0 12px;font-size:15px;}
 
 /* ---- Hàng chờ (lễ tân) ---- */
 .cn-t{flex:1;min-width:0;display:flex;flex-direction:column;}

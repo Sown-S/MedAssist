@@ -3,7 +3,7 @@ import { ymd } from '../../utils/format'
 
 export default function PeriodPicker({ period, date, onChange }) {
   return (
-    <div className="period-picker">
+    <div className="period">
       <div className="seg">
         {PERIODS.filter((p) => p.key !== 'date').map((p) => (
           <button key={p.key} className={period === p.key ? 'on' : ''} onClick={() => onChange(p.key, date)}>
@@ -13,7 +13,8 @@ export default function PeriodPicker({ period, date, onChange }) {
       </div>
       <input
         type="date"
-        className={period === 'date' ? 'on' : ''}
+        className={'input' + (period === 'date' ? ' on' : '')}
+        style={{ width: 160, height: 40 }}
         value={period === 'date' ? date : ''}
         max={ymd(new Date())}
         title="Pick a date"

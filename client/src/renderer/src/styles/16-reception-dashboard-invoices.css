@@ -63,9 +63,6 @@
 .icon-btn.sm{align-items:center;justify-content:center;}
 
 /* Lọc theo kỳ, doanh thu */
-.period-picker{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
-.period-picker input[type=date]{padding:7px 10px;border:1px solid var(--border);border-radius:9px;background:var(--field-bg);color:var(--ink-soft);font-family:var(--font);font-size:13px;color-scheme:dark;}
-.period-picker input[type=date].active{border-color:var(--primary);color:var(--ink);background:var(--primary-soft);}
 
 .status-row{--tone:var(--ink-soft);display:flex;align-items:center;gap:12px;width:100%;padding:11px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--surface);color:var(--ink);text-align:left;cursor:pointer;font-family:var(--font);font-size:13.5px;}
 .status-row:hover{border-color:var(--tone);}

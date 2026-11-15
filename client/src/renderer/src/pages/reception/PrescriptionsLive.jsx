@@ -89,35 +89,41 @@ export default function PrescriptionsLive({ initialDoctorId = '', initialDoctorN
       </MiniStats>
 
       <div className="card">
-        <div className="cash-filters">
-          <PeriodPicker
-            period={period}
-            date={date}
-            onChange={(p, d) => {
-              setPeriod(p)
-              setDate(d)
-            }}
-          />
-          <select className="input" value={status} onChange={(e) => setStatus(e.target.value)}>
-            {STATUS_FILTERS.map((s) => (
-              <option key={s.key} value={s.key}>
-                {s.label}
-              </option>
-            ))}
-          </select>
-          <select className="input" value={doctorId} onChange={(e) => setDoctorId(e.target.value)}>
-            <option value="">All doctors</option>
-            {doctors.map(([id, name]) => (
-              <option key={id} value={id}>
-                {name}
-              </option>
-            ))}
-          </select>
-          <input className="input grow" type="search" placeholder="Search patient, doctor or drug…" value={q} onChange={(e) => setQ(e.target.value)} />
-          <button className="btn btn-ghost btn-sm" disabled={!list.length} onClick={printList}>
-            <Icon name="printer" /> Print list
-          </button>
-        </div>
+        <div className="card-b">
+          <div className="toolbar" style={{ marginBottom: 14 }}>
+            <PeriodPicker
+              period={period}
+              date={date}
+              onChange={(p, d) => {
+                setPeriod(p)
+                setDate(d)
+              }}
+            />
+            <div className="sp" />
+            <select className="select" value={doctorId} onChange={(e) => setDoctorId(e.target.value)}>
+              <option value="">All doctors</option>
+              {doctors.map(([id, name]) => (
+                <option key={id} value={id}>
+                  {name}
+                </option>
+              ))}
+            </select>
+            <select className="select" value={status} onChange={(e) => setStatus(e.target.value)}>
+              {STATUS_FILTERS.map((s) => (
+                <option key={s.key} value={s.key}>
+                  {s.label}
+                </option>
+              ))}
+            </select>
+            <div className="search">
+              <Icon name="search" />
+              <input className="input" type="search" placeholder="Search patient, doctor or drug…" value={q} onChange={(e) => setQ(e.target.value)} />
+            </div>
+            <button className="btn btn-outline btn-sm" disabled={!list.length} onClick={printList}>
+              <Icon name="printer" />
+              {translate('Print list')}
+            </button>
+          </div>
         <div className="tbl-wrap">
           <table>
             <thead>
@@ -134,22 +140,21 @@ export default function PrescriptionsLive({ initialDoctorId = '', initialDoctorN
             <tbody>
               {list.map((r) => (
                 <Fragment key={r.id}>
-                  <tr className="clickable" onClick={() => setOpen(open === r.id ? null : r.id)}>
+                  <tr className={'clickable' + (r.pay === 'cancelled' ? ' dim' : '')} onClick={() => setOpen(open === r.id ? null : r.id)}>
                     <td className="num">{r.ticket ? ticketNo(r.ticket) : '—'}</td>
                     <td>
-                      <b>{r.name}</b>
-                      <div className="ai-soft num" style={{ fontSize: 12 }}>
-                        {r.patientId}
-                      </div>
+                      <b style={{ fontWeight: 500 }}>{r.name}</b>
                     </td>
                     <td>{r.doctor}</td>
-                    <td className="ai-soft" style={{ fontSize: 13 }}>
-                      {r.rx.map((x) => x.name).join(', ')}
+                    <td style={{ maxWidth: 260 }}>
+                      <div className="clip muted" title={r.rx.map((x) => x.name).join(', ')}>
+                        {r.rx.map((x) => x.name).join(', ')}
+                      </div>
                     </td>
-                    <td className="num">{when(r)}</td>
+                    <td className="num muted">{when(r)}</td>
                     <td className="r num">{money(r.amount)}</td>
                     <td>
-                      <span className={'badge ' + PAY_STATUS[r.pay].cls}>{PAY_STATUS[r.pay].label}</span>
+                      {PAY_STATUS[r.pay].cls ? <span className={'badge ' + PAY_STATUS[r.pay].cls}>{translate(PAY_STATUS[r.pay].label)}</span> : <span className="plain">{translate(PAY_STATUS[r.pay].label)}</span>}
                     </td>
                   </tr>
                   {open === r.id && (
@@ -207,6 +212,7 @@ export default function PrescriptionsLive({ initialDoctorId = '', initialDoctorN
               )}
             </tbody>
           </table>
+        </div>
         </div>
       </div>
     </>

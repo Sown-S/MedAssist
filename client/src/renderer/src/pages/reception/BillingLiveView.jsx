@@ -202,7 +202,7 @@ function InvoiceHistory({ readOnly, onPay, reloadKey }) {
                       <td className="num muted">{hhmm(x.created_at)}</td>
                       <td>{x.payment_status === 'Paid' ? translate(methodLabel(fromServerMethod(x.payment_method))) : '—'}</td>
                       <td>
-                        <span className={'badge ' + st.cls}>{translate(st.label)}</span>
+                        {st.cls ? <span className={'badge ' + st.cls}>{translate(st.label)}</span> : <span className="plain">{translate(st.label)}</span>}
                         {x.paid_at && <div className="muted small num">{hhmm(x.paid_at)}</div>}
                       </td>
                       <td className="r num">
