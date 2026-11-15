@@ -54,6 +54,6 @@ describe('Banner phiên bản ở màn đăng nhập', () => {
     const { default: Login } = await import('../src/renderer/src/pages/Login.jsx')
     render(<Login />)
     expect(screen.getByText(`App version (${version}) differs from the server (0.0.1), update to avoid errors`)).toBeTruthy()
-    expect(document.querySelector('.login-banners + .login-card')).toBeTruthy()
+    expect(document.querySelector('.login-right > .login-banners + .login-form')).toBeTruthy()
   })
 })

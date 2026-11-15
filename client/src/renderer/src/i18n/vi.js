@@ -89,7 +89,6 @@ export const VI = {
   'Back to sign in': 'Quay lại đăng nhập',
   'You need to change your password before continuing. Please sign in again.': 'Bạn cần đổi mật khẩu trước khi tiếp tục. Vui lòng đăng nhập lại.',
   'Please sign in again with the new password.': 'Vui lòng đăng nhập lại bằng mật khẩu mới.',
-  'e.g. mai.nguyen': 'ví dụ: mai.nguyen',
   Password: 'Mật khẩu',
   'Show/hide password': 'Hiện/ẩn mật khẩu',
   'Signing in…': 'Đang kiểm tra…',

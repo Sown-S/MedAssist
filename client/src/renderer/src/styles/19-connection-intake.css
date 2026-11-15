@@ -21,11 +21,6 @@
 .srv-msg.checking{color:var(--priority-ink);}
 .srv-msg.ok{color:var(--success-ink);}
 .srv-msg.fail{color:var(--warn-ink);}
-.login-server{width:100%;box-sizing:border-box;margin-top:14px;padding:16px 18px;background:var(--surface);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);border:1px solid var(--border);border-radius:22px;box-shadow:0 30px 70px -20px rgba(16,24,40,.16);}
-.login-screen .srv-label{color:#fff;font-size:13px;}
-.login-lang .login-server-btn{display:inline-flex;align-items:center;gap:6px;}
-.login-lang .login-server-btn svg{width:14px;height:14px;}
-.login-lang-sep{width:1px;align-self:stretch;margin:4px 4px;background:var(--border);}
 
 /* Lượt chưa đóng từ những ngày trước */
 .stale-row{padding:10px 12px;border-radius:11px;background:var(--surface-alt);margin-bottom:8px;}

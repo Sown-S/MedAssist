@@ -9,7 +9,7 @@ import AppIcon, { Logo } from "../components/Icon";
 import { translate } from "../i18n";
 import loginPhoto from "../assets/login-doctors.jpg";
 import Button from "../components/Button";
-import { Icon, ICONS } from "./LoginIcons";
+import { version as appVersion } from "../../../../package.json";
 
 const ROLE_CARDS = [
   { key: "doctor", label: "Doctor" },
@@ -78,182 +78,114 @@ export default function Login() {
     setError("");
   }
 
+  const roleIcon = { doctor: 'stethoscope', reception: 'clipboard-list', admin: 'shield' }
+  const errBox = (msg) => (
+    <div className="err" role="alert" style={{ display: 'flex' }}>
+      <AppIcon name="circle-alert" />
+      <span>{msg}</span>
+    </div>
+  )
+  const shownError = error || (!pending && notice)
+
   return (
-    <div className="login-screen">
+    <div className="login view">
       <LoginHero />
       <section className="login-right">
-      <div className="login-wrap">
-        <div className="login-head">
-          <h2 className="login-title">
-            {pending ? "Set a New Password" : "Sign in"}
-          </h2>
-          <p className="sub">
-            {pending
-              ? pending.expired
-                ? "Your password has expired — please set a new one."
-                : "Please set a password of your own before continuing."
-              : "Choose your role and sign in with the account you were given"}
-          </p>
-        </div>
-
         {/* Bản mới trên GitHub / lệch version với máy chủ: hiện ngay khi kết nối, trước khi đăng nhập. */}
-        <div className="login-banners">
-          <VersionBanners margin="0 0 12px" />
+        <div className="login-banners" style={{ maxWidth: 460, margin: '0 auto', width: '100%' }}>
+          <VersionBanners margin="0 0 16px" />
         </div>
-
-        <div className="login-card">
-          {error ? (
-            <div className="login-err show">{error}</div>
-          ) : (
-            notice && !pending && <div className="login-err show">{notice}</div>
-          )}
-
-          {!pending ? (
-            <form onSubmit={handleSubmit}>
-              <div className="login-field">
-                <label>Role</label>
-                <div className="role-cards">
-                  {ROLE_CARDS.map((r) => (
-                    <button
-                      type="button"
-                      key={r.key}
-                      className={
-                        "role-card" + (roleKey === r.key ? " active" : "")
-                      }
-                      onClick={() => setRoleKey(r.key)}
-                    >
-                      <span className="ic">
-                        <Icon>{ICONS[r.key]}</Icon>
-                      </span>
-                      <b>{r.label}</b>
-                    </button>
-                  ))}
-                </div>
-              </div>
-              <div className="login-field">
-                <label>Username</label>
-                <div className="input-ic">
-                  <span>
-                    <Icon>{ICONS.user}</Icon>
-                  </span>
-                  <input
-                    type="text"
-                    autoComplete="username"
-                    placeholder="e.g. mai.nguyen"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                  />
-                </div>
-              </div>
-              <div className="login-field">
-                <label>Password</label>
-                <div className="input-ic">
-                  <span>
-                    <Icon>{ICONS.lock}</Icon>
-                  </span>
-                  <input
-                    type={show ? "text" : "password"}
-                    autoComplete="current-password"
-                    placeholder="••••••••"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                  />
-                  <button
-                    type="button"
-                    className="eye"
-                    onClick={() => setShow(!show)}
-                    title="Show/hide password"
-                  >
-                    <Icon>{show ? ICONS.eyeOff : ICONS.eye}</Icon>
+        {!pending ? (
+          <form className="login-form" noValidate onSubmit={handleSubmit}>
+            <div>
+              <h2>Sign in</h2>
+              <p className="sub" style={{ marginTop: 4 }}>
+                Choose your role and sign in with the account you were given
+              </p>
+            </div>
+            {shownError && errBox(shownError)}
+            <div className="field">
+              <span className="lab">Role</span>
+              <div className="roles">
+                {ROLE_CARDS.map((r) => (
+                  <button type="button" key={r.key} className={'role' + (roleKey === r.key ? ' on' : '')} onClick={() => setRoleKey(r.key)}>
+                    <AppIcon name={roleIcon[r.key]} />
+                    {r.label}
                   </button>
-                </div>
+                ))}
               </div>
-              <Button
-                className="btn btn-primary login-submit"
-                type="submit"
-                loading={busy}
-              >
-                {busy ? "Signing in…" : "Sign In"}
-              </Button>
-              <p className="login-note">
-                Don't have an account? Contact your administrator.
-              </p>
-            </form>
-          ) : (
-            <form onSubmit={handleChange}>
-              <div className="login-field">
-                <label>{`New password (at least ${minLength} characters)`}</label>
-                <div className="input-ic">
-                  <span>
-                    <Icon>{ICONS.lock}</Icon>
-                  </span>
-                  <input
-                    type="password"
-                    value={np}
-                    onChange={(e) => setNp(e.target.value)}
-                    autoFocus
-                  />
-                </div>
-              </div>
-              <div className="login-field">
-                <label>Confirm new password</label>
-                <div className="input-ic">
-                  <span>
-                    <Icon>{ICONS.lock}</Icon>
-                  </span>
-                  <input
-                    type="password"
-                    value={np2}
-                    onChange={(e) => setNp2(e.target.value)}
-                  />
-                </div>
-              </div>
-              <Button
-                className="btn btn-primary login-submit"
-                type="submit"
-                loading={busy}
-              >
-                {busy ? "Saving…" : "Save & Continue"}
-              </Button>
-              <p className="login-note">
-                <button type="button" className="btn btn-ghost btn-sm" onClick={cancelChange} disabled={busy}>
-                  Back to sign in
+            </div>
+            <div className="field">
+              <label htmlFor="u">Username</label>
+              <input className="input" id="u" type="text" autoComplete="username" value={username} onChange={(e) => setUsername(e.target.value)} />
+            </div>
+            <div className="field">
+              <label htmlFor="p">Password</label>
+              <div className="pw">
+                <input className="input" id="p" type={show ? 'text' : 'password'} autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} />
+                <button type="button" onClick={() => setShow(!show)} title="Show/hide password" aria-label={translate('Show/hide password')}>
+                  <AppIcon name={show ? 'eye-off' : 'eye'} />
                 </button>
-              </p>
-            </form>
-          )}
-        </div>
-
-        <div className="login-footer">
-          <Icon>{ICONS.lock}</Icon>
-          Secure access to your clinic workspace
-        </div>
-        {serverOpen && (
-          <div className="login-server">
-            <ServerAddress onClose={() => setServerOpen(false)} />
-          </div>
-        )}
-        <div className="login-lang">
-          <button type="button" className={"login-server-btn" + (serverOpen ? " active" : "")} onClick={() => setServerOpen(!serverOpen)} title="Clinic server address">
-            <AppIcon name="wifi" /> Server
-          </button>
-          <span className="login-lang-sep" />
-          {LANGUAGES.map((l) => (
-            <button
-              type="button"
-              key={l.code}
-              className={getLang() === l.code ? "active" : ""}
-              onClick={() => setLang(l.code)}
-              title={l.name}
-            >
-              {l.code.toUpperCase()}
+              </div>
+            </div>
+            <Button className="btn btn-primary" type="submit" loading={busy}>
+              {busy ? 'Signing in…' : 'Sign In'}
+            </Button>
+            <p className="muted small" style={{ textAlign: 'center' }}>
+              Don't have an account? Contact your administrator.
+            </p>
+            <div className="secure">
+              <AppIcon name="lock" />
+              Secure access to your clinic workspace
+            </div>
+            <div className={'srv-panel' + (serverOpen ? ' open' : '')}>
+              <div>{serverOpen && <ServerAddress variant="login" />}</div>
+            </div>
+            <div className="lang">
+              <button type="button" className={serverOpen ? 'on' : ''} onClick={() => setServerOpen(!serverOpen)} title="Clinic server address">
+                <AppIcon name="wifi" />
+                Server
+              </button>
+              <span className="sep" />
+              {[...LANGUAGES].sort((a) => (a.code === 'vi' ? -1 : 1)).map((l) => (
+                <button type="button" key={l.code} className={getLang() === l.code ? 'on' : ''} onClick={() => setLang(l.code)} title={l.name}>
+                  {l.code.toUpperCase()}
+                </button>
+              ))}
+            </div>
+          </form>
+        ) : (
+          <form className="login-form" noValidate onSubmit={handleChange}>
+            <h2>Set a New Password</h2>
+            <p className="sub">{pending.expired ? 'Your password has expired — please set a new one.' : 'Please set a password of your own before continuing.'}</p>
+            {shownError && errBox(shownError)}
+            <div className="field">
+              <label htmlFor="np">{`New password (at least ${minLength} characters)`}</label>
+              <div className="pw">
+                <input className="input" id="np" type={show ? 'text' : 'password'} value={np} onChange={(e) => setNp(e.target.value)} autoFocus />
+                <button type="button" onClick={() => setShow(!show)} title="Show/hide password" aria-label={translate('Show/hide password')}>
+                  <AppIcon name={show ? 'eye-off' : 'eye'} />
+                </button>
+              </div>
+            </div>
+            <div className="field">
+              <label htmlFor="rp">Confirm new password</label>
+              <div className="pw">
+                <input className="input" id="rp" type={show ? 'text' : 'password'} value={np2} onChange={(e) => setNp2(e.target.value)} />
+              </div>
+            </div>
+            <Button className="btn btn-primary" type="submit" loading={busy}>
+              {busy ? 'Saving…' : 'Save & Continue'}
+            </Button>
+            <button type="button" className="btn btn-ghost" onClick={cancelChange} disabled={busy}>
+              <AppIcon name="arrow-left" />
+              Back to sign in
             </button>
-          ))}
-        </div>
-      </div>
+          </form>
+        )}
       </section>
     </div>
-  );
+  )
 }
 
 // Nửa trái màn đăng nhập (kiểu trang đăng nhập Facebook): logo, tiêu đề lớn, ảnh ghép giới thiệu hệ thống.
@@ -261,7 +193,7 @@ export default function Login() {
 function LoginHero() {
   return (
     <section className="login-left" aria-hidden="true">
-      <div className="login-brand">
+      <div className="brand">
         <Logo />
         <span className="t">
           Med<b>Assist</b>
@@ -338,7 +270,9 @@ function LoginHero() {
           </div>
         </div>
       </div>
-      <div className="cx-by">MedAssist</div>
+      <div className="cx-by">
+        <span>MedAssist {appVersion}</span>
+      </div>
     </section>
   );
 }

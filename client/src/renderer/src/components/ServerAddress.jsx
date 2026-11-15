@@ -5,7 +5,7 @@ import { translate } from '../i18n'
 import { getBaseUrl, setBaseUrl, subscribeBaseUrl, normalizeUrl } from '../api/serverConfig'
 
 // Địa chỉ server của máy này (màn đăng nhập và Cài đặt › Kết nối). Vẫn lưu được khi chưa kết nối (VD server đang khởi động).
-export default function ServerAddress({ onSaved, onClose }) {
+export default function ServerAddress({ onSaved, onClose, variant }) {
   const current = useSyncExternalStore(subscribeBaseUrl, getBaseUrl)
   const [value, setValue] = useState(current)
   const [status, setStatus] = useState({ state: 'idle' })
@@ -29,6 +29,32 @@ export default function ServerAddress({ onSaved, onClose }) {
     setValue(r.url)
     setStatus({ state: 'ok', text: translate('Server address saved for this computer.') })
     onSaved?.(r.url)
+  }
+
+  // Màn đăng nhập: đúng ô "Địa chỉ máy chủ" của bản mẫu (ô nhập + nút Kiểm tra, dòng trạng thái có chấm màu).
+  if (variant === 'login') {
+    const st = status.state === 'fail' ? 'bad' : status.state === 'checking' ? 'wait' : ''
+    return (
+      <div className="srv-box">
+        <div className="field">
+          <label htmlFor="srv">Clinic server address</label>
+          <div className="srv">
+            <input className="input" id="srv" value={value} spellCheck={false} placeholder="https://192.168.1.10" onChange={(e) => (setValue(e.target.value), setStatus({ state: 'idle' }))} onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), test())} />
+            <Button className="btn btn-outline" loading={status.state === 'checking'} onClick={test}>
+              <Icon name="plug-zap" />
+              <span>{translate('Test connection')}</span>
+            </Button>
+            <button type="button" className="btn btn-primary" disabled={normalizeUrl(value) === current} onClick={save}>
+              {translate('Save')}
+            </button>
+          </div>
+        </div>
+        <div className={'srv-st ' + st}>
+          <span className={'dot ' + (st === 'bad' ? 'bad' : st === 'wait' ? 'warn' : 'live')} />
+          {status.text ?? translate('Address of the clinic server — saved on this computer only.')}
+        </div>
+      </div>
+    )
   }
 
   return (
