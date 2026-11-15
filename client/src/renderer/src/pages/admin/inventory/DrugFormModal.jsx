@@ -85,10 +85,10 @@ export default function DrugFormModal({ drug, onClose }) {
           {field('active_ingredient_code', 'ATC code (optional)', false, { placeholder: 'N02BE01' })}
         </div>
         <p className="ai-foot-note">The batch purchase price is entered when receiving stock. The system does not check drug interactions or dose limits.</p>
-        {err && <div className="kb-error">{err}</div>}
+        {err && <div className="banner d">{err}</div>}
       </div>
       <div className="modal-f">
-        <button className="btn btn-ghost" onClick={onClose}>
+        <button className="btn btn-outline" onClick={onClose}>
           Cancel
         </button>
         <button className="btn btn-primary" disabled={busy} onClick={save}>

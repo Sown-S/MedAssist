@@ -46,7 +46,7 @@ export function ConfirmDialog({ open, title, message, children, confirmLabel = '
         )}
       </div>
       <div className="modal-f">
-        <button className="btn btn-ghost" onClick={onCancel}>
+        <button className="btn btn-outline" onClick={onCancel}>
           Cancel
         </button>
         <button

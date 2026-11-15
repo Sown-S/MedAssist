@@ -50,10 +50,8 @@ export function useTakePatient(open) {
           Finalize this visit or send the patient for lab tests before calling the next one, so no one is left half-examined.
         </p>
         {busy.target.priority && (
-          <div className="warn-banner show caution">
-            <div className="icon">
-              <Icon name="zap" />
-            </div>
+          <div className="banner w">
+            <Icon name="zap" />
             <div className="txt">
               <b>
                 {no(busy.target.ticket)} — {busy.target.name} · {translate('Priority')}
@@ -64,11 +62,11 @@ export function useTakePatient(open) {
         )}
       </div>
       <div className="modal-f">
-        <button className="btn btn-ghost" onClick={() => setBusy(null)}>
+        <button className="btn btn-outline" onClick={() => setBusy(null)}>
           Cancel
         </button>
         {busy.target.priority && (
-          <button className="btn btn-ghost" onClick={() => run(busy.target, true)}>
+          <button className="btn btn-outline" onClick={() => run(busy.target, true)}>
             <Icon name="zap" /> Call in anyway
           </button>
         )}
@@ -234,7 +232,7 @@ export function ReleaseModal({ visit, onClose, onDone }) {
         </p>
       </div>
       <div className="modal-f">
-        <button className="btn btn-ghost" onClick={onClose}>
+        <button className="btn btn-outline" onClick={onClose}>
           Cancel
         </button>
         <button className="btn btn-primary" onClick={submit}>
@@ -283,7 +281,7 @@ export function LeaveVisitModal({ visit, onClose, onDone }) {
         </div>
       </div>
       <div className="modal-f">
-        <button className="btn btn-ghost" onClick={onClose}>
+        <button className="btn btn-outline" onClick={onClose}>
           Cancel
         </button>
         <button className="btn btn-primary" onClick={submit} disabled={reason === 'other' && !note.trim()}>

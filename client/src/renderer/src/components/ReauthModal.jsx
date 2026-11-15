@@ -34,14 +34,14 @@ export default function ReauthModal({ open, title, confirmLabel = 'Confirm', dan
         <ModalHeader title={title} onClose={close} />
         <div className="modal-b">
           {children}
-          {err && <div className="login-err show">{err}</div>}
-          <div className="login-field" style={{ marginTop: 12 }}>
+          {err && <div className="banner d" style={{ marginBottom: 12 }}>{err}</div>}
+          <div className="field" style={{ marginTop: 12 }}>
             <label>Your password (to confirm)</label>
             <input className="input" type="password" value={pw} autoFocus autoComplete="current-password" onChange={(e) => setPw(e.target.value)} />
           </div>
         </div>
         <div className="modal-f">
-          <button type="button" className="btn btn-ghost" onClick={close}>
+          <button type="button" className="btn btn-outline" onClick={close}>
             Cancel
           </button>
           <Button type="submit" className={'btn ' + (danger ? 'btn-danger' : 'btn-primary')} disabled={!pw} loading={busy}>

@@ -33,10 +33,10 @@ export default function CancelOrderItemModal({ item, onClose, onDone }) {
           <label>Reason *</label>
           <input className="input" type="text" autoFocus value={reason} onChange={(e) => setReason(e.target.value)} placeholder="e.g. Patient declined the ultrasound" />
         </div>
-        {error && <div className="login-err show">{error}</div>}
+        {error && <div className="banner d" style={{ marginBottom: 12 }}>{error}</div>}
       </div>
       <div className="modal-f">
-        <button className="btn btn-ghost" onClick={onClose}>
+        <button className="btn btn-outline" onClick={onClose}>
           Keep it
         </button>
         <button className="btn btn-primary" disabled={busy} onClick={submit}>

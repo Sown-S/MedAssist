@@ -59,10 +59,8 @@ export default function DrugCatalogPage({ params, onNavigate }) {
       </div>
 
       {missingAtc > 0 && (
-        <div className="warn-banner show caution" style={{ marginTop: 0, marginBottom: 12 }}>
-          <div className="icon">
-            <Icon name="alert" />
-          </div>
+        <div className="banner w" style={{ marginTop: 0, marginBottom: 12 }}>
+          <Icon name="alert" />
           <div className="txt">
             <b>
               <span className="num">{missingAtc}</span> <span>drugs have no ATC code</span>

@@ -42,14 +42,6 @@
 .rx-search{display:flex;gap:8px;margin-bottom:10px;}
 .rx-search input{flex:1;padding:9px 11px;border:1px solid var(--border);border-radius:9px;font-size:14px;background:var(--field-bg);color:var(--ink);}
 
-.warn-banner{display:none;border-radius:11px;padding:11px 13px;margin-top:10px;gap:9px;align-items:flex-start;}
-.warn-banner.show{display:flex;}
-.warn-banner.danger{background:var(--warn-soft);border:1px solid rgba(239,68,68,.35);}
-.warn-banner.caution{background:var(--priority-soft);border:1px solid rgba(245,158,11,.35);}
-.warn-banner .icon{font-size:16px;}
-.warn-banner.danger .txt{font-size:13.5px;color:var(--warn-ink);}
-.warn-banner.caution .txt{font-size:13.5px;color:var(--priority-ink);}
-.warn-banner .txt b{display:block;font-size:13.5px;margin-bottom:2px;color:var(--ink);}
 /* Cảnh báo cụm ca: mỗi chẩn đoán / triệu chứng một dòng */
 .cluster-alerts{margin:0 0 14px;}
 .cluster-alerts .txt span{display:block;line-height:1.5;}

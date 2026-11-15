@@ -96,7 +96,7 @@ export default function CatalogDetailPage({ catalogKey, params, onNavigate }) {
           </div>
         </div>
 
-        {lc.error && <div className="warn-banner show danger">{lc.error}</div>}
+        {lc.error && <div className="banner d">{lc.error}</div>}
         {!lc.loaded ? (
           <p className="ai-soft">{translate('Loading the catalog…')}</p>
         ) : pg.total === 0 ? (

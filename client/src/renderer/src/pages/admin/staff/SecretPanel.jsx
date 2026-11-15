@@ -38,7 +38,7 @@ export default function SecretPanel({ secret, onClose }) {
             <Icon name={copied ? 'check' : 'clipboard'} /> <span>{copied ? 'Copied' : 'Copy'}</span>
           </button>
         </div>
-        <p className="login-note sp-warn">This password is shown only once. After you close this window it cannot be displayed again — only reset.</p>
+        <p className="muted small sp-warn">This password is shown only once. After you close this window it cannot be displayed again — only reset.</p>
       </div>
       <div className="modal-f">
         <button className="btn btn-primary" onClick={onClose}>

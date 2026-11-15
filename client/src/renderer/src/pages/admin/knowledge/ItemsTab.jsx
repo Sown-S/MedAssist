@@ -193,7 +193,7 @@ function HistoryModal({ kind, group, names, onClose }) {
     <Modal open onClose={onClose} wide>
       <ModalHeader title={translate('Version history') + ' · ' + group.key} onClose={onClose} />
       <div className="modal-b">
-        {err && <div className="kb-error">{err}</div>}
+        {err && <div className="banner d">{err}</div>}
         {!rows && !err && <p className="ai-soft">Loading…</p>}
         {rows && (
           <div className="tbl-wrap">
@@ -267,7 +267,7 @@ function DeactivateModal({ kind, group, names, onClose, onDone }) {
         <p className="ai-confirm-msg">
           <Summary kind={kind} values={group.active?.values} names={names} />
         </p>
-        {isRedFlag && <div className="kb-error">Warning: this is a red-flag rule. Turning it off means doctors will NOT be alerted for this emergency sign.</div>}
+        {isRedFlag && <div className="banner d">Warning: this is a red-flag rule. Turning it off means doctors will NOT be alerted for this emergency sign.</div>}
         <p className="ai-soft ai-small">Takes effect immediately — no approval needed (safety switch). Turning it back on needs a new version in an approved release.</p>
         {!deps && !err && <p className="ai-soft">Checking dependent items…</p>}
         {deps && deps.length > 0 && (
@@ -290,10 +290,10 @@ function DeactivateModal({ kind, group, names, onClose, onDone }) {
           </label>
           <textarea className="input" rows={3} value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Recorded in the activity log (at least 3 characters)" />
         </div>
-        {err && <div className="kb-error">{err}</div>}
+        {err && <div className="banner d">{err}</div>}
       </div>
       <div className="modal-f">
-        <button className="btn btn-ghost" onClick={onClose}>
+        <button className="btn btn-outline" onClick={onClose}>
           Cancel
         </button>
         <button className="btn btn-danger" disabled={busy || !deps || reason.trim().length < 3} onClick={confirm}>

@@ -38,7 +38,7 @@ export function AdminNavProvider({ children }) {
           <p className="ai-soft">You have changes that have not been saved. Leave this page and discard them?</p>
         </div>
         <div className="modal-f">
-          <button className="btn btn-ghost" onClick={() => setPendingNav(null)}>
+          <button className="btn btn-outline" onClick={() => setPendingNav(null)}>
             Stay on this page
           </button>
           <button className="btn btn-danger" onClick={() => go(pendingNav.id, pendingNav.p)}>

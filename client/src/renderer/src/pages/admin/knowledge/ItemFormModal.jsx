@@ -221,11 +221,11 @@ export default function ItemFormModal({ open, kind, group, data, names, onClose,
         {!sources.length && ['relations', 'excerpts', 'rules'].includes(kind) && (
           <p className="ai-small sp-warn">No active source yet — add one in the Sources tab first.</p>
         )}
-        {err && <div className="kb-error">{err}</div>}
+        {err && <div className="banner d">{err}</div>}
         <p className="ai-foot-note">Saved as a draft in the open release. It is only used after a doctor approves the release.</p>
       </div>
       <div className="modal-f">
-        <button className="btn btn-ghost" onClick={onClose}>
+        <button className="btn btn-outline" onClick={onClose}>
           Cancel
         </button>
         <button className="btn btn-primary" disabled={busy} onClick={save}>

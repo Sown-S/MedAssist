@@ -26,26 +26,28 @@ export default function ChangePasswordModal({ open, onClose }) {
   }
 
   return (
-    <Modal open={open} onClose={onClose}>
+    <Modal open={open} onClose={onClose} size="sm">
       <form onSubmit={submit}>
         <ModalHeader title="Change your password" onClose={onClose} />
         <div className="modal-b">
-          {form.err && <div className="login-err show">{form.err}</div>}
-          <div className="login-field">
+          {form.err && <div className="banner d" style={{ marginBottom: 12 }}>{form.err}</div>}
+          <div className="fg">
+          <div className="field full">
             <label>Current password</label>
             <input className="input" type="password" autoFocus autoComplete="current-password" value={form.old} onChange={(e) => setForm({ ...form, old: e.target.value })} />
           </div>
-          <div className="login-field">
+          <div className="field full">
             <label>{`New password (at least ${minLength} characters)`}</label>
             <input className="input" type="password" autoComplete="new-password" value={form.np} onChange={(e) => setForm({ ...form, np: e.target.value })} />
           </div>
-          <div className="login-field">
+          <div className="field full">
             <label>Confirm new password</label>
             <input className="input" type="password" autoComplete="new-password" value={form.np2} onChange={(e) => setForm({ ...form, np2: e.target.value })} />
           </div>
+          </div>
         </div>
         <div className="modal-f">
-          <button type="button" className="btn btn-ghost" onClick={onClose}>
+          <button type="button" className="btn btn-outline" onClick={onClose}>
             Cancel
           </button>
           <button type="submit" className="btn btn-primary" disabled={busy || !form.old || !form.np}>

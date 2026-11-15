@@ -95,10 +95,10 @@ export function ReviewPanel({ data, names, onChanged }) {
           <p className="ai-confirm-msg">
             <span>All</span> <b className="num">{detail?.changes.length ?? 0}</b> <span>changes become active for every new AI assessment. You are recorded as the approver.</span>
           </p>
-          {err && <div className="kb-error">{err}</div>}
+          {err && <div className="banner d">{err}</div>}
         </div>
         <div className="modal-f">
-          <button className="btn btn-ghost" onClick={() => setApproving(false)}>
+          <button className="btn btn-outline" onClick={() => setApproving(false)}>
             Cancel
           </button>
           <button className="btn btn-primary" onClick={() => run(() => approveRelease(pending.release_id), 'Release approved and in use')}>
@@ -117,10 +117,10 @@ export function ReviewPanel({ data, names, onChanged }) {
             </label>
             <textarea className="input" rows={3} value={note} onChange={(e) => setNote(e.target.value)} placeholder="At least 3 characters" />
           </div>
-          {err && <div className="kb-error">{err}</div>}
+          {err && <div className="banner d">{err}</div>}
         </div>
         <div className="modal-f">
-          <button className="btn btn-ghost" onClick={() => setRejecting(false)}>
+          <button className="btn btn-outline" onClick={() => setRejecting(false)}>
             Cancel
           </button>
           <button

@@ -94,7 +94,7 @@ export default function HistoryPage() {
           </span>
         </div>
 
-        {err && <div className="kb-error">{err}</div>}
+        {err && <div className="banner d">{err}</div>}
         {!data && !err && <p className="ai-soft">Loading…</p>}
         {data && (
           <div className="ai-table-wrap">

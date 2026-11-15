@@ -274,10 +274,11 @@ export default function TopActions({ user, onSignOut }) {
 
       <Modal open={open === 'help'} onClose={() => setOpen(null)}>
         <ModalHeader title="Help" onClose={() => setOpen(null)} />
+        <div className="modal-b">
         <p className="help-intro">What you can do as {user.role}:</p>
         {HELP[user.roleKey].map(([name, text]) => (
           <div className="help-sec" key={name}>
-            <span className="ico">
+            <span className="ico p">
               <Icon name={HELP_ICON[name] ?? 'help'} />
             </span>
             <span>
@@ -298,7 +299,8 @@ export default function TopActions({ user, onSignOut }) {
         <p className="help-intro" style={{ marginTop: 14 }}>
           Forgot your password or need another account? Ask an administrator to reset or create it under Admin → Staff accounts.
         </p>
-        <div className="help-foot">
+        </div>
+        <div className="modal-f">
           <button className="btn btn-primary" onClick={() => setOpen(null)}>
             Got it
           </button>
@@ -307,6 +309,7 @@ export default function TopActions({ user, onSignOut }) {
 
       <Modal open={open === 'settings'} onClose={() => setOpen(null)}>
         <ModalHeader title="Settings" onClose={() => setOpen(null)} />
+        <div className="modal-b">
         <div className="sec-t" style={{ marginTop: 0 }}>
           Menu bar appearance
         </div>
@@ -326,24 +329,24 @@ export default function TopActions({ user, onSignOut }) {
                 </span>
               </span>
               <span className="nm">
-                <Icon name={theme === t.key ? 'circleCheck' : 'circle'} />
+                <Icon name={theme === t.key ? 'circle-check' : 'circle'} />
                 <span>{translate(t.label)}</span>
               </span>
             </button>
           ))}
         </div>
-        <p className="help-intro" style={{ marginTop: 8 }}>
+        <p className="muted small" style={{ margin: '8px 0 0' }}>
           Applied right away on this computer only.
         </p>
         <div className="sec-t">Language</div>
-        <div className="seg" style={{ marginBottom: 0 }}>
+        <div className="seg">
           {LANGUAGES.map((l) => (
             <button key={l.code} className={(getLang() === l.code ? 'on' : '')} onClick={() => chooseLanguage(l.code)}>
               {l.name}
             </button>
           ))}
         </div>
-        <p className="help-intro" style={{ marginTop: 10 }}>
+        <p className="muted small" style={{ margin: '10px 0 0' }}>
           The display language is saved on this computer only. Times are shown in Vietnam time (GMT+7).
         </p>
         <div className="sec-t">Account</div>
@@ -357,9 +360,15 @@ export default function TopActions({ user, onSignOut }) {
             <b>{v}</b>
           </div>
         ))}
-        <button className="btn btn-ghost btn-sm" style={{ marginTop: 8 }} onClick={() => setOpen('password')}>
-          <Icon name="lock" /> Change password
+        <button className="btn btn-outline btn-sm" style={{ marginTop: 10 }} onClick={() => setOpen('password')}>
+          <Icon name="key-round" /> Change password
         </button>
+        </div>
+        <div className="modal-f">
+          <button className="btn btn-outline" onClick={() => setOpen(null)}>
+            {translate('Close')}
+          </button>
+        </div>
       </Modal>
 
       <ChangePasswordModal open={open === 'password'} onClose={() => setOpen(null)} />

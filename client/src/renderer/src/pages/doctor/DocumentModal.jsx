@@ -216,11 +216,11 @@ export default function DocumentModal({ subject, onClose, mode = 'print', target
         </fieldset>
       </div>
       <div className="modal-f">
-        <button className="btn btn-ghost" onClick={onClose}>
+        <button className="btn btn-outline" onClick={onClose}>
           Close
         </button>
         {mode === 'amend' && (
-          <button className="btn btn-ghost" onClick={() => print()}>
+          <button className="btn btn-outline" onClick={() => print()}>
             <Icon name="printer" /> Reprint
           </button>
         )}

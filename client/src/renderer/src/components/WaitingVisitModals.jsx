@@ -130,7 +130,7 @@ export function EditWaitingModal({ visit, onClose }) {
         >
           <Icon name="ban" /> Emergency — transfer now
         </button>
-        <button className="btn btn-ghost" onClick={onClose}>
+        <button className="btn btn-outline" onClick={onClose}>
           Cancel
         </button>
         <button className="btn btn-primary" disabled={!loaded || busy} onClick={save}>
@@ -162,10 +162,8 @@ export function CancelVisitModal({ visit, onClose }) {
           The visit leaves the queue and is kept as “left without finishing” with your reason. The patient record is not deleted.
         </p>
         {pendingFlag && (
-          <div className="warn-banner show danger" style={{ marginBottom: 10 }}>
-            <div className="icon">
-              <Icon name="ban" />
-            </div>
+          <div className="banner d" style={{ marginBottom: 10 }}>
+            <Icon name="ban" />
             <div className="txt">{translate('This patient has warning signs waiting for a doctor — let the doctor decide first.')}</div>
           </div>
         )}
@@ -184,7 +182,7 @@ export function CancelVisitModal({ visit, onClose }) {
         </div>
       </div>
       <div className="modal-f">
-        <button className="btn btn-ghost" onClick={onClose}>
+        <button className="btn btn-outline" onClick={onClose}>
           Back
         </button>
         <button className="btn btn-primary" style={{ background: 'var(--warn)' }} disabled={pendingFlag || (reason === 'other' && !note.trim())} onClick={submit}>

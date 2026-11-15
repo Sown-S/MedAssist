@@ -48,7 +48,7 @@ export default function ReleaseTab({ data, names, onChanged, autoCreate }) {
 
   return (
     <>
-      {err && <div className="kb-error">{err}</div>}
+      {err && <div className="banner d">{err}</div>}
       {!open ? (
         <div className="kb-release-empty">
           <Empty icon="folder" title="No release is being drafted" text="Open a release to group your changes; a doctor approves the whole release at once." />
@@ -145,10 +145,10 @@ function CreateReleaseModal({ open, suggested, onClose, onCreate }) {
           <label>What changes (optional)</label>
           <textarea className="input" rows={3} value={desc} onChange={(e) => setDesc(e.target.value)} placeholder="vd: Thêm nhóm bệnh da liễu" />
         </div>
-        {err && <div className="kb-error">{err}</div>}
+        {err && <div className="banner d">{err}</div>}
       </div>
       <div className="modal-f">
-        <button className="btn btn-ghost" onClick={onClose}>
+        <button className="btn btn-outline" onClick={onClose}>
           Cancel
         </button>
         <button className="btn btn-primary" disabled={!label.trim()} onClick={() => onCreate(label.trim(), desc.trim()).catch((e) => setErr(errorText(e)))}>

@@ -167,7 +167,7 @@ export function ReleaseModal({ release, ctx, onClose }) {
     <Modal open onClose={onClose} wide>
       <ModalHeader title={translate('Release') + ' ' + release.label} onClose={onClose} />
       <div className="modal-b">
-        {err && <div className="kb-error">{err}</div>}
+        {err && <div className="banner d">{err}</div>}
         <ChangeList detail={detail} ctx={ctx} />
       </div>
     </Modal>

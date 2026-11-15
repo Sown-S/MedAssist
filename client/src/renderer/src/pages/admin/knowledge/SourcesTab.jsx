@@ -132,10 +132,10 @@ function SourceModal({ open, onClose, onSaved }) {
             <input className="input" value={f.license_note} onChange={(e) => set({ license_note: e.target.value })} />
           </div>
         </div>
-        {err && <div className="kb-error">{err}</div>}
+        {err && <div className="banner d">{err}</div>}
       </div>
       <div className="modal-f">
-        <button className="btn btn-ghost" onClick={onClose}>
+        <button className="btn btn-outline" onClick={onClose}>
           Cancel
         </button>
         <button className="btn btn-primary" disabled={!ok || busy} onClick={save}>

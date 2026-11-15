@@ -95,7 +95,7 @@ export default function LabOrderModal({ open, visit, diagnosis, onClose, onSent 
     <Modal open={open} onClose={onClose} wide>
       <ModalHeader title={translate('Lab test order') + ' — ' + visit.name} onClose={onClose} />
       <div className="modal-b">
-        {cat.error && <div className="warn-banner show">{cat.error}</div>}
+        {cat.error && <div className="banner w">{cat.error}</div>}
         {packages.length > 0 && (
           <div className="field">
             <label>Package</label>
@@ -152,7 +152,7 @@ export default function LabOrderModal({ open, visit, diagnosis, onClose, onSent 
         <span className="ai-soft" style={{ marginRight: 'auto', alignSelf: 'center' }}>
           {count} {translate(count === 1 ? 'test selected' : 'tests selected')}
         </span>
-        <button className="btn btn-ghost" onClick={onClose}>
+        <button className="btn btn-outline" onClick={onClose}>
           Cancel
         </button>
         <button className="btn btn-primary" onClick={submit} disabled={!count || saving}>

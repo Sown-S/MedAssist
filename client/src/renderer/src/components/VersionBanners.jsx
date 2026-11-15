@@ -30,20 +30,16 @@ export default function VersionBanners({ margin = '12px 24px 0' }) {
   return (
     <>
       {mismatch && (
-        <div className="warn-banner show caution" role="status" style={{ margin }}>
-          <div className="icon">
-            <Icon name="alert" />
-          </div>
+        <div className="banner w" role="status" style={{ margin }}>
+          <Icon name="alert" />
           <div className="txt">
             <b>{translate(`App version (${clean(appVersion)}) differs from the server (${clean(serverVersion)}), update to avoid errors`)}</b>
           </div>
         </div>
       )}
       {latest && (
-        <div className="warn-banner show caution version-banner" role="status" style={{ margin }}>
-          <div className="icon">
-            <Icon name="bulb" />
-          </div>
+        <div className="banner w version-banner" role="status" style={{ margin }}>
+          <Icon name="bulb" />
           <div className="txt">
             <b>{translate(`Version ${latest} is available`)}</b>
           </div>

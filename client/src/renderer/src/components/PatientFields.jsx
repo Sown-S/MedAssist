@@ -144,10 +144,8 @@ export function NewPatientFields({ form, field, err, onDob }) {
 
 export function DuplicateBanner({ dupes, allowNew, onPick, onCreateNew }) {
   return (
-    <div className="warn-banner show caution">
-      <div className="icon">
-        <Icon name="alert" />
-      </div>
+    <div className="banner w">
+      <Icon name="alert" />
       <div className="txt" style={{ flex: 1 }}>
         <b>This patient may already have a record</b>
         <span>Same phone number, or same name and date of birth. Use the existing record if it is the same person.</span>

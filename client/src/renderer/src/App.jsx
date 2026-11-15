@@ -42,10 +42,8 @@ export function Shell() {
       <ShellLayout user={user} onSignOut={() => (openVisits.length ? setLeaving(true) : logout())}>
       {/* Lễ tân có banner mất kết nối riêng trong trang; các vai trò khác dùng banner chung này. */}
       {!serverOnline && user.roleKey !== 'reception' && (
-        <div className="warn-banner show caution" style={{ margin: '12px 24px 0' }}>
-          <div className="icon">
-            <Icon name="alert" />
-          </div>
+        <div className="banner w" style={{ margin: '12px 24px 0' }}>
+          <Icon name="alert" />
           <div className="txt">
             <b>No connection to the clinic server — read-only mode</b>
             <span>Saving is blocked until the connection returns; what is on screen was loaded earlier.</span>
@@ -55,10 +53,8 @@ export function Shell() {
 
       {/* Một yêu cầu chờ quá 10 giây (giới hạn 45 giây) → báo để người dùng biết app không treo. */}
       {serverSlow && serverOnline && (
-        <div className="warn-banner show caution" role="status" style={{ margin: '12px 24px 0' }}>
-          <div className="icon">
-            <Icon name="clock" />
-          </div>
+        <div className="banner w" role="status" style={{ margin: '12px 24px 0' }}>
+          <Icon name="clock" />
           <div className="txt">
             <b>The server is responding slowly — still waiting…</b>
             <span>Your last action is still being processed. If there is no answer after 45 seconds it stops and you can try again.</span>
@@ -149,7 +145,7 @@ export function Shell() {
           ))}
         </div>
         <div className="modal-f">
-          <button className="btn btn-ghost" onClick={() => setLeaving(false)}>
+          <button className="btn btn-outline" onClick={() => setLeaving(false)}>
             Close
           </button>
           <button

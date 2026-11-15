@@ -132,10 +132,8 @@ export function RowForm({ catalogKey, row, all, cats, inv, onClose }) {
           </p>
         )}
         {tried && errors.length > 0 && (
-          <div className="warn-banner show danger">
-            <div className="icon">
-              <Icon name="ban" />
-            </div>
+          <div className="banner d">
+            <Icon name="ban" />
             <div className="txt">
               {errors.map((e) => (
                 <div key={e}>{e}</div>
@@ -145,7 +143,7 @@ export function RowForm({ catalogKey, row, all, cats, inv, onClose }) {
         )}
       </div>
       <div className="modal-f">
-        <button className="btn btn-ghost" onClick={onClose}>
+        <button className="btn btn-outline" onClick={onClose}>
           Cancel
         </button>
         <button className="btn btn-primary" onClick={save} disabled={saving}>

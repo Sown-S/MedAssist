@@ -9,7 +9,7 @@ export default function AccountFormModal({ form, setForm, editing, me, rooms, fo
         <form onSubmit={onSubmit}>
           <ModalHeader title={editing ? `Edit account — ${editing.username}` : 'New account'} onClose={() => setForm(null)} />
           <div className="modal-b">
-            {formErr && <div className="login-err show">{formErr}</div>}
+            {formErr && <div className="banner d" style={{ marginBottom: 12 }}>{formErr}</div>}
             <div className="form-grid cols-2">
               <div className="field">
                 <label>Full name</label>
@@ -65,17 +65,17 @@ export default function AccountFormModal({ form, setForm, editing, me, rooms, fo
                 </>
               )}
             </div>
-            {editing?.id === me.id && <p className="login-note">You cannot change your own role — ask another administrator.</p>}
+            {editing?.id === me.id && <p className="muted small">You cannot change your own role — ask another administrator.</p>}
             {editing && form.roleKey !== editing.roleKey && (
-              <p className="login-note sp-warn">
+              <p className="muted small sp-warn">
                 <span>Role change:</span> <span>{ROLES[editing.roleKey].label}</span> → <span>{ROLES[form.roleKey].label}</span>.{' '}
                 <span>You will be asked for your password.</span>
               </p>
             )}
-            {!editing && <p className="login-note">A temporary password is generated after you create the account — it is shown once so you can send it to the staff member.</p>}
+            {!editing && <p className="muted small">A temporary password is generated after you create the account — it is shown once so you can send it to the staff member.</p>}
           </div>
           <div className="modal-f">
-            <button type="button" className="btn btn-ghost" onClick={() => setForm(null)}>
+            <button type="button" className="btn btn-outline" onClick={() => setForm(null)}>
               Cancel
             </button>
             <button type="submit" className="btn btn-primary">

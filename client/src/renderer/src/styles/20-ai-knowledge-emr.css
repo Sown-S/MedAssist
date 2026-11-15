@@ -19,7 +19,6 @@
 .kb-banner{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 13px;margin-bottom:12px;border-radius:10px;background:rgba(24,119,242,.08);border:1px solid rgba(24,119,242,.25);font-size:13.5px;}
 .kb-banner svg{width:17px;height:17px;flex-shrink:0;}
 .kb-banner.warn{background:var(--priority-soft);border-color:rgba(245,158,11,.35);color:var(--priority-ink);}
-.kb-error{margin:10px 0;padding:9px 12px;border-radius:9px;background:var(--warn-soft);color:var(--warn-ink);font-size:13.5px;}
 .kb-table td{vertical-align:top;}
 .kb-actions{white-space:nowrap;text-align:right;}
 .kb-danger{color:var(--warn-ink);}

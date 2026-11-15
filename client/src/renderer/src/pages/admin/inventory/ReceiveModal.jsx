@@ -91,18 +91,14 @@ export default function ReceiveModal({ drug, drugs, onClose }) {
           </div>
         )}
         {shortLife && (
-          <div className="warn-banner show caution">
-            <div className="icon">
-              <Icon name="alert" />
-            </div>
+          <div className="banner w">
+            <Icon name="alert" />
             <div className="txt">This batch expires in less than 6 months.</div>
           </div>
         )}
         {tried && errors.length > 0 && (
-          <div className="warn-banner show danger">
-            <div className="icon">
-              <Icon name="ban" />
-            </div>
+          <div className="banner d">
+            <Icon name="ban" />
             <div className="txt">
               {errors.map((e) => (
                 <div key={e}>{e}</div>
@@ -112,7 +108,7 @@ export default function ReceiveModal({ drug, drugs, onClose }) {
         )}
       </div>
       <div className="modal-f">
-        <button className="btn btn-ghost" onClick={onClose}>
+        <button className="btn btn-outline" onClick={onClose}>
           Cancel
         </button>
         <button className="btn btn-primary" onClick={save}>

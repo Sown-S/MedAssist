@@ -24,7 +24,7 @@ export default function KnowledgeLive({ reviewOnly = false }) {
   if (error)
     return (
       <div className="card">
-        <div className="kb-error">{errorText(error)}</div>
+        <div className="banner d">{errorText(error)}</div>
         <button className="btn btn-ghost btn-sm" onClick={reload}>
           Try again
         </button>

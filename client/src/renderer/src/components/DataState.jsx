@@ -9,10 +9,8 @@ export function LoadingBlock({ text = 'Loading...' }) {
 
 export function ErrorBlock({ message }) {
   return (
-    <div className="warn-banner danger show">
-      <div className="icon">
-  <Icon name="ban" />
-</div>
+    <div className="banner d">
+      <Icon name="ban" />
       <div className="txt">
         <b>Failed to load data</b>
         {message}

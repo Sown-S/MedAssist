@@ -75,7 +75,7 @@ export default function PatientLookup() {
             }}
           />
         </div>
-        {err && <div className="kb-error">{err}</div>}
+        {err && <div className="banner d">{err}</div>}
         {listOpen && q.trim() && (
           <div className="pl-results">
             {results.map((r) => (

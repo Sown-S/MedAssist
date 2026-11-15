@@ -164,10 +164,8 @@ export default function Reception() {
       )}
 
       {readOnly && (
-        <div className="warn-banner show caution" style={{ marginTop: 0, marginBottom: 14 }}>
-          <div className="icon">
-            <Icon name="alert" />
-          </div>
+        <div className="banner w" style={{ marginTop: 0, marginBottom: 14 }}>
+          <Icon name="alert" />
           <div className="txt">
             <b>No connection to the clinic server — read-only mode</b>
             You can still look up patients and view the queue as last loaded. Registering, check-in and payments are locked until the connection

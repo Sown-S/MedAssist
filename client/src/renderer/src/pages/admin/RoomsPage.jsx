@@ -70,7 +70,7 @@ export default function RoomsPage({ onNavigate }) {
         </div>
       </div>
 
-      {error && <div className="warn-banner show">{error}</div>}
+      {error && <div className="banner w">{error}</div>}
 
       {form && (
         <form className="card" style={{ marginBottom: 16 }} onSubmit={submit}>
@@ -95,8 +95,8 @@ export default function RoomsPage({ onNavigate }) {
               </select>
             </div>
           </div>
-          {form.id && <p className="login-note">The code and type of a room cannot be changed.</p>}
-          {formErr && <div className="login-err show">{translate(formErr)}</div>}
+          {form.id && <p className="muted small">The code and type of a room cannot be changed.</p>}
+          {formErr && <div className="banner d" style={{ marginBottom: 12 }}>{translate(formErr)}</div>}
           <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
             <button type="button" className="btn btn-ghost" onClick={() => setForm(null)}>
               Cancel

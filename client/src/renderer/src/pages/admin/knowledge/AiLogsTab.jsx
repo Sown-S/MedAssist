@@ -94,7 +94,7 @@ export default function AiLogsTab() {
         </div>
       </div>
 
-      {err && <div className="kb-error">{err}</div>}
+      {err && <div className="banner d">{err}</div>}
       {!data && !err && <p className="ai-soft">Loading…</p>}
       {data && (
         <div className="ai-table-wrap" style={{ marginTop: 10 }}>
@@ -166,7 +166,7 @@ export default function AiLogsTab() {
                     {shortDateTime(x.started_at)} → {shortDateTime(x.completed_at)}
                   </b>
                 </div>
-                {x.error_detail && <div className="kb-error">{x.error_detail}</div>}
+                {x.error_detail && <div className="banner d">{x.error_detail}</div>}
               </div>
             )
           })()}
