@@ -7,7 +7,7 @@ import ServerAddress from "../components/ServerAddress";
 import VersionBanners from "../components/VersionBanners";
 import AppIcon, { Logo } from "../components/Icon";
 import { translate } from "../i18n";
-import loginPhoto from "../assets/login-doctors.jpg";
+import loginPhoto from "../assets/login-clinic.jpg";
 import Button from "../components/Button";
 import { version as appVersion } from "../../../../package.json";
 

@@ -5,6 +5,7 @@ import { translate } from '../../i18n'
 import { ACTION_TYPES, ACTION_LABEL, ACTION_TONE as TONE, listAuditLogs, exportAuditLogs } from '../../api/auditApi'
 import Skeleton from '../../components/Skeleton'
 import { ErrorNote } from '../../components/DataState'
+import Clip from '../../components/Clip'
 
 // Nhật ký hoạt động trên server (US09). Với bệnh nhân / lượt khám chỉ ghi tên trường thay đổi, không ghi giá trị (Quy định v5 §7).
 const PAGE = 50
@@ -158,7 +159,13 @@ export default function HistoryPage() {
                         {open === x.log_id && x.entity_id && <div className="muted">{x.entity_id}</div>}
                       </td>
                       <td className="muted">
-                        {changes(x) || <span className="muted">—</span>}
+                        {changes(x) ? (
+                          <Clip lines={2} title={translate('Changed fields')}>
+                            {changes(x)}
+                          </Clip>
+                        ) : (
+                          <span className="muted">—</span>
+                        )}
                         {open === x.log_id && (x.old_values || x.new_values) && <pre className="kb-json">{JSON.stringify({ old: x.old_values, new: x.new_values }, null, 2)}</pre>}
                       </td>
                       <td className="num">{x.ip_address ?? '—'}</td>

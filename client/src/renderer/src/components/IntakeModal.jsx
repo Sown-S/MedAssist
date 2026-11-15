@@ -15,6 +15,8 @@ import { printTicket, ticketNo } from './queuePrint'
 import PatientAlerts from './PatientAlerts'
 import { PHONE_RE, DOB_RE, ID_RE, EditPatient, NewPatientFields, DuplicateBanner } from './PatientFields'
 
+const SAVED_FLASH_MS = 650
+
 // Sinh hiệu đề xuất + lời kể của lần trích xuất ra chúng (xem extractionStale).
 const NO_VITALS = { list: [], from: null }
 
@@ -41,6 +43,8 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
   const [editing, setEditing] = useState(false)
   // Lượt khám được tạo sớm (khi trích xuất hoặc khi lưu) — server cấp số ngay.
   const [busy, setBusy] = useState(false)
+  // Lưu xong: nút hiện ✓ “Đã lưu” một nhịp ngắn rồi mới đóng, để lễ tân thấy ngay là đã lưu.
+  const [done, setDone] = useState(false)
   const [visit, setVisit] = useState(null)
   const [idTaken, setIdTaken] = useState(false)
   const visitRef = useRef(null)
@@ -167,6 +171,9 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
       const level = clinic.triageOf(a.priority?.final)
       const name = existing?.name ?? form.name.trim()
       if (print) printTicket({ ticket: v.queue_number, name, priority: level !== 'routine', arrivedAt: v.visit_date })
+      setDone(true)
+      await new Promise((r) => setTimeout(r, SAVED_FLASH_MS))
+      setDone(false)
       onClose()
       const no = ticketNo(v.queue_number)
       if (level === 'emergency') showToast(translate('Emergency — placed at the top of the queue; doctors have been alerted') + ' · ' + no)
@@ -325,9 +332,9 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
         <button className="btn btn-outline" onClick={close}>
           Cancel
         </button>
-        <button className="btn btn-primary" onClick={() => handleSave(false)} disabled={busy || (touched && invalid && !existing)}>
-          <Icon name="ticket" />
-          {translate(existing ? 'Create visit & issue number' : 'Save & issue number')}
+        <button className={'btn btn-primary' + (done ? ' is-done' : '')} onClick={() => handleSave(false)} disabled={busy || (touched && invalid && !existing)} aria-busy={busy || undefined}>
+          {done ? <Icon name="check" /> : busy ? <span className="spinner btn-spinner" aria-hidden="true" /> : <Icon name="ticket" />}
+          {done ? translate('Saved') : busy ? translate('Saving…') : translate(existing ? 'Create visit & issue number' : 'Save & issue number')}
         </button>
       </div>
     </Modal>

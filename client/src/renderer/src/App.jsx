@@ -17,7 +17,7 @@ import Modal, { ModalHeader } from './components/Modal'
 import ErrorBoundary from './components/ErrorBoundary'
 import { useQueue, isMine, inRoom, atLabs } from './api/queueStore'
 import { translate } from './i18n'
-import { useServerOnline, useServerSlow } from './api/connectivity'
+import { OfflineBanner, TopProgress, SlowNotice } from './components/NetStatus'
 import { LeaveVisitModal } from './pages/doctor/doctorShared'
 import VersionBanners from './components/VersionBanners'
 
@@ -31,8 +31,6 @@ export function Shell() {
   const [leaving, setLeaving] = useState(false)
   // Bệnh nhân đi xét nghiệm không quay lại: đóng lượt ngay từ hộp thoại đăng xuất.
   const [closing, setClosing] = useState(null)
-  const serverOnline = useServerOnline()
-  const serverSlow = useServerSlow()
   const { visits } = useQueue()
   if (!user) return <Login />
   const openVisits = user.roleKey === 'doctor' ? visits.filter((v) => (inRoom(v) || atLabs(v)) && isMine(v, user)) : []
@@ -40,27 +38,10 @@ export function Shell() {
   return (
     <AdminNavProvider>
       <ShellLayout user={user} onSignOut={() => (openVisits.length ? setLeaving(true) : logout())}>
-      {/* Lễ tân có banner mất kết nối riêng trong trang; các vai trò khác dùng banner chung này. */}
-      {!serverOnline && user.roleKey !== 'reception' && (
-        <div className="banner w" style={{ margin: '12px 24px 0' }}>
-          <Icon name="alert" />
-          <div className="txt">
-            <b>No connection to the clinic server — read-only mode</b>
-            <span>Saving is blocked until the connection returns; what is on screen was loaded earlier.</span>
-          </div>
-        </div>
-      )}
-
-      {/* Một yêu cầu chờ quá 10 giây (giới hạn 45 giây) → báo để người dùng biết app không treo. */}
-      {serverSlow && serverOnline && (
-        <div className="banner w" role="status" style={{ margin: '12px 24px 0' }}>
-          <Icon name="clock" />
-          <div className="txt">
-            <b>The server is responding slowly — still waiting…</b>
-            <span>Your last action is still being processed. If there is no answer after 45 seconds it stops and you can try again.</span>
-          </div>
-        </div>
-      )}
+      {/* Lễ tân có banner mất kết nối riêng trong trang (kèm danh sách thao tác bị khoá); các vai trò khác dùng banner chung này. */}
+      {user.roleKey !== 'reception' && <OfflineBanner style={{ margin: '12px 24px 0' }} />}
+      <TopProgress />
+      <SlowNotice />
 
       <VersionBanners />
 

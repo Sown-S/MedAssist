@@ -4,9 +4,31 @@
     <meta charset="UTF-8" />
     <title>MedAssist</title>
     <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' data:; script-src 'self'; connect-src 'self' http: https:" />
+    <style>
+      /* Màn khởi động tĩnh: hiện ngay khi cửa sổ mở, trước khi React tải xong (BootGate vẽ lại đúng hình này). */
+      html,body{margin:0;background:#F0F2F5}
+      .boot{position:fixed;inset:0;display:grid;place-items:center;font-family:'Be Vietnam Pro',system-ui,sans-serif;color:#3C434D;background:radial-gradient(1200px 600px at 50% 30%,#fff,#F0F2F5)}
+      .boot-card{width:min(420px,calc(100vw - 48px));display:flex;flex-direction:column;align-items:center;gap:16px;text-align:center}
+      .boot-logo{display:flex;align-items:center;gap:10px;font-size:30px;font-weight:700;color:#1D2129;letter-spacing:-.02em}
+      .boot-logo b{color:#1877F2;font-weight:700}.boot-logo svg{width:56px;height:34px;color:#1877F2}
+      .boot-bar{position:relative;width:160px;height:4px;border-radius:4px;background:#E1E4E8;overflow:hidden}
+      .boot-bar i{position:absolute;top:0;bottom:0;width:40%;border-radius:4px;background:#1877F2;animation:bootbar 1.2s cubic-bezier(.2,.7,.2,1) infinite}
+      @keyframes bootbar{0%{left:-40%}100%{left:100%}}
+      @media (prefers-reduced-motion:reduce){.boot-bar i{animation:none;left:0;width:100%;opacity:.5}}
+    </style>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <div class="boot" role="status">
+        <div class="boot-card">
+          <div class="boot-logo">
+            <svg viewBox="5 11 31 19" aria-hidden="true"><path d="M7 22h5l3-9 5 15 4-11 2.5 5H33" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" /><circle cx="33" cy="22" r="1.8" fill="currentColor" /></svg>
+            <span>Med<b>Assist</b></span>
+          </div>
+          <div class="boot-bar"><i></i></div>
+        </div>
+      </div>
+    </div>
     <script type="module" src="./src/main.jsx"></script>
   </body>
 </html>

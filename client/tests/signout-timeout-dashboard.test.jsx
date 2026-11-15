@@ -128,14 +128,14 @@ describe('Gọi server có giới hạn thời gian', () => {
     vi.unstubAllGlobals()
   })
 
-  it('quá 10 giây → bật cờ "đang chậm"; quá 45 giây → lỗi TIMEOUT kèm câu báo, tắt cờ', async () => {
+  it('quá 5 giây → bật cờ "đang chậm"; quá 45 giây → lỗi TIMEOUT kèm câu báo, tắt cờ', async () => {
     const p = client.apiGet('/api/v1/queue')
     const settled = p.catch((e) => e)
-    await vi.advanceTimersByTimeAsync(9900)
+    await vi.advanceTimersByTimeAsync(4900)
     expect(client.isServerSlow()).toBe(false)
     await vi.advanceTimersByTimeAsync(200)
     expect(client.isServerSlow()).toBe(true)
-    await vi.advanceTimersByTimeAsync(35000)
+    await vi.advanceTimersByTimeAsync(40000)
     const e = await settled
     expect(e).toBeInstanceOf(client.ApiError)
     expect(e.code).toBe('TIMEOUT')

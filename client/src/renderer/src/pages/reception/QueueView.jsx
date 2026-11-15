@@ -10,6 +10,8 @@ import CallPanel from './CallPanel'
 import { EditWaitingModal, CancelVisitModal } from '../../components/WaitingVisitModals'
 import { hhmm, dmy, useNow } from './shared'
 import { vitalsText } from '../../api/vitals'
+import useNewIds from '../../hooks/useNewIds'
+import Clip from '../../components/Clip'
 
 // Số phút chờ bắt đầu thành vàng / đỏ, theo từng chặng.
 const WAIT_LIMITS = { Waiting: [30, 60], CheckedIn: [15, 30], Examining: [30, 45], labs: [30, 60], Prescribed: [10, 20] }
@@ -24,6 +26,8 @@ export default function QueueView({ readOnly, onPay }) {
   const [editing, setEditing] = useState(null)
   const [cancelling, setCancelling] = useState(null)
 
+  // Bệnh nhân vừa được tiếp đón: dòng sáng lên một nhịp.
+  const fresh = useNewIds(visits.map((v) => v.id))
   // Lượt đang tiếp đón không tính vào số người chờ, chỉ hiện mờ cuối tab Chờ.
   const byStatus = (s) => visits.filter((v) => v.status === s && !isIntakeOpen(v))
   const list =
@@ -137,7 +141,7 @@ export default function QueueView({ readOnly, onPay }) {
                   {list.map((v) => {
                     const w = waitOf(v)
                     return (
-                      <tr key={v.id} className={rowTone(v) + (isIntakeOpen(v) || [ST.FINISHED, ST.CANCELLED].includes(v.status) ? ' dim' : '')}>
+                      <tr key={v.id} className={rowTone(v) + (isIntakeOpen(v) || [ST.FINISHED, ST.CANCELLED].includes(v.status) ? ' dim' : '') + (fresh.has(v.id) ? ' row-new' : '')}>
                         <td className="r num">
                           <b style={{ fontSize: 'var(--fs-md)' }} title={translate('Arrival time') + ' ' + hhmm(v.arrivedAt)}>
                             {String(v.ticket).padStart(3, '0')}
@@ -165,9 +169,9 @@ export default function QueueView({ readOnly, onPay }) {
                           <div className="vit">{v.status !== ST.FINISHED && v.status !== ST.PRESCRIBED ? vitalsText(v.vitals) : '—'}</div>
                         </td>
                         <td style={{ maxWidth: 120 }}>
-                          <div className="clip muted" title={translate(v.reason)}>
+                          <Clip className="muted" title={translate('Reason for visit') + ' — ' + v.name}>
                             {translate(v.reason) || '—'}
-                          </div>
+                          </Clip>
                         </td>
                         <td>
                           {stepOf(v, w)}
@@ -221,7 +225,11 @@ export default function QueueView({ readOnly, onPay }) {
                         <b style={{ fontWeight: 500 }}>{r.name}</b>
                         {r.by && <div className="muted small">{r.by}</div>}
                       </td>
-                      <td className="muted">{translate(r.signs) || '—'}</td>
+                      <td className="muted" style={{ maxWidth: 560 }}>
+                        <Clip lines={2} title={translate('Emergency signs') + ' — ' + r.name}>
+                          {translate(r.signs) || '—'}
+                        </Clip>
+                      </td>
                       <td className="num muted">{hhmm(r.at)}</td>
                       <td>
                         {r.doctorReview ? (

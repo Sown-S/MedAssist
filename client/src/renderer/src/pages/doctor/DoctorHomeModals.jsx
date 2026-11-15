@@ -7,6 +7,7 @@ import { useQueue, minutesSince, isMine, labRows, atLabs, ST } from '../../api/q
 import { dmy } from '../reception/shared'
 import { PatientBrief, LabOrderResults } from './doctorShared'
 import { fold } from '../../utils/format'
+import Clip from '../../components/Clip'
 
 // Hộp thoại của trang chủ bác sĩ: danh sách chờ khám, bệnh nhân đang đi xét nghiệm.
 export const no = (t) => String(t).padStart(3, '0')
@@ -56,7 +57,7 @@ export function WaitingModal({ list, initial, now, past, onTake, onClose }) {
                           </div>
                         </td>
                         <td className="muted" style={{ maxWidth: 240 }}>
-                          <div className="clip">{translate(v.reason)}</div>
+                          <Clip title={translate('Reason for visit') + ' — ' + v.name}>{translate(v.reason)}</Clip>
                         </td>
                         <td className="r">
                           <span className={'badge ' + (n >= 45 ? 'b-danger' : n >= 25 ? 'b-warning' : 'b-neutral')}>
@@ -182,7 +183,7 @@ export function LabListModal({ onResume, onClose }) {
                           </div>
                         </td>
                         <td style={{ maxWidth: 260 }}>
-                          <div className="clip">{rows.map((r) => r.name).join(', ')}</div>
+                          <Clip title={translate('Tests') + ' — ' + v.name}>{rows.map((r) => r.name).join(', ')}</Clip>
                         </td>
                         <td>
                           <span className={'badge ' + STATE[state][1]}>{translate(STATE[state][0])}</span>

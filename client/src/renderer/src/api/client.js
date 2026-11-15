@@ -15,11 +15,18 @@ export class ApiError extends Error {
   }
 }
 
-// Mỗi lần gọi server chờ tối đa 45 giây (server treo / mạng chập chờn thì nút không quay mãi). Quá 10 giây thì bật cờ
+// Mỗi lần gọi server chờ tối đa 45 giây (server treo / mạng chập chờn thì nút không quay mãi). Quá 5 giây thì bật cờ
 // "đang chậm" để giao diện báo người dùng là app vẫn đang chờ, không treo. Tải file (xuất nhật ký) gọi fetch riêng, không
 // áp giới hạn này.
 const REQUEST_TIMEOUT_MS = 45000
-const SLOW_AFTER_MS = 10000
+const SLOW_AFTER_MS = 5000
+// Thanh tiến trình mảnh trên cùng: chỉ hiện khi có yêu cầu chờ quá 300 ms (thao tác nhanh không bị nháy).
+const PENDING_AFTER_MS = 300
+let pendingCount = 0
+const pendingSubs = new Set()
+const bumpPending = (d) => ((pendingCount += d), pendingSubs.forEach((f) => f()))
+export const subscribePending = (f) => (pendingSubs.add(f), () => pendingSubs.delete(f))
+export const isRequestPending = () => pendingCount > 0
 let slowCount = 0
 const slowSubs = new Set()
 const bumpSlow = (d) => ((slowCount += d), slowSubs.forEach((f) => f()))
@@ -33,6 +40,8 @@ export async function timedFetch(url, init = {}) {
   let slow = false
   const stop = setTimeout(() => ((timedOut = true), ctrl.abort()), REQUEST_TIMEOUT_MS)
   const warn = setTimeout(() => ((slow = true), bumpSlow(1)), SLOW_AFTER_MS)
+  let pending = false
+  const pend = setTimeout(() => ((pending = true), bumpPending(1)), PENDING_AFTER_MS)
   // Bên gọi tự huỷ (signal riêng) vẫn được tôn trọng.
   const outer = init.signal
   const relay = () => ctrl.abort()
@@ -46,6 +55,8 @@ export async function timedFetch(url, init = {}) {
   } finally {
     clearTimeout(stop)
     clearTimeout(warn)
+    clearTimeout(pend)
+    if (pending) bumpPending(-1)
     outer?.removeEventListener('abort', relay)
     if (slow) bumpSlow(-1)
   }

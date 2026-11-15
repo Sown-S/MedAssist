@@ -19,8 +19,11 @@ import './global.css'
 import { loadServerConfig } from './api/serverConfig'
 import { loadClientConfig } from './api/settingsStore'
 import { applySidebarTheme } from './api/sidebarTheme'
+import { applyAppearance } from './api/appTheme'
+import BootGate from './components/BootGate'
 
 applySidebarTheme()
+applyAppearance()
 
 // HashRouter vì bản build chạy từ app:// của Electron, không có server phục vụ các route như /doctor.
 // Thông tin phòng khám, tự đăng xuất: nạp nền, không chờ — mất kết nối thì dùng bản đệm trên máy.
@@ -28,9 +31,11 @@ loadServerConfig().then(() => {
   loadClientConfig()
   ReactDOM.createRoot(document.getElementById('root')).render(
     <React.StrictMode>
-      <HashRouter>
-        <App />
-      </HashRouter>
+      <BootGate>
+        <HashRouter>
+          <App />
+        </HashRouter>
+      </BootGate>
     </React.StrictMode>
   )
 })

@@ -56,14 +56,27 @@ async function probe() {
   }
 }
 
+// Mốc lần hỏi kế tiếp — banner mất kết nối đếm ngược theo mốc này.
+let nextAt = 0
+const subsTick = new Set()
+export const subscribeNextProbe = (f) => (subsTick.add(f), () => subsTick.delete(f))
+export const getNextProbeAt = () => nextAt
+const tick = () => ((nextAt = Date.now() + INTERVAL_MS), subsTick.forEach((f) => f()))
+// Nút “Thử lại ngay” trên banner.
+export function probeNow() {
+  tick()
+  return probe()
+}
+
 let started = false
 function start() {
   if (started) return
   started = true
   window.addEventListener('online', () => ((online = true), emit(), probe()))
   window.addEventListener('offline', () => ((online = false), emit()))
+  tick()
   probe()
-  setInterval(probe, INTERVAL_MS)
+  setInterval(() => (tick(), probe()), INTERVAL_MS)
 }
 
 export function useServerOnline() {
@@ -72,7 +85,7 @@ export function useServerOnline() {
 }
 export const isServerOnline = snapshot
 
-// true khi có yêu cầu chờ server quá 10 giây (xem timedFetch trong client.js).
+// true khi có yêu cầu chờ server quá 5 giây (xem timedFetch trong client.js).
 export const useServerSlow = () => useSyncExternalStore(subscribeSlow, isServerSlow)
 
 // { ok, reason, detail } — khung đề xuất từ lời kể ẩn khi disabled, báo vàng và khoá nút khi hỏng, tự mở lại khi ok.

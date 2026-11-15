@@ -18,6 +18,7 @@ import HomeGreeting from '../components/HomeGreeting'
 import { useAuth } from '../context/AuthContext'
 import useCallAnnouncer from '../components/useCallAnnouncer'
 import { useServerOnline } from '../api/connectivity'
+import { OfflineBanner } from '../components/NetStatus'
 
 // Công cụ cho nhà phát triển (giả lập mất mạng…): chỉ hiện khi VITE_DEV_TOOLS=true.
 const DEV_TOOLS = import.meta.env.VITE_DEV_TOOLS === 'true'
@@ -174,12 +175,14 @@ export default function Reception() {
           </BellPortal>
         )}
 
-        {readOnly && (
+        <OfflineBanner style={{ marginTop: 0, marginBottom: 14 }}>
+          <span>{translate('You can still look up patients and view the queue as last loaded. Registering, check-in and payments are locked until the connection returns, so nothing is saved twice or lost.')}</span>
+        </OfflineBanner>
+        {simulateOffline && online && (
           <div className="banner w" style={{ marginTop: 0, marginBottom: 14 }}>
             <Icon name="alert" />
             <div className="txt">
-              <b>No connection to the clinic server — read-only mode</b>
-              You can still look up patients and view the queue as last loaded. Registering, check-in and payments are locked until the connection returns, so nothing is saved twice or lost.
+              <b>{translate('No connection to the clinic server — read-only mode')}</b>
             </div>
           </div>
         )}

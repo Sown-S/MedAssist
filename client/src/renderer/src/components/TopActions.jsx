@@ -7,7 +7,8 @@ import { LANGUAGES, getLang, setLang, translate } from '../i18n'
 import { useNavigate } from 'react-router-dom'
 import { useQueue, isMine, inRoom, atLabs, isPendingFlag } from '../api/queueStore'
 import { useInventory, stockOf } from '../api/inventoryStore'
-import { SIDEBAR_THEMES, getSidebarTheme, setSidebarTheme } from '../api/sidebarTheme'
+import SettingsModal from './SettingsModal'
+import Clip from './Clip'
 
 // Thông báo tính tại máy từ hàng chờ và kho.
 const hm = (iso) =>
@@ -59,7 +60,6 @@ const HELP = {
 export default function TopActions({ user, onSignOut }) {
   const [open, setOpen] = useState(null)
   const [unread, setUnread] = useState(true)
-  const [theme, setTheme] = useState(getSidebarTheme)
   const bellRef = useRef(null)
   const langRef = useRef(null)
   const acctRef = useRef(null)
@@ -167,11 +167,6 @@ export default function TopActions({ user, onSignOut }) {
     return () => document.removeEventListener('mousedown', close)
   }, [open])
 
-  function chooseTheme(key) {
-    setTheme(key)
-    setSidebarTheme(key)
-  }
-
   const ib = (icon, tip, onClick) => (
     <button className="btn btn-ghost btn-icon" title={translate(tip)} aria-label={translate(tip)} onClick={onClick}>
       <Icon name={icon} />
@@ -203,12 +198,14 @@ export default function TopActions({ user, onSignOut }) {
                 <div className={'ico ' + (n.urgent ? 'd' : n.icon ? 'n' : 'w')} style={{ width: 30, height: 30 }}>
                   <Icon name={n.icon ?? 'package-x'} />
                 </div>
-                <div>
-                  <b>{n.title}</b>
-                  <span className="muted">
+                <div style={{ minWidth: 0, flex: 1 }}>
+                  <Clip as="b" title={n.title}>
+                    {n.title}
+                  </Clip>
+                  <Clip lines={2} className="muted" title={n.title} full={n.note + (n.time ? ' · ' + n.time : '')}>
                     {n.note}
                     {n.time ? ' · ' + n.time : ''}
-                  </span>
+                  </Clip>
                 </div>
               </div>
             ))}
@@ -307,69 +304,7 @@ export default function TopActions({ user, onSignOut }) {
         </div>
       </Modal>
 
-      <Modal open={open === 'settings'} onClose={() => setOpen(null)}>
-        <ModalHeader title="Settings" onClose={() => setOpen(null)} />
-        <div className="modal-b">
-          <div className="sec-t" style={{ marginTop: 0 }}>
-            Menu bar appearance
-          </div>
-          <div className="thm" role="radiogroup" aria-label={translate('Menu bar appearance')}>
-            {SIDEBAR_THEMES.map((t) => (
-              <button key={t.key} type="button" role="radio" aria-checked={theme === t.key} className={theme === t.key ? 'on' : ''} onClick={() => chooseTheme(t.key)}>
-                <span className="pv">
-                  <span className="ps" style={{ background: t.bg, color: t.ink }}>
-                    <i className="act" />
-                    <i />
-                    <i />
-                    <i />
-                  </span>
-                  <span className="pm">
-                    <i />
-                    <i />
-                  </span>
-                </span>
-                <span className="nm">
-                  <Icon name={theme === t.key ? 'circle-check' : 'circle'} />
-                  <span>{translate(t.label)}</span>
-                </span>
-              </button>
-            ))}
-          </div>
-          <p className="muted small" style={{ margin: '8px 0 0' }}>
-            Applied right away on this computer only.
-          </p>
-          <div className="sec-t">Language</div>
-          <div className="seg">
-            {LANGUAGES.map((l) => (
-              <button key={l.code} className={getLang() === l.code ? 'on' : ''} onClick={() => chooseLanguage(l.code)}>
-                {l.name}
-              </button>
-            ))}
-          </div>
-          <p className="muted small" style={{ margin: '10px 0 0' }}>
-            The display language is saved on this computer only. Times are shown in Vietnam time (GMT+7).
-          </p>
-          <div className="sec-t">Account</div>
-          {[
-            ['Name', user.name],
-            ['Username', user.username],
-            ['Role', user.role]
-          ].map(([k, v]) => (
-            <div className="pref-row inline" key={k}>
-              <span>{k}</span>
-              <b>{v}</b>
-            </div>
-          ))}
-          <button className="btn btn-outline btn-sm" style={{ marginTop: 10 }} onClick={() => setOpen('password')}>
-            <Icon name="key-round" /> Change password
-          </button>
-        </div>
-        <div className="modal-f">
-          <button className="btn btn-outline" onClick={() => setOpen(null)}>
-            {translate('Close')}
-          </button>
-        </div>
-      </Modal>
+      <SettingsModal open={open === 'settings'} onClose={() => setOpen(null)} user={user} onChangePassword={() => setOpen('password')} />
 
       <ChangePasswordModal open={open === 'password'} onClose={() => setOpen(null)} />
     </>

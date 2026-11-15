@@ -4,6 +4,7 @@ import { translate } from '../../../i18n'
 import { waitingOrder, readyOrder, ST, inRoom, atLabs, minutesSince, isMine } from '../../../api/queueStore'
 import { useNow, hhmm } from '../../reception/shared'
 import { InviteBar } from '../doctorShared'
+import useNewIds from '../../../hooks/useNewIds'
 
 // Cột hàng đợi chia nhóm, thu gọn được; trạng thái nhớ theo máy.
 const GROUPS_KEY = 'medassist_doc_queue_groups'
@@ -34,6 +35,7 @@ export function useQueueGroups() {
 // Cột hàng đợi bên trái màn Khám: các nhóm thu gọn được, hoặc thu thành dải icon (rail).
 export default function DoctorQueue({ visits, user, mine, current, onSelect, take, next, onCloseLab, openGroups, toggle }) {
   const now = useNow()
+  const fresh = useNewIds(visits.map((v) => v.id))
   const groups = [
     { key: 'mine', title: 'In my room', list: mine },
     // Chỉ người mình chỉ định — bệnh nhân vẫn thuộc bác sĩ đó trong lúc đi xét nghiệm, bác sĩ khác không nhận được.
@@ -98,7 +100,7 @@ export default function DoctorQueue({ visits, user, mine, current, onSelect, tak
                     return (
                       <div
                         key={v.id}
-                        className={'qi' + (active ? ' on' : '') + (g.key === 'done' || g.key === 'other' ? ' dim' : '')}
+                        className={'qi' + (active ? ' on' : '') + (g.key === 'done' || g.key === 'other' ? ' dim' : '') + (fresh.has(v.id) ? ' row-new' : '')}
                         style={clickable ? undefined : { cursor: 'default' }}
                         tabIndex={clickable ? 0 : undefined}
                         onClick={() => onItem(g, v)}
