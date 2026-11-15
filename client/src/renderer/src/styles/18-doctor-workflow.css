@@ -4,7 +4,6 @@
 
 
 
-.timeline{display:flex;flex-direction:column;gap:8px;}
 
 .icon-btn.primary{background:var(--primary);color:#fff;}
 

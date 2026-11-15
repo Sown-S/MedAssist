@@ -1,4 +1,5 @@
 import {
+  IdCard,
   Coffee,
   Inbox,
   CircleCheckBig,
@@ -178,6 +179,7 @@ const ICONS = {
   'message-square-warning': MessageSquareWarning,
   monitor: Monitor,
   package: Package,
+  'id-card': IdCard,
   coffee: Coffee,
   inbox: Inbox,
   'x-circle': CircleX,

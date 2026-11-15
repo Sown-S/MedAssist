@@ -103,21 +103,26 @@ export default function DrugCabinetView({ go }) {
   return (
     <>
       {current && (
-        <div className="ctx-banner">
+        <div className="banner n">
           <Icon name="stethoscope" />
-          <span className="txt">
-            <span>Prescribing for</span> <b>{current.name}</b>
+          <div className="txt">
+            <span>Prescribing for</span> <b style={{ display: 'inline' }}>{current.name}</b>
             {current.allergies ? ' · ' + translate('Drug allergy') + ': ' + translate(current.allergies) : ''}
-          </span>
+          </div>
           <button className="btn btn-ghost btn-sm" onClick={() => go('consult', current.id)}>
-            <Icon name="arrowLeft" /> Back to the consultation
+            <Icon name="arrow-left" />
+            {translate('Back to the consultation')}
           </button>
         </div>
       )}
       <div className="card">
-        <div className="cash-filters" style={{ marginBottom: 14 }}>
-          <input className="input grow" type="search" placeholder="Search by drug name, active ingredient or ATC…" value={q} onChange={filter(setQ)} />
-          <select className="input" value={atc} onChange={filter(setAtc)} title={translate('Therapeutic class (ATC)')}>
+        <div className="card-b">
+        <div className="toolbar" style={{ marginBottom: 14 }}>
+          <div className="search">
+            <Icon name="search" />
+            <input className="input" type="search" placeholder="Search by drug name, active ingredient or ATC…" value={q} onChange={filter(setQ)} />
+          </div>
+          <select className="select" value={atc} onChange={filter(setAtc)} title={translate('Therapeutic class (ATC)')}>
             <option value="">All drug classes (ATC)</option>
             {classes.map((c) => (
               <option key={c} value={c}>
@@ -126,41 +131,41 @@ export default function DrugCabinetView({ go }) {
             ))}
             {active.some((d) => !d.atc) && <option value="-">No ATC code</option>}
           </select>
-          <select className="input" value={group} onChange={filter(setGroup)}>
+          <select className="select" value={group} onChange={filter(setGroup)}>
             {GROUPS.map((g) => (
               <option key={g.key} value={g.key}>
                 {g.label}
               </option>
             ))}
           </select>
-          <select className="input" value={stock} onChange={filter(setStock)}>
+          <select className="select" value={stock} onChange={filter(setStock)}>
             {STOCK_FILTERS.map((g) => (
               <option key={g.key} value={g.key}>
                 {g.label}
               </option>
             ))}
           </select>
-          <select className="input" value={expiry} onChange={filter(setExpiry)}>
+          <select className="select" value={expiry} onChange={filter(setExpiry)}>
             {EXPIRY_FILTERS.map((g) => (
               <option key={g.key} value={g.key}>
                 {g.key === 'near' ? translate('Expiring within') + ' ' + near + ' ' + translate('days') : g.label}
               </option>
             ))}
           </select>
-          <select className="input" value={sort} onChange={filter(setSort)}>
+          <select className="select" value={sort} onChange={filter(setSort)}>
             {SORTS.map((g) => (
               <option key={g.key} value={g.key}>
                 {g.label}
               </option>
             ))}
           </select>
-          <span className="ai-soft" style={{ fontSize: 13 }}>
+          <span className="muted small">
             {list.length} / {active.length} {translate(active.length === 1 ? 'drug' : 'drugs')}
           </span>
         </div>
         {list.length ? (
           <div className="tbl-wrap">
-            <table className="cab-table">
+            <table>
               <thead>
                 <tr>
                   <th>Drug</th>
@@ -176,16 +181,16 @@ export default function DrugCabinetView({ go }) {
                 {pg.rows.map(({ d, s }) => {
                   const main = s.statuses.find((x) => x !== 'ok') ?? 'ok'
                   return (
-                    <tr key={d.id} className={s.usable === 0 ? 'dimmed' : ''}>
+                    <tr key={d.id} className={s.usable === 0 ? 'dim' : ''}>
                       <td>
-                        <b className="cab-name">{d.name}</b>
-                        <small className="cab-sub">
+                        <b style={{ fontWeight: 500 }}>{d.name}</b>
+                        <div className="muted small">
                           {d.ingredient || '—'}
                           {d.atc ? ' · ' + d.atc : ''}
-                        </small>
+                        </div>
                       </td>
                       <td>
-                        <span className="cab-tags">
+                        <span className="acts" style={{ justifyContent: 'flex-start' }}>
                           {d.essential && <span className="tag">Essential</span>}
                           {d.group === 'controlled' && <span className="tag w">Controlled</span>}
                           {d.kind === 'supply' && <span className="tag">Supply</span>}
@@ -193,12 +198,12 @@ export default function DrugCabinetView({ go }) {
                         </span>
                       </td>
                       <td className="r num">
-                        {s.usable.toLocaleString('vi-VN')} <span className="cab-unit">{unitLabel(d.unit)}</span>
+                        {s.usable.toLocaleString('vi-VN')} <span>{unitLabel(d.unit)}</span>
                       </td>
-                      <td className="r num">
+                      <td className="num">
                         {s.nextExpiry ? fmtDate(s.nextExpiry.expiry) : '—'}
                         {s.nextExpiry && s.nextExpiry.days <= near && (
-                          <span className={'exp-days' + (s.nextExpiry.days <= 30 ? ' soon' : ' near')}>{translate(s.nextExpiry.days + ' days left')}</span>
+                          <div className="small" style={{ color: s.nextExpiry.days <= 30 ? 'var(--danger)' : 'var(--warning)' }}>{translate(s.nextExpiry.days + ' days left')}</div>
                         )}
                       </td>
                       <td className="r num">{fmtMoney(d.price)}</td>
@@ -208,8 +213,9 @@ export default function DrugCabinetView({ go }) {
                       {current && (
                         <td className="r">
                           {d.kind === 'drug' && (
-                            <button className="btn btn-ghost btn-sm" disabled={s.usable === 0} onClick={() => add(d)} title={translate('Add to prescription')}>
-                              <Icon name="plus" /> <span>Add</span>
+                            <button className="btn btn-outline btn-sm" disabled={s.usable === 0} onClick={() => add(d)} title={translate('Add to prescription')}>
+                              <Icon name="plus" />
+                              {translate('Add')}
                             </button>
                           )}
                         </td>
@@ -223,13 +229,14 @@ export default function DrugCabinetView({ go }) {
         ) : (
           <div className="empty">
             <div className="ill">
-              <Icon name="box" />
+              <Icon name="pill" />
             </div>
             <b>No drugs match.</b>
             <span>Try another name or clear the filters.</span>
           </div>
         )}
         {list.length > PAGE_SIZE && <Pager {...pg} onPage={setPage} />}
+        </div>
       </div>
     </>
   )

@@ -69,8 +69,6 @@
 /* Dòng bấm được */
 .row-click{cursor:pointer;}
 .row-click:hover td{background:var(--surface-hover);}
-.timeline{position:relative;padding-left:22px;}
-.timeline::before{content:'';position:absolute;left:6px;top:6px;bottom:6px;width:2px;background:var(--border);}
 
 /* Phân trang */
 .pager{display:flex;align-items:center;justify-content:space-between;padding:12px 14px 4px;font-size:13px;color:var(--ink-soft);}

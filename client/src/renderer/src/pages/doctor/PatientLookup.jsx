@@ -60,9 +60,11 @@ export default function PatientLookup() {
   return (
     <div className="lookup2">
       <div className="card lookup-search">
-        <div className="pl-q">
+        <div className="card-b">
+        <div className="search" style={{ width: '100%' }}>
           <Icon name="search" />
-          <input className="input"
+          <input
+            className="input"
             type="search"
             autoFocus
             placeholder="Name, phone number, record ID, ID card or birth year…"
@@ -78,7 +80,7 @@ export default function PatientLookup() {
           <div className="pl-results">
             {results.map((r) => (
               <button key={r.id} className={'pl-row' + (r.id === p?.id ? ' active' : '')} onClick={() => open(r.id)}>
-                <span className="avatar sm">{initials(r.name)}</span>
+                <span className="ava" style={{ width: 30, height: 30, fontSize: 12 }}>{initials(r.name)}</span>
                 <span className="nm">{r.name}</span>
                 <span className="sub">
                   <span className="num">{r.code}</span> · {r.dob} · <span className="num">{r.phone || '—'}</span>
@@ -89,14 +91,15 @@ export default function PatientLookup() {
             {!searching && !results.length && !err && <p className="ai-soft pl-hint">No patient matches.</p>}
           </div>
         )}
-        {!q.trim() && !p && <p className="ai-soft pl-hint">Type at least part of a name, phone number or record ID.</p>}
+        {!q.trim() && !p && <p className="muted small" style={{ marginTop: 8 }}>Type at least part of a name, phone number or record ID.</p>}
+        </div>
       </div>
 
       {p ? (
         <div className="lookup-grid">
           <div className="card pt-card">
             <div className="pt-id">
-              <span className="avatar lg">{initials(p.name)}</span>
+              <span className="ava" style={{ width: 48, height: 48, fontSize: 'var(--fs-md)' }}>{initials(p.name)}</span>
               <div>
                 <b>{p.name}</b>
                 <span className="ai-soft">
@@ -107,7 +110,7 @@ export default function PatientLookup() {
             {p.pregnancy === 'yes' && <span className="badge b-warning">{translate('Pregnant')}</span>}
             <div className="pt-rows">
               <div className="pt-row">
-                <span className="is-ico">
+                <span className="ico n">
                   <Icon name="phone" />
                 </span>
                 <span>
@@ -116,8 +119,8 @@ export default function PatientLookup() {
                 </span>
               </div>
               <div className="pt-row">
-                <span className="is-ico">
-                  <Icon name="card" />
+                <span className="ico n">
+                  <Icon name="id-card" />
                 </span>
                 <span>
                   <small>ID card number (CCCD)</small>
@@ -126,8 +129,9 @@ export default function PatientLookup() {
               </div>
             </div>
             <PatientAlerts p={p} />
-            <button className="btn btn-ghost btn-sm" onClick={() => setDocs(true)}>
-              <Icon name="fileText" /> Referral letter
+            <button className="btn btn-outline btn-sm" onClick={() => setDocs(true)}>
+              <Icon name="file-output" />
+              {translate('Referral letter')}
             </button>
           </div>
           <div className="card">

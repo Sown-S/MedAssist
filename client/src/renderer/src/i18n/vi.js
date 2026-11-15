@@ -1747,12 +1747,10 @@ export const VI = {
   'Show cancelled visits': 'Hiện cả lượt đã hủy',
   'Show older visits': 'Xem các lượt cũ hơn',
   Diagnoses: 'Chẩn đoán',
-  Primary: 'Chính',
   Secondary: 'Kèm theo',
   withdrawn: 'đã rút lại',
   'No diagnosis recorded.': 'Chưa ghi chẩn đoán.',
   'No prescription.': 'Không kê đơn.',
-  'Red flag:': 'Cờ đỏ:',
   'Name, phone number, record ID, ID card or birth year…': 'Họ tên, SĐT, mã bệnh nhân, CCCD hoặc năm sinh…',
   // Nhật ký hoạt động trên server (pages/admin/AuditLogLive.jsx)
   'Who did what and when — sign-ins, record views, changes, approvals and AI assessments. Entries can never be edited or deleted.':
@@ -1976,6 +1974,7 @@ export const VI = {
   '— Objective · Physical examination': "— Objective · Khám thực thể",
   '— Plan · Treatment plan & advice': "— Plan · Kế hoạch điều trị & lời dặn",
   'Dose per time': "Liều / lần",
+  'None ordered': "Không chỉ định",
 }
 
 export const PATTERNS = [

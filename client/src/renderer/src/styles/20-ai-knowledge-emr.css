@@ -53,18 +53,6 @@
 .kb-json{margin:6px 0 0;padding:8px 10px;max-width:520px;white-space:pre-wrap;word-break:break-word;font:12px 'IBM Plex Mono';background:var(--field-bg);border:1px solid var(--border);border-radius:8px;color:var(--ink-soft);}
 
 /* Lịch sử khám từ server */
-.emr-visit{border:1px solid var(--border);border-radius:10px;background:var(--surface);margin-bottom:8px;overflow:hidden;}
-.emr-visit-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap;width:100%;padding:9px 12px;background:transparent;border:none;color:var(--ink);text-align:left;cursor:pointer;font:inherit;}
-.emr-visit-head:hover{background:rgba(16,24,40,0.017);}
-.emr-dx{flex:1;min-width:180px;}
-.emr-caret{color:var(--ink-soft);}
-.emr-rx-sum{padding:0 12px 9px;color:var(--ink-soft);display:flex;gap:6px;align-items:flex-start;}
-.emr-rx-sum svg{width:14px;height:14px;flex-shrink:0;margin-top:2px;}
-.emr-detail{padding:4px 12px 12px;border-top:1px solid var(--border);}
-.emr-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;}
-.emr-dx-row{margin:4px 0;}
-.emr-dx-row.retracted{text-decoration:line-through;opacity:.6;}
-.emr-notes{white-space:pre-wrap;font-size:13px;color:var(--ink-soft);margin:3px 0 0 4px;}
 
 /* Chuyển tuyến, lời mời vào phòng, đề xuất sinh hiệu */
 .fac-input{position:relative;}

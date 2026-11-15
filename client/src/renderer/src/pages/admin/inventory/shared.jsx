@@ -17,12 +17,12 @@ const UNITS = [
 export const unitLabel = (k) => UNITS.find((u) => u.key === k)?.label ?? k
 
 export const STATUS = {
-  ok: { label: 'Sufficient', cls: 'ok' },
-  low: { label: 'Low stock', cls: 'warn' },
-  out: { label: 'Out of stock', cls: 'low' },
-  near: { label: 'Near expiry', cls: 'warn' },
-  expired: { label: 'Has expired batches', cls: 'low' },
-  inactive: { label: 'Discontinued', cls: 'muted' }
+  ok: { label: 'Sufficient', cls: 'b-success' },
+  low: { label: 'Low stock', cls: 'b-warning' },
+  out: { label: 'Out of stock', cls: 'b-danger' },
+  near: { label: 'Near expiry', cls: 'b-warning' },
+  expired: { label: 'Has expired batches', cls: 'b-danger' },
+  inactive: { label: 'Discontinued', cls: 'b-neutral' }
 }
 
 export const MOVE_TYPES = {
