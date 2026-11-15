@@ -6,6 +6,7 @@ import RedFlagModal from '../components/RedFlagModal'
 import SearchModal from '../components/SearchModal'
 import StaleVisitsModal from '../components/StaleVisitsModal'
 import Icon from '../components/Icon'
+import BellPortal from '../components/BellPortal'
 import { useQueue, useQueueSync, syncStale } from '../api/queueStore'
 import { translate } from '../i18n'
 import Dashboard from './reception/Dashboard'
@@ -112,7 +113,8 @@ export default function Reception() {
   )
 
   return (
-    <div className={'page' + (view === 'home' ? ' rhome' : '')}>
+    <div className="content view">
+      <div className={view === 'home' ? 'rhome' : 'vflow'}>
       {view === 'home' ? (
         <HomeGreeting crumb="Receptionist" name={user.name} extra={<span className="gpill"><Icon name="door" /><span>{translate('Reception desk')}</span></span>}>
           {actions}
@@ -138,27 +140,27 @@ export default function Reception() {
 
       {/* Lượt tồn từ ngày trước: popup đỏ cạnh chuông. Ca cờ đỏ nằm ở chuông, ô Ca cấp cứu và trang Hàng chờ. */}
       {stale.length > 0 && !staleSeen && (
-        <div className="bell-stack">
+        <BellPortal>
           {stale.length > 0 && !staleSeen && (
             <div className="bell-pop" role="alert">
-              <div className="bp-ico">
-                <Icon name="clock" />
+              <div className="ico d">
+                <Icon name="history" />
               </div>
               <div className="bp-t">
                 <b>
                   {stale.length} {translate('open visits from previous days')}
                 </b>
                 <span>{translate('Close them with a reason, or collect payment if the patient came back.')}</span>
-                <button className="btn btn-sm bp-go" onClick={() => (hideStale(), setStaleOpen(true))}>
+                <button className="btn btn-danger btn-sm" onClick={() => (hideStale(), setStaleOpen(true))}>
                   {translate('Review')}
                 </button>
               </div>
-              <button className="bp-x" onClick={hideStale} title={translate('Close')} aria-label={translate('Close')}>
+              <button className="btn btn-ghost btn-icon" onClick={hideStale} title={translate('Close')} aria-label={translate('Close')}>
                 <Icon name="x" />
               </button>
             </div>
           )}
-        </div>
+        </BellPortal>
       )}
 
       {readOnly && (
@@ -199,6 +201,7 @@ export default function Reception() {
       )}
       {staleOpen && <StaleVisitsModal readOnly={readOnly} onClose={() => setStaleOpen(false)} onPay={pay} />}
       <RedFlagModal open={!!redFlag} patient={redFlag} onClose={() => setRedFlag(null)} onReferred={() => setIntake(null)} />
+      </div>
     </div>
   )
 }

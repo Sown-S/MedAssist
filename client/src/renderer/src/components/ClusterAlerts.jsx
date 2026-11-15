@@ -38,9 +38,9 @@ export default function ClusterAlerts({ onOpenReport }) {
     setSeen(signature(report))
   }
   return (
-    <div className="bell-pop cluster-pop" role="status">
-      <div className="bp-ico">
-        <Icon name="alert" />
+    <div className="bell-pop warn cluster-pop" role="status">
+      <div className="ico w">
+        <Icon name="trending-up" />
       </div>
       <div className="bp-t">
         <b>
@@ -60,13 +60,13 @@ export default function ClusterAlerts({ onOpenReport }) {
         )}
         {onOpenReport && (
           <span className="bp-acts">
-            <button className="btn btn-ghost btn-sm" onClick={onOpenReport}>
-              <Icon name="chartLine" /> Open reports
+            <button className="btn btn-outline btn-sm" onClick={onOpenReport}>
+              <span>Open reports</span>
             </button>
           </span>
         )}
       </div>
-      <button className="bp-x" onClick={close} title={translate('Close')} aria-label={translate('Close')}>
+      <button className="btn btn-ghost btn-icon" onClick={close} title={translate('Close')} aria-label={translate('Close')}>
         <Icon name="x" />
       </button>
     </div>

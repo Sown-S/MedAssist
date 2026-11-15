@@ -35,13 +35,13 @@ export default function Admin() {
 
   if (reviewer)
     return (
-      <div className="page">
+      <div className="content view">
         <KnowledgeLive reviewOnly />
       </div>
     )
 
   return (
-    <div className="page admin-main">
+    <div className="content view admin-main">
       <Current key={page + JSON.stringify(params)} params={params} catalogKey={page.slice(4)} onNavigate={navigate} setLeaveGuard={setLeaveGuard} />
     </div>
   )

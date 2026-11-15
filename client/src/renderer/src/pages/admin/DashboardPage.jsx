@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import StatCard from '../../components/StatCard'
 import Icon from '../../components/Icon'
+import BellPortal from '../../components/BellPortal'
 import { LoadingBlock, ErrorBlock } from '../../components/DataState'
 import { useApiData } from '../../hooks/useApiData'
 import { listAccounts } from '../../api/accountStore'
@@ -214,9 +215,9 @@ export default function DashboardPage({ onNavigate }) {
         </button>
       </HomeGreeting>
 
-      <div className="bell-stack">
+      <BellPortal>
         <ClusterAlerts onOpenReport={() => navigate('/reports')} />
-      </div>
+      </BellPortal>
       {!ready && <LoadingBlock />}
       {e1 && <ErrorBlock message={translate('Could not load today’s figures') + ': ' + e1} />}
       {accountsError && <ErrorBlock message={translate('Could not load staff accounts') + ': ' + translate(accountsError)} />}

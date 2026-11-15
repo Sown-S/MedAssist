@@ -10,7 +10,12 @@ import { useInventory, stockOf } from '../api/inventoryStore'
 import { SIDEBAR_THEMES, getSidebarTheme, setSidebarTheme } from '../api/sidebarTheme'
 
 // Thông báo tính tại máy từ hàng chờ và kho.
-const hm = (iso) => new Date(iso).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit', hour12: false })
+const hm = (iso) =>
+  new Date(iso).toLocaleTimeString('vi-VN', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false
+  })
 
 // Phím tắt theo vai trò — hiện thành bảng phím trong hộp Trợ giúp.
 const SHORTCUTS = {
@@ -25,7 +30,16 @@ const SHORTCUTS = {
   ],
   admin: [['Esc', 'Close the dialog']]
 }
-const HELP_ICON = { Consultation: 'stethoscope', 'Lab tests': 'flask', 'Red-flag cases': 'siren', Prescribing: 'fileText', 'Your room': 'door', Reception: 'users', Reports: 'chart', Admin: 'settings' }
+const HELP_ICON = {
+  Consultation: 'stethoscope',
+  'Lab tests': 'flask',
+  'Red-flag cases': 'siren',
+  Prescribing: 'fileText',
+  'Your room': 'door',
+  Reception: 'users',
+  Reports: 'chart',
+  Admin: 'settings'
+}
 
 const HELP = {
   doctor: [
@@ -35,9 +49,7 @@ const HELP = {
     ['Prescribing', 'Enter Morning / Noon / Afternoon / Evening doses and the number of days — quantity and directions fill in automatically. Children under 12 need a weight.'],
     ['Your room', 'Each doctor works in a fixed room set by the administrator in Staff accounts — no shifts to start or end. Leaving the room: “Return to queue”. Patient gone: “Patient left”.']
   ],
-  reception: [
-    ['Reception', 'Register or find patients, check them in, follow the queue and collect payments.']
-  ],
+  reception: [['Reception', 'Register or find patients, check them in, follow the queue and collect payments.']],
   admin: [
     ['Reports', 'Revenue, visit counts and AI module performance.'],
     ['Admin', 'Manage inventory, catalogs, staff accounts, AI rules and the activity log.']
@@ -59,28 +71,83 @@ export default function TopActions({ user, onSignOut }) {
   // Bác sĩ: chấm đỏ luôn bật tới khi xử lý xong việc cần làm ngay.
   const live = doctor
     ? [
-        ...redFlags.filter((r) => isPendingFlag(r) && !r.doctorReview).map((r) => ({ id: r.id, icon: 'siren', title: translate('Red-flag case') + ' — ' + r.name, note: translate(r.signs) || '—', time: hm(r.at), urgent: true, to: '/doctor' })),
+        ...redFlags
+          .filter((r) => isPendingFlag(r) && !r.doctorReview)
+          .map((r) => ({
+            id: r.id,
+            icon: 'siren',
+            title: translate('Red-flag case') + ' — ' + r.name,
+            note: translate(r.signs) || '—',
+            time: hm(r.at),
+            urgent: true,
+            to: '/doctor'
+          })),
         ...visits
           .filter((v) => inRoom(v) && v.returnNote && isMine(v, user))
-          .map((v) => ({ id: 'rt' + v.id, icon: 'fileText', title: translate('Prescription sent back') + ' — ' + v.name, note: v.returnNote.text || translate('not enough stock, please change these drugs'), time: hm(v.returnNote.at), urgent: true, to: consult(v.id) })),
+          .map((v) => ({
+            id: 'rt' + v.id,
+            icon: 'fileText',
+            title: translate('Prescription sent back') + ' — ' + v.name,
+            note: v.returnNote.text || translate('not enough stock, please change these drugs'),
+            time: hm(v.returnNote.at),
+            urgent: true,
+            to: consult(v.id)
+          })),
         ...visits
           .filter((v) => atLabs(v) && v.labReturnedAt && isMine(v, user))
-          .map((v) => ({ id: 'lb' + v.id, icon: 'flask', title: translate('Back from lab') + ' — ' + v.name, note: translate('Results are ready — resume the visit'), time: hm(v.labReturnedAt), to: consult() }))
+          .map((v) => ({
+            id: 'lb' + v.id,
+            icon: 'flask',
+            title: translate('Back from lab') + ' — ' + v.name,
+            note: translate('Results are ready — resume the visit'),
+            time: hm(v.labReturnedAt),
+            to: consult()
+          }))
       ]
     : user.roleKey === 'reception'
       ? [
           // Lễ tân: ca cờ đỏ chưa hướng dẫn xong và lượt tồn từ ngày trước nằm trong danh sách của chuông.
           ...(stale.length
-            ? [{ id: 'stale', icon: 'history', title: stale.length + ' ' + translate('open visits from previous days'), note: translate('Close them with a reason, or collect payment if the patient came back.'), time: '', urgent: true, to: '/reception?stale=1' }]
+            ? [
+                {
+                  id: 'stale',
+                  icon: 'history',
+                  title: stale.length + ' ' + translate('open visits from previous days'),
+                  note: translate('Close them with a reason, or collect payment if the patient came back.'),
+                  time: '',
+                  urgent: true,
+                  to: '/reception?stale=1'
+                }
+              ]
             : []),
           ...redFlags
             .filter((r) => isPendingFlag(r) && !r.ack)
-            .map((r) => ({ id: r.id, icon: 'siren', title: translate('Red-flag case') + ' — ' + r.name, note: translate(r.signs) || '—', time: hm(r.at), urgent: true, to: '/reception?view=queue' }))
+            .map((r) => ({
+              id: r.id,
+              icon: 'siren',
+              title: translate('Red-flag case') + ' — ' + r.name,
+              note: translate(r.signs) || '—',
+              time: hm(r.at),
+              urgent: true,
+              to: '/reception?view=queue'
+            }))
         ]
       : []
   const low = inv.drugs.filter((d) => d.active && d.kind === 'drug' && stockOf(d, inv.batches).statuses.some((x) => x === 'out' || x === 'low'))
   const stock = low.length
-    ? [{ id: 'stock', title: low.length + ' ' + translate('drugs low or out of stock'), note: low.slice(0, 4).map((d) => d.name).join(', ') + (low.length > 4 ? '…' : ''), time: '', to: doctor ? '/doctor?view=drugs' : null }]
+    ? [
+        {
+          id: 'stock',
+          title: low.length + ' ' + translate('drugs low or out of stock'),
+          note:
+            low
+              .slice(0, 4)
+              .map((d) => d.name)
+              .join(', ') + (low.length > 4 ? '…' : ''),
+          time: '',
+          to: doctor ? '/doctor?view=drugs' : null
+        }
+      ]
     : []
   const notifications = [...live, ...stock]
   const { showToast } = useToast()
@@ -105,54 +172,55 @@ export default function TopActions({ user, onSignOut }) {
     setSidebarTheme(key)
   }
 
+  const ib = (icon, tip, onClick) => (
+    <button className="btn btn-ghost btn-icon" title={translate(tip)} aria-label={translate(tip)} onClick={onClick}>
+      <Icon name={icon} />
+    </button>
+  )
+
   return (
     <>
-      <div className="notif-wrap" ref={bellRef}>
-        <button
-          className="icon-btn"
-          title="Notifications"
-          onClick={() => {
-            setOpen(open === 'bell' ? null : 'bell')
-            setUnread(false)
-          }}
-        >
-          <Icon name="bell" />
-          {(unread || live.length > 0) && <span className="dot" />}
-        </button>
+      <div className="tb bell" ref={bellRef}>
+        {ib('bell', 'Notifications', () => {
+          setOpen(open === 'bell' ? null : 'bell')
+          setUnread(false)
+        })}
+        {(unread || live.length > 0) && notifications.length > 0 && <span className="badge-dot" />}
         {open === 'bell' && (
-          <div className="notif-panel">
-            <div className="notif-head">Notifications</div>
+          <div className="menu open" style={{ width: 320 }}>
+            <div className="mh">Notifications</div>
             {notifications.map((n) => (
               <div
-                className={'notif-item' + (n.urgent ? ' urgent' : '') + (n.to ? ' clickable' : '')}
+                className="ni"
                 key={n.id}
+                style={n.to ? { cursor: 'pointer' } : undefined}
                 onClick={() => {
                   if (!n.to) return
                   setOpen(null)
                   navigate(n.to)
                 }}
               >
-                <span className={'notif-ico' + (n.urgent ? ' urgent' : '')}>
-                  <Icon name={n.icon ?? 'box'} />
-                </span>
+                <div className={'ico ' + (n.urgent ? 'd' : n.icon ? 'n' : 'w')} style={{ width: 30, height: 30 }}>
+                  <Icon name={n.icon ?? 'package-x'} />
+                </div>
                 <div>
                   <b>{n.title}</b>
-                  <span>{n.note}</span>
+                  <span className="muted">
+                    {n.note}
+                    {n.time ? ' · ' + n.time : ''}
+                  </span>
                 </div>
-                <span className="time">{n.time}</span>
               </div>
             ))}
-            {!notifications.length && <p className="ai-soft" style={{ fontSize: 13, padding: '8px 12px' }}>No notifications.</p>}
+            {!notifications.length && <div className="ni muted">No notifications.</div>}
           </div>
         )}
       </div>
-      <div className="notif-wrap" ref={langRef}>
-        <button className="icon-btn" title="Language" aria-label={translate('Language')} onClick={() => setOpen(open === 'lang' ? null : 'lang')}>
-          <Icon name="languages" />
-        </button>
+      <div className="tb" ref={langRef}>
+        {ib('languages', 'Language', () => setOpen(open === 'lang' ? null : 'lang'))}
         {open === 'lang' && (
-          <div className="top-menu">
-            <div className="notif-head">Language</div>
+          <div className="menu open">
+            <div className="mh">Language</div>
             {LANGUAGES.map((l) => (
               <button
                 key={l.code}
@@ -162,44 +230,42 @@ export default function TopActions({ user, onSignOut }) {
                   chooseLanguage(l.code)
                 }}
               >
-                <Icon name={getLang() === l.code ? 'check' : 'circle'} />
+                <Icon name={getLang() === l.code ? 'check' : 'globe'} />
                 <span>{l.name}</span>
               </button>
             ))}
           </div>
         )}
       </div>
-      <button className="icon-btn" title="Help" onClick={() => setOpen('help')}>
-        <Icon name="help" />
-      </button>
-      <button className="icon-btn" title="Settings" onClick={() => setOpen('settings')}>
-        <Icon name="settings" />
-      </button>
-      <div className="notif-wrap" ref={acctRef}>
+      <div className="tb">{ib('circle-help', 'Help', () => setOpen('help'))}</div>
+      <div className="tb">{ib('settings', 'Settings', () => setOpen('settings'))}</div>
+      <div className="tb" ref={acctRef}>
         <button className="acct" onClick={() => setOpen(open === 'acct' ? null : 'acct')} aria-haspopup="menu" aria-expanded={open === 'acct'}>
-          <span className="avatar">{user.av}</span>
-          <span className="who">
+          <div className="ava">{user.av}</div>
+          <div className="who">
             <b>{user.name}</b>
             <span>{user.role}</span>
-          </span>
-          <Icon name="chevronDown" />
+          </div>
+          <Icon name="chevron-down" />
         </button>
         {open === 'acct' && (
-          <div className="top-menu right" role="menu">
-            <div className="notif-head">Account</div>
+          <div className="menu open" role="menu">
+            <div className="mh">Account</div>
             <button role="menuitem" onClick={() => setOpen('password')}>
-              <Icon name="key" />
+              <Icon name="key-round" />
               <span>Change password</span>
             </button>
+            <hr />
             <button
               role="menuitem"
-              className="danger logout-btn"
+              className="logout-btn"
+              style={{ color: 'var(--danger)' }}
               onClick={() => {
                 setOpen(null)
                 onSignOut?.()
               }}
             >
-              <Icon name="logOut" />
+              <Icon name="log-out" />
               Sign out
             </button>
           </div>
@@ -230,8 +296,7 @@ export default function TopActions({ user, onSignOut }) {
           ))}
         </div>
         <p className="help-intro" style={{ marginTop: 14 }}>
-          Forgot your password or need another account? Ask an administrator to reset or create it under Admin →
-          Staff accounts.
+          Forgot your password or need another account? Ask an administrator to reset or create it under Admin → Staff accounts.
         </p>
         <div className="help-foot">
           <button className="btn btn-primary" onClick={() => setOpen(null)}>
@@ -242,7 +307,9 @@ export default function TopActions({ user, onSignOut }) {
 
       <Modal open={open === 'settings'} onClose={() => setOpen(null)}>
         <ModalHeader title="Settings" onClose={() => setOpen(null)} />
-        <div className="section-label" style={{ marginTop: 0 }}>Menu bar appearance</div>
+        <div className="section-label" style={{ marginTop: 0 }}>
+          Menu bar appearance
+        </div>
         <div className="thm" role="radiogroup" aria-label={translate('Menu bar appearance')}>
           {SIDEBAR_THEMES.map((t) => (
             <button key={t.key} type="button" role="radio" aria-checked={theme === t.key} className={theme === t.key ? 'on' : ''} onClick={() => chooseTheme(t.key)}>
@@ -271,11 +338,7 @@ export default function TopActions({ user, onSignOut }) {
         <div className="section-label">Language</div>
         <div className="itabs" style={{ marginBottom: 0 }}>
           {LANGUAGES.map((l) => (
-            <button
-              key={l.code}
-              className={'itab' + (getLang() === l.code ? ' active' : '')}
-              onClick={() => chooseLanguage(l.code)}
-            >
+            <button key={l.code} className={'itab' + (getLang() === l.code ? ' active' : '')} onClick={() => chooseLanguage(l.code)}>
               {l.name}
             </button>
           ))}
@@ -283,9 +346,7 @@ export default function TopActions({ user, onSignOut }) {
         <p className="help-intro" style={{ marginTop: 10 }}>
           The display language is saved on this computer only. Times are shown in Vietnam time (GMT+7).
         </p>
-        <div className="section-label">
-          Account
-        </div>
+        <div className="section-label">Account</div>
         {[
           ['Name', user.name],
           ['Username', user.username],

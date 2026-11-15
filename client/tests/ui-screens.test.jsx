@@ -35,7 +35,7 @@ afterEach(() => cleanup())
 afterAll(() => vi.unstubAllGlobals())
 
 // Chờ trang dựng xong; bỏ qua ô thông báo (luôn có sẵn dấu ✓) để không coi là đã dựng khi chưa đăng nhập xong.
-const pageText = () => [...document.body.querySelectorAll('body > div > :not(.toast)')].map((el) => el.textContent).join('').trim()
+const pageText = () => [...document.body.querySelectorAll('body > div > :not(.toasts)')].map((el) => el.textContent).join('').trim()
 async function rendered() {
   await waitFor(() => expect(pageText()).not.toBe(''))
   expect(screen.queryByText(FAIL)).toBeNull()

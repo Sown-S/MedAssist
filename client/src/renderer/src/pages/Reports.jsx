@@ -43,7 +43,7 @@ export default function Reports() {
   const sub = translate(PERIOD_SUB[period])
 
   return (
-    <div className="page">
+    <div className="vflow">
       <div className="page-head">
         <div>
           <h1>Reports &amp; Statistics</h1>

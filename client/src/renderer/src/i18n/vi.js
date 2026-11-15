@@ -1971,6 +1971,8 @@ export const VI = {
   'Add to prescription': "Thêm vào đơn",
   'Settings sections': "Các mục cài đặt",
   'Collected': "Đã thu",
+  'Server connection status': "Trạng thái kết nối máy chủ",
+  'Where each patient is right now': "Mỗi bệnh nhân đang ở bước nào",
 }
 
 export const PATTERNS = [

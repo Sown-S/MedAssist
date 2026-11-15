@@ -21,7 +21,6 @@
 @import './styles/18-doctor-workflow.css';
 @import './styles/19-connection-intake.css';
 @import './styles/20-ai-knowledge-emr.css';
-@import './styles/21-app-shell.css';
 @import './styles/22-home.css';
 @import './styles/23-login.css';
 @import './styles/24-modals.css';
@@ -29,3 +28,5 @@
 @import './styles/26-reports-charts.css';
 @import './styles/27-consult.css';
 @import './styles/28-doctor-pages.css';
+@import './styles/90-mock.css';
+@import './styles/91-app-extras.css';

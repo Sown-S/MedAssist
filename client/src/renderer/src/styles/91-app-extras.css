@@ -1,0 +1,33 @@
+/* Cầu nối: tên biến cũ của app trỏ về token của bản mẫu, để phần riêng của app (không có trong bản mẫu) dùng đúng bảng màu.
+   Thêm vào đây chỉ những gì bản mẫu không có; mọi thứ bản mẫu đã định nghĩa thì dùng nguyên lớp của bản mẫu. */
+:root{
+  --font:'Be Vietnam Pro',system-ui,sans-serif;
+  --bg-solid:var(--bg);
+  --surface-alt:var(--surface-2);
+  --surface-hover:var(--routine-soft);
+  --ink-soft:var(--ink-3);
+  --primary-dark:var(--primary-hover);
+  --priority:var(--warning);
+  --priority-soft:var(--warning-soft);
+  --priority-ink:var(--warning);
+  --warn:var(--danger);
+  --warn-soft:var(--danger-soft);
+  --warn-ink:#B91C1C;
+  --success-ink:var(--success);
+}
+/* Bản mẫu không dùng font đơn cách: số liệu dùng chữ số đều hàng của Be Vietnam Pro */
+.mono{font-family:inherit;letter-spacing:0;font-variant-numeric:tabular-nums;}
+/* Lớp bọc trung gian giữ nguyên bố cục flex của .content như bản mẫu */
+.vflow{display:contents}
+.thm .ps i.act{background:var(--primary);opacity:1}
+/* Nhiều popup cạnh chuông cùng lúc (cờ đỏ + cụm ca) xếp chồng dưới chuông; từng popup giữ đúng kiểu .bell-pop của bản mẫu */
+.bell-stack{position:absolute;right:-6px;top:calc(100% + 10px);width:340px;display:flex;flex-direction:column;gap:10px;z-index:29}
+.bell-stack:empty{display:none}
+.bell-stack .bell-pop{position:relative;right:auto;top:auto;width:auto}
+.bell-stack .bell-pop+.bell-pop::before{display:none}
+.bell-pop .bp-t .bp-sign{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin:2px 0 4px}
+.bell-pop .bp-t .bp-meta{display:block;margin:0 0 10px;font-size:13px;color:var(--ink-3)}
+.bell-pop .bp-t .bp-acts{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:0}
+.bell-pop .bp-t .cluster-alerts span{margin:0}
+/* Thẻ đã theo cấu trúc bản mẫu (.card-h + .card-b) không có padding ở khung ngoài */
+.card:has(>.card-h),.card:has(>.card-b){padding:0}

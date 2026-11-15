@@ -7,7 +7,7 @@ import { AdminNavProvider } from './context/AdminNavContext'
 import RequireRole from './components/RequireRole'
 import Icon from './components/Icon'
 import TopActions from './components/TopActions'
-import SideNav, { useCurrentLabel } from './components/SideNav'
+import SideNav, { useCurrentLabel, useSideCollapsed } from './components/SideNav'
 import Login from './pages/Login'
 import Reception from './pages/Reception'
 import Doctor from './pages/Doctor'
@@ -185,13 +185,16 @@ export function Shell() {
 // Khung giao diện: menu bên trái + thanh trên cùng (tiêu đề mục đang mở, thông báo, ngôn ngữ, trợ giúp, cài đặt, tài khoản).
 function ShellLayout({ user, onSignOut, children }) {
   const title = useCurrentLabel(user)
+  const [collapsed, setCollapsed] = useSideCollapsed()
   return (
-    <div className="app-shell">
-      <SideNav user={user} />
-      <div className="app-main">
-        <header className="topbar">
-          <h1 className="top-title">{title}</h1>
-          <div className="top-actions">
+    <div className={'app' + (collapsed ? ' collapsed' : '')}>
+      <SideNav user={user} collapsed={collapsed} onToggle={() => setCollapsed((v) => !v)} />
+      <div className="main">
+        <header className="top">
+          <div className="ttl">
+            <h1>{title}</h1>
+          </div>
+          <div className="top-r">
             <TopActions user={user} onSignOut={onSignOut} />
           </div>
         </header>

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import Icon from '../components/Icon'
+import BellPortal from '../components/BellPortal'
 import { useAuth } from '../context/AuthContext'
 import { useQueue, useQueueSync, reviewRedFlag, inviteAgain, isPendingFlag, ST } from '../api/queueStore'
 import { useToast } from '../context/ToastContext'
@@ -50,7 +51,8 @@ export default function Doctor() {
   }
 
   return (
-    <div className={'page' + (view === 'home' ? ' rhome' : '')}>
+    <div className="content view">
+      <div className={view === 'home' ? 'rhome' : 'vflow'}>
       {view === 'home' ? (
         <HomeGreeting
           crumb="Doctor"
@@ -80,10 +82,10 @@ export default function Doctor() {
       )}
 
       {/* Popup cạnh chuông: ca cờ đỏ chưa bác sĩ nào xem (mới nhất, kèm số ca còn lại) và cảnh báo cụm ca ở Trang chủ. */}
-      <div className="bell-stack">
+      <BellPortal>
         {topRF && (
           <div className="bell-pop redflag-alert" role="alert">
-            <div className="bp-ico">
+            <div className="ico d">
               <Icon name="siren" />
             </div>
             <div className="bp-t">
@@ -98,26 +100,26 @@ export default function Doctor() {
                 {topRF.allergies ? ' · ' + translate('Drug allergy') + ': ' + translate(topRF.allergies) : ''}
               </small>
               <span className="bp-acts">
-                <button className="btn btn-sm bp-go" onClick={() => seeNow(topRF)}>
+                <button className="btn btn-danger btn-sm" onClick={() => seeNow(topRF)}>
                   <Icon name="stethoscope" /> See the patient now
                 </button>
-                <button className="btn btn-ghost btn-sm" onClick={() => reviewRedFlag(topRF.id, 'seen', user)}>
+                <button className="btn btn-outline btn-sm" onClick={() => reviewRedFlag(topRF.id, 'seen', user)}>
                   Dismiss
                 </button>
                 {shownRF.length > 1 && (
-                  <button className="btn btn-ghost btn-sm bp-more" onClick={() => setHiddenRF((h) => [...h, topRF.id])}>
+                  <button className="btn btn-outline btn-sm bp-more" onClick={() => setHiddenRF((h) => [...h, topRF.id])}>
                     {translate('Next case')} (+{shownRF.length - 1})
                   </button>
                 )}
               </span>
             </div>
-            <button className="bp-x" onClick={() => setHiddenRF((h) => [...h, topRF.id])} title={translate('Close')} aria-label={translate('Close')}>
+            <button className="btn btn-ghost btn-icon" onClick={() => setHiddenRF((h) => [...h, topRF.id])} title={translate('Close')} aria-label={translate('Close')}>
               <Icon name="x" />
             </button>
           </div>
         )}
         {view === 'home' && <ClusterAlerts />}
-      </div>
+      </BellPortal>
 
       {/* Đổi màn bằng menu bên trái (components/SideNav.jsx); phòng khám của bác sĩ hiện ở cuối menu. */}
       {view === 'home' && <DoctorHome go={go} />}
@@ -127,6 +129,7 @@ export default function Doctor() {
       {view === 'patients' && <PatientLookup />}
       {dialog}
 
+      </div>
     </div>
   )
 }
