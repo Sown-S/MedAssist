@@ -29,7 +29,6 @@ export const VI = {
   'Control panel': 'Bảng điều khiển',
   'Total awaiting payment': 'Tổng chờ thu',
   'visits today': 'lượt khám hôm nay',
-  'compared with the day before': 'so với hôm trước',
   'Finalize the visit': 'Hoàn tất khám',
   'Close the dialog': 'Đóng hộp thoại',
   'Got it': 'Đã hiểu',
@@ -179,7 +178,6 @@ export const VI = {
   // ===== Tiếp đón / hồ sơ =====
   'Waiting for consultation': 'Chờ khám',
   'Awaiting payment': 'Chờ thanh toán',
-  "Today's revenue": 'Doanh thu hôm nay',
   'Invoice total': 'Tổng hóa đơn',
   'Collect payment': 'Thu tiền',
   'Invalid phone number (10 digits required)': 'Số điện thoại không hợp lệ (cần 10 số)',
@@ -259,7 +257,6 @@ export const VI = {
   Connected: 'Đã kết nối',
   Running: 'Đang chạy',
   Completed: 'Hoàn tất',
-  'Open Reports': 'Mở Báo cáo',
   'Revenue — last 7 days': 'Doanh thu — 7 ngày gần nhất',
   'View reports': 'Xem báo cáo',
   'AI decision support': 'Hỗ trợ quyết định AI',
@@ -1974,6 +1971,7 @@ export const VI = {
   'Dose per time': "Liều / lần",
   'None ordered': "Không chỉ định",
   'changes': "thay đổi",
+  'Open →': "Mở →",
 }
 
 export const PATTERNS = [

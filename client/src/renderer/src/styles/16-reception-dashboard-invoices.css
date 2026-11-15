@@ -55,17 +55,6 @@
 
 /* Lọc theo kỳ, doanh thu */
 
-.status-row{--tone:var(--ink-soft);display:flex;align-items:center;gap:12px;width:100%;padding:11px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--surface);color:var(--ink);text-align:left;cursor:pointer;font-family:var(--font);font-size:13.5px;}
-.status-row:hover{border-color:var(--tone);}
-.status-row.active{border-color:var(--tone);background:var(--surface-hover);}
-.status-row .dot{width:10px;height:10px;border-radius:50%;background:var(--tone);box-shadow:0 0 0 4px color-mix(in srgb,var(--tone) 20%,transparent);flex-shrink:0;}
-.status-row .grow{flex:1;display:flex;flex-direction:column;}
-.status-row small{font-size:11.5px;color:var(--ink-soft);}
-.status-row .mono{color:var(--tone);font-weight:600;}
-.status-row.unpaid{--tone:var(--warn-ink);}
-.status-row.processing{--tone:var(--priority-ink);}
-.status-row.paid{--tone:var(--success-ink);}
-.status-row.cancelled{--tone:var(--ink-soft);}
 /* Nút trong ô trống giữ icon cỡ chữ, cùng hàng với nhãn. */
 
 /* Thu hồi đơn để sửa (màn Đơn thuốc của bác sĩ) */

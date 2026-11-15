@@ -166,9 +166,9 @@ describe('Dashboard Admin', () => {
 
   it('ô "Đang chờ khám" ra số, không phải NaN (hôm nay chưa ai check-in)', async () => {
     renderPage(<Admin onNavigate={() => {}} />, { user: ADMIN, path: '/admin' })
-    const card = (await screen.findByText('Waiting for consultation')).closest('.stat-card')
+    const card = (await screen.findByText('Waiting for consultation')).closest('.tile')
     await waitFor(() => expect(card.querySelector('.val').textContent).toBe('1'))
-    expect(screen.getByText('Awaiting payment').closest('.stat-card').querySelector('.val').textContent).toBe('0')
+    expect(screen.getByText('Awaiting payment').closest('.tile').querySelector('.val').textContent).toBe('0')
     expect(document.body.textContent).not.toContain('NaN')
   })
 

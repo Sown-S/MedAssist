@@ -14,6 +14,7 @@ import { rangeOf, reportPath, fillDays, vnd, percent } from '../../api/reportsAp
 import { translate } from '../../i18n'
 import { fmtDateTime } from './inventory/shared'
 import ClusterAlerts from '../../components/ClusterAlerts'
+import LineChart from '../../components/LineChart'
 import HomeGreeting from '../../components/HomeGreeting'
 import { useAuth } from '../../context/AuthContext'
 
@@ -83,21 +84,23 @@ function ServerActivity({ items, onOpen }) {
   return (
     <div className="tbl-wrap">
       <table>
-        <tbody>
+        <thead>
           <tr>
             <th>Time</th>
             <th>Account</th>
             <th>Action</th>
             <th>Object</th>
           </tr>
+        </thead>
+        <tbody>
           {(items ?? []).map((x) => (
-            <tr className="row-click" key={x.log_id} onClick={onOpen}>
+            <tr className="clickable" key={x.log_id} onClick={onOpen}>
               <td className="num">{fmtDateTime(x.created_at)}</td>
               <td>{x.username ?? x.attempted_username ?? '—'}</td>
               <td>
                 <span className={'badge ' + (ACTION_TONE[x.action_type] ?? '')}>{translate(ACTION_LABEL[x.action_type] ?? x.action_type)}</span>
               </td>
-              <td className="num ai-small">{x.target_entity ?? '—'}</td>
+              <td className="muted">{x.target_entity ?? '—'}</td>
             </tr>
           ))}
           {items && !items.length && (
@@ -113,70 +116,6 @@ function ServerActivity({ items, onOpen }) {
   )
 }
 
-const fmtVnd = (n) => n.toLocaleString('vi-VN') + 'đ'
-
-// Doanh thu 7 ngày dạng đường (kiểu biểu đồ chứng khoán): điểm cuối nổi bật, rê chuột vào điểm để xem số.
-function RevenueChart({ days }) {
-  const [hover, setHover] = useState(null)
-  const vals = days.map((d) => d.amt)
-  const max = Math.max(...vals, 1) * 1.1 // 7 ngày đều chưa thu tiền → không chia cho 0
-  const n = days.length
-  const x = (i) => (n > 1 ? (i / (n - 1)) * 100 : 50)
-  const y = (v) => (1 - v / max) * 100
-  const line = days.map((d, i) => (i ? 'L' : 'M') + x(i).toFixed(2) + ' ' + y(d.amt).toFixed(2)).join(' ')
-  const last = vals[n - 1] ?? 0
-  const prev = vals[n - 2] ?? 0
-  const diff = last - prev
-  const shown = hover ?? n - 1
-  return (
-    <div className="lc-wrap">
-      <div className="lc-h">
-        <b className="num">{fmtVnd(last)}</b>
-        {n > 1 && (
-          <span className={'lc-d ' + (diff >= 0 ? 'up' : 'down')}>
-            <Icon name="trending" />
-            {(diff >= 0 ? '+' : '−') + fmtVnd(Math.abs(diff))}
-          </span>
-        )}
-        <span className="ai-soft">{translate('compared with the day before')}</span>
-      </div>
-      <div className="lc" onMouseLeave={() => setHover(null)}>
-        <div className="lc-grid">
-          <i />
-          <i />
-          <i />
-          <i />
-        </div>
-        <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-          <defs>
-            <linearGradient id="lcg" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0" stopColor="#1877F2" stopOpacity=".22" />
-              <stop offset="1" stopColor="#1877F2" stopOpacity="0" />
-            </linearGradient>
-          </defs>
-          <path d={line + ' L100 100 L0 100 Z'} fill="url(#lcg)" />
-          <path d={line} className="lc-l" vectorEffect="non-scaling-stroke" />
-        </svg>
-        {days.map((d, i) => (
-          <span
-            key={d.day}
-            className={'lc-p' + (i === n - 1 ? ' last' : '') + (i === shown ? ' on' : '')}
-            style={{ left: x(i) + '%', top: y(d.amt) + '%' }}
-            onMouseEnter={() => setHover(i)}
-            aria-label={d.day + ': ' + fmtVnd(d.amt)}
-          >
-            {i === shown && <em>{fmtVnd(d.amt)}</em>}
-          </span>
-        ))}
-      </div>
-      <div className="lc-x">
-        {days.map((d) => (
-          <span key={d.day}>{d.day}</span>
-        ))}
-      </div>
-    </div>
-  )
-}
 
 export default function DashboardPage({ onNavigate }) {
   const navigate = useNavigate()
@@ -206,16 +145,21 @@ export default function DashboardPage({ onNavigate }) {
   const server = useServerLog()
   const alerts = ready ? buildAlerts(inv, accounts, server.failed) : []
 
+  const ALERT_ICON = { inventory: 'package-x', staff: 'key-round', history: 'shield-alert' }
   return (
-    <div>
-      <HomeGreeting crumb="Admin" name={user?.name ?? ''}>
-        <button className="btn btn-ghost" onClick={() => navigate('/reports')}>
-          <Icon name="chartLine" /> View reports
-        </button>
-        <button className="btn btn-primary" onClick={() => onNavigate('staff')}>
-          <Icon name="userPlus" /> Create account
-        </button>
-      </HomeGreeting>
+    <>
+      <div className="rhome" style={{ flex: 'none' }}>
+        <HomeGreeting crumb="Admin" name={user?.name ?? ''}>
+          <button className="btn btn-outline" onClick={() => navigate('/reports')}>
+            <Icon name="chart-line" />
+            {translate('View reports')}
+          </button>
+          <button className="btn btn-primary" onClick={() => onNavigate('staff')}>
+            <Icon name="user-plus" />
+            {translate('Create account')}
+          </button>
+        </HomeGreeting>
+      </div>
 
       <BellPortal>
         <ClusterAlerts onOpenReport={() => navigate('/reports')} />
@@ -226,123 +170,163 @@ export default function DashboardPage({ onNavigate }) {
 
       {ready && (
         <>
-          <div className="kpis k5">
+          <div className="kpis tiles4 ak">
             <StatCard value={summary?.visits.total ?? NA} label="Visits today" icon="users" onClick={() => navigate('/reports')} />
             <StatCard value={byStatus ? countOf(byStatus, 'Waiting', 'CheckedIn') : NA} label="Waiting for consultation" icon="clock" tone="g" />
             <StatCard value={byStatus ? countOf(byStatus, 'Prescribed') : NA} label="Awaiting payment" icon="banknote" />
-            <StatCard value={summary ? vnd(summary.revenue.total) : NA} label="Today's revenue" icon="wallet" />
-            <StatCard value={summary?.visits.red_flags ?? NA} label="Red-flag referrals" icon="siren" tone="r" alert={summary?.visits.red_flags > 0} />
+            <StatCard value={summary?.visits.red_flags ?? NA} label="Red-flag referrals" icon="ambulance" tone="r" alert={summary?.visits.red_flags > 0} />
           </div>
 
-          <div className="dash-grid">
+          <div className="grid-2">
             <div className="card">
-              <div className="card-title">
-                Needs attention <span className="cnt">{alerts.length}</span>
+              <div className="card-h">
+                <h3>Needs attention</h3>
+                {alerts.length > 0 && <span className="plain">{alerts.length}</span>}
               </div>
-              {alerts.length === 0 && <p className="dash-empty">Nothing needs your attention right now.</p>}
-              {alerts.map((a, i) => (
-                <button className="alert-row" key={i} onClick={() => onNavigate(a.to)}>
-                  <span className={'alert-ic ' + a.level}>
-                    <Icon name={a.level === 'critical' ? 'ban' : 'alert'} />
-                  </span>
-                  <span className="alert-txt">
-                    <b>{a.title}</b>
-                    <span>{a.note}</span>
-                  </span>
-                  <span className={'badge ' + (a.level === 'critical' ? 'low' : 'warn')}>{a.tag}</span>
-                  <Icon name="chevronRight" />
-                </button>
-              ))}
-            </div>
-
-            <div className="card">
-              <div className="card-title">
-                System status
-                <span className="dash-link" onClick={() => onNavigate('settings', { tab: 'connection' })}>
-                  Settings <Icon name="chevronRight" />
-                </span>
-              </div>
-              {!health && <p className="dash-empty">Checking connection…</p>}
-              {health?.services.map((s) => (
-                <div className="status-row" key={s.key}>
-                  <span className="alert-txt">
-                    <b>{s.name}</b>
-                    <span>{s.detail}</span>
-                  </span>
-                  <span className={'badge ' + (s.ok ? 'ok' : s.ok === null ? 'muted' : 'low')}>{s.state}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="dash-grid">
-            <div className="card dash-click" onClick={() => navigate('/reports')} title="Open Reports">
-              <div className="card-title">
-                Revenue — last 7 days
-                <span className="dash-link">
-                  View reports <Icon name="chevronRight" />
-                </span>
-              </div>
-              {week ? <RevenueChart days={fillDays(week.revenue.by_day, days7)} /> : <p className="ai-soft">Not available — could not load the report.</p>}
-            </div>
-
-            <div className="dash-stack">
-              <div className="card">
-                <div className="card-title">AI decision support</div>
-                {ai ? (
-                  <>
-                    <div className="ai-metric">
-                      <span className="val">{percent(ai.decisions.acceptance_rate)}</span>
-                      <span>of AI suggestions matched the doctor's confirmed diagnosis</span>
+              <div className="card-b">
+                {alerts.length === 0 ? (
+                  <div className="empty">
+                    <div className="ill">
+                      <Icon name="circle-check-big" />
                     </div>
-                    <div className="bar-track" style={{ flex: 'none', margin: '10px 0 12px' }}>
-                      <div className="bar-fill" style={{ width: percent(ai.decisions.acceptance_rate ?? 0) }} />
-                    </div>
-                    <div className="pref-row inline">
-                      <span>AI assessments today</span>
-                      <b>{ai.assessments.total}</b>
-                    </div>
-                    <div className="pref-row inline">
-                      <span>Rule-only results (model unavailable)</span>
-                      <b>{ai.assessments.rule_only}</b>
-                    </div>
-                  </>
+                    <b>Nothing needs your attention right now.</b>
+                  </div>
                 ) : (
-                  <p className="ai-soft">Not available — could not load the report.</p>
+                  <div className="rows">
+                    {alerts.map((a, i) => (
+                      <div className="r" key={i}>
+                        <div className={'ico ' + (a.level === 'critical' ? 'd' : a.to === 'inventory' ? 'w' : 'n')}>
+                          <Icon name={a.level === 'critical' && a.to === 'inventory' ? 'package-x' : a.tag === 'Near expiry' ? 'calendar-clock' : ALERT_ICON[a.to] ?? 'triangle-alert'} />
+                        </div>
+                        <div className="t">
+                          <b>{translate(a.title)}</b>
+                          <span>{translate(a.note)}</span>
+                        </div>
+                        <button className="btn btn-ghost btn-sm" onClick={() => onNavigate(a.to)}>
+                          {translate('Open →')}
+                        </button>
+                      </div>
+                    ))}
+                  </div>
                 )}
-                <button className="btn btn-ghost btn-sm" style={{ marginTop: 10 }} onClick={() => onNavigate('ai')}>
-                  Open AI configuration
+              </div>
+            </div>
+
+            <div className="card">
+              <div className="card-h">
+                <h3>System status</h3>
+                <button className="btn btn-ghost btn-sm" onClick={() => onNavigate('settings', { tab: 'connection' })}>
+                  {translate('Settings')}
                 </button>
               </div>
-
-              <div className="card">
-                <div className="card-title">Shortcuts</div>
-                <div className="shortcut-grid">
-                  <button className="btn btn-ghost" onClick={() => onNavigate('staff')}>
-                    <Icon name="users" /> Create account
-                  </button>
-                  <button className="btn btn-ghost" onClick={() => onNavigate('inventory')}>
-                    <Icon name="box" /> Stock in
-                  </button>
-                  <button className="btn btn-ghost" onClick={() => navigate('/reports')}>
-                    <Icon name="chart" /> View reports
-                  </button>
+              <div className="card-b">
+                {!health && <p className="muted small">{translate('Checking connection…')}</p>}
+                <div className="rows">
+                  {health?.services.map((s) => (
+                    <div className="r" key={s.key}>
+                      <div className="ico n">
+                        <Icon name={s.key === 'ai' || s.key === 'llm' ? 'cpu' : s.key === 'db' ? 'database' : 'server'} />
+                      </div>
+                      <div className="t">
+                        <b>{s.name}</b>
+                        <span>{s.detail}</span>
+                      </div>
+                      {s.ok ? <span className="plain">{s.state}</span> : <span className={'badge ' + (s.ok === null ? 'b-neutral' : 'b-danger')}>{s.state}</span>}
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="card">
-            <div className="card-title">Recent activity</div>
-            <ServerActivity items={server.recent} onOpen={() => onNavigate('history')} />
-            <div style={{ textAlign: 'right', marginTop: 10 }}>
-              <button className="btn btn-ghost btn-sm" onClick={() => onNavigate('history')}>
-                View full history →
-              </button>
+          <div className="grid-2">
+            <div className="card">
+              <div className="card-h">
+                <h3>Revenue — last 7 days</h3>
+                <button className="btn btn-ghost btn-sm" onClick={() => navigate('/reports')}>
+                  {translate('View reports')}
+                </button>
+              </div>
+              <div className="card-b">
+                {week ? <LineChart points={fillDays(week.revenue.by_day, days7).map((x) => ({ label: x.day, value: x.amt }))} fmt={vnd} height={190} /> : <p className="muted small">{translate('Not available — could not load the report.')}</p>}
+              </div>
+            </div>
+
+            <div className="card">
+              <div className="card-h">
+                <h3>AI decision support</h3>
+                <button className="btn btn-ghost btn-sm" onClick={() => onNavigate('ai')}>
+                  {translate('Open AI configuration')}
+                </button>
+              </div>
+              <div className="card-b">
+                {ai ? (
+                  <div className="rows">
+                    <div className="r">
+                      <div className="t">
+                        <span>{translate('AI assessments today')}</span>
+                        <b style={{ fontSize: 'var(--fs-lg)' }}>{ai.assessments.total}</b>
+                      </div>
+                    </div>
+                    <div className="r">
+                      <div className="t">
+                        <span>{translate('Rule-only results (model unavailable)')}</span>
+                        <b style={{ fontSize: 'var(--fs-lg)' }}>{ai.assessments.rule_only}</b>
+                      </div>
+                    </div>
+                    <div className="r">
+                      <div className="t">
+                        <span>{translate("of AI suggestions matched the doctor's confirmed diagnosis")}</span>
+                        <b style={{ fontSize: 'var(--fs-lg)' }}>{percent(ai.decisions.acceptance_rate)}</b>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="muted small">{translate('Not available — could not load the report.')}</p>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <div className="grid-2">
+            <div className="card">
+              <div className="card-h">
+                <h3>Recent activity</h3>
+                <button className="btn btn-ghost btn-sm" onClick={() => onNavigate('history')}>
+                  {translate('View full history →')}
+                </button>
+              </div>
+              <div className="card-b">
+                <ServerActivity items={server.recent} onOpen={() => onNavigate('history')} />
+              </div>
+            </div>
+            <div className="card">
+              <div className="card-h">
+                <h3>Shortcuts</h3>
+              </div>
+              <div className="card-b quick q2s">
+                {[
+                  ['user-plus', 'Create account', 'Receptionist, doctor or administrator', () => onNavigate('staff')],
+                  ['package-plus', 'Stock in', 'Add a new drug batch', () => onNavigate('inventory')],
+                  ['library', 'Catalog management', 'Drugs, services, lab tests', () => onNavigate('catalog')],
+                  ['brain', 'AI configuration', 'Rules and thresholds', () => onNavigate('ai')]
+                ].map(([icon, t, sub, run]) => (
+                  <button key={t} className="qa qv" onClick={run}>
+                    <div className="ico p">
+                      <Icon name={icon} />
+                    </div>
+                    <div>
+                      <b>{translate(t)}</b>
+                      <span>{translate(sub)}</span>
+                    </div>
+                    <Icon name="arrow-up-right" />
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         </>
       )}
-    </div>
+    </>
   )
 }

@@ -19,12 +19,6 @@
 /* ---- Màn khám: cột hàng chờ theo mẫu (nhóm xổ xuống, chữ hoa mảnh, mũi tên ›) ---- */
 
 /* ---- Trang chủ quản trị: 5 ô, biểu đồ doanh thu dạng đường ---- */
-.kpis.k5{grid-template-columns:repeat(5,minmax(0,1fr));}
-.kpis .stat-card.tile.rt{min-height:126px;padding:18px 20px;}
-.kpis .stat-card .tl{font-size:18px;}
-.kpis .stat-card .rt-n{font-size:28px;}
-div.stat-card.tile.rt{cursor:default;}
-div.stat-card.tile.rt:hover{transform:none;box-shadow:var(--shadow);border-color:var(--border);}
 .lc-h{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:12px;}
 .lc-h b{font-size:26px;font-weight:700;}
 .lc-d{display:inline-flex;align-items:center;gap:4px;font-weight:600;font-size:14px;}
@@ -45,6 +39,5 @@ div.stat-card.tile.rt:hover{transform:none;box-shadow:var(--shadow);border-color
 .lc-x span{flex:1;text-align:center;}
 .lc-x span:first-child{text-align:left;}
 .lc-x span:last-child{text-align:right;}
-@media (max-width:1500px){.kpis.k5{grid-template-columns:repeat(3,minmax(0,1fr));}}
 
 /* ---- Trang chủ lấp đầy màn hình: hai thẻ dưới kéo dài tới đáy, ô và chữ to hơn ---- */
