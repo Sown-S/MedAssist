@@ -29,7 +29,6 @@ export const VI = {
   'Control panel': 'Bảng điều khiển',
   'Total awaiting payment': 'Tổng chờ thu',
   'visits today': 'lượt khám hôm nay',
-  'Drugs low or out of stock': 'Thuốc sắp hết / đã hết',
   'compared with the day before': 'so với hôm trước',
   'Finalize the visit': 'Hoàn tất khám',
   'Close the dialog': 'Đóng hộp thoại',
@@ -1975,6 +1974,9 @@ export const VI = {
   'Signs': "Dấu hiệu",
   'Suggested from the description — confirm each symptom before use': "Đề xuất từ lời kể — xác nhận từng triệu chứng trước khi dùng",
   'Choose a day': "Chọn ngày",
+  'Go to consultation room': "Vào phòng khám",
+  'waited': "đã chờ",
+  'Stock, expiry dates and price of each drug': "Tồn kho, hạn dùng và giá của từng thuốc",
 }
 
 export const PATTERNS = [

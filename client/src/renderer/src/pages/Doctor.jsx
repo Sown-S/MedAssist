@@ -13,7 +13,6 @@ import ConsultView from './doctor/ConsultView'
 import DrugCabinetView from './doctor/DrugCabinetView'
 import PrescriptionsLive from './reception/PrescriptionsLive'
 import PatientLookup from './doctor/PatientLookup'
-import HomeGreeting from '../components/HomeGreeting'
 import ClusterAlerts from '../components/ClusterAlerts'
 
 const VIEWS = {
@@ -53,24 +52,7 @@ export default function Doctor() {
   return (
     <div className="content view">
       <div className={view === 'home' ? 'rhome' : 'vflow'}>
-      {view === 'home' ? (
-        <HomeGreeting
-          crumb="Doctor"
-          name={user.name}
-          extra={
-            user.room && (
-              <span className="gpill">
-                <Icon name="stethoscope" />
-                <span>{user.room}</span>
-              </span>
-            )
-          }
-        >
-          <button className="btn btn-ghost" onClick={() => go('consult')}>
-            <Icon name="stethoscope" /> Consultation room
-          </button>
-        </HomeGreeting>
-      ) : (
+      {view !== 'home' &&
         view !== 'consult' && (
           <div className="pg-h">
             <div>
@@ -78,8 +60,7 @@ export default function Doctor() {
               <p>{VIEWS[view].sub}</p>
             </div>
           </div>
-        )
-      )}
+        )}
 
       {/* Popup cạnh chuông: ca cờ đỏ chưa bác sĩ nào xem (mới nhất, kèm số ca còn lại) và cảnh báo cụm ca ở Trang chủ. */}
       <BellPortal>

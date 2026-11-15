@@ -1,13 +1,14 @@
 import { useState } from 'react'
 import Icon from '../../components/Icon'
+import HomeGreeting from '../../components/HomeGreeting'
 import { useAuth } from '../../context/AuthContext'
 import { translate } from '../../i18n'
 import { useQueue, waitingOrder, minutesSince, isMine, inRoom, atLabs, ST, readyOrder } from '../../api/queueStore'
 import { usePrescriptions } from '../../api/prescriptionApi'
 import { useInventory, stockOf } from '../../api/inventoryStore'
-import { useNow, periodRange, dmy, hhmm } from '../reception/shared'
+import { useNow, periodRange, dmy, hhmm, PAY_STATUS } from '../reception/shared'
 import { useTakePatient, pastVisitsOf, InviteBar } from './doctorShared'
-import { WaitingModal, LabListModal, no, waitTone } from './DoctorHomeModals'
+import { WaitingModal, LabListModal, no } from './DoctorHomeModals'
 import { ymd } from '../../utils/format'
 
 export default function DoctorHome({ go }) {
@@ -43,126 +44,182 @@ export default function DoctorHome({ go }) {
       hint: ready[0] ? translate('Next') + ': ' + no(ready[0].ticket) + ' — ' + ready[0].name : waiting.length ? translate('Nobody checked in yet') : translate('No one is waiting.'),
       run: () => setWaitOpen('')
     },
-    { icon: 'door', title: 'In my room', value: mine.length, hint: mine[0] ? mine[0].name : translate('No patient in your room'), run: () => go('consult', mine[0]?.id) },
-    { icon: 'flask', title: 'Lab tests', value: labs.length, hint: `${labs.length} ${translate('patients out for lab tests')}`, run: () => setLabOpen(true) },
+    { icon: 'door-open', title: 'In my room', value: mine.length, hint: mine[0] ? mine[0].name : translate('No patient in your room'), run: () => go('consult', mine[0]?.id) },
+    { icon: 'flask-conical', title: 'Lab tests', value: labs.length, hint: `${labs.length} ${translate('patients out for lab tests')}`, run: () => setLabOpen(true) },
     {
-      icon: 'fileText',
+      icon: 'file-text',
       title: 'My prescriptions',
       value: rxWeek,
       hint: `${rxToday.length} ${translate('prescriptions today')} · ${rxWeek} ${translate('prescriptions this week')}`,
       run: () => go('prescriptions')
     },
-    { icon: 'pill', title: 'Drug cabinet', value: inv.drugs.filter((d) => d.active && d.kind === 'drug').length, run: () => go('drugs') },
     {
-      tone: lowStock ? 'r' : '',
-      icon: 'package',
-      title: 'Drugs low or out of stock',
-      value: lowStock,
+      icon: 'pill',
+      title: 'Drug cabinet',
+      value: inv.drugs.filter((d) => d.active && d.kind === 'drug').length,
       hint: lowStock ? `${lowStock} ${translate('drugs low or out of stock')}` : translate('All drugs in stock'),
-      run: () => go('drugs'),
-      alert: lowStock > 0
-    }
+      run: () => go('drugs')
+    },
+    { icon: 'stethoscope', title: 'Consultation room', value: user.room ? user.room.replace(/\D+/g, '') || user.room : '—', hint: user.room || translate('No room assigned — ask an administrator'), run: () => go('consult') }
   ]
   const actions = [
-    {
-      icon: 'megaphone',
-      title: 'Call next patient',
-      sub: mine.length ? 'Finish or send the current patient for lab tests first' : 'Priority first, then by number',
-      run: next
-    },
     { icon: 'stethoscope', title: 'Consultation room', sub: 'Examine, diagnose and prescribe', run: () => go('consult') },
-    { icon: 'fileText', title: 'My prescriptions', sub: 'By day, week or month', run: () => go('prescriptions') },
-    { icon: 'flask', title: 'Lab tests', sub: `${labs.length} ${translate('patients out for lab tests')}`, run: () => setLabOpen(true) }
+    { icon: 'file-text', title: 'My prescriptions', sub: 'By day, week or month', run: () => go('prescriptions') },
+    { icon: 'pill', title: 'Drug cabinet', sub: 'Stock, expiry dates and price of each drug', run: () => go('drugs') },
+    { icon: 'flask-conical', title: 'Lab tests', sub: `${labs.length} ${translate('patients out for lab tests')}`, run: () => setLabOpen(true) }
   ]
+  const first = waiting[0]
+  const callNext = (
+    <button className="btn btn-primary" onClick={next} disabled={!waiting.length} title={translate(mine.length ? 'Finish or send the current patient for lab tests first' : 'Priority first, then by number')}>
+      <Icon name="megaphone" />
+      {translate('Call next patient')}
+      <kbd>Alt+N</kbd>
+    </button>
+  )
 
   return (
     <>
-      <div className="kpis k3 dk">
+      <HomeGreeting
+        crumb="Doctor"
+        name={user.name}
+        extra={
+          user.room && (
+            <span className="gpill">
+              <Icon name="stethoscope" />
+              <span>{user.room}</span>
+            </span>
+          )
+        }
+      >
+        <button className="btn btn-outline" onClick={() => go('consult')}>
+          <Icon name="stethoscope" />
+          {translate('Go to consultation room')}
+        </button>
+        {callNext}
+      </HomeGreeting>
+
+      <div className="grid-3 dk">
         {tiles.map((c) => (
           <button key={c.title} className={'tile rt ' + (c.tone || 'b') + (c.alert ? ' alert' : '')} onClick={c.run} title={c.hint}>
             <span className="tl">{translate(c.title)}</span>
-            <span className="rt-b">
-              <b className="rt-n val">{c.value}</b>
+            <div className="rt-b">
+              <b className="num rt-n val">{c.value}</b>
               <span className="chip">
                 <Icon name={c.icon} />
               </span>
-            </span>
+            </div>
           </button>
         ))}
       </div>
 
       <div className="card">
-        <div className="card-title">Control panel</div>
-        <div className="quick q4 qrow">
+        <div className="card-h">
+          <h3>Control panel</h3>
+        </div>
+        <div className="card-b quick q4">
           {actions.map((a) => (
             <button key={a.title} className="qa qv" onClick={a.run}>
-              <span className="ico">
+              <div className="ico p">
                 <Icon name={a.icon} />
-              </span>
-              <span>
+              </div>
+              <div>
                 <b>{translate(a.title)}</b>
-                <small>{translate(a.sub)}</small>
-              </span>
-              <Icon name="arrowUpRight" className="qa-go" />
+                <span>{translate(a.sub)}</span>
+              </div>
+              <Icon name="arrow-up-right" />
             </button>
           ))}
         </div>
       </div>
 
-      <div className="dash-bottom">
+      <div className="grid-dk">
         <div className="card">
-          <div className="card-title">
-            <Icon name="users" /> Next in line <span className="cnt">{waiting.length}</span>
+          <div className="card-h">
+            <h3>Next in line</h3>
+            <span className="plain">{translate('Priority first, then by number')}</span>
           </div>
-          {waiting.slice(0, 6).map((v) => {
-            const n = minutesSince(v.statusAt, now)
-            return (
-              <div className="pay-row clickable" key={v.id} onClick={() => setWaitOpen(v.id)} title={translate('View the patient summary')}>
-                <span className="num t">{no(v.ticket)}</span>
-                <span className="nm">
-                  <b>{v.name}</b>
-                  <small>{translate(v.reason)}</small>
-                </span>
-                {v.triage === 'emergency' && <span className="badge b-danger">{translate('Emergency')}</span>}
-                {v.priority && v.triage !== 'emergency' && (
-                  <span className="flag-priority">
-                    <Icon name="zap" /> Priority
+          {first ? (
+            <div className="next-card">
+              <span className="no num">{no(first.ticket)}</span>
+              <div style={{ flex: 1, minWidth: 0, cursor: 'pointer' }} onClick={() => setWaitOpen(first.id)} title={translate('View the patient summary')}>
+                <b style={{ fontSize: 'var(--fs-md)' }}>{first.name}</b>{' '}
+                {first.triage === 'emergency' ? <span className="badge b-danger">{translate('Emergency')}</span> : first.priority && <span className="badge b-warning">{translate('Priority')}</span>}
+                {first.status === ST.WAITING && <span className="badge b-neutral">{translate('Not checked in')}</span>}
+                <div className="muted small">
+                  {[first.age !== '' ? first.age + ' ' + translate('yrs') : null, translate(first.gender), translate(first.reason)].filter(Boolean).join(' · ')} · {translate('waited')} {minutesSince(first.statusAt, now)} {translate('min')}
+                </div>
+                {first.allergies && (
+                  <span className="allergy">
+                    <Icon name="triangle-alert" />
+                    {translate('Allergy')} {translate(first.allergies)}
                   </span>
                 )}
-                {v.allergies && <span className="allergy-chip">Allergy</span>}
-                {v.status === ST.WAITING && <span className="badge b-neutral">{translate('Not checked in')}</span>}
-                <span className={'p-wait ' + waitTone(n)}>{n} min</span>
               </div>
-            )
-          })}
-          {!waiting.length && <p className="ai-soft" style={{ fontSize: 14 }}>No one is waiting.</p>}
-          <InviteBar onStart={take} />
-          {/* Server mời cả người chưa check-in (lễ tân check-in khi họ đến quầy). */}
-          <button className="btn btn-primary btn-sm" style={{ marginTop: 10 }} onClick={next} disabled={!waiting.length}>
-            <Icon name="megaphone" /> Call next patient
-          </button>
+              {callNext}
+            </div>
+          ) : (
+            <div className="empty">
+              <div className="ill">
+                <Icon name="coffee" />
+              </div>
+              <b>No one is waiting.</b>
+              <span>Patients appear here as soon as reception checks them in.</span>
+            </div>
+          )}
+          <div style={{ padding: '0 20px 16px' }}>
+            <InviteBar onStart={take} />
+          </div>
         </div>
 
         <div className="card">
-          <div className="card-title">
-            <Icon name="clipboard" /> My recent prescriptions <span className="cnt">{recent.length}</span>
+          <div className="card-h">
+            <h3>My recent prescriptions</h3>
+            <button className="btn btn-ghost btn-sm" onClick={() => go('prescriptions')}>
+              {translate('All prescriptions →')}
+            </button>
           </div>
-          {recent.slice(0, 6).map((r) => (
-            <div className="pay-row clickable" key={r.id} onClick={() => go('prescriptions')} title={translate('View & review the prescription')}>
-              <span className="num t">{r.day === today ? hhmm(r.rxAt) : dmy(r.rxAt).slice(0, 5)}</span>
-              <span className="nm">
-                <b>{r.name}</b>
-                <small>{r.diagnosis || r.rx.map((x) => x.name).join(', ')}</small>
-              </span>
-              <span className="ai-soft" style={{ fontSize: 12.5 }}>
-                {r.rx.length} {translate(r.rx.length === 1 ? 'drug' : 'drugs')}
-              </span>
+          <div className="card-b">
+            <div className="tbl-wrap">
+              {recent.length ? (
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Patient</th>
+                      <th>Diagnosis</th>
+                      <th>Medicines</th>
+                      <th>Time</th>
+                      <th>Payment</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {recent.slice(0, 6).map((r) => {
+                      const st = PAY_STATUS[r.pay]
+                      return (
+                        <tr key={r.id} className="clickable" onClick={() => go('prescriptions')} title={translate('View & review the prescription')}>
+                          <td>
+                            <b style={{ fontWeight: 500 }}>{r.name}</b>
+                          </td>
+                          <td className="muted">{r.diagnosis || '—'}</td>
+                          <td>
+                            {r.rx.length} {translate(r.rx.length === 1 ? 'drug' : 'drugs')}
+                          </td>
+                          <td className="num muted">{r.day === today ? hhmm(r.rxAt) : dmy(r.rxAt).slice(0, 5)}</td>
+                          <td>{st ? st.cls ? <span className={'badge ' + st.cls}>{translate(st.label)}</span> : <span className="plain">{translate(st.label)}</span> : '—'}</td>
+                        </tr>
+                      )
+                    })}
+                  </tbody>
+                </table>
+              ) : (
+                <div className="empty">
+                  <div className="ill">
+                    <Icon name="file-text" />
+                  </div>
+                  <b>You have not finalized any prescriptions yet.</b>
+                </div>
+              )}
             </div>
-          ))}
-          {!recent.length && <p className="ai-soft" style={{ fontSize: 14 }}>You have not finalized any prescriptions yet.</p>}
-          <button className="btn btn-ghost btn-sm" style={{ marginTop: 10 }} onClick={() => go('prescriptions')}>
-            All prescriptions →
-          </button>
+          </div>
         </div>
       </div>
 

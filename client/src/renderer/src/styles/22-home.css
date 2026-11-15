@@ -15,11 +15,6 @@
 /* Màn vừa (cửa sổ 1360): 2 cột */
 
 /* Trang chủ bác sĩ: 6 ô xếp 3 cột, bảng điều khiển dạng hàng ngang */
-.kpis.k3{grid-template-columns:repeat(3,minmax(0,1fr));}
-.kpis.dk .tile.rt{min-height:118px;padding:16px 20px;gap:6px;}
-.kpis.dk .tile.rt .chip{width:40px;height:40px;}
-.kpis.dk .tile.rt .rt-n{font-size:30px;}
-@media (max-width:1280px){.kpis.k3{grid-template-columns:repeat(2,minmax(0,1fr));}}
 
 /* ---- Màn khám: cột hàng chờ theo mẫu (nhóm xổ xuống, chữ hoa mảnh, mũi tên ›) ---- */
 .dq{top:84px;max-height:calc(100vh - 110px);padding:14px 12px 10px;}
