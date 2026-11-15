@@ -23,7 +23,7 @@ export default function StaffTable({ rows, me, q, setQ, roleFilter, setRoleFilte
           <input className="input" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search name, username, staff code, phone…" />
         </div>
         <div className="ai-toolbar-right">
-          <select className="input" value={roleFilter} onChange={(e) => setRoleFilter(e.target.value)}>
+          <select className="select" value={roleFilter} onChange={(e) => setRoleFilter(e.target.value)}>
             <option value="all">All roles</option>
             {Object.entries(ROLES).map(([k, r]) => (
               <option key={k} value={k}>
@@ -96,7 +96,7 @@ export default function StaffTable({ rows, me, q, setQ, roleFilter, setRoleFilte
                       <td className="num">{a.phone || '—'}</td>
                       <td>
                         <div className="staff-badges">
-                          {!a.active ? <span className="badge b-neutral">Disabled</span> : a.locked ? <span className="badge b-danger" title={translate('Unlocks by itself at') + ' ' + fmtDateTime(a.lockedUntil)}>Locked</span> : <span className="badge b-success">Active</span>}
+                          {!a.active ? <span className="badge b-neutral">Disabled</span> : a.locked ? <span className="badge b-danger" title={translate('Unlocks by itself at') + ' ' + fmtDateTime(a.lockedUntil)}>Locked</span> : <span className="plain">Active</span>}
                           {a.mustChange && <span className="badge b-warning">Password change pending</span>}
                           {a.active && !a.locked && a.failedAttempts > 0 && (
                             <span className="ai-small sp-warn">

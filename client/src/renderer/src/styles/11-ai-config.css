@@ -14,8 +14,6 @@
 .ai-sum-card:hover{background:var(--surface-hover);}
 .ai-count{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;background:rgba(16,24,40,0.066);padding:1px 7px;border-radius:20px;}
 .ai-count.alert{background:var(--warn);color:#fff;}
-.ai-toolbar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px;}
-.ai-toolbar-right{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
 .ai-search{display:flex;align-items:center;gap:7px;background:var(--field-bg);border:1px solid var(--border);border-radius:9px;padding:0 10px;color:var(--ink-soft);min-width:240px;}
 .ai-search input{flex:1;border:none;background:transparent;color:var(--ink);padding:8px 0;font:14px var(--font);outline:none;}
 .ai-search:focus-within{border-color:var(--accent);}

@@ -11,18 +11,18 @@ export default function InventoryPage({ onNavigate }) {
   const { user } = useAuth()
 
   return (
-    <div>
-      <div className="breadcrumb">
-        Inventory / <b>Stock &amp; expiry</b>
-      </div>
+    <div className="vflow">
       <div className="pg-h">
         <div>
           <h2>Stock &amp; expiry</h2>
           <p>Stock by batch, expiry dates and every stock movement. Drug master data lives in Catalog management › Drugs &amp; supplies.</p>
         </div>
-        <button className="btn btn-ghost btn-sm" onClick={() => onNavigate('drugs')}>
-          <Icon name="folder" /> <span>Drug catalog</span>
-        </button>
+        <div className="act">
+          <button className="btn btn-outline" onClick={() => onNavigate('drugs')}>
+            <Icon name="library" />
+            <span>Drug catalog</span>
+          </button>
+        </div>
       </div>
 
       <div className="card">
@@ -34,8 +34,10 @@ export default function InventoryPage({ onNavigate }) {
             Stock movements
           </button>
         </div>
-        {tab === 'stock' && <StockTab inv={inv} user={user} onNavigate={onNavigate} />}
-        {tab === 'moves' && <MovesTab inv={inv} />}
+        <div className="card-b">
+          {tab === 'stock' && <StockTab inv={inv} user={user} onNavigate={onNavigate} />}
+          {tab === 'moves' && <MovesTab inv={inv} />}
+        </div>
       </div>
     </div>
   )

@@ -60,8 +60,9 @@ export default function CatalogPage({ onNavigate }) {
     exportCatalog(key, cats[key])
   }
 
+  const CAT_ICON = { '@drugs': 'pill', services: 'clipboard-list', packages: 'package', labs: 'flask-conical', icd10: 'book-open', general: 'list' }
   return (
-    <div>
+    <div className="vflow">
       <div className="pg-h">
         <div>
           <h2>Catalog management</h2>
@@ -69,95 +70,113 @@ export default function CatalogPage({ onNavigate }) {
         </div>
       </div>
 
-      <div className="card cat-search-card">
-        <div className="search cat-search">
-          <Icon name="search" />
-          <input className="input" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search a code or name in every catalog (e.g. J03, Amoxicillin, Đà Nẵng)…" />
-        </div>
-        {q.trim().length >= 2 && (
-          <div className="cat-results">
-            {results.length === 0 ? (
-              <p className="ai-soft">No results.</p>
-            ) : (
-              results.map((r, i) => (
-                <div
-                  key={i}
-                  className={'cat-result' + (r.active ? '' : ' ai-dim')}
-                  onClick={() => onNavigate(r.page, r.page.startsWith('cat-') ? { q: r.code, openId: r.id } : { q: r.name })}
-                >
-                  <span className="badge">{info(r.key).title}</span> <b className="num">{r.code}</b> <span>{r.name}</span>
-                  {!r.active && <span className="badge b-neutral">Discontinued</span>}
-                </div>
-              ))
-            )}
+      <div className="card">
+        <div className="card-b">
+          <div className="search" style={{ width: '100%', marginBottom: 14 }}>
+            <Icon name="search" />
+            <input className="input" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search a code or name in every catalog (e.g. J03, Amoxicillin, Đà Nẵng)…" />
           </div>
-        )}
-      </div>
+          {q.trim().length >= 2 && (
+            <div className="rows" style={{ marginBottom: 14 }}>
+              {results.length === 0 ? (
+                <p className="muted small">{translate('No results.')}</p>
+              ) : (
+                results.map((r, i) => (
+                  <div
+                    key={i}
+                    className={'r clickable' + (r.active ? '' : ' dim')}
+                    style={{ cursor: 'pointer' }}
+                    onClick={() => onNavigate(r.page, r.page.startsWith('cat-') ? { q: r.code, openId: r.id } : { q: r.name })}
+                  >
+                    <span className="tag">{info(r.key).title}</span>
+                    <div className="t">
+                      <b className="num">{r.code}</b> <span>{r.name}</span>
+                    </div>
+                    {!r.active && <span className="badge b-neutral">{translate('Discontinued')}</span>}
+                  </div>
+                ))
+              )}
+            </div>
+          )}
 
-      {ORDER.map(({ group, keys }) => (
-        <div className="card" style={{ marginTop: 14 }} key={group}>
-          <div className="card-title">{group}</div>
-          <div className="tbl-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Catalog</th>
-                  <th className="r num">Records</th>
-                  <th>Last updated</th>
-                  <th>Status</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {keys.map((key) => {
-                  const x = info(key)
-                  const active = x.list.filter((r) => r.active).length
-                  const issues = review(key, cats, inv)
-                  return (
-                    <tr key={key} className="row-click" onClick={() => onNavigate(x.page)}>
-                      <td>
-                        <b>{x.title}</b>
-                        <div className="ai-soft ai-small">{x.desc}</div>
-                      </td>
-                      <td className="r num">
-                        <b className="num">{active}</b>
-                        {active !== x.list.length && (
-                          <div className="ai-soft ai-small">
-                            / <span className="num">{x.list.length}</span> <span>total</span>
-                          </div>
-                        )}
-                      </td>
-                      <td className="num ai-small">{fmtDateTime(x.last)}</td>
-                      <td>
-                        {issues.length ? (
-                          <>
-                            <span className="badge b-warning">Needs review</span>
-                            {issues.map((t) => (
-                              <div key={t} className="ai-small sp-warn cat-issue">
-                                {t}
-                              </div>
-                            ))}
-                          </>
-                        ) : (
-                          <span className="badge b-success">In use</span>
-                        )}
-                      </td>
-                      <td className="ai-actions" onClick={(e) => e.stopPropagation()}>
-                        <button className="btn btn-ghost btn-sm" title="Export" onClick={() => exportRow(key)}>
-                          <Icon name="download" />
-                        </button>
-                        <button className="btn btn-ghost btn-sm" title="Open" onClick={() => onNavigate(x.page)}>
-                          <Icon name="chevronRight" />
-                        </button>
-                      </td>
+          {ORDER.map(({ group, keys }) => (
+            <div key={group}>
+              {ORDER.length > 1 && <div className="sec-t">{translate(group)}</div>}
+              <div className="tbl-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Catalog</th>
+                      <th className="r">Records</th>
+                      <th>Last updated</th>
+                      <th>Status</th>
+                      <th className="r">Actions</th>
                     </tr>
-                  )
-                })}
-              </tbody>
-            </table>
-          </div>
+                  </thead>
+                  <tbody>
+                    {keys.map((key) => {
+                      const x = info(key)
+                      const active = x.list.filter((r) => r.active).length
+                      const issues = review(key, cats, inv)
+                      return (
+                        <tr key={key} className="clickable" onClick={() => onNavigate(x.page)}>
+                          <td>
+                            <div className="who-cell">
+                              <div className="ico n">
+                                <Icon name={CAT_ICON[key] ?? 'list'} />
+                              </div>
+                              <div style={{ minWidth: 0 }}>
+                                <b>{x.title}</b>
+                                <span className="clip" style={{ display: 'block', maxWidth: 420 }}>
+                                  {x.desc}
+                                </span>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="r num">
+                            {active.toLocaleString('vi-VN')}
+                            {active !== x.list.length && (
+                              <div className="muted small">
+                                / <span className="num">{x.list.length}</span> <span>total</span>
+                              </div>
+                            )}
+                          </td>
+                          <td className="num">{fmtDateTime(x.last)}</td>
+                          <td>
+                            {issues.length ? (
+                              <>
+                                <span className="badge b-warning">Needs review</span>
+                                {issues.map((t) => (
+                                  <div key={t} className="small" style={{ color: 'var(--warning)' }}>
+                                    {t}
+                                  </div>
+                                ))}
+                              </>
+                            ) : (
+                              <span className="plain">{translate('In use')}</span>
+                            )}
+                          </td>
+                          <td onClick={(e) => e.stopPropagation()}>
+                            <div className="acts">
+                              <button className="btn btn-ghost btn-sm" title={translate('Export')} onClick={() => exportRow(key)}>
+                                <Icon name="download" />
+                                {translate('Export')}
+                              </button>
+                              <button className="btn btn-outline btn-sm" onClick={() => onNavigate(x.page)}>
+                                {translate('Open')}
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      )
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          ))}
         </div>
-      ))}
+      </div>
     </div>
   )
 }

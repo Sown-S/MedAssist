@@ -64,3 +64,11 @@ tr.clickable{cursor:pointer}tr.clickable:hover td{background:var(--surface-2)}
 .sug{flex-wrap:wrap}.sug .acts{flex-basis:100%;justify-content:flex-start;padding-left:32px;gap:6px}.sug.on{border-color:var(--success);background:var(--success-soft)}
 .link-btn{border:0;background:none;padding:0;color:var(--primary-ink);font:inherit;cursor:pointer}
 .card.queue{padding:0}
+/* Thẻ chưa tách card-h/card-b: khoảng cách đúng như .card-b của bản mẫu; tiêu đề thẻ cũ (.card-title) như .card-h h3 */
+.card:not(:has(>.card-h)):not(:has(>.card-b)):not(.ch):not(.queue){padding:16px 20px 20px}
+.card-title{display:flex;align-items:center;gap:8px;font-size:var(--fs-md);font-weight:600;color:var(--ink);margin:0 0 12px}
+.card-title .cnt{font-size:13px;font-weight:600;background:var(--routine-soft);color:var(--ink-2);border-radius:999px;padding:0 8px;line-height:22px}
+/* Thanh lọc cũ (.ai-toolbar) như .toolbar của bản mẫu */
+.ai-toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+.ai-toolbar-right{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-left:auto}
+.toolbar select.input,.ai-toolbar select.input{width:auto;height:40px}

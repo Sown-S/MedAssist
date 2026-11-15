@@ -320,7 +320,6 @@ export const VI = {
   Unpaid: 'Chưa thanh toán',
 
   // ===== Phân quyền, nhân viên, cài đặt, roadmap =====
-  Roles: 'Danh sách vai trò',
   Page: 'Tên trang',
   View: 'Hiển thị',
   Add: 'Thêm',
@@ -334,7 +333,6 @@ export const VI = {
   'Account re-enabled': 'Đã kích hoạt lại tài khoản',
   'Create and manage Doctor, Receptionist and Administrator accounts. Only administrators can create accounts.':
     'Tạo và quản lý tài khoản Bác sĩ, Lễ tân, Quản trị viên. Chỉ Quản trị viên mới tạo được tài khoản.',
-  '+ New account': '+ Tạo tài khoản',
   You: 'Bạn',
   Disabled: 'Vô hiệu',
   'Password change pending': 'Chờ đổi mật khẩu',
@@ -924,14 +922,12 @@ export const VI = {
   Rooms: 'Phòng khám',
   'Consultation rooms and the lab room. Each consultation room has one doctor, assigned in Staff accounts.':
     'Các phòng khám và phòng xét nghiệm. Mỗi phòng khám có một bác sĩ, gán ở Tài khoản nhân viên.',
-  '+ Add room': '+ Thêm phòng',
   'Add room': 'Thêm phòng',
   // Lưới bắt lỗi giao diện (ErrorBoundary)
   'Something went wrong on this screen': 'Màn hình này vừa gặp lỗi',
   'Data already saved is not affected. Try again, or reload the app if it keeps happening.': 'Dữ liệu đã lưu không bị ảnh hưởng. Bấm Thử lại, hoặc tải lại ứng dụng nếu lỗi vẫn lặp lại.',
   'Reload the app': 'Tải lại ứng dụng',
   // Chuỗi còn thiếu (phát hiện bởi tests/i18n.test.js)
-  'Inventory /': 'Kho /',
   '+ Age': '+ Tuổi',
   '+ Group': '+ Nhóm',
   'Rename room': 'Đổi tên phòng',
@@ -1921,7 +1917,6 @@ export const VI = {
   'Master data shared by prescribing and invoices. Stock levels are in Inventory › Stock & expiry.': 'Dữ liệu gốc dùng chung cho kê đơn và hoá đơn. Số lượng tồn xem ở Kho › Tồn kho & hạn dùng.',
   'Stock is issued on a FEFO basis (first expired, first out). Expired batches are excluded from “On hand” and can no longer be prescribed or sold. Suggested reorder = threshold + 30 days of consumption − usable stock.': 'Xuất kho theo FEFO (hết hạn trước, xuất trước). Lô đã hết hạn không tính vào “Tồn kho” và không được kê hay bán nữa. Gợi ý đặt thêm = ngưỡng + lượng dùng 30 ngày − tồn dùng được.',
   'Stock by batch, expiry dates and every stock movement. Drug master data lives in Catalog management › Drugs & supplies.': 'Tồn theo lô, hạn dùng và mọi lần nhập xuất. Thông tin gốc của thuốc nằm ở Quản lý danh mục › Thuốc & vật tư.',
-  'Roles & permissions /': 'Phân quyền vai trò /',
   'Discard & leave': 'Bỏ thay đổi & rời trang',
   'Finalize & call next': 'Hoàn tất & mời người tiếp',
   'Save & print order': 'Lưu & in phiếu chỉ định',

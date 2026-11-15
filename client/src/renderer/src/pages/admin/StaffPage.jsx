@@ -3,6 +3,7 @@ import Modal from '../../components/Modal'
 import ReauthModal from '../../components/ReauthModal'
 import ChangePasswordModal from '../../components/ChangePasswordModal'
 import Icon from '../../components/Icon'
+import { translate } from '../../i18n'
 import { LoadingBlock, ErrorBlock } from '../../components/DataState'
 import { useToast } from '../../context/ToastContext'
 import { useAuth } from '../../context/AuthContext'
@@ -156,18 +157,18 @@ export default function StaffPage() {
   const meAccount = accounts?.find((a) => a.id === me.id)
 
   return (
-    <div>
-      <div className="breadcrumb">
-        Roles &amp; permissions / <b>Staff accounts</b>
-      </div>
+    <div className="vflow">
       <div className="pg-h">
         <div>
           <h2>Staff accounts</h2>
           <p>Create and manage Doctor, Receptionist and Administrator accounts. Only administrators can create accounts.</p>
         </div>
-        <button className="btn btn-primary" onClick={() => openCreate()}>
-          + New account
-        </button>
+        <div className="act">
+          <button className="btn btn-primary" onClick={() => openCreate()}>
+            <Icon name="user-plus" />
+            {translate('Create account')}
+          </button>
+        </div>
       </div>
 
       {!accounts && !error && <LoadingBlock />}

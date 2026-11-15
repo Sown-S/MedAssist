@@ -52,9 +52,10 @@ export default function RoomsPage({ onNavigate }) {
           <h2>Rooms</h2>
           <p>Consultation rooms and the lab room. Each consultation room has one doctor, assigned in Staff accounts.</p>
         </div>
-        <div style={{ display: 'flex', gap: 8 }}>
-          <button className="btn btn-ghost" onClick={() => onNavigate?.('staff')}>
-            <Icon name="lock" /> Staff accounts
+        <div className="act">
+          <button className="btn btn-outline" onClick={() => onNavigate?.('staff')}>
+            <Icon name="users" />
+            {translate('Staff accounts')}
           </button>
           <button
             className="btn btn-primary"
@@ -63,7 +64,8 @@ export default function RoomsPage({ onNavigate }) {
               setForm({ ...EMPTY })
             }}
           >
-            + Add room
+            <Icon name="plus" />
+            {translate('Add room')}
           </button>
         </div>
       </div>
@@ -114,9 +116,7 @@ export default function RoomsPage({ onNavigate }) {
       )}
 
       <div className="card">
-        <div className="card-title">
-          <Icon name="stethoscope" /> Rooms <span className="cnt">{rooms?.length ?? 0}</span>
-        </div>
+        <div className="card-b">
         <div className="tbl-wrap">
           <table>
             <thead>
@@ -146,27 +146,31 @@ export default function RoomsPage({ onNavigate }) {
                       <span className="sp-warn">No doctor</span>
                     )}
                   </td>
-                  <td>{r.active ? <span className="badge b-success">In use</span> : <span className="badge b-neutral">Not in use</span>}</td>
-                  <td className="ai-actions">
-                    <button
-                      className="btn btn-ghost btn-sm"
-                      onClick={() => {
-                        setFormErr('')
-                        setForm({ id: r.id, code: r.code, name: r.name, type: r.type })
-                      }}
-                    >
-                      Rename
-                    </button>
-                    <button className="btn btn-ghost btn-sm" onClick={() => toggle(r)}>
-                      {r.active ? 'Stop using' : 'Use again'}
-                    </button>
+                  <td>{r.active ? <span className="plain">{translate('In use')}</span> : <span className="badge b-neutral">{translate('Not in use')}</span>}</td>
+                  <td>
+                    <div className="acts">
+                      <button
+                        className="btn btn-ghost btn-sm"
+                        onClick={() => {
+                          setFormErr('')
+                          setForm({ id: r.id, code: r.code, name: r.name, type: r.type })
+                        }}
+                      >
+                        <Icon name="pencil" />
+                        {translate('Rename')}
+                      </button>
+                      <button className="btn btn-ghost btn-sm" onClick={() => toggle(r)}>
+                        {translate(r.active ? 'Stop using' : 'Use again')}
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-        {rooms && !rooms.length && <p className="ai-soft">No rooms yet.</p>}
+        {rooms && !rooms.length && <p className="muted small">No rooms yet.</p>}
+        </div>
       </div>
     </div>
   )

@@ -33,13 +33,6 @@
 .side-group.open .side-sub{max-height:900px;}
 .cat-crumb{cursor:pointer;text-decoration:underline dotted;}
 .cat-crumb:hover{color:var(--ink);}
-.cat-search-card{padding:14px 16px;}
-.cat-search{min-width:0;width:100%;}
-.cat-search input{font-size:15px;padding:10px 0;}
-.cat-results{margin-top:10px;max-height:320px;overflow:auto;display:flex;flex-direction:column;}
-.cat-result{display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:8px;cursor:pointer;font-size:13.5px;}
-.cat-result:hover{background:var(--surface-hover);}
-.cat-issue{margin-top:3px;}
 .cat-lines{display:flex;flex-direction:column;gap:6px;}
 .cat-line{display:flex;align-items:center;gap:8px;}
 .cat-line .ai-inline-input[type=number]{width:70px;}

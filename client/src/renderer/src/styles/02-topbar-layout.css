@@ -19,6 +19,4 @@
 .btn-ghost:hover{background:var(--surface-hover);color:var(--ink);}
 .btn-sm{padding:6px 12px;font-size:13px;}
 
-.card{background:var(--surface);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);border:1px solid var(--border);border-radius:var(--radius);padding:18px;}
-.card-title{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:700;margin:0 0 12px;color:var(--ink);}
-.card-title .cnt{font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;color:var(--ink-soft);background:var(--surface-alt);padding:3px 9px;border-radius:20px;margin-left:auto;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);}
