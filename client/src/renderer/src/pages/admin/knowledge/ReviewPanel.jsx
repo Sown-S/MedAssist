@@ -1,3 +1,4 @@
+import Icon from '../../../components/Icon'
 import { useEffect, useState } from 'react'
 import Modal, { ModalHeader } from '../../../components/Modal'
 import { useToast } from '../../../context/ToastContext'
@@ -40,40 +41,51 @@ export function ReviewPanel({ data, names, onChanged }) {
 
   return (
     <>
-      {err && <div className="kb-error">{err}</div>}
+      {err && <div className="hint-w">{err}</div>}
       {!pending ? (
         <div className="card">
-          <Empty icon="check" title="Nothing to review" text="When the administrator submits a release, it appears here." />
+          <Empty icon="book-open-check" title="Nothing to review" text="When the administrator submits a release, it appears here." />
         </div>
       ) : (
-        <div className="card kb-release">
-          <div className="ai-toolbar">
+        <div className="card">
+          <div className="card-h">
             <div>
-              <div className="card-title">
-                <span className="num">{pending.label}</span> <ReleaseBadge status={pending.status} />
-              </div>
-              {pending.description && <div className="ai-small ai-soft">{pending.description}</div>}
-              <div className="ai-small ai-soft">
+              <h3 className="num">{pending.label}</h3>
+              <span className="muted small">
                 <span>Submitted</span> {shortDateTime(pending.submitted_at)}
-              </div>
+                {detail ? ' · ' + detail.changes.length + ' ' + translate('changes') : ''}
+              </span>
             </div>
-            <div className="ai-toolbar-right">
-              <button className="btn btn-ghost btn-sm" onClick={() => setRejecting(true)}>
-                Reject
+            <ReleaseBadge status={pending.status} />
+          </div>
+          <div className="card-b">
+            {pending.description && (
+              <p className="small muted" style={{ marginBottom: 10 }}>
+                {pending.description}
+              </p>
+            )}
+            <ChangeList detail={detail} ctx={ctx} />
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 16 }}>
+              <button className="btn btn-danger-outline" onClick={() => setRejecting(true)}>
+                <Icon name="x" />
+                {translate('Reject')}
               </button>
-              <button className="btn btn-primary btn-sm" disabled={!detail} onClick={() => setApproving(true)}>
-                Approve release
+              <button className="btn btn-primary" disabled={!detail} onClick={() => setApproving(true)}>
+                <Icon name="check" />
+                {translate('Approve release')}
               </button>
             </div>
           </div>
-          <p className="ai-small ai-soft">Review every change below. Approving activates the whole release at once for all new AI assessments.</p>
-          <ChangeList detail={detail} ctx={ctx} />
         </div>
       )}
 
-      <div className="card" style={{ marginTop: 14 }}>
-        <div className="card-title">Release history</div>
-        <ReleaseHistory releases={data.releases} onView={setViewing} />
+      <div className="card">
+        <div className="card-h">
+          <h3>Release history</h3>
+        </div>
+        <div className="card-b">
+          <ReleaseHistory releases={data.releases} onView={setViewing} />
+        </div>
       </div>
       <ReleaseModal release={viewing} ctx={ctx} onClose={() => setViewing(null)} />
 

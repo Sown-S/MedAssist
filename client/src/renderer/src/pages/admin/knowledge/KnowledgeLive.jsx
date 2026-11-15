@@ -51,7 +51,7 @@ export default function KnowledgeLive({ reviewOnly = false }) {
       ]
 
   return (
-    <div>
+    <div className="vflow">
       <div className="pg-h">
         <div>
           <h2>{reviewOnly ? 'Knowledge review' : 'AI knowledge base'}</h2>
@@ -110,6 +110,10 @@ export default function KnowledgeLive({ reviewOnly = false }) {
         </div>
       )}
 
+      {reviewOnly ? (
+        <ReviewPanel data={data} names={names} onChanged={reload} />
+      ) : (
+        <>
       <MiniStats>
         <MiniStat icon="fileText" value={count('conditions')} label="Conditions">
           <span className="is-sub">
@@ -164,6 +168,8 @@ export default function KnowledgeLive({ reviewOnly = false }) {
       <p className="ai-foot-note">
         <Icon name="alert" /> <span>{translate('Knowledge is authored in Obsidian (OKF) and imported with import_okf, or edited here. Every change is versioned and written to the activity log.')}</span>
       </p>
+        </>
+      )}
     </div>
   )
 }

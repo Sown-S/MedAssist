@@ -1705,8 +1705,6 @@ export const VI = {
   'Open release': 'Mở bản phát hành',
   'When the administrator submits a release, it appears here.': 'Khi quản trị viên gửi duyệt một bản phát hành, bản đó sẽ hiện ở đây.',
   'Approve release': 'Duyệt bản phát hành',
-  'Review every change below. Approving activates the whole release at once for all new AI assessments.':
-    'Xem kỹ từng thay đổi bên dưới. Duyệt sẽ kích hoạt cả bản phát hành cho mọi lượt đánh giá AI mới.',
   'changes become active for every new AI assessment. You are recorded as the approver.': 'thay đổi có hiệu lực cho mọi lượt đánh giá AI mới. Bạn được ghi là người duyệt.',
   'Release approved and in use': 'Đã duyệt, bản phát hành đang được dùng',
   'Reject release': 'Từ chối bản phát hành',
@@ -1975,6 +1973,7 @@ export const VI = {
   '— Plan · Treatment plan & advice': "— Plan · Kế hoạch điều trị & lời dặn",
   'Dose per time': "Liều / lần",
   'None ordered': "Không chỉ định",
+  'changes': "thay đổi",
 }
 
 export const PATTERNS = [
