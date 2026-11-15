@@ -10,7 +10,7 @@ export function VitalsTab({ visit, vitals, onChange, tried, needWeight, vitalErr
     <div className="ipanel active">
       <div className="sec-t">Vitals for this visit</div>
       <p className="ai-soft" style={{ fontSize: 12.5, marginTop: 0 }}>
-        <span>Recorded at check-in:</span> <span className="mono">{vitalsText(visit.vitals)}</span>
+        <span>Recorded at check-in:</span> <span className="num">{vitalsText(visit.vitals)}</span>
       </p>
       <VitalsFields
         value={vitals}

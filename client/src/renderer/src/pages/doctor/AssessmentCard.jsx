@@ -98,9 +98,9 @@ export default function AssessmentCard({ a, decisions, onAccept, onDismiss }) {
               </div>
               <div className="sug-act">
                 {decisions[c.condition_code] === 'accepted' ? (
-                  <span className="badge ok">{translate('Accepted')}</span>
+                  <span className="badge b-success">{translate('Accepted')}</span>
                 ) : decisions[c.condition_code] === 'dismissed' ? (
-                  <span className="badge muted">{translate('Dismissed')}</span>
+                  <span className="badge b-neutral">{translate('Dismissed')}</span>
                 ) : dismissing === c.condition_code ? (
                   <select
                     className="input"

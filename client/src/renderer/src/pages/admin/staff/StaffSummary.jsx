@@ -12,7 +12,7 @@ export default function StaffSummary({ counts, roleFilter, setRoleFilter, status
       {Object.entries(ROLES).map(([k, r]) => (
         <MiniStat key={k} icon={ROLE_ICON[k] ?? 'users'} value={counts[k].total} label={r.label} active={roleFilter === k} onClick={() => setRoleFilter(roleFilter === k ? 'all' : k)}>
           <span className="is-sub">
-            <span className="mono">{counts[k].active}</span> <span>active</span>
+            <span className="num">{counts[k].active}</span> <span>active</span>
           </span>
         </MiniStat>
       ))}
@@ -24,7 +24,7 @@ export default function StaffSummary({ counts, roleFilter, setRoleFilter, status
         value={counts.idle}
         label={
           <>
-            <span>No sign-in for</span> <span className="mono">{IDLE_DAYS}</span> <span>days</span>
+            <span>No sign-in for</span> <span className="num">{IDLE_DAYS}</span> <span>days</span>
           </>
         }
         active={statusFilter === 'idle'}

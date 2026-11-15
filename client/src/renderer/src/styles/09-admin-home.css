@@ -1,6 +1,5 @@
 /* Trang chủ quản trị, chọn ngôn ngữ ở đăng nhập */
 
-.badge.warn{background:var(--priority-soft);color:var(--priority-ink);}
 .dash-grid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:14px;margin-bottom:14px;align-items:stretch;}
 /* Vùng nội dung Admin đã trừ sidebar 232px: dưới ~1200px cột phải quá hẹp → xếp một cột. */
 @media (max-width:1200px){.dash-grid{grid-template-columns:minmax(0,1fr);}}

@@ -50,7 +50,7 @@ export function ReviewPanel({ data, names, onChanged }) {
           <div className="ai-toolbar">
             <div>
               <div className="card-title">
-                <span className="mono">{pending.label}</span> <ReleaseBadge status={pending.status} />
+                <span className="num">{pending.label}</span> <ReleaseBadge status={pending.status} />
               </div>
               {pending.description && <div className="ai-small ai-soft">{pending.description}</div>}
               <div className="ai-small ai-soft">
@@ -81,7 +81,7 @@ export function ReviewPanel({ data, names, onChanged }) {
         <ModalHeader title={translate('Approve release') + ' ' + (pending?.label ?? '')} onClose={() => setApproving(false)} />
         <div className="modal-b">
           <p className="ai-confirm-msg">
-            <span>All</span> <b className="mono">{detail?.changes.length ?? 0}</b> <span>changes become active for every new AI assessment. You are recorded as the approver.</span>
+            <span>All</span> <b className="num">{detail?.changes.length ?? 0}</b> <span>changes become active for every new AI assessment. You are recorded as the approver.</span>
           </p>
           {err && <div className="kb-error">{err}</div>}
         </div>

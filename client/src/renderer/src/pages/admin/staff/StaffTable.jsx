@@ -45,112 +45,114 @@ export default function StaffTable({ rows, me, q, setQ, roleFilter, setRoleFilte
         <p className="ai-soft">No accounts match.</p>
       ) : (
         <div className="ai-table-wrap">
-          <table className="dt staff-table">
-            <thead>
-              <tr>
-                <th>Full name</th>
-                <th>Username</th>
-                <th>Role</th>
-                <th>Phone</th>
-                <th>Status</th>
-                <th>Last sign-in</th>
-                <th>Created</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((a) => {
-                const self = a.id === me.id
-                const idle = isIdle(a)
-                return (
-                  <tr key={a.id} className={a.active ? '' : 'ai-dim'}>
-                    <td>
-                      <span className="st-who">
-                        <span className="avatar sm">{initials(a.fullName)}</span>
-                        <span>
-                          <b>{a.fullName}</b> {self && <span className="badge ok">You</span>}
-                          {a.staffCode && <span className="ai-small ai-soft st-code mono">{a.staffCode}</span>}
+          <div className="tbl-wrap">
+            <table className="staff-table">
+              <thead>
+                <tr>
+                  <th>Full name</th>
+                  <th>Username</th>
+                  <th>Role</th>
+                  <th>Phone</th>
+                  <th>Status</th>
+                  <th>Last sign-in</th>
+                  <th>Created</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map((a) => {
+                  const self = a.id === me.id
+                  const idle = isIdle(a)
+                  return (
+                    <tr key={a.id} className={a.active ? '' : 'ai-dim'}>
+                      <td>
+                        <span className="st-who">
+                          <span className="avatar sm">{initials(a.fullName)}</span>
+                          <span>
+                            <b>{a.fullName}</b> {self && <span className="badge b-success">You</span>}
+                            {a.staffCode && <span className="ai-small ai-soft st-code num">{a.staffCode}</span>}
+                          </span>
                         </span>
-                      </span>
-                      {hasDefaultName(a) && <div className="ai-small sp-warn">Default name — change to a real person</div>}
-                      {a.fullName.trim().toLowerCase() === a.username.toLowerCase() && (
-                        <div className="ai-small sp-warn">Name is the same as the username — enter the real full name</div>
-                      )}
-                      {a.roleKey === 'doctor' && (
-                        <div className="ai-small ai-soft">
-                          {a.roomName ? <span>{a.roomName}</span> : <span className="sp-warn">No room</span>}
-                          {' · '}
-                          {a.licenseNo ? (
-                            <>
-                              <span>Licence</span> <span className="mono">{a.licenseNo}</span>
-                            </>
-                          ) : (
-                            <span className="sp-warn">No licence no.</span>
+                        {hasDefaultName(a) && <div className="ai-small sp-warn">Default name — change to a real person</div>}
+                        {a.fullName.trim().toLowerCase() === a.username.toLowerCase() && (
+                          <div className="ai-small sp-warn">Name is the same as the username — enter the real full name</div>
+                        )}
+                        {a.roleKey === 'doctor' && (
+                          <div className="ai-small ai-soft">
+                            {a.roomName ? <span>{a.roomName}</span> : <span className="sp-warn">No room</span>}
+                            {' · '}
+                            {a.licenseNo ? (
+                              <>
+                                <span>Licence</span> <span className="num">{a.licenseNo}</span>
+                              </>
+                            ) : (
+                              <span className="sp-warn">No licence no.</span>
+                            )}
+                          </div>
+                        )}
+                      </td>
+                      <td className="num">{a.username}</td>
+                      <td>{ROLES[a.roleKey].label}</td>
+                      <td className="num">{a.phone || '—'}</td>
+                      <td>
+                        <div className="staff-badges">
+                          {!a.active ? <span className="badge b-neutral">Disabled</span> : a.locked ? <span className="badge b-danger" title={translate('Unlocks by itself at') + ' ' + fmtDateTime(a.lockedUntil)}>Locked</span> : <span className="badge b-success">Active</span>}
+                          {a.mustChange && <span className="badge b-warning">Password change pending</span>}
+                          {a.active && !a.locked && a.failedAttempts > 0 && (
+                            <span className="ai-small sp-warn">
+                              <span className="num">
+                                {a.failedAttempts}
+                                {policy && '/' + policy.maxFailed}
+                              </span>{' '}
+                              <span>failed sign-ins</span>
+                            </span>
                           )}
                         </div>
-                      )}
-                    </td>
-                    <td className="mono">{a.username}</td>
-                    <td>{ROLES[a.roleKey].label}</td>
-                    <td className="mono">{a.phone || '—'}</td>
-                    <td>
-                      <div className="staff-badges">
-                        {!a.active ? <span className="badge muted">Disabled</span> : a.locked ? <span className="badge low" title={translate('Unlocks by itself at') + ' ' + fmtDateTime(a.lockedUntil)}>Locked</span> : <span className="badge ok">Active</span>}
-                        {a.mustChange && <span className="badge warn">Password change pending</span>}
-                        {a.active && !a.locked && a.failedAttempts > 0 && (
-                          <span className="ai-small sp-warn">
-                            <span className="mono">
-                              {a.failedAttempts}
-                              {policy && '/' + policy.maxFailed}
-                            </span>{' '}
-                            <span>failed sign-ins</span>
-                          </span>
-                        )}
-                      </div>
-                    </td>
-                    <td className="ai-small">
-                      {a.lastLoginAt ? <span className="mono">{fmtDateTime(a.lastLoginAt)}</span> : <span className="ai-soft">Never signed in</span>}
-                      {idle && <div className="sp-warn">Unused</div>}
-                    </td>
-                    <td className="ai-small" title={a.createdBy ? translate('by') + ' ' + a.createdBy : undefined}>
-                      <span className="mono">{fmtDate(a.createdAt)}</span>
-                    </td>
-                    <td>
-                      <div className="staff-actions">
-                        {!self && a.locked && (
-                          <button className="btn btn-primary btn-sm" onClick={() => onUnlock(a)}>
-                            Unlock
+                      </td>
+                      <td className="ai-small">
+                        {a.lastLoginAt ? <span className="num">{fmtDateTime(a.lastLoginAt)}</span> : <span className="ai-soft">Never signed in</span>}
+                        {idle && <div className="sp-warn">Unused</div>}
+                      </td>
+                      <td className="ai-small" title={a.createdBy ? translate('by') + ' ' + a.createdBy : undefined}>
+                        <span className="num">{fmtDate(a.createdAt)}</span>
+                      </td>
+                      <td>
+                        <div className="staff-actions">
+                          {!self && a.locked && (
+                            <button className="btn btn-primary btn-sm" onClick={() => onUnlock(a)}>
+                              Unlock
+                            </button>
+                          )}
+                          <button className="icon-btn" onClick={() => onEdit(a)} title={translate('Edit')} aria-label={translate('Edit')}>
+                            <Icon name="pencil" />
                           </button>
-                        )}
-                        <button className="icon-btn" onClick={() => onEdit(a)} title={translate('Edit')} aria-label={translate('Edit')}>
-                          <Icon name="pencil" />
-                        </button>
-                        {self ? (
-                          <button className="icon-btn" onClick={onOwnPw} title={translate('Change password')} aria-label={translate('Change password')}>
-                            <Icon name="key" />
-                          </button>
-                        ) : (
-                          <>
-                            <button className="icon-btn" onClick={() => onReset(a)} title={translate('Reset password')} aria-label={translate('Reset password')}>
+                          {self ? (
+                            <button className="icon-btn" onClick={onOwnPw} title={translate('Change password')} aria-label={translate('Change password')}>
                               <Icon name="key" />
                             </button>
-                            <button
-                              className={'icon-btn' + (a.active ? ' danger' : '')}
-                              onClick={() => onToggle(a)}
-                              title={translate(a.active ? 'Disable' : 'Enable')}
-                              aria-label={translate(a.active ? 'Disable' : 'Enable')}
-                            >
-                              <Icon name={a.active ? 'ban' : 'circleCheck'} />
-                            </button>
-                          </>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                )
-              })}
-            </tbody>
-          </table>
+                          ) : (
+                            <>
+                              <button className="icon-btn" onClick={() => onReset(a)} title={translate('Reset password')} aria-label={translate('Reset password')}>
+                                <Icon name="key" />
+                              </button>
+                              <button
+                                className={'icon-btn' + (a.active ? ' danger' : '')}
+                                onClick={() => onToggle(a)}
+                                title={translate(a.active ? 'Disable' : 'Enable')}
+                                aria-label={translate(a.active ? 'Disable' : 'Enable')}
+                              >
+                                <Icon name={a.active ? 'ban' : 'circleCheck'} />
+                              </button>
+                            </>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
     </div>

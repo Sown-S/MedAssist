@@ -3,9 +3,6 @@
 .btn:disabled{opacity:.45;cursor:not-allowed;}
 .btn-danger{background:var(--warn);color:#fff;}
 .btn-danger:hover:not(:disabled){background:#DC2626;}
-.badge{background:var(--surface-alt);color:var(--ink-soft);display:inline-block;}
-.badge.info{background:rgba(24,119,242,.14);color:var(--primary-ink);}
-.badge.muted{background:rgba(148,163,184,.16);color:var(--ink-2);}
 .ai-soft{color:var(--ink-soft);}
 .ai-small{font-size:12px;}
 .ai-req{color:var(--warn-ink);}
@@ -33,7 +30,6 @@
 .ai-inline-input{width:100%;}
 .ai-select:focus,.ai-inline-input:focus{outline:none;border-color:var(--accent);}
 .ai-table-wrap{overflow:auto;}
-.ai-table-wrap table.dt thead th{position:sticky;top:0;background:var(--solid);z-index:1;}
 .ai-chip{display:inline-flex;align-items:center;gap:3px;font-size:12px;font-weight:600;padding:2px 8px;border-radius:20px;background:var(--primary-soft);color:var(--primary-ink);white-space:nowrap;}
 .ai-chip.neg{background:rgba(148,163,184,.14);color:var(--ink-2);}
 .ai-chip.neg span:first-child{color:var(--warn-ink);}

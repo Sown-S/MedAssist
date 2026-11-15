@@ -63,7 +63,7 @@ export default function ReleaseTab({ data, names, onChanged, autoCreate }) {
           <div className="ai-toolbar">
             <div>
               <div className="card-title">
-                <span className="mono">{open.label}</span> <ReleaseBadge status={open.status} />
+                <span className="num">{open.label}</span> <ReleaseBadge status={open.status} />
               </div>
               {open.description && <div className="ai-small ai-soft">{open.description}</div>}
             </div>
@@ -139,7 +139,7 @@ function CreateReleaseModal({ open, suggested, onClose, onCreate }) {
       <div className="modal-b">
         <div className="field">
           <label>Release label</label>
-          <input className="input mono" value={label} maxLength={30} onChange={(e) => setLabel(e.target.value)} />
+          <input className="input num" value={label} maxLength={30} onChange={(e) => setLabel(e.target.value)} />
         </div>
         <div className="field" style={{ marginTop: 10 }}>
           <label>What changes (optional)</label>

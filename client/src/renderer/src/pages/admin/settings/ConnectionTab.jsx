@@ -45,7 +45,7 @@ export function ConnectionTab({ onNavigate }) {
               </div>
             ))}
             <div className="ai-small ai-soft" style={{ marginTop: 8 }}>
-              <span>Checked at</span> <span className="mono">{fmtDateTime(health.checkedAt)}</span>
+              <span>Checked at</span> <span className="num">{fmtDateTime(health.checkedAt)}</span>
             </div>
           </>
         )}

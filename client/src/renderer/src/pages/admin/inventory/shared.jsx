@@ -64,12 +64,12 @@ export function ExpiryCell({ batch }) {
   const cls = d < 0 ? 'inv-exp bad' : d <= 30 ? 'inv-exp bad' : d <= 90 ? 'inv-exp warn' : 'inv-exp'
   return (
     <span className={cls}>
-      <span className="mono">{fmtDate(batch.expiry)}</span>{' '}
+      <span className="num">{fmtDate(batch.expiry)}</span>{' '}
       {d < 0 ? (
         <span className="ai-small">(expired)</span>
       ) : d <= 90 ? (
         <span className="ai-small">
-          (<span className="mono">{d}</span> <span>days left</span>)
+          (<span className="num">{d}</span> <span>days left</span>)
         </span>
       ) : null}
     </span>
@@ -111,10 +111,10 @@ export function Pager({ page, pages, total, from, to, onPage }) {
   return (
     <div className="pager">
       <span>
-        <span className="mono">
+        <span className="num">
           {from}–{to}
         </span>{' '}
-        <span>of</span> <span className="mono">{total}</span>
+        <span>of</span> <span className="num">{total}</span>
       </span>
       <div className="pager-btns">
         <button disabled={page === 1} onClick={() => onPage(page - 1)}>

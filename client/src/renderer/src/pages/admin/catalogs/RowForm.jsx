@@ -88,12 +88,12 @@ export function RowForm({ catalogKey, row, all, cats, inv, onClose }) {
 
         {catalogKey === 'packages' && (
           <p className="ai-hint">
-            <span>Separate price</span> <b className="mono">{fmtMoney(packageTotal(f, cats))}</b> · <span>Package price</span>{' '}
-            <b className="mono">{fmtMoney(Number(f.price) || 0)}</b>
+            <span>Separate price</span> <b className="num">{fmtMoney(packageTotal(f, cats))}</b> · <span>Package price</span>{' '}
+            <b className="num">{fmtMoney(Number(f.price) || 0)}</b>
             {packageTotal(f, cats) > (Number(f.price) || 0) && (
               <>
                 {' · '}
-                <span>Patient saves</span> <b className="mono inv-plus">{fmtMoney(packageTotal(f, cats) - (Number(f.price) || 0))}</b>
+                <span>Patient saves</span> <b className="num inv-plus">{fmtMoney(packageTotal(f, cats) - (Number(f.price) || 0))}</b>
               </>
             )}
           </p>
@@ -101,32 +101,34 @@ export function RowForm({ catalogKey, row, all, cats, inv, onClose }) {
         {!isNew && prices && (
           <>
             <div className="sec-t">Price history</div>
-            <table className="dt">
-              <thead>
-                <tr>
-                  <th>Changed at</th>
-                  <th className="num">Old price</th>
-                  <th className="num">New price</th>
-                  <th>Changed by</th>
-                </tr>
-              </thead>
-              <tbody>
-                {prices.map((h, i) => (
-                  <tr key={i}>
-                    <td className="mono">{fmtDateTime(h.changed_at)}</td>
-                    <td className="num mono">{h.old_price == null ? '—' : fmtMoney(Number(h.old_price))}</td>
-                    <td className="num mono">{h.price == null ? '—' : fmtMoney(Number(h.price))}</td>
-                    <td>{h.changed_by_name ?? '—'}</td>
+            <div className="tbl-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Changed at</th>
+                    <th className="r num">Old price</th>
+                    <th className="r num">New price</th>
+                    <th>Changed by</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {prices.map((h, i) => (
+                    <tr key={i}>
+                      <td className="num">{fmtDateTime(h.changed_at)}</td>
+                      <td className="r num">{h.old_price == null ? '—' : fmtMoney(Number(h.old_price))}</td>
+                      <td className="r num">{h.price == null ? '—' : fmtMoney(Number(h.price))}</td>
+                      <td>{h.changed_by_name ?? '—'}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
             <p className="ai-hint">Invoices and lab orders store the price at the time they are made, so changing the price here does not change old documents.</p>
           </>
         )}
         {!isNew && (
           <p className="ai-soft ai-small">
-            <span>Last updated</span> <span className="mono">{fmtDateTime(row.updatedAt)}</span> · {row.updatedBy}
+            <span>Last updated</span> <span className="num">{fmtDateTime(row.updatedAt)}</span> · {row.updatedBy}
           </p>
         )}
         {tried && errors.length > 0 && (
@@ -200,7 +202,7 @@ function PackageItems({ value, onChange, cats }) {
         const r = resolveRef(it.ref, cats)
         return (
           <div className="cat-line" key={it.ref}>
-            <span className="mono">{it.ref.split(':')[1]}</span>
+            <span className="num">{it.ref.split(':')[1]}</span>
             <span className="cat-line-name">{r?.name ?? it.ref}</span>
             <input
               type="number"
@@ -209,7 +211,7 @@ function PackageItems({ value, onChange, cats }) {
               value={it.qty}
               onChange={(e) => onChange(value.map((v, j) => (j === i ? { ...v, qty: Math.max(1, +e.target.value || 1) } : v)))}
             />
-            <span className="mono ai-soft">{fmtMoney((r?.price ?? 0) * it.qty)}</span>
+            <span className="num ai-soft">{fmtMoney((r?.price ?? 0) * it.qty)}</span>
             <button type="button" className="btn btn-ghost btn-sm" onClick={() => onChange(value.filter((_, j) => j !== i))}>
               <Icon name="trash" />
             </button>

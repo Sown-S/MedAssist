@@ -113,97 +113,101 @@ export default function PrescriptionsLive({ initialDoctorId = '', initialDoctorN
               </option>
             ))}
           </select>
-          <input className="grow" type="search" placeholder="Search patient, doctor or drug…" value={q} onChange={(e) => setQ(e.target.value)} />
+          <input className="input grow" type="search" placeholder="Search patient, doctor or drug…" value={q} onChange={(e) => setQ(e.target.value)} />
           <button className="btn btn-ghost btn-sm" disabled={!list.length} onClick={printList}>
             <Icon name="printer" /> Print list
           </button>
         </div>
-        <table className="dt">
-          <thead>
-            <tr>
-              <th>No.</th>
-              <th>Patient</th>
-              <th>Doctor</th>
-              <th>Medicines</th>
-              <th>Prescribed</th>
-              <th className="num">Amount</th>
-              <th>Payment</th>
-            </tr>
-          </thead>
-          <tbody>
-            {list.map((r) => (
-              <Fragment key={r.id}>
-                <tr className="clickable" onClick={() => setOpen(open === r.id ? null : r.id)}>
-                  <td className="mono">{r.ticket ? ticketNo(r.ticket) : '—'}</td>
-                  <td>
-                    <b>{r.name}</b>
-                    <div className="ai-soft mono" style={{ fontSize: 12 }}>
-                      {r.patientId}
-                    </div>
-                  </td>
-                  <td>{r.doctor}</td>
-                  <td className="ai-soft" style={{ fontSize: 13 }}>
-                    {r.rx.map((x) => x.name).join(', ')}
-                  </td>
-                  <td className="mono">{when(r)}</td>
-                  <td className="num mono">{money(r.amount)}</td>
-                  <td>
-                    <span className={'badge ' + PAY_STATUS[r.pay].cls}>{PAY_STATUS[r.pay].label}</span>
-                  </td>
-                </tr>
-                {open === r.id && (
-                  <tr>
-                    <td colSpan="7">
-                      <table className="dt">
-                        <tbody>
-                          {r.rx.map((x, i) => (
-                            <tr key={i}>
-                              <td>{x.name}</td>
-                              <td className="num">
-                                {x.qty} {x.unit}
-                              </td>
-                              <td>{x.usage}</td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                      {onRecalled && canRecall(r, user) && (
-                        <div className="rx-recall">
-                          {asking === r.id ? (
-                            <>
-                              <span>Recall this prescription? Stock is returned and the unpaid invoice is cancelled; you then edit and finalize it again.</span>
-                              <button className="btn btn-ghost btn-sm" disabled={recalling} onClick={() => setAsking(null)}>
-                                Cancel
-                              </button>
-                              <button className="btn btn-primary btn-sm" disabled={recalling} onClick={() => recall(r)}>
-                                <Icon name="repeat" /> Recall
-                              </button>
-                            </>
-                          ) : (
-                            <button className="btn btn-ghost btn-sm" onClick={() => setAsking(r.id)} title={translate('Reception has not collected payment or dispensed any drug yet')}>
-                              <Icon name="repeat" /> Recall to edit (not yet paid)
-                            </button>
-                          )}
-                        </div>
-                      )}
+        <div className="tbl-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>No.</th>
+                <th>Patient</th>
+                <th>Doctor</th>
+                <th>Medicines</th>
+                <th>Prescribed</th>
+                <th className="r num">Amount</th>
+                <th>Payment</th>
+              </tr>
+            </thead>
+            <tbody>
+              {list.map((r) => (
+                <Fragment key={r.id}>
+                  <tr className="clickable" onClick={() => setOpen(open === r.id ? null : r.id)}>
+                    <td className="num">{r.ticket ? ticketNo(r.ticket) : '—'}</td>
+                    <td>
+                      <b>{r.name}</b>
+                      <div className="ai-soft num" style={{ fontSize: 12 }}>
+                        {r.patientId}
+                      </div>
+                    </td>
+                    <td>{r.doctor}</td>
+                    <td className="ai-soft" style={{ fontSize: 13 }}>
+                      {r.rx.map((x) => x.name).join(', ')}
+                    </td>
+                    <td className="num">{when(r)}</td>
+                    <td className="r num">{money(r.amount)}</td>
+                    <td>
+                      <span className={'badge ' + PAY_STATUS[r.pay].cls}>{PAY_STATUS[r.pay].label}</span>
                     </td>
                   </tr>
-                )}
-              </Fragment>
-            ))}
-            {!list.length && (
-              <tr>
-                <td colSpan="7">
-                  <div className="empty-state">
-                    <Icon name="clipboard" />
-                    <b>{error ? error.message : !loaded ? translate('Loading…') : all.length ? translate('No prescriptions match the filters.') : translate('No prescriptions in this period.')}</b>
-                    <span>Try another period or clear the filters.</span>
-                  </div>
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+                  {open === r.id && (
+                    <tr>
+                      <td colSpan="7">
+                        <table>
+                          <tbody>
+                            {r.rx.map((x, i) => (
+                              <tr key={i}>
+                                <td>{x.name}</td>
+                                <td className="r num">
+                                  {x.qty} {x.unit}
+                                </td>
+                                <td>{x.usage}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                        {onRecalled && canRecall(r, user) && (
+                          <div className="rx-recall">
+                            {asking === r.id ? (
+                              <>
+                                <span>Recall this prescription? Stock is returned and the unpaid invoice is cancelled; you then edit and finalize it again.</span>
+                                <button className="btn btn-ghost btn-sm" disabled={recalling} onClick={() => setAsking(null)}>
+                                  Cancel
+                                </button>
+                                <button className="btn btn-primary btn-sm" disabled={recalling} onClick={() => recall(r)}>
+                                  <Icon name="repeat" /> Recall
+                                </button>
+                              </>
+                            ) : (
+                              <button className="btn btn-ghost btn-sm" onClick={() => setAsking(r.id)} title={translate('Reception has not collected payment or dispensed any drug yet')}>
+                                <Icon name="repeat" /> Recall to edit (not yet paid)
+                              </button>
+                            )}
+                          </div>
+                        )}
+                      </td>
+                    </tr>
+                  )}
+                </Fragment>
+              ))}
+              {!list.length && (
+                <tr>
+                  <td colSpan="7">
+                    <div className="empty">
+                      <div className="ill">
+                        <Icon name="clipboard" />
+                      </div>
+                      <b>{error ? error.message : !loaded ? translate('Loading…') : all.length ? translate('No prescriptions match the filters.') : translate('No prescriptions in this period.')}</b>
+                      <span>Try another period or clear the filters.</span>
+                    </div>
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </>
   )

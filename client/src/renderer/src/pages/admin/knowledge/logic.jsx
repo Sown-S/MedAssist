@@ -32,7 +32,7 @@ export function LogicView({ node, names, depth = 0 }) {
     return (
       <span className="ai-chip vital">
         <span>{d?.label ?? node.vital}</span>{' '}
-        <span className="mono">
+        <span className="num">
           {CMP_TEXT[node.cmp] ?? node.cmp} {node.value} {d?.unit}
         </span>
       </span>
@@ -42,13 +42,13 @@ export function LogicView({ node, names, depth = 0 }) {
     return (
       <span className="ai-chip meta">
         <span>Age</span>{' '}
-        <span className="mono">
+        <span className="num">
           {CMP_TEXT[node.cmp] ?? node.cmp} {node.value}
         </span>{' '}
         <span>{node.unit === 'months' ? 'months' : 'years'}</span>
       </span>
     )
-  return <span className="mono ai-small">{JSON.stringify(node)}</span>
+  return <span className="num ai-small">{JSON.stringify(node)}</span>
 }
 
 const newLeaf = (type, symptoms) =>

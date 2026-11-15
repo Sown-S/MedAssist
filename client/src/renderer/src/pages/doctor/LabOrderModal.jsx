@@ -123,7 +123,7 @@ export default function LabOrderModal({ open, visit, diagnosis, onClose, onSent 
                     <input type="checkbox" checked={picked.includes(x.code) || fromPkg} disabled={fromPkg} onChange={() => toggle(x.code)} />
                     <span className="lab-pick-name">{x.name}</span>
                     {fromPkg ? <small>{translate('In package')}</small> : sampleLabel(x.sample) && <small>{translate(sampleLabel(x.sample))}</small>}
-                    {!fromPkg && x.price > 0 && <small className="mono">{money(x.price)}</small>}
+                    {!fromPkg && x.price > 0 && <small className="num">{money(x.price)}</small>}
                   </label>
                 )
               })}

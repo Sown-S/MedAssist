@@ -32,13 +32,13 @@ export function WaitingModal({ list, initial, now, past, onTake, onClose }) {
                     {v.age !== '' && v.age != null ? ', ' + v.age + ' ' + translate('yrs') : ''} · {translate(v.reason)}
                   </small>
                 </span>
-                {v.triage === 'emergency' && <span className="badge low">{translate('Emergency')}</span>}
+                {v.triage === 'emergency' && <span className="badge b-danger">{translate('Emergency')}</span>}
                 {v.priority && v.triage !== 'emergency' && (
                   <span className="flag-priority">
                     <Icon name="zap" /> Priority
                   </span>
                 )}
-                {v.absent && <span className="badge muted">Absent</span>}
+                {v.absent && <span className="badge b-neutral">Absent</span>}
                 {v.allergies && <span className="allergy-chip">Allergy</span>}
                 <span className={'p-wait ' + waitTone(n)}>{n} min</span>
                 <Icon name="chevronDown" />
@@ -67,8 +67,10 @@ export function WaitingModal({ list, initial, now, past, onTake, onClose }) {
           )
         })}
         {!list.length && (
-          <div className="empty-state">
-            <Icon name="users" />
+          <div className="empty">
+            <div className="ill">
+              <Icon name="users" />
+            </div>
             <b>No one is waiting.</b>
             <span>Patients appear here as soon as reception checks them in.</span>
           </div>
@@ -118,7 +120,7 @@ export function LabListModal({ onResume, onClose }) {
               </button>
             ))}
           </div>
-          <input className="grow" type="search" placeholder="Search patient or test…" value={q} onChange={(e) => setQ(e.target.value)} />
+          <input className="input grow" type="search" placeholder="Search patient or test…" value={q} onChange={(e) => setQ(e.target.value)} />
         </div>
         <div className="lab-list">
           {list.map(({ v, state }) => (
@@ -128,7 +130,7 @@ export function LabListModal({ onResume, onClose }) {
                 <span className="wait-main">
                   <b>{v.name}</b>
                   <small>
-                    <span className="mono">{v.patientId}</span>
+                    <span className="num">{v.patientId}</span>
                     {v.day ? ' · ' + dmy(v.labOrders[0].at) : ' · ' + translate('Today')}
                   </small>
                 </span>
@@ -145,8 +147,10 @@ export function LabListModal({ onResume, onClose }) {
             </div>
           ))}
           {!list.length && (
-            <div className="empty-state">
-              <Icon name="flask" />
+            <div className="empty">
+              <div className="ill">
+                <Icon name="flask" />
+              </div>
               <b>{all.length ? translate('No lab orders match the filters.') : translate('You have not ordered any lab tests yet.')}</b>
               <span>Lab orders appear here after you use “Order lab tests” in the consultation room.</span>
             </div>

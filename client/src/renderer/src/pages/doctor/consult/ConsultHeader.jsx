@@ -30,11 +30,11 @@ export default function ConsultHeader({ visit, vit, prev, alerts }) {
               {String(visit.ticket).padStart(3, '0')}
             </span>
             {visit.name}
-            {visit.triage === 'emergency' ? <span className="badge low">{translate('Emergency')}</span> : visit.priority ? <span className="badge warn">{translate('Priority')}</span> : null}
+            {visit.triage === 'emergency' ? <span className="badge b-danger">{translate('Emergency')}</span> : visit.priority ? <span className="badge b-warning">{translate('Priority')}</span> : null}
           </h2>
           <div className="sub">
             {translate(visit.gender)}
-            {visit.age !== '' ? ' · ' + visit.age + ' ' + translate('yrs') : ''} · <span className="mono">{visit.patientCode ?? visit.patientId}</span> · <span className="mono">{visit.phone}</span>
+            {visit.age !== '' ? ' · ' + visit.age + ' ' + translate('yrs') : ''} · <span className="num">{visit.patientCode ?? visit.patientId}</span> · <span className="num">{visit.phone}</span>
           </div>
         </div>
         {STATUS_CHIP[visit.status] && <span className="status-chip">{STATUS_CHIP[visit.status]}</span>}
@@ -43,23 +43,23 @@ export default function ConsultHeader({ visit, vit, prev, alerts }) {
       <div className="consult-strip">
         <span>
           <small>Pulse</small>
-          <b className="mono">{vit.heart_rate_bpm || '—'}</b>
+          <b className="num">{vit.heart_rate_bpm || '—'}</b>
         </span>
         <span>
           <small>BP</small>
-          <b className="mono">{vit.systolic_bp_mmhg ? vit.systolic_bp_mmhg + '/' + (vit.diastolic_bp_mmhg || '—') : '—'}</b>
+          <b className="num">{vit.systolic_bp_mmhg ? vit.systolic_bp_mmhg + '/' + (vit.diastolic_bp_mmhg || '—') : '—'}</b>
         </span>
         <span className={num(vit.temperature_c) >= 38.5 ? 'hot' : ''}>
           <small>Temp</small>
-          <b className="mono">{vit.temperature_c ? vit.temperature_c + '°C' : '—'}</b>
+          <b className="num">{vit.temperature_c ? vit.temperature_c + '°C' : '—'}</b>
         </span>
         <span className={vit.spo2_pct && num(vit.spo2_pct) < 94 ? 'hot' : ''}>
           <small>SpO2</small>
-          <b className="mono">{vit.spo2_pct ? vit.spo2_pct + '%' : '—'}</b>
+          <b className="num">{vit.spo2_pct ? vit.spo2_pct + '%' : '—'}</b>
         </span>
         <span className={isChild(visit) && !(num(vit.weight_kg) > 0) ? 'need' : ''}>
           <small>Body weight</small>
-          <b className="mono">{vit.weight_kg ? vit.weight_kg + ' kg' : isChild(visit) ? translate('required') : '—'}</b>
+          <b className="num">{vit.weight_kg ? vit.weight_kg + ' kg' : isChild(visit) ? translate('required') : '—'}</b>
         </span>
         <span className="wide">
           <small>Last visit</small>

@@ -4,9 +4,6 @@
 .ctx-banner .txt{flex:1;min-width:0;font-size:15px;color:var(--ink-2);}
 .ctx-banner .txt b{color:var(--ink);}
 .ctx-banner .btn{background:var(--surface);}
-table.dt .r{text-align:right;}
-table.dt .num{font-variant-numeric:tabular-nums;white-space:nowrap;}
-table.dt tr.dimmed td{opacity:.6;}
 .cab-name{display:block;font-weight:500;}
 .cab-sub{display:block;font-size:13px;color:var(--ink-soft);}
 .cab-unit{color:var(--ink-soft);font-size:13px;}
@@ -38,8 +35,6 @@ table.dt tr.dimmed td{opacity:.6;}
 .pt-id .ai-soft{font-size:13px;}
 .pt-rows{display:flex;flex-direction:column;gap:10px;}
 .pt-row{display:flex;align-items:center;gap:10px;}
-.pt-row .is-ico{width:32px;height:32px;border-radius:8px;display:grid;place-items:center;background:var(--surface-alt);color:var(--ink-2);flex:none;}
-.pt-row .is-ico .icn{width:16px;height:16px;}
 .pt-row small{display:block;font-size:12.5px;color:var(--ink-soft);}
 .pt-row b{font-weight:500;}
 .pt-card .btn{justify-content:center;}
@@ -47,10 +42,6 @@ table.dt tr.dimmed td{opacity:.6;}
 /* Cấu hình AI: thẻ luật */
 .rule-card .rule-list{display:flex;flex-direction:column;gap:10px;max-height:300px;overflow:auto;}
 .rule-li{display:flex;align-items:flex-start;gap:10px;}
-.rule-li .is-ico{width:30px;height:30px;border-radius:8px;display:grid;place-items:center;flex:none;}
-.rule-li .is-ico .icn{width:16px;height:16px;}
-.rule-li .is-ico.t-d{background:var(--warn-soft);color:var(--warn);}
-.rule-li .is-ico.t-w{background:var(--priority-soft);color:var(--priority);}
 .rule-li .rl-t{min-width:0;display:flex;flex-direction:column;}
 .rule-li .rl-t b{font-weight:600;font-size:14.5px;}
 .rule-li .rl-t small{font-size:13px;color:var(--ink-soft);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}

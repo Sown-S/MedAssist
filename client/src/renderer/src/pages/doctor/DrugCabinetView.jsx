@@ -116,7 +116,7 @@ export default function DrugCabinetView({ go }) {
       )}
       <div className="card">
         <div className="cash-filters" style={{ marginBottom: 14 }}>
-          <input className="grow" type="search" placeholder="Search by drug name, active ingredient or ATC…" value={q} onChange={filter(setQ)} />
+          <input className="input grow" type="search" placeholder="Search by drug name, active ingredient or ATC…" value={q} onChange={filter(setQ)} />
           <select className="input" value={atc} onChange={filter(setAtc)} title={translate('Therapeutic class (ATC)')}>
             <option value="">All drug classes (ATC)</option>
             {classes.map((c) => (
@@ -159,68 +159,72 @@ export default function DrugCabinetView({ go }) {
           </span>
         </div>
         {list.length ? (
-          <table className="dt cab-table">
-            <thead>
-              <tr>
-                <th>Drug</th>
-                <th>Labels</th>
-                <th className="r">Usable stock</th>
-                <th>Next expiry</th>
-                <th className="r">Price</th>
-                <th>Status</th>
-                {current && <th />}
-              </tr>
-            </thead>
-            <tbody>
-              {pg.rows.map(({ d, s }) => {
-                const main = s.statuses.find((x) => x !== 'ok') ?? 'ok'
-                return (
-                  <tr key={d.id} className={s.usable === 0 ? 'dimmed' : ''}>
-                    <td>
-                      <b className="cab-name">{d.name}</b>
-                      <small className="cab-sub">
-                        {d.ingredient || '—'}
-                        {d.atc ? ' · ' + d.atc : ''}
-                      </small>
-                    </td>
-                    <td>
-                      <span className="cab-tags">
-                        {d.essential && <span className="tag">Essential</span>}
-                        {d.group === 'controlled' && <span className="tag w">Controlled</span>}
-                        {d.kind === 'supply' && <span className="tag">Supply</span>}
-                        {!d.essential && d.group !== 'controlled' && d.kind !== 'supply' && <span className="plain">—</span>}
-                      </span>
-                    </td>
-                    <td className="r num">
-                      {s.usable.toLocaleString('vi-VN')} <span className="cab-unit">{unitLabel(d.unit)}</span>
-                    </td>
-                    <td className="num">
-                      {s.nextExpiry ? fmtDate(s.nextExpiry.expiry) : '—'}
-                      {s.nextExpiry && s.nextExpiry.days <= near && (
-                        <span className={'exp-days' + (s.nextExpiry.days <= 30 ? ' soon' : ' near')}>{translate(s.nextExpiry.days + ' days left')}</span>
-                      )}
-                    </td>
-                    <td className="r num">{fmtMoney(d.price)}</td>
-                    <td>
-                      {main === 'ok' ? <span className="plain">{translate(STATUS.ok.label)}</span> : <span className={'badge ' + STATUS[main].cls}>{STATUS[main].label}</span>}
-                    </td>
-                    {current && (
-                      <td className="r">
-                        {d.kind === 'drug' && (
-                          <button className="btn btn-ghost btn-sm" disabled={s.usable === 0} onClick={() => add(d)} title={translate('Add to prescription')}>
-                            <Icon name="plus" /> <span>Add</span>
-                          </button>
+          <div className="tbl-wrap">
+            <table className="cab-table">
+              <thead>
+                <tr>
+                  <th>Drug</th>
+                  <th>Labels</th>
+                  <th className="r">Usable stock</th>
+                  <th>Next expiry</th>
+                  <th className="r">Price</th>
+                  <th>Status</th>
+                  {current && <th />}
+                </tr>
+              </thead>
+              <tbody>
+                {pg.rows.map(({ d, s }) => {
+                  const main = s.statuses.find((x) => x !== 'ok') ?? 'ok'
+                  return (
+                    <tr key={d.id} className={s.usable === 0 ? 'dimmed' : ''}>
+                      <td>
+                        <b className="cab-name">{d.name}</b>
+                        <small className="cab-sub">
+                          {d.ingredient || '—'}
+                          {d.atc ? ' · ' + d.atc : ''}
+                        </small>
+                      </td>
+                      <td>
+                        <span className="cab-tags">
+                          {d.essential && <span className="tag">Essential</span>}
+                          {d.group === 'controlled' && <span className="tag w">Controlled</span>}
+                          {d.kind === 'supply' && <span className="tag">Supply</span>}
+                          {!d.essential && d.group !== 'controlled' && d.kind !== 'supply' && <span className="plain">—</span>}
+                        </span>
+                      </td>
+                      <td className="r num">
+                        {s.usable.toLocaleString('vi-VN')} <span className="cab-unit">{unitLabel(d.unit)}</span>
+                      </td>
+                      <td className="r num">
+                        {s.nextExpiry ? fmtDate(s.nextExpiry.expiry) : '—'}
+                        {s.nextExpiry && s.nextExpiry.days <= near && (
+                          <span className={'exp-days' + (s.nextExpiry.days <= 30 ? ' soon' : ' near')}>{translate(s.nextExpiry.days + ' days left')}</span>
                         )}
                       </td>
-                    )}
-                  </tr>
-                )
-              })}
-            </tbody>
-          </table>
+                      <td className="r num">{fmtMoney(d.price)}</td>
+                      <td>
+                        {main === 'ok' ? <span className="plain">{translate(STATUS.ok.label)}</span> : <span className={'badge ' + STATUS[main].cls}>{STATUS[main].label}</span>}
+                      </td>
+                      {current && (
+                        <td className="r">
+                          {d.kind === 'drug' && (
+                            <button className="btn btn-ghost btn-sm" disabled={s.usable === 0} onClick={() => add(d)} title={translate('Add to prescription')}>
+                              <Icon name="plus" /> <span>Add</span>
+                            </button>
+                          )}
+                        </td>
+                      )}
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+          </div>
         ) : (
-          <div className="empty-state">
-            <Icon name="box" />
+          <div className="empty">
+            <div className="ill">
+              <Icon name="box" />
+            </div>
             <b>No drugs match.</b>
             <span>Try another name or clear the filters.</span>
           </div>

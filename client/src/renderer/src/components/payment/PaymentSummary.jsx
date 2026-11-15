@@ -48,7 +48,7 @@ export default function PaymentSummary({ visitId, inv, paid, editable, items, pa
         <span>Total</span>
         <span className="amt">{fmt(inv.total_amount)}</span>
       </div>
-      <p className="ai-soft mono" style={{ fontSize: 12 }}>
+      <p className="ai-soft num" style={{ fontSize: 12 }}>
         {inv.invoice_code} · {translate(paid ? 'Paid' : 'Awaiting payment')}
       </p>
 

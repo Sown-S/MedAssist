@@ -130,7 +130,7 @@ export default function Reception() {
 
       {DEV_TOOLS && (
         <div className="dev-tools">
-          <span className="badge muted">Developer tool</span>
+          <span className="badge b-neutral">Developer tool</span>
           <label>
             <input type="checkbox" checked={simulateOffline} onChange={(e) => setSimulateOffline(e.target.checked)} />
             Simulate a network outage

@@ -60,10 +60,6 @@
 .btn-spinner{width:13px;height:13px;border-color:currentColor;border-right-color:transparent;opacity:.85;vertical-align:-2px;margin-right:7px;}
 .btn[aria-busy="true"]:disabled{opacity:.8;cursor:progress;}
 @media (prefers-reduced-motion: reduce){.spinner{animation-duration:1.6s;}}
-.empty-state{text-align:center;padding:38px 20px;color:var(--ink-soft);}
-.empty-state .ic{font-size:31px;margin-bottom:8px;}
-.empty-state b{display:block;color:var(--ink);font-size:14.5px;margin-bottom:3px;}
-.empty-state p{font-size:13px;margin:0;}
 .field-error{border-color:var(--warn) !important;background:rgba(239,68,68,.08) !important;}
 
 /* Nhãn “ngoài phạm vi” */

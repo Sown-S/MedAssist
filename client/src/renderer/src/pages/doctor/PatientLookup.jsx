@@ -81,7 +81,7 @@ export default function PatientLookup() {
                 <span className="avatar sm">{initials(r.name)}</span>
                 <span className="nm">{r.name}</span>
                 <span className="sub">
-                  <span className="mono">{r.code}</span> · {r.dob} · <span className="mono">{r.phone || '—'}</span>
+                  <span className="num">{r.code}</span> · {r.dob} · <span className="num">{r.phone || '—'}</span>
                 </span>
               </button>
             ))}
@@ -100,11 +100,11 @@ export default function PatientLookup() {
               <div>
                 <b>{p.name}</b>
                 <span className="ai-soft">
-                  <span className="mono">{p.code}</span> · {p.dob} ({ageOf(p.dob)} {translate('yrs')}) · {translate(p.gender)}
+                  <span className="num">{p.code}</span> · {p.dob} ({ageOf(p.dob)} {translate('yrs')}) · {translate(p.gender)}
                 </span>
               </div>
             </div>
-            {p.pregnancy === 'yes' && <span className="badge warn">{translate('Pregnant')}</span>}
+            {p.pregnancy === 'yes' && <span className="badge b-warning">{translate('Pregnant')}</span>}
             <div className="pt-rows">
               <div className="pt-row">
                 <span className="is-ico">
@@ -112,7 +112,7 @@ export default function PatientLookup() {
                 </span>
                 <span>
                   <small>Phone</small>
-                  <b className="mono">{p.phone || '—'}</b>
+                  <b className="num">{p.phone || '—'}</b>
                 </span>
               </div>
               <div className="pt-row">
@@ -121,7 +121,7 @@ export default function PatientLookup() {
                 </span>
                 <span>
                   <small>ID card number (CCCD)</small>
-                  <b className="mono">{p.idNumber || '—'}</b>
+                  <b className="num">{p.idNumber || '—'}</b>
                 </span>
               </div>
             </div>
@@ -136,8 +136,10 @@ export default function PatientLookup() {
         </div>
       ) : (
         <div className="card">
-          <div className="empty-state">
-            <Icon name="search" />
+          <div className="empty">
+            <div className="ill">
+              <Icon name="search" />
+            </div>
             <b>Find a patient</b>
             <span>Search by name, phone number or record ID to see their full history or print a referral letter.</span>
           </div>

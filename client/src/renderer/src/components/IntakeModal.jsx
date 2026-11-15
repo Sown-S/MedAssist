@@ -202,12 +202,12 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
       {existing ? (
         <>
           <div className="pl-summary">
-            <span className="mono">{existing.id}</span>
+            <span className="num">{existing.id}</span>
             <span>{translate(existing.gender)}</span>
             <span>
               {existing.dob} ({ageOf(existing.dob)} {translate('yrs')})
             </span>
-            <span className="mono">{existing.phone}</span>
+            <span className="num">{existing.phone}</span>
             <button className="btn btn-ghost btn-sm" onClick={() => setEditing(!editing)}>
               <Icon name="pencil" /> {editing ? translate('Close') : translate('Edit details')}
             </button>

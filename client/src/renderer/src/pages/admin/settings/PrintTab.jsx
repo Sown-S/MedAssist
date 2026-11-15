@@ -41,36 +41,38 @@ export function PrintTab({ form, draft, readOnly }) {
 
       <div className="card" style={{ marginTop: 14 }}>
         <div className="card-title">This computer only</div>
-        <table className="dt">
-          <thead>
-            <tr>
-              <th>Document</th>
-              <th>Paper size</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {PRINT_DOCS.map((d) => (
-              <tr key={d.key}>
-                <td>{d.label}</td>
-                <td>
-                  <select className="input" value={dev.papers[d.key]} onChange={(e) => setDevice({ papers: { [d.key]: e.target.value } })}>
-                    {PAPERS.map((x) => (
-                      <option key={x.key} value={x.key}>
-                        {x.label}
-                      </option>
-                    ))}
-                  </select>
-                </td>
-                <td className="ai-actions">
-                  <button className="btn btn-ghost btn-sm" title="Print a test page" onClick={() => printTest(d, draft)}>
-                    <Icon name="printer" /> <span>Test</span>
-                  </button>
-                </td>
+        <div className="tbl-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Document</th>
+                <th>Paper size</th>
+                <th></th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {PRINT_DOCS.map((d) => (
+                <tr key={d.key}>
+                  <td>{d.label}</td>
+                  <td>
+                    <select className="input" value={dev.papers[d.key]} onChange={(e) => setDevice({ papers: { [d.key]: e.target.value } })}>
+                      {PAPERS.map((x) => (
+                        <option key={x.key} value={x.key}>
+                          {x.label}
+                        </option>
+                      ))}
+                    </select>
+                  </td>
+                  <td className="ai-actions">
+                    <button className="btn btn-ghost btn-sm" title="Print a test page" onClick={() => printTest(d, draft)}>
+                      <Icon name="printer" /> <span>Test</span>
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
         <p className="ai-foot-note">
           <Icon name="settings" /> <span>Saved on this computer only — e.g. the front-desk PC prints receipts on an 80 mm thermal printer, the doctor’s PC prints prescriptions on A5.</span>
         </p>

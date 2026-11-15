@@ -117,53 +117,55 @@ export default function RoomsPage({ onNavigate }) {
         <div className="card-title">
           <Icon name="stethoscope" /> Rooms <span className="cnt">{rooms?.length ?? 0}</span>
         </div>
-        <table className="dt">
-          <thead>
-            <tr>
-              <th>Code</th>
-              <th>Name</th>
-              <th>Type</th>
-              <th>Doctor</th>
-              <th>Status</th>
-              <th />
-            </tr>
-          </thead>
-          <tbody>
-            {(rooms ?? []).map((r) => (
-              <tr key={r.id} className={r.active ? '' : 'ai-dim'}>
-                <td className="mono">{r.code}</td>
-                <td>
-                  <b>{r.name}</b>
-                </td>
-                <td>{translate(ROOM_TYPES[r.type] ?? r.type)}</td>
-                <td>
-                  {r.type !== 'Exam' ? (
-                    <span className="ai-soft">—</span>
-                  ) : r.physician ? (
-                    r.physician.name
-                  ) : (
-                    <span className="sp-warn">No doctor</span>
-                  )}
-                </td>
-                <td>{r.active ? <span className="badge ok">In use</span> : <span className="badge muted">Not in use</span>}</td>
-                <td className="ai-actions">
-                  <button
-                    className="btn btn-ghost btn-sm"
-                    onClick={() => {
-                      setFormErr('')
-                      setForm({ id: r.id, code: r.code, name: r.name, type: r.type })
-                    }}
-                  >
-                    Rename
-                  </button>
-                  <button className="btn btn-ghost btn-sm" onClick={() => toggle(r)}>
-                    {r.active ? 'Stop using' : 'Use again'}
-                  </button>
-                </td>
+        <div className="tbl-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Code</th>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Doctor</th>
+                <th>Status</th>
+                <th />
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {(rooms ?? []).map((r) => (
+                <tr key={r.id} className={r.active ? '' : 'ai-dim'}>
+                  <td className="num">{r.code}</td>
+                  <td>
+                    <b>{r.name}</b>
+                  </td>
+                  <td>{translate(ROOM_TYPES[r.type] ?? r.type)}</td>
+                  <td>
+                    {r.type !== 'Exam' ? (
+                      <span className="ai-soft">—</span>
+                    ) : r.physician ? (
+                      r.physician.name
+                    ) : (
+                      <span className="sp-warn">No doctor</span>
+                    )}
+                  </td>
+                  <td>{r.active ? <span className="badge b-success">In use</span> : <span className="badge b-neutral">Not in use</span>}</td>
+                  <td className="ai-actions">
+                    <button
+                      className="btn btn-ghost btn-sm"
+                      onClick={() => {
+                        setFormErr('')
+                        setForm({ id: r.id, code: r.code, name: r.name, type: r.type })
+                      }}
+                    >
+                      Rename
+                    </button>
+                    <button className="btn btn-ghost btn-sm" onClick={() => toggle(r)}>
+                      {r.active ? 'Stop using' : 'Use again'}
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
         {rooms && !rooms.length && <p className="ai-soft">No rooms yet.</p>}
       </div>
     </div>

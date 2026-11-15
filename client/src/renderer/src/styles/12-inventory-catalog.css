@@ -1,7 +1,6 @@
 /* Kho theo lô, danh mục */
 
 /* Kho */
-table.dt th.num,table.dt td.num{text-align:right;}
 .inv-sort{cursor:pointer;user-select:none;}
 .inv-sort:hover{color:var(--ink);}
 .inv-sort.on{color:var(--primary-ink);}
@@ -18,7 +17,6 @@ table.dt th.num,table.dt td.num{text-align:right;}
 .essential-chip.inv-ctrl{background:rgba(168,85,247,.18);color:var(--violet);}
 .inv-open td{background:rgba(24,119,242,.06);border-bottom-color:transparent;}
 .inv-batches > td{background:rgba(16,24,40,0.017);padding:10px 14px 14px 32px;}
-.inv-batch-box table.dt{font-size:13px;}
 .inv-batch-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px;font-size:13.5px;}
 .inv-expired td{background:rgba(239,68,68,.07);}
 .inv-fefo{margin-left:6px;font-size:10.5px;}

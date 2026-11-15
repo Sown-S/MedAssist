@@ -93,55 +93,57 @@ export default function ItemsTab({ data, names, canEdit, openRelease, onChanged,
         <Empty title="Nothing matches" text="Try another type, filter or search keyword." />
       ) : (
         <div className="ai-table-wrap">
-          <table className="dt kb-table">
-            <thead>
-              <tr>
-                <th>Code</th>
-                <th>Content</th>
-                <th>Version</th>
-                <th>Status</th>
-                <th />
-              </tr>
-            </thead>
-            <tbody>
-              {list.map((g) => {
-                const row = g.open ?? g.active ?? g.latest
-                return (
-                  <tr key={g.key}>
-                    <td className="mono ai-small">{g.key}</td>
-                    <td>
-                      <Summary kind={kind} values={row.values} names={names} />
-                    </td>
-                    <td className="mono">
-                      v{row.version}
-                      <div className="ai-small ai-soft">{row.release_label}</div>
-                    </td>
-                    <td>
-                      <div className="ai-status">
-                        {g.active ? <StatusBadge status="Active" /> : <StatusBadge status={g.latest.status} />}
-                        {g.open && <StatusBadge status={g.open.status} />}
-                      </div>
-                    </td>
-                    <td className="kb-actions">
-                      {editable && (g.active || g.open) && (
-                        <button className="btn btn-ghost btn-sm" onClick={() => setForm({ group: g })}>
-                          Edit
+          <div className="tbl-wrap">
+            <table className="kb-table">
+              <thead>
+                <tr>
+                  <th>Code</th>
+                  <th>Content</th>
+                  <th>Version</th>
+                  <th>Status</th>
+                  <th />
+                </tr>
+              </thead>
+              <tbody>
+                {list.map((g) => {
+                  const row = g.open ?? g.active ?? g.latest
+                  return (
+                    <tr key={g.key}>
+                      <td className="num ai-small">{g.key}</td>
+                      <td>
+                        <Summary kind={kind} values={row.values} names={names} />
+                      </td>
+                      <td className="num">
+                        v{row.version}
+                        <div className="ai-small ai-soft">{row.release_label}</div>
+                      </td>
+                      <td>
+                        <div className="ai-status">
+                          {g.active ? <StatusBadge status="Active" /> : <StatusBadge status={g.latest.status} />}
+                          {g.open && <StatusBadge status={g.open.status} />}
+                        </div>
+                      </td>
+                      <td className="kb-actions">
+                        {editable && (g.active || g.open) && (
+                          <button className="btn btn-ghost btn-sm" onClick={() => setForm({ group: g })}>
+                            Edit
+                          </button>
+                        )}
+                        {canEdit && g.active && (
+                          <button className="btn btn-ghost btn-sm kb-danger" onClick={() => setOff(g)}>
+                            Turn off now
+                          </button>
+                        )}
+                        <button className="btn btn-ghost btn-sm" onClick={() => setHistoryOf(g)}>
+                          History
                         </button>
-                      )}
-                      {canEdit && g.active && (
-                        <button className="btn btn-ghost btn-sm kb-danger" onClick={() => setOff(g)}>
-                          Turn off now
-                        </button>
-                      )}
-                      <button className="btn btn-ghost btn-sm" onClick={() => setHistoryOf(g)}>
-                        History
-                      </button>
-                    </td>
-                  </tr>
-                )
-              })}
-            </tbody>
-          </table>
+                      </td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
       <p className="ai-foot-note">
@@ -194,33 +196,35 @@ function HistoryModal({ kind, group, names, onClose }) {
         {err && <div className="kb-error">{err}</div>}
         {!rows && !err && <p className="ai-soft">Loading…</p>}
         {rows && (
-          <table className="dt">
-            <thead>
-              <tr>
-                <th>Version</th>
-                <th>Release</th>
-                <th>Status</th>
-                <th>Content</th>
-                <th>Created</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((r) => (
-                <tr key={r.version}>
-                  <td className="mono">v{r.version}</td>
-                  <td className="mono ai-small">{r.release_label}</td>
-                  <td>
-                    <StatusBadge status={r.status} />
-                    {r.retired_reason && <div className="ai-small ai-soft">{r.retired_reason}</div>}
-                  </td>
-                  <td>
-                    <Summary kind={kind} values={r.values} names={names} />
-                  </td>
-                  <td className="ai-small">{shortDateTime(r.created_at)}</td>
+          <div className="tbl-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Version</th>
+                  <th>Release</th>
+                  <th>Status</th>
+                  <th>Content</th>
+                  <th>Created</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {rows.map((r) => (
+                  <tr key={r.version}>
+                    <td className="num">v{r.version}</td>
+                    <td className="num ai-small">{r.release_label}</td>
+                    <td>
+                      <StatusBadge status={r.status} />
+                      {r.retired_reason && <div className="ai-small ai-soft">{r.retired_reason}</div>}
+                    </td>
+                    <td>
+                      <Summary kind={kind} values={r.values} names={names} />
+                    </td>
+                    <td className="ai-small">{shortDateTime(r.created_at)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
     </Modal>
@@ -273,7 +277,7 @@ function DeactivateModal({ kind, group, names, onClose, onDone }) {
               <ul className="kb-dep-list">
                 {deps.map((d) => (
                   <li key={d.kind + d.key}>
-                    <span>{KIND_META[d.kind]?.one ?? d.kind}</span> · <span className="mono">{d.key}</span>
+                    <span>{KIND_META[d.kind]?.one ?? d.kind}</span> · <span className="num">{d.key}</span>
                   </li>
                 ))}
               </ul>

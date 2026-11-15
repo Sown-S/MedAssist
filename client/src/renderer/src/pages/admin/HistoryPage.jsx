@@ -92,7 +92,7 @@ export default function HistoryPage() {
           <span className="ai-soft ai-small">
             {data ? (
               <>
-                <b className="mono">{data.total.toLocaleString('vi-VN')}</b> <span>entries</span>
+                <b className="num">{data.total.toLocaleString('vi-VN')}</b> <span>entries</span>
               </>
             ) : (
               '…'
@@ -114,44 +114,46 @@ export default function HistoryPage() {
         {!data && !err && <p className="ai-soft">Loading…</p>}
         {data && (
           <div className="ai-table-wrap">
-            <table className="dt">
-              <thead>
-                <tr>
-                  <th>Time</th>
-                  <th>Account</th>
-                  <th>Action</th>
-                  <th>Object</th>
-                  <th>Fields changed</th>
-                  <th>IP</th>
-                </tr>
-              </thead>
-              <tbody>
-                {data.items.map((x) => (
-                  <tr key={x.log_id} onClick={() => setOpen(open === x.log_id ? null : x.log_id)} style={{ cursor: 'pointer' }}>
-                    <td className="mono ai-small">{when(x.created_at)}</td>
-                    <td>{x.username ?? (x.attempted_username ? <span className="sp-warn">{x.attempted_username}</span> : <span className="ai-soft">—</span>)}</td>
-                    <td>
-                      <span className={'badge ' + (TONE[x.action_type] ?? '')}>{translate(ACTION_LABEL[x.action_type] ?? x.action_type)}</span>
-                    </td>
-                    <td className="mono ai-small">
-                      {x.target_entity}
-                      {open === x.log_id && x.entity_id && <div className="ai-soft">{x.entity_id}</div>}
-                    </td>
-                    <td className="ai-small">
-                      {changes(x) || <span className="ai-soft">—</span>}
-                      {open === x.log_id && (x.old_values || x.new_values) && <pre className="kb-json">{JSON.stringify({ old: x.old_values, new: x.new_values }, null, 2)}</pre>}
-                    </td>
-                    <td className="mono ai-small">{x.ip_address ?? '—'}</td>
+            <div className="tbl-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Time</th>
+                    <th>Account</th>
+                    <th>Action</th>
+                    <th>Object</th>
+                    <th>Fields changed</th>
+                    <th>IP</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {data.items.map((x) => (
+                    <tr key={x.log_id} onClick={() => setOpen(open === x.log_id ? null : x.log_id)} style={{ cursor: 'pointer' }}>
+                      <td className="num ai-small">{when(x.created_at)}</td>
+                      <td>{x.username ?? (x.attempted_username ? <span className="sp-warn">{x.attempted_username}</span> : <span className="ai-soft">—</span>)}</td>
+                      <td>
+                        <span className={'badge ' + (TONE[x.action_type] ?? '')}>{translate(ACTION_LABEL[x.action_type] ?? x.action_type)}</span>
+                      </td>
+                      <td className="num ai-small">
+                        {x.target_entity}
+                        {open === x.log_id && x.entity_id && <div className="ai-soft">{x.entity_id}</div>}
+                      </td>
+                      <td className="ai-small">
+                        {changes(x) || <span className="ai-soft">—</span>}
+                        {open === x.log_id && (x.old_values || x.new_values) && <pre className="kb-json">{JSON.stringify({ old: x.old_values, new: x.new_values }, null, 2)}</pre>}
+                      </td>
+                      <td className="num ai-small">{x.ip_address ?? '—'}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
             {!data.items.length && <p className="ai-soft">No entries match.</p>}
           </div>
         )}
         <div className="ai-toolbar" style={{ marginTop: 10 }}>
           <span className="ai-small ai-soft">
-            <span>Page</span> <span className="mono">{page + 1}</span> / <span className="mono">{pages}</span>
+            <span>Page</span> <span className="num">{page + 1}</span> / <span className="num">{pages}</span>
           </span>
           <div className="ai-toolbar-right">
             <button className="btn btn-ghost btn-sm" disabled={page === 0} onClick={() => setPage(page - 1)}>

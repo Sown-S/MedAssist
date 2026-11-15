@@ -3,16 +3,6 @@
 /* ---- Tiêu đề trang ---- */
 
 /* ---- Bảng ---- */
-.card table.dt{border-collapse:separate;border-spacing:0;border:1px solid var(--border);border-radius:10px;overflow:hidden;font-size:15px;}
-table.dt th{background:var(--surface-alt);font-size:14px;font-weight:600;text-transform:none;letter-spacing:0;color:var(--ink-soft);padding:12px;}
-table.dt td{padding:12px;vertical-align:middle;}
-table.dt tr.clickable:hover td{background:var(--surface-alt);}
-.badge{display:inline-flex;align-items:center;gap:5px;height:24px;padding:0 10px;font-size:13px;font-weight:600;border-radius:999px;}
-.badge.ok,.badge.low,.badge.warn,.badge.info,.badge.muted{background:var(--surface-alt);}
-.badge.low{background:var(--warn-soft);color:var(--warn-ink);}
-.badge.warn{background:var(--priority-soft);color:var(--priority-ink);}
-.badge.ok{background:var(--success-soft);color:var(--success-ink);}
-.badge.low::before,.badge.warn::before,.badge.info::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;}
 .plain{color:var(--ink-soft);font-size:14px;white-space:nowrap;}
 
 /* ---- Tab dạng nút liền (Hôm nay / Tuần này…) ---- */
@@ -24,23 +14,6 @@ table.dt tr.clickable:hover td{background:var(--surface-alt);}
 .itab.active .itab-cnt{background:var(--primary-soft);color:var(--primary-ink);}
 
 /* ---- Ô tóm tắt có icon (Hoá đơn, Đơn thuốc) ---- */
-.inv-stats{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:18px;}
-.inv-stat{display:grid;grid-template-columns:auto auto;grid-template-rows:auto auto;column-gap:12px;align-items:center;padding:12px 18px 12px 12px;min-width:160px;border:1px solid var(--border);border-radius:12px;background:var(--surface);box-shadow:var(--shadow);text-align:left;font-family:var(--font);}
-.inv-stat .is-ico{grid-row:1/3;width:36px;height:36px;border-radius:8px;display:grid;place-items:center;background:var(--primary-soft);color:var(--primary);}
-.inv-stat .is-ico .icn{width:18px;height:18px;}
-.inv-stat .val{font-size:22px;font-weight:700;line-height:1.15;color:var(--ink);}
-.inv-stat .lbl{font-size:14px;color:var(--ink-soft);}
-.inv-stat.unpaid .is-ico,.inv-stat.t-w .is-ico{background:var(--priority-soft);color:var(--priority);}
-.inv-stat.t-s .is-ico{background:var(--success-soft);color:var(--success);}
-.inv-stat.t-d .is-ico{background:var(--warn-soft);color:var(--warn);}
-.inv-stat.t-n .is-ico{background:var(--surface-alt);color:var(--ink-2);}
-.inv-stat .is-sub{grid-column:2;font-size:12.5px;color:var(--ink-soft);}
-.inv-stat.alert{border-color:color-mix(in srgb,var(--warn) 35%,transparent);}
-button.inv-stat{cursor:pointer;transition:box-shadow .2s,border-color .2s;}
-button.inv-stat:hover{border-color:var(--border-strong);box-shadow:var(--shadow-lg);}
-button.inv-stat.active{border-color:var(--primary);background:var(--primary-soft);}
-.inv-stat.paid .is-ico{background:var(--success-soft);color:var(--success);}
-.inv-stat.unpaid .val,.inv-stat.processing .val,.inv-stat.paid .val{color:var(--ink);}
 .cash-filters{gap:10px;}
 .cash-filters input[type=search],.cash-filters input.grow{height:40px;border:1px solid var(--border);border-radius:8px;padding:0 12px;font-size:15px;}
 

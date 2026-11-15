@@ -54,7 +54,7 @@ export default function CatalogDetailPage({ catalogKey, params, onNavigate }) {
           <p>{s.desc}</p>
         </div>
         <div className="ai-soft ai-small">
-          <span>Last updated</span> <span className="mono">{fmtDateTime(lastUpdate)}</span>
+          <span>Last updated</span> <span className="num">{fmtDateTime(lastUpdate)}</span>
         </div>
       </div>
 
@@ -103,50 +103,52 @@ export default function CatalogDetailPage({ catalogKey, params, onNavigate }) {
           <Empty title="No records match" text="Try another keyword or filter, or import the list from a file." />
         ) : (
           <div className="ai-table-wrap">
-            <table className="dt">
-              <thead>
-                <tr>
-                  <th>Code</th>
-                  <th>Name</th>
-                  {columns.map((c) => (
-                    <th key={c.key} className={c.num ? 'num' : ''}>
-                      {c.label}
-                    </th>
-                  ))}
-                  <th>Status</th>
-                  <th>Updated</th>
-                  <th />
-                </tr>
-              </thead>
-              <tbody>
-                {pg.rows.map((r) => (
-                  <tr key={r.id} className={'row-click' + (r.active ? '' : ' ai-dim')} onClick={() => setEdit(r)}>
-                    <td className="mono">{r.code}</td>
-                    <td>
-                      <b>{r.name}</b>
-                    </td>
+            <div className="tbl-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Code</th>
+                    <th>Name</th>
                     {columns.map((c) => (
-                      <td key={c.key} className={c.num ? 'num' : ''}>
-                        {c.render ? c.render(r, cats, inv, c.key) : r[c.key] || <span className="ai-soft">—</span>}
-                      </td>
+                      <th key={c.key} className={c.num ? 'num' : ''}>
+                        {c.label}
+                      </th>
                     ))}
-                    <td>{r.active ? <span className="badge ok">In use</span> : <span className="badge muted">Discontinued</span>}</td>
-                    <td className="ai-small">
-                      <span className="mono">{fmtDate(r.updatedAt)}</span>
-                      <div className="ai-soft">{r.updatedBy}</div>
-                    </td>
-                    <td className="ai-actions" onClick={(e) => e.stopPropagation()}>
-                      <button className="btn btn-ghost btn-sm" title="Edit" onClick={() => setEdit(r)}>
-                        <Icon name="pencil" />
-                      </button>
-                      <button className="btn btn-ghost btn-sm" title={r.active ? 'Discontinue' : 'Re-activate'} onClick={() => setToggle(r)}>
-                        <Icon name={r.active ? 'ban' : 'repeat'} />
-                      </button>
-                    </td>
+                    <th>Status</th>
+                    <th>Updated</th>
+                    <th />
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {pg.rows.map((r) => (
+                    <tr key={r.id} className={'row-click' + (r.active ? '' : ' ai-dim')} onClick={() => setEdit(r)}>
+                      <td className="num">{r.code}</td>
+                      <td>
+                        <b>{r.name}</b>
+                      </td>
+                      {columns.map((c) => (
+                        <td key={c.key} className={c.num ? 'num' : ''}>
+                          {c.render ? c.render(r, cats, inv, c.key) : r[c.key] || <span className="ai-soft">—</span>}
+                        </td>
+                      ))}
+                      <td>{r.active ? <span className="badge b-success">In use</span> : <span className="badge b-neutral">Discontinued</span>}</td>
+                      <td className="ai-small">
+                        <span className="num">{fmtDate(r.updatedAt)}</span>
+                        <div className="ai-soft">{r.updatedBy}</div>
+                      </td>
+                      <td className="ai-actions" onClick={(e) => e.stopPropagation()}>
+                        <button className="btn btn-ghost btn-sm" title="Edit" onClick={() => setEdit(r)}>
+                          <Icon name="pencil" />
+                        </button>
+                        <button className="btn btn-ghost btn-sm" title={r.active ? 'Discontinue' : 'Re-activate'} onClick={() => setToggle(r)}>
+                          <Icon name={r.active ? 'ban' : 'repeat'} />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
             <Pager {...pg} onPage={setPage} />
           </div>
         )}

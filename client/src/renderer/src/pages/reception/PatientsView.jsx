@@ -103,14 +103,14 @@ export default function PatientsView({ readOnly, onCheckIn }) {
                         </b>
                       </div>
                     </td>
-                    <td className="num">
+                    <td className="r num">
                       {p.dob}{' '}
                       <span className="muted small">
                         · {ageOf(p.dob)} {translate('yrs')}
                       </span>
                     </td>
                     <td>{translate(p.gender)}</td>
-                    <td className="num">{p.phone || '—'}</td>
+                    <td className="r num">{p.phone || '—'}</td>
                     <td>
                       <div className="acts">
                         <button className="btn btn-ghost btn-icon" title={translate('Visit history')} aria-label={translate('Visit history')} onClick={() => setHistory(p)}>
@@ -177,24 +177,26 @@ function VisitHistoryModal({ patient, onClose }) {
         {rows === null ? (
           <p className="ai-soft">{translate('Loading…')}</p>
         ) : rows.length ? (
-          <table className="dt">
-            <thead>
-              <tr>
-                <th>Visit date</th>
-                <th>Reason for visit</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((v) => (
-                <tr key={v.id}>
-                  <td>{dmy(v.at)}</td>
-                  <td>{v.reason || '—'}</td>
-                  <td>{v.referred ? translate('Referred') : translate(statusLabel(v.status))}</td>
+          <div className="tbl-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Visit date</th>
+                  <th>Reason for visit</th>
+                  <th>Status</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {rows.map((v) => (
+                  <tr key={v.id}>
+                    <td>{dmy(v.at)}</td>
+                    <td>{v.reason || '—'}</td>
+                    <td>{v.referred ? translate('Referred') : translate(statusLabel(v.status))}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         ) : (
           <p className="ai-soft">{translate('No visits yet.')}</p>
         )}

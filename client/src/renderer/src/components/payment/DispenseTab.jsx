@@ -49,66 +49,68 @@ export default function DispenseTab({ active, visitId, items, waiting, paid, rx,
   return (
     <div className={'ipanel' + (active ? ' active' : '')}>
       {items.length ? (
-        <table className="dt disp-table">
-          <thead>
-            <tr>
-              <th>Drug</th>
-              <th className="num">Quantity</th>
-              <th>Status</th>
-              <th />
-            </tr>
-          </thead>
-          <tbody>
-            {items.map((l) => (
-              <tr key={l.item_id} className={l.dispense_status === 'Skipped' ? 'disp-skipped' : ''}>
-                <td>
-                  <b>{l.drug_name}</b>
-                  <div className="inv-sub">{[l.dosage, l.frequency, l.duration_days + ' ' + translate('days')].join(' · ')}</div>
-                  {l.instruction && <div className="inv-sub">{l.instruction}</div>}
-                  {l.skip_reason && (
-                    <div className="inv-sub">
-                      {translate('Reason')}: {l.skip_reason}
-                    </div>
-                  )}
-                </td>
-                <td className="num mono">
-                  {l.quantity} {translate(unitLabel(l.unit))}
-                </td>
-                <td>
-                  <span className={'badge ' + (DS[l.dispense_status]?.cls ?? 'muted')}>{translate(DS[l.dispense_status]?.label ?? l.dispense_status)}</span>
-                </td>
-                <td className="ai-actions">
-                  {l.dispense_status === 'Pending' && skipping !== l.item_id && (
-                    <>
-                      <button className="btn btn-primary btn-sm" onClick={() => markDispensed(l)}>
-                        <Icon name="check" /> Dispensed
-                      </button>
-                      <button
-                        className="btn btn-ghost btn-sm"
-                        disabled={paid}
-                        title={paid ? translate('Already paid — only “Dispensed” can be recorded now') : ''}
-                        onClick={() => (setSkipping(l.item_id), setSkipReason(''))}
-                      >
-                        <Icon name="x" /> Skip
-                      </button>
-                    </>
-                  )}
-                  {skipping === l.item_id && (
-                    <span className="disp-skip">
-                      <input className="input" type="text" autoFocus placeholder={translate('Reason (e.g. patient declined, out of stock)')} value={skipReason} onChange={(e) => setSkipReason(e.target.value)} />
-                      <button className="btn btn-danger btn-sm" disabled={skipReason.trim().length < 3} onClick={confirmSkip}>
-                        Skip &amp; return stock
-                      </button>
-                      <button className="btn btn-ghost btn-sm" onClick={() => setSkipping(null)}>
-                        Cancel
-                      </button>
-                    </span>
-                  )}
-                </td>
+        <div className="tbl-wrap">
+          <table className="disp-table">
+            <thead>
+              <tr>
+                <th>Drug</th>
+                <th className="r num">Quantity</th>
+                <th>Status</th>
+                <th />
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {items.map((l) => (
+                <tr key={l.item_id} className={l.dispense_status === 'Skipped' ? 'disp-skipped' : ''}>
+                  <td>
+                    <b>{l.drug_name}</b>
+                    <div className="inv-sub">{[l.dosage, l.frequency, l.duration_days + ' ' + translate('days')].join(' · ')}</div>
+                    {l.instruction && <div className="inv-sub">{l.instruction}</div>}
+                    {l.skip_reason && (
+                      <div className="inv-sub">
+                        {translate('Reason')}: {l.skip_reason}
+                      </div>
+                    )}
+                  </td>
+                  <td className="r num">
+                    {l.quantity} {translate(unitLabel(l.unit))}
+                  </td>
+                  <td>
+                    <span className={'badge ' + (DS[l.dispense_status]?.cls ?? 'muted')}>{translate(DS[l.dispense_status]?.label ?? l.dispense_status)}</span>
+                  </td>
+                  <td className="ai-actions">
+                    {l.dispense_status === 'Pending' && skipping !== l.item_id && (
+                      <>
+                        <button className="btn btn-primary btn-sm" onClick={() => markDispensed(l)}>
+                          <Icon name="check" /> Dispensed
+                        </button>
+                        <button
+                          className="btn btn-ghost btn-sm"
+                          disabled={paid}
+                          title={paid ? translate('Already paid — only “Dispensed” can be recorded now') : ''}
+                          onClick={() => (setSkipping(l.item_id), setSkipReason(''))}
+                        >
+                          <Icon name="x" /> Skip
+                        </button>
+                      </>
+                    )}
+                    {skipping === l.item_id && (
+                      <span className="disp-skip">
+                        <input className="input" type="text" autoFocus placeholder={translate('Reason (e.g. patient declined, out of stock)')} value={skipReason} onChange={(e) => setSkipReason(e.target.value)} />
+                        <button className="btn btn-danger btn-sm" disabled={skipReason.trim().length < 3} onClick={confirmSkip}>
+                          Skip &amp; return stock
+                        </button>
+                        <button className="btn btn-ghost btn-sm" onClick={() => setSkipping(null)}>
+                          Cancel
+                        </button>
+                      </span>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       ) : (
         <p className="ai-soft" style={{ fontSize: 13.5 }}>No medication to dispense for this visit.</p>
       )}

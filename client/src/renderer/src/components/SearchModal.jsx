@@ -80,7 +80,7 @@ export default function SearchModal({ open, onClose, onCheckIn, readOnly }) {
               <button key={r.id} className={'pl-row' + (r.id === sel?.id ? ' active' : '')} onClick={() => setPicked(r.id)}>
                 <span className="nm">{r.name}</span>
                 <span className="sub">
-                  <span className="mono">{r.code ?? r.id}</span> · {r.dob} · <span className="mono">{r.phone}</span>
+                  <span className="num">{r.code ?? r.id}</span> · {r.dob} · <span className="num">{r.phone}</span>
                 </span>
                 {v && !isClosed(v) && <span className="pl-today">{ticketNo(v.ticket)}</span>}
               </button>
@@ -95,12 +95,12 @@ export default function SearchModal({ open, onClose, onCheckIn, readOnly }) {
             <>
               <h3>{sel.name}</h3>
               <div className="pl-summary">
-                <span className="mono">{sel.code ?? sel.id}</span>
+                <span className="num">{sel.code ?? sel.id}</span>
                 <span>{translate(sel.gender)}</span>
                 <span>
                   {sel.dob} ({ageOf(sel.dob)} {translate('yrs')})
                 </span>
-                <span className="mono">{sel.phone}</span>
+                <span className="num">{sel.phone}</span>
               </div>
               <PatientAlerts p={sel} />
               {today && (

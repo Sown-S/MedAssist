@@ -52,7 +52,7 @@ export default function InvoiceItems({ visitId, inv, editable, cat, orders, act,
     <div>
       <div className="sec-t">Services</div>
       <div className="invoice-row">
-        <span className="badge info">{translate('Consultation')}</span>
+        <span className="badge b-info">{translate('Consultation')}</span>
         <div className="inv-name">
           {consultLine?.item_name ?? translate('Consultation fee')}
           {editable && consultServices.length > 1 && (
@@ -83,7 +83,7 @@ export default function InvoiceItems({ visitId, inv, editable, cat, orders, act,
         const it = orderItemOf(x)
         return (
           <div className="invoice-row" key={x.invoice_item_id}>
-            <span className="badge info">{translate('Ordered by the doctor')}</span>
+            <span className="badge b-info">{translate('Ordered by the doctor')}</span>
             <div className="inv-name">
               {x.item_name}
               {x.quantity > 1 && <div className="inv-sub">× {x.quantity}</div>}
@@ -111,7 +111,7 @@ export default function InvoiceItems({ visitId, inv, editable, cat, orders, act,
       )}
       {services.map((x, idx) => (
         <div className="invoice-row" key={x.invoice_item_id}>
-          <span className="badge muted">{translate('Paraclinical')}</span>
+          <span className="badge b-neutral">{translate('Paraclinical')}</span>
           <div className="inv-name">
             {x.item_name}
             {x.quantity > 1 && <div className="inv-sub">× {x.quantity}</div>}

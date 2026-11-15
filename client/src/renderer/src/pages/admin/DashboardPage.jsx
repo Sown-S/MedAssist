@@ -81,33 +81,35 @@ function useServerLog() {
 
 function ServerActivity({ items, onOpen }) {
   return (
-    <table className="dt">
-      <tbody>
-        <tr>
-          <th>Time</th>
-          <th>Account</th>
-          <th>Action</th>
-          <th>Object</th>
-        </tr>
-        {(items ?? []).map((x) => (
-          <tr className="row-click" key={x.log_id} onClick={onOpen}>
-            <td className="mono">{fmtDateTime(x.created_at)}</td>
-            <td>{x.username ?? x.attempted_username ?? '—'}</td>
-            <td>
-              <span className={'badge ' + (ACTION_TONE[x.action_type] ?? '')}>{translate(ACTION_LABEL[x.action_type] ?? x.action_type)}</span>
-            </td>
-            <td className="mono ai-small">{x.target_entity ?? '—'}</td>
-          </tr>
-        ))}
-        {items && !items.length && (
+    <div className="tbl-wrap">
+      <table>
+        <tbody>
           <tr>
-            <td colSpan="4" className="ai-soft">
-              No activity recorded yet.
-            </td>
+            <th>Time</th>
+            <th>Account</th>
+            <th>Action</th>
+            <th>Object</th>
           </tr>
-        )}
-      </tbody>
-    </table>
+          {(items ?? []).map((x) => (
+            <tr className="row-click" key={x.log_id} onClick={onOpen}>
+              <td className="num">{fmtDateTime(x.created_at)}</td>
+              <td>{x.username ?? x.attempted_username ?? '—'}</td>
+              <td>
+                <span className={'badge ' + (ACTION_TONE[x.action_type] ?? '')}>{translate(ACTION_LABEL[x.action_type] ?? x.action_type)}</span>
+              </td>
+              <td className="num ai-small">{x.target_entity ?? '—'}</td>
+            </tr>
+          ))}
+          {items && !items.length && (
+            <tr>
+              <td colSpan="4" className="ai-soft">
+                No activity recorded yet.
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+    </div>
   )
 }
 
@@ -129,7 +131,7 @@ function RevenueChart({ days }) {
   return (
     <div className="lc-wrap">
       <div className="lc-h">
-        <b className="mono">{fmtVnd(last)}</b>
+        <b className="num">{fmtVnd(last)}</b>
         {n > 1 && (
           <span className={'lc-d ' + (diff >= 0 ? 'up' : 'down')}>
             <Icon name="trending" />

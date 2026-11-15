@@ -76,7 +76,7 @@ export function StockTab({ inv, user }) {
         <MiniStat icon="alert" tone={totals.low ? 'w' : 'n'} value={totals.low} label="Below threshold" onClick={() => reset(setStatus)('low')}>
           {totals.out > 0 && (
             <span className="is-sub">
-              <span className="mono">{totals.out}</span> <span>out of stock</span>
+              <span className="num">{totals.out}</span> <span>out of stock</span>
             </span>
           )}
         </MiniStat>
@@ -88,14 +88,14 @@ export function StockTab({ inv, user }) {
             value={totals.w[w]}
             label={
               <>
-                <span>Batches expiring within</span> <span className="mono">{w}</span> <span>days</span>
+                <span>Batches expiring within</span> <span className="num">{w}</span> <span>days</span>
               </>
             }
             onClick={() => reset(setWin)(w)}
           />
         ))}
         <MiniStat icon="trash" tone={totals.expiredQty ? 'd' : 'n'} value={totals.expiredQty} label="Expired batches to write off" alert={totals.expiredQty > 0} onClick={() => reset(setStatus)('expired')}>
-          {totals.expiredQty > 0 && <span className="is-sub mono">{fmtMoney(totals.expiredValue)}</span>}
+          {totals.expiredQty > 0 && <span className="is-sub num">{fmtMoney(totals.expiredValue)}</span>}
         </MiniStat>
       </MiniStats>
 
@@ -123,7 +123,7 @@ export function StockTab({ inv, user }) {
           <div className="ai-seg" title="Expiring within">
             {WINDOWS.map((w) => (
               <button key={w} className={win === w ? 'active' : ''} onClick={() => reset(setWin)(w)}>
-                {w === 0 ? <span>Any expiry</span> : <span className="mono">≤{w}d</span>}
+                {w === 0 ? <span>Any expiry</span> : <span className="num">≤{w}d</span>}
               </button>
             ))}
           </div>
@@ -140,106 +140,108 @@ export function StockTab({ inv, user }) {
         <Empty title="No drugs match" text="Try another keyword or filter." />
       ) : (
         <div className="ai-table-wrap">
-          <table className="dt inv-table">
-            <thead>
-              <tr>
-                <SortTh k="name" sort={sort} onSort={setSort}>
-                  Drug
-                </SortTh>
-                <th>Unit</th>
-                <SortTh k="usable" sort={sort} onSort={setSort} className="num">
-                  On hand
-                </SortTh>
-                <th className="num">Threshold</th>
-                <SortTh k="cover" sort={sort} onSort={setSort} className="num">
-                  Days of cover
-                </SortTh>
-                <SortTh k="reorder" sort={sort} onSort={setSort} className="num">
-                  Suggested reorder
-                </SortTh>
-                <SortTh k="expiry" sort={sort} onSort={setSort}>
-                  Nearest usable expiry
-                </SortTh>
-                <SortTh k="value" sort={sort} onSort={setSort} className="num">
-                  Stock value
-                </SortTh>
-                <th>Status</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {pg.rows.map(({ d, s }) => (
-                <Fragment key={d.id}>
-                  <tr className={'row-click' + (open === d.id ? ' inv-open' : '') + (!d.active ? ' ai-dim' : '')} onClick={() => setOpen(open === d.id ? null : d.id)}>
-                    <td>
-                      <div className="inv-drug">
-                        <Icon name={open === d.id ? 'chevronDown' : 'chevronRight'} />
-                        <div>
-                          <b>{d.name}</b>
-                          {d.group === 'controlled' && <span className="essential-chip inv-ctrl">Controlled</span>}
-                          {d.essential && <span className="essential-chip">Essential</span>}
-                          <div className="ai-soft ai-small">
-                            {d.ingredient}
-                            {d.atc && (
-                              <>
-                                {' · '}
-                                <span className="mono">{d.atc}</span>
-                              </>
-                            )}
+          <div className="tbl-wrap">
+            <table className="inv-table">
+              <thead>
+                <tr>
+                  <SortTh k="name" sort={sort} onSort={setSort}>
+                    Drug
+                  </SortTh>
+                  <th>Unit</th>
+                  <SortTh k="usable" sort={sort} onSort={setSort} className="num">
+                    On hand
+                  </SortTh>
+                  <th className="r num">Threshold</th>
+                  <SortTh k="cover" sort={sort} onSort={setSort} className="num">
+                    Days of cover
+                  </SortTh>
+                  <SortTh k="reorder" sort={sort} onSort={setSort} className="num">
+                    Suggested reorder
+                  </SortTh>
+                  <SortTh k="expiry" sort={sort} onSort={setSort}>
+                    Nearest usable expiry
+                  </SortTh>
+                  <SortTh k="value" sort={sort} onSort={setSort} className="num">
+                    Stock value
+                  </SortTh>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {pg.rows.map(({ d, s }) => (
+                  <Fragment key={d.id}>
+                    <tr className={'row-click' + (open === d.id ? ' inv-open' : '') + (!d.active ? ' ai-dim' : '')} onClick={() => setOpen(open === d.id ? null : d.id)}>
+                      <td>
+                        <div className="inv-drug">
+                          <Icon name={open === d.id ? 'chevronDown' : 'chevronRight'} />
+                          <div>
+                            <b>{d.name}</b>
+                            {d.group === 'controlled' && <span className="essential-chip inv-ctrl">Controlled</span>}
+                            {d.essential && <span className="essential-chip">Essential</span>}
+                            <div className="ai-soft ai-small">
+                              {d.ingredient}
+                              {d.atc && (
+                                <>
+                                  {' · '}
+                                  <span className="num">{d.atc}</span>
+                                </>
+                              )}
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </td>
-                    <td>{unitLabel(d.unit)}</td>
-                    <td className="num">
-                      <b className="mono">{fmtNum(s.usable)}</b>
-                      {s.expired > 0 && (
-                        <div className="ai-small inv-minus">
-                          + <span className="mono">{s.expired}</span> <span>expired</span>
-                        </div>
-                      )}
-                    </td>
-                    <td className="num mono">{d.threshold}</td>
-                    <td className="num">
-                      {s.daysCover == null ? (
-                        <span className="ai-soft">—</span>
-                      ) : (
-                        <span className={s.daysCover < 14 ? 'inv-minus' : ''}>
-                          <span className="mono">{s.daysCover}</span> <span className="ai-small">days</span>
-                        </span>
-                      )}
-                    </td>
-                    <td className="num">{s.reorder ? <b className="mono">{fmtNum(s.reorder)}</b> : <span className="ai-soft">—</span>}</td>
-                    <td>
-                      <ExpiryCell batch={s.nextExpiry} />
-                    </td>
-                    <td className="num mono">{fmtMoney(s.value)}</td>
-                    <td>
-                      <StatusBadges statuses={s.statuses} />
-                    </td>
-                    <td className="ai-actions" onClick={(e) => e.stopPropagation()}>
-                      <button className="btn btn-ghost btn-sm" title="Receive stock" disabled={!d.active} onClick={() => setReceive(d)}>
-                        <Icon name="download" />
-                      </button>
-                      <button className="btn btn-ghost btn-sm" title="Stock card" onClick={() => setCard(d)}>
-                        <Icon name="clipboard" />
-                      </button>
-                      <button className="btn btn-ghost btn-sm" title="Edit drug information" onClick={() => setEdit(d)}>
-                        <Icon name="pencil" />
-                      </button>
-                    </td>
-                  </tr>
-                  {open === d.id && (
-                    <tr className="inv-batches">
-                      <td colSpan={10}>
-                        <BatchTable drug={d} stock={s} onReceive={() => setReceive(d)} />
+                      </td>
+                      <td>{unitLabel(d.unit)}</td>
+                      <td className="r num">
+                        <b className="num">{fmtNum(s.usable)}</b>
+                        {s.expired > 0 && (
+                          <div className="ai-small inv-minus">
+                            + <span className="num">{s.expired}</span> <span>expired</span>
+                          </div>
+                        )}
+                      </td>
+                      <td className="r num">{d.threshold}</td>
+                      <td className="r num">
+                        {s.daysCover == null ? (
+                          <span className="ai-soft">—</span>
+                        ) : (
+                          <span className={s.daysCover < 14 ? 'inv-minus' : ''}>
+                            <span className="num">{s.daysCover}</span> <span className="ai-small">days</span>
+                          </span>
+                        )}
+                      </td>
+                      <td className="r num">{s.reorder ? <b className="num">{fmtNum(s.reorder)}</b> : <span className="ai-soft">—</span>}</td>
+                      <td>
+                        <ExpiryCell batch={s.nextExpiry} />
+                      </td>
+                      <td className="r num">{fmtMoney(s.value)}</td>
+                      <td>
+                        <StatusBadges statuses={s.statuses} />
+                      </td>
+                      <td className="ai-actions" onClick={(e) => e.stopPropagation()}>
+                        <button className="btn btn-ghost btn-sm" title="Receive stock" disabled={!d.active} onClick={() => setReceive(d)}>
+                          <Icon name="download" />
+                        </button>
+                        <button className="btn btn-ghost btn-sm" title="Stock card" onClick={() => setCard(d)}>
+                          <Icon name="clipboard" />
+                        </button>
+                        <button className="btn btn-ghost btn-sm" title="Edit drug information" onClick={() => setEdit(d)}>
+                          <Icon name="pencil" />
+                        </button>
                       </td>
                     </tr>
-                  )}
-                </Fragment>
-              ))}
-            </tbody>
-          </table>
+                    {open === d.id && (
+                      <tr className="inv-batches">
+                        <td colSpan={10}>
+                          <BatchTable drug={d} stock={s} onReceive={() => setReceive(d)} />
+                        </td>
+                      </tr>
+                    )}
+                  </Fragment>
+                ))}
+              </tbody>
+            </table>
+          </div>
           <Pager {...pg} onPage={setPage} />
         </div>
       )}

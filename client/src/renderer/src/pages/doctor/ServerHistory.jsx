@@ -60,22 +60,22 @@ export default function ServerHistory({ patientId, excludeVisitId, onLoaded }) {
         {list.map((v) => (
           <div key={v.visit_id} className="emr-visit">
             <button className="emr-visit-head" onClick={() => setOpen(open === v.visit_id ? null : v.visit_id)}>
-              <span className="mono ai-small">{shortDateTime(v.visit_date)}</span>
+              <span className="num ai-small">{shortDateTime(v.visit_date)}</span>
               <span className={'badge ' + (TONE[v.status] ?? '')}>{translate(VISIT_STATUS_LABEL[v.status] ?? v.status)}</span>
               {v.outcome === 'Referred' && (
-                <span className="badge low">
+                <span className="badge b-danger">
                   {translate('Referred')}
                   {v.referral_facility ? ' → ' + v.referral_facility : ''}
                 </span>
               )}
-              {v.is_red_flag && <span className="badge low">Red flag</span>}
-              {v.triage_priority && v.triage_priority !== 'Routine' && !v.is_red_flag && <span className="badge warn">{translate(PRIORITY_LABEL[v.triage_priority] ?? v.triage_priority)}</span>}
+              {v.is_red_flag && <span className="badge b-danger">Red flag</span>}
+              {v.triage_priority && v.triage_priority !== 'Routine' && !v.is_red_flag && <span className="badge b-warning">{translate(PRIORITY_LABEL[v.triage_priority] ?? v.triage_priority)}</span>}
               <span className="emr-dx">
                 {v.diagnoses.length ? (
                   v.diagnoses.map((d, i) => (
                     <span key={i} className={d.is_primary ? '' : 'ai-soft'}>
                       {i > 0 && ' · '}
-                      {d.icd10_code && <b className="mono">{d.icd10_code}</b>} {d.diagnosis_name}
+                      {d.icd10_code && <b className="num">{d.icd10_code}</b>} {d.diagnosis_name}
                     </span>
                   ))
                 ) : (
@@ -125,7 +125,7 @@ function ReferralBox({ record, onSaved }) {
   return (
     <div className="emr-referral">
       <div className="emr-referral-head">
-        <span className="badge low">
+        <span className="badge b-danger">
           <Icon name="ban" /> {translate('Referred')}
         </span>
         <b>{f.facility_name}</b>
@@ -196,7 +196,7 @@ function VisitDetail({ visitId }) {
       {r.diagnoses.length ? (
         r.diagnoses.map((d) => (
           <div key={d.diagnosis_id} className={'emr-dx-row' + (d.confirmed_by_physician ? '' : ' retracted')}>
-            <span className={'badge ' + (d.is_primary ? 'info' : 'muted')}>{d.is_primary ? 'Primary' : 'Secondary'}</span> {d.icd10_code && <b className="mono">{d.icd10_code}</b>} {d.diagnosis_name}
+            <span className={'badge ' + (d.is_primary ? 'info' : 'muted')}>{d.is_primary ? 'Primary' : 'Secondary'}</span> {d.icd10_code && <b className="num">{d.icd10_code}</b>} {d.diagnosis_name}
             {!d.confirmed_by_physician && <span className="ai-small ai-soft"> ({translate('withdrawn')})</span>}
             {d.clinical_notes && <div className="emr-notes">{d.clinical_notes}</div>}
           </div>
@@ -217,28 +217,30 @@ function VisitDetail({ visitId }) {
 
       <div className="sec-t">Prescription</div>
       {r.prescription?.items.length ? (
-        <table className="dt">
-          <tbody>
-            {r.prescription.items.map((x) => (
-              <tr key={x.item_id}>
-                <td>
-                  <b>{x.drug_label}</b>
-                  <div className="ai-small ai-soft">{[x.dosage, x.frequency, x.duration_days + ' ' + translate('days')].join(' · ')}</div>
-                  {x.instruction && <div className="ai-small ai-soft">{x.instruction}</div>}
-                </td>
-                <td className="num mono">
-                  {x.quantity} {x.unit}
-                </td>
-                <td>
-                  <span className={'badge ' + (x.dispense_status === 'Dispensed' ? 'ok' : x.dispense_status === 'Skipped' ? 'muted' : 'warn')}>
-                    {translate(x.dispense_status === 'Dispensed' ? 'Dispensed' : x.dispense_status === 'Skipped' ? 'Skipped' : 'Waiting to dispense')}
-                  </span>
-                  {x.skip_reason && <div className="ai-small ai-soft">{x.skip_reason}</div>}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <div className="tbl-wrap">
+          <table>
+            <tbody>
+              {r.prescription.items.map((x) => (
+                <tr key={x.item_id}>
+                  <td>
+                    <b>{x.drug_label}</b>
+                    <div className="ai-small ai-soft">{[x.dosage, x.frequency, x.duration_days + ' ' + translate('days')].join(' · ')}</div>
+                    {x.instruction && <div className="ai-small ai-soft">{x.instruction}</div>}
+                  </td>
+                  <td className="r num">
+                    {x.quantity} {x.unit}
+                  </td>
+                  <td>
+                    <span className={'badge ' + (x.dispense_status === 'Dispensed' ? 'ok' : x.dispense_status === 'Skipped' ? 'muted' : 'warn')}>
+                      {translate(x.dispense_status === 'Dispensed' ? 'Dispensed' : x.dispense_status === 'Skipped' ? 'Skipped' : 'Waiting to dispense')}
+                    </span>
+                    {x.skip_reason && <div className="ai-small ai-soft">{x.skip_reason}</div>}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       ) : (
         <p className="ai-soft ai-small">No prescription.</p>
       )}
@@ -248,7 +250,7 @@ function VisitDetail({ visitId }) {
           <span className="sec-t" style={{ display: 'inline' }}>
             Invoice
           </span>{' '}
-          <span className="mono">{r.invoice.invoice_code}</span> · <b className="mono">{money(r.invoice.total_amount)}</b> ·{' '}
+          <span className="num">{r.invoice.invoice_code}</span> · <b className="num">{money(r.invoice.total_amount)}</b> ·{' '}
           <span className={'badge ' + (r.invoice.payment_status === 'Paid' ? 'ok' : r.invoice.payment_status === 'Cancelled' ? 'muted' : 'warn')}>
             {translate(r.invoice.payment_status === 'Paid' ? 'Paid' : r.invoice.payment_status === 'Cancelled' ? 'Cancelled' : 'Awaiting payment')}
           </span>

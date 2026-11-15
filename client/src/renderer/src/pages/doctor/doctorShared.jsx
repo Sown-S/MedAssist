@@ -156,7 +156,7 @@ export function PatientBrief({ v, past }) {
         </div>
         <div>
           <span className="brief-k">Vitals at check-in</span>
-          <span className="mono">{vitalsText(v.vitals)}</span>
+          <span className="num">{vitalsText(v.vitals)}</span>
         </div>
         <div>
           <span className="brief-k">Previous visits</span>
@@ -167,7 +167,7 @@ export function PatientBrief({ v, past }) {
         <div className="brief-last">
           <span className="brief-k">Last visit</span>
           <span>
-            <b className="mono">{dmy(last.rxAt ?? last.statusAt)}</b> · {last.doctor || '—'} · {last.diagnosis || translate(last.reason ?? '') || '—'}
+            <b className="num">{dmy(last.rxAt ?? last.statusAt)}</b> · {last.doctor || '—'} · {last.diagnosis || translate(last.reason ?? '') || '—'}
           </span>
           {last.rx?.length > 0 && <small>{last.rx.map((x) => `${x.name} × ${x.qty}`).join(', ')}</small>}
         </div>
@@ -187,22 +187,24 @@ export function LabOrderResults({ order, summary }) {
   return (
     <div className="lab-res">
       <div className="lab-res-head">
-        <span className="mono">
+        <span className="num">
           {hhmm(order.at)} {dmy(order.at)}
         </span>
         <span>· {order.by}</span>
         {order.diagnosis && <span className="ai-soft">· {order.diagnosis}</span>}
       </div>
-      <table className="dt lab-res-table">
-        <tbody>
-          {rows.map((r) => (
-            <tr key={r.key} className={r.cancelled ? 'ai-dim' : ''}>
-              <td>{r.cancelled ? <s>{r.name}</s> : r.name}</td>
-              <td className={r.result ? '' : 'ai-soft'}>{r.cancelled ? translate('Cancelled — not done') : r.result || translate('No result yet')}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <div className="tbl-wrap">
+        <table className="lab-res-table">
+          <tbody>
+            {rows.map((r) => (
+              <tr key={r.key} className={r.cancelled ? 'ai-dim' : ''}>
+                <td>{r.cancelled ? <s>{r.name}</s> : r.name}</td>
+                <td className={r.result ? '' : 'ai-soft'}>{r.cancelled ? translate('Cancelled — not done') : r.result || translate('No result yet')}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
       {conclusion && (
         <p className="lab-res-sum">
           <b>{translate('Conclusion')}:</b> {conclusion}

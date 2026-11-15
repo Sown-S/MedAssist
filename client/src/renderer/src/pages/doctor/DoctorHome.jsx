@@ -118,19 +118,19 @@ export default function DoctorHome({ go }) {
             const n = minutesSince(v.statusAt, now)
             return (
               <div className="pay-row clickable" key={v.id} onClick={() => setWaitOpen(v.id)} title={translate('View the patient summary')}>
-                <span className="mono t">{no(v.ticket)}</span>
+                <span className="num t">{no(v.ticket)}</span>
                 <span className="nm">
                   <b>{v.name}</b>
                   <small>{translate(v.reason)}</small>
                 </span>
-                {v.triage === 'emergency' && <span className="badge low">{translate('Emergency')}</span>}
+                {v.triage === 'emergency' && <span className="badge b-danger">{translate('Emergency')}</span>}
                 {v.priority && v.triage !== 'emergency' && (
                   <span className="flag-priority">
                     <Icon name="zap" /> Priority
                   </span>
                 )}
                 {v.allergies && <span className="allergy-chip">Allergy</span>}
-                {v.status === ST.WAITING && <span className="badge muted">{translate('Not checked in')}</span>}
+                {v.status === ST.WAITING && <span className="badge b-neutral">{translate('Not checked in')}</span>}
                 <span className={'p-wait ' + waitTone(n)}>{n} min</span>
               </div>
             )
@@ -149,7 +149,7 @@ export default function DoctorHome({ go }) {
           </div>
           {recent.slice(0, 6).map((r) => (
             <div className="pay-row clickable" key={r.id} onClick={() => go('prescriptions')} title={translate('View & review the prescription')}>
-              <span className="mono t">{r.day === today ? hhmm(r.rxAt) : dmy(r.rxAt).slice(0, 5)}</span>
+              <span className="num t">{r.day === today ? hhmm(r.rxAt) : dmy(r.rxAt).slice(0, 5)}</span>
               <span className="nm">
                 <b>{r.name}</b>
                 <small>{r.diagnosis || r.rx.map((x) => x.name).join(', ')}</small>

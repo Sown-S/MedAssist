@@ -85,8 +85,8 @@ export default function CatalogPage({ onNavigate }) {
                   className={'cat-result' + (r.active ? '' : ' ai-dim')}
                   onClick={() => onNavigate(r.page, r.page.startsWith('cat-') ? { q: r.code, openId: r.id } : { q: r.name })}
                 >
-                  <span className="badge">{info(r.key).title}</span> <b className="mono">{r.code}</b> <span>{r.name}</span>
-                  {!r.active && <span className="badge muted">Discontinued</span>}
+                  <span className="badge">{info(r.key).title}</span> <b className="num">{r.code}</b> <span>{r.name}</span>
+                  {!r.active && <span className="badge b-neutral">Discontinued</span>}
                 </div>
               ))
             )}
@@ -97,63 +97,65 @@ export default function CatalogPage({ onNavigate }) {
       {ORDER.map(({ group, keys }) => (
         <div className="card" style={{ marginTop: 14 }} key={group}>
           <div className="card-title">{group}</div>
-          <table className="dt">
-            <thead>
-              <tr>
-                <th>Catalog</th>
-                <th className="num">Records</th>
-                <th>Last updated</th>
-                <th>Status</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {keys.map((key) => {
-                const x = info(key)
-                const active = x.list.filter((r) => r.active).length
-                const issues = review(key, cats, inv)
-                return (
-                  <tr key={key} className="row-click" onClick={() => onNavigate(x.page)}>
-                    <td>
-                      <b>{x.title}</b>
-                      <div className="ai-soft ai-small">{x.desc}</div>
-                    </td>
-                    <td className="num">
-                      <b className="mono">{active}</b>
-                      {active !== x.list.length && (
-                        <div className="ai-soft ai-small">
-                          / <span className="mono">{x.list.length}</span> <span>total</span>
-                        </div>
-                      )}
-                    </td>
-                    <td className="mono ai-small">{fmtDateTime(x.last)}</td>
-                    <td>
-                      {issues.length ? (
-                        <>
-                          <span className="badge warn">Needs review</span>
-                          {issues.map((t) => (
-                            <div key={t} className="ai-small sp-warn cat-issue">
-                              {t}
-                            </div>
-                          ))}
-                        </>
-                      ) : (
-                        <span className="badge ok">In use</span>
-                      )}
-                    </td>
-                    <td className="ai-actions" onClick={(e) => e.stopPropagation()}>
-                      <button className="btn btn-ghost btn-sm" title="Export" onClick={() => exportRow(key)}>
-                        <Icon name="download" />
-                      </button>
-                      <button className="btn btn-ghost btn-sm" title="Open" onClick={() => onNavigate(x.page)}>
-                        <Icon name="chevronRight" />
-                      </button>
-                    </td>
-                  </tr>
-                )
-              })}
-            </tbody>
-          </table>
+          <div className="tbl-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Catalog</th>
+                  <th className="r num">Records</th>
+                  <th>Last updated</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {keys.map((key) => {
+                  const x = info(key)
+                  const active = x.list.filter((r) => r.active).length
+                  const issues = review(key, cats, inv)
+                  return (
+                    <tr key={key} className="row-click" onClick={() => onNavigate(x.page)}>
+                      <td>
+                        <b>{x.title}</b>
+                        <div className="ai-soft ai-small">{x.desc}</div>
+                      </td>
+                      <td className="r num">
+                        <b className="num">{active}</b>
+                        {active !== x.list.length && (
+                          <div className="ai-soft ai-small">
+                            / <span className="num">{x.list.length}</span> <span>total</span>
+                          </div>
+                        )}
+                      </td>
+                      <td className="num ai-small">{fmtDateTime(x.last)}</td>
+                      <td>
+                        {issues.length ? (
+                          <>
+                            <span className="badge b-warning">Needs review</span>
+                            {issues.map((t) => (
+                              <div key={t} className="ai-small sp-warn cat-issue">
+                                {t}
+                              </div>
+                            ))}
+                          </>
+                        ) : (
+                          <span className="badge b-success">In use</span>
+                        )}
+                      </td>
+                      <td className="ai-actions" onClick={(e) => e.stopPropagation()}>
+                        <button className="btn btn-ghost btn-sm" title="Export" onClick={() => exportRow(key)}>
+                          <Icon name="download" />
+                        </button>
+                        <button className="btn btn-ghost btn-sm" title="Open" onClick={() => onNavigate(x.page)}>
+                          <Icon name="chevronRight" />
+                        </button>
+                      </td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+          </div>
         </div>
       ))}
     </div>

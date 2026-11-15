@@ -154,13 +154,13 @@ export default function SettingsPage({ params, onNavigate, setLeaveGuard }) {
           <span>
             {errCount > 0 ? (
               <span className="set-err">
-                <span className="mono">{errCount}</span> <span>fields need fixing</span>
+                <span className="num">{errCount}</span> <span>fields need fixing</span>
               </span>
             ) : blockedOffline ? (
               <span className="set-err">No connection to the clinic server — clinic details and shared settings cannot be saved now.</span>
             ) : (
               <>
-                <span className="mono">{changed.size}</span> <span>unsaved changes</span>
+                <span className="num">{changed.size}</span> <span>unsaved changes</span>
               </>
             )}
           </span>

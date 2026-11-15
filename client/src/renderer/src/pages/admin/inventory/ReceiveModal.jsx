@@ -86,7 +86,7 @@ export default function ReceiveModal({ drug, drugs, onClose }) {
         {qty > 0 && cost >= 0 && (
           <div className="rc-facts">
             <span>
-              <span>Receipt value</span> <b className="mono">{fmtMoney(qty * cost)}</b>
+              <span>Receipt value</span> <b className="num">{fmtMoney(qty * cost)}</b>
             </span>
           </div>
         )}

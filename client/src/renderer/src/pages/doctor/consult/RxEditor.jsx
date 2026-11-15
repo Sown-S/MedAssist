@@ -108,7 +108,7 @@ export default function RxEditor({ rx, tried, srvDrugs, issueOf, issues, short, 
                     {issue.usable != null && (
                       <>
                         {' '}
-                        (<span>only</span> <span className="mono">{issue.usable}</span> <span>{unitLabel(issue.unit)}</span>)
+                        (<span>only</span> <span className="num">{issue.usable}</span> <span>{unitLabel(issue.unit)}</span>)
                       </>
                     )}
                   </div>
@@ -123,7 +123,7 @@ export default function RxEditor({ rx, tried, srvDrugs, issueOf, issues, short, 
           </datalist>
         </div>
       ) : (
-        <div className="empty-state" style={{ padding: '22px 10px' }}>
+        <div className="empty" style={{ padding: '22px 10px' }}>
           <Icon name="clipboard" />
           <b>No drugs yet</b>
           <span>Search the catalog, pick a template or repeat the last prescription. A visit can also be completed without drugs.</span>
@@ -139,7 +139,7 @@ export default function RxEditor({ rx, tried, srvDrugs, issueOf, issues, short, 
             <b>{translate('Confirmation blocked — not enough usable stock')}</b>
             {short.map((x) => (
               <div key={x.key}>
-                <span>{x.name}</span> — <span>{translate(SHORT_REASON[x.reason] ?? x.reason)}</span> ({translate('needs')} <b className="mono">{x.need}</b>, {translate('usable')} <b className="mono">{x.usable}</b>)
+                <span>{x.name}</span> — <span>{translate(SHORT_REASON[x.reason] ?? x.reason)}</span> ({translate('needs')} <b className="num">{x.need}</b>, {translate('usable')} <b className="num">{x.usable}</b>)
               </div>
             ))}
           </div>

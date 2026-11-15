@@ -1975,6 +1975,7 @@ export const VI = {
   'Transferred at once or placed at the top of the queue · doctors are alerted': "Chuyển tuyến ngay hoặc đưa lên đầu hàng chờ · bác sĩ đã được báo",
   'Signs': "Dấu hiệu",
   'Suggested from the description — confirm each symptom before use': "Đề xuất từ lời kể — xác nhận từng triệu chứng trước khi dùng",
+  'Choose a day': "Chọn ngày",
 }
 
 export const PATTERNS = [

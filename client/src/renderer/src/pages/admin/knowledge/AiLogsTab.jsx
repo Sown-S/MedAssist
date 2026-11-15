@@ -78,7 +78,7 @@ export default function AiLogsTab() {
         <span className="ai-soft ai-small">
           {data ? (
             <>
-              <b className="mono">{data.total.toLocaleString('vi-VN')}</b> <span>runs</span>
+              <b className="num">{data.total.toLocaleString('vi-VN')}</b> <span>runs</span>
             </>
           ) : (
             '…'
@@ -98,45 +98,47 @@ export default function AiLogsTab() {
       {!data && !err && <p className="ai-soft">Loading…</p>}
       {data && (
         <div className="ai-table-wrap" style={{ marginTop: 10 }}>
-          <table className="dt">
-            <thead>
-              <tr>
-                <th>Queued</th>
-                <th>Run</th>
-                <th>Status</th>
-                <th>Priority (rule → final)</th>
-                <th>Suggested codes</th>
-                <th className="num">Time</th>
-                <th>Doctor’s decision</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data.items.map((x) => {
-                const st = STATUS_META[x.status] ?? { label: x.status, tone: '' }
-                return (
-                  <tr key={x.assessment_id + x.run_type} onClick={() => setOpen(open === x.assessment_id ? null : x.assessment_id)} style={{ cursor: 'pointer' }}>
-                    <td className="mono ai-small">{shortDateTime(x.queued_at)}</td>
-                    <td className="ai-small">
-                      {translate(RUN_LABEL[x.run_type] ?? x.run_type)}
-                      {x.mode && <div className="ai-soft">{translate(MODE_LABEL[x.mode] ?? x.mode)}</div>}
-                    </td>
-                    <td>
-                      <span className={'badge ' + st.tone}>{translate(st.label)}</span>
-                      {x.attempt_count > 1 && (
-                        <div className="ai-soft ai-small">
-                          {x.attempt_count} {translate('attempts')}
-                        </div>
-                      )}
-                    </td>
-                    <td className="mono ai-small">{x.priority_rule || x.priority_final ? `${x.priority_rule ?? '—'} → ${x.priority_final ?? '—'}` : '—'}</td>
-                    <td className="mono ai-small">{x.suggested_codes.length ? x.suggested_codes.join(', ') : '—'}</td>
-                    <td className="num mono ai-small">{sec(x.latency_total_ms)}</td>
-                    <td className="ai-small">{x.physician_decision ? translate(DECISION_LABEL[x.physician_decision] ?? x.physician_decision) : <span className="ai-soft">—</span>}</td>
-                  </tr>
-                )
-              })}
-            </tbody>
-          </table>
+          <div className="tbl-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Queued</th>
+                  <th>Run</th>
+                  <th>Status</th>
+                  <th>Priority (rule → final)</th>
+                  <th>Suggested codes</th>
+                  <th className="r num">Time</th>
+                  <th>Doctor’s decision</th>
+                </tr>
+              </thead>
+              <tbody>
+                {data.items.map((x) => {
+                  const st = STATUS_META[x.status] ?? { label: x.status, tone: '' }
+                  return (
+                    <tr key={x.assessment_id + x.run_type} onClick={() => setOpen(open === x.assessment_id ? null : x.assessment_id)} style={{ cursor: 'pointer' }}>
+                      <td className="num ai-small">{shortDateTime(x.queued_at)}</td>
+                      <td className="ai-small">
+                        {translate(RUN_LABEL[x.run_type] ?? x.run_type)}
+                        {x.mode && <div className="ai-soft">{translate(MODE_LABEL[x.mode] ?? x.mode)}</div>}
+                      </td>
+                      <td>
+                        <span className={'badge ' + st.tone}>{translate(st.label)}</span>
+                        {x.attempt_count > 1 && (
+                          <div className="ai-soft ai-small">
+                            {x.attempt_count} {translate('attempts')}
+                          </div>
+                        )}
+                      </td>
+                      <td className="num ai-small">{x.priority_rule || x.priority_final ? `${x.priority_rule ?? '—'} → ${x.priority_final ?? '—'}` : '—'}</td>
+                      <td className="num ai-small">{x.suggested_codes.length ? x.suggested_codes.join(', ') : '—'}</td>
+                      <td className="num num ai-small">{sec(x.latency_total_ms)}</td>
+                      <td className="ai-small">{x.physician_decision ? translate(DECISION_LABEL[x.physician_decision] ?? x.physician_decision) : <span className="ai-soft">—</span>}</td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+          </div>
           {open && (() => {
             const x = data.items.find((i) => i.assessment_id === open)
             if (!x) return null
@@ -144,23 +146,23 @@ export default function AiLogsTab() {
               <div className="pl-detail" style={{ marginTop: 10 }}>
                 <div className="pref-row inline">
                   <span>Knowledge release</span>
-                  <b className="mono">{x.knowledge_release_label ?? '—'}</b>
+                  <b className="num">{x.knowledge_release_label ?? '—'}</b>
                 </div>
                 <div className="pref-row inline">
                   <span>Model / prompt</span>
-                  <b className="mono">
+                  <b className="num">
                     {x.model_name ?? '—'} · {x.prompt_version ?? '—'}
                   </b>
                 </div>
                 <div className="pref-row inline">
                   <span>Time: rules / model / total</span>
-                  <b className="mono">
+                  <b className="num">
                     {sec(x.latency_phase1_ms)} · {sec(x.latency_llm_ms)} · {sec(x.latency_total_ms)}
                   </b>
                 </div>
                 <div className="pref-row inline">
                   <span>Started → finished</span>
-                  <b className="mono">
+                  <b className="num">
                     {shortDateTime(x.started_at)} → {shortDateTime(x.completed_at)}
                   </b>
                 </div>
@@ -173,7 +175,7 @@ export default function AiLogsTab() {
       )}
       <div className="ai-toolbar" style={{ marginTop: 10 }}>
         <span className="ai-small ai-soft">
-          <span>Page</span> <span className="mono">{page + 1}</span> / <span className="mono">{pages}</span>
+          <span>Page</span> <span className="num">{page + 1}</span> / <span className="num">{pages}</span>
         </span>
         <div className="ai-toolbar-right">
           <button className="btn btn-ghost btn-sm" disabled={page === 0} onClick={() => setPage(page - 1)}>

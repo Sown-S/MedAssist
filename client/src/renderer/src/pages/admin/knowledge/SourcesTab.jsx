@@ -23,32 +23,34 @@ export default function SourcesTab({ data, canEdit, onChanged }) {
       {!data.sources.length ? (
         <Empty icon="folder" title="No source yet" />
       ) : (
-        <table className="dt">
-          <thead>
-            <tr>
-              <th>Organization</th>
-              <th>Title</th>
-              <th>Edition</th>
-              <th>Published</th>
-              <th>Link</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data.sources.map((s) => (
-              <tr key={s.source_id}>
-                <td>
-                  <b>{s.organization}</b>
-                </td>
-                <td>{s.title}</td>
-                <td className="mono ai-small">{s.edition ?? '—'}</td>
-                <td className="ai-small">{s.publication_date ?? '—'}</td>
-                <td className="ai-small kb-url">{s.url ?? '—'}</td>
-                <td>{s.is_active ? <span className="badge ok">In use</span> : <span className="badge muted">Not in use</span>}</td>
+        <div className="tbl-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Organization</th>
+                <th>Title</th>
+                <th>Edition</th>
+                <th>Published</th>
+                <th>Link</th>
+                <th>Status</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {data.sources.map((s) => (
+                <tr key={s.source_id}>
+                  <td>
+                    <b>{s.organization}</b>
+                  </td>
+                  <td>{s.title}</td>
+                  <td className="num ai-small">{s.edition ?? '—'}</td>
+                  <td className="ai-small">{s.publication_date ?? '—'}</td>
+                  <td className="ai-small kb-url">{s.url ?? '—'}</td>
+                  <td>{s.is_active ? <span className="badge b-success">In use</span> : <span className="badge b-neutral">Not in use</span>}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
       <SourceModal
         open={adding}

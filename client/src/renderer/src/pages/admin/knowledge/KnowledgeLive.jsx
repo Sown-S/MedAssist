@@ -62,8 +62,8 @@ export default function KnowledgeLive({ reviewOnly = false }) {
           </p>
         </div>
         {active && (
-          <span className="badge ok">
-            <span>In use:</span> <span className="mono">{active.label}</span>
+          <span className="badge b-success">
+            <span>In use:</span> <span className="num">{active.label}</span>
           </span>
         )}
       </div>
@@ -113,7 +113,7 @@ export default function KnowledgeLive({ reviewOnly = false }) {
       <MiniStats>
         <MiniStat icon="fileText" value={count('conditions')} label="Conditions">
           <span className="is-sub">
-            <span className="mono">{count('symptoms')}</span> <span>symptoms</span> · <span className="mono">{count('relations')}</span> <span>links</span>
+            <span className="num">{count('symptoms')}</span> <span>symptoms</span> · <span className="num">{count('relations')}</span> <span>links</span>
           </span>
         </MiniStat>
         {reviewOnly && <MiniStat icon="siren" tone="d" value={rules.filter((g) => g.active.values.rule_type === 'RED_FLAG').length} label="Red-flag rules in use" />}

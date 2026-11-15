@@ -138,7 +138,7 @@ export default function QueueView({ readOnly, onPay }) {
                     const w = waitOf(v)
                     return (
                       <tr key={v.id} className={rowTone(v) + (isIntakeOpen(v) || [ST.FINISHED, ST.CANCELLED].includes(v.status) ? ' dim' : '')}>
-                        <td className="num">
+                        <td className="r num">
                           <b style={{ fontSize: 'var(--fs-md)' }} title={translate('Arrival time') + ' ' + hhmm(v.arrivedAt)}>
                             {String(v.ticket).padStart(3, '0')}
                           </b>

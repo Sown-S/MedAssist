@@ -28,11 +28,11 @@ export default function SecretPanel({ secret, onClose }) {
         <div className="staff-secret">
           <div>
             <div className="ai-small ai-soft">Username</div>
-            <div className="mono">{a.username}</div>
+            <div className="num">{a.username}</div>
           </div>
           <div>
             <div className="ai-small ai-soft">Temporary password</div>
-            <div className="mono staff-secret-pw">{password}</div>
+            <div className="num staff-secret-pw">{password}</div>
           </div>
           <button type="button" className="btn btn-ghost btn-sm" onClick={copy}>
             <Icon name={copied ? 'check' : 'clipboard'} /> <span>{copied ? 'Copied' : 'Copy'}</span>

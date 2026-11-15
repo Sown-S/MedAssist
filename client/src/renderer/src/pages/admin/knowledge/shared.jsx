@@ -88,7 +88,7 @@ export function Summary({ kind, values, names }) {
   if (kind === 'conditions')
     return (
       <span>
-        <b>{v.name_vi}</b> {v.icd10_code && <span className="mono">· {v.icd10_code}</span>} {v.disease_group && <span className="ai-soft">· {v.disease_group}</span>}
+        <b>{v.name_vi}</b> {v.icd10_code && <span className="num">· {v.icd10_code}</span>} {v.disease_group && <span className="ai-soft">· {v.disease_group}</span>}
       </span>
     )
   if (kind === 'relations')
@@ -96,7 +96,7 @@ export function Summary({ kind, values, names }) {
       <span>
         <b>{names.condition[v.condition_code] ?? v.condition_code}</b> <span className="ai-soft">↔</span> {names.symptom[v.symptom_code] ?? v.symptom_code}{' '}
         <span className={'badge ' + (v.polarity === 'CONTRADICTS' ? 'low' : 'ok')}>{v.polarity === 'CONTRADICTS' ? 'Contradicts' : 'Supports'}</span>{' '}
-        <span className="mono">{Number(v.weight).toFixed(2)}</span> {v.is_key && <span className="badge info">Key symptom</span>}
+        <span className="num">{Number(v.weight).toFixed(2)}</span> {v.is_key && <span className="badge b-info">Key symptom</span>}
       </span>
     )
   if (kind === 'excerpts')

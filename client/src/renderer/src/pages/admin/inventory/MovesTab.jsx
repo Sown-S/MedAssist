@@ -47,39 +47,41 @@ export function MovesTab({ inv }) {
         </div>
       </div>
       <div className="ai-table-wrap">
-        <table className="dt">
-          <thead>
-            <tr>
-              <th>Time</th>
-              <th>Voucher no.</th>
-              <th>Drug</th>
-              <th>Type</th>
-              <th>Lot</th>
-              <th className="num">Quantity</th>
-              <th className="num">Balance</th>
-              <th>By</th>
-            </tr>
-          </thead>
-          <tbody>
-            {pg.rows.map((m) => (
-              <tr key={m.id}>
-                <td className="mono">{fmtDateTime(m.at)}</td>
-                <td className="mono">{m.ref}</td>
-                <td>{name(m.drugId)}</td>
-                <td>
-                  <span className={'badge ' + (m.type === 'in' ? 'ok' : m.type === 'out' ? 'info' : 'warn')}>{MOVE_TYPES[m.type]}</span>
-                </td>
-                <td className="mono">{m.lot}</td>
-                <td className={'mono num ' + (m.qty > 0 ? 'inv-plus' : 'inv-minus')}>
-                  {m.qty > 0 ? '+' : ''}
-                  {m.qty}
-                </td>
-                <td className="mono num">{m.balance}</td>
-                <td>{m.by}</td>
+        <div className="tbl-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>Voucher no.</th>
+                <th>Drug</th>
+                <th>Type</th>
+                <th>Lot</th>
+                <th className="r num">Quantity</th>
+                <th className="r num">Balance</th>
+                <th>By</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {pg.rows.map((m) => (
+                <tr key={m.id}>
+                  <td className="num">{fmtDateTime(m.at)}</td>
+                  <td className="num">{m.ref}</td>
+                  <td>{name(m.drugId)}</td>
+                  <td>
+                    <span className={'badge ' + (m.type === 'in' ? 'ok' : m.type === 'out' ? 'info' : 'warn')}>{MOVE_TYPES[m.type]}</span>
+                  </td>
+                  <td className="num">{m.lot}</td>
+                  <td className={'mono num ' + (m.qty > 0 ? 'inv-plus' : 'inv-minus')}>
+                    {m.qty > 0 ? '+' : ''}
+                    {m.qty}
+                  </td>
+                  <td className="num num">{m.balance}</td>
+                  <td>{m.by}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
         <Pager {...pg} onPage={setPage} />
       </div>
     </>

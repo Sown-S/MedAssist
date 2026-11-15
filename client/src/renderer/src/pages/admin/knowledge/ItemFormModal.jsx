@@ -67,7 +67,7 @@ export default function ItemFormModal({ open, kind, group, data, names, onClose,
           {kind !== 'relations' && (
             <div className="field full">
               <label>{KIND_META[kind].keyLabel}</label>
-              <input className="input mono" value={key} disabled={!creating} onChange={(e) => setKey(e.target.value.trim().toLowerCase())} placeholder="vd: sot_cao" />
+              <input className="input num" value={key} disabled={!creating} onChange={(e) => setKey(e.target.value.trim().toLowerCase())} placeholder="vd: sot_cao" />
               {creating && <small className="ai-soft">Lowercase letters without accents, digits and underscores; cannot be changed later.</small>}
             </div>
           )}
@@ -93,7 +93,7 @@ export default function ItemFormModal({ open, kind, group, data, names, onClose,
               </div>
               <div className="field">
                 <label>ICD-10 code</label>
-                <input className="input mono" value={f.icd10_code} onChange={(e) => set({ icd10_code: e.target.value })} />
+                <input className="input num" value={f.icd10_code} onChange={(e) => set({ icd10_code: e.target.value })} />
               </div>
               <div className="field">
                 <label>Disease group</label>

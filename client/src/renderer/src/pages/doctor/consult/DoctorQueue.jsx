@@ -116,7 +116,7 @@ export default function DoctorQueue({ visits, user, mine, current, onSelect, tak
                               )}
                             </small>
                             <span className="dq-tags">
-                              {v.triage === 'emergency' && g.key !== 'done' && <span className="badge low">{translate('Emergency')}</span>}
+                              {v.triage === 'emergency' && g.key !== 'done' && <span className="badge b-danger">{translate('Emergency')}</span>}
                               {v.priority && v.triage !== 'emergency' && g.key !== 'done' && <span className="dot warn" title={translate('Priority')} />}
                               {v.allergies && <span className="dot danger" title={translate('Allergy') + ': ' + translate(v.allergies)} />}
                               {g.key === 'labs' && v.labReturnedAt && (
@@ -124,7 +124,7 @@ export default function DoctorQueue({ visits, user, mine, current, onSelect, tak
                                   <Icon name="flask" /> {translate('Back from lab')}
                                 </span>
                               )}
-                              {g.key === 'waiting' && v.status === ST.WAITING && <span className="badge muted">{translate('Not checked in')}</span>}
+                              {g.key === 'waiting' && v.status === ST.WAITING && <span className="badge b-neutral">{translate('Not checked in')}</span>}
                               {v.released && g.key === 'waiting' && (
                                 <span className="dq-handover" title={translate('Returned to the queue by') + ' ' + v.released.by}>
                                   <Icon name="repeat" /> {translate('Returned to queue')}

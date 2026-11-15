@@ -154,10 +154,10 @@ export function DuplicateBanner({ dupes, allowNew, onPick, onCreateNew }) {
         <div className="dupe-list">
           {dupes.map((d) => (
             <div className="dupe-row" key={d.id}>
-              <span className="mono">{d.id}</span>
+              <span className="num">{d.id}</span>
               <b>{d.name}</b>
               <span>{d.dob}</span>
-              <span className="mono">{d.phone}</span>
+              <span className="num">{d.phone}</span>
               <button className="btn btn-primary btn-sm" onClick={() => onPick(d)}>
                 Use this record
               </button>

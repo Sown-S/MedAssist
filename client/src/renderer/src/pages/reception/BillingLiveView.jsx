@@ -36,71 +36,86 @@ export default function BillingLiveView({ mode, readOnly, onPay }) {
       </MiniStats>
 
       <div className="card">
-        <div className="cash-filters">
-          <input className="grow" type="search" placeholder="Search patient or invoice code…" value={q} onChange={(e) => setQ(e.target.value)} />
+        <div className="card-b">
+        <div className="toolbar" style={{ marginBottom: 14 }}>
+          <div className="search">
+            <Icon name="search" />
+            <input className="input" type="search" placeholder="Search patient or invoice code…" value={q} onChange={(e) => setQ(e.target.value)} />
+          </div>
+          <div className="sp" />
           <button className="btn btn-ghost btn-sm" onClick={awaiting.reload}>
-            <Icon name="repeat" /> Refresh
+            <Icon name="refresh-cw" />
+            {translate('Refresh')}
           </button>
         </div>
-        <p className="ai-soft" style={{ fontSize: 12.5, margin: '0 0 8px' }}>
+        <p className="muted small" style={{ margin: '0 0 10px' }}>
           {mode === 'invoices'
             ? translate('Visits with work left at the desk. Invoices already issued are listed by day below.')
             : translate('Only visits with work left at the desk are listed. Paid invoices and earlier prescriptions are in each patient’s history.')}
         </p>
-        <table className="dt">
-          <thead>
-            <tr>
-              <th>No.</th>
-              <th>Patient</th>
-              {mode === 'invoices' && <th>Invoice</th>}
-              <th>Dispensing</th>
-              <th>Payment</th>
-              <th className="num">Amount</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {list.map((v) => (
-              <tr key={v.id} className="clickable" onClick={() => !readOnly && onPay(v)}>
-                <td className="mono">{v.ticket ? ticketNo(v.ticket) : '—'}</td>
-                <td>
-                  <b>{v.name}</b>
-                </td>
-                {mode === 'invoices' && <td className="mono">{v.invoiceCode ?? '—'}</td>}
-                <td>
-                  {!v.hasRx ? (
-                    <span className="badge muted">{translate('No prescription')}</span>
-                  ) : v.pending > 0 ? (
-                    <span className="badge warn">
-                      {v.pending} {translate(v.pending === 1 ? 'item waiting' : 'items waiting')}
-                    </span>
-                  ) : (
-                    <span className="badge ok">{translate('Dispensed')}</span>
-                  )}
-                </td>
-                <td>
-                  <span className={'badge ' + (v.payStatus === 'Paid' ? 'ok' : 'low')}>{translate(v.payStatus === 'Paid' ? 'Paid' : 'Not paid')}</span>
-                </td>
-                <td className="num mono">{money(v.total)}</td>
-                <td onClick={(e) => e.stopPropagation()}>
-                  <button className="btn btn-primary btn-sm" disabled={readOnly} onClick={() => onPay(v)}>
-                    Dispense &amp; collect
-                  </button>
-                </td>
-              </tr>
-            ))}
-            {!list.length && (
+        <div className="tbl-wrap">
+          <table>
+            <thead>
               <tr>
-                <td colSpan={mode === 'invoices' ? 7 : 6}>
-                  <div className="empty-state">
-                    <Icon name="clipboard" />
-                    <b>{translate(all.length ? 'No visits match the search.' : 'Nothing waiting at the desk.')}</b>
-                  </div>
-                </td>
+                <th>No.</th>
+                <th>Patient</th>
+                {mode === 'invoices' && <th>Invoice</th>}
+                <th>Dispensing</th>
+                <th>Payment</th>
+                <th className="r num">Amount</th>
+                <th className="r"></th>
               </tr>
-            )}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {list.map((v) => (
+                <tr key={v.id} className="clickable" onClick={() => !readOnly && onPay(v)}>
+                  <td className="num">{v.ticket ? ticketNo(v.ticket) : '—'}</td>
+                  <td>
+                    <b style={{ fontWeight: 500 }}>{v.name}</b>
+                  </td>
+                  {mode === 'invoices' && <td className="num">{v.invoiceCode ?? '—'}</td>}
+                  <td>
+                    {!v.hasRx ? (
+                      <span className="badge b-neutral">{translate('No prescription')}</span>
+                    ) : v.pending > 0 ? (
+                      <span className="badge b-warning">
+                        {v.pending} {translate(v.pending === 1 ? 'item waiting' : 'items waiting')}
+                      </span>
+                    ) : (
+                      <span className="badge b-success">{translate('Dispensed')}</span>
+                    )}
+                  </td>
+                  <td>
+                    {v.payStatus === 'Paid' ? <span className="plain">{translate('Paid')}</span> : <span className="badge b-warning">{translate('Not paid')}</span>}
+                  </td>
+                  <td className="r num">
+                    <b>{money(v.total)}</b>
+                  </td>
+                  <td onClick={(e) => e.stopPropagation()}>
+                    <div className="acts">
+                      <button className="btn btn-primary btn-sm" disabled={readOnly} onClick={() => onPay(v)}>
+                        Dispense &amp; collect
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+              {!list.length && (
+                <tr>
+                  <td colSpan={mode === 'invoices' ? 7 : 6}>
+                    <div className="empty">
+                      <div className="ill">
+                        <Icon name="clipboard" />
+                      </div>
+                      <b>{translate(all.length ? 'No visits match the search.' : 'Nothing waiting at the desk.')}</b>
+                    </div>
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+        </div>
       </div>
     </>
   )
@@ -136,74 +151,83 @@ function InvoiceHistory({ readOnly, onPay, reloadKey }) {
         </MiniStats>
       )}
       <div className="card">
-        <div className="card-title">
-          Invoices by day{' '}
+        <div className="card-h">
+          <h3>Invoices by day</h3>
           {list && (
-            <span className="cnt">
+            <span className="plain">
               {paid.length} {translate('paid')} · {money(revenue)}
             </span>
           )}
         </div>
-        <div className="cash-filters">
-          <input type="date" value={date} max={ymd(new Date())} onChange={(e) => setDate(e.target.value || ymd(new Date()))} />
-          <label className="ai-small">
-            <input type="checkbox" checked={withCancelled} onChange={(e) => setWithCancelled(e.target.checked)} /> Show cancelled invoices
+        <div className="card-b">
+        <div className="toolbar" style={{ marginBottom: 14 }}>
+          <input className="input" type="date" style={{ width: 160, height: 40 }} title={translate('Choose a day')} value={date} max={ymd(new Date())} onChange={(e) => setDate(e.target.value || ymd(new Date()))} />
+          <div className="sp" />
+          <label className="check">
+            <input type="checkbox" checked={withCancelled} onChange={(e) => setWithCancelled(e.target.checked)} />
+            {translate('Show cancelled invoices')}
           </label>
         </div>
         {error && <ErrorBlock message={error.message} />}
-        {!list && !error && <p className="ai-soft">Loading…</p>}
+        {!list && !error && <p className="muted small">{translate('Loading…')}</p>}
         {list && (
-          <table className="dt">
-            <thead>
-              <tr>
-                <th>Invoice</th>
-                <th>No.</th>
-                <th>Patient</th>
-                <th>Issued</th>
-                <th>Method</th>
-                <th>Payment</th>
-                <th className="num">Amount</th>
-              </tr>
-            </thead>
-            <tbody>
-              {list.map((x) => {
-                const st = PAY_STATUS[x.payment_status.toLowerCase()] ?? { label: x.payment_status, cls: '' }
-                const cancelled = x.payment_status === 'Cancelled'
-                return (
-                  <tr
-                    key={x.invoice_id}
-                    className={cancelled ? '' : 'clickable'}
-                    style={cancelled ? { opacity: 0.6 } : undefined}
-                    onClick={() => !cancelled && !readOnly && onPay({ id: x.visit_id, ticket: x.queue_number, name: x.patient_name, tab: 'pay' })}
-                  >
-                    <td className="mono">{x.invoice_code}</td>
-                    <td className="mono">{x.queue_number ? ticketNo(x.queue_number) : '—'}</td>
-                    <td>
-                      <b>{x.patient_name}</b>
-                    </td>
-                    <td className="mono">{hhmm(x.created_at)}</td>
-                    <td>{x.payment_status === 'Paid' ? translate(methodLabel(fromServerMethod(x.payment_method))) : '—'}</td>
-                    <td>
-                      <span className={'badge ' + st.cls}>{translate(st.label)}</span>
-                      {x.paid_at && <div className="ai-soft ai-small mono">{hhmm(x.paid_at)}</div>}
-                    </td>
-                    <td className="num mono">{money(Number(x.total_amount))}</td>
-                  </tr>
-                )
-              })}
-              {!list.length && (
+          <div className="tbl-wrap">
+            <table>
+              <thead>
                 <tr>
-                  <td colSpan="7">
-                    <div className="empty-state">
-                      <Icon name="clipboard" />
-                      <b>{translate('No invoices on this day.')}</b>
-                    </div>
-                  </td>
+                  <th>Invoice</th>
+                  <th>No.</th>
+                  <th>Patient</th>
+                  <th>Issued</th>
+                  <th>Method</th>
+                  <th>Payment</th>
+                  <th className="r num">Amount</th>
                 </tr>
-              )}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {list.map((x) => {
+                  const st = PAY_STATUS[x.payment_status.toLowerCase()] ?? { label: x.payment_status, cls: '' }
+                  const cancelled = x.payment_status === 'Cancelled'
+                  return (
+                    <tr
+                      key={x.invoice_id}
+                      className={cancelled ? 'dim' : 'clickable'}
+                      onClick={() => !cancelled && !readOnly && onPay({ id: x.visit_id, ticket: x.queue_number, name: x.patient_name, tab: 'pay' })}
+                    >
+                      <td className="num">{x.invoice_code}</td>
+                      <td className="num">{x.queue_number ? ticketNo(x.queue_number) : '—'}</td>
+                      <td>
+                        <b style={{ fontWeight: 500 }}>{x.patient_name}</b>
+                      </td>
+                      <td className="num muted">{hhmm(x.created_at)}</td>
+                      <td>{x.payment_status === 'Paid' ? translate(methodLabel(fromServerMethod(x.payment_method))) : '—'}</td>
+                      <td>
+                        <span className={'badge ' + st.cls}>{translate(st.label)}</span>
+                        {x.paid_at && <div className="muted small num">{hhmm(x.paid_at)}</div>}
+                      </td>
+                      <td className="r num">
+                        <b>{money(Number(x.total_amount))}</b>
+                      </td>
+                    </tr>
+                  )
+                })}
+                {!list.length && (
+                  <tr>
+                    <td colSpan="7">
+                      <div className="empty">
+                        <div className="ill">
+                          <Icon name="clipboard" />
+                        </div>
+                        <b>{translate('No invoices on this day.')}</b>
+                      </div>
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
         )}
+        </div>
       </div>
     </>
   )

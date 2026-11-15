@@ -60,7 +60,7 @@ function Change({ c, ctx, onDrop }) {
       <div className="kb-change-head">
         <span className={'badge ' + (c.action === 'new' ? 'ok' : 'info')}>{c.action === 'new' ? 'New' : 'Changed'}</span>
         <span className="ai-soft">{KIND_META[c.kind]?.one}</span>
-        <span className="mono ai-small">
+        <span className="num ai-small">
           {c.key} · v{c.version}
         </span>
         {onDrop && (
@@ -108,46 +108,48 @@ export const ctxOf = (data, names) => ({ names, sources: Object.fromEntries(data
 export function ReleaseHistory({ releases, onView }) {
   if (!releases.length) return <p className="ai-soft">No release yet.</p>
   return (
-    <table className="dt">
-      <thead>
-        <tr>
-          <th>Release</th>
-          <th>Status</th>
-          <th>Created</th>
-          <th>Submitted</th>
-          <th>Approved</th>
-          <th />
-        </tr>
-      </thead>
-      <tbody>
-        {[...releases]
-          .sort((a, b) => (a.created_at < b.created_at ? 1 : -1))
-          .map((r) => (
-            <tr key={r.release_id}>
-              <td>
-                <b className="mono">{r.label}</b>
-                {r.description && <div className="ai-small ai-soft">{r.description}</div>}
-                {r.review_note && (
-                  <div className="ai-small sp-warn">
-                    <span>Doctor's note:</span> {r.review_note}
-                  </div>
-                )}
-              </td>
-              <td>
-                <ReleaseBadge status={r.status} />
-              </td>
-              <td className="ai-small">{shortDateTime(r.created_at)}</td>
-              <td className="ai-small">{shortDateTime(r.submitted_at)}</td>
-              <td className="ai-small">{shortDateTime(r.approved_at)}</td>
-              <td>
-                <button className="btn btn-ghost btn-sm" onClick={() => onView(r)}>
-                  View
-                </button>
-              </td>
-            </tr>
-          ))}
-      </tbody>
-    </table>
+    <div className="tbl-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Release</th>
+            <th>Status</th>
+            <th>Created</th>
+            <th>Submitted</th>
+            <th>Approved</th>
+            <th />
+          </tr>
+        </thead>
+        <tbody>
+          {[...releases]
+            .sort((a, b) => (a.created_at < b.created_at ? 1 : -1))
+            .map((r) => (
+              <tr key={r.release_id}>
+                <td>
+                  <b className="num">{r.label}</b>
+                  {r.description && <div className="ai-small ai-soft">{r.description}</div>}
+                  {r.review_note && (
+                    <div className="ai-small sp-warn">
+                      <span>Doctor's note:</span> {r.review_note}
+                    </div>
+                  )}
+                </td>
+                <td>
+                  <ReleaseBadge status={r.status} />
+                </td>
+                <td className="ai-small">{shortDateTime(r.created_at)}</td>
+                <td className="ai-small">{shortDateTime(r.submitted_at)}</td>
+                <td className="ai-small">{shortDateTime(r.approved_at)}</td>
+                <td>
+                  <button className="btn btn-ghost btn-sm" onClick={() => onView(r)}>
+                    View
+                  </button>
+                </td>
+              </tr>
+            ))}
+        </tbody>
+      </table>
+    </div>
   )
 }
 

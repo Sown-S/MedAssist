@@ -63,12 +63,12 @@ export function ConfirmDialog({ open, title, message, children, confirmLabel = '
 
 export function Empty({ icon = 'search', title, text }) {
   return (
-    <div className="empty-state">
-      <div className="ic">
+    <div className="empty">
+      <div className="ill">
         <Icon name={icon} />
       </div>
       <b>{title}</b>
-      {text && <p>{text}</p>}
+      {text && <span>{text}</span>}
     </div>
   )
 }
