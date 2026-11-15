@@ -72,3 +72,4 @@ tr.clickable{cursor:pointer}tr.clickable:hover td{background:var(--surface-2)}
 .ai-toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
 .ai-toolbar-right{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-left:auto}
 .toolbar select.input,.ai-toolbar select.input{width:auto;height:40px}
+.vtab svg.lucide{width:18px;height:18px}.settings>.set-main{min-width:0;display:flex;flex-direction:column;gap:16px}

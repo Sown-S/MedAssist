@@ -43,7 +43,7 @@ export function Field({ path, hint, error, changed, wide, children }) {
     <div className={'field set-field' + (wide ? ' wide' : '') + (changed ? ' changed' : '') + (error ? ' has-err' : '')}>
       <label>
         <span>{label}</span>
-        <span className={'badge ' + ef.cls + ' set-effect'}>{ef.label}</span>
+        {effect !== 'now' && <span className={'badge ' + ef.cls + ' set-effect'}>{ef.label}</span>}
       </label>
       {children}
       {error ? <small className="set-err">{error}</small> : hint && <small className="ai-soft">{hint}</small>}

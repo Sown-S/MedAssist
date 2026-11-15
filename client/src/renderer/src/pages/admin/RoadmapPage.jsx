@@ -1,5 +1,6 @@
 // Danh sách “ngoài phạm vi” của Proposal (mục 6.2) và các mục Architecture ghi vào lộ trình, để làm rõ ranh giới dự án.
 import Icon from '../../components/Icon'
+import { translate } from '../../i18n'
 
 const ITEMS = [
   {
@@ -41,20 +42,23 @@ const ITEMS = [
 
 export default function RoadmapPage() {
   return (
-    <div>
+    <div className="vflow">
       <div className="pg-h">
         <div>
           <h2>Future roadmap</h2>
           <p>Items outside the current project scope — noted for future expansion after graduation</p>
         </div>
       </div>
-      <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+      <div className="road">
         {ITEMS.map((it) => (
-          <div className="roadmap-card" key={it.title}>
-            <h4>
-              <Icon name={it.icon} /> {it.title} <span className="roadmap-badge">Roadmap</span>
-            </h4>
-            <p>{it.desc}</p>
+          <div className="card" key={it.title}>
+            <div className="ico n">
+              <Icon name={it.icon} />
+            </div>
+            <div>
+              <b>{translate(it.title)}</b>
+              <span className="muted small">{translate(it.desc)}</span>
+            </div>
           </div>
         ))}
       </div>

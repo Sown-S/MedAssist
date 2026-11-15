@@ -33,17 +33,8 @@
 .kb-table{width:100%;}
 .kb-table td:first-child{max-width:190px;word-break:break-all;}
 /* Cài đặt: menu dọc bên trái như mẫu */
-.set-layout{display:grid;grid-template-columns:230px minmax(0,1fr);gap:16px;align-items:start;}
-.set-nav{display:flex;flex-direction:column;gap:2px;padding:10px;position:sticky;top:12px;margin:0;}
-.set-nav-i{display:flex;align-items:center;gap:10px;padding:10px 12px;border:0;border-radius:8px;background:none;font:500 15px var(--font);color:var(--ink-2);cursor:pointer;text-align:left;}
-.set-nav-i .icn{width:17px;height:17px;color:var(--ink-soft);}
-.set-nav-i:hover{background:var(--surface-alt);color:var(--ink);}
-.set-nav-i.active{background:var(--primary-soft);color:var(--primary-ink);}
-.set-nav-i.active .icn{color:var(--primary);}
-.set-nav-i .set-dot{margin-left:auto;}
 .set-main{min-width:0;display:flex;flex-direction:column;gap:16px;}
 .set-main>.card{margin:0;}
-@media (max-width:1000px){.set-layout{grid-template-columns:1fr;}.set-nav{position:static;flex-direction:row;flex-wrap:wrap;}}
 /* Tài khoản */
 .st-who{display:inline-flex;align-items:center;gap:10px;}
 .st-who b{font-weight:600;}

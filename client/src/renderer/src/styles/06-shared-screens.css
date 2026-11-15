@@ -61,10 +61,6 @@
 .field-error{border-color:var(--warn) !important;background:rgba(239,68,68,.08) !important;}
 
 /* Nhãn “ngoài phạm vi” */
-.roadmap-badge{display:inline-flex;align-items:center;gap:4px;font-size:10.5px;font-weight:700;background:var(--surface-alt);color:var(--ink-soft);padding:2px 7px;border-radius:20px;margin-left:6px;letter-spacing:.2px;}
-.roadmap-card{border:1px dashed var(--border);border-radius:14px;padding:14px 16px;background:var(--surface-alt);}
-.roadmap-card h4{margin:0 0 4px;font-size:14px;display:flex;align-items:center;gap:6px;color:var(--ink);}
-.roadmap-card p{margin:0;font-size:13px;color:var(--ink-soft);line-height:1.5;}
 
 /* Dòng bấm được */
 .row-click{cursor:pointer;}

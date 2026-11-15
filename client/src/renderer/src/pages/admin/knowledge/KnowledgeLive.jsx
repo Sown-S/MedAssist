@@ -7,8 +7,6 @@ import { useAuth } from '../../../context/AuthContext'
 import ItemsTab from './ItemsTab'
 import ReleaseTab from './ReleaseTab'
 import { ReviewPanel } from './ReviewPanel'
-import { ReleaseBadge } from './releaseParts'
-import { MiniStat, MiniStats } from '../../../components/MiniStat'
 import SourcesTab from './SourcesTab'
 import AiLogsTab from './AiLogsTab'
 import { useKnowledge, useNames, groupByKey, errorText } from './shared'
@@ -37,7 +35,6 @@ export default function KnowledgeLive({ reviewOnly = false }) {
   const active = data.releases.find((r) => r.status === 'Active')
   const open = data.releases.find((r) => OPEN_STATUSES.includes(r.status))
   const rules = groupByKey(data.items.rules).filter((g) => g.active)
-  const count = (k) => groupByKey(data.items[k]).filter((g) => g.active).length
   const tabs = reviewOnly
     ? [
         { key: 'review', label: 'Review queue' },
@@ -61,7 +58,7 @@ export default function KnowledgeLive({ reviewOnly = false }) {
               : 'Symptoms, conditions, their links, guideline excerpts and triage rules used by the AI — changes apply only after a doctor approves the release'}
           </p>
         </div>
-        {active && (
+        {reviewOnly && active && (
           <span className="badge b-success">
             <span>In use:</span> <span className="num">{active.label}</span>
           </span>
@@ -69,12 +66,14 @@ export default function KnowledgeLive({ reviewOnly = false }) {
       </div>
 
       {!reviewOnly && (
-        <div className="ctx-banner">
-          <Icon name="alert" />
-          <span className="txt">
-            <b>AI suggestions are for reference only and must be confirmed by a doctor.</b>{' '}
-            <span>Red-flag and priority-floor rules are decided by these rules alone, never by the AI model.</span>
-          </span>
+        <div className="banner i">
+          <Icon name="info" />
+          <div className="txt">
+            <b>
+              <span>In use:</span> <span className="num">{active ? active.label : '—'}</span>
+            </b>
+            <span>AI suggestions are for reference only and must be confirmed by a doctor.</span>
+          </div>
         </div>
       )}
 
@@ -82,27 +81,36 @@ export default function KnowledgeLive({ reviewOnly = false }) {
         <div className="grid-2e">
           {[
             ['RED_FLAG', 'Red-flag rules in use', 'siren', 'd'],
-            ['PRIORITY_FLOOR', 'Priority-floor rules in use', 'alert', 'w']
+            ['PRIORITY_FLOOR', 'Priority-floor rules in use', 'arrow-up', 'w']
           ].map(([type, title, icon, tone]) => {
             const list = rules.filter((g) => g.active.values.rule_type === type)
             return (
-              <div className="card rule-card" key={type}>
-                <div className="card-title">
-                  {translate(title)} <span className="cnt">{list.length}</span>
+              <div className="card" key={type}>
+                <div className="card-h">
+                  <h3>
+                    <Icon name={type === 'RED_FLAG' ? 'siren' : 'arrow-up-narrow-wide'} />
+                    {translate(title)}
+                  </h3>
+                  <span className="plain">
+                    {list.length} {translate('rules')}
+                  </span>
                 </div>
-                <div className="rule-list">
-                  {list.map((g) => (
-                    <div className="rule-li" key={g.key}>
-                      <span className={'is-ico t-' + tone}>
-                        <Icon name={icon} />
-                      </span>
-                      <span className="rl-t">
-                        <b>{g.active.values.rule_name || g.key}</b>
-                        <small>{g.active.values.reason_text}</small>
-                      </span>
-                    </div>
-                  ))}
-                  {!list.length && <p className="ai-soft">—</p>}
+                <div className="card-b">
+                  <div className="rows">
+                    {list.map((g) => (
+                      <div className="r" key={g.key}>
+                        <div className={'ico ' + tone} style={{ width: 30, height: 30 }}>
+                          <Icon name={icon} />
+                        </div>
+                        <div className="t">
+                          <b>{g.active.values.rule_name || g.key}</b>
+                          <span>{g.active.values.reason_text}</span>
+                        </div>
+                      </div>
+                    ))}
+                    {!list.length && <p className="muted small">—</p>}
+                  </div>
+                  {type === 'RED_FLAG' && <p className="muted small" style={{ marginTop: 10 }}>Red-flag and priority-floor rules are decided by these rules alone, never by the AI model.</p>}
                 </div>
               </div>
             )
@@ -114,22 +122,6 @@ export default function KnowledgeLive({ reviewOnly = false }) {
         <ReviewPanel data={data} names={names} onChanged={reload} />
       ) : (
         <>
-      <MiniStats>
-        <MiniStat icon="fileText" value={count('conditions')} label="Conditions">
-          <span className="is-sub">
-            <span className="num">{count('symptoms')}</span> <span>symptoms</span> · <span className="num">{count('relations')}</span> <span>links</span>
-          </span>
-        </MiniStat>
-        {reviewOnly && <MiniStat icon="siren" tone="d" value={rules.filter((g) => g.active.values.rule_type === 'RED_FLAG').length} label="Red-flag rules in use" />}
-        {reviewOnly && <MiniStat icon="alert" tone="w" value={rules.filter((g) => g.active.values.rule_type === 'PRIORITY_FLOOR').length} label="Priority-floor rules in use" />}
-        <MiniStat
-          icon="history"
-          tone={open?.status === 'PendingApproval' ? 'd' : 'n'}
-          value={open ? open.label : '—'}
-          label={open ? <ReleaseBadge status={open.status} /> : 'Open release'}
-          onClick={() => setTab(reviewOnly ? 'review' : 'release')}
-        />
-      </MiniStats>
 
       <div className="card">
         <div className="utabs">
@@ -143,7 +135,7 @@ export default function KnowledgeLive({ reviewOnly = false }) {
               }}
             >
               <span>{t.label}</span>
-              {t.key === 'review' && open?.status === 'PendingApproval' && <span className="ai-count alert">1</span>}
+              {t.key === 'review' && open?.status === 'PendingApproval' && <span className="badge b-danger" style={{ marginLeft: 6 }}>1</span>}
             </button>
           ))}
         </div>

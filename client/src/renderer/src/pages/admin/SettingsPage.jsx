@@ -95,13 +95,13 @@ export default function SettingsPage({ params, onNavigate, setLeaveGuard }) {
         </div>
       </div>
 
-      <div className="set-layout">
-        <nav className="card set-nav" aria-label={translate('Settings sections')}>
+      <div className="settings">
+        <nav className="card vtabs" aria-label={translate('Settings sections')}>
           {TABS.map((t) => (
-            <button key={t.key} className={'set-nav-i' + (tab === t.key ? ' active' : '')} aria-current={tab === t.key ? 'page' : undefined} onClick={() => setTab(t.key)}>
+            <button key={t.key} className={'vtab' + (tab === t.key ? ' on' : '')} aria-current={tab === t.key ? 'page' : undefined} onClick={() => setTab(t.key)}>
               <Icon name={t.icon} />
               <span>{t.label}</span>
-              {tabChanged(t.key) && <span className="set-dot" title="Unsaved changes" />}
+              {tabChanged(t.key) && <span className="set-dot" style={{ marginLeft: 'auto' }} title="Unsaved changes" />}
             </button>
           ))}
         </nav>
