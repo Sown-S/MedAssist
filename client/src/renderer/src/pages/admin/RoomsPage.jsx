@@ -75,40 +75,44 @@ export default function RoomsPage({ onNavigate }) {
 
       {form && (
         <form className="card" style={{ marginBottom: 16 }} onSubmit={submit}>
-          <div className="card-title">{form.id ? translate('Rename room') + ' ' + form.code : translate('Add room')}</div>
-          <div className="fg">
-            <div className="field">
-              <label>Code *</label>
-              <input className="input" value={form.code} disabled={!!form.id} autoFocus={!form.id} placeholder="05" onChange={(e) => setForm({ ...form, code: e.target.value })} />
-            </div>
-            <div className="field">
-              <label>Name *</label>
-              <input className="input" value={form.name} autoFocus={!!form.id} placeholder="Phòng khám 05" onChange={(e) => setForm({ ...form, name: e.target.value })} />
-            </div>
-            <div className="field">
-              <label>Type</label>
-              <select className="input" value={form.type} disabled={!!form.id} onChange={(e) => setForm({ ...form, type: e.target.value })}>
-                {Object.entries(ROOM_TYPES).map(([k, l]) => (
-                  <option key={k} value={k}>
-                    {l}
-                  </option>
-                ))}
-              </select>
-            </div>
+          <div className="card-h">
+            <h3>{form.id ? translate('Rename room') + ' ' + form.code : translate('Add room')}</h3>
           </div>
-          {form.id && <p className="muted small">The code and type of a room cannot be changed.</p>}
-          {formErr && (
-            <div className="banner d" style={{ marginBottom: 12 }}>
-              {translate(formErr)}
+          <div className="card-b">
+            <div className="fg">
+              <div className="field">
+                <label>Code *</label>
+                <input className="input" value={form.code} disabled={!!form.id} autoFocus={!form.id} placeholder="05" onChange={(e) => setForm({ ...form, code: e.target.value })} />
+              </div>
+              <div className="field">
+                <label>Name *</label>
+                <input className="input" value={form.name} autoFocus={!!form.id} placeholder="Phòng khám 05" onChange={(e) => setForm({ ...form, name: e.target.value })} />
+              </div>
+              <div className="field">
+                <label>Type</label>
+                <select className="input" value={form.type} disabled={!!form.id} onChange={(e) => setForm({ ...form, type: e.target.value })}>
+                  {Object.entries(ROOM_TYPES).map(([k, l]) => (
+                    <option key={k} value={k}>
+                      {l}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
-          )}
-          <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
-            <button type="button" className="btn btn-ghost" onClick={() => setForm(null)}>
-              Cancel
-            </button>
-            <button type="submit" className="btn btn-primary">
-              <Icon name="check" /> Save
-            </button>
+            {form.id && <p className="muted small">The code and type of a room cannot be changed.</p>}
+            {formErr && (
+              <div className="banner d" style={{ marginBottom: 12 }}>
+                {translate(formErr)}
+              </div>
+            )}
+            <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+              <button type="button" className="btn btn-ghost" onClick={() => setForm(null)}>
+                Cancel
+              </button>
+              <button type="submit" className="btn btn-primary">
+                <Icon name="check" /> Save
+              </button>
+            </div>
           </div>
         </form>
       )}

@@ -6,7 +6,7 @@
 .staff-callout{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px;padding:14px 16px;border-color:rgba(251,191,36,.35);}
 .staff-callout > svg{width:20px;height:20px;color:var(--priority-ink);flex-shrink:0;}
 .staff-callout > div{flex:1 1 260px;color:var(--ink);}
-.staff-sum-on{border-color:var(--accent);background:var(--primary-soft);}
+
 .staff-table td{vertical-align:top;}
 .staff-badges{display:flex;flex-direction:column;align-items:flex-start;gap:4px;}
 .staff-actions{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:4px;min-width:180px;}
@@ -48,8 +48,7 @@
 .set-checks{display:flex;flex-wrap:wrap;gap:8px 18px;padding-top:4px;color:var(--ink);font-size:14px;}
 .set-checks label{display:inline-flex;align-items:center;gap:6px;cursor:pointer;}
 .set-checks input{accent-color:var(--primary);}
-.set-unit{display:flex;align-items:center;gap:8px;}
-.set-unit input{width:100px;}
+
 .set-backup-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:8px;}
 .set-backup-head .btn{display:inline-flex;align-items:center;gap:6px;}
 .set-backup-head .card-title{margin-bottom:2px;}

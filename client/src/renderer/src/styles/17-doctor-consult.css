@@ -4,29 +4,13 @@
 .doc-ta{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:9px;font-size:14px;font-family:inherit;background:var(--field-bg);color:var(--ink);resize:vertical;}
 .doc-ta:focus{outline:none;border-color:var(--accent);}
 .req{color:var(--warn-ink);}
-.field-error .icd-picker>input{border-color:var(--warn-ink);}
-.drug-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px;}
-.drug-card{display:flex;flex-direction:column;gap:10px;padding:16px 18px;border-radius:var(--radius);background:var(--surface);border:1px solid var(--border);transition:border-color .15s,transform .15s;}
-.drug-card:hover{border-color:var(--primary);transform:translateY(-2px);}
-.drug-card.out{opacity:.7;}
-.drug-top{display:flex;justify-content:space-between;gap:8px;align-items:flex-start;}
-.drug-top b{display:block;font-size:15px;color:var(--ink);}
-.drug-top small{font-size:12px;color:var(--ink-soft);}
-.drug-tags{display:flex;gap:5px;flex-wrap:wrap;min-height:4px;}
-.drug-facts{display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--ink-soft);}
-.drug-facts>span{display:flex;align-items:center;gap:6px;}
-.drug-facts svg{width:15px;height:15px;color:var(--accent);}
-.drug-facts b{color:var(--ink);}
 
 /* Thu gọn / mở rộng, danh sách chờ, cận lâm sàng, tủ thuốc */
 /* Hiệu ứng thu gọn bằng grid-template-rows 0fr ↔ 1fr — không cần biết trước chiều cao. */
 .collapse{display:grid;grid-template-rows:0fr;transition:grid-template-rows .2s ease;}
 .collapse>div{overflow:hidden;min-height:0;}
 .open>.collapse{grid-template-rows:1fr;}
-@media (prefers-reduced-motion:reduce){.collapse,.dq-h svg,.wait-head>svg{transition:none;}}
-.pay-row.clickable{cursor:pointer;border-radius:9px;transition:background .15s;}
-.pay-row.clickable:hover{background:var(--surface-hover);}
-
+@media (prefers-reduced-motion:reduce){.collapse{transition:none;}}
 
 .brief-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;font-size:13px;color:var(--ink);}
 .brief-grid>div,.brief-last{display:flex;flex-direction:column;gap:3px;}

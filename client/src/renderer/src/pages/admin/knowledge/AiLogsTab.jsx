@@ -14,11 +14,11 @@ const EMPTY = { from: '', to: '', run_type: '', status: '', mode: '' }
 const RUN_LABEL = { Assessment: 'Assessment', Extraction: 'Symptom extraction' }
 const STATUS_META = {
   Queued: { label: 'Queued', tone: '' },
-  Running: { label: 'Running', tone: 'info' },
-  Completed: { label: 'Completed', tone: 'ok' },
-  Degraded: { label: 'Rule-only', tone: 'warn' },
-  Failed: { label: 'Failed', tone: 'low' },
-  Skipped: { label: 'Skipped (red flag)', tone: 'muted' }
+  Running: { label: 'Running', tone: 'b-info' },
+  Completed: { label: 'Completed', tone: 'b-success' },
+  Degraded: { label: 'Rule-only', tone: 'b-warning' },
+  Failed: { label: 'Failed', tone: 'b-danger' },
+  Skipped: { label: 'Skipped (red flag)', tone: 'b-neutral' }
 }
 const MODE_LABEL = { Full: 'Rules + model', RuleOnly: 'Rules only' }
 const DECISION_LABEL = { AcceptedTop: 'Accepted top suggestion', ChoseOther: 'Chose another diagnosis', NoSuggestion: 'No suggestion shown' }

@@ -1,35 +1,24 @@
 /* Tiếp đón: hàng chờ, cờ đỏ, sinh hiệu, triệu chứng, gọi số */
 
 /* Hàng chờ, ca cờ đỏ */
-.rec-queue-grid{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:18px;align-items:start;margin-bottom:18px;}
-.rec-queue-grid .scroll-list{max-height:520px;}
-@media (max-width:1100px){.rec-queue-grid{grid-template-columns:1fr;}}
-.p-head{gap:12px;}
-.p-info{flex:1;min-width:0;}
+
 .p-ticket{font-family:'IBM Plex Mono',monospace;font-size:22px;font-weight:700;line-height:1;color:var(--accent);min-width:50px;text-align:center;}
 .dev-tools{display:flex;align-items:center;gap:10px;margin-bottom:14px;padding:6px 10px;border:1px dashed var(--border);border-radius:10px;font-size:12px;color:var(--ink-soft);width:fit-content;}
 .dev-tools label{display:flex;align-items:center;gap:6px;cursor:pointer;}
 /* Sinh hiệu + triệu chứng ba trạng thái */
-@media (max-width:900px){.vitals-grid{grid-template-columns:repeat(2,minmax(0,1fr));}}
+
 /* Khung “Đọc lời kể & đề xuất”: nút chính, các bước theo status server, thanh thời gian đầy ở 30 giây */
 /* Đề xuất: hai cột Có / Không, chip lớn */
-@media (max-width:700px){.sym-prop-cols{grid-template-columns:1fr;}}
+
 /* Danh sách triệu chứng: tìm không dấu, “Đã xác nhận”, các nhóm */
 /* Dải “Tiếp theo” ở bảng gọi: đã check-in (✓) / chưa check-in (bấm để check-in) */
 button.call-chip{font:inherit;cursor:pointer;border:1px dashed var(--border);}
 button.call-chip:hover{border-color:var(--accent);}
 .call-chip.ready{display:inline-flex;align-items:center;gap:4px;box-shadow:0 0 0 1px rgba(34,197,94,.55) inset;}
 .call-chip.ready svg{width:12px;height:12px;color:var(--success-ink);}
-.sym-extract{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:12.5px;}
+
 .sym-warn{color:var(--priority-ink);display:inline-flex;align-items:center;gap:5px;}
-.sym-chips{display:flex;flex-wrap:wrap;gap:6px;}
-.sym-chip{display:inline-flex;align-items:center;gap:6px;padding:3px 4px 3px 3px;border-radius:20px;border:1px solid var(--border);background:var(--field-bg);font-size:13px;}
-.sym-chip button{border:none;background:transparent;color:var(--ink-soft);cursor:pointer;display:inline-flex;align-items:center;padding:3px;border-radius:50%;}
-.sym-chip button svg{width:14px;height:14px;}
-.sym-chip .sym-chip-state{font:700 11.5px var(--font);padding:3px 9px;border-radius:14px;background:rgba(34,197,94,.18);color:var(--success-ink);}
-.sym-chip.absent .sym-chip-state{background:rgba(148,163,184,.18);color:var(--ink-soft);}
-.sym-chip .sym-chip-ok:hover{color:var(--success-ink);}
-.sym-chip .sym-chip-x:hover{color:var(--warn-ink);}
+
 /* Nhóm triệu chứng thu gọn / mở rộng */
 /* Danh mục có nhóm (chạy thật): một cột để tên dài không bị ép nhiều dòng */
 @media (max-width:900px){.sym-grid{grid-template-columns:1fr;}}

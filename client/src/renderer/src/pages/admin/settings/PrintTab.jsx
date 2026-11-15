@@ -14,75 +14,87 @@ export function PrintTab({ form, draft, readOnly }) {
   return (
     <>
       <div className="card">
-        <div className="card-title">Applies to every computer</div>
-        <div className="set-split">
-          <fieldset className="set-fieldset" disabled={readOnly}>
-            <div className="set-grid">
-              <Field {...fp('print.showLogo')}>
-                <Switch checked={val('print.showLogo')} onChange={(v) => set('print.showLogo', v)} />
-              </Field>
-              <Field {...fp('print.header')} wide hint="Optional, e.g. opening hours or a hotline. Shown under the clinic details.">
-                <input className="input" {...text('print.header', { maxLength: 500 })} />
-              </Field>
-              <Field {...fp('print.footer')} wide hint="Optional, e.g. a thank-you line. Leave empty to print no footer.">
-                <input className="input" {...text('print.footer', { maxLength: 500 })} />
-              </Field>
+        <div className="card-h">
+          <h3>Applies to every computer</h3>
+        </div>
+        <div className="card-b">
+          <div className="set-split">
+            <fieldset className="set-fieldset" disabled={readOnly}>
+              <div className="set-grid">
+                <Field {...fp('print.showLogo')}>
+                  <Switch checked={val('print.showLogo')} onChange={(v) => set('print.showLogo', v)} />
+                </Field>
+                <Field {...fp('print.header')} wide hint="Optional, e.g. opening hours or a hotline. Shown under the clinic details.">
+                  <input className="input" {...text('print.header', { maxLength: 500 })} />
+                </Field>
+                <Field {...fp('print.footer')} wide hint="Optional, e.g. a thank-you line. Leave empty to print no footer.">
+                  <input className="input" {...text('print.footer', { maxLength: 500 })} />
+                </Field>
+              </div>
+            </fieldset>
+            <div>
+              <div className="small muted" style={{ marginBottom: 6 }}>
+                Header preview
+              </div>
+              <div className="set-print-preview" dangerouslySetInnerHTML={{ __html: printHeaderHtml(draft) }} />
+              {val('print.footer') && <div className="set-print-preview foot">{val('print.footer')}</div>}
             </div>
-          </fieldset>
-          <div>
-            <div className="small muted" style={{ marginBottom: 6 }}>
-              Header preview
-            </div>
-            <div className="set-print-preview" dangerouslySetInnerHTML={{ __html: printHeaderHtml(draft) }} />
-            {val('print.footer') && <div className="set-print-preview foot">{val('print.footer')}</div>}
           </div>
         </div>
       </div>
 
       <div className="card" style={{ marginTop: 14 }}>
-        <div className="card-title">This computer only</div>
-        <div className="tbl-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Document</th>
-                <th>Paper size</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {PRINT_DOCS.map((d) => (
-                <tr key={d.key}>
-                  <td>{d.label}</td>
-                  <td>
-                    <select className="input" value={dev.papers[d.key]} onChange={(e) => setDevice({ papers: { [d.key]: e.target.value } })}>
-                      {PAPERS.map((x) => (
-                        <option key={x.key} value={x.key}>
-                          {x.label}
-                        </option>
-                      ))}
-                    </select>
-                  </td>
-                  <td className="acts-td">
-                    <button className="btn btn-ghost btn-sm" title="Print a test page" onClick={() => printTest(d, draft)}>
-                      <Icon name="printer" /> <span>Test</span>
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="card-h">
+          <h3>This computer only</h3>
         </div>
-        <p className="muted small foot-note">
-          <Icon name="settings" /> <span>Saved on this computer only — e.g. the front-desk PC prints receipts on an 80 mm thermal printer, the doctor’s PC prints prescriptions on A5.</span>
-        </p>
+        <div className="card-b">
+          <div className="tbl-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Document</th>
+                  <th>Paper size</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {PRINT_DOCS.map((d) => (
+                  <tr key={d.key}>
+                    <td>{d.label}</td>
+                    <td>
+                      <select className="input" value={dev.papers[d.key]} onChange={(e) => setDevice({ papers: { [d.key]: e.target.value } })}>
+                        {PAPERS.map((x) => (
+                          <option key={x.key} value={x.key}>
+                            {x.label}
+                          </option>
+                        ))}
+                      </select>
+                    </td>
+                    <td className="acts-td">
+                      <button className="btn btn-ghost btn-sm" title="Print a test page" onClick={() => printTest(d, draft)}>
+                        <Icon name="printer" /> <span>Test</span>
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <p className="muted small foot-note">
+            <Icon name="settings" /> <span>Saved on this computer only — e.g. the front-desk PC prints receipts on an 80 mm thermal printer, the doctor’s PC prints prescriptions on A5.</span>
+          </p>
+        </div>
       </div>
 
       <div className="card" style={{ marginTop: 14 }}>
-        <div className="card-title">Document numbering</div>
-        <p className="muted small" style={{ margin: 0 }}>
-          {translate('Read-only: the clinic server numbers documents when they are saved (e.g. invoices HD-20261017-0001) and issues queue numbers, so two computers never get the same number.')}
-        </p>
+        <div className="card-h">
+          <h3>Document numbering</h3>
+        </div>
+        <div className="card-b">
+          <p className="muted small" style={{ margin: 0 }}>
+            {translate('Read-only: the clinic server numbers documents when they are saved (e.g. invoices HD-20261017-0001) and issues queue numbers, so two computers never get the same number.')}
+          </p>
+        </div>
       </div>
     </>
   )

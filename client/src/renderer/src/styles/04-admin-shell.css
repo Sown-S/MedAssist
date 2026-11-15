@@ -1,5 +1,4 @@
 /* Khu quản trị: breadcrumb (menu bên trái nằm ở 21-app-shell.css) */
 
-
 .breadcrumb{font-size:13px;color:var(--ink-soft);margin-bottom:12px;}
 .breadcrumb b{color:var(--ink);}

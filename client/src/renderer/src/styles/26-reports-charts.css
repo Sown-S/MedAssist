@@ -28,6 +28,6 @@
 .lc-x span:first-child{text-align:left;}
 .lc-x span:last-child{text-align:right;}
 .lc-empty{display:grid;place-items:center;min-height:180px;color:var(--ink-soft);font-size:14px;}
-.pg-tools{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+
 @media (max-width:1280px){.grid-2e{grid-template-columns:1fr;}}
 .lc-d.down .icn{transform:scaleY(-1);}

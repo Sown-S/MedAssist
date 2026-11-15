@@ -1,19 +1,6 @@
 /* Thẻ gợi ý AI, duyệt tri thức, kho tri thức, lịch sử khám, thu tiền, chuyển tuyến */
 
 /* Thẻ gợi ý AI */
-.assess-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px;}
-.assess-cand{padding:8px 0;border-top:1px solid var(--border);}
-.assess-cand:first-of-type{border-top:none;}
-.assess-cand-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:13.5px;}
-.assess-rank{width:20px;height:20px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:var(--surface-alt);font-size:11.5px;font-weight:700;}
-.assess-score{width:70px;height:6px;border-radius:3px;background:var(--surface-alt);overflow:hidden;display:inline-block;}
-.assess-score span{display:block;height:100%;background:var(--accent);}
-.assess-evidence{display:flex;flex-wrap:wrap;gap:5px;margin:6px 0 0 28px;}
-.assess-evidence .ev{font-size:11.5px;padding:2px 7px;border-radius:7px;}
-.assess-evidence .ev.sup{background:rgba(21,128,61,.14);color:var(--success-ink);}
-.assess-evidence .ev.con{background:rgba(239,68,68,.14);color:var(--warn-ink);}
-.assess-evidence .ev.mis{background:var(--surface-alt);color:var(--ink-soft);}
-.assess-expl{margin:6px 0 0 28px;font-size:12.5px;color:var(--ink);}
 
 /* Kho tri thức (pages/admin/knowledge) */
 .kb-table td{vertical-align:top;}
@@ -71,5 +58,4 @@ fieldset.doc-fields{border:none;padding:0;margin:0;min-width:0;}
 .emr-referral-head .btn{margin-left:auto;}
 .emr-referral-head .badge svg{width:12px;height:12px;vertical-align:-1px;}
 .vital-proposals{margin-bottom:10px;}
-.vital-proposals .sym-chip{padding-left:11px;}
-.vital-proposals .sym-chip.kept{opacity:.65;}
+

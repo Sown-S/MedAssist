@@ -11,7 +11,7 @@ import { ErrorNote } from '../../../components/DataState'
 
 // Phần dùng chung của màn soạn bản phát hành (admin) và màn duyệt (bác sĩ): trạng thái, danh sách thay đổi, lịch sử.
 const RELEASE_STATUS = { Draft: 'Being drafted', PendingApproval: 'Awaiting approval', Active: 'Approved', Retired: 'Superseded' }
-const RELEASE_TONE = { Draft: '', PendingApproval: 'info', Active: 'ok', Retired: 'muted' }
+const RELEASE_TONE = { Draft: '', PendingApproval: 'b-info', Active: 'b-success', Retired: 'b-neutral' }
 export const ReleaseBadge = ({ status }) => <span className={'badge ' + (RELEASE_TONE[status] ?? '')}>{RELEASE_STATUS[status] ?? status}</span>
 
 const FIELD_LABEL = {
@@ -60,7 +60,7 @@ function Change({ c, ctx, onDrop }) {
   return (
     <div className="kb-change">
       <div className="kb-change-head">
-        <span className={'badge ' + (c.action === 'new' ? 'ok' : 'info')}>{c.action === 'new' ? 'New' : 'Changed'}</span>
+        <span className={'badge ' + (c.action === 'new' ? 'b-success' : 'b-info')}>{c.action === 'new' ? 'New' : 'Changed'}</span>
         <span className="muted">{KIND_META[c.kind]?.one}</span>
         <span className="num small">
           {c.key} · v{c.version}

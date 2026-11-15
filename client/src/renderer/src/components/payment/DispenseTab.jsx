@@ -93,7 +93,7 @@ export default function DispenseTab({ active, visitId, items, waiting, paid, rx,
                     {l.quantity} {translate(unitLabel(l.unit))}
                   </td>
                   <td>
-                    <span className={'badge ' + (DS[l.dispense_status]?.cls ?? 'muted')}>{translate(DS[l.dispense_status]?.label ?? l.dispense_status)}</span>
+                    <span className={'badge ' + (DS[l.dispense_status]?.cls ?? 'b-neutral')}>{translate(DS[l.dispense_status]?.label ?? l.dispense_status)}</span>
                   </td>
                   <td>
                     <div className="acts">

@@ -13,7 +13,7 @@ export const ID_RE = /^\d{12}$/
 
 // Hiển thị dd/mm/yyyy cố định: ô date gốc của Chromium theo vùng của Windows (máy en-US thành mm/dd/yyyy).
 // Nút lịch mở bảng chọn ngày gốc, không cho chọn ngày tương lai.
-export function DobInput({ value, onChange, className }) {
+export function DobInput({ value, onChange, className = 'input' }) {
   const picker = useRef(null)
   return (
     <div className="dob-input">

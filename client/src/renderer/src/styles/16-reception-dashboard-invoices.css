@@ -1,7 +1,7 @@
 /* Lễ tân: thẻ bệnh nhân, bảng điều khiển, gọi số, hoá đơn, doanh thu theo kỳ */
 
 /* Thông báo cờ đỏ, tra cứu, cảnh báo dị ứng */
-.p-card.open .p-detail{max-height:420px;}
+
 .btn kbd{font-family:'IBM Plex Mono',monospace;font-size:10.5px;padding:1px 5px;border-radius:5px;border:1px solid currentColor;opacity:.6;margin-left:4px;}
 .redflag-alert{display:flex;align-items:center;gap:12px;padding:12px 14px;margin-bottom:12px;border-radius:12px;background:rgba(239,68,68,.18);border:1px solid rgba(239,68,68,.55);color:var(--warn-ink);font-size:13.5px;}
 .redflag-alert > svg{width:22px;height:22px;flex-shrink:0;color:var(--warn-ink);}
@@ -18,17 +18,10 @@
 .dupe-list{display:flex;flex-direction:column;gap:6px;margin-top:8px;}
 .dupe-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;color:var(--ink);font-size:13px;}
 .dupe-row .btn{margin-left:auto;}
-@media (max-width:800px){.pl-grid{grid-template-columns:1fr;}}
 
 /* Bảng điều khiển Lễ tân */
-@media (max-width:1100px){.dash-bottom{grid-template-columns:1fr;}}
-.pay-row{display:flex;align-items:center;gap:12px;padding:9px 0;border-bottom:1px solid var(--border);}
-.pay-row .t{font-weight:700;color:var(--accent);min-width:34px;}
-.pay-row .nm{flex:1;display:flex;flex-direction:column;}
-.pay-row .nm small{font-size:12px;color:var(--ink-soft);}
-.pay-row .amt{font-weight:600;}
+
 /* Gọi số */
-.call-panel .card-title svg{width:17px;height:17px;color:var(--accent);}
 .call-now{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:14px 16px;border-radius:12px;background:rgba(24,119,242,.08);border:1px solid rgba(24,119,242,.35);margin-bottom:12px;min-height:72px;}
 .call-now .lbl{font-size:12.5px;color:var(--ink-soft);}
 .call-now .num{font-family:'IBM Plex Mono',monospace;font-size:38px;font-weight:700;color:var(--accent);line-height:1;}

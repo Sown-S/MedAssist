@@ -103,61 +103,60 @@ export default function CallPanel({ readOnly, variant }) {
 
   return (
     <div className="card call-panel">
-      <div className="card-title">
-        <Icon name="megaphone" /> Patients to call in
+      <div className="card-h">
+        <h3>
+          <Icon name="megaphone" /> Patients to call in
+        </h3>
       </div>
-      {toCall.length ? (
-        toCall.map((v) => (
-          <div key={v.id} className="call-now">
-            <span className="num">{ticketNo(v.ticket)}</span>
-            <span style={{ flex: 1, minWidth: 160, display: 'flex', flexDirection: 'column' }}>
-              <span className="nm">
-                {dev.showNames ? v.name + ' → ' : '→ '}
-                {v.room || '—'}
+      <div className="card-b">
+        {toCall.length ? (
+          toCall.map((v) => (
+            <div key={v.id} className="call-now">
+              <span className="num">{ticketNo(v.ticket)}</span>
+              <span style={{ flex: 1, minWidth: 160, display: 'flex', flexDirection: 'column' }}>
+                <span className="nm">
+                  {dev.showNames ? v.name + ' → ' : '→ '}
+                  {v.room || '—'}
+                </span>
+                <span className="lbl">
+                  {v.doctor} · {translate('ready')} {minutesSince(v.calledAt ?? v.statusAt)} {translate('min ago')} · <i>“{callText(v)}”</i>
+                </span>
               </span>
-              <span className="lbl">
-                {v.doctor} · {translate('ready')} {minutesSince(v.calledAt ?? v.statusAt)} {translate('min ago')} · <i>“{callText(v)}”</i>
-              </span>
-            </span>
-            {v.status === ST.WAITING && (
-              <button className="btn btn-primary btn-sm" disabled={readOnly} onClick={() => checkIn(v)} title={translate('The patient is at the desk and it is nearly their turn')}>
-                <Icon name="check" /> {translate('Mark present')}
+              {v.status === ST.WAITING && (
+                <button className="btn btn-primary btn-sm" disabled={readOnly} onClick={() => checkIn(v)} title={translate('The patient is at the desk and it is nearly their turn')}>
+                  <Icon name="check" /> {translate('Mark present')}
+                </button>
+              )}
+              <button className="btn btn-ghost btn-sm" disabled={readOnly} onClick={() => notHere(v)} title={translate('Cancels the invitation — the patient keeps their place in the queue')}>
+                <Icon name="x" /> Not here
               </button>
-            )}
-            <button
-              className="btn btn-ghost btn-sm"
-              disabled={readOnly}
-              onClick={() => notHere(v)}
-              title={translate('Cancels the invitation — the patient keeps their place in the queue')}
-            >
-              <Icon name="x" /> Not here
-            </button>
+            </div>
+          ))
+        ) : (
+          <div className="call-now">
+            <span className="lbl">No one to call right now — when a doctor is ready for the next patient, they appear here with the room.</span>
           </div>
-        ))
-      ) : (
-        <div className="call-now">
-          <span className="lbl">No one to call right now — when a doctor is ready for the next patient, they appear here with the room.</span>
-        </div>
-      )}
-      {next.length > 0 && (
-        <div className="call-next">
-          <span className="lbl">Next in the queue</span>
-          {next.slice(0, dev.nextCount).map((v) => {
-            const cls = 'call-chip' + (v.absent ? ' absent' : '') + (v.priority ? ' prio' : '') + (v.triage === 'emergency' ? ' emerg' : '') + (v.status === ST.CHECKED_IN ? ' ready' : ' pending')
-            const tip = (dev.showNames ? v.name + ' · ' : '') + translate(v.status === ST.CHECKED_IN ? 'Checked in — can be called' : 'Not checked in — click when the patient is at the desk')
-            return v.status === ST.WAITING ? (
-              <button key={v.id} type="button" className={cls} title={tip} disabled={readOnly} onClick={() => checkIn(v)}>
-                {ticketNo(v.ticket)}
-              </button>
-            ) : (
-              <span key={v.id} className={cls} title={tip}>
-                <Icon name="check" /> {ticketNo(v.ticket)}
-              </span>
-            )
-          })}
-          {next.length > dev.nextCount && <span className="muted">+{next.length - dev.nextCount}</span>}
-        </div>
-      )}
+        )}
+        {next.length > 0 && (
+          <div className="call-next">
+            <span className="lbl">Next in the queue</span>
+            {next.slice(0, dev.nextCount).map((v) => {
+              const cls = 'call-chip' + (v.absent ? ' absent' : '') + (v.priority ? ' prio' : '') + (v.triage === 'emergency' ? ' emerg' : '') + (v.status === ST.CHECKED_IN ? ' ready' : ' pending')
+              const tip = (dev.showNames ? v.name + ' · ' : '') + translate(v.status === ST.CHECKED_IN ? 'Checked in — can be called' : 'Not checked in — click when the patient is at the desk')
+              return v.status === ST.WAITING ? (
+                <button key={v.id} type="button" className={cls} title={tip} disabled={readOnly} onClick={() => checkIn(v)}>
+                  {ticketNo(v.ticket)}
+                </button>
+              ) : (
+                <span key={v.id} className={cls} title={tip}>
+                  <Icon name="check" /> {ticketNo(v.ticket)}
+                </span>
+              )
+            })}
+            {next.length > dev.nextCount && <span className="muted">+{next.length - dev.nextCount}</span>}
+          </div>
+        )}
+      </div>
     </div>
   )
 }

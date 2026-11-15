@@ -69,11 +69,7 @@ export default function ReleaseTab({ data, names, onChanged, autoCreate }) {
               {open.description && <div className="small muted">{open.description}</div>}
             </div>
             {open.status === 'Draft' && (
-              <button
-                className="btn btn-primary btn-sm"
-                disabled={!detail?.changes.length}
-                onClick={() => run(() => submitRelease(open.release_id), 'Sent to the doctor for approval')}
-              >
+              <button className="btn btn-primary btn-sm" disabled={!detail?.changes.length} onClick={() => run(() => submitRelease(open.release_id), 'Sent to the doctor for approval')}>
                 Submit for doctor review
               </button>
             )}
@@ -92,17 +88,17 @@ export default function ReleaseTab({ data, names, onChanged, autoCreate }) {
               <div className="txt">{translate('Waiting for a doctor (not the author) to approve or reject. Changes are locked meanwhile.')}</div>
             </div>
           )}
-          <ChangeList
-            detail={detail}
-            ctx={ctx}
-            onDrop={open.status === 'Draft' ? (c) => run(() => dropDraft(c.kind, c.key), 'Removed from the release') : null}
-          />
+          <ChangeList detail={detail} ctx={ctx} onDrop={open.status === 'Draft' ? (c) => run(() => dropDraft(c.kind, c.key), 'Removed from the release') : null} />
         </div>
       )}
 
       <div className="card" style={{ marginTop: 14 }}>
-        <div className="card-title">Release history</div>
-        <ReleaseHistory releases={data.releases} onView={setViewing} />
+        <div className="card-h">
+          <h3>Release history</h3>
+        </div>
+        <div className="card-b">
+          <ReleaseHistory releases={data.releases} onView={setViewing} />
+        </div>
       </div>
 
       <CreateReleaseModal

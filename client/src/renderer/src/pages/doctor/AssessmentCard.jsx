@@ -36,13 +36,13 @@ export function useAssessment(visit) {
 }
 
 const STATUS = {
-  Pending: { label: 'AI analysis in progress…', tone: 'muted' },
-  Preliminary: { label: 'Preliminary — rule ranking', tone: 'muted' },
-  Ready: { label: 'Full — ranked and explained', tone: 'ok' },
-  Degraded: { label: 'Rule-only', tone: 'low' },
-  Failed: { label: 'AI assessment failed', tone: 'low' },
-  None: { label: 'Not assessed yet', tone: 'muted' },
-  Skipped: { label: 'Red flag — no AI suggestion', tone: 'low' }
+  Pending: { label: 'AI analysis in progress…', tone: 'b-neutral' },
+  Preliminary: { label: 'Preliminary — rule ranking', tone: 'b-neutral' },
+  Ready: { label: 'Full — ranked and explained', tone: 'b-success' },
+  Degraded: { label: 'Rule-only', tone: 'b-danger' },
+  Failed: { label: 'AI assessment failed', tone: 'b-danger' },
+  None: { label: 'Not assessed yet', tone: 'b-neutral' },
+  Skipped: { label: 'Red flag — no AI suggestion', tone: 'b-danger' }
 }
 const DISMISS = [
   ['differs', 'Clinical picture differs'],

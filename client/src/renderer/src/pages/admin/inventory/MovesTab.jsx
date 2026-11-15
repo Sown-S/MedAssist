@@ -65,7 +65,7 @@ export function MovesTab({ inv }) {
                 <td className="num">{m.ref}</td>
                 <td>{name(m.drugId)}</td>
                 <td>
-                  <span className={'badge ' + (m.type === 'in' ? 'ok' : m.type === 'out' ? 'info' : 'warn')}>{MOVE_TYPES[m.type]}</span>
+                  <span className={'badge ' + (m.type === 'in' ? 'b-success' : m.type === 'out' ? 'b-info' : 'b-warning')}>{MOVE_TYPES[m.type]}</span>
                 </td>
                 <td className="num">{m.lot}</td>
                 <td className={'mono num ' + (m.qty > 0 ? 'inv-plus' : 'inv-minus')}>

@@ -51,8 +51,6 @@
 .dob-input .dob-cal:hover{background:var(--surface-2);color:var(--ink)}
 .dob-input .dob-native{position:absolute;right:0;bottom:0;width:38px;height:100%;opacity:0;pointer-events:none}
 .pl-summary{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;font-size:var(--fs-sm);color:var(--ink-3);margin-bottom:8px}
-/* Badge tô màu theo biến (giá trị ok/low/warn/muted/info tính trong code) dùng đúng màu b-* của bản mẫu */
-.badge.ok{background:var(--success-soft);color:var(--success)}.badge.low{background:var(--danger-soft);color:var(--danger)}.badge.warn{background:var(--warning-soft);color:var(--warning)}.badge.muted{background:var(--routine-soft);color:var(--ink-2)}.badge.info{background:var(--info-soft);color:var(--info)}
 /* Dòng bảng bấm được (mở chi tiết / thu tiền) */
 tr.clickable{cursor:pointer}tr.clickable:hover td{background:var(--surface-2)}
 /* Ô tóm tắt bấm được để lọc danh sách */

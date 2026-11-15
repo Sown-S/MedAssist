@@ -12,11 +12,11 @@ export const KIND_META = {
 }
 
 const STATUS_LABEL = { Active: 'In use', Draft: 'Draft', PendingApproval: 'Awaiting approval', Retired: 'Retired' }
-const STATUS_TONE = { Active: 'ok', Draft: '', PendingApproval: 'info', Retired: 'muted' }
+const STATUS_TONE = { Active: 'b-success', Draft: '', PendingApproval: 'b-info', Retired: 'b-neutral' }
 export const StatusBadge = ({ status }) => <span className={'badge ' + (STATUS_TONE[status] ?? '')}>{STATUS_LABEL[status] ?? status}</span>
 
 const RULE_TYPE_LABEL = { RED_FLAG: 'Red flag', PRIORITY_FLOOR: 'Priority floor' }
-const RuleTypeBadge = ({ type }) => <span className={'badge ' + (type === 'RED_FLAG' ? 'low' : 'warn')}>{RULE_TYPE_LABEL[type] ?? type}</span>
+const RuleTypeBadge = ({ type }) => <span className={'badge ' + (type === 'RED_FLAG' ? 'b-danger' : 'b-warning')}>{RULE_TYPE_LABEL[type] ?? type}</span>
 
 
 export function errorText(e) {
@@ -95,7 +95,7 @@ export function Summary({ kind, values, names }) {
     return (
       <span>
         <b>{names.condition[v.condition_code] ?? v.condition_code}</b> <span className="muted">↔</span> {names.symptom[v.symptom_code] ?? v.symptom_code}{' '}
-        <span className={'badge ' + (v.polarity === 'CONTRADICTS' ? 'low' : 'ok')}>{v.polarity === 'CONTRADICTS' ? 'Contradicts' : 'Supports'}</span>{' '}
+        <span className={'badge ' + (v.polarity === 'CONTRADICTS' ? 'b-danger' : 'b-success')}>{v.polarity === 'CONTRADICTS' ? 'Contradicts' : 'Supports'}</span>{' '}
         <span className="num">{Number(v.weight).toFixed(2)}</span> {v.is_key && <span className="badge b-info">Key symptom</span>}
       </span>
     )

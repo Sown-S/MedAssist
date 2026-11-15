@@ -10,18 +10,7 @@
 /* ---- Ô tóm tắt có icon (Hoá đơn, Đơn thuốc) ---- */
 
 /* ---- Hàng chờ (lễ tân) ---- */
-.cn-t{flex:1;min-width:0;display:flex;flex-direction:column;}
-.cn-t b{font-size:15.5px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.cn-t small{font-size:13px;color:var(--ink-soft);}
-.q-no{display:block;font-size:16px;}
-@media (max-width:1280px){.cn-row{grid-template-columns:1fr;}}
+
 /* Danh sách thông báo ở chuông: icon tròn bên trái */
-.notif-item{display:flex;align-items:flex-start;gap:10px;}
-.notif-item>div{flex:1;min-width:0;}
-.notif-ico{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;flex:none;background:var(--primary-soft);color:var(--primary);}
-.notif-ico.urgent{background:var(--warn-soft);color:var(--warn);}
-.notif-ico .icn{width:16px;height:16px;}
-.notif-panel{border-radius:12px;box-shadow:var(--shadow-lg);background:var(--surface);border:1px solid var(--border);}
-.notif-head{text-transform:uppercase;font-size:13px;letter-spacing:.04em;color:var(--ink-soft);}
 
 /* ---- Bệnh nhân (lễ tân) ---- */
