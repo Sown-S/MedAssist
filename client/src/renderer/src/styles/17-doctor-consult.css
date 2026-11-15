@@ -27,20 +27,7 @@
 .pay-row.clickable{cursor:pointer;border-radius:9px;transition:background .15s;}
 .pay-row.clickable:hover{background:var(--surface-hover);}
 
-.busy-current{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;background:var(--surface-alt);border:1px solid var(--border);margin-bottom:10px;}
-.busy-current b{display:block;color:var(--ink);}
-.busy-current small{font-size:12px;color:var(--ink-soft);}
 
-.wait-list{max-height:min(68vh,640px);overflow:auto;display:flex;flex-direction:column;gap:8px;}
-.wait-item{border:1px solid var(--border);border-radius:12px;background:var(--surface);}
-.wait-item.open{border-color:var(--primary);}
-.wait-head{display:flex;align-items:center;gap:10px;width:100%;padding:10px 12px;background:none;border:none;cursor:pointer;color:var(--ink);font-family:inherit;text-align:left;}
-.wait-head>svg{width:16px;height:16px;color:var(--ink-soft);transition:transform .2s ease;flex-shrink:0;}
-.wait-item.open .wait-head>svg{transform:rotate(180deg);}
-.wait-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;}
-.wait-main b{font-size:14px;color:var(--ink);}
-.wait-main small{font-size:12px;color:var(--ink-soft);}
-.wait-body{padding:0 14px 14px;}
 .brief-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;font-size:13px;color:var(--ink);}
 .brief-grid>div,.brief-last{display:flex;flex-direction:column;gap:3px;}
 .brief-k{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-soft);}
@@ -48,9 +35,6 @@
 .brief-last small{font-size:12px;color:var(--ink-soft);}
 @media (max-width:640px){.brief-grid{grid-template-columns:1fr;}}
 
-.lab-list{display:flex;flex-direction:column;gap:10px;max-height:min(62vh,600px);overflow:auto;}
-.lab-list-item{border:1px solid var(--border);border-radius:12px;padding:12px 14px;background:var(--surface);}
-.lab-list-head{display:flex;align-items:center;gap:10px;margin-bottom:6px;}
 .lab-res{margin-top:6px;}
 .lab-res-head{display:flex;flex-wrap:wrap;gap:5px;font-size:12px;color:var(--ink-soft);margin-bottom:4px;}
 .lab-res-sum{font-size:13px;color:var(--ink);margin:6px 0 0;}

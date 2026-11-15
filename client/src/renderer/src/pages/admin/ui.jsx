@@ -29,7 +29,14 @@ export function ConfirmDialog({ open, title, message, children, confirmLabel = '
     <Modal open={open} onClose={onCancel}>
       <ModalHeader title={title} onClose={onCancel} />
       <div className="modal-b">
-        {message && <p className="ai-confirm-msg">{message}</p>}
+        {message && (
+          <div className="confirm">
+            <div className={'ico ' + (danger ? 'd' : 'w')}>
+              <Icon name="triangle-alert" />
+            </div>
+            <p>{message}</p>
+          </div>
+        )}
         {children}
         {requireNote && (
           <div className="field" style={{ marginTop: 12 }}>

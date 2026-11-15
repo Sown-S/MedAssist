@@ -160,7 +160,7 @@ export default function DocumentModal({ subject, onClose, mode = 'print', target
       <div className="modal-b">
         {mode === 'doctor' && <p className="hint">The visit ends as “Referred”: no prescription, no invoice. You can add to the letter later from the patient’s record.</p>}
         {desk && <p className="hint">Send the patient to hospital now (call 115 if needed). The visit is closed as “Referred” and doctors can complete the letter later.</p>}
-        <fieldset className="form-grid cols-2 doc-fields" disabled={mode === 'reprint'}>
+        <fieldset className="fg doc-fields" disabled={mode === 'reprint'}>
           <div className="field">
             <label>
               Referred to <span className="req">*</span>

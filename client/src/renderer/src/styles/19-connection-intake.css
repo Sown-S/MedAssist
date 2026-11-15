@@ -23,11 +23,6 @@
 .srv-msg.fail{color:var(--warn-ink);}
 
 /* Lượt chưa đóng từ những ngày trước */
-.stale-row{padding:10px 12px;border-radius:11px;background:var(--surface-alt);margin-bottom:8px;}
-.stale-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
-.stale-head .wait-main{flex:1;min-width:180px;display:flex;flex-direction:column;}
-.stale-head small{font-size:12px;color:var(--ink-soft);}
-.stale-close{margin-top:10px;padding-top:10px;border-top:1px solid var(--border);}
 
 /* Phân loại lúc tiếp đón (cổng cờ đỏ) */
 .call-chip.emerg{background:rgba(239,68,68,.25);color:var(--warn-ink);}

@@ -30,7 +30,7 @@ export function ClinicalInfoEditor({ visit }) {
     )
   return (
     <div className="clin-edit">
-      <div className="form-grid cols-2">
+      <div className="fg">
         <div className="field">
           <label>Drug allergies</label>
           <input className="input" type="text" autoFocus value={f.allergies} onChange={(e) => setF({ ...f, allergies: e.target.value })} placeholder="Penicillin…" />

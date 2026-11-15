@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import Icon from '../../../components/Icon'
-import { LoadingBlock } from '../../../components/DataState'
+import { LoadingBlock, ErrorBlock } from '../../../components/DataState'
 import { translate } from '../../../i18n'
 import { OPEN_STATUSES } from '../../../api/knowledgeApi'
 import { useAuth } from '../../../context/AuthContext'
@@ -24,13 +24,13 @@ export default function KnowledgeLive({ reviewOnly = false }) {
   if (error)
     return (
       <div className="card">
-        <div className="banner d">{errorText(error)}</div>
+        <ErrorBlock message={errorText(error)} />
         <button className="btn btn-ghost btn-sm" onClick={reload}>
           Try again
         </button>
       </div>
     )
-  if (!data) return <LoadingBlock text="Loading the knowledge base..." />
+  if (!data) return <LoadingBlock />
 
   const active = data.releases.find((r) => r.status === 'Active')
   const open = data.releases.find((r) => OPEN_STATUSES.includes(r.status))

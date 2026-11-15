@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react'
 import Modal, { ModalHeader } from './Modal'
 import PatientAlerts from './PatientAlerts'
+import Icon from './Icon'
 import { ageOf } from '../api/patient'
 import { useQueue, isClosed, statusLabel } from '../api/queueStore'
 import { translate } from '../i18n'
 import { ticketNo } from './queuePrint'
 import { lookupPatients, getPatient } from '../api/clinicApi'
+import { ErrorNote } from './DataState'
 
 // Tìm qua GET /patients/lookup (gõ xong 300 ms), chọn ai thì tải đủ hồ sơ.
 function useServerSearch(q, picked) {
@@ -38,6 +40,14 @@ function useServerSearch(q, picked) {
   return { results, detail, error }
 }
 
+const initials = (name = '') =>
+  name
+    .trim()
+    .split(/\s+/)
+    .slice(-2)
+    .map((w) => w[0]?.toUpperCase() ?? '')
+    .join('')
+
 // readOnly = mất kết nối: vẫn tra cứu được, nút tiếp đón bị khoá.
 export default function SearchModal({ open, onClose, onCheckIn, readOnly }) {
   const { visits } = useQueue()
@@ -61,61 +71,80 @@ export default function SearchModal({ open, onClose, onCheckIn, readOnly }) {
   return (
     <Modal open={open} onClose={onClose} wide>
       <ModalHeader title="Find patient" onClose={onClose} />
-      <input
-        className="pl-search"
-        type="search"
-        autoFocus
-        placeholder="Name, phone number or record ID…"
-        value={q}
-        onChange={(e) => {
-          setQ(e.target.value)
-          setPicked(null)
-        }}
-      />
-      <div className="pl-grid">
-        <div className="pl-results">
-          {results.map((r) => {
-            const v = todayOf(r)
-            return (
-              <button key={r.id} className={'pl-row' + (r.id === sel?.id ? ' active' : '')} onClick={() => setPicked(r.id)}>
-                <span className="nm">{r.name}</span>
-                <span className="sub">
-                  <span className="num">{r.code ?? r.id}</span> · {r.dob} · <span className="num">{r.phone}</span>
-                </span>
-                {v && !isClosed(v) && <span className="pl-today">{ticketNo(v.ticket)}</span>}
-              </button>
-            )
-          })}
-          {server.error && <p className="muted small" style={{ padding: 10 }}>{server.error}</p>}
-          {q.trim() && !results.length && !server.error && <p className="muted small" style={{ padding: 10 }}>No patient matches. Register them as a new patient.</p>}
-          {!q.trim() && <p className="muted small" style={{ padding: 10 }}>Type at least part of a name, phone number or record ID.</p>}
-        </div>
-        <div className="pl-detail">
-          {sel ? (
-            <>
-              <h3>{sel.name}</h3>
-              <div className="pl-summary">
-                <span className="num">{sel.code ?? sel.id}</span>
-                <span>{translate(sel.gender)}</span>
-                <span>
-                  {sel.dob} ({ageOf(sel.dob)} {translate('yrs')})
-                </span>
-                <span className="num">{sel.phone}</span>
+      <div className="modal-b flush">
+        <div className="srch">
+          <div>
+            <div className="search" style={{ width: '100%', marginBottom: 10 }}>
+              <Icon name="search" />
+              <input
+                className="input"
+                type="search"
+                autoFocus
+                placeholder={translate('Name, phone number or record ID…')}
+                value={q}
+                onChange={(e) => {
+                  setQ(e.target.value)
+                  setPicked(null)
+                }}
+              />
+            </div>
+            {results.map((r) => {
+              const v = todayOf(r)
+              return (
+                <button key={r.id} type="button" className={'sr' + (r.id === sel?.id ? ' on' : '')} onClick={() => setPicked(r.id)}>
+                  <span className="ava">{initials(r.name)}</span>
+                  <span className="t">
+                    <b>{r.name}</b>
+                    <span>
+                      <span className="num">{r.code ?? r.id}</span> · {r.dob} · <span className="num">{r.phone}</span>
+                    </span>
+                  </span>
+                  {v && !isClosed(v) && <span className="badge b-info">{ticketNo(v.ticket)}</span>}
+                </button>
+              )
+            })}
+            <ErrorNote>{server.error}</ErrorNote>
+            {q.trim() && !results.length && !server.error && <p className="muted small" style={{ padding: 10 }}>No patient matches. Register them as a new patient.</p>}
+            {!q.trim() && <p className="muted small" style={{ padding: 10 }}>Type at least part of a name, phone number or record ID.</p>}
+          </div>
+          <div>
+            {sel ? (
+              <>
+                <b style={{ fontSize: 'var(--fs-md)' }}>{sel.name}</b>
+                <div className="muted small">
+                  <span className="num">{sel.code ?? sel.id}</span> · {sel.dob} ({ageOf(sel.dob)} {translate('yrs')}) · {translate(sel.gender)} · <span className="num">{sel.phone}</span>
+                </div>
+                <div style={{ margin: '12px 0' }}>
+                  <PatientAlerts p={sel} />
+                </div>
+                {today && (
+                  <div className="muted small">
+                    {translate('Today')}: {translate('no.')} <b>{ticketNo(today.ticket)}</b> · {translate(statusLabel(today.status))}
+                  </div>
+                )}
+                <button className="btn btn-primary" style={{ marginTop: 14 }} disabled={readOnly || busy} onClick={() => onCheckIn(sel)}>
+                  <Icon name="clipboard-plus" />
+                  {busy ? translate('Already in today’s queue') : translate('Check in & issue number')}
+                </button>
+              </>
+            ) : (
+              <div className="empty">
+                <div className="ill">
+                  <Icon name="user-search" />
+                </div>
+                <p className="muted small">{translate('Select a patient to see their details.')}</p>
               </div>
-              <PatientAlerts p={sel} />
-              {today && (
-                <p className="pl-status">
-                  {translate('Today')}: {translate('no.')} <b>{ticketNo(today.ticket)}</b> · {translate(statusLabel(today.status))}
-                </p>
-              )}
-              <button className="btn btn-primary" style={{ marginTop: 12 }} disabled={readOnly || busy} onClick={() => onCheckIn(sel)}>
-                {busy ? 'Already in today’s queue' : 'Check in & issue number'}
-              </button>
-            </>
-          ) : (
-            <p className="muted small">Select a patient to see their details.</p>
-          )}
+            )}
+          </div>
         </div>
+      </div>
+      <div className="modal-f">
+        <span className="muted small">{translate('Not found? Register them as a new patient.')}</span>
+        <span className="sp" />
+        <button className="btn btn-outline" disabled={readOnly} onClick={() => onCheckIn(null)}>
+          <Icon name="user-plus" />
+          {translate('Register new patient')}
+        </button>
       </div>
     </Modal>
   )

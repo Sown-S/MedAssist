@@ -6,6 +6,7 @@ import { statusLabel } from '../../api/queueStore'
 import { translate } from '../../i18n'
 import { listPatients, getPatient, patientVisits } from '../../api/clinicApi'
 import { dmy } from './shared'
+import Skeleton from '../../components/Skeleton'
 
 const PAGE = 20
 const EMPTY = { q: '', phone: '', idNumber: '', code: '', birthYear: '' }
@@ -198,7 +199,7 @@ function VisitHistoryModal({ patient, onClose }) {
       <ModalHeader title={translate('Visit history') + ' — ' + patient.name} onClose={onClose} />
       <div className="modal-b">
         {rows === null ? (
-          <p className="muted">{translate('Loading…')}</p>
+          <Skeleton rows={4} />
         ) : rows.length ? (
           <div className="tbl-wrap">
             <table>
@@ -212,17 +213,30 @@ function VisitHistoryModal({ patient, onClose }) {
               <tbody>
                 {rows.map((v) => (
                   <tr key={v.id}>
-                    <td>{dmy(v.at)}</td>
+                    <td className="num">{dmy(v.at)}</td>
                     <td>{v.reason || '—'}</td>
-                    <td>{v.referred ? translate('Referred') : translate(statusLabel(v.status))}</td>
+                    <td>
+                      <span className={'badge ' + (v.referred ? 'b-danger' : 'b-neutral')}>{v.referred ? translate('Referred') : translate(statusLabel(v.status))}</span>
+                    </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
         ) : (
-          <p className="muted">{translate('No visits yet.')}</p>
+          <div className="empty">
+            <div className="ill">
+              <Icon name="calendar" />
+            </div>
+            <p className="muted">{translate('No visits yet.')}</p>
+          </div>
         )}
+      </div>
+      <div className="modal-f">
+        <span className="sp" />
+        <button className="btn btn-outline" onClick={onClose}>
+          {translate('Close')}
+        </button>
       </div>
     </Modal>
   )

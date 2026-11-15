@@ -3,6 +3,8 @@ import Icon from '../../../components/Icon'
 import { translate } from '../../../i18n'
 import { AI_MODES, AI_RUN_TYPES, AI_STATUSES, listAiLogs } from '../../../api/reportsApi'
 import { shortDateTime } from '../../../utils/format'
+import Skeleton from '../../../components/Skeleton'
+import { ErrorNote } from '../../../components/DataState'
 
 // Mỗi lượt chạy AI kèm phiên bản tri thức / model / prompt, độ trễ và quyết định của bác sĩ — truy vết được mà không lộ
 // bệnh nhân (server không trả họ tên, triệu chứng hay đầu ra thô của LLM).
@@ -52,7 +54,7 @@ export default function AiLogsTab() {
       <p className="muted small" style={{ marginTop: 0 }}>
         Every AI run with the knowledge release, model and prompt versions, timing and the doctor’s decision. No patient data is shown.
       </p>
-      <div className="form-grid cols-4">
+      <div className="fg3">
         <div className="field">
           <label>From</label>
           <input type="date" value={draft.from} onChange={(e) => setDraft({ ...draft, from: e.target.value })} />
@@ -94,8 +96,8 @@ export default function AiLogsTab() {
         </div>
       </div>
 
-      {err && <div className="banner d">{err}</div>}
-      {!data && !err && <p className="muted">Loading…</p>}
+      <ErrorNote>{err}</ErrorNote>
+      {!data && !err && <Skeleton rows={6} cols={4} />}
       {data && (
         <div className="tbl-wrap" style={{ marginTop: 10 }}>
           <div className="tbl-wrap">
@@ -143,7 +145,7 @@ export default function AiLogsTab() {
             const x = data.items.find((i) => i.assessment_id === open)
             if (!x) return null
             return (
-              <div className="pl-detail" style={{ marginTop: 10 }}>
+              <div className="card" style={{ marginTop: 10 }}>
                 <div className="pref-row inline">
                   <span>Knowledge release</span>
                   <b className="num">{x.knowledge_release_label ?? '—'}</b>
@@ -166,7 +168,7 @@ export default function AiLogsTab() {
                     {shortDateTime(x.started_at)} → {shortDateTime(x.completed_at)}
                   </b>
                 </div>
-                {x.error_detail && <div className="banner d">{x.error_detail}</div>}
+                <ErrorNote>{x.error_detail}</ErrorNote>
               </div>
             )
           })()}

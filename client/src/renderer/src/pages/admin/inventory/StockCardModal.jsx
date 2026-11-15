@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import Modal, { ModalHeader } from '../../../components/Modal'
+import Modal, { ModalHeader, ModalCloseFooter } from '../../../components/Modal'
 import Icon from '../../../components/Icon'
 import { translate } from '../../../i18n'
 import { reasonLabel, loadMovesFor } from '../../../api/inventoryStore'
@@ -86,6 +86,7 @@ export default function StockCardModal({ drug, moves, onClose }) {
           <span>Quantities in</span> <b>{unitLabel(drug.unit)}</b>
         </p>
       </div>
+      <ModalCloseFooter onClose={onClose} />
     </Modal>
   )
 }

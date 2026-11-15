@@ -6,6 +6,7 @@ import { lookupPatients, getPatient } from '../../api/clinicApi'
 import { ageOf } from '../../api/patient'
 import ServerHistory from './ServerHistory'
 import DocumentModal from './DocumentModal'
+import { ErrorNote } from '../../components/DataState'
 
 // Một ô tìm cho mọi khoá (mã BN, SĐT, CCCD, năm sinh, họ tên). Server tự ghi nhật ký VIEW mỗi lần xem.
 export default function PatientLookup() {
@@ -78,7 +79,7 @@ export default function PatientLookup() {
               }}
             />
           </div>
-          {err && <div className="banner d">{err}</div>}
+          <ErrorNote>{err}</ErrorNote>
           {listOpen && q.trim() && (
             <div className="pl-results">
               {results.map((r) => (

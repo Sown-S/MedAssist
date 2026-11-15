@@ -36,27 +36,30 @@ export function useTakePatient(open) {
   }
 
   const dialog = busy && (
-    <Modal open onClose={() => setBusy(null)}>
+    <Modal open onClose={() => setBusy(null)} size="sm">
       <ModalHeader title={translate('A patient is still in your room')} onClose={() => setBusy(null)} />
       <div className="modal-b">
-        <div className="busy-current">
-          <span className="p-ticket">{no(busy.busy.ticket)}</span>
-          <div>
-            <b>{busy.busy.name}</b>
-            <small>{translate('In consultation ' + minutesSince(busy.busy.statusAt) + ' min')}</small>
+        <div className="confirm">
+          <div className="ico w">
+            <Icon name="stethoscope" />
           </div>
+          <p>
+            <b>
+              {no(busy.busy.ticket)} — {busy.busy.name}
+            </b>{' '}
+            <span className="muted small">· {translate('In consultation ' + minutesSince(busy.busy.statusAt) + ' min')}</span>
+            <br />
+            {translate('Finalize this visit or send the patient for lab tests before calling the next one, so no one is left half-examined.')}
+          </p>
         </div>
-        <p className="muted small">
-          Finalize this visit or send the patient for lab tests before calling the next one, so no one is left half-examined.
-        </p>
         {busy.target.priority && (
-          <div className="banner w">
+          <div className="banner w" style={{ marginTop: 14 }}>
             <Icon name="zap" />
             <div className="txt">
               <b>
                 {no(busy.target.ticket)} — {busy.target.name} · {translate('Priority')}
               </b>
-              <span>A priority patient can be called in now; the current visit stays open and this is recorded in the activity log.</span>
+              <span>{translate('A priority patient can be called in now; the current visit stays open and this is recorded in the activity log.')}</span>
             </div>
           </div>
         )}
@@ -224,12 +227,15 @@ export function ReleaseModal({ visit, onClose, onDone }) {
     onDone?.()
   }
   return (
-    <Modal open onClose={onClose}>
+    <Modal open onClose={onClose} size="sm">
       <ModalHeader title={translate('Return to queue') + ' — ' + visit.name} onClose={onClose} />
       <div className="modal-b">
-        <p className="muted small" style={{ marginTop: 0 }}>
-          The patient goes back to the waiting queue; any doctor can call them in again. Your unfinished notes stay with the visit.
-        </p>
+        <div className="confirm">
+          <div className="ico w">
+            <Icon name="repeat" />
+          </div>
+          <p>{translate('The patient goes back to the waiting queue; any doctor can call them in again. Your unfinished notes stay with the visit.')}</p>
+        </div>
       </div>
       <div className="modal-f">
         <button className="btn btn-outline" onClick={onClose}>
@@ -257,12 +263,15 @@ export function LeaveVisitModal({ visit, onClose, onDone }) {
     onDone?.()
   }
   return (
-    <Modal open onClose={onClose}>
+    <Modal open onClose={onClose} wide>
       <ModalHeader title={translate('Patient left') + ' — ' + visit.name} onClose={onClose} />
       <div className="modal-b">
-        <p className="muted small" style={{ marginTop: 0 }}>
-          The visit is closed without an invoice. To charge the consultation fee, finalize the visit without drugs instead.
-        </p>
+        <div className="confirm">
+          <div className="ico d">
+            <Icon name="triangle-alert" />
+          </div>
+          <p>{translate('The visit is closed without an invoice. To charge the consultation fee, finalize the visit without drugs instead.')}</p>
+        </div>
         <div className="field">
           <label>Reason</label>
           <div className="leave-reasons">
@@ -284,8 +293,8 @@ export function LeaveVisitModal({ visit, onClose, onDone }) {
         <button className="btn btn-outline" onClick={onClose}>
           Cancel
         </button>
-        <button className="btn btn-primary" onClick={submit} disabled={reason === 'other' && !note.trim()}>
-          <Icon name="check" /> Close visit
+        <button className="btn btn-danger" onClick={submit} disabled={reason === 'other' && !note.trim()}>
+          {translate('Close visit')}
         </button>
       </div>
     </Modal>

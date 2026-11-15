@@ -10,6 +10,7 @@ import { LAB_GROUPS, SERVICE_GROUPS, SAMPLES } from '../admin/catalogs/schemas'
 import { printHtml, esc } from '../admin/inventory/shared'
 import { dmy, hhmm } from '../reception/shared'
 import { fold, money } from '../../utils/format'
+import Skeleton from '../../components/Skeleton'
 
 // Xét nghiệm làm thủ công: bác sĩ lập và in phiếu, bệnh nhân cầm phiếu đi làm rồi mang kết quả giấy quay lại.
 // Phiếu lưu ở server (ERD v2.1) — server tự đánh dấu đi xét nghiệm và đưa tiền dịch vụ vào hoá đơn.
@@ -95,7 +96,12 @@ export default function LabOrderModal({ open, visit, diagnosis, onClose, onSent 
     <Modal open={open} onClose={onClose} wide>
       <ModalHeader title={translate('Lab test order') + ' — ' + visit.name} onClose={onClose} />
       <div className="modal-b">
-        {cat.error && <div className="banner w">{cat.error}</div>}
+        {cat.error && (
+          <div className="banner w">
+            <Icon name="triangle-alert" />
+            <div className="txt">{cat.error}</div>
+          </div>
+        )}
         {packages.length > 0 && (
           <div className="field">
             <label>Package</label>
@@ -109,8 +115,9 @@ export default function LabOrderModal({ open, visit, diagnosis, onClose, onSent 
             </select>
           </div>
         )}
-        <div className="field">
-          <input className="input" type="text" autoFocus value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search tests by name or code…" />
+        <div className="search" style={{ width: '100%' }}>
+          <Icon name="search" />
+          <input className="input" type="search" autoFocus value={q} onChange={(e) => setQ(e.target.value)} placeholder={translate('Search tests by name or code…')} />
         </div>
         <div className="lab-pick">
           {groups.map((g) => (
@@ -129,14 +136,14 @@ export default function LabOrderModal({ open, visit, diagnosis, onClose, onSent 
               })}
             </div>
           ))}
-          {!cat.loaded && <p className="muted">{translate('Loading the catalog…')}</p>}
+          {!cat.loaded && <Skeleton rows={4} cols={2} compact />}
           {cat.loaded && !groups.length && <p className="muted">{translate('No tests match your search.')}</p>}
         </div>
-        <div className="form-grid cols-2" style={{ marginTop: 12 }}>
+        <div className="fg" style={{ marginTop: 12 }}>
           <div className="field">
             <label>Other tests (not in the catalog)</label>
             <input className="input" type="text" value={other} onChange={(e) => setOther(e.target.value)} placeholder="e.g. Abdominal ultrasound" />
-            {other.trim() && <small className="muted">{translate('Not in the catalog — no price; reception adds it to the invoice by hand.')}</small>}
+            {other.trim() && <small className="hint">{translate('Not in the catalog — no price; reception adds it to the invoice by hand.')}</small>}
           </div>
           <div className="field">
             <label>Provisional diagnosis</label>
@@ -149,9 +156,10 @@ export default function LabOrderModal({ open, visit, diagnosis, onClose, onSent 
         </div>
       </div>
       <div className="modal-f">
-        <span className="muted" style={{ marginRight: 'auto', alignSelf: 'center' }}>
+        <span className="muted small">
           {count} {translate(count === 1 ? 'test selected' : 'tests selected')}
         </span>
+        <span className="sp" />
         <button className="btn btn-outline" onClick={onClose}>
           Cancel
         </button>

@@ -4,6 +4,7 @@ import { translate } from '../../../i18n'
 import { useToast } from '../../../context/ToastContext'
 import { saveDrugLive } from '../../../api/inventoryStore'
 import { getSettings } from '../../../api/settingsStore'
+import { ErrorNote } from '../../../components/DataState'
 
 // Thêm / sửa thuốc khi chạy với server. Thuốc trùng (hoạt chất + tên + hàm lượng + dạng) server từ chối.
 // Không có giới hạn liều hay tương tác (ngoài phạm vi FR03).
@@ -73,7 +74,7 @@ export default function DrugFormModal({ drug, onClose }) {
     <Modal open onClose={onClose} wide>
       <ModalHeader title={drug.id ? translate('Edit drug information') + ' · ' + drug.name : 'Add drug'} onClose={onClose} />
       <div className="modal-b">
-        <div className="form-grid cols-2">
+        <div className="fg">
           {field('generic_name', 'Active ingredient', true, { placeholder: 'Paracetamol' })}
           {field('trade_name', 'Trade name', true, { placeholder: 'Panadol' })}
           {field('strength', 'Strength', true, { placeholder: '500 mg' })}
@@ -85,7 +86,7 @@ export default function DrugFormModal({ drug, onClose }) {
           {field('active_ingredient_code', 'ATC code (optional)', false, { placeholder: 'N02BE01' })}
         </div>
         <p className="muted small foot-note">The batch purchase price is entered when receiving stock. The system does not check drug interactions or dose limits.</p>
-        {err && <div className="banner d">{err}</div>}
+        <ErrorNote>{err}</ErrorNote>
       </div>
       <div className="modal-f">
         <button className="btn btn-outline" onClick={onClose}>

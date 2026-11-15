@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import Icon from '../../../components/Icon'
 import { translate } from '../../../i18n'
+import { ErrorNote } from '../../../components/DataState'
 import { useAuth } from '../../../context/AuthContext'
 import { useToast } from '../../../context/ToastContext'
 import { useInventory } from '../../../api/inventoryStore'
@@ -96,7 +97,7 @@ export default function CatalogDetailPage({ catalogKey, params, onNavigate }) {
           </div>
         </div>
 
-        {lc.error && <div className="banner d">{lc.error}</div>}
+        <ErrorNote>{lc.error}</ErrorNote>
         {!lc.loaded ? (
           <p className="muted">{translate('Loading the catalog…')}</p>
         ) : pg.total === 0 ? (

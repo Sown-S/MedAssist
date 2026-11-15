@@ -7,6 +7,7 @@ import { translate } from '../../i18n'
 import { hhmm, methodLabel, PAY_STATUS } from './shared'
 import { money, fold, ymd } from '../../utils/format'
 import { MiniStat, MiniStats } from '../../components/MiniStat'
+import Skeleton from '../../components/Skeleton'
 
 // Hoá đơn / Đơn thuốc của Lễ tân khi chạy với server: các lượt còn việc ở quầy (GET /billing/awaiting).
 // Tab Hoá đơn có thêm lịch sử theo ngày; đơn cũ xem ở lịch sử của từng bệnh nhân.
@@ -175,7 +176,7 @@ function InvoiceHistory({ readOnly, onPay, reloadKey }) {
             </label>
           </div>
           {error && <ErrorBlock message={error.message} />}
-          {!list && !error && <p className="muted small">{translate('Loading…')}</p>}
+          {!list && !error && <Skeleton rows={5} cols={5} />}
           {list && (
             <div className="tbl-wrap">
               <table>

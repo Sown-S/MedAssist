@@ -1,5 +1,6 @@
 import Modal, { ModalHeader } from '../../../components/Modal'
 import { ROLES } from '../../../api/accountStore'
+import { ErrorNote } from '../../../components/DataState'
 
 // Tạo / sửa tài khoản. form = null là đóng; editing = tài khoản đang sửa (null khi tạo mới).
 export default function AccountFormModal({ form, setForm, editing, me, rooms, formErr, onSubmit }) {
@@ -9,8 +10,8 @@ export default function AccountFormModal({ form, setForm, editing, me, rooms, fo
         <form onSubmit={onSubmit}>
           <ModalHeader title={editing ? `Edit account — ${editing.username}` : 'New account'} onClose={() => setForm(null)} />
           <div className="modal-b">
-            {formErr && <div className="banner d" style={{ marginBottom: 12 }}>{formErr}</div>}
-            <div className="form-grid cols-2">
+            <ErrorNote style={{ marginBottom: 12 }}>{formErr}</ErrorNote>
+            <div className="fg">
               <div className="field">
                 <label>Full name</label>
                 <input className="input" value={form.fullName} autoFocus onChange={(e) => setForm({ ...form, fullName: e.target.value })} />

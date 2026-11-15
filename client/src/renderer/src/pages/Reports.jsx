@@ -63,7 +63,7 @@ export default function Reports() {
         </div>
       </div>
 
-      {loading && <LoadingBlock text="Loading report..." />}
+      {loading && <LoadingBlock />}
       {error && <ErrorBlock message={error} />}
 
       {data && !loading && (
@@ -95,7 +95,7 @@ export default function Reports() {
                 {period === 'today' && <span className="plain">{translate('Last 7 days')}</span>}
               </div>
               <div className="card-b">
-                {byDay ? <LineChart points={fillDays(byDay, chartRange).map((x) => ({ label: x.day, value: x.amt }))} fmt={vnd} height={220} /> : <LoadingBlock text="Loading report..." />}
+                {byDay ? <LineChart points={fillDays(byDay, chartRange).map((x) => ({ label: x.day, value: x.amt }))} fmt={vnd} height={220} /> : <LoadingBlock />}
               </div>
             </div>
           </div>

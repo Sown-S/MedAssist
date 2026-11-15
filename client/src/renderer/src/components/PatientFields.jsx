@@ -42,7 +42,7 @@ export function EditPatient({ p, onSaved }) {
   const bind = (k) => ({ value: f[k], onChange: (e) => setF({ ...f, [k]: e.target.value }) })
   return (
     <div className="clin-edit">
-      <div className="form-grid">
+      <div className="fg">
         <div className="field">
           <label>Full name *</label>
           <input className="input" type="text" {...bind('name')} />

@@ -4,6 +4,7 @@ import Icon from './Icon'
 import { translate } from '../i18n'
 import { cancelServiceOrderItem } from '../api/serviceApi'
 import { apiMessage } from '../api/serviceStore'
+import { ErrorNote } from './DataState'
 
 // Huỷ một dòng chỉ định bệnh nhân không làm (ERD v2.1). Bác sĩ: lượt đang khám; lễ tân: lượt chờ thu tiền
 // (hoá đơn tự lập lại). Dòng đã có kết quả thì server từ chối.
@@ -33,7 +34,7 @@ export default function CancelOrderItemModal({ item, onClose, onDone }) {
           <label>Reason *</label>
           <input className="input" type="text" autoFocus value={reason} onChange={(e) => setReason(e.target.value)} placeholder="e.g. Patient declined the ultrasound" />
         </div>
-        {error && <div className="banner d" style={{ marginBottom: 12 }}>{error}</div>}
+        <ErrorNote style={{ marginBottom: 12 }}>{error}</ErrorNote>
       </div>
       <div className="modal-f">
         <button className="btn btn-outline" onClick={onClose}>

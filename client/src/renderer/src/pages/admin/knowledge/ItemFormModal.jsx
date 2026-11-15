@@ -5,6 +5,7 @@ import { putDraft, RULE_PREFIX } from '../../../api/knowledgeApi'
 import { KIND_META, errorText, usableCodes } from './shared'
 import { LogicEditor, LogicView } from './logic'
 import { initial, bodyOf, problem } from './itemForm'
+import { ErrorNote } from '../../../components/DataState'
 
 // group = null: thêm mới. Lưu = tạo / cập nhật bản nháp trong bản phát hành đang mở.
 export default function ItemFormModal({ open, kind, group, data, names, onClose, onSaved }) {
@@ -63,7 +64,7 @@ export default function ItemFormModal({ open, kind, group, data, names, onClose,
     <Modal open onClose={onClose} wide>
       <ModalHeader title={translate(creating ? 'New' : 'Edit') + ' · ' + translate(KIND_META[kind].one)} onClose={onClose} />
       <div className="modal-b">
-        <div className="form-grid cols-2">
+        <div className="fg">
           {kind !== 'relations' && (
             <div className="field full">
               <label>{KIND_META[kind].keyLabel}</label>
@@ -221,7 +222,7 @@ export default function ItemFormModal({ open, kind, group, data, names, onClose,
         {!sources.length && ['relations', 'excerpts', 'rules'].includes(kind) && (
           <p className="small sp-warn">No active source yet — add one in the Sources tab first.</p>
         )}
-        {err && <div className="banner d">{err}</div>}
+        <ErrorNote>{err}</ErrorNote>
         <p className="muted small foot-note">Saved as a draft in the open release. It is only used after a doctor approves the release.</p>
       </div>
       <div className="modal-f">

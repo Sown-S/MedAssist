@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react'
-import Modal, { ModalHeader } from '../../../components/Modal'
+import Modal, { ModalHeader, ModalCloseFooter } from '../../../components/Modal'
 import { translate } from '../../../i18n'
 import { getRelease } from '../../../api/knowledgeApi'
 import { Empty } from '../ui'
 import { KIND_META, Summary, errorText } from './shared'
 import { LogicView } from './logic'
 import { shortDateTime } from '../../../utils/format'
+import Skeleton from '../../../components/Skeleton'
+import { ErrorNote } from '../../../components/DataState'
 
 // Phần dùng chung của màn soạn bản phát hành (admin) và màn duyệt (bác sĩ): trạng thái, danh sách thay đổi, lịch sử.
 const RELEASE_STATUS = { Draft: 'Being drafted', PendingApproval: 'Awaiting approval', Active: 'Approved', Retired: 'Superseded' }
@@ -92,7 +94,7 @@ function Change({ c, ctx, onDrop }) {
 }
 
 export function ChangeList({ detail, ctx, onDrop }) {
-  if (!detail) return <p className="muted">Loading…</p>
+  if (!detail) return <Skeleton rows={4} />
   if (!detail.changes.length) return <Empty icon="folder" title="No changes yet" text="Add or edit items in the Knowledge base tab — each saved draft appears here." />
   return (
     <div className="kb-changes">
@@ -167,9 +169,10 @@ export function ReleaseModal({ release, ctx, onClose }) {
     <Modal open onClose={onClose} wide>
       <ModalHeader title={translate('Release') + ' ' + release.label} onClose={onClose} />
       <div className="modal-b">
-        {err && <div className="banner d">{err}</div>}
+        <ErrorNote>{err}</ErrorNote>
         <ChangeList detail={detail} ctx={ctx} />
       </div>
+      <ModalCloseFooter onClose={onClose} />
     </Modal>
   )
 }

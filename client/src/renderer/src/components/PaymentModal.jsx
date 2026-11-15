@@ -13,6 +13,7 @@ import { translate } from '../i18n'
 import DispenseTab from './payment/DispenseTab'
 import InvoiceItems from './payment/InvoiceItems'
 import PaymentSummary from './payment/PaymentSummary'
+import Skeleton from './Skeleton'
 
 // Cấp phát và thu tiền khi chạy với server: mọi thao tác gọi API rồi tải lại — server là nguồn sự thật.
 // Dòng cận lâm sàng sinh từ phiếu chỉ định (service_order_id) quầy không sửa, chỉ huỷ chỉ định;
@@ -76,7 +77,7 @@ export default function PaymentModal({ open, onClose, patient, initialTab = 'dis
           </div>
         )}
         {inv === undefined && !err ? (
-          <p className="muted small">{translate('Loading…')}</p>
+          <Skeleton rows={3} />
         ) : (
           <>
             <div className="utabs" style={{ margin: '-18px -20px 0' }}>

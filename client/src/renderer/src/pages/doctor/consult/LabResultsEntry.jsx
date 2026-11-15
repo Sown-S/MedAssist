@@ -3,6 +3,7 @@ import { translate } from '../../../i18n'
 import { labOrderSummary, labRows } from '../../../api/queueStore'
 import { hhmm } from '../../reception/shared'
 import { printLabOrder } from '../LabOrderModal'
+import { ErrorNote } from '../../../components/DataState'
 
 // Kết quả cận lâm sàng nhập từ phiếu giấy: từng dòng chỉ định + kết luận của phiếu. Chưa lưu thì giữ trong bản nháp.
 export default function LabResultsEntry({ visit, labOrders, labResults, resultOf, conclusionOf, onResult, onConclusion, onCancelRow, onSave, error }) {
@@ -85,7 +86,7 @@ export default function LabResultsEntry({ visit, labOrders, labResults, resultOf
             {translate('Save lab results')}
           </button>
         </div>
-        {error && <p className="hint-w">{error}</p>}
+        <ErrorNote>{error}</ErrorNote>
       </div>
     </div>
   )

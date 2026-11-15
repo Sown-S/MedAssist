@@ -7,6 +7,7 @@ import { getRelease, createRelease, submitRelease, dropDraft, OPEN_STATUSES } fr
 import { Empty } from '../ui'
 import { errorText } from './shared'
 import { ReleaseBadge, ChangeList, ctxOf, ReleaseHistory, ReleaseModal } from './releaseParts'
+import { ErrorNote } from '../../../components/DataState'
 
 function nextLabel(releases) {
   const y = new Date().getFullYear()
@@ -48,7 +49,7 @@ export default function ReleaseTab({ data, names, onChanged, autoCreate }) {
 
   return (
     <>
-      {err && <div className="banner d">{err}</div>}
+      <ErrorNote>{err}</ErrorNote>
       {!open ? (
         <div className="kb-release-empty">
           <Empty icon="folder" title="No release is being drafted" text="Open a release to group your changes; a doctor approves the whole release at once." />
@@ -78,17 +79,17 @@ export default function ReleaseTab({ data, names, onChanged, autoCreate }) {
             )}
           </div>
           {open.status === 'Draft' && open.review_note && (
-            <div className="kb-banner warn">
-              <Icon name="alert" />
-              <span>
-                <b>Returned by the doctor:</b> {open.review_note}
-              </span>
+            <div className="banner w">
+              <Icon name="triangle-alert" />
+              <div className="txt">
+                <b>{translate('Returned by the doctor:')}</b> {open.review_note}
+              </div>
             </div>
           )}
           {open.status === 'PendingApproval' && (
-            <div className="kb-banner">
+            <div className="banner i">
               <Icon name="clock" />
-              <span>Waiting for a doctor (not the author) to approve or reject. Changes are locked meanwhile.</span>
+              <div className="txt">{translate('Waiting for a doctor (not the author) to approve or reject. Changes are locked meanwhile.')}</div>
             </div>
           )}
           <ChangeList
@@ -145,7 +146,7 @@ function CreateReleaseModal({ open, suggested, onClose, onCreate }) {
           <label>What changes (optional)</label>
           <textarea className="input" rows={3} value={desc} onChange={(e) => setDesc(e.target.value)} placeholder="vd: Thêm nhóm bệnh da liễu" />
         </div>
-        {err && <div className="banner d">{err}</div>}
+        <ErrorNote>{err}</ErrorNote>
       </div>
       <div className="modal-f">
         <button className="btn btn-outline" onClick={onClose}>

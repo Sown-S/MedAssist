@@ -3,6 +3,8 @@ import Icon from '../../components/Icon'
 import { useToast } from '../../context/ToastContext'
 import { translate } from '../../i18n'
 import { ACTION_TYPES, ACTION_LABEL, ACTION_TONE as TONE, listAuditLogs, exportAuditLogs } from '../../api/auditApi'
+import Skeleton from '../../components/Skeleton'
+import { ErrorNote } from '../../components/DataState'
 
 // Nhật ký hoạt động trên server (US09). Với bệnh nhân / lượt khám chỉ ghi tên trường thay đổi, không ghi giá trị (Quy định v5 §7).
 const PAGE = 50
@@ -124,8 +126,8 @@ export default function HistoryPage() {
             </span>
           </div>
 
-          {err && <div className="banner d">{err}</div>}
-          {!data && !err && <p className="muted">Loading…</p>}
+          <ErrorNote>{err}</ErrorNote>
+          {!data && !err && <Skeleton rows={6} cols={5} />}
           {data && (
             <div className="tbl-wrap">
               <div className="tbl-wrap">

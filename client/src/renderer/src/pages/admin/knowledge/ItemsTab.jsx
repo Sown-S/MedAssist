@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import Modal, { ModalHeader } from '../../../components/Modal'
+import Modal, { ModalHeader, ModalCloseFooter } from '../../../components/Modal'
 import Icon from '../../../components/Icon'
 import { useToast } from '../../../context/ToastContext'
 import { translate } from '../../../i18n'
@@ -8,6 +8,8 @@ import { Empty } from '../ui'
 import ItemFormModal from './ItemFormModal'
 import { KIND_META, StatusBadge, Summary, groupByKey, errorText } from './shared'
 import { shortDateTime } from '../../../utils/format'
+import Skeleton from '../../../components/Skeleton'
+import { ErrorNote } from '../../../components/DataState'
 
 const FILTERS = [
   { key: 'current', label: 'In use + drafts' },
@@ -46,13 +48,13 @@ export default function ItemsTab({ data, names, canEdit, openRelease, onChanged,
   return (
     <>
       {canEdit && !editable && (
-        <div className="kb-banner">
+        <div className="banner i" style={{ marginBottom: 14 }}>
           <Icon name="lock" />
-          <span>
+          <div className="txt">
             {openRelease?.status === 'PendingApproval'
               ? translate('The open release is waiting for a doctor — changes are locked until it is approved or rejected.')
               : translate('To change the knowledge base, open a release first.')}
-          </span>
+          </div>
           {!openRelease && (
             <button className="btn btn-primary btn-sm" onClick={onOpenRelease}>
               Open a release
@@ -193,8 +195,8 @@ function HistoryModal({ kind, group, names, onClose }) {
     <Modal open onClose={onClose} wide>
       <ModalHeader title={translate('Version history') + ' · ' + group.key} onClose={onClose} />
       <div className="modal-b">
-        {err && <div className="banner d">{err}</div>}
-        {!rows && !err && <p className="muted">Loading…</p>}
+        <ErrorNote>{err}</ErrorNote>
+        {!rows && !err && <Skeleton rows={6} cols={4} />}
         {rows && (
           <div className="tbl-wrap">
             <table>
@@ -227,6 +229,7 @@ function HistoryModal({ kind, group, names, onClose }) {
           </div>
         )}
       </div>
+      <ModalCloseFooter onClose={onClose} />
     </Modal>
   )
 }
@@ -264,15 +267,27 @@ function DeactivateModal({ kind, group, names, onClose, onDone }) {
     <Modal open onClose={onClose}>
       <ModalHeader title={translate('Turn off now') + ' · ' + group.key} onClose={onClose} />
       <div className="modal-b">
-        <p className="ai-confirm-msg">
-          <Summary kind={kind} values={group.active?.values} names={names} />
-        </p>
-        {isRedFlag && <div className="banner d">Warning: this is a red-flag rule. Turning it off means doctors will NOT be alerted for this emergency sign.</div>}
-        <p className="muted small">Takes effect immediately — no approval needed (safety switch). Turning it back on needs a new version in an approved release.</p>
-        {!deps && !err && <p className="muted">Checking dependent items…</p>}
+        <div className="confirm">
+          <div className="ico d">
+            <Icon name="power" />
+          </div>
+          <p>
+            <Summary kind={kind} values={group.active?.values} names={names} />
+            <br />
+            <span className="muted small">{translate('Takes effect immediately — no approval needed (safety switch). Turning it back on needs a new version in an approved release.')}</span>
+          </p>
+        </div>
+        {isRedFlag && (
+          <div className="banner d" style={{ marginTop: 14 }}>
+            <Icon name="siren" />
+            <div className="txt">{translate('Warning: this is a red-flag rule. Turning it off means doctors will NOT be alerted for this emergency sign.')}</div>
+          </div>
+        )}
+        {!deps && !err && <Skeleton rows={2} cols={2} compact />}
         {deps && deps.length > 0 && (
-          <div className="kb-banner warn">
-            <div>
+          <div className="banner w" style={{ marginTop: 14 }}>
+            <Icon name="triangle-alert" />
+            <div className="txt">
               <b>These items will be turned off too:</b>
               <ul className="kb-dep-list">
                 {deps.map((d) => (
@@ -290,7 +305,7 @@ function DeactivateModal({ kind, group, names, onClose, onDone }) {
           </label>
           <textarea className="input" rows={3} value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Recorded in the activity log (at least 3 characters)" />
         </div>
-        {err && <div className="banner d">{err}</div>}
+        <ErrorNote>{err}</ErrorNote>
       </div>
       <div className="modal-f">
         <button className="btn btn-outline" onClick={onClose}>

@@ -5,6 +5,7 @@ import { translate } from '../../../i18n'
 import { createSource } from '../../../api/knowledgeApi'
 import { Empty } from '../ui'
 import { errorText } from './shared'
+import { ErrorNote } from '../../../components/DataState'
 
 // Mọi quan hệ, trích dẫn và luật phải trích một nguồn.
 export default function SourcesTab({ data, canEdit, onChanged }) {
@@ -102,7 +103,7 @@ function SourceModal({ open, onClose, onSaved }) {
     <Modal open onClose={onClose} wide>
       <ModalHeader title="New source" onClose={onClose} />
       <div className="modal-b">
-        <div className="form-grid cols-2">
+        <div className="fg">
           <div className="field">
             <label>Organization</label>
             <input className="input" value={f.organization} onChange={(e) => set({ organization: e.target.value })} placeholder="vd: Bộ Y tế, WHO" />
@@ -132,7 +133,7 @@ function SourceModal({ open, onClose, onSaved }) {
             <input className="input" value={f.license_note} onChange={(e) => set({ license_note: e.target.value })} />
           </div>
         </div>
-        {err && <div className="banner d">{err}</div>}
+        <ErrorNote>{err}</ErrorNote>
       </div>
       <div className="modal-f">
         <button className="btn btn-outline" onClick={onClose}>

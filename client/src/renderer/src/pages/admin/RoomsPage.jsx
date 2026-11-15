@@ -4,6 +4,7 @@ import { useToast } from '../../context/ToastContext'
 import { translate } from '../../i18n'
 import { listRooms, createRoom, updateRoom, ROOM_TYPES } from '../../api/roomStore'
 import { MiniStat, MiniStats } from '../../components/MiniStat'
+import { ErrorNote } from '../../components/DataState'
 
 const EMPTY = { code: '', name: '', type: 'Exam' }
 
@@ -70,12 +71,12 @@ export default function RoomsPage({ onNavigate }) {
         </div>
       </div>
 
-      {error && <div className="banner w">{error}</div>}
+      <ErrorNote tone="w">{error}</ErrorNote>
 
       {form && (
         <form className="card" style={{ marginBottom: 16 }} onSubmit={submit}>
           <div className="card-title">{form.id ? translate('Rename room') + ' ' + form.code : translate('Add room')}</div>
-          <div className="form-grid">
+          <div className="fg">
             <div className="field">
               <label>Code *</label>
               <input className="input" value={form.code} disabled={!!form.id} autoFocus={!form.id} placeholder="05" onChange={(e) => setForm({ ...form, code: e.target.value })} />

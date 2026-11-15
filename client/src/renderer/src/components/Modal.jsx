@@ -31,3 +31,16 @@ export function ModalHeader({ title, onClose }) {
     </div>
   )
 }
+
+// Chân hộp thoại chỉ có nút Đóng (hộp xem thông tin, không có thao tác lưu).
+export function ModalCloseFooter({ onClose, children }) {
+  return (
+    <div className="modal-f">
+      {children}
+      <span className="sp" />
+      <button className="btn btn-outline" onClick={onClose}>
+        {translate('Close')}
+      </button>
+    </div>
+  )
+}

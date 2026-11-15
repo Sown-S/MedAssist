@@ -8,6 +8,7 @@ import { Empty } from '../ui'
 import { errorText } from './shared'
 import { ReleaseBadge, ChangeList, ctxOf, ReleaseHistory, ReleaseModal } from './releaseParts'
 import { shortDateTime } from '../../../utils/format'
+import { ErrorNote } from '../../../components/DataState'
 
 // Bác sĩ: duyệt bản chờ duyệt
 export function ReviewPanel({ data, names, onChanged }) {
@@ -41,7 +42,7 @@ export function ReviewPanel({ data, names, onChanged }) {
 
   return (
     <>
-      {err && <div className="hint-w">{err}</div>}
+      <ErrorNote>{err}</ErrorNote>
       {!pending ? (
         <div className="card">
           <Empty icon="book-open-check" title="Nothing to review" text="When the administrator submits a release, it appears here." />
@@ -92,10 +93,15 @@ export function ReviewPanel({ data, names, onChanged }) {
       <Modal open={approving} onClose={() => setApproving(false)}>
         <ModalHeader title={translate('Approve release') + ' ' + (pending?.label ?? '')} onClose={() => setApproving(false)} />
         <div className="modal-b">
-          <p className="ai-confirm-msg">
-            <span>All</span> <b className="num">{detail?.changes.length ?? 0}</b> <span>changes become active for every new AI assessment. You are recorded as the approver.</span>
-          </p>
-          {err && <div className="banner d">{err}</div>}
+          <div className="confirm">
+            <div className="ico s">
+              <Icon name="circle-check" />
+            </div>
+            <p>
+              <span>All</span> <b className="num">{detail?.changes.length ?? 0}</b> <span>changes become active for every new AI assessment. You are recorded as the approver.</span>
+            </p>
+          </div>
+          <ErrorNote>{err}</ErrorNote>
         </div>
         <div className="modal-f">
           <button className="btn btn-outline" onClick={() => setApproving(false)}>
@@ -117,7 +123,7 @@ export function ReviewPanel({ data, names, onChanged }) {
             </label>
             <textarea className="input" rows={3} value={note} onChange={(e) => setNote(e.target.value)} placeholder="At least 3 characters" />
           </div>
-          {err && <div className="banner d">{err}</div>}
+          <ErrorNote>{err}</ErrorNote>
         </div>
         <div className="modal-f">
           <button className="btn btn-outline" onClick={() => setRejecting(false)}>

@@ -9,6 +9,8 @@ import DocumentModal from './DocumentModal'
 import { useAuth } from '../../context/AuthContext'
 import { ageFrom } from '../../api/clinicApi'
 import { money, shortDateTime } from '../../utils/format'
+import Skeleton from '../../components/Skeleton'
+import { ErrorNote } from '../../components/DataState'
 
 // Lịch sử khám từ server (FR04); bấm một lượt để xem đầy đủ. excludeVisitId = lượt đang khám;
 // onLoaded(history) để trang cha lấy thông tin bệnh nhân.
@@ -56,7 +58,7 @@ export default function ServerHistory({ patientId, excludeVisitId, onLoaded }) {
           {translate('Show cancelled visits')}
         </label>
       </div>
-      {err && <div className="hint-w">{err}</div>}
+      <ErrorNote>{err}</ErrorNote>
       {!list.length && !loading && !err && <p className="muted small">{translate('No earlier visits in the system.')}</p>}
       {list.map((v) => {
         const isOpen = open === v.visit_id
@@ -99,7 +101,7 @@ export default function ServerHistory({ patientId, excludeVisitId, onLoaded }) {
           </div>
         )
       })}
-      {loading && <p className="muted small">{translate('Loading…')}</p>}
+      {loading && <Skeleton rows={3} compact />}
       {!loading && items.length < total && (
         <button className="btn btn-ghost btn-sm" onClick={() => load(items.length, true)}>
           {translate('Show older visits')}

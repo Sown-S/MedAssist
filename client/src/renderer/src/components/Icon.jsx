@@ -1,4 +1,6 @@
 import {
+  Power,
+  UserSearch,
   Server,
   Database,
   Cpu,
@@ -185,6 +187,8 @@ const ICONS = {
   'message-square-warning': MessageSquareWarning,
   monitor: Monitor,
   package: Package,
+  power: Power,
+  'user-search': UserSearch,
   server: Server,
   database: Database,
   cpu: Cpu,

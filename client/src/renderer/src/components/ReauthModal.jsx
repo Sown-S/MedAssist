@@ -3,6 +3,7 @@ import Modal, { ModalHeader } from './Modal'
 import Button from './Button'
 import { useAuth } from '../context/AuthContext'
 import { verifyPassword } from '../api/accountStore'
+import { ErrorNote } from './DataState'
 
 // Thao tác nhạy cảm (tạo quản trị viên, đặt lại mật khẩu, đổi vai trò) phải nhập lại mật khẩu của chính người đang
 // đăng nhập — phòng khi máy để quên chưa khoá màn hình.
@@ -34,7 +35,7 @@ export default function ReauthModal({ open, title, confirmLabel = 'Confirm', dan
         <ModalHeader title={title} onClose={close} />
         <div className="modal-b">
           {children}
-          {err && <div className="banner d" style={{ marginBottom: 12 }}>{err}</div>}
+          <ErrorNote style={{ marginBottom: 12 }}>{err}</ErrorNote>
           <div className="field" style={{ marginTop: 12 }}>
             <label>Your password (to confirm)</label>
             <input className="input" type="password" value={pw} autoFocus autoComplete="current-password" onChange={(e) => setPw(e.target.value)} />
