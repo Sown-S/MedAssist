@@ -16,7 +16,7 @@ export default function StockCardModal({ drug, moves, onClose }) {
   return (
     <Modal open onClose={onClose} wide>
       <ModalHeader title={translate('Stock card') + ' · ' + drug.name} onClose={onClose} />
-      <div className="modal-body">
+      <div className="modal-b">
         <div className="ai-toolbar">
           <div className="ai-seg">
             <button className={type === 'all' ? 'active' : ''} onClick={() => setType('all')}>

@@ -72,7 +72,7 @@ export default function ServerAddress({ onSaved, onClose, variant }) {
       <div className="srv-row">
         <span className={'srv-field' + (status.state === 'fail' ? ' bad' : status.state === 'ok' ? ' good' : '')}>
           <Icon name="monitor" />
-          <input
+          <input className="input"
             type="text"
             value={value}
             spellCheck={false}

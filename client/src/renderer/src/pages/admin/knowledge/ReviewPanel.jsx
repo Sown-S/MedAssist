@@ -79,13 +79,13 @@ export function ReviewPanel({ data, names, onChanged }) {
 
       <Modal open={approving} onClose={() => setApproving(false)}>
         <ModalHeader title={translate('Approve release') + ' ' + (pending?.label ?? '')} onClose={() => setApproving(false)} />
-        <div className="modal-body">
+        <div className="modal-b">
           <p className="ai-confirm-msg">
             <span>All</span> <b className="mono">{detail?.changes.length ?? 0}</b> <span>changes become active for every new AI assessment. You are recorded as the approver.</span>
           </p>
           {err && <div className="kb-error">{err}</div>}
         </div>
-        <div className="modal-foot">
+        <div className="modal-f">
           <button className="btn btn-ghost" onClick={() => setApproving(false)}>
             Cancel
           </button>
@@ -97,17 +97,17 @@ export function ReviewPanel({ data, names, onChanged }) {
 
       <Modal open={rejecting} onClose={() => setRejecting(false)}>
         <ModalHeader title={translate('Reject release') + ' ' + (pending?.label ?? '')} onClose={() => setRejecting(false)} />
-        <div className="modal-body">
+        <div className="modal-b">
           <p className="ai-soft">The release goes back to the administrator with your note.</p>
           <div className="field">
             <label>
               Reason <span className="ai-req">*</span>
             </label>
-            <textarea rows={3} value={note} onChange={(e) => setNote(e.target.value)} placeholder="At least 3 characters" />
+            <textarea className="input" rows={3} value={note} onChange={(e) => setNote(e.target.value)} placeholder="At least 3 characters" />
           </div>
           {err && <div className="kb-error">{err}</div>}
         </div>
-        <div className="modal-foot">
+        <div className="modal-f">
           <button className="btn btn-ghost" onClick={() => setRejecting(false)}>
             Cancel
           </button>

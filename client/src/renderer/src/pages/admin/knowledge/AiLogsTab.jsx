@@ -37,7 +37,7 @@ export default function AiLogsTab() {
 
   const pages = data ? Math.max(1, Math.ceil(data.total / PAGE)) : 1
   const select = (key, values, labels) => (
-    <select value={draft[key]} onChange={(e) => setDraft({ ...draft, [key]: e.target.value })}>
+    <select className="input" value={draft[key]} onChange={(e) => setDraft({ ...draft, [key]: e.target.value })}>
       <option value="">All</option>
       {values.map((v) => (
         <option key={v} value={v}>

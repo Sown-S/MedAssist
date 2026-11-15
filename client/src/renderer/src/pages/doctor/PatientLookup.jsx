@@ -62,7 +62,7 @@ export default function PatientLookup() {
       <div className="card lookup-search">
         <div className="pl-q">
           <Icon name="search" />
-          <input
+          <input className="input"
             type="search"
             autoFocus
             placeholder="Name, phone number, record ID, ID card or birth year…"

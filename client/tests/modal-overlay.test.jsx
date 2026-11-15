@@ -18,9 +18,9 @@ describe('Modal', () => {
   it('bấm ra vùng mờ bên ngoài không đóng modal', () => {
     const onClose = vi.fn()
     open(onClose)
-    fireEvent.click(document.querySelector('.modal-overlay'))
+    fireEvent.click(document.querySelector('.ov'))
     expect(onClose).not.toHaveBeenCalled()
-    expect(document.querySelector('.modal-box')).toBeTruthy()
+    expect(document.querySelector('.modal')).toBeTruthy()
   })
 
   it('nút X vẫn đóng modal', () => {
@@ -35,9 +35,9 @@ describe('ConfirmModal', () => {
   it('bấm ra vùng mờ không huỷ; chỉ nút Hủy mới huỷ', () => {
     const onCancel = vi.fn()
     render(<ConfirmModal open message="Xoá dòng thuốc?" onConfirm={() => {}} onCancel={onCancel} />)
-    fireEvent.click(document.querySelector('.modal-overlay'))
+    fireEvent.click(document.querySelector('.ov'))
     expect(onCancel).not.toHaveBeenCalled()
-    fireEvent.click(document.querySelector('.confirm-actions .btn-ghost'))
+    fireEvent.click(document.querySelector('.confirm-actions .btn-outline'))
     expect(onCancel).toHaveBeenCalledTimes(1)
   })
 })

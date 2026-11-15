@@ -22,10 +22,10 @@ export function PrintTab({ form, draft, readOnly }) {
                 <Switch checked={val('print.showLogo')} onChange={(v) => set('print.showLogo', v)} />
               </Field>
               <Field {...fp('print.header')} wide hint="Optional, e.g. opening hours or a hotline. Shown under the clinic details.">
-                <input {...text('print.header', { maxLength: 500 })} />
+                <input className="input" {...text('print.header', { maxLength: 500 })} />
               </Field>
               <Field {...fp('print.footer')} wide hint="Optional, e.g. a thank-you line. Leave empty to print no footer.">
-                <input {...text('print.footer', { maxLength: 500 })} />
+                <input className="input" {...text('print.footer', { maxLength: 500 })} />
               </Field>
             </div>
           </fieldset>
@@ -54,7 +54,7 @@ export function PrintTab({ form, draft, readOnly }) {
               <tr key={d.key}>
                 <td>{d.label}</td>
                 <td>
-                  <select className="ai-select" value={dev.papers[d.key]} onChange={(e) => setDevice({ papers: { [d.key]: e.target.value } })}>
+                  <select className="input" value={dev.papers[d.key]} onChange={(e) => setDevice({ papers: { [d.key]: e.target.value } })}>
                     {PAPERS.map((x) => (
                       <option key={x.key} value={x.key}>
                         {x.label}

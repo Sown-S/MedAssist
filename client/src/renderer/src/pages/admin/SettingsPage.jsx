@@ -129,7 +129,7 @@ export default function SettingsPage({ params, onNavigate, setLeaveGuard }) {
               </div>
             </Field>
             <Field {...fp('security.idleMinutes')} hint="Recommended on shared clinic computers: patient data stays on screen otherwise.">
-              <select value={idleNow} disabled={!online} onChange={(e) => set('security.idleMinutes', Number(e.target.value))}>
+              <select className="input" value={idleNow} disabled={!online} onChange={(e) => set('security.idleMinutes', Number(e.target.value))}>
                 {idleOptions.map((x) => (
                   <option key={x.key} value={x.key}>
                     {x.label}

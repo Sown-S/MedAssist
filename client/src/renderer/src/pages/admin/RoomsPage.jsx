@@ -76,15 +76,15 @@ export default function RoomsPage({ onNavigate }) {
           <div className="form-grid">
             <div className="field">
               <label>Code *</label>
-              <input value={form.code} disabled={!!form.id} autoFocus={!form.id} placeholder="05" onChange={(e) => setForm({ ...form, code: e.target.value })} />
+              <input className="input" value={form.code} disabled={!!form.id} autoFocus={!form.id} placeholder="05" onChange={(e) => setForm({ ...form, code: e.target.value })} />
             </div>
             <div className="field">
               <label>Name *</label>
-              <input value={form.name} autoFocus={!!form.id} placeholder="Phòng khám 05" onChange={(e) => setForm({ ...form, name: e.target.value })} />
+              <input className="input" value={form.name} autoFocus={!!form.id} placeholder="Phòng khám 05" onChange={(e) => setForm({ ...form, name: e.target.value })} />
             </div>
             <div className="field">
               <label>Type</label>
-              <select value={form.type} disabled={!!form.id} onChange={(e) => setForm({ ...form, type: e.target.value })}>
+              <select className="input" value={form.type} disabled={!!form.id} onChange={(e) => setForm({ ...form, type: e.target.value })}>
                 {Object.entries(ROOM_TYPES).map(([k, l]) => (
                   <option key={k} value={k}>
                     {l}

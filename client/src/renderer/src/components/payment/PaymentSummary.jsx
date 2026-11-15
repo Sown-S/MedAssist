@@ -58,7 +58,7 @@ export default function PaymentSummary({ visitId, inv, paid, editable, items, pa
         </button>
       ) : (
         <>
-          <div className="section-label">Payment method</div>
+          <div className="sec-t">Payment method</div>
           <div className="ai-seg">
             {methods.map((m) => (
               <button key={m.key} className={method === m.key ? 'active' : ''} onClick={() => setMethod(m.key)}>
@@ -87,7 +87,7 @@ export default function PaymentSummary({ visitId, inv, paid, editable, items, pa
           ) : (
             <div className="field" style={{ marginTop: 10 }}>
               <label>Reason for cancelling</label>
-              <input type="text" autoFocus value={cancelReason} onChange={(e) => setCancelReason(e.target.value)} placeholder={translate('e.g. patient left without paying')} />
+              <input className="input" type="text" autoFocus value={cancelReason} onChange={(e) => setCancelReason(e.target.value)} placeholder={translate('e.g. patient left without paying')} />
               <div style={{ display: 'flex', gap: 6, marginTop: 6 }}>
                 <button className="btn btn-ghost btn-sm" onClick={() => setCancelling(false)}>
                   Back

@@ -2,7 +2,6 @@
 
 /* Icon đơn sắc (components/Icon.jsx) */
 .icn{width:1.15em;height:1.15em;vertical-align:-.2em;flex-shrink:0;}
-.confirm-box .ic{color:var(--priority);}
 .redflag-box .ic{color:var(--warn);}
 .warn-banner .icon,.ai-box .icon{display:flex;padding-top:1px;}
 .warn-banner.danger .icon{color:var(--warn-ink);}

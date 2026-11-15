@@ -15,13 +15,13 @@ export default function SoapPanel({ visit, d, set, tried, ai, aiDecision, decide
   }
   return (
     <div className="ipanel active">
-      <div className="section-label">S — Subjective · Chief complaint / reported symptoms</div>
+      <div className="sec-t">S — Subjective · Chief complaint / reported symptoms</div>
       <div className="symptom-box">
         <small className="ai-soft">{translate('At check-in')}:</small> {translate(visit.reason)}
         <ConfirmedSymptoms list={visit.symptoms} />
       </div>
       <textarea
-        className="doc-ta"
+        className="input doc-ta"
         rows="2"
         style={{ marginTop: 6 }}
         value={d.hpi}
@@ -30,12 +30,12 @@ export default function SoapPanel({ visit, d, set, tried, ai, aiDecision, decide
       />
       {labs}
 
-      <div className="section-label">O — Objective · Physical examination</div>
-      <textarea className="doc-ta" rows="3" value={d.exam} onChange={(e) => set({ exam: e.target.value })} placeholder="Findings on examination…" />
+      <div className="sec-t">O — Objective · Physical examination</div>
+      <textarea className="input doc-ta" rows="3" value={d.exam} onChange={(e) => set({ exam: e.target.value })} placeholder="Findings on examination…" />
 
       <AssessmentCard a={ai} decisions={aiDecision} onAccept={(c) => decideAi(c, 'accepted')} onDismiss={(c) => decideAi(c, 'dismissed')} />
 
-      <div className="section-label">
+      <div className="sec-t">
         Confirmed diagnosis (ICD-10 code) <span className="req">*</span>
       </div>
       <div className={tried && !d.diagnosis.trim() ? 'field-error' : ''}>
@@ -43,8 +43,8 @@ export default function SoapPanel({ visit, d, set, tried, ai, aiDecision, decide
       </div>
       <SecondaryDx list={d.diagnosesExtra} onChange={(diagnosesExtra) => set({ diagnosesExtra })} />
 
-      <div className="section-label">P — Plan · Treatment plan &amp; advice</div>
-      <textarea className="doc-ta" rows="2" value={d.plan} onChange={(e) => set({ plan: e.target.value })} placeholder="e.g. Rest, drink plenty of water, come back if the fever lasts more than 3 days…" />
+      <div className="sec-t">P — Plan · Treatment plan &amp; advice</div>
+      <textarea className="input doc-ta" rows="2" value={d.plan} onChange={(e) => set({ plan: e.target.value })} placeholder="e.g. Rest, drink plenty of water, come back if the fever lasts more than 3 days…" />
       <div className="follow-up">
         <label>
           <Icon name="calendar" /> <span>Follow-up visit</span>

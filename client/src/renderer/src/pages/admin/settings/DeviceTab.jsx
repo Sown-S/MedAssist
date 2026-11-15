@@ -20,7 +20,7 @@ export function DeviceTab() {
             <label>
               <span>Next patients shown</span>
             </label>
-            <select value={dev.queue.nextCount} onChange={(e) => setDevice({ queue: { nextCount: Number(e.target.value) } })}>
+            <select className="input" value={dev.queue.nextCount} onChange={(e) => setDevice({ queue: { nextCount: Number(e.target.value) } })}>
               {[3, 6, 10].map((n) => (
                 <option key={n} value={n}>
                   {n}

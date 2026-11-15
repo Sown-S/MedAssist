@@ -103,7 +103,7 @@ export default function AssessmentCard({ a, decisions, onAccept, onDismiss }) {
                   <span className="badge muted">{translate('Dismissed')}</span>
                 ) : dismissing === c.condition_code ? (
                   <select
-                    className="ai-select"
+                    className="input"
                     defaultValue=""
                     autoFocus
                     onBlur={() => setDismissing(null)}

@@ -17,7 +17,7 @@ export function WaitingModal({ list, initial, now, past, onTake, onClose }) {
   return (
     <Modal open onClose={onClose} wide>
       <ModalHeader title={translate('Waiting for consultation') + ' · ' + list.length} onClose={onClose} />
-      <div className="modal-body wait-list">
+      <div className="modal-b wait-list">
         {list.map((v) => {
           const n = minutesSince(v.statusAt, now)
           const on = open === v.id
@@ -109,7 +109,7 @@ export function LabListModal({ onResume, onClose }) {
   return (
     <Modal open onClose={onClose} wide>
       <ModalHeader title={translate('Lab tests & results')} onClose={onClose} />
-      <div className="modal-body">
+      <div className="modal-b">
         <div className="cash-filters" style={{ marginBottom: 12 }}>
           <div className="itabs" style={{ marginBottom: 0 }}>
             {LAB_FILTERS.map((f) => (

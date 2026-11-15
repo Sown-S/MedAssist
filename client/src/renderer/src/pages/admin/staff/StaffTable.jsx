@@ -18,12 +18,12 @@ export default function StaffTable({ rows, me, q, setQ, roleFilter, setRoleFilte
   return (
     <div className="card">
       <div className="ai-toolbar">
-        <div className="ai-search">
+        <div className="search">
           <Icon name="search" />
-          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search name, username, staff code, phone…" />
+          <input className="input" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search name, username, staff code, phone…" />
         </div>
         <div className="ai-toolbar-right">
-          <select className="ai-select" value={roleFilter} onChange={(e) => setRoleFilter(e.target.value)}>
+          <select className="input" value={roleFilter} onChange={(e) => setRoleFilter(e.target.value)}>
             <option value="all">All roles</option>
             {Object.entries(ROLES).map(([k, r]) => (
               <option key={k} value={k}>

@@ -36,3 +36,18 @@
 .pg-h>:not(:first-child){display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 /* Ca cờ đỏ ở bảng Ca cấp cứu: việc lễ tân cần làm ngay dưới badge kết quả */
 .rf-todo{display:flex;flex-direction:column;align-items:flex-start;gap:6px;margin-top:6px;max-width:420px}
+.hint-w{display:flex;gap:6px;align-items:flex-start;font-size:13px;color:var(--warning);margin-top:8px}.hint-w svg.lucide{width:15px;height:15px;flex:none;margin-top:2px}
+/* Các bước khi chờ mô hình đọc lời kể (dòng chữ nhỏ dưới thanh tiến trình) */
+.steps-inline{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:4px 14px;font-size:13px;color:var(--ink-3)}
+.steps-inline li{display:flex;align-items:center;gap:6px}
+.steps-inline li::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--border-strong)}
+.steps-inline li.active{color:var(--primary-ink);font-weight:600}.steps-inline li.active::before{background:var(--primary)}
+.steps-inline li.done::before{background:var(--success)}
+.steps-inline small{color:var(--ink-3);font-weight:400}
+/* Ô ngày sinh: gõ dd/mm/yyyy hoặc chọn lịch (nút lịch trong ô) */
+.dob-input{position:relative;display:flex}
+.dob-input .input{flex:1;min-width:0;padding-right:40px}
+.dob-input .dob-cal{position:absolute;right:4px;top:50%;transform:translateY(-50%);display:grid;place-items:center;width:34px;height:34px;border:0;border-radius:6px;background:none;color:var(--ink-3);cursor:pointer}
+.dob-input .dob-cal:hover{background:var(--surface-2);color:var(--ink)}
+.dob-input .dob-native{position:absolute;right:0;bottom:0;width:38px;height:100%;opacity:0;pointer-events:none}
+.pl-summary{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;font-size:var(--fs-sm);color:var(--ink-3);margin-bottom:8px}

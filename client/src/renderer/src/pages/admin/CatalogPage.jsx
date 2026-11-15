@@ -70,9 +70,9 @@ export default function CatalogPage({ onNavigate }) {
       </div>
 
       <div className="card cat-search-card">
-        <div className="ai-search cat-search">
+        <div className="search cat-search">
           <Icon name="search" />
-          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search a code or name in every catalog (e.g. J03, Amoxicillin, Đà Nẵng)…" />
+          <input className="input" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search a code or name in every catalog (e.g. J03, Amoxicillin, Đà Nẵng)…" />
         </div>
         {q.trim().length >= 2 && (
           <div className="cat-results">

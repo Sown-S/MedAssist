@@ -62,7 +62,7 @@ export function RowForm({ catalogKey, row, all, cats, inv, onClose }) {
   return (
     <Modal open onClose={onClose} wide>
       <ModalHeader title={isNew ? translate('Add') + ' · ' + translate(s.title) : row.code + ' · ' + row.name} onClose={onClose} />
-      <div className="modal-body">
+      <div className="modal-b">
         {catalogKey === 'icd' && isNew && (
           <p className="ai-hint">
             <Icon name="help" /> <span>A code added here is marked “Custom” so it can be checked against the official list later.</span>
@@ -78,7 +78,7 @@ export function RowForm({ catalogKey, row, all, cats, inv, onClose }) {
                   {fd.label} {fd.required && <span className="ai-req">*</span>}
                 </label>
                 {!isNew && fd.key === 'code' ? (
-                  <input value={f.code} disabled title={translate('The code cannot be changed after it is created.')} />
+                  <input className="input" value={f.code} disabled title={translate('The code cannot be changed after it is created.')} />
                 ) : (
                   <FieldInput fd={fd} value={f[fd.key]} onChange={(v) => set(fd.key, v)} cats={cats} inv={inv} />
                 )}
@@ -100,7 +100,7 @@ export function RowForm({ catalogKey, row, all, cats, inv, onClose }) {
         )}
         {!isNew && prices && (
           <>
-            <div className="section-label">Price history</div>
+            <div className="sec-t">Price history</div>
             <table className="dt">
               <thead>
                 <tr>
@@ -142,7 +142,7 @@ export function RowForm({ catalogKey, row, all, cats, inv, onClose }) {
           </div>
         )}
       </div>
-      <div className="modal-foot">
+      <div className="modal-f">
         <button className="btn btn-ghost" onClick={onClose}>
           Cancel
         </button>
@@ -157,7 +157,7 @@ export function RowForm({ catalogKey, row, all, cats, inv, onClose }) {
 function FieldInput({ fd, value, onChange, cats, inv }) {
   if (fd.type === 'select')
     return (
-      <select value={value ?? ''} onChange={(e) => onChange(e.target.value)}>
+      <select className="input" value={value ?? ''} onChange={(e) => onChange(e.target.value)}>
         {fd.options.map((o) => (
           <option key={o.key} value={o.key}>
             {o.label}
@@ -165,16 +165,16 @@ function FieldInput({ fd, value, onChange, cats, inv }) {
         ))}
       </select>
     )
-  if (fd.type === 'textarea') return <textarea rows={2} value={value ?? ''} onChange={(e) => onChange(e.target.value)} />
+  if (fd.type === 'textarea') return <textarea className="input" rows={2} value={value ?? ''} onChange={(e) => onChange(e.target.value)} />
   if (fd.type === 'date') return <input type="date" value={value ?? ''} onChange={(e) => onChange(e.target.value)} />
   if (fd.type === 'money' || fd.type === 'number')
-    return <input type="number" min="0" step={fd.type === 'money' ? 1000 : 'any'} value={value ?? ''} onChange={(e) => onChange(e.target.value)} />
+    return <input className="input" type="number" min="0" step={fd.type === 'money' ? 1000 : 'any'} value={value ?? ''} onChange={(e) => onChange(e.target.value)} />
   if (fd.type === 'pkgItems') return <PackageItems value={value ?? []} onChange={onChange} cats={cats} />
   if (fd.type === 'rxItems') return <RxItems value={value ?? []} onChange={onChange} cats={cats} inv={inv} />
   if (fd.type === 'advicePick') return <AdvicePick value={value ?? []} onChange={onChange} cats={cats} />
   if (fd.type === 'icd')
     return (
-      <select value={value ?? ''} onChange={(e) => onChange(e.target.value)}>
+      <select className="input" value={value ?? ''} onChange={(e) => onChange(e.target.value)}>
         <option value="">—</option>
         {cats.icd
           .filter((r) => r.active)
@@ -185,7 +185,7 @@ function FieldInput({ fd, value, onChange, cats, inv }) {
           ))}
       </select>
     )
-  return <input value={value ?? ''} onChange={(e) => onChange(e.target.value)} />
+  return <input className="input" value={value ?? ''} onChange={(e) => onChange(e.target.value)} />
 }
 
 function PackageItems({ value, onChange, cats }) {
@@ -217,7 +217,7 @@ function PackageItems({ value, onChange, cats }) {
         )
       })}
       <div className="cat-line">
-        <select className="ai-select" value={pick} onChange={(e) => setPick(e.target.value)}>
+        <select className="input" value={pick} onChange={(e) => setPick(e.target.value)}>
           <option value="">— Add a service or lab test —</option>
           {options.map((o) => (
             <option key={o.ref} value={o.ref}>
@@ -241,7 +241,7 @@ function RxItems({ value, onChange, cats, inv }) {
     <div className="cat-lines">
       {value.map((it, i) => (
         <div className="cat-line rx" key={i}>
-          <select className="ai-select" value={it.drugId} onChange={(e) => upd(i, { drugId: e.target.value })}>
+          <select className="input" value={it.drugId} onChange={(e) => upd(i, { drugId: e.target.value })}>
             <option value="">—</option>
             {drugs.map((d) => (
               <option key={d.id} value={d.id}>
@@ -250,7 +250,7 @@ function RxItems({ value, onChange, cats, inv }) {
             ))}
           </select>
           <input type="number" min="1" className="ai-inline-input" value={it.qty} onChange={(e) => upd(i, { qty: +e.target.value })} />
-          <select className="ai-select" value={it.route ?? 'PO'} onChange={(e) => upd(i, { route: e.target.value })}>
+          <select className="input" value={it.route ?? 'PO'} onChange={(e) => upd(i, { route: e.target.value })}>
             {routes.map((r) => (
               <option key={r.code} value={r.code}>
                 {r.name}

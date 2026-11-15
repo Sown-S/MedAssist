@@ -34,10 +34,10 @@ export function AdminNavProvider({ children }) {
       {children}
       <Modal open={!!pendingNav} onClose={() => setPendingNav(null)}>
         <ModalHeader title="Unsaved changes" onClose={() => setPendingNav(null)} />
-        <div className="modal-body">
+        <div className="modal-b">
           <p className="ai-soft">You have changes that have not been saved. Leave this page and discard them?</p>
         </div>
-        <div className="modal-foot">
+        <div className="modal-f">
           <button className="btn btn-ghost" onClick={() => setPendingNav(null)}>
             Stay on this page
           </button>

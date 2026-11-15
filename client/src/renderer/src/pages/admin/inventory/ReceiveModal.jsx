@@ -45,11 +45,11 @@ export default function ReceiveModal({ drug, drugs, onClose }) {
   return (
     <Modal open onClose={onClose}>
       <ModalHeader title="Receive stock" onClose={onClose} />
-      <div className="modal-body">
+      <div className="modal-b">
         <div className="ai-grid3">
           <div className="field" style={{ gridColumn: 'span 3' }}>
             <label>Drug</label>
-            <select value={f.drugId} onChange={(e) => set('drugId', e.target.value)} disabled={!!drug.id}>
+            <select className="input" value={f.drugId} onChange={(e) => set('drugId', e.target.value)} disabled={!!drug.id}>
               {drugs
                 .filter((x) => x.active)
                 .map((x) => (
@@ -63,7 +63,7 @@ export default function ReceiveModal({ drug, drugs, onClose }) {
             <label>
               Lot number <span className="ai-req">*</span>
             </label>
-            <input value={f.lot} onChange={(e) => set('lot', e.target.value)} />
+            <input className="input" value={f.lot} onChange={(e) => set('lot', e.target.value)} />
           </div>
           <div className="field">
             <label>
@@ -75,11 +75,11 @@ export default function ReceiveModal({ drug, drugs, onClose }) {
             <label>
               Quantity <span className="ai-soft">({d ? unitLabel(d.unit) : ''})</span> <span className="ai-req">*</span>
             </label>
-            <input type="number" min="1" value={f.qty} onChange={(e) => set('qty', e.target.value)} />
+            <input className="input" type="number" min="1" value={f.qty} onChange={(e) => set('qty', e.target.value)} />
           </div>
           <div className="field">
             <label>Purchase price (per unit)</label>
-            <input type="number" min="0" value={f.cost} placeholder={cost >= 0 ? String(cost) : ''} onChange={(e) => set('cost', e.target.value)} />
+            <input className="input" type="number" min="0" value={f.cost} placeholder={cost >= 0 ? String(cost) : ''} onChange={(e) => set('cost', e.target.value)} />
           </div>
         </div>
 
@@ -111,7 +111,7 @@ export default function ReceiveModal({ drug, drugs, onClose }) {
           </div>
         )}
       </div>
-      <div className="modal-foot">
+      <div className="modal-f">
         <button className="btn btn-ghost" onClick={onClose}>
           Cancel
         </button>

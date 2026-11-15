@@ -27,15 +27,15 @@ export default function CancelOrderItemModal({ item, onClose, onDone }) {
   return (
     <Modal open onClose={onClose}>
       <ModalHeader title={translate('Cancel order line') + ' — ' + item.name} onClose={onClose} />
-      <div className="modal-body">
+      <div className="modal-b">
         <p className="ai-soft">The patient did not have this test or service done. It is removed from the invoice; the order keeps the line as cancelled.</p>
         <div className="field">
           <label>Reason *</label>
-          <input type="text" autoFocus value={reason} onChange={(e) => setReason(e.target.value)} placeholder="e.g. Patient declined the ultrasound" />
+          <input className="input" type="text" autoFocus value={reason} onChange={(e) => setReason(e.target.value)} placeholder="e.g. Patient declined the ultrasound" />
         </div>
         {error && <div className="login-err show">{error}</div>}
       </div>
-      <div className="modal-foot">
+      <div className="modal-f">
         <button className="btn btn-ghost" onClick={onClose}>
           Keep it
         </button>

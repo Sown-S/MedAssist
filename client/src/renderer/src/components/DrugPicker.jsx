@@ -21,7 +21,7 @@ export default function DrugPicker({ onPick, disabled, drugs, inputId, title }) 
 
   return (
     <div className="rx-search" style={{ position: 'relative' }}>
-      <input
+      <input className="input"
         type="text"
         id={inputId}
         title={title}

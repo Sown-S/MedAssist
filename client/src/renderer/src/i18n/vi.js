@@ -1466,7 +1466,6 @@ export const VI = {
   'Waiting for the model': 'Đang chờ mô hình',
   'The model is reading': 'Mô hình đang đọc',
   'Showing suggestions': 'Hiện đề xuất',
-  'max 30 seconds': 'tối đa 30 giây',
   'Stop waiting for the result': 'Ngừng chờ kết quả',
   'You can enter vital signs while waiting.': 'Trong lúc chờ có thể nhập sinh hiệu.',
   'No result within 30 seconds.': 'Quá 30 giây chưa có kết quả.',
@@ -1486,7 +1485,6 @@ export const VI = {
   'e.g. multiple trauma, heavy bleeding — describe it in the patient’s description': 'ví dụ: đa chấn thương, mất máu nhiều — ghi rõ trong lời kể',
   'The model did not recognise any symptom in the description. This does not mean the patient has none — ask again and pick in the list below.':
     'Mô hình chưa nhận ra triệu chứng nào trong lời kể. Điều này không có nghĩa là bệnh nhân không có triệu chứng — hãy hỏi lại và chọn trong danh sách bên dưới.',
-  'Suggested — confirm before use': 'Đề xuất — cần xác nhận trước khi dùng',
   'Not sure — ask the patient again:': 'Chưa rõ — cần hỏi lại bệnh nhân:',
   'Confirm all': 'Xác nhận tất cả',
   'Switch Yes / No': 'Đổi Có / Không',
@@ -1976,6 +1974,7 @@ export const VI = {
   'Ready': "Sẵn sàng",
   'Transferred at once or placed at the top of the queue · doctors are alerted': "Chuyển tuyến ngay hoặc đưa lên đầu hàng chờ · bác sĩ đã được báo",
   'Signs': "Dấu hiệu",
+  'Suggested from the description — confirm each symptom before use': "Đề xuất từ lời kể — xác nhận từng triệu chứng trước khi dùng",
 }
 
 export const PATTERNS = [

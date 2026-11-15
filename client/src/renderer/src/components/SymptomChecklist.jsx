@@ -9,13 +9,14 @@ const SOURCE_LABEL = { Form: 'Picked by nurse', Extracted: 'From description', P
 // Kết quả tìm hiện trước bấy nhiêu mục; nhiều hơn thì có nút hiện hết, để không ai tưởng chỉ có bấy nhiêu.
 const RESULTS_SHOWN = 8
 const nameOf = (s) => (s.key === OUT_OF_SCOPE ? translate('Dangerous sign not in the list') : translate(s.label))
-const OutOfScopeHint = () => <small className="sym-hint">{translate('e.g. multiple trauma, heavy bleeding — describe it in the patient’s description')}</small>
+const OutOfScopeHint = () => <small>{translate('e.g. multiple trauma, heavy bleeding — describe it in the patient’s description')}</small>
 
+const TRI = { PRESENT: 'y', ABSENT: 'n', UNKNOWN: 'u' }
 function StateButtons({ cur, onPick, disabled, states = STATES }) {
   return (
-    <span className="ai-seg sym-seg">
+    <span className="tri">
       {states.map((x) => (
-        <button type="button" key={x.key} disabled={disabled} className={(cur === x.key ? 'active ' : '') + x.key.toLowerCase()} aria-pressed={cur === x.key} onClick={() => onPick(x.key)}>
+        <button type="button" key={x.key} disabled={disabled} className={TRI[x.key] + (cur === x.key ? ' on' : '')} aria-pressed={cur === x.key} onClick={() => onPick(x.key)}>
           {translate(x.label)}
         </button>
       ))}
@@ -26,8 +27,8 @@ function StateButtons({ cur, onPick, disabled, states = STATES }) {
 function Row({ s, value, onSet, disabled }) {
   const cur = value[s.key]?.state ?? 'UNKNOWN'
   return (
-    <div className={'sym-row' + (cur !== 'UNKNOWN' ? ' set' : '')}>
-      <span className="sym-name">
+    <div className={'sym-r' + (isDangerSymptom(s) ? ' d' : '') + (cur !== 'UNKNOWN' ? ' set' : '')}>
+      <span className="sn">
         {nameOf(s)}
         {s.key === OUT_OF_SCOPE && <OutOfScopeHint />}
       </span>
@@ -55,21 +56,22 @@ export default function SymptomChecklist({ value, onSet, disabled = false }) {
 
   return (
     <div className="sym-checklist">
-      {catalog.status === 'loading' && <p className="ai-soft">{translate('Loading the symptom list…')}</p>}
+      {catalog.status === 'loading' && <p className="muted small">{translate('Loading the symptom list…')}</p>}
       {catalog.status === 'failed' && (
-        <p className="sym-warn">
-          <Icon name="alert" /> {translate('Could not load the symptom list from the server.')}{' '}
+        <div className="hint-w">
+          <Icon name="triangle-alert" /> {translate('Could not load the symptom list from the server.')}{' '}
           <button type="button" className="btn btn-ghost btn-sm" onClick={catalog.reload}>
             {translate('Try again')}
           </button>
-        </p>
+        </div>
       )}
 
       {catalog.list.length > 0 && (
-        <div className="sym-search">
-          <div className="ai-search sym-search-box">
+        <div style={{ marginTop: 12 }}>
+          <div className="search" style={{ width: '100%' }}>
             <Icon name="search" />
             <input
+              className="input"
               type="search"
               value={query}
               disabled={disabled}
@@ -80,69 +82,71 @@ export default function SymptomChecklist({ value, onSet, disabled = false }) {
             />
           </div>
           {query.trim() && (
-            <div className="sym-results">
-              {results.length ? shown.map((s) => <Row key={s.key} s={s} value={value} onSet={onSet} disabled={disabled} />) : <p className="ai-soft">{translate('No matching symptom.')}</p>}
-              {hidden > 0 && (
-                <button type="button" className="btn btn-ghost btn-sm sym-more" onClick={() => setShowAll(true)}>
-                  {translate(`Show ${hidden} more`)}
-                </button>
-              )}
+            <div className="sym-sec open sym-results" style={{ marginTop: 8 }}>
+              <div className="sym-grid" style={{ paddingTop: 10 }}>
+                {results.length ? shown.map((s) => <Row key={s.key} s={s} value={value} onSet={onSet} disabled={disabled} />) : <p className="sym-empty" style={{ padding: 0 }}>{translate('No matching symptom.')}</p>}
+                {hidden > 0 && (
+                  <button type="button" className="btn btn-ghost btn-sm" onClick={() => setShowAll(true)}>
+                    {translate(`Show ${hidden} more`)}
+                  </button>
+                )}
+              </div>
             </div>
           )}
         </div>
       )}
 
-      <div className="sym-section grouped confirmed">
-        <div className="sym-group static">
-          <Icon name="check" />
-          <span>{translate('Confirmed symptoms')}</span>
-          <span className="sym-count">{confirmed.length}</span>
-        </div>
-        {confirmed.length ? (
-          <div className="sym-grid">
-            {confirmed.map(({ s, state, source }) => (
-              <div key={s.key} className={'sym-row set' + (isDangerSymptom(s) ? ' danger' : '')}>
-                <span className="sym-name">
-                  {nameOf(s)}
-                  <small className="sym-src">{translate(SOURCE_LABEL[source] ?? SOURCE_LABEL.Form)}</small>
-                </span>
-                <span className="sym-row-actions">
+      <div className="sym-list">
+        <div className="sym-sec conf">
+          <div className="sym-g st">
+            <Icon name="check" />
+            <span>{translate('Confirmed symptoms')}</span>
+            <span className="sym-c">{confirmed.length}</span>
+          </div>
+          {confirmed.length ? (
+            <div className="sym-grid">
+              {confirmed.map(({ s, state, source }) => (
+                <div key={s.key} className={'sym-r set' + (isDangerSymptom(s) ? ' d' : '')}>
+                  <span className="sn">
+                    {nameOf(s)}
+                    <small>{translate(SOURCE_LABEL[source] ?? SOURCE_LABEL.Form)}</small>
+                  </span>
                   <StateButtons cur={state} disabled={disabled} states={STATES.filter((x) => x.key !== 'UNKNOWN')} onPick={(next) => next !== state && onSet(s.key, next)} />
-                  <button type="button" className="icon-btn sym-rm" disabled={disabled} onClick={() => onSet(s.key, 'UNKNOWN')} title={translate('Remove')} aria-label={translate('Remove')}>
+                  <button type="button" className="btn btn-ghost btn-icon" disabled={disabled} onClick={() => onSet(s.key, 'UNKNOWN')} title={translate('Remove')} aria-label={translate('Remove')}>
                     <Icon name="x" />
                   </button>
-                </span>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <p className="ai-soft sym-empty">{translate('Nothing confirmed yet — confirm the suggestions above or pick below.')}</p>
-        )}
-      </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="sym-empty">{translate('Nothing confirmed yet — confirm the suggestions above or pick below.')}</p>
+          )}
+        </div>
 
-      {groups.map((g) => {
-        const picked = g.items.filter((s) => value[s.key] && value[s.key].state !== 'UNKNOWN').length
-        const isOpen = !g.label || (openGroups[g.key] ?? g.key === DANGER)
-        return (
-          <div key={g.key} className={'sym-section' + (g.label ? ' grouped' : '') + (g.key === DANGER ? ' danger' : '')}>
-            {g.label && (
-              <button type="button" className="sym-group" aria-expanded={isOpen} onClick={() => setOpenGroups((o) => ({ ...o, [g.key]: !isOpen }))}>
-                <Icon name={isOpen ? 'chevronDown' : 'chevronRight'} />
-                <span>{translate(g.label)}</span>
-                {picked > 0 && <span className="sym-picked">{translate(`${picked} selected`)}</span>}
-                <span className="sym-count">{g.items.length}</span>
-              </button>
-            )}
-            {isOpen && (
-              <div className="sym-grid">
-                {g.items.map((s) => (
-                  <Row key={s.key} s={s} value={value} onSet={onSet} disabled={disabled} />
-                ))}
-              </div>
-            )}
-          </div>
-        )
-      })}
+        {groups.map((g) => {
+          const picked = g.items.filter((s) => value[s.key] && value[s.key].state !== 'UNKNOWN').length
+          const isOpen = !g.label || (openGroups[g.key] ?? g.key === DANGER)
+          return (
+            <div key={g.key} className={'sym-sec' + (g.key === DANGER ? ' danger' : '') + (isOpen ? ' open' : '')}>
+              {g.label && (
+                <button type="button" className="sym-g" aria-expanded={isOpen} onClick={() => setOpenGroups((o) => ({ ...o, [g.key]: !isOpen }))}>
+                  <Icon name="chevron-right" />
+                  <span>{translate(g.label)}</span>
+                  <span className="sym-p">{picked > 0 ? translate(`${picked} selected`) : ''}</span>
+                  <span className="sym-c">{g.items.length}</span>
+                </button>
+              )}
+              {isOpen && (
+                <div className="sym-grid" style={g.label ? undefined : { paddingTop: 10 }}>
+                  {g.items.map((s) => (
+                    <Row key={s.key} s={s} value={value} onSet={onSet} disabled={disabled} />
+                  ))}
+                </div>
+              )}
+            </div>
+          )
+        })}
+      </div>
     </div>
   )
 }

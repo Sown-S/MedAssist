@@ -29,22 +29,22 @@ export default function ChangePasswordModal({ open, onClose }) {
     <Modal open={open} onClose={onClose}>
       <form onSubmit={submit}>
         <ModalHeader title="Change your password" onClose={onClose} />
-        <div className="modal-body">
+        <div className="modal-b">
           {form.err && <div className="login-err show">{form.err}</div>}
           <div className="login-field">
             <label>Current password</label>
-            <input type="password" autoFocus autoComplete="current-password" value={form.old} onChange={(e) => setForm({ ...form, old: e.target.value })} />
+            <input className="input" type="password" autoFocus autoComplete="current-password" value={form.old} onChange={(e) => setForm({ ...form, old: e.target.value })} />
           </div>
           <div className="login-field">
             <label>{`New password (at least ${minLength} characters)`}</label>
-            <input type="password" autoComplete="new-password" value={form.np} onChange={(e) => setForm({ ...form, np: e.target.value })} />
+            <input className="input" type="password" autoComplete="new-password" value={form.np} onChange={(e) => setForm({ ...form, np: e.target.value })} />
           </div>
           <div className="login-field">
             <label>Confirm new password</label>
-            <input type="password" autoComplete="new-password" value={form.np2} onChange={(e) => setForm({ ...form, np2: e.target.value })} />
+            <input className="input" type="password" autoComplete="new-password" value={form.np2} onChange={(e) => setForm({ ...form, np2: e.target.value })} />
           </div>
         </div>
-        <div className="modal-foot">
+        <div className="modal-f">
           <button type="button" className="btn btn-ghost" onClick={onClose}>
             Cancel
           </button>

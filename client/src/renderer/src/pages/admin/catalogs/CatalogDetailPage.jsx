@@ -61,13 +61,13 @@ export default function CatalogDetailPage({ catalogKey, params, onNavigate }) {
 
       <div className="card">
         <div className="ai-toolbar">
-          <div className="ai-search">
+          <div className="search">
             <Icon name="search" />
-            <input value={q} onChange={(e) => reset(setQ)(e.target.value)} placeholder="Search code or name…" />
+            <input className="input" value={q} onChange={(e) => reset(setQ)(e.target.value)} placeholder="Search code or name…" />
           </div>
           <div className="ai-toolbar-right">
             {s.filter && (
-              <select className="ai-select" value={sub} onChange={(e) => reset(setSub)(e.target.value)}>
+              <select className="input" value={sub} onChange={(e) => reset(setSub)(e.target.value)}>
                 <option value="all">All groups</option>
                 {s.filter.options.map((o) => (
                   <option key={o.key} value={o.key}>

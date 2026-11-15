@@ -117,7 +117,7 @@ export default function DrugCabinetView({ go }) {
       <div className="card">
         <div className="cash-filters" style={{ marginBottom: 14 }}>
           <input className="grow" type="search" placeholder="Search by drug name, active ingredient or ATC…" value={q} onChange={filter(setQ)} />
-          <select value={atc} onChange={filter(setAtc)} title={translate('Therapeutic class (ATC)')}>
+          <select className="input" value={atc} onChange={filter(setAtc)} title={translate('Therapeutic class (ATC)')}>
             <option value="">All drug classes (ATC)</option>
             {classes.map((c) => (
               <option key={c} value={c}>
@@ -126,28 +126,28 @@ export default function DrugCabinetView({ go }) {
             ))}
             {active.some((d) => !d.atc) && <option value="-">No ATC code</option>}
           </select>
-          <select value={group} onChange={filter(setGroup)}>
+          <select className="input" value={group} onChange={filter(setGroup)}>
             {GROUPS.map((g) => (
               <option key={g.key} value={g.key}>
                 {g.label}
               </option>
             ))}
           </select>
-          <select value={stock} onChange={filter(setStock)}>
+          <select className="input" value={stock} onChange={filter(setStock)}>
             {STOCK_FILTERS.map((g) => (
               <option key={g.key} value={g.key}>
                 {g.label}
               </option>
             ))}
           </select>
-          <select value={expiry} onChange={filter(setExpiry)}>
+          <select className="input" value={expiry} onChange={filter(setExpiry)}>
             {EXPIRY_FILTERS.map((g) => (
               <option key={g.key} value={g.key}>
                 {g.key === 'near' ? translate('Expiring within') + ' ' + near + ' ' + translate('days') : g.label}
               </option>
             ))}
           </select>
-          <select value={sort} onChange={filter(setSort)}>
+          <select className="input" value={sort} onChange={filter(setSort)}>
             {SORTS.map((g) => (
               <option key={g.key} value={g.key}>
                 {g.label}

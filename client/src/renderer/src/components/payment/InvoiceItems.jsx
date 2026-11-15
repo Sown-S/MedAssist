@@ -50,13 +50,13 @@ export default function InvoiceItems({ visitId, inv, editable, cat, orders, act,
 
   return (
     <div>
-      <div className="section-label">Services</div>
+      <div className="sec-t">Services</div>
       <div className="invoice-row">
         <span className="badge info">{translate('Consultation')}</span>
         <div className="inv-name">
           {consultLine?.item_name ?? translate('Consultation fee')}
           {editable && consultServices.length > 1 && (
-            <select className="ai-select" value="" onChange={(e) => changeConsult(e.target.value)} style={{ marginTop: 4 }}>
+            <select className="input" value="" onChange={(e) => changeConsult(e.target.value)} style={{ marginTop: 4 }}>
               <option value="">{translate('Change consultation service…')}</option>
               {consultServices.map((s) => (
                 <option key={s.service_id} value={s.service_id}>
@@ -68,7 +68,7 @@ export default function InvoiceItems({ visitId, inv, editable, cat, orders, act,
         </div>
         {editable ? (
           <span className="svc-fee">
-            <input type="number" min="0" step="1000" value={fee} onChange={(e) => setFee(e.target.value)} />
+            <input className="input" type="number" min="0" step="1000" value={fee} onChange={(e) => setFee(e.target.value)} />
             {Number(fee) !== Number(inv.consultation_fee) && (
               <button className="btn btn-ghost btn-sm" onClick={saveFee}>
                 Save
@@ -126,7 +126,7 @@ export default function InvoiceItems({ visitId, inv, editable, cat, orders, act,
       ))}
       {editable && (
         <div className="svc-add">
-          <select className="ai-select" value={adding} onChange={(e) => addFromCatalog(e.target.value)}>
+          <select className="input" value={adding} onChange={(e) => addFromCatalog(e.target.value)}>
             <option value="">{translate('+ Add a service from the catalog…')}</option>
             <optgroup label={translate('Services')}>
               {cat.services
@@ -148,8 +148,8 @@ export default function InvoiceItems({ visitId, inv, editable, cat, orders, act,
             </optgroup>
           </select>
           <div className="svc-custom">
-            <input type="text" placeholder={translate('Other service, e.g. ultrasound at partner clinic')} value={custom.name} onChange={(e) => setCustom({ ...custom, name: e.target.value })} />
-            <input type="number" min="0" step="1000" placeholder={translate('Amount')} value={custom.amount} onChange={(e) => setCustom({ ...custom, amount: e.target.value })} />
+            <input className="input" type="text" placeholder={translate('Other service, e.g. ultrasound at partner clinic')} value={custom.name} onChange={(e) => setCustom({ ...custom, name: e.target.value })} />
+            <input className="input" type="number" min="0" step="1000" placeholder={translate('Amount')} value={custom.amount} onChange={(e) => setCustom({ ...custom, amount: e.target.value })} />
             <button className="btn btn-ghost btn-sm" onClick={addCustom}>
               + {translate('Add')}
             </button>
@@ -157,7 +157,7 @@ export default function InvoiceItems({ visitId, inv, editable, cat, orders, act,
         </div>
       )}
 
-      <div className="section-label">Medication (from the doctor’s prescription)</div>
+      <div className="sec-t">Medication (from the doctor’s prescription)</div>
       {drugItems.map((x) => (
         <div className="invoice-row" key={x.invoice_item_id}>
           <div className="inv-name">

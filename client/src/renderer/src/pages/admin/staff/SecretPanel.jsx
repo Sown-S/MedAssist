@@ -21,7 +21,7 @@ export default function SecretPanel({ secret, onClose }) {
   return (
     <>
       <ModalHeader title={secret.reset ? 'New temporary password' : 'Account created'} onClose={onClose} />
-      <div className="modal-body">
+      <div className="modal-b">
         <p className="ai-soft">
           <span>Send these sign-in details to</span> <b>{a.fullName}</b> <span>through a private channel. They must change the password at first sign-in.</span>
         </p>
@@ -40,7 +40,7 @@ export default function SecretPanel({ secret, onClose }) {
         </div>
         <p className="login-note sp-warn">This password is shown only once. After you close this window it cannot be displayed again — only reset.</p>
       </div>
-      <div className="modal-foot">
+      <div className="modal-f">
         <button className="btn btn-primary" onClick={onClose}>
           Done
         </button>

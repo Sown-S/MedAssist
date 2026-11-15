@@ -70,11 +70,11 @@ export default function ItemsTab({ data, names, canEdit, openRelease, onChanged,
           ))}
         </div>
         <div className="ai-toolbar-right">
-          <div className="ai-search">
+          <div className="search">
             <Icon name="search" />
-            <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search by code or name…" />
+            <input className="input" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search by code or name…" />
           </div>
-          <select className="ai-select" value={filter} onChange={(e) => setFilter(e.target.value)}>
+          <select className="input" value={filter} onChange={(e) => setFilter(e.target.value)}>
             {FILTERS.map((x) => (
               <option key={x.key} value={x.key}>
                 {x.label}
@@ -190,7 +190,7 @@ function HistoryModal({ kind, group, names, onClose }) {
   return (
     <Modal open onClose={onClose} wide>
       <ModalHeader title={translate('Version history') + ' · ' + group.key} onClose={onClose} />
-      <div className="modal-body">
+      <div className="modal-b">
         {err && <div className="kb-error">{err}</div>}
         {!rows && !err && <p className="ai-soft">Loading…</p>}
         {rows && (
@@ -259,7 +259,7 @@ function DeactivateModal({ kind, group, names, onClose, onDone }) {
   return (
     <Modal open onClose={onClose}>
       <ModalHeader title={translate('Turn off now') + ' · ' + group.key} onClose={onClose} />
-      <div className="modal-body">
+      <div className="modal-b">
         <p className="ai-confirm-msg">
           <Summary kind={kind} values={group.active?.values} names={names} />
         </p>
@@ -284,11 +284,11 @@ function DeactivateModal({ kind, group, names, onClose, onDone }) {
           <label>
             Reason <span className="ai-req">*</span>
           </label>
-          <textarea rows={3} value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Recorded in the activity log (at least 3 characters)" />
+          <textarea className="input" rows={3} value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Recorded in the activity log (at least 3 characters)" />
         </div>
         {err && <div className="kb-error">{err}</div>}
       </div>
-      <div className="modal-foot">
+      <div className="modal-f">
         <button className="btn btn-ghost" onClick={onClose}>
           Cancel
         </button>

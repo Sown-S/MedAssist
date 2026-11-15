@@ -63,88 +63,95 @@ export default function PatientsView({ readOnly, onCheckIn }) {
 
   return (
     <div className="card">
-      <div className="pt-filters">
-        <div className="ai-search pt-q">
-          <Icon name="search" />
-          <input type="search" value={f.q} onChange={set('q')} placeholder={translate('Full name (with or without accents)')} aria-label={translate('Full name')} />
-        </div>
-        <input className="pt-in" value={f.phone} onChange={set('phone')} placeholder={translate('Phone')} aria-label={translate('Phone')} inputMode="numeric" />
-        <input className="pt-in" value={f.idNumber} onChange={set('idNumber')} placeholder={translate('ID card')} aria-label={translate('ID card')} inputMode="numeric" />
-        <input className="pt-in" value={f.code} onChange={set('code')} placeholder={translate('Patient code, e.g. BN-3F2A9C1B')} aria-label={translate('Record code')} />
-        <input className="pt-in pt-year" value={f.birthYear} onChange={set('birthYear')} placeholder={translate('Year of birth')} aria-label={translate('Year of birth')} inputMode="numeric" />
-        {dirty && (
-          <button className="btn btn-ghost btn-sm pt-clear" onClick={() => (setF(EMPTY), setOffset(0))}>
-            Clear filters
+      <div className="card-b">
+        <div className="toolbar" style={{ marginBottom: 14 }}>
+          <div className="search" style={{ width: 300 }}>
+            <Icon name="search" />
+            <input className="input" type="search" value={f.q} onChange={set('q')} placeholder={translate('Full name (with or without accents)')} aria-label={translate('Full name')} />
+          </div>
+          <input className="input" style={{ width: 160, height: 40 }} value={f.phone} onChange={set('phone')} placeholder={translate('Phone')} aria-label={translate('Phone')} inputMode="numeric" />
+          <input className="input" style={{ width: 150, height: 40 }} value={f.idNumber} onChange={set('idNumber')} placeholder={translate('ID card')} aria-label={translate('ID card')} inputMode="numeric" />
+          <input className="input" style={{ width: 200, height: 40 }} value={f.code} onChange={set('code')} placeholder={translate('Patient code, e.g. BN-3F2A9C1B')} aria-label={translate('Record code')} />
+          <input className="input num" style={{ width: 110, height: 40 }} value={f.birthYear} onChange={set('birthYear')} placeholder={translate('Year of birth')} aria-label={translate('Year of birth')} inputMode="numeric" />
+          <button className="btn btn-ghost btn-sm" disabled={!dirty} onClick={() => (setF(EMPTY), setOffset(0))}>
+            {translate('Clear filters')}
           </button>
-        )}
-      </div>
-      {status === 'failed' && <p className="sym-warn">{translate('Could not load the patient list from the server.')}</p>}
-      <table className="dt pt-table">
-        <thead>
-          <tr>
-            <th>Record code</th>
-            <th>Full name</th>
-            <th>Date of birth</th>
-            <th>Gender</th>
-            <th>Phone</th>
-            <th />
-          </tr>
-        </thead>
-        <tbody>
-          {data.items.map((p) => (
-            <tr key={p.id}>
-              <td className="pt-code">{p.code}</td>
-              <td>
-                <span className="pt-who">
-                  <span className="avatar">{initials(p.name)}</span>
-                  <b>{p.name}</b>
-                </span>
-              </td>
-              <td>
-                {p.dob}{' '}
-                <small className="pt-age">
-                  · {ageOf(p.dob)} {translate('yrs')}
-                </small>
-              </td>
-              <td>{translate(p.gender)}</td>
-              <td>{p.phone || '—'}</td>
-              <td>
-                <span className="pt-acts">
-                  <button className="icon-btn" title={translate('Visit history')} aria-label={translate('Visit history')} onClick={() => setHistory(p)}>
-                    <Icon name="history" />
-                  </button>
-                  <button className="btn btn-ghost btn-sm" disabled={readOnly} onClick={() => checkIn(p)}>
-                    <Icon name="userCheck" /> Check in
-                  </button>
-                </span>
-              </td>
-            </tr>
-          ))}
-          {status === 'ready' && !data.items.length && (
-            <tr>
-              <td colSpan="6" className="ai-soft">
-                {dirty ? translate('No matching patient.') : translate('No patient records yet.')}
-              </td>
-            </tr>
+        </div>
+        {status === 'failed' && <p className="sym-warn">{translate('Could not load the patient list from the server.')}</p>}
+        <div className="tbl-wrap">
+          {data.items.length || status !== 'ready' ? (
+            <table>
+              <thead>
+                <tr>
+                  <th>Record code</th>
+                  <th>Full name</th>
+                  <th>Date of birth</th>
+                  <th>Gender</th>
+                  <th>Phone</th>
+                  <th className="r" />
+                </tr>
+              </thead>
+              <tbody>
+                {data.items.map((p) => (
+                  <tr key={p.id}>
+                    <td className="num muted">{p.code}</td>
+                    <td>
+                      <div className="who-cell">
+                        <div className="ava">{initials(p.name)}</div>
+                        <b className="clip" style={{ maxWidth: 260 }}>
+                          {p.name}
+                        </b>
+                      </div>
+                    </td>
+                    <td className="num">
+                      {p.dob}{' '}
+                      <span className="muted small">
+                        · {ageOf(p.dob)} {translate('yrs')}
+                      </span>
+                    </td>
+                    <td>{translate(p.gender)}</td>
+                    <td className="num">{p.phone || '—'}</td>
+                    <td>
+                      <div className="acts">
+                        <button className="btn btn-ghost btn-icon" title={translate('Visit history')} aria-label={translate('Visit history')} onClick={() => setHistory(p)}>
+                          <Icon name="history" />
+                        </button>
+                        <button className="btn btn-outline btn-sm" disabled={readOnly} onClick={() => checkIn(p)}>
+                          <Icon name="user-check" />
+                          {translate('Check in')}
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <div className="empty">
+              <div className="ill">
+                <Icon name="contact-round" />
+              </div>
+              <b>{dirty ? translate('No matching patient.') : translate('No patient records yet.')}</b>
+            </div>
           )}
-        </tbody>
-      </table>
-      <div className="pt-pager">
-        <span>
-          {translate('Showing')} {from}–{to} / {data.total.toLocaleString('vi-VN')} {translate('records')}
-        </span>
-        <span className="pt-pager-btns">
-          {offset > 0 && (
-            <button className="btn btn-ghost btn-sm" onClick={() => setOffset(Math.max(0, offset - PAGE))}>
-              ← Previous
-            </button>
-          )}
-          {offset + PAGE < data.total && (
-            <button className="btn btn-ghost btn-sm" onClick={() => setOffset(offset + PAGE)}>
-              Next →
-            </button>
-          )}
-        </span>
+        </div>
+        <div className="pager">
+          <span>
+            {translate('Showing')} {from}–{to} / {data.total.toLocaleString('vi-VN')} {translate('records')}
+          </span>
+          <span className="acts">
+            {offset > 0 && (
+              <button className="btn btn-outline btn-sm" onClick={() => setOffset(Math.max(0, offset - PAGE))}>
+                {translate('← Previous')}
+              </button>
+            )}
+            {offset + PAGE < data.total && (
+              <button className="btn btn-outline btn-sm" onClick={() => setOffset(offset + PAGE)}>
+                {translate('Next →')}
+              </button>
+            )}
+          </span>
+        </div>
       </div>
       {history && <VisitHistoryModal patient={history} onClose={() => setHistory(null)} />}
     </div>
@@ -166,7 +173,7 @@ function VisitHistoryModal({ patient, onClose }) {
   return (
     <Modal open onClose={onClose} wide>
       <ModalHeader title={translate('Visit history') + ' — ' + patient.name} onClose={onClose} />
-      <div className="modal-body">
+      <div className="modal-b">
         {rows === null ? (
           <p className="ai-soft">{translate('Loading…')}</p>
         ) : rows.length ? (

@@ -86,7 +86,7 @@ describe('Đăng xuất của bác sĩ', () => {
     const row = screen.getByText('Nguyễn Văn An', { selector: '.signout-row b' }).closest('.signout-row')
     expect(row.textContent).toContain('In my room')
     expect(row.textContent).toContain('Open visit')
-    expect(screen.getByText('Sign out', { selector: '.modal-foot button' }).disabled).toBe(true)
+    expect(screen.getByText('Sign out', { selector: '.modal-f button' }).disabled).toBe(true)
     expect(screen.queryByText('Sign out anyway')).toBeNull()
   })
 

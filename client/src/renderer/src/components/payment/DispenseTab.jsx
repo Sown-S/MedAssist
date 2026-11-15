@@ -95,7 +95,7 @@ export default function DispenseTab({ active, visitId, items, waiting, paid, rx,
                   )}
                   {skipping === l.item_id && (
                     <span className="disp-skip">
-                      <input type="text" autoFocus placeholder={translate('Reason (e.g. patient declined, out of stock)')} value={skipReason} onChange={(e) => setSkipReason(e.target.value)} />
+                      <input className="input" type="text" autoFocus placeholder={translate('Reason (e.g. patient declined, out of stock)')} value={skipReason} onChange={(e) => setSkipReason(e.target.value)} />
                       <button className="btn btn-danger btn-sm" disabled={skipReason.trim().length < 3} onClick={confirmSkip}>
                         Skip &amp; return stock
                       </button>

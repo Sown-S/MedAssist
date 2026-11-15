@@ -47,7 +47,7 @@ export default function ServerHistory({ patientId, excludeVisitId, onLoaded }) {
   return (
     <div>
       <div className="ai-toolbar">
-        <div className="section-label" style={{ margin: 0 }}>
+        <div className="sec-t" style={{ margin: 0 }}>
           Visits <span className="itab-cnt">{Math.max(0, total - (items.some((v) => v.visit_id === excludeVisitId) ? 1 : 0))}</span>
         </div>
         <label className="ai-small ai-soft" style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
@@ -170,16 +170,16 @@ function VisitDetail({ visitId }) {
     <div className="emr-detail">
       <div className="emr-grid">
         <div>
-          <div className="section-label">Reason for visit</div>
+          <div className="sec-t">Reason for visit</div>
           <div>{v.chief_complaint}</div>
           {v.free_text_description && <div className="ai-small ai-soft">{v.free_text_description}</div>}
         </div>
         <div>
-          <div className="section-label">Vital signs</div>
+          <div className="sec-t">Vital signs</div>
           <div className="ai-small">{vit || '—'}</div>
         </div>
         <div>
-          <div className="section-label">Staff</div>
+          <div className="sec-t">Staff</div>
           <div className="ai-small">
             <span>Reception</span>: {r.nurse_name ?? '—'} · <span>Doctor</span>: {r.physician_name ?? '—'}
           </div>
@@ -192,7 +192,7 @@ function VisitDetail({ visitId }) {
       )}
       {v.outcome === 'Referred' && v.referral && <ReferralBox record={r} onSaved={() => getVisitRecord(visitId).then(setR, () => {})} />}
 
-      <div className="section-label">Diagnoses</div>
+      <div className="sec-t">Diagnoses</div>
       {r.diagnoses.length ? (
         r.diagnoses.map((d) => (
           <div key={d.diagnosis_id} className={'emr-dx-row' + (d.confirmed_by_physician ? '' : ' retracted')}>
@@ -208,14 +208,14 @@ function VisitDetail({ visitId }) {
       {/* Phiếu chỉ định và kết quả bác sĩ ghi từ phiếu giấy. */}
       {(r.service_orders ?? []).length > 0 && (
         <>
-          <div className="section-label">Lab tests &amp; diagnostics</div>
+          <div className="sec-t">Lab tests &amp; diagnostics</div>
           {r.service_orders.map((o) => (
             <LabOrderResults key={o.order_id} order={toLabOrder(o)} />
           ))}
         </>
       )}
 
-      <div className="section-label">Prescription</div>
+      <div className="sec-t">Prescription</div>
       {r.prescription?.items.length ? (
         <table className="dt">
           <tbody>
@@ -245,7 +245,7 @@ function VisitDetail({ visitId }) {
 
       {r.invoice && (
         <div className="ai-small">
-          <span className="section-label" style={{ display: 'inline' }}>
+          <span className="sec-t" style={{ display: 'inline' }}>
             Invoice
           </span>{' '}
           <span className="mono">{r.invoice.invoice_code}</span> · <b className="mono">{money(r.invoice.total_amount)}</b> ·{' '}

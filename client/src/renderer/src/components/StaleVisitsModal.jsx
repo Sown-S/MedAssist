@@ -32,7 +32,7 @@ export default function StaleVisitsModal({ readOnly, onClose, onPay }) {
   return (
     <Modal open onClose={onClose} wide>
       <ModalHeader title={translate('Open visits from previous days') + ' · ' + stale.length} onClose={onClose} />
-      <div className="modal-body">
+      <div className="modal-b">
         <p className="ai-soft" style={{ fontSize: 13, marginTop: 0 }}>
           These visits were not finished or not paid. Close each one with a reason, or collect payment if the patient came back. A patient with an open visit cannot be checked in again.
         </p>
@@ -66,7 +66,7 @@ export default function StaleVisitsModal({ readOnly, onClose, onPay }) {
                   ))}
                 </div>
                 <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
-                  <input type="text" style={{ flex: 1 }} value={note} onChange={(e) => setNote(e.target.value)} placeholder={translate('Note') + (reason === 'other' ? ' *' : '')} />
+                  <input className="input" type="text" style={{ flex: 1 }} value={note} onChange={(e) => setNote(e.target.value)} placeholder={translate('Note') + (reason === 'other' ? ' *' : '')} />
                   <button className="btn btn-primary btn-sm" style={{ background: 'var(--warn)' }} disabled={reason === 'other' && !note.trim()} onClick={() => close(v)}>
                     <Icon name="check" /> Confirm close
                   </button>

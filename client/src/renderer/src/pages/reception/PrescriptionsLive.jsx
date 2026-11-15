@@ -98,14 +98,14 @@ export default function PrescriptionsLive({ initialDoctorId = '', initialDoctorN
               setDate(d)
             }}
           />
-          <select value={status} onChange={(e) => setStatus(e.target.value)}>
+          <select className="input" value={status} onChange={(e) => setStatus(e.target.value)}>
             {STATUS_FILTERS.map((s) => (
               <option key={s.key} value={s.key}>
                 {s.label}
               </option>
             ))}
           </select>
-          <select value={doctorId} onChange={(e) => setDoctorId(e.target.value)}>
+          <select className="input" value={doctorId} onChange={(e) => setDoctorId(e.target.value)}>
             <option value="">All doctors</option>
             {doctors.map(([id, name]) => (
               <option key={id} value={id}>

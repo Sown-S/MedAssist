@@ -38,7 +38,6 @@
 .doc-work .itabs{display:flex;background:none;border:0;border-bottom:1px solid var(--border);border-radius:0;padding:0;gap:18px;margin:14px 0 16px;}
 .doc-work .itab{padding:12px 2px;border-radius:0;border-bottom:2px solid transparent;margin-bottom:-1px;font-weight:600;color:var(--ink-soft);background:none;box-shadow:none;}
 .doc-work .itab.active{color:var(--primary-ink);border-bottom-color:var(--primary);background:none;box-shadow:none;}
-.doc-work .section-label{font-size:13px;font-weight:700;letter-spacing:.04em;color:var(--ink-soft);margin:16px 0 6px;}
 .doc-work .symptom-box{background:var(--surface-alt);border-left:3px solid var(--border-strong);border-radius:10px;padding:10px 12px;font-size:14.5px;color:var(--ink-2);}
 
 /* Gợi ý AI gọn: ba ô nằm ngang, bằng chứng mở khi cần */

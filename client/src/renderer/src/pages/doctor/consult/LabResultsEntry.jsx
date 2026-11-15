@@ -10,7 +10,7 @@ export default function LabResultsEntry({ visit, labOrders, labResults, resultOf
     <>
       {labOrders.length > 0 && (
         <>
-          <div className="section-label">Lab tests ordered · results from the paper report</div>
+          <div className="sec-t">Lab tests ordered · results from the paper report</div>
           {labOrders.map((o) => (
             <div key={o.id} className="symptom-box lab-entry">
               <div className="lab-ordered">
@@ -39,7 +39,7 @@ export default function LabResultsEntry({ visit, labOrders, labResults, resultOf
                       {r.name}
                       {r.ref && <small className="ai-soft"> · {r.ref}</small>}
                     </span>
-                    <input
+                    <input className="input"
                       type="text"
                       value={resultOf(r)}
                       onChange={(e) => onResult(r.key, e.target.value)}

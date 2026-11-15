@@ -91,9 +91,9 @@ export function EditWaitingModal({ visit, onClose }) {
   return (
     <Modal open onClose={onClose} wide>
       <ModalHeader title={translate('Edit waiting visit') + ' — ' + ticketNo(visit.ticket) + ' ' + visit.name} onClose={onClose} />
-      <div className="modal-body">
+      <div className="modal-b">
         <PatientAlerts p={visit} compact />
-        <div className="section-label">Symptoms</div>
+        <div className="sec-t">Symptoms</div>
         <SymptomPanel
           value={syms}
           onChange={setSyms}
@@ -103,7 +103,7 @@ export function EditWaitingModal({ visit, onClose }) {
           onExtract={extract}
           onVitals={(list, from) => setVitalProps({ list, from })}
         />
-        <div className="section-label">Vital signs</div>
+        <div className="sec-t">Vital signs</div>
         <VitalProposals
           list={vitalProps.list}
           form={f}
@@ -121,7 +121,7 @@ export function EditWaitingModal({ visit, onClose }) {
           </p>
         )}
       </div>
-      <div className="modal-foot">
+      <div className="modal-f">
         <button
           className="btn"
           style={{ background: 'var(--warn)', color: '#fff', marginRight: 'auto' }}
@@ -157,7 +157,7 @@ export function CancelVisitModal({ visit, onClose }) {
   return (
     <Modal open onClose={onClose}>
       <ModalHeader title={translate('Cancel visit') + ' — ' + ticketNo(visit.ticket) + ' ' + visit.name} onClose={onClose} />
-      <div className="modal-body">
+      <div className="modal-b">
         <p className="ai-soft" style={{ fontSize: 13, marginTop: 0 }}>
           The visit leaves the queue and is kept as “left without finishing” with your reason. The patient record is not deleted.
         </p>
@@ -180,10 +180,10 @@ export function CancelVisitModal({ visit, onClose }) {
           <label>
             Note {reason === 'other' && <span className="req">*</span>}
           </label>
-          <input type="text" value={note} onChange={(e) => setNote(e.target.value)} placeholder="e.g. Said they would come back tomorrow" />
+          <input className="input" type="text" value={note} onChange={(e) => setNote(e.target.value)} placeholder="e.g. Said they would come back tomorrow" />
         </div>
       </div>
-      <div className="modal-foot">
+      <div className="modal-f">
         <button className="btn btn-ghost" onClick={onClose}>
           Back
         </button>

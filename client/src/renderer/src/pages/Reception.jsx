@@ -88,7 +88,7 @@ export default function Reception() {
   // Phím tắt: F2 đăng ký mới, F3 / Ctrl+K tra cứu.
   useEffect(() => {
     const onKey = (e) => {
-      if (intake || searchOpen || redFlag || paying || document.querySelector('.modal-overlay')) return
+      if (intake || searchOpen || redFlag || paying || document.querySelector('.ov')) return
       if (e.key === 'F2' && !readOnly) {
         e.preventDefault()
         setIntake({ patient: null })

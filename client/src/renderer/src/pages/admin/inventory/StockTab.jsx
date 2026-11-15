@@ -100,19 +100,19 @@ export function StockTab({ inv, user }) {
       </MiniStats>
 
       <div className="ai-toolbar">
-        <div className="ai-search">
+        <div className="search">
           <Icon name="search" />
-          <input value={q} onChange={(e) => reset(setQ)(e.target.value)} placeholder="Search by name, active ingredient, ATC code…" />
+          <input className="input" value={q} onChange={(e) => reset(setQ)(e.target.value)} placeholder="Search by name, active ingredient, ATC code…" />
         </div>
         <div className="ai-toolbar-right">
-          <select className="ai-select" value={group} onChange={(e) => reset(setGroup)(e.target.value)}>
+          <select className="input" value={group} onChange={(e) => reset(setGroup)(e.target.value)}>
             {GROUPS.map((g) => (
               <option key={g.key} value={g.key}>
                 {g.label}
               </option>
             ))}
           </select>
-          <select className="ai-select" value={status} onChange={(e) => reset(setStatus)(e.target.value)}>
+          <select className="input" value={status} onChange={(e) => reset(setStatus)(e.target.value)}>
             <option value="all">All statuses</option>
             {['ok', 'low', 'out', 'near', 'expired'].map((k) => (
               <option key={k} value={k}>

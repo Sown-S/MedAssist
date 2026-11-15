@@ -111,7 +111,7 @@ export function Shell() {
       {/* Còn ca đã nhận thì không đăng xuất được: xong ca nào thì ca đó biến khỏi danh sách, hết ca mới mở nút. */}
       <Modal open={leaving} onClose={() => setLeaving(false)}>
         <ModalHeader title={translate('Finish your visits before signing out')} onClose={() => setLeaving(false)} />
-        <div className="modal-body">
+        <div className="modal-b">
           <p className="ai-soft" style={{ fontSize: 13.5, marginTop: 0 }}>
             {openVisits.length
               ? translate('You still have patients you took. Finalize each visit, return the patient to the queue, or close the visit if the patient left — then you can sign out.')
@@ -148,7 +148,7 @@ export function Shell() {
             </div>
           ))}
         </div>
-        <div className="modal-foot">
+        <div className="modal-f">
           <button className="btn btn-ghost" onClick={() => setLeaving(false)}>
             Close
           </button>

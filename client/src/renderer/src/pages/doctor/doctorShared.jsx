@@ -38,7 +38,7 @@ export function useTakePatient(open) {
   const dialog = busy && (
     <Modal open onClose={() => setBusy(null)}>
       <ModalHeader title={translate('A patient is still in your room')} onClose={() => setBusy(null)} />
-      <div className="modal-body">
+      <div className="modal-b">
         <div className="busy-current">
           <span className="p-ticket">{no(busy.busy.ticket)}</span>
           <div>
@@ -63,7 +63,7 @@ export function useTakePatient(open) {
           </div>
         )}
       </div>
-      <div className="modal-foot">
+      <div className="modal-f">
         <button className="btn btn-ghost" onClick={() => setBusy(null)}>
           Cancel
         </button>
@@ -226,12 +226,12 @@ export function ReleaseModal({ visit, onClose, onDone }) {
   return (
     <Modal open onClose={onClose}>
       <ModalHeader title={translate('Return to queue') + ' — ' + visit.name} onClose={onClose} />
-      <div className="modal-body">
+      <div className="modal-b">
         <p className="ai-soft" style={{ fontSize: 13, marginTop: 0 }}>
           The patient goes back to the waiting queue; any doctor can call them in again. Your unfinished notes stay with the visit.
         </p>
       </div>
-      <div className="modal-foot">
+      <div className="modal-f">
         <button className="btn btn-ghost" onClick={onClose}>
           Cancel
         </button>
@@ -259,7 +259,7 @@ export function LeaveVisitModal({ visit, onClose, onDone }) {
   return (
     <Modal open onClose={onClose}>
       <ModalHeader title={translate('Patient left') + ' — ' + visit.name} onClose={onClose} />
-      <div className="modal-body">
+      <div className="modal-b">
         <p className="ai-soft" style={{ fontSize: 13, marginTop: 0 }}>
           The visit is closed without an invoice. To charge the consultation fee, finalize the visit without drugs instead.
         </p>
@@ -277,10 +277,10 @@ export function LeaveVisitModal({ visit, onClose, onDone }) {
           <label>
             Note {reason === 'other' && <span className="req">*</span>}
           </label>
-          <input type="text" value={note} onChange={(e) => setNote(e.target.value)} placeholder="e.g. Called twice, no answer; advised to come back if the fever persists" />
+          <input className="input" type="text" value={note} onChange={(e) => setNote(e.target.value)} placeholder="e.g. Called twice, no answer; advised to come back if the fever persists" />
         </div>
       </div>
-      <div className="modal-foot">
+      <div className="modal-f">
         <button className="btn btn-ghost" onClick={onClose}>
           Cancel
         </button>

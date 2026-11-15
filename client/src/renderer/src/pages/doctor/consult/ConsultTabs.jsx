@@ -8,7 +8,7 @@ import { isChild } from './rxDraft'
 export function VitalsTab({ visit, vitals, onChange, tried, needWeight, vitalErr }) {
   return (
     <div className="ipanel active">
-      <div className="section-label">Vitals for this visit</div>
+      <div className="sec-t">Vitals for this visit</div>
       <p className="ai-soft" style={{ fontSize: 12.5, marginTop: 0 }}>
         <span>Recorded at check-in:</span> <span className="mono">{vitalsText(visit.vitals)}</span>
       </p>
@@ -28,9 +28,9 @@ export function VitalsTab({ visit, vitals, onChange, tried, needWeight, vitalErr
 export function HistoryTab({ visit }) {
   return (
     <div className="ipanel active">
-      <div className="section-label">Underlying conditions</div>
+      <div className="sec-t">Underlying conditions</div>
       <div className="symptom-box">{visit.history ? translate(visit.history) : translate('No chronic conditions on record.')}</div>
-      <div className="section-label">Drug allergies</div>
+      <div className="sec-t">Drug allergies</div>
       <div className="symptom-box">{visit.allergies ? translate(visit.allergies) : translate('No recorded drug allergies.')}</div>
       <ServerHistory patientId={visit.patientId} excludeVisitId={visit.id} />
     </div>

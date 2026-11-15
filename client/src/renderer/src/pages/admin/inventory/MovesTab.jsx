@@ -28,9 +28,9 @@ export function MovesTab({ inv }) {
           ))}
         </div>
         <div className="ai-toolbar-right">
-          <div className="ai-search">
+          <div className="search">
             <Icon name="search" />
-            <input value={q} onChange={(e) => (setQ(e.target.value), setPage(1))} placeholder="Search drug, document, lot, staff…" />
+            <input className="input" value={q} onChange={(e) => (setQ(e.target.value), setPage(1))} placeholder="Search drug, document, lot, staff…" />
           </div>
           <button
             className="btn btn-ghost btn-sm"

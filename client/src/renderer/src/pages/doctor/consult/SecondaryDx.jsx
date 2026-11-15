@@ -12,7 +12,7 @@ export function SecondaryDx({ list, onChange }) {
   }
   return (
     <div className="dx2">
-      <div className="section-label">Secondary diagnoses / comorbidities</div>
+      <div className="sec-t">Secondary diagnoses / comorbidities</div>
       {list.length > 0 && (
         <div className="dx2-list">
           {list.map((x) => (

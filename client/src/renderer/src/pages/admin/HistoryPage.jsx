@@ -62,11 +62,11 @@ export default function HistoryPage() {
         <div className="form-grid cols-4">
           <div className="field">
             <label>Account</label>
-            <input value={draft.username} onChange={(e) => setDraft({ ...draft, username: e.target.value })} placeholder="vd: bs01" />
+            <input className="input" value={draft.username} onChange={(e) => setDraft({ ...draft, username: e.target.value })} placeholder="vd: bs01" />
           </div>
           <div className="field">
             <label>Action</label>
-            <select value={draft.action_type} onChange={(e) => setDraft({ ...draft, action_type: e.target.value })}>
+            <select className="input" value={draft.action_type} onChange={(e) => setDraft({ ...draft, action_type: e.target.value })}>
               <option value="">All</option>
               {ACTION_TYPES.map((a) => (
                 <option key={a} value={a}>
@@ -85,7 +85,7 @@ export default function HistoryPage() {
           </div>
           <div className="field">
             <label>Object (table)</label>
-            <input value={draft.target_entity} onChange={(e) => setDraft({ ...draft, target_entity: e.target.value })} placeholder="vd: visit, patient, invoice" />
+            <input className="input" value={draft.target_entity} onChange={(e) => setDraft({ ...draft, target_entity: e.target.value })} placeholder="vd: visit, patient, invoice" />
           </div>
         </div>
         <div className="ai-toolbar" style={{ marginTop: 12 }}>

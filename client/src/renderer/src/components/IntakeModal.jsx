@@ -195,9 +195,10 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
       <ModalHeader title={existing ? translate('New visit') + ' — ' + existing.name : 'Register new patient & create visit'} onClose={close} />
 
       {/* Hai cột như mẫu: trái thông tin bệnh nhân, phải triệu chứng và sinh hiệu. */}
+      <div className="modal-b flush">
       <div className="intake">
       <section>
-      {existing && <div className="section-label" style={{ marginTop: 0 }}>Patient details</div>}
+      {existing && <div className="sec-t" style={{ marginTop: 0 }}>Patient details</div>}
       {existing ? (
         <>
           <div className="pl-summary">
@@ -223,10 +224,11 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
       {dupes && !existing && <DuplicateBanner dupes={dupes} allowNew={!idTaken} onPick={pickRecord} onCreateNew={() => handleSave(true)} />}
       {pregnancyAsked && (
         <>
-          <div className="section-label">
-            <Icon name="heartPulse" /> <span>Pregnancy</span>
+          <div className="sec-t">
+            <Icon name="baby" />
+            <span>Pregnancy</span>
           </div>
-          <div className="seg-btns" role="radiogroup" aria-label={translate('Pregnancy')}>
+          <div className="seg" role="radiogroup" aria-label={translate('Pregnancy')}>
             {[
               ['', 'Not asked'],
               ['no', 'Not pregnant'],
@@ -239,16 +241,17 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
           </div>
         </>
       )}
-      <div className="section-label">
-        <Icon name="clipboard" /> <span>Queue number</span>
+      <div className="sec-t">
+        <Icon name="ticket" />
+        <span>Queue number</span>
       </div>
       <div className="qno">
-        <span className="n mono">{visit ? ticketNo(visit.queue_number) : '—'}</span>
-        <span className="qno-t">
+        <span className="n num">{visit ? ticketNo(visit.queue_number) : '—'}</span>
+        <div style={{ flex: 1 }}>
           <b>{visit ? translate('Queue number') + ' ' + ticketNo(visit.queue_number) : translate('Issued when saved')}</b>
-          <small>{translate('Issued by the server when the visit is saved')}</small>
-        </span>
-        <label className="intake-print">
+          <div className="muted small">{translate('Issued by the server when the visit is saved')}</div>
+        </div>
+        <label className="check">
           <input type="checkbox" checked={print} onChange={(e) => setPrint(e.target.checked)} />
           <span>Print queue ticket</span>
         </label>
@@ -256,8 +259,9 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
       </section>
 
       <section>
-      <div className="section-label" style={{ marginTop: 0 }}>
-        <Icon name="fileText" /> <span>Symptoms</span>
+      <div className="sec-t" style={{ marginTop: 0 }}>
+        <Icon name="message-square-text" />
+        <span>Symptoms</span>
       </div>
       <SymptomPanel
         value={syms}
@@ -268,8 +272,9 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
         onVitals={(list, from) => setVitalProps({ list, from })}
       />
 
-      <div className="section-label">
-        <Icon name="heartPulse" /> <span>Vital signs</span>
+      <div className="sec-t">
+        <Icon name="activity" />
+        <span>Vital signs</span>
       </div>
       <VitalProposals
         list={vitalProps.list}
@@ -291,21 +296,25 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
       )}
       </section>
       </div>
+      </div>
 
-      <div className="form-actions">
+      <div className="modal-f">
         {!existing && (
-          <span className="fa-hint">
-            <Icon name="help" /> {translate('Fill in the name, date of birth and phone number first.')}
+          <span className="muted small">
+            <Icon name="info" /> {translate('Fill in the name, date of birth and phone number first.')}
           </span>
         )}
-        <button className="btn btn-ghost" style={{ color: 'var(--warn)', borderColor: '#F3C9C9' }} onClick={() => onRedFlag(redFlagInfo())}>
-          <Icon name="ban" /> Emergency warning signs
+        <span className="sp" />
+        <button className="btn btn-danger-outline" onClick={() => onRedFlag(redFlagInfo())}>
+          <Icon name="siren" />
+          {translate('Emergency warning signs')}
         </button>
-        <button className="btn btn-ghost" onClick={close}>
+        <button className="btn btn-outline" onClick={close}>
           Cancel
         </button>
         <button className="btn btn-primary" onClick={() => handleSave(false)} disabled={busy || (touched && invalid && !existing)}>
-          {existing ? 'Create visit & issue number' : 'Save & issue number'}
+          <Icon name="ticket" />
+          {translate(existing ? 'Create visit & issue number' : 'Save & issue number')}
         </button>
       </div>
     </Modal>

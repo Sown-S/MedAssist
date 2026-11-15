@@ -286,7 +286,7 @@ export default function TopActions({ user, onSignOut }) {
             </span>
           </div>
         ))}
-        <div className="section-label">Keyboard shortcuts</div>
+        <div className="sec-t">Keyboard shortcuts</div>
         <div className="keys">
           {SHORTCUTS[user.roleKey].map(([k, d]) => (
             <Fragment key={k}>
@@ -307,7 +307,7 @@ export default function TopActions({ user, onSignOut }) {
 
       <Modal open={open === 'settings'} onClose={() => setOpen(null)}>
         <ModalHeader title="Settings" onClose={() => setOpen(null)} />
-        <div className="section-label" style={{ marginTop: 0 }}>
+        <div className="sec-t" style={{ marginTop: 0 }}>
           Menu bar appearance
         </div>
         <div className="thm" role="radiogroup" aria-label={translate('Menu bar appearance')}>
@@ -335,7 +335,7 @@ export default function TopActions({ user, onSignOut }) {
         <p className="help-intro" style={{ marginTop: 8 }}>
           Applied right away on this computer only.
         </p>
-        <div className="section-label">Language</div>
+        <div className="sec-t">Language</div>
         <div className="itabs" style={{ marginBottom: 0 }}>
           {LANGUAGES.map((l) => (
             <button key={l.code} className={'itab' + (getLang() === l.code ? ' active' : '')} onClick={() => chooseLanguage(l.code)}>
@@ -346,7 +346,7 @@ export default function TopActions({ user, onSignOut }) {
         <p className="help-intro" style={{ marginTop: 10 }}>
           The display language is saved on this computer only. Times are shown in Vietnam time (GMT+7).
         </p>
-        <div className="section-label">Account</div>
+        <div className="sec-t">Account</div>
         {[
           ['Name', user.name],
           ['Username', user.username],

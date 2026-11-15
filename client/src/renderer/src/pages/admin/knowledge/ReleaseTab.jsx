@@ -136,18 +136,18 @@ function CreateReleaseModal({ open, suggested, onClose, onCreate }) {
   return (
     <Modal open onClose={onClose}>
       <ModalHeader title="Open a release" onClose={onClose} />
-      <div className="modal-body">
+      <div className="modal-b">
         <div className="field">
           <label>Release label</label>
-          <input className="mono" value={label} maxLength={30} onChange={(e) => setLabel(e.target.value)} />
+          <input className="input mono" value={label} maxLength={30} onChange={(e) => setLabel(e.target.value)} />
         </div>
         <div className="field" style={{ marginTop: 10 }}>
           <label>What changes (optional)</label>
-          <textarea rows={3} value={desc} onChange={(e) => setDesc(e.target.value)} placeholder="vd: Thêm nhóm bệnh da liễu" />
+          <textarea className="input" rows={3} value={desc} onChange={(e) => setDesc(e.target.value)} placeholder="vd: Thêm nhóm bệnh da liễu" />
         </div>
         {err && <div className="kb-error">{err}</div>}
       </div>
-      <div className="modal-foot">
+      <div className="modal-f">
         <button className="btn btn-ghost" onClick={onClose}>
           Cancel
         </button>

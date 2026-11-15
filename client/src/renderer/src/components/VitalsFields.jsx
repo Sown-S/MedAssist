@@ -6,21 +6,21 @@ const ORDER = ['heart_rate_bpm', 'systolic_bp_mmhg', 'diastolic_bp_mmhg', 'tempe
 
 export default function VitalsFields({ value, onChange, errorKeys = new Set(), requireWeight = false }) {
   return (
-    <div className="vitals-grid">
+    <div className="fg3">
       {ORDER.map((k) => {
         const d = vitalDef(k)
         const req = k === 'weight_kg' && requireWeight
-        const cls = errorKeys.has(k) ? 'field-error' : ''
+        const bad = errorKeys.has(k)
         return (
-          <div className="field" key={k}>
+          <div className={'field' + (bad ? ' invalid' : '')} key={k}>
             <label>
-              {translate(d.label)} <span className="ai-soft">({d.unit})</span>
-              {req && <span className="req"> *</span>}
+              {translate(d.label)} ({d.unit})
+              {req && <span className="req">*</span>}
             </label>
             <input
               type="text"
               inputMode={d.decimals ? 'decimal' : 'numeric'}
-              className={cls.trim()}
+              className="input"
               placeholder={req ? translate('needed for children’s doses') : d.placeholder}
               value={value[k] ?? ''}
               onChange={(e) => onChange(k, e.target.value)}

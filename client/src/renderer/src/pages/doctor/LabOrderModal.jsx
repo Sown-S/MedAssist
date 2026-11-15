@@ -94,12 +94,12 @@ export default function LabOrderModal({ open, visit, diagnosis, onClose, onSent 
   return (
     <Modal open={open} onClose={onClose} wide>
       <ModalHeader title={translate('Lab test order') + ' — ' + visit.name} onClose={onClose} />
-      <div className="modal-body">
+      <div className="modal-b">
         {cat.error && <div className="warn-banner show">{cat.error}</div>}
         {packages.length > 0 && (
           <div className="field">
             <label>Package</label>
-            <select value={pkg} onChange={(e) => setPkg(e.target.value)}>
+            <select className="input" value={pkg} onChange={(e) => setPkg(e.target.value)}>
               <option value="">{translate('No package')}</option>
               {packages.map((p) => (
                 <option key={p.package_id} value={p.package_id}>
@@ -110,12 +110,12 @@ export default function LabOrderModal({ open, visit, diagnosis, onClose, onSent 
           </div>
         )}
         <div className="field">
-          <input type="text" autoFocus value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search tests by name or code…" />
+          <input className="input" type="text" autoFocus value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search tests by name or code…" />
         </div>
         <div className="lab-pick">
           {groups.map((g) => (
             <div key={g.key} className="lab-pick-group">
-              <div className="section-label">{translate(g.label)}</div>
+              <div className="sec-t">{translate(g.label)}</div>
               {g.rows.map((x) => {
                 const fromPkg = inPkg.has(x.code)
                 return (
@@ -135,20 +135,20 @@ export default function LabOrderModal({ open, visit, diagnosis, onClose, onSent 
         <div className="form-grid cols-2" style={{ marginTop: 12 }}>
           <div className="field">
             <label>Other tests (not in the catalog)</label>
-            <input type="text" value={other} onChange={(e) => setOther(e.target.value)} placeholder="e.g. Abdominal ultrasound" />
+            <input className="input" type="text" value={other} onChange={(e) => setOther(e.target.value)} placeholder="e.g. Abdominal ultrasound" />
             {other.trim() && <small className="ai-soft">{translate('Not in the catalog — no price; reception adds it to the invoice by hand.')}</small>}
           </div>
           <div className="field">
             <label>Provisional diagnosis</label>
-            <input type="text" value={dx} onChange={(e) => setDx(e.target.value)} placeholder="Shown on the printed order" />
+            <input className="input" type="text" value={dx} onChange={(e) => setDx(e.target.value)} placeholder="Shown on the printed order" />
           </div>
         </div>
         <div className="field">
           <label>Note for the lab</label>
-          <input type="text" value={note} onChange={(e) => setNote(e.target.value)} placeholder="e.g. Fasting sample, urgent" />
+          <input className="input" type="text" value={note} onChange={(e) => setNote(e.target.value)} placeholder="e.g. Fasting sample, urgent" />
         </div>
       </div>
-      <div className="modal-foot">
+      <div className="modal-f">
         <span className="ai-soft" style={{ marginRight: 'auto', alignSelf: 'center' }}>
           {count} {translate(count === 1 ? 'test selected' : 'tests selected')}
         </span>

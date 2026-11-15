@@ -66,13 +66,13 @@ export default function DrugFormModal({ drug, onClose }) {
       <label>
         {label} {req && <span className="ai-req">*</span>}
       </label>
-      <input value={f[k]} onChange={(e) => set(k, e.target.value)} {...props} />
+      <input className="input" value={f[k]} onChange={(e) => set(k, e.target.value)} {...props} />
     </div>
   )
   return (
     <Modal open onClose={onClose} wide>
       <ModalHeader title={drug.id ? translate('Edit drug information') + ' · ' + drug.name : 'Add drug'} onClose={onClose} />
-      <div className="modal-body">
+      <div className="modal-b">
         <div className="form-grid cols-2">
           {field('generic_name', 'Active ingredient', true, { placeholder: 'Paracetamol' })}
           {field('trade_name', 'Trade name', true, { placeholder: 'Panadol' })}
@@ -87,7 +87,7 @@ export default function DrugFormModal({ drug, onClose }) {
         <p className="ai-foot-note">The batch purchase price is entered when receiving stock. The system does not check drug interactions or dose limits.</p>
         {err && <div className="kb-error">{err}</div>}
       </div>
-      <div className="modal-foot">
+      <div className="modal-f">
         <button className="btn btn-ghost" onClick={onClose}>
           Cancel
         </button>

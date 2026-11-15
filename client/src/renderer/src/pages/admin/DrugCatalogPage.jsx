@@ -74,18 +74,18 @@ export default function DrugCatalogPage({ params, onNavigate }) {
 
       <div className="card">
         <div className="ai-toolbar">
-          <div className="ai-search">
+          <div className="search">
             <Icon name="search" />
-            <input value={q} onChange={(e) => (setQ(e.target.value), setPage(1))} placeholder="Search by name, active ingredient, ATC code…" />
+            <input className="input" value={q} onChange={(e) => (setQ(e.target.value), setPage(1))} placeholder="Search by name, active ingredient, ATC code…" />
           </div>
           <div className="ai-toolbar-right">
-            <select className="ai-select" value={kind} onChange={(e) => (setKind(e.target.value), setPage(1))}>
+            <select className="input" value={kind} onChange={(e) => (setKind(e.target.value), setPage(1))}>
               <option value="all">Drugs &amp; supplies</option>
               <option value="drug">Drugs only</option>
               <option value="supply">Medical supplies only</option>
               <option value="essential">Essential</option>
             </select>
-            <select className="ai-select" value={active} onChange={(e) => (setActive(e.target.value), setPage(1))}>
+            <select className="input" value={active} onChange={(e) => (setActive(e.target.value), setPage(1))}>
               <option value="active">In use</option>
               <option value="inactive">Discontinued</option>
               <option value="all">All</option>

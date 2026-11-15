@@ -47,7 +47,7 @@ export default function ItemFormModal({ open, kind, group, data, names, onClose,
   const sourceField = (
     <div className="field full">
       <label>Source</label>
-      <select value={f.source_id} onChange={(e) => set({ source_id: e.target.value })}>
+      <select className="input" value={f.source_id} onChange={(e) => set({ source_id: e.target.value })}>
         <option value="">— Choose a source —</option>
         {sources.map((s) => (
           <option key={s.source_id} value={s.source_id}>
@@ -62,12 +62,12 @@ export default function ItemFormModal({ open, kind, group, data, names, onClose,
   return (
     <Modal open onClose={onClose} wide>
       <ModalHeader title={translate(creating ? 'New' : 'Edit') + ' · ' + translate(KIND_META[kind].one)} onClose={onClose} />
-      <div className="modal-body">
+      <div className="modal-b">
         <div className="form-grid cols-2">
           {kind !== 'relations' && (
             <div className="field full">
               <label>{KIND_META[kind].keyLabel}</label>
-              <input className="mono" value={key} disabled={!creating} onChange={(e) => setKey(e.target.value.trim().toLowerCase())} placeholder="vd: sot_cao" />
+              <input className="input mono" value={key} disabled={!creating} onChange={(e) => setKey(e.target.value.trim().toLowerCase())} placeholder="vd: sot_cao" />
               {creating && <small className="ai-soft">Lowercase letters without accents, digits and underscores; cannot be changed later.</small>}
             </div>
           )}
@@ -76,11 +76,11 @@ export default function ItemFormModal({ open, kind, group, data, names, onClose,
             <>
               <div className="field">
                 <label>Symptom name</label>
-                <input value={f.symptom_name} onChange={(e) => set({ symptom_name: e.target.value })} />
+                <input className="input" value={f.symptom_name} onChange={(e) => set({ symptom_name: e.target.value })} />
               </div>
               <div className="field">
                 <label>Group (optional)</label>
-                <input value={f.category} onChange={(e) => set({ category: e.target.value })} />
+                <input className="input" value={f.category} onChange={(e) => set({ category: e.target.value })} />
               </div>
             </>
           )}
@@ -89,19 +89,19 @@ export default function ItemFormModal({ open, kind, group, data, names, onClose,
             <>
               <div className="field full">
                 <label>Condition name (Vietnamese)</label>
-                <input value={f.name_vi} onChange={(e) => set({ name_vi: e.target.value })} />
+                <input className="input" value={f.name_vi} onChange={(e) => set({ name_vi: e.target.value })} />
               </div>
               <div className="field">
                 <label>ICD-10 code</label>
-                <input className="mono" value={f.icd10_code} onChange={(e) => set({ icd10_code: e.target.value })} />
+                <input className="input mono" value={f.icd10_code} onChange={(e) => set({ icd10_code: e.target.value })} />
               </div>
               <div className="field">
                 <label>Disease group</label>
-                <input value={f.disease_group} onChange={(e) => set({ disease_group: e.target.value })} />
+                <input className="input" value={f.disease_group} onChange={(e) => set({ disease_group: e.target.value })} />
               </div>
               <div className="field full">
                 <label>Description (optional)</label>
-                <textarea rows={3} value={f.description} onChange={(e) => set({ description: e.target.value })} />
+                <textarea className="input" rows={3} value={f.description} onChange={(e) => set({ description: e.target.value })} />
               </div>
             </>
           )}
@@ -110,7 +110,7 @@ export default function ItemFormModal({ open, kind, group, data, names, onClose,
             <>
               <div className="field">
                 <label>Condition</label>
-                <select value={f.condition_code} disabled={!creating} onChange={(e) => set({ condition_code: e.target.value })}>
+                <select className="input" value={f.condition_code} disabled={!creating} onChange={(e) => set({ condition_code: e.target.value })}>
                   <option value="">— Choose —</option>
                   {conditions.map((c) => (
                     <option key={c} value={c}>
@@ -121,7 +121,7 @@ export default function ItemFormModal({ open, kind, group, data, names, onClose,
               </div>
               <div className="field">
                 <label>Symptom</label>
-                <select value={f.symptom_code} disabled={!creating} onChange={(e) => set({ symptom_code: e.target.value })}>
+                <select className="input" value={f.symptom_code} disabled={!creating} onChange={(e) => set({ symptom_code: e.target.value })}>
                   <option value="">— Choose —</option>
                   {symptoms.map((c) => (
                     <option key={c} value={c}>
@@ -132,14 +132,14 @@ export default function ItemFormModal({ open, kind, group, data, names, onClose,
               </div>
               <div className="field">
                 <label>Direction</label>
-                <select value={f.polarity} onChange={(e) => set({ polarity: e.target.value })}>
+                <select className="input" value={f.polarity} onChange={(e) => set({ polarity: e.target.value })}>
                   <option value="SUPPORTS">Supports the condition</option>
                   <option value="CONTRADICTS">Contradicts the condition</option>
                 </select>
               </div>
               <div className="field">
                 <label>Weight (0 – 1)</label>
-                <input type="number" min="0" max="1" step="0.05" value={f.weight} onChange={(e) => set({ weight: e.target.value })} />
+                <input className="input" type="number" min="0" max="1" step="0.05" value={f.weight} onChange={(e) => set({ weight: e.target.value })} />
               </div>
               <label className="field full kb-check">
                 <input type="checkbox" checked={f.is_key} onChange={(e) => set({ is_key: e.target.checked })} /> <span>Key symptom (asked about when still unknown)</span>
@@ -152,7 +152,7 @@ export default function ItemFormModal({ open, kind, group, data, names, onClose,
             <>
               <div className="field full">
                 <label>Condition</label>
-                <select value={f.condition_code} onChange={(e) => set({ condition_code: e.target.value })}>
+                <select className="input" value={f.condition_code} onChange={(e) => set({ condition_code: e.target.value })}>
                   <option value="">— Choose —</option>
                   {conditions.map((c) => (
                     <option key={c} value={c}>
@@ -163,16 +163,16 @@ export default function ItemFormModal({ open, kind, group, data, names, onClose,
               </div>
               <div className="field full">
                 <label>Title</label>
-                <input value={f.title} onChange={(e) => set({ title: e.target.value })} />
+                <input className="input" value={f.title} onChange={(e) => set({ title: e.target.value })} />
               </div>
               <div className="field full">
                 <label>Content (rephrased, not copied verbatim)</label>
-                <textarea rows={5} value={f.content} onChange={(e) => set({ content: e.target.value })} />
+                <textarea className="input" rows={5} value={f.content} onChange={(e) => set({ content: e.target.value })} />
               </div>
               {sourceField}
               <div className="field full">
                 <label>Location in the source (optional)</label>
-                <input value={f.source_locator} onChange={(e) => set({ source_locator: e.target.value })} placeholder="vd: Mục 3.2, tr. 14" />
+                <input className="input" value={f.source_locator} onChange={(e) => set({ source_locator: e.target.value })} placeholder="vd: Mục 3.2, tr. 14" />
               </div>
             </>
           )}
@@ -181,7 +181,7 @@ export default function ItemFormModal({ open, kind, group, data, names, onClose,
             <>
               <div className="field">
                 <label>Rule type</label>
-                <select
+                <select className="input"
                   value={f.rule_type}
                   disabled={!creating}
                   onChange={(e) => {
@@ -196,11 +196,11 @@ export default function ItemFormModal({ open, kind, group, data, names, onClose,
               </div>
               <div className="field">
                 <label>Rule name</label>
-                <input value={f.rule_name} onChange={(e) => set({ rule_name: e.target.value })} />
+                <input className="input" value={f.rule_name} onChange={(e) => set({ rule_name: e.target.value })} />
               </div>
               <div className="field full">
                 <label>Reason shown to doctors (one short sentence)</label>
-                <input value={f.reason_text} onChange={(e) => set({ reason_text: e.target.value })} />
+                <input className="input" value={f.reason_text} onChange={(e) => set({ reason_text: e.target.value })} />
               </div>
               <div className="field full">
                 <label>Condition (when this rule applies)</label>
@@ -224,7 +224,7 @@ export default function ItemFormModal({ open, kind, group, data, names, onClose,
         {err && <div className="kb-error">{err}</div>}
         <p className="ai-foot-note">Saved as a draft in the open release. It is only used after a doctor approves the release.</p>
       </div>
-      <div className="modal-foot">
+      <div className="modal-f">
         <button className="btn btn-ghost" onClick={onClose}>
           Cancel
         </button>

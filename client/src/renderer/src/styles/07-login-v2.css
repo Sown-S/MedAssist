@@ -8,5 +8,3 @@
 .login-field select{padding:10px 12px;border:1px solid var(--border);border-radius:10px;background:var(--field-bg);color:var(--ink);font-family:var(--font);font-size:13.5px;}
 .login-field select option{background:var(--solid);}
 .login-field input{width:100%;box-sizing:border-box;}
-.modal-body{padding:4px 2px 8px;}
-.modal-foot{display:flex;justify-content:flex-end;gap:8px;margin-top:10px;}

@@ -99,19 +99,19 @@ function SourceModal({ open, onClose, onSaved }) {
   return (
     <Modal open onClose={onClose} wide>
       <ModalHeader title="New source" onClose={onClose} />
-      <div className="modal-body">
+      <div className="modal-b">
         <div className="form-grid cols-2">
           <div className="field">
             <label>Organization</label>
-            <input value={f.organization} onChange={(e) => set({ organization: e.target.value })} placeholder="vd: Bộ Y tế, WHO" />
+            <input className="input" value={f.organization} onChange={(e) => set({ organization: e.target.value })} placeholder="vd: Bộ Y tế, WHO" />
           </div>
           <div className="field">
             <label>Document number / edition</label>
-            <input value={f.edition} onChange={(e) => set({ edition: e.target.value })} placeholder="vd: QĐ 4068/QĐ-BYT" />
+            <input className="input" value={f.edition} onChange={(e) => set({ edition: e.target.value })} placeholder="vd: QĐ 4068/QĐ-BYT" />
           </div>
           <div className="field full">
             <label>Title</label>
-            <input value={f.title} onChange={(e) => set({ title: e.target.value })} />
+            <input className="input" value={f.title} onChange={(e) => set({ title: e.target.value })} />
           </div>
           <div className="field">
             <label>Publication date (optional)</label>
@@ -123,16 +123,16 @@ function SourceModal({ open, onClose, onSaved }) {
           </div>
           <div className="field full">
             <label>Link (optional)</label>
-            <input value={f.url} onChange={(e) => set({ url: e.target.value })} placeholder="https://" />
+            <input className="input" value={f.url} onChange={(e) => set({ url: e.target.value })} placeholder="https://" />
           </div>
           <div className="field full">
             <label>License / usage note (optional)</label>
-            <input value={f.license_note} onChange={(e) => set({ license_note: e.target.value })} />
+            <input className="input" value={f.license_note} onChange={(e) => set({ license_note: e.target.value })} />
           </div>
         </div>
         {err && <div className="kb-error">{err}</div>}
       </div>
-      <div className="modal-foot">
+      <div className="modal-f">
         <button className="btn btn-ghost" onClick={onClose}>
           Cancel
         </button>

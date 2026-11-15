@@ -72,16 +72,16 @@ export default function RxEditor({ rx, tried, srvDrugs, issueOf, issues, short, 
                   {SLOTS.map(([k, label]) => (
                     <label key={k}>
                       <small>{label}</small>
-                      <input type="text" inputMode="decimal" value={it.dose?.[k] ?? ''} onChange={(e) => setDose(it, { [k]: e.target.value })} placeholder="0" />
+                      <input className="input" type="text" inputMode="decimal" value={it.dose?.[k] ?? ''} onChange={(e) => setDose(it, { [k]: e.target.value })} placeholder="0" />
                     </label>
                   ))}
                   <label>
                     <small>Days</small>
-                    <input type="text" inputMode="numeric" value={it.dose?.days ?? ''} onChange={(e) => setDose(it, { days: e.target.value })} placeholder="7" />
+                    <input className="input" type="text" inputMode="numeric" value={it.dose?.days ?? ''} onChange={(e) => setDose(it, { days: e.target.value })} placeholder="7" />
                   </label>
                   <label className="meal">
                     <small>When</small>
-                    <select value={it.dose?.meal ?? 'after'} onChange={(e) => setDose(it, { meal: e.target.value })}>
+                    <select className="input" value={it.dose?.meal ?? 'after'} onChange={(e) => setDose(it, { meal: e.target.value })}>
                       {MEALS.map((m) => (
                         <option key={m.key} value={m.key}>
                           {m.label}
@@ -97,7 +97,7 @@ export default function RxEditor({ rx, tried, srvDrugs, issueOf, issues, short, 
                 </div>
                 <div className="rx-line-fields">
                   <span className="rx-qty">
-                    <input type="number" min="1" step="1" placeholder="Qty" value={it.qty} onChange={(e) => setLine(it.id, { qty: e.target.value })} />
+                    <input className="input" type="number" min="1" step="1" placeholder="Qty" value={it.qty} onChange={(e) => setLine(it.id, { qty: e.target.value })} />
                     <span className="ai-soft">{unitLabel(it.unit)}</span>
                   </span>
                   <input className="rx-usage" type="text" list="rx-usages" placeholder="Directions — filled in from the dose above, or type for “as needed” drugs" value={it.usage} onChange={(e) => setLine(it.id, { usage: e.target.value })} />

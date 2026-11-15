@@ -14,61 +14,11 @@
 .dev-tools{display:flex;align-items:center;gap:10px;margin-bottom:14px;padding:6px 10px;border:1px dashed var(--border);border-radius:10px;font-size:12px;color:var(--ink-soft);width:fit-content;}
 .dev-tools label{display:flex;align-items:center;gap:6px;cursor:pointer;}
 /* Sinh hiệu + triệu chứng ba trạng thái */
-.vitals-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px 14px;align-items:end;}
-.intake-extra{align-items:end;}
-.intake-print{display:flex;align-items:center;gap:8px;height:40px;font-size:13.5px;color:var(--ink);cursor:pointer;}
-.intake-print input{accent-color:var(--primary);}
 @media (max-width:900px){.vitals-grid{grid-template-columns:repeat(2,minmax(0,1fr));}}
-.sym-panel{display:flex;flex-direction:column;gap:8px;}
 /* Khung “Đọc lời kể & đề xuất”: nút chính, các bước theo status server, thanh thời gian đầy ở 30 giây */
-.sym-ai{border:1px solid var(--border);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:9px;background:rgba(16,24,40,0.014);}
-.sym-ai-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-size:12.5px;}
-.sym-progress{display:flex;flex-direction:column;gap:8px;}
-.sym-steps{display:flex;flex-wrap:wrap;gap:6px 16px;list-style:none;margin:0;padding:0;font-size:13px;}
-.sym-steps li{display:inline-flex;align-items:center;gap:6px;color:var(--ink-soft);opacity:.55;}
-.sym-steps li.active{opacity:1;color:var(--ink);font-weight:600;}
-.sym-steps li.done{opacity:1;color:var(--success-ink);}
-.sym-steps .dot{width:18px;height:18px;border-radius:50%;border:1.5px solid currentColor;display:inline-flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:700;flex-shrink:0;}
-.sym-steps .dot svg{width:11px;height:11px;}
-.sym-steps li.active .dot{border-color:var(--accent);color:var(--accent);}
-.sym-ahead{color:var(--accent);font-weight:600;}
-.sym-bar{height:6px;border-radius:999px;background:rgba(16,24,40,0.044);overflow:hidden;}
-.sym-bar > span{display:block;height:100%;background:var(--accent);border-radius:inherit;transition:width .25s linear;}
-.sym-ai-meta{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;font-size:12.5px;color:var(--ink-soft);}
-.sym-ai-meta b{color:var(--ink);font-variant-numeric:tabular-nums;}
-.sym-cancel{display:inline-flex;flex-direction:column;align-items:flex-end;gap:2px;}
-.sym-cancel small{font-size:11px;color:var(--ink-soft);}
-.sym-ai-hint{margin:0;font-size:12px;}
-.sym-alert{display:flex;align-items:flex-start;gap:9px;border:1px solid rgba(245,158,11,.45);background:var(--priority-soft);color:var(--priority-ink);border-radius:10px;padding:9px 11px;font-size:13px;}
-.sym-alert > svg{width:16px;height:16px;flex-shrink:0;margin-top:2px;}
-.sym-alert > span{flex:1;display:flex;flex-direction:column;gap:3px;}
-.sym-alert-detail{color:var(--ink-soft);font-size:12.5px;}
-.sym-alert .btn{flex-shrink:0;}
 /* Đề xuất: hai cột Có / Không, chip lớn */
-.sym-prop-cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}
 @media (max-width:700px){.sym-prop-cols{grid-template-columns:1fr;}}
-.sym-prop-title{font:700 11.5px var(--font);text-transform:uppercase;letter-spacing:.04em;color:var(--ink-soft);margin-bottom:6px;}
-.sym-prop-col.present .sym-prop-title{color:var(--success-ink);}
-.sym-prop-cols .sym-chips{flex-direction:column;align-items:stretch;}
-.sym-prop-cols .sym-chip{font-size:14px;padding:6px 6px 6px 12px;border-radius:12px;gap:8px;}
-.sym-prop-cols .sym-chip-name{flex:1;min-width:0;line-height:1.3;}
-.sym-prop-cols .sym-chip button svg{width:16px;height:16px;}
-.sym-prop-cols .sym-chip .sym-chip-state{white-space:nowrap;background:rgba(16,24,40,0.033);color:var(--ink-soft);}
 /* Danh sách triệu chứng: tìm không dấu, “Đã xác nhận”, các nhóm */
-.sym-checklist{display:flex;flex-direction:column;gap:8px;}
-.sym-search-box{min-width:0;}
-.sym-results{border:1px solid rgba(24,119,242,.3);border-radius:10px;padding:4px 6px;margin-top:6px;display:flex;flex-direction:column;gap:2px;}
-.sym-results .ai-soft{margin:6px;font-size:12.5px;}
-.sym-results .sym-more{align-self:flex-start;margin:2px 4px 4px;}
-.sym-section.confirmed{border-color:rgba(24,119,242,.3);}
-.sym-group.static{cursor:default;color:var(--accent);}
-.sym-group.static:hover{color:var(--accent);}
-.sym-empty{margin:0 2px 6px;font-size:12.5px;}
-.sym-row.danger .sym-name{color:var(--warn-ink);}
-.sym-row-actions{display:inline-flex;align-items:center;gap:4px;}
-.sym-rm{width:30px;height:30px;}
-.sym-hint{font-size:11.5px;color:var(--ink-soft);}
-.sym-picked{font:600 11px var(--font);text-transform:none;letter-spacing:0;color:var(--primary-ink);background:var(--primary-soft);border-radius:999px;padding:1px 8px;}
 /* Dải “Tiếp theo” ở bảng gọi: đã check-in (✓) / chưa check-in (bấm để check-in) */
 button.call-chip{font:inherit;cursor:pointer;border:1px dashed var(--border);}
 button.call-chip:hover{border-color:var(--accent);}
@@ -76,8 +26,6 @@ button.call-chip:hover{border-color:var(--accent);}
 .call-chip.ready svg{width:12px;height:12px;color:var(--success-ink);}
 .sym-extract{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:12.5px;}
 .sym-warn{color:var(--priority-ink);display:inline-flex;align-items:center;gap:5px;}
-.sym-proposals{border:1px dashed rgba(24,119,242,.45);background:rgba(24,119,242,.06);border-radius:11px;padding:9px 11px;}
-.sym-proposals-head{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:13px;margin-bottom:7px;}
 .sym-chips{display:flex;flex-wrap:wrap;gap:6px;}
 .sym-chip{display:inline-flex;align-items:center;gap:6px;padding:3px 4px 3px 3px;border-radius:20px;border:1px solid var(--border);background:var(--field-bg);font-size:13px;}
 .sym-chip button{border:none;background:transparent;color:var(--ink-soft);cursor:pointer;display:inline-flex;align-items:center;padding:3px;border-radius:50%;}
@@ -87,25 +35,6 @@ button.call-chip:hover{border-color:var(--accent);}
 .sym-chip .sym-chip-ok:hover{color:var(--success-ink);}
 .sym-chip .sym-chip-x:hover{color:var(--warn-ink);}
 /* Nhóm triệu chứng thu gọn / mở rộng */
-.sym-section{border:1px solid rgba(16,24,40,0.033);border-radius:10px;padding:2px 8px 6px;}
-.sym-section.danger{border-color:rgba(239,68,68,.25);}
 /* Danh mục có nhóm (chạy thật): một cột để tên dài không bị ép nhiều dòng */
-.sym-section.grouped .sym-grid{grid-template-columns:1fr;gap:2px;}
-.sym-section:not(.grouped){border:none;padding:0;}
-.sym-group{display:flex;align-items:center;gap:6px;width:100%;padding:8px 2px;border:none;background:none;cursor:pointer;font:700 11.5px var(--font);color:var(--ink-soft);text-transform:uppercase;letter-spacing:.04em;text-align:left;}
-.sym-group:hover{color:var(--ink);}
-.sym-group svg{width:14px;height:14px;flex-shrink:0;}
-.sym-section.danger .sym-group{color:var(--warn-ink);}
-.sym-count{margin-left:auto;font-weight:600;text-transform:none;letter-spacing:0;color:var(--ink-soft);background:rgba(16,24,40,0.033);border-radius:999px;padding:1px 8px;}
-.sym-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 16px;}
 @media (max-width:900px){.sym-grid{grid-template-columns:1fr;}}
 /* Cụm Có / Không / Chưa rõ cố định bên phải để các hàng luôn thẳng cột */
-.sym-row{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:10px;min-height:36px;padding:3px 6px;border-radius:8px;font-size:13px;}
-.sym-row.set{background:rgba(24,119,242,.10);box-shadow:inset 3px 0 0 var(--primary);}
-.sym-name{display:flex;flex-direction:column;min-width:0;line-height:1.3;}
-.sym-src{font-size:11px;color:var(--accent);}
-.sym-seg{flex-wrap:nowrap;flex-shrink:0;}
-.sym-seg button{width:58px;justify-content:center;padding:4px 0;font-size:12px;white-space:nowrap;}
-.sym-seg button.active.present{background:rgba(34,197,94,.2);color:var(--success-ink);}
-.sym-seg button.active.absent{background:rgba(148,163,184,.2);color:var(--ink);}
-.sym-seg button.active.unknown{background:rgba(16,24,40,0.044);color:var(--ink-soft);}
