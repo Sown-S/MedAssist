@@ -89,3 +89,4 @@ KB tham chiếu theo kho: KB-2026.11, 153 bệnh. Kiểm cả hai JSONL không c
 ### Kết quả kỹ thuật bổ sung ngày 11/11/2026
 
 RuleOnly KB-2026.11 đã chạy đúng một lần trên staging riêng, LLM_PROVIDER=none, không trích xuất: recall cờ đỏ 48/48, báo nhầm 0, mức ưu tiên 82/82, luật P/R/F1=1/1/1; DDx top-1=15/18, top-3=17/18, bằng các chỉ số đợt .10. Chỉ 18 ca DDx phủ 27/153 bệnh; không chứng minh toàn KB an toàn hoặc đủ độ phủ. Full chưa chạy. Báo cáo: `evaluation/results/kb_2026_11_acceptance/rule_only/so_sanh_voi_KB-2026.10.md`. Hash giữ nguyên, không sửa KB theo kết quả.
+Bộ v1.4 riêng (bản nháp chờ rà chéo) đã có tại ../testset_v1.4/README.md; hai JSONL và manifest đóng băng v1.3 không thay đổi.

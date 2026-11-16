@@ -1,0 +1,626 @@
+{
+  "freeze_version": "testset-v1.4-draft",
+  "is_separate_testset": true,
+  "is_frozen": false,
+  "created_date": "2026-11-15",
+  "timezone": "Asia/Bangkok",
+  "review_status": "PENDING_CROSS_REVIEW",
+  "benchmark_status": "NOT_RUN",
+  "knowledge_snapshot": {
+    "total_conditions": 153,
+    "groups": {
+      "dermatology": 56,
+      "ent": 36,
+      "infectious": 11,
+      "musculoskeletal": 28,
+      "ophthalmology": 20,
+      "respiratory": 2
+    },
+    "total_symptoms": 299,
+    "total_triage_rules": 12,
+    "total_sources": 11,
+    "kb_release": "KB-2026.11"
+  },
+  "parent_testset": {
+    "version": "testset-v1.3-frozen",
+    "manifest_path": "evaluation/testset/manifest_freeze.json",
+    "manifest_raw_sha256": "7ffbd2ed68b745b0d439f30a1a3ed0633bda75983539e7f45e540f19f3e7b548",
+    "combined_sha256": "4e7b58cffc3cd950e1411a131919e36976ea94f209c426821886b03708cd368d",
+    "files": [
+      {
+        "path": "evaluation/testset/symptom_extraction_testset.jsonl",
+        "num_cases": 29,
+        "sha256": "92e62bf63fa63a78f9595c41b8a4fdb26ca8c4517006e828031a19b390949b34",
+        "raw_sha256": "c25e5b9b64604d890c348955b177a360b1fc03351c9d782cce64da5fbd9c56a0"
+      },
+      {
+        "path": "evaluation/testset/clinical_cases_labeled.jsonl",
+        "num_cases": 82,
+        "sha256": "10fc9b2b5c21cd5d28ec79717780e60979a9d409c87b4664e46246936b968412",
+        "raw_sha256": "550a8a5a344b0c5faa448d6c67005000213762847286f67b3172f178748a096f"
+      }
+    ]
+  },
+  "files": [
+    {
+      "path": "evaluation/testset_v1.4/clinical_cases_labeled_v1.4.jsonl",
+      "num_cases": 82,
+      "sha256": "2019c6f01d57081513e52c7d29e49b2c568a4842a0fad265184be2f267f21177",
+      "raw_sha256": "bf08786b00fabf2b3fb51b7b1e44de66466f8b9538138a656d579bf6fb4bcea5"
+    },
+    {
+      "path": "evaluation/testset_v1.4/symptom_extraction_testset_v1.4.jsonl",
+      "num_cases": 29,
+      "sha256": "b1cdf74efa2ba69c9d5443ddafef80be9e5bd779ea0dfee230a138644c31e373",
+      "raw_sha256": "b4e7a6f2415d5d68f1912de5947e59cba0cfc5ab66da3ddd3bc9a5dd9f762681"
+    }
+  ],
+  "sha256_normalization": "CRLF to LF before hashing",
+  "combined_sha256_formula": "sha256((sha_ext + \":\" + sha_clin).encode(\"utf-8\"))",
+  "combined_sha256": "a136d072e8c5149f25409591b245b61865e3320a5233ad73ef9d4d54aec86161",
+  "combined_order": [
+    "symptom_extraction_testset_v1.4.jsonl",
+    "clinical_cases_labeled_v1.4.jsonl"
+  ],
+  "case_changes": [
+    {
+      "case_id": "CLIN-019",
+      "source_file": "evaluation/testset/clinical_cases_labeled.jsonl",
+      "target_file": "evaluation/testset_v1.4/clinical_cases_labeled_v1.4.jsonl",
+      "source_reviewer": "Huy",
+      "source_review_date": "2026-11-11",
+      "source_verdict": "CẦN SỬA",
+      "huy_comment_full": "PRESENT hiện chỉ có 2 mã chung (pruritus_intense_skin_itch;vesicular_blister_rash), thiếu mã then chốt scabies_interdigital_burrows_nocturnal hoặc atopic_dermatitis_flexural_eczema nên cả benh_ghe (#7) và viem_da_co_dia (#15) đều rớt khỏi Top-5. Đề xuất bổ sung scabies_interdigital_burrows_nocturnal ở v1.4.",
+      "old_labels": {
+        "symptoms": {
+          "pruritus_intense_skin_itch": "PRESENT",
+          "vesicular_blister_rash": "PRESENT",
+          "fever_high": "ABSENT"
+        },
+        "expected_priority": "Routine",
+        "expected_triggered_rules": [],
+        "expected_top_conditions": [
+          "benh_ghe",
+          "viem_da_co_dia"
+        ]
+      },
+      "new_labels": {
+        "symptoms": {
+          "pruritus_intense_skin_itch": "PRESENT",
+          "vesicular_blister_rash": "PRESENT",
+          "fever_high": "ABSENT"
+        },
+        "expected_priority": "Routine",
+        "expected_triggered_rules": [],
+        "expected_top_conditions": [
+          "benh_ghe",
+          "viem_da_co_dia"
+        ]
+      },
+      "labels_changed": false,
+      "reason": "Theo xác nhận người giao việc ngày 16/11/2026, giữ nguyên toàn bộ nhãn và sinh hiệu v1.3; không thêm clinical_note hoặc mã ghẻ/viêm da cơ địa. CẦN BÁC SĨ QUYẾT sau khi xác minh dữ kiện; checklist nằm ngoài JSONL trong CHANGES.md. Không dùng thứ hạng DDx để sửa nhãn.",
+      "decision_status": "CẦN BÁC SĨ QUYẾT",
+      "changed_fields": {
+        "review_status": {
+          "old": "APPROVED",
+          "new": "PENDING_CROSS_REVIEW"
+        },
+        "revision_note": {
+          "old": null,
+          "new": {
+            "version": "v1.4-draft",
+            "status": "CẦN BÁC SĨ QUYẾT",
+            "reason": "Theo xác nhận người giao việc ngày 16/11/2026, giữ nguyên toàn bộ nhãn và sinh hiệu v1.3; không thêm clinical_note hoặc mã ghẻ/viêm da cơ địa. CẦN BÁC SĨ QUYẾT sau khi xác minh dữ kiện; checklist nằm ngoài JSONL trong CHANGES.md. Không dùng thứ hạng DDx để sửa nhãn.",
+            "details": "evaluation/testset_v1.4/CHANGES.md"
+          }
+        }
+      }
+    },
+    {
+      "case_id": "EXT-010",
+      "source_file": "evaluation/testset/symptom_extraction_testset.jsonl",
+      "target_file": "evaluation/testset_v1.4/symptom_extraction_testset_v1.4.jsonl",
+      "source_reviewer": "Huy",
+      "source_review_date": "2026-11-11",
+      "source_verdict": "CẦN SỬA",
+      "huy_comment_full": "2 mã PRESENT (inflammatory_sacroiliac_back_pain, enthesitis_achilles_heel) khớp sát văn bản. Tuy nhiên nhãn ABSENT gán mechanical_spinal_pain_stiffness từ cụm 'nằm nghỉ không giảm' là suy luận loại trừ lâm sàng chứ câu văn không phủ định trực tiếp đau cơ học; nếu chấm extraction chặt nên cân nhắc bỏ khỏi ABSENT ở bản v1.4.",
+      "old_labels": {
+        "expected_symptoms": {
+          "inflammatory_sacroiliac_back_pain": "PRESENT",
+          "enthesitis_achilles_heel": "PRESENT",
+          "mechanical_spinal_pain_stiffness": "ABSENT"
+        }
+      },
+      "new_labels": {
+        "expected_symptoms": {
+          "inflammatory_sacroiliac_back_pain": "PRESENT",
+          "enthesitis_achilles_heel": "PRESENT"
+        }
+      },
+      "labels_changed": true,
+      "reason": "Áp dụng phương án A theo xác nhận rõ của người giao việc ngày 16/11/2026: bỏ mechanical_spinal_pain_stiffness=ABSENT; chỉ giữ inflammatory_sacroiliac_back_pain=PRESENT và enthesitis_achilles_heel=PRESENT. Văn bản mô tả tính chất đau kiểu viêm, không phủ định trực tiếp đau kiểu cơ học; không suy luận loại trừ giữa hai mã khác nhau. Chính sách không đảo thống nhất EXT-011 về đối chiếu 15 phút với ngưỡng >1 giờ trên cùng thông số thời gian.",
+      "decision_status": "USER_CONFIRMED_PROPOSAL; PENDING_CROSS_REVIEW",
+      "changed_fields": {
+        "review_status": {
+          "old": "APPROVED",
+          "new": "PENDING_CROSS_REVIEW"
+        },
+        "revision_note": {
+          "old": null,
+          "new": {
+            "version": "v1.4-draft",
+            "status": "PHƯƠNG ÁN A ĐÃ ĐƯỢC NGƯỜI GIAO VIỆC XÁC NHẬN; CHỜ RÀ CHÉO",
+            "reason": "Áp dụng phương án A theo xác nhận rõ của người giao việc ngày 16/11/2026: bỏ mechanical_spinal_pain_stiffness=ABSENT; chỉ giữ inflammatory_sacroiliac_back_pain=PRESENT và enthesitis_achilles_heel=PRESENT. Văn bản mô tả tính chất đau kiểu viêm, không phủ định trực tiếp đau kiểu cơ học; không suy luận loại trừ giữa hai mã khác nhau. Chính sách không đảo thống nhất EXT-011 về đối chiếu 15 phút với ngưỡng >1 giờ trên cùng thông số thời gian.",
+            "details": "evaluation/testset_v1.4/CHANGES.md"
+          }
+        },
+        "expected_symptoms": {
+          "old": {
+            "inflammatory_sacroiliac_back_pain": "PRESENT",
+            "enthesitis_achilles_heel": "PRESENT",
+            "mechanical_spinal_pain_stiffness": "ABSENT"
+          },
+          "new": {
+            "inflammatory_sacroiliac_back_pain": "PRESENT",
+            "enthesitis_achilles_heel": "PRESENT"
+          }
+        }
+      }
+    },
+    {
+      "case_id": "EXT-014",
+      "source_file": "evaluation/testset/symptom_extraction_testset.jsonl",
+      "target_file": "evaluation/testset_v1.4/symptom_extraction_testset_v1.4.jsonl",
+      "source_reviewer": "Huy",
+      "source_review_date": "2026-11-11",
+      "source_verdict": "CẦN SỬA",
+      "huy_comment_full": "PRESENT (tendinitis_finkelstein_trigger_elbow) khớp chính xác. Tuy nhiên văn bản KHÔNG nhắc tới sốt nhưng nhãn ABSENT lại có fever_high; cần bỏ fever_high khỏi ABSENT (hoặc thêm 'không sốt' vào câu văn) nếu tách v1.4 để không phạt oan bộ trích xuất.",
+      "old_labels": {
+        "expected_symptoms": {
+          "tendinitis_finkelstein_trigger_elbow": "PRESENT",
+          "fever_high": "ABSENT"
+        }
+      },
+      "new_labels": {
+        "expected_symptoms": {
+          "tendinitis_finkelstein_trigger_elbow": "PRESENT"
+        }
+      },
+      "labels_changed": true,
+      "reason": "Văn bản không đề cập sốt và không có dữ kiện phủ định sốt: bỏ fever_high=ABSENT; không chèn thêm không sốt vào văn bản.",
+      "decision_status": "USER_CONFIRMED_PROPOSAL; PENDING_CROSS_REVIEW",
+      "changed_fields": {
+        "review_status": {
+          "old": "APPROVED",
+          "new": "PENDING_CROSS_REVIEW"
+        },
+        "revision_note": {
+          "old": null,
+          "new": {
+            "version": "v1.4-draft",
+            "status": "ĐỀ XUẤT SỬA; CHỜ RÀ CHÉO",
+            "reason": "Văn bản không đề cập sốt và không có dữ kiện phủ định sốt: bỏ fever_high=ABSENT; không chèn thêm không sốt vào văn bản.",
+            "details": "evaluation/testset_v1.4/CHANGES.md"
+          }
+        },
+        "expected_symptoms": {
+          "old": {
+            "tendinitis_finkelstein_trigger_elbow": "PRESENT",
+            "fever_high": "ABSENT"
+          },
+          "new": {
+            "tendinitis_finkelstein_trigger_elbow": "PRESENT"
+          }
+        }
+      }
+    },
+    {
+      "case_id": "EXT-024",
+      "source_file": "evaluation/testset/symptom_extraction_testset.jsonl",
+      "target_file": "evaluation/testset_v1.4/symptom_extraction_testset_v1.4.jsonl",
+      "source_reviewer": "Huy",
+      "source_review_date": "2026-11-11",
+      "source_verdict": "CẦN SỬA",
+      "huy_comment_full": "Cần sửa 2 điểm nếu tách v1.4: (1) Văn bản nêu rõ 'ngứa dữ dội về đêm ở các kẽ ngón tay... kèm đường hầm luống ghẻ' nhưng PRESENT lại thiếu mã then chốt scabies_interdigital_burrows_nocturnal; (2) Văn bản không nhắc tới sốt nhưng ABSENT lại gán fever_high.",
+      "old_labels": {
+        "expected_symptoms": {
+          "pruritus_intense_skin_itch": "PRESENT",
+          "vesicular_blister_rash": "PRESENT",
+          "fever_high": "ABSENT"
+        }
+      },
+      "new_labels": {
+        "expected_symptoms": {
+          "pruritus_intense_skin_itch": "PRESENT",
+          "vesicular_blister_rash": "PRESENT",
+          "scabies_interdigital_burrows_nocturnal": "PRESENT"
+        }
+      },
+      "labels_changed": true,
+      "reason": "Bỏ fever_high=ABSENT vì không nhắc sốt; thêm mã scabies_interdigital_burrows_nocturnal=PRESENT có sẵn, vì chính văn bản có ngứa đêm, kẽ ngón và đường hầm luống ghẻ. Không suy ra vị trí sinh dục chưa được nêu.",
+      "decision_status": "USER_CONFIRMED_PROPOSAL; PENDING_CROSS_REVIEW",
+      "changed_fields": {
+        "review_status": {
+          "old": "APPROVED",
+          "new": "PENDING_CROSS_REVIEW"
+        },
+        "revision_note": {
+          "old": null,
+          "new": {
+            "version": "v1.4-draft",
+            "status": "ĐỀ XUẤT SỬA; CHỜ RÀ CHÉO",
+            "reason": "Bỏ fever_high=ABSENT vì không nhắc sốt; thêm mã scabies_interdigital_burrows_nocturnal=PRESENT có sẵn, vì chính văn bản có ngứa đêm, kẽ ngón và đường hầm luống ghẻ. Không suy ra vị trí sinh dục chưa được nêu.",
+            "details": "evaluation/testset_v1.4/CHANGES.md"
+          }
+        },
+        "expected_symptoms": {
+          "old": {
+            "pruritus_intense_skin_itch": "PRESENT",
+            "vesicular_blister_rash": "PRESENT",
+            "fever_high": "ABSENT"
+          },
+          "new": {
+            "pruritus_intense_skin_itch": "PRESENT",
+            "vesicular_blister_rash": "PRESENT",
+            "scabies_interdigital_burrows_nocturnal": "PRESENT"
+          }
+        }
+      }
+    },
+    {
+      "case_id": "EXT-026",
+      "source_file": "evaluation/testset/symptom_extraction_testset.jsonl",
+      "target_file": "evaluation/testset_v1.4/symptom_extraction_testset_v1.4.jsonl",
+      "source_reviewer": "Huy",
+      "source_review_date": "2026-11-11",
+      "source_verdict": "CẦN SỬA",
+      "huy_comment_full": "PRESENT (genital_ulcer_chancre_discharge) khớp đúng triệu chứng tiểu buốt, chảy mủ niệu đạo. Tuy nhiên văn bản không nhắc tới sốt nhưng ABSENT lại gán fever_high; đề xuất bỏ fever_high khỏi ABSENT ở v1.4.",
+      "old_labels": {
+        "expected_symptoms": {
+          "genital_ulcer_chancre_discharge": "PRESENT",
+          "fever_high": "ABSENT"
+        }
+      },
+      "new_labels": {
+        "expected_symptoms": {
+          "genital_ulcer_chancre_discharge": "PRESENT",
+          "gonorrhea_purulent_urethritis_dysuria": "PRESENT"
+        }
+      },
+      "labels_changed": true,
+      "reason": "Bỏ fever_high=ABSENT vì không nhắc sốt. Bổ sung gonorrhea_purulent_urethritis_dysuria=PRESENT theo thống nhất đã ghi ở README_review.md; văn bản nêu đái buốt, đái rắt và giọt mủ vàng xanh buổi sáng. Giữ mã chung genital_ulcer_chancre_discharge=PRESENT đã được Huy nhận xét phù hợp; không thay hoặc xóa mã chung.",
+      "decision_status": "USER_CONFIRMED_PROPOSAL; PENDING_CROSS_REVIEW",
+      "changed_fields": {
+        "review_status": {
+          "old": "APPROVED",
+          "new": "PENDING_CROSS_REVIEW"
+        },
+        "revision_note": {
+          "old": null,
+          "new": {
+            "version": "v1.4-draft",
+            "status": "ĐỀ XUẤT SỬA; CHỜ RÀ CHÉO",
+            "reason": "Bỏ fever_high=ABSENT vì không nhắc sốt. Bổ sung gonorrhea_purulent_urethritis_dysuria=PRESENT theo thống nhất đã ghi ở README_review.md; văn bản nêu đái buốt, đái rắt và giọt mủ vàng xanh buổi sáng. Giữ mã chung genital_ulcer_chancre_discharge=PRESENT đã được Huy nhận xét phù hợp; không thay hoặc xóa mã chung.",
+            "details": "evaluation/testset_v1.4/CHANGES.md"
+          }
+        },
+        "expected_symptoms": {
+          "old": {
+            "genital_ulcer_chancre_discharge": "PRESENT",
+            "fever_high": "ABSENT"
+          },
+          "new": {
+            "genital_ulcer_chancre_discharge": "PRESENT",
+            "gonorrhea_purulent_urethritis_dysuria": "PRESENT"
+          }
+        }
+      }
+    }
+  ],
+  "changed_case_ids": [
+    "CLIN-019",
+    "EXT-010",
+    "EXT-014",
+    "EXT-024",
+    "EXT-026"
+  ],
+  "label_changed_case_ids": [
+    "EXT-010",
+    "EXT-014",
+    "EXT-024",
+    "EXT-026"
+  ],
+  "unchanged_record_bytes_count": 106,
+  "pending_cases": [
+    {
+      "case_id": "CLIN-019",
+      "status": "CẦN BÁC SĨ QUYẾT",
+      "labels_retained_from_v1_3": true,
+      "clinical_note_added": false
+    }
+  ],
+  "policy_options_EXT_010": {
+    "status": "OPTION_A_CONFIRMED_BY_USER",
+    "selected_option": "A",
+    "current_labels_retained_for_compatibility_only": false,
+    "A": {
+      "policy": "Chỉ nhận phủ định trực tiếp; bỏ ABSENT chưa được nói rõ",
+      "proposed_labels": {
+        "inflammatory_sacroiliac_back_pain": "PRESENT",
+        "enthesitis_achilles_heel": "PRESENT"
+      },
+      "selection_status": "SELECTED_BY_USER"
+    },
+    "B": {
+      "policy": "Cho phép suy luận từ thuộc tính được mô tả đối chiếu định nghĩa mã; giữ ABSENT nếu Tuấn+Huy chấp nhận chính sách này",
+      "proposed_labels": {
+        "inflammatory_sacroiliac_back_pain": "PRESENT",
+        "enthesitis_achilles_heel": "PRESENT",
+        "mechanical_spinal_pain_stiffness": "ABSENT"
+      },
+      "selection_status": "NOT_SELECTED"
+    },
+    "decision_date": "2026-11-16",
+    "decision_source": "Explicit choice provided by user in conversation",
+    "scope": {
+      "applies_to": "Suy luận loại trừ giữa hai mã bệnh lý/cơ chế khác nhau",
+      "does_not_reverse_EXT_011": true,
+      "EXT_011_basis": "15 phút đối chiếu trực tiếp ngưỡng >1 giờ trên cùng thông số thời gian cứng khớp",
+      "does_not_change_KB_rules_or_prompts": true
+    }
+  },
+  "sources": [
+    {
+      "path": "evaluation/review/review_sheet_clinical_v1.3.csv",
+      "raw_sha256": "4305f2c6e921e2c5caf544f618da35c8e00a0bba5ba53a3b85f2504bbf179ef9",
+      "rows": 82
+    },
+    {
+      "path": "evaluation/review/review_sheet_extraction_v1.3.csv",
+      "raw_sha256": "4dc188241dd04f91a75c0f4b60a70c320fcd3a69fba5ce91d10cd219a70506d9",
+      "rows": 29
+    },
+    {
+      "path": "evaluation/review/README_review.md",
+      "raw_sha256": "a938985ef066e26d0d1eb58528ae24615576e16d294099adb72eacce5c59db43"
+    }
+  ],
+  "additional_reference_for_EXT_026": {
+    "path": "evaluation/review/README_review.md",
+    "section": "Kết luận bổ sung Huy và công việc riêng",
+    "recorded_agreement": "EXT-026 dùng gonorrhea_purulent_urethritis_dysuria, bỏ ABSENT sốt trong v1.4"
+  },
+  "source_evidence": {
+    "scabies": {
+      "catalog_code": "scabies_interdigital_burrows_nocturnal",
+      "catalog_name": "Mụn nước ở kẽ ngón tay, ngấn cổ tay, sinh dục kèm đường hầm luống ghẻ và ngứa dữ dội về đêm",
+      "condition_excerpt": "knowledge/conditions/dermatology/benh_ghe.md#excerpt-benh_ghe_chan_doan",
+      "source_key": "moh_qd_75_2015"
+    },
+    "urethritis": {
+      "catalog_code": "gonorrhea_purulent_urethritis_dysuria",
+      "catalog_name": "Tiểu buốt, tiểu rắt kèm chảy mủ niệu đạo đặc vàng xanh (giọt mủ ban mai)",
+      "condition_excerpt": "knowledge/conditions/dermatology/benh_lau.md#excerpt-benh_lau_chan_doan",
+      "source_key": "moh_qd_75_2015"
+    },
+    "extraction_negation_policy": "server/app/ai/llm/prompts/extraction_v2.txt"
+  },
+  "knowledge_file_sha256_before": {
+    "knowledge/_release.md": "8c1198156274a85f94ad5d0428cad252752faa86ad2265d8a1c803c71bd28566",
+    "knowledge/_spec/okf_format.md": "7ae9814a5b1149c82c6fd4fb05740d9cf25d45d337e889e1c6d7c7b6ddf3feb4",
+    "knowledge/conditions/dermatology/a_vay_nen_va_vay_phan_dang_lichen.md": "323db1ea3bc155178933ddfed8115f03958a7b868fe082b916f222a22d9cf0a9",
+    "knowledge/conditions/dermatology/benh_apthose.md": "481525cd68ec815ea16908fd5a19fef3e61ce40016aa3e5efbe4ab168731686f",
+    "knowledge/conditions/dermatology/benh_bach_bien.md": "b422e2098ddb8a6183fdebed36bf482333a8932c1298fb7330cceb9c82e80028",
+    "knowledge/conditions/dermatology/benh_choc.md": "71fa415a82c12e956905f033222dba3eb7bd7d9d348bf6e1f230cfad6dec1f9b",
+    "knowledge/conditions/dermatology/benh_da_do_anh_sang.md": "72eafec1796d62e852233edd65b860d2b23348071d6abfd191e3f39886bf717c",
+    "knowledge/conditions/dermatology/benh_da_do_nam_soi.md": "31548c6e77833fbc987f61454deb97131c45e72d2829030b57c08ca0466cc27b",
+    "knowledge/conditions/dermatology/benh_da_nghe_nghiep.md": "685cf077c690773a8cdcb5c2b75c2b3527f7ebc2a8b9a88dc29b64b82816b81c",
+    "knowledge/conditions/dermatology/benh_da_va_niem_mac_do_candida.md": "e90bf8db724bd17fa65dfca7ee20af7547866d7ebf9e7c33f78a75e20542851a",
+    "knowledge/conditions/dermatology/benh_gai_den.md": "5680235212df6582f63535f0abd00a3efbd085dafd5d48de3fd45bb14137614a",
+    "knowledge/conditions/dermatology/benh_ghe.md": "16177754b372303e9df1cb00d5c57bfa54327b9954fb211b65392baa97ba0637",
+    "knowledge/conditions/dermatology/benh_giang_mai.md": "bdedcefa30adba0b99988edd7839b2b49540810d23e468b8864b814b4a4607b6",
+    "knowledge/conditions/dermatology/benh_hat_com.md": "814f490bc17e822e49d932ed0faf7c3b07efbf2cd112ef4dfcc5db328611c374",
+    "knowledge/conditions/dermatology/benh_lao_da.md": "7fab42e7a688a8238ae091381abc3703655b10c621167999610c1e9b739c99b2",
+    "knowledge/conditions/dermatology/benh_lau.md": "d0b7a34e848a9d16576f18f2510b34ee35dd72d85b4ce5d7d50c46237209e33b",
+    "knowledge/conditions/dermatology/benh_lichen_phang.md": "b30891875bce73926023ea28bc73650ef1e6d811cbdb53ac2ae7fac6fd75788d",
+    "knowledge/conditions/dermatology/benh_may_day.md": "cd3a73f53b0702e311524d241938ade127dc205395ed42468023edd7963b14f6",
+    "knowledge/conditions/dermatology/benh_pellagra.md": "395aa55128450fb90a98fccfcd1c9a45b3c68cecd9c58e463daff9749e19fb19",
+    "knowledge/conditions/dermatology/benh_phong.md": "0f131f8fd2d94aa326388103ba196aaa39d89879d7823726b0154ef1931ada21",
+    "knowledge/conditions/dermatology/benh_porphyrin_da.md": "3981991294031c91c382ae73413b27301fe43aa9f4a1c21becf82eaa20bca4a8",
+    "knowledge/conditions/dermatology/benh_sui_mao_ga_sinh_duc.md": "7d2e432294ff22aaee8979ff343ff181344052964d7610a7f74520ec12736a94",
+    "knowledge/conditions/dermatology/benh_vay_ca.md": "f74e1e4c27c0e2cc5262aa238e49556bd6ccf9a86996ecabc291a1887b909e4e",
+    "knowledge/conditions/dermatology/benh_vay_nen.md": "179a9f8b6f4a5c251241ce557e1a988a6e94804e6c6a00ae9f410eaec04b3d45",
+    "knowledge/conditions/dermatology/benh_vay_phan_do_nang_long.md": "77e01fc279bcb7d8b5a4ad523eeb5868b41d42188e6b9cbc4dd2c1254d7a60d7",
+    "knowledge/conditions/dermatology/benh_viem_da_dang_herpes_cua_duhring_brocq.md": "8130c22506c7bc27de16932fbc6645604b0fe9db17dbb62105228192788e1ab2",
+    "knowledge/conditions/dermatology/benh_zona.md": "6c20026d0facad00441cfb08aa348a13c7f33331fb5763b28486472dced2376e",
+    "knowledge/conditions/dermatology/bong_nuoc_dang_pemphigus.md": "331ec8c074a3b3f8b6fad8a7ec5ed13d163f9d74fd5bca88f7148b18653098b5",
+    "knowledge/conditions/dermatology/day_sung_long_ban_tay_ban_chan_di_truyen.md": "dde45df1e4799159c5154db5d2736d8519b525c146ddb4a137c9cc06e81f01c5",
+    "knowledge/conditions/dermatology/di_sung_nang_long.md": "7a7062e85ceec04263d63c555cad5af3d8c0bd383c43202fbf428a85776ff382",
+    "knowledge/conditions/dermatology/do_da_toan_than.md": "c8d24b3e466e02b9a147a939d0b00c69fd8caccf73344de7c3d4afb3e58fce43",
+    "knowledge/conditions/dermatology/herpes_sinh_duc.md": "d7d3d842eddaf77dff9e1049fe76ace501fb68157dd7da1f5602afd8e4b94a7b",
+    "knowledge/conditions/dermatology/hoi_chung_raynaud.md": "9667c33b9831fdb765b83e82bf0433a5d221fd6685c8e752510c53403ec07be2",
+    "knowledge/conditions/dermatology/hong_ban_da_dang.md": "c28922283d8c2f8751057603ec9259f15ec27ba2d0393fe9dfb9729449f0ad7a",
+    "knowledge/conditions/dermatology/ly_thuong_bi_bong_nuoc_bam_sinh.md": "3e1094a26f196ffcfbbba5c1d7b24e3b08f0f1491d0c85ba310f2cd7739cc506",
+    "knowledge/conditions/dermatology/nam_mong.md": "539403ecf6e6b67a6066c5b8097ac423fd4ed1b8e0f97d1abb12d686d3fd69b8",
+    "knowledge/conditions/dermatology/nam_toc.md": "4c883c4c3ceb4c928e5ec487f90bf465f40c8ca00eda60c0e46a74e95af8e718",
+    "knowledge/conditions/dermatology/nhiem_chlamydia_trachomatis_sinh_duc_tiet_nieu.md": "b276ff4167419a98c0f09965fd1850201d5d536d7ad4e8f9c8ff42baf11f0399",
+    "knowledge/conditions/dermatology/nhot.md": "767d44409b726f2fbd2ef960bbee851fd50919d9e74ff85806c867bfa6e43b19",
+    "knowledge/conditions/dermatology/pemphigus.md": "063f41d07320e755dd664c31db1f69d9d840297f8dd9149f317d96eaf61a545f",
+    "knowledge/conditions/dermatology/ram_ma.md": "a1a5d1fa5d03331be0b6a2e74418eb9aba4e970a57a9dced4b616312e60a7fc3",
+    "knowledge/conditions/dermatology/sam_da.md": "92f4ece3555b23593f840bbadf48f8e8af96cd9c0d29c19aff073f4aa3c7093e",
+    "knowledge/conditions/dermatology/san_ngua.md": "65b862b37a1d73277f47249b809ea0c99323a408a21e5b36792adb0d31eb92ca",
+    "knowledge/conditions/dermatology/sarcoidosis.md": "d1fb3b5a89cda005184c6c2b0af08a85348af01a4fe691c35b02f2137c4a9bdc",
+    "knowledge/conditions/dermatology/trung_ca.md": "7ccf17fb771da2b6e18efe9ce0ed90383aed5450812c8948e653fdf5139d3e67",
+    "knowledge/conditions/dermatology/u_mem_lay.md": "d68be239ad3c62d0fcd71323091527fa58fd6cfaf129b712f0e904523aaec926",
+    "knowledge/conditions/dermatology/u_ong_tuyen_mo_hoi.md": "d1ebbfae38d7a005ab920a4254dcb762855b2243437bcdaff09af993f9a84fe7",
+    "knowledge/conditions/dermatology/u_xo_than_kinh.md": "2ac692fc754beaaee8b795636fe6b0474e1a0013086c3381393022e9e076190b",
+    "knowledge/conditions/dermatology/vay_phan_hong_gibert.md": "25edfb5152ff74c49649336fce660c3769c0daad2385bd509303c9f95a0fcb4c",
+    "knowledge/conditions/dermatology/viem_am_dao_do_trung_roi.md": "b1fbb3fc79975c1c021d6138e09db412d254e1ba6ee40883f1b87453200f4bff",
+    "knowledge/conditions/dermatology/viem_am_ho_am_dao_do_nam_candida.md": "bbad9096fd6a8c2e2e83505839b50c8285cf2664aec05e5a806a8b7fa60c9e0e",
+    "knowledge/conditions/dermatology/viem_bi_co.md": "0abd0f9d1d255561fa6549abaf8ff0a5225cf86f1511af3e369c631d9740a3dd",
+    "knowledge/conditions/dermatology/viem_da_co_dia.md": "abc48b4f5ffd7f0ed7610e01b0c73b0677ae28a7cf21ca490b529e5725cc4fbc",
+    "knowledge/conditions/dermatology/viem_da_dau.md": "c6acf4879e6b42a9baae32aec22b5ed3457e1ccf7ce1c3e5086829ed6a325121",
+    "knowledge/conditions/dermatology/viem_da_dau_chi_ruot.md": "899a6c0f98ea07a5a0e920e764ac11d816de3aa6170022625a5434bc6eeed29e",
+    "knowledge/conditions/dermatology/viem_da_tiep_xuc_di_ung.md": "0dfcc82cde98f64f965d5d53ce1bd758fc966253eb72126e24a7bb62677a3760",
+    "knowledge/conditions/dermatology/viem_da_tiep_xuc_do_con_trung.md": "b35e626f19f3061746f4b4b76d45c2c774d22878f2737028248995b2d512c66c",
+    "knowledge/conditions/dermatology/viem_nang_long.md": "73a6c784d37ed9b331f3ac7c7f5f64e6bc219359f4f7b24e13da5edaf4942837",
+    "knowledge/conditions/ent/benh_meniere.md": "b2fd46fc8efc1351ee3c35373a036babafef3b965472c41428d285924b9d7b16",
+    "knowledge/conditions/ent/benh_polyp_mui.md": "aefe1e2530bf223d35f5fc910b3d25efff2f19e242a0846d30e643bf0d815ae6",
+    "knowledge/conditions/ent/hoi_chung_dau_nhuc_so_mat.md": "1ca7290a0769697e298d508a9f9f55ccd648e1427216c1194310a0462dd268c7",
+    "knowledge/conditions/ent/hong_thanh_quan_viem_mui_hong_cap_tinh.md": "ae632dfcdbdf09b3ff3c01102a100c68182c9a4d3d920b167631c8bd0bfed84b",
+    "knowledge/conditions/ent/lao_thanh_quan.md": "d9241290c37f3ccb7ff9de23799cd2bb2aec396032eea05865b545b05d22ac36",
+    "knowledge/conditions/ent/liet_co_mo_thanh_quan.md": "5887ea4d242cd492187156be3966e86bc99f4924a31efddb01cbcee980826dab",
+    "knowledge/conditions/ent/liet_day_than_kinh_vii_ngoai_bien.md": "a2bc3f98764b1b3caec63ff217af138cb6c4fede45c8e2a4844a667d6d380e4e",
+    "knowledge/conditions/ent/mui_xoang_viem_mui_xoang_tre_em.md": "96511ff1d55753e419c23f91daabccd41aec33fb6605be2695212de153271d11",
+    "knowledge/conditions/ent/nam_thanh_quan.md": "6921d5eb69a13638622f158ce05f7085901dc1025007fc938d1afa7500fd530a",
+    "knowledge/conditions/ent/nang_ro_giap_luoi.md": "ef1050ecfd7e38317690ccc067c92bea35fe7a15cfafd8d8ec63f816aa776742",
+    "knowledge/conditions/ent/nang_va_ro_khe_mang_i.md": "26e0559e86ffd396cfdb9eebb585899a895766c6d4deca2a24f725ab9814b668",
+    "knowledge/conditions/ent/nang_va_ro_khe_mang_ii.md": "7f47d0f54789b79dc8b8e6211b511f78bfd75c564ec042a35892b363053438b7",
+    "knowledge/conditions/ent/ngu_ngay_va_hoi_chung_tac_nghen_tho_trong_khi_ngu.md": "c60767e4be33d26475ddaae944e721857aca84182a65f4a35a84df42be67bfec",
+    "knowledge/conditions/ent/papilloma_thanh_quan.md": "f6eba74062c8dfa525817668efec2615653984beba5d12c0b2a1b37a9ebe110d",
+    "knowledge/conditions/ent/papilloma_u_nhu_mui_xoang.md": "c8043801bec5297c8990714318323a65543b4cb5d6f2c4f36a44e87b80ffc82c",
+    "knowledge/conditions/ent/seo_hep_thanh_khi_quan.md": "9bc14b74de35dca7fdcb1abd9f33bc4d91fe5f26aa815dded033217e5c3bdbb5",
+    "knowledge/conditions/ent/trao_nguoc_da_day_thuc_quan.md": "07e35a2024a2170baee19cddee8a405ad5938b6ef324d06a780461c496fa9dbe",
+    "knowledge/conditions/ent/u_lanh_tinh_mui_xoang.md": "507421b26ae21daf0e03d24fe8afd9551de04db2225e96c0e9ffa3cfa730c556",
+    "knowledge/conditions/ent/u_tuyen_nuoc_bot.md": "ca881386458ab8dcf77fe9b42408dd5300c4b7cdc30462cb9122d522d9000b87",
+    "knowledge/conditions/ent/u_xo_mach_vom_mui_hong.md": "c08693da2bd00e6dcb063f111739b9011bc840fed5d990382a7a6700d9b655ec",
+    "knowledge/conditions/ent/viem_amidan_cap_va_man_tinh.md": "2269006b4cdac5ab5c90aed954c3af13af00f88a54fe060d2eb4e6f114d4a692",
+    "knowledge/conditions/ent/viem_hong_cap_tinh.md": "16ee056ce4a1329b5230d2ae7520aa55158d838dee003dacd2dbf4b6236848fb",
+    "knowledge/conditions/ent/viem_hong_man_tinh.md": "b7e16cb7303644779b45e1527e48dae38e23457c2e2edb07da26051c66365638",
+    "knowledge/conditions/ent/viem_mui_xoang_cap_tinh.md": "6eb971736d4b2b47674e7173ffbedfc25ed082aab2851b081952e4b91e1e7439",
+    "knowledge/conditions/ent/viem_mui_xoang_di_ung.md": "212effa5b9d488f04f6da99b44edfdae34e096a6ac0189fe9778e1767748faef",
+    "knowledge/conditions/ent/viem_mui_xoang_do_nam.md": "753be6f2409c586946dd7fe177fcc9943cf4ae0095d79c095cf228f2ba1275c4",
+    "knowledge/conditions/ent/viem_mui_xoang_man_tinh.md": "dcad75f12efffbc9da3ffac72ab566f21c82de050670e99c589f0a7e1dc99833",
+    "knowledge/conditions/ent/viem_tai_giua_cap_tinh_tre_em.md": "efefa2f77f7feb75e47ed0c345f622d414d69c7a6fa078e4f4ed1091bb35f01b",
+    "knowledge/conditions/ent/viem_tai_giua_man_tinh.md": "53a759c33c7d437f68ee23415aa61e3245c5f4233defc640ef94bd059fd0e684",
+    "knowledge/conditions/ent/viem_tai_giua_man_tinh_co_cholesteatoma.md": "a3add2609419471f5e19a77f2f6df8812b93f3adae4dd8b97a2c35e0735a96a1",
+    "knowledge/conditions/ent/viem_tai_giua_man_tre_em.md": "21226f3671f4981ca107583095aff2a2a7d78473dbac13cc1b63b744a32d1617",
+    "knowledge/conditions/ent/viem_thanh_quan_cap_tinh.md": "3a1967d32b3c4efa271a1223d25656c38e114e375d61b2db09ac9f831496006e",
+    "knowledge/conditions/ent/viem_thanh_quan_cap_tinh_ha_thanh_mon.md": "f78694800e68e88373737c92417499ddacb90248a6d439a5327a31fa65ccb3af",
+    "knowledge/conditions/ent/viem_thanh_quan_man_tinh.md": "71db0173ced6de2fac190c5e47c9bfa425840370e3cf36df0eec0bc01c75ac72",
+    "knowledge/conditions/ent/viem_v_a_cap_va_man_tinh.md": "007942cc4ea20a03b3b149a1f494972af24a63853052f0e16cc2f149092a600d",
+    "knowledge/conditions/ent/xop_xo_tai.md": "acba474be8bff407769e880e2760dc919d66dcf89e33e536be9993de8eeefe2e",
+    "knowledge/conditions/infectious/benh_ly_truc_khuan.md": "dc43a4cc72db8ef0d4a02bf9a7ed3fbc0c7009b8ece00719ad846604e05a9626",
+    "knowledge/conditions/infectious/benh_nhiem_trung_o_da_va_mo_mem.md": "7b1f5f19f807aa3d37ba0c2d4c859fa8417de264ba3ac797c26f7ce79ab7d36f",
+    "knowledge/conditions/infectious/benh_sot_mo.md": "9b5363646e8c64b3dd84a8f4b759766c7f6e8eeaa6f210f23339e1eb6012db43",
+    "knowledge/conditions/infectious/benh_sot_ret_khang_thuoc.md": "da5163d04b1fb4fc386bfaf19ff6dac3e473a1b2ea4d4a9ee49e9235e1c6fa26",
+    "knowledge/conditions/infectious/benh_thuong_han.md": "ae3d404a54af27baf92c21a9aae6bccaf528cb5eeb7df74709c4b69f42f12aa1",
+    "knowledge/conditions/infectious/benh_thuy_dau.md": "a859aac66d4d05b85d949fe99a400e6088d97aff934d4c042d58467b3fc984be",
+    "knowledge/conditions/infectious/benh_tieu_chay_do_vi_khuan.md": "66ff025b58064c565ccb9ca182c17d1f929f50a48ebd31ad4a926173212715db",
+    "knowledge/conditions/infectious/cum_mua.md": "beac213a128570c305c37e4dc42b828dd25f6b500d75029d87f4a5b10ab59c8a",
+    "knowledge/conditions/infectious/soi.md": "bc8b2e9ae92129dcb3c7cc72b72b6e694eeead1947f60d5a55ba8039f533d586",
+    "knowledge/conditions/infectious/sot_ret.md": "07d401e4f1a795e0703089db4abc83be878cf8712332c2512186f2a4fbca4705",
+    "knowledge/conditions/infectious/tay_chan_mieng.md": "d536213d3bbd23cdbffa04683093085fe49de1db1f8a129dc9518472b597bf56",
+    "knowledge/conditions/musculoskeletal/benh_gut.md": "db852081fe8ad47b3af31ad5a5d613ae31bd7928977a3e6fb3e150b59ee7cf58",
+    "knowledge/conditions/musculoskeletal/benh_loang_xuong.md": "30c93e1d000b7f3ca171a3389b274f24a7471ea1a9ec198e0215d6a9a050d681",
+    "knowledge/conditions/musculoskeletal/benh_lupus_ban_do_he_thong.md": "bf06c2e9c8dcdfae97e68bee1918be5707ab3e9e699e1c80235b3ceccecab38b",
+    "knowledge/conditions/musculoskeletal/benh_thoai_hoa_cot_song_co.md": "90bf30ceac00867dbb5809ab91333bafa568bb5629328f674fd76033b422a17b",
+    "knowledge/conditions/musculoskeletal/benh_thoai_hoa_cot_song_that_lung.md": "fbb8d324b947d4bbe6d4a119d3395b0c93bc8cf5f405d777f02056d5400a0509",
+    "knowledge/conditions/musculoskeletal/benh_u_te_bao_khong_lo.md": "97ca148d150a92918349fb92df05493dd6fd7ae43f45d31bf6f680065424fa3f",
+    "knowledge/conditions/musculoskeletal/benh_viem_khop_dang_thap.md": "939c8062aad38e46398d9afc2283cf132bb8f0cb515b60abfe886512a12eaf86",
+    "knowledge/conditions/musculoskeletal/benh_viem_khop_phan_ung.md": "991cc5c4f59005924f909fe1dbb0a90361aa3eb8b6e7d2a66c47a1b29cd2500d",
+    "knowledge/conditions/musculoskeletal/benh_viem_khop_thieu_nien_tu_phat_the_da_khop_co_yeu_to_dang.md": "4e81d06c087eb604eaa67dbbdfa36393a8806ea8a6dc93ab62ab73f786fc9914",
+    "knowledge/conditions/musculoskeletal/benh_viem_khop_thieu_nien_tu_phat_the_he_thong.md": "4e77a7c7eecd3a6a2008cbf5fc507de33f9dcf3d161aaf15329b3a10f1ab9c0d",
+    "knowledge/conditions/musculoskeletal/benh_viem_khop_thieu_nien_tu_phat_the_viem_cot_song_dinh.md": "2f367a5e22ffe70064482e40feede0499fb161117b98d4466e642179fba77db0",
+    "knowledge/conditions/musculoskeletal/benh_viem_khop_vay_nen.md": "4f892fcda12a96c1fc6ca36eb886ef22a678810c4073c714c2e3bae48fdeed73",
+    "knowledge/conditions/musculoskeletal/benh_viem_mang_hoat_dich_khop_goi_man_tinh_khong_dac_hieu.md": "71b6747d338568c965a4db6687c4ec11c19254959d8a300bad2451e1e37f5676",
+    "knowledge/conditions/musculoskeletal/benh_xo_cung_bi_toan_the.md": "fcda025723c856f51fba9c7712aa14efe35934fbfa12483d312955150460d1bd",
+    "knowledge/conditions/musculoskeletal/chom_xuong_dui.md": "f2a6b21822ffcc051868ddfb7e3de6caba427527f48a3d5782826b9b61bda040",
+    "knowledge/conditions/musculoskeletal/dau_than_kinh_toa.md": "22e392e818dd3552de96243546c2ae5b59f3485c0f3e6f78247743c3c4f07527",
+    "knowledge/conditions/musculoskeletal/hoi_chung_co_vai_canh_tay.md": "1ae03e82b7a1cfbfe4096b21d4e4997d846b231f9c9a8b9908acc548170f42e7",
+    "knowledge/conditions/musculoskeletal/hoi_chung_dau_that_lung.md": "1a50ccc78ba66c665a1d6dbaab9183e6fefe95922c2520d17b9d7b5729d1a6a9",
+    "knowledge/conditions/musculoskeletal/hong_ban_nut.md": "6af98921b942877f9a9731a9d5a8bdc6610da8b09e532f808c3f90242825c932",
+    "knowledge/conditions/musculoskeletal/loan_duong_co_tien_trien.md": "e34b593006136f889394dc57588843362df9c0a4308450f23221a0fc326780f2",
+    "knowledge/conditions/musculoskeletal/loan_san_xo_xuong.md": "336ed725c53ce3e1bb6588a22fb87b4e68080ed0eefcce9cd201c69456068c3c",
+    "knowledge/conditions/musculoskeletal/ngoai_xuong_canh_tay.md": "09a213fc616f986c5d3664af71f859602b8807eb393d1067ad327f7e5f7a3fd0",
+    "knowledge/conditions/musculoskeletal/viem_cot_song_dinh_khop.md": "ce4375c505596cd152a2d97f7dec17abe694154bbec6b57ff956f6620ce8a343",
+    "knowledge/conditions/musculoskeletal/viem_da_co_va_viem_da_co.md": "b5c8f21b5600f64c12fa4d6b1da2d21d53a43eaa2aa961a8d4c74e3ea0d9db69",
+    "knowledge/conditions/musculoskeletal/viem_gan_gap_ngon_tay_ngon_tay_lo_xo.md": "e618c6136f4042a9c0670842b3734acc268f076fcdbaa55378714c1ad439f25f",
+    "knowledge/conditions/musculoskeletal/viem_gan_vung_mom_tram_quay_co_tay.md": "5f973dfb62a55bb22a3a437b29c1eedd87279e0840830d81037e9588623fa769",
+    "knowledge/conditions/musculoskeletal/viem_khop_thieu_nien_tu_phat_the_viem_khop_vay_nen.md": "44eb872342ac2a7e5a9badcb302cef937356420fcacfd979d2052a9968e72e62",
+    "knowledge/conditions/musculoskeletal/viem_mang_hoat_dich_khop_hang_thoang_qua.md": "3144889e82490c0fd7bd1dd7312a14447cba441d9a244dd61a2253d062493763",
+    "knowledge/conditions/ophthalmology/benh_hac_vong_mac_trung_tam_thanh_dich.md": "4bf14aa6bcb140b658d697dfa4cdbe8dba829a327c0f850bbed1f4c04617d477",
+    "knowledge/conditions/ophthalmology/benh_tac_tinh_mach_vong_mac.md": "d1e7da710784ab8c5452fc51edbb0c3efc88d4e979e26f20ea11a3239bbdde90",
+    "knowledge/conditions/ophthalmology/benh_viem_mang_bo_dao_truoc_cap_tinh.md": "27ef4efefe13ca7ed834209627803c20c52a4a6ea2f790454636d3fdb4394b35",
+    "knowledge/conditions/ophthalmology/glocom_goc_dong_nguyen_phat.md": "31d6d5a0d76d6ea0e3d318cb88bc31fb9e6e50595c21c531767e85feff24fc1a",
+    "knowledge/conditions/ophthalmology/glocom_goc_mo_nguyen_phat.md": "c3755609297b459ba27888b6b0ccb3d1d0f6192d92812981ffd9d095d87ff9e0",
+    "knowledge/conditions/ophthalmology/hoi_chung_vogt_koyanagi_harada.md": "df35b7f0571eb0d57e1dbd9d35cf8f01f698fffe6514f3adae27663029b38bda",
+    "knowledge/conditions/ophthalmology/kho_mat_do_thieu_vitamin_a.md": "2416052fc36c0183624847924848c6351f38ac6fbd943821d88b20755f1fec4d",
+    "knowledge/conditions/ophthalmology/loi_mat.md": "59778eba1c7a50b7db73a849c4e0a0a15f1445b81fff124c7029cf54c93aa6ea",
+    "knowledge/conditions/ophthalmology/nhan_viem_dong_cam.md": "1288f372b58cd0a83f525cef6b787526c1db494aa8ef7deb06d5a4ed6b283570",
+    "knowledge/conditions/ophthalmology/nhuoc_thi.md": "f65b43119d07907b3f0ae87ad7ea79221d1b4c81aa6b9a9ffd523306e4d8312c",
+    "knowledge/conditions/ophthalmology/viem_giac_mac_do_herpes.md": "b50687d4478faaf5b321f717415791fe8482a52d345f8e123f3d47b5a3fed0e2",
+    "knowledge/conditions/ophthalmology/viem_ket_giac_mac_mua_xuan.md": "c53de7db9983e0e07def0b3c1d3c640e950639cbfe8f3becb93a506021554d0f",
+    "knowledge/conditions/ophthalmology/viem_ket_mac_cap.md": "842fd82a90f8afda0235ab8b50ea9e3695a2c2a1d4cbc4b22c39fff98636a84d",
+    "knowledge/conditions/ophthalmology/viem_ket_mac_di_ung_cap_tinh.md": "24cf984b75c483f2d362fc9526c5fa98e543a039711d51719936eec6c643f65e",
+    "knowledge/conditions/ophthalmology/viem_loet_giac_mac_do_amip_acanthamoeba.md": "4643bcc341e3a97a8d3eece0c71574a8639284dc5ca12d24159c55baa0342bfc",
+    "knowledge/conditions/ophthalmology/viem_loet_giac_mac_do_nam.md": "ef349d5f3dd6501fe91f9374d6989b891e3abfeaaae37027c3276ade2d987c72",
+    "knowledge/conditions/ophthalmology/viem_loet_giac_mac_do_vi_khuan.md": "38990b701668dfa91304a0c8ebe1d5a8c47de3bed57ff129f52bf50f49a016dc",
+    "knowledge/conditions/ophthalmology/viem_mang_bo_dao_cap_tinh_o_tre_em.md": "ff0fc2839fd68bb21ca9cc94970fc8567f90922b22eeb2ac29762666898e06b9",
+    "knowledge/conditions/ophthalmology/viem_thi_than_kinh.md": "6655cc3af82e0cf65292a0f152eef9609ebd574f78574a0c9213e3b159c2207f",
+    "knowledge/conditions/ophthalmology/viem_tui_le.md": "20f41cb513d30ca13143b5060dfddcef413e62fc1595fbb5f00d038c8877999c",
+    "knowledge/conditions/respiratory/hen_phe_quan.md": "7e87109288c565afd1c44fe0c8c5ba261fcfb820e970f8087a2aea82ccc4439a",
+    "knowledge/conditions/respiratory/phoi_tac_nghen_man_tinh.md": "2e6deb47b4ac7455c9dc59ff2109e9e6c39a9a802d08f52f54811667a26c7d9e",
+    "knowledge/rules/priority_floors/pf_gi_respiratory_bleeding.md": "1d22bda92afb7cc26a751b7cd1d788c7bd8ef32065b0f7a4970e11c64c651cee",
+    "knowledge/rules/priority_floors/pf_severe_dehydration_high_fever.md": "d5eee55a522d18aab28e1f134587f535dfa63015447845c3ded9a5ca6c9e80ff",
+    "knowledge/rules/priority_floors/pf_sot_cao.md": "48a021ad95daf626918b827f3db0f14c559531916daf9c7c5aeb096322e6e42c",
+    "knowledge/rules/red_flags/rf_acute_chest_pain.md": "9d2a7b9ee37ae3701aaa69c4157fb81c5e0b3585830e691943aedc4012d40969",
+    "knowledge/rules/red_flags/rf_altered_consciousness.md": "d95a9999e3d506bd08564c3bb51810dc887d33be8443502d47c87714c31b4a30",
+    "knowledge/rules/red_flags/rf_cauda_equina_cord_compression.md": "4d238dbc0f13c076f193b4753dee1d950aadb1fa18a46620320b7f704f73c6f9",
+    "knowledge/rules/red_flags/rf_out_of_scope.md": "c7d792aac90b13a83f1cfec648cedb6996b30a1044f890c674e1c0b8ac6df3e3",
+    "knowledge/rules/red_flags/rf_progressive_paralysis.md": "50e475efb7c3f36cb9fe74ca714690058d916dc1e43a1987f9db25accf0da5af",
+    "knowledge/rules/red_flags/rf_respiratory_failure.md": "7b22b71739f46b10334a99c2308567ddcc87907de630a5267d4e6e203e65533d",
+    "knowledge/rules/red_flags/rf_seizures.md": "88e6fc5242bdfa229bf932bda031e9bf9e12a4dad6da1ce4739ff3ca79477215",
+    "knowledge/rules/red_flags/rf_septic_arthritis_suspected.md": "2431f923f832d216089e8a58e30fc971c60c7811a5337f4fae0d63488b23494b",
+    "knowledge/rules/red_flags/rf_shock_circulatory_failure.md": "dae0824d54ffe4b63561f2126eb5dde7b94f6ed9e657dd1eb9a48c6fa7f9a217",
+    "knowledge/sources/moh_qd_1327_2014.md": "bc3a259f2af8e872c4a1dcb35f08c6e1597d4342ac8fc1ad24cee471eb694e48",
+    "knowledge/sources/moh_qd_1840_2025.md": "dd7f08b5cfd008f1f0e481e09f131229587d477c4d310d8e90d6e2efd9f458b3",
+    "knowledge/sources/moh_qd_1851_2020.md": "b9c5f0169df8a2b61fcf8e0d0608f37887f30052dccb8dd0988d7419dac38bca",
+    "knowledge/sources/moh_qd_2699_2020.md": "c5235de8da0090b57f13163d786389aad4d3a2e9ad26b7278a3865b1e1d68477",
+    "knowledge/sources/moh_qd_292_2024.md": "f864ab36cfa109d67c4a9b6fb32cf8c54bd3d583cd6e2f703783a02c2cbaafb3",
+    "knowledge/sources/moh_qd_361_2014.md": "401605eeb787965377ef18bb4fdfdca32e4de12bbbb9b26b4239dd8c5dd636bf",
+    "knowledge/sources/moh_qd_40_2015.md": "f82a13436f2e82e6bf8d058c42cb121c373b2f482637dacd7fc8730ba46f6c6b",
+    "knowledge/sources/moh_qd_4562_2018.md": "733d430a8479582e38eee2becfaf87b9b6b263be6c7acac03d0d26e0ef988cdd",
+    "knowledge/sources/moh_qd_5642_2015.md": "b32cd96b05a2ad0231736b4ffb1f0c8f08332a5ddcf4ed4ab0be73a958ae71a1",
+    "knowledge/sources/moh_qd_5643_2015.md": "52ea6619a67b19f85b42529bbc7a31b4ca46dafff020a38a020d49abb0fc9a14",
+    "knowledge/sources/moh_qd_75_2015.md": "98cf2d993b9298024e2abec29b38ca5cb8f2a1670c378db97577501a2bd4dc3e",
+    "knowledge/symptoms/symptom_catalog.md": "afec4fa8d0c6b606954ca7161fdc1219b169bda8d67edb3d8813e7ea4f1d08d4"
+  },
+  "source_readme_append": {
+    "path": "evaluation/testset/README.md",
+    "original_byte_length": 7504,
+    "original_raw_sha256": "6a219dcb9929f90cd71a65e9e949c231f1f36b7a63c90b08d45ea7558e645831",
+    "appended_note": "Bộ v1.4 riêng (bản nháp chờ rà chéo) đã có tại ../testset_v1.4/README.md; hai JSONL và manifest đóng băng v1.3 không thay đổi.",
+    "appended_bytes_hex": "42e1bb992076312e34207269c3aa6e67202862e1baa36e206e68c3a170206368e1bb9d2072c3a0206368c3a96f2920c491c3a32063c3b32074e1baa169202e2e2f746573747365745f76312e342f524541444d452e6d643b20686169204a534f4e4c2076c3a0206d616e696665737420c491c3b36e672062c4836e672076312e33206b68c3b46e67207468617920c491e1bb95692e0d0a"
+  },
+  "scope_note": "Chỉ đúng 5 ID có byte khác so với v1.3; 4 ca đổi nhãn, CLIN-019 chỉ đổi metadata và giữ nhãn chờ bác sĩ. 106 ca khác nguyên byte, gồm EXT-011. Phương án A của EXT-010 đã được người dùng xác nhận, không thay chính sách khác hoặc KB/luật/prompt. Metadata lịch sử của 106 ca không phải duyệt mới v1.4.",
+  "reference_file_raw_sha256": {
+    "server/app/ai/llm/prompts/extraction_v2.txt": "7708c28691ad727105d695b37acf1328d4a5bbdde321f3f63b107e049acba074",
+    "server/app/ai/llm/prompts/extraction_phrases_v2.txt": "8db6280b0f110bc9af0730155a63c98f70117686e6b3456d1e54920b4055767a"
+  },
+  "working_branch": "eval/testset-v1-4-draft",
+  "latest_user_feedback": {
+    "received_date": "2026-11-16",
+    "source": "User-provided feedback and explicit instruction in this conversation; no clinician signature inferred",
+    "case_decisions": {
+      "EXT-010": "Chọn A: bỏ ABSENT cơ học; không đảo EXT-011",
+      "CLIN-019": "Đồng ý giữ nhãn v1.3, CẦN BÁC SĨ QUYẾT; checklist ngoài JSONL",
+      "EXT-014": "Đồng ý bỏ ABSENT sốt, giữ PRESENT hiện có",
+      "EXT-024": "Đồng ý bỏ ABSENT sốt và thêm mã ghẻ đặc trưng; không suy vị trí sinh dục",
+      "EXT-026": "Đồng ý bỏ ABSENT sốt và thêm mã niệu đạo đặc trưng, giữ mã chung; không suy loét/săng"
+    },
+    "review_status": "PENDING_CROSS_REVIEW"
+  },
+  "latest_decision_update": {
+    "date": "2026-11-16",
+    "branch": "eval/testset-v1-4-option-a",
+    "previous_combined_sha256": "5d15c82fa3478cdb337dcde492d3c187af337a9549a8ad43a980a81223462655",
+    "preserved_applied_case_raw_sha256": {
+      "EXT-014": "2027cd835fd15e9831439b32407bb6437ed7a2b3948a0cc9a01e03683c22cd52",
+      "EXT-024": "f31687d09c412e0e04b124c9959b9fdb5b4bbfd17eb0297b3791fd67db0c1816",
+      "EXT-026": "e24dbc5c75223f73d3afea65e6a2810e6f1d13e1a6ac348fa5429fbc28013b8d"
+    },
+    "EXT_011_raw_sha256": "75c8351fe17fec53c583399cb05b92bd8eeeef4ce7447e4630a07eed54a58dc1"
+  },
+  "updated_date": "2026-11-16"
+}
