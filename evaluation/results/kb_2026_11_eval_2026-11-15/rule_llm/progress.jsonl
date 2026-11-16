@@ -1,0 +1,222 @@
+{"stage": "clinical", "case_id": "CLIN-001", "event": "start", "time": "2026-11-15T16:44:07.455336+07:00"}
+{"stage": "clinical", "case_id": "CLIN-001", "event": "end", "time": "2026-11-15T16:44:38.273449+07:00", "ai_status": "Completed", "mode": "Full"}
+{"stage": "clinical", "case_id": "CLIN-002", "event": "start", "time": "2026-11-15T16:44:38.279270+07:00"}
+{"stage": "clinical", "case_id": "CLIN-002", "event": "end", "time": "2026-11-15T16:45:05.909102+07:00", "ai_status": "Completed", "mode": "Full"}
+{"stage": "clinical", "case_id": "CLIN-003", "event": "start", "time": "2026-11-15T16:45:05.914849+07:00"}
+{"stage": "clinical", "case_id": "CLIN-003", "event": "end", "time": "2026-11-15T16:45:40.155481+07:00", "ai_status": "Completed", "mode": "Full"}
+{"stage": "clinical", "case_id": "CLIN-004", "event": "start", "time": "2026-11-15T16:45:40.162248+07:00"}
+{"stage": "clinical", "case_id": "CLIN-004", "event": "end", "time": "2026-11-15T16:46:07.760711+07:00", "ai_status": "Completed", "mode": "Full"}
+{"stage": "clinical", "case_id": "CLIN-005", "event": "start", "time": "2026-11-15T16:46:07.766723+07:00"}
+{"stage": "clinical", "case_id": "CLIN-005", "event": "end", "time": "2026-11-15T16:46:37.824049+07:00", "ai_status": "Completed", "mode": "Full"}
+{"stage": "clinical", "case_id": "CLIN-006", "event": "start", "time": "2026-11-15T16:46:37.829353+07:00"}
+{"stage": "clinical", "case_id": "CLIN-006", "event": "end", "time": "2026-11-15T16:47:06.118476+07:00", "ai_status": "Completed", "mode": "Full"}
+{"stage": "clinical", "case_id": "CLIN-007", "event": "start", "time": "2026-11-15T16:47:06.124327+07:00"}
+{"stage": "clinical", "case_id": "CLIN-007", "event": "end", "time": "2026-11-15T16:47:06.125780+07:00", "ai_status": "Skipped", "mode": "RuleOnly"}
+{"stage": "clinical", "case_id": "CLIN-008", "event": "start", "time": "2026-11-15T16:47:06.131859+07:00"}
+{"stage": "clinical", "case_id": "CLIN-008", "event": "end", "time": "2026-11-15T16:47:33.677322+07:00", "ai_status": "Completed", "mode": "Full"}
+{"stage": "clinical", "case_id": "CLIN-009", "event": "start", "time": "2026-11-15T16:47:33.684482+07:00"}
+{"stage": "clinical", "case_id": "CLIN-009", "event": "end", "time": "2026-11-15T16:48:07.532709+07:00", "ai_status": "Completed", "mode": "Full"}
+{"stage": "clinical", "case_id": "CLIN-010", "event": "start", "time": "2026-11-15T16:48:07.538419+07:00"}
+{"stage": "clinical", "case_id": "CLIN-010", "event": "end", "time": "2026-11-15T16:48:37.730086+07:00", "ai_status": "Completed", "mode": "Full"}
+{"stage": "clinical", "case_id": "CLIN-011", "event": "start", "time": "2026-11-15T16:48:37.736131+07:00"}
+{"stage": "clinical", "case_id": "CLIN-011", "event": "end", "time": "2026-11-15T16:49:13.440594+07:00", "ai_status": "Completed", "mode": "Full"}
+{"stage": "clinical", "case_id": "CLIN-013", "event": "start", "time": "2026-11-15T16:49:13.445927+07:00"}
+{"stage": "clinical", "case_id": "CLIN-013", "event": "end", "time": "2026-11-15T16:49:43.500846+07:00", "ai_status": "Completed", "mode": "Full"}
+{"stage": "clinical", "case_id": "CLIN-014", "event": "start", "time": "2026-11-15T16:49:43.509533+07:00"}
+{"stage": "clinical", "case_id": "CLIN-014", "event": "end", "time": "2026-11-15T16:50:13.257909+07:00", "ai_status": "Completed", "mode": "Full"}
+{"stage": "clinical", "case_id": "CLIN-015", "event": "start", "time": "2026-11-15T16:50:13.262956+07:00"}
+{"stage": "clinical", "case_id": "CLIN-015", "event": "end", "time": "2026-11-15T16:50:13.264963+07:00", "ai_status": "Skipped", "mode": "RuleOnly"}
+{"stage": "clinical", "case_id": "CLIN-017", "event": "start", "time": "2026-11-15T16:50:13.270523+07:00"}
+{"stage": "clinical", "case_id": "CLIN-017", "event": "end", "time": "2026-11-15T16:50:43.517704+07:00", "ai_status": "Completed", "mode": "Full"}
+{"stage": "clinical", "case_id": "CLIN-018", "event": "start", "time": "2026-11-15T16:50:43.523578+07:00"}
+{"stage": "clinical", "case_id": "CLIN-018", "event": "end", "time": "2026-11-15T16:51:09.420251+07:00", "ai_status": "Completed", "mode": "Full"}
+{"stage": "clinical", "case_id": "CLIN-019", "event": "start", "time": "2026-11-15T16:51:09.425562+07:00"}
+{"stage": "clinical", "case_id": "CLIN-019", "event": "end", "time": "2026-11-15T16:51:43.260648+07:00", "ai_status": "Completed", "mode": "Full"}
+{"stage": "clinical", "case_id": "CLIN-020", "event": "start", "time": "2026-11-15T16:51:43.266831+07:00"}
+{"stage": "clinical", "case_id": "CLIN-020", "event": "end", "time": "2026-11-15T16:52:10.555200+07:00", "ai_status": "Completed", "mode": "Full"}
+{"stage": "clinical", "case_id": "CLIN-021", "event": "start", "time": "2026-11-15T16:52:10.560706+07:00"}
+{"stage": "clinical", "case_id": "CLIN-021", "event": "end", "time": "2026-11-15T16:52:42.709165+07:00", "ai_status": "Completed", "mode": "Full"}
+{"stage": "clinical", "case_id": "CLIN-022", "event": "start", "time": "2026-11-15T16:52:42.715001+07:00"}
+{"stage": "clinical", "case_id": "CLIN-022", "event": "end", "time": "2026-11-15T16:53:20.996689+07:00", "ai_status": "Completed", "mode": "Full"}
+{"stage": "clinical", "case_id": "CLIN-023", "event": "start", "time": "2026-11-15T16:53:21.002060+07:00"}
+{"stage": "clinical", "case_id": "CLIN-023", "event": "end", "time": "2026-11-15T16:53:21.003794+07:00", "ai_status": "Skipped", "mode": "RuleOnly"}
+{"stage": "clinical", "case_id": "CLIN-024", "event": "start", "time": "2026-11-15T16:53:21.008761+07:00"}
+{"stage": "clinical", "case_id": "CLIN-024", "event": "end", "time": "2026-11-15T16:53:21.010273+07:00", "ai_status": "Skipped", "mode": "RuleOnly"}
+{"stage": "clinical", "case_id": "CLIN-025", "event": "start", "time": "2026-11-15T16:53:21.015014+07:00"}
+{"stage": "clinical", "case_id": "CLIN-025", "event": "end", "time": "2026-11-15T16:53:21.016440+07:00", "ai_status": "Skipped", "mode": "RuleOnly"}
+{"stage": "clinical", "case_id": "CLIN-026", "event": "start", "time": "2026-11-15T16:53:21.021523+07:00"}
+{"stage": "clinical", "case_id": "CLIN-026", "event": "end", "time": "2026-11-15T16:53:21.022961+07:00", "ai_status": "Skipped", "mode": "RuleOnly"}
+{"stage": "clinical", "case_id": "CLIN-027", "event": "start", "time": "2026-11-15T16:53:21.027541+07:00"}
+{"stage": "clinical", "case_id": "CLIN-027", "event": "end", "time": "2026-11-15T16:53:21.029052+07:00", "ai_status": "Skipped", "mode": "RuleOnly"}
+{"stage": "clinical", "case_id": "CLIN-028", "event": "start", "time": "2026-11-15T16:53:21.033955+07:00"}
+{"stage": "clinical", "case_id": "CLIN-028", "event": "end", "time": "2026-11-15T16:53:21.035474+07:00", "ai_status": "Skipped", "mode": "RuleOnly"}
+{"stage": "clinical", "case_id": "CLIN-029", "event": "start", "time": "2026-11-15T16:53:21.040028+07:00"}
+{"stage": "clinical", "case_id": "CLIN-029", "event": "end", "time": "2026-11-15T16:53:21.041588+07:00", "ai_status": "Skipped", "mode": "RuleOnly"}
+{"stage": "clinical", "case_id": "CLIN-030", "event": "start", "time": "2026-11-15T16:53:21.046070+07:00"}
+{"stage": "clinical", "case_id": "CLIN-030", "event": "end", "time": "2026-11-15T16:53:21.047509+07:00", "ai_status": "Skipped", "mode": "RuleOnly"}
+{"stage": "clinical", "case_id": "CLIN-031", "event": "start", "time": "2026-11-15T16:53:21.052125+07:00"}
+{"stage": "clinical", "case_id": "CLIN-031", "event": "end", "time": "2026-11-15T16:53:21.053831+07:00", "ai_status": "Skipped", "mode": "RuleOnly"}
+{"stage": "clinical", "case_id": "CLIN-032", "event": "start", "time": "2026-11-15T16:53:21.058284+07:00"}
+{"stage": "clinical", "case_id": "CLIN-032", "event": "end", "time": "2026-11-15T16:53:21.059852+07:00", "ai_status": "Skipped", "mode": "RuleOnly"}
+{"stage": "clinical", "case_id": "CLIN-033", "event": "start", "time": "2026-11-15T16:53:21.064362+07:00"}
+{"stage": "clinical", "case_id": "CLIN-033", "event": "end", "time": "2026-11-15T16:53:21.065866+07:00", "ai_status": "Skipped", "mode": "RuleOnly"}
+{"stage": "clinical", "case_id": "CLIN-034", "event": "start", "time": "2026-11-15T16:53:21.070197+07:00"}
+{"stage": "clinical", "case_id": "CLIN-034", "event": "end", "time": "2026-11-15T16:53:21.071691+07:00", "ai_status": "Skipped", "mode": "RuleOnly"}
+{"stage": "clinical", "case_id": "CLIN-035", "event": "start", "time": "2026-11-15T16:53:21.076471+07:00"}
+{"stage": "clinical", "case_id": "CLIN-035", "event": "end", "time": "2026-11-15T16:53:21.077945+07:00", "ai_status": "Skipped", "mode": "RuleOnly"}
+{"stage": "clinical", "case_id": "CLIN-036", "event": "start", "time": "2026-11-15T16:53:21.083041+07:00"}
+{"stage": "clinical", "case_id": "CLIN-036", "event": "end", "time": "2026-11-15T16:53:21.084468+07:00", "ai_status": "Skipped", "mode": "RuleOnly"}
+{"stage": "clinical", "case_id": "CLIN-037", "event": "start", "time": "2026-11-15T16:53:21.089175+07:00"}
+{"stage": "clinical", "case_id": "CLIN-037", "event": "end", "time": "2026-11-15T16:53:21.090639+07:00", "ai_status": "Skipped", "mode": "RuleOnly"}
+{"stage": "clinical", "case_id": "CLIN-038", "event": "start", "time": "2026-11-15T16:53:21.095580+07:00"}
+{"stage": "clinical", "case_id": "CLIN-038", "event": "end", "time": "2026-11-15T16:53:21.097041+07:00", "ai_status": "Skipped", "mode": "RuleOnly"}
+{"stage": "clinical", "case_id": "CLIN-039", "event": "start", "time": "2026-11-15T16:53:21.101579+07:00"}
+{"stage": "clinical", "case_id": "CLIN-039", "event": "end", "time": "2026-11-15T16:53:21.103118+07:00", "ai_status": "Skipped", "mode": "RuleOnly"}
+{"stage": "clinical", "case_id": "CLIN-040", "event": "start", "time": "2026-11-15T16:53:21.107691+07:00"}
+{"stage": "clinical", "case_id": "CLIN-040", "event": "end", "time": "2026-11-15T16:53:21.109232+07:00", "ai_status": "Skipped", "mode": "RuleOnly"}
+{"stage": "clinical", "case_id": "CLIN-041", "event": "start", "time": "2026-11-15T16:53:21.113959+07:00"}
+{"stage": "clinical", "case_id": "CLIN-041", "event": "end", "time": "2026-11-15T16:53:21.115451+07:00", "ai_status": "Skipped", "mode": "RuleOnly"}
+{"stage": "clinical", "case_id": "CLIN-042", "event": "start", "time": "2026-11-15T16:53:21.120604+07:00"}
+{"stage": "clinical", "case_id": "CLIN-042", "event": "end", "time": "2026-11-15T16:53:21.122134+07:00", "ai_status": "Skipped", "mode": "RuleOnly"}
+{"stage": "clinical", "case_id": "CLIN-043", "event": "start", "time": "2026-11-15T16:53:21.126609+07:00"}
+{"stage": "clinical", "case_id": "CLIN-043", "event": "end", "time": "2026-11-15T16:53:21.128021+07:00", "ai_status": "Skipped", "mode": "RuleOnly"}
+{"stage": "clinical", "case_id": "CLIN-044", "event": "start", "time": "2026-11-15T16:53:21.134009+07:00"}
+{"stage": "clinical", "case_id": "CLIN-044", "event": "end", "time": "2026-11-15T16:53:21.135709+07:00", "ai_status": "Skipped", "mode": "RuleOnly"}
+{"stage": "clinical", "case_id": "CLIN-045", "event": "start", "time": "2026-11-15T16:53:21.141485+07:00"}
+{"stage": "clinical", "case_id": "CLIN-045", "event": "end", "time": "2026-11-15T16:53:21.143251+07:00", "ai_status": "Skipped", "mode": "RuleOnly"}
+{"stage": "clinical", "case_id": "CLIN-046", "event": "start", "time": "2026-11-15T16:53:21.148786+07:00"}
+{"stage": "clinical", "case_id": "CLIN-046", "event": "end", "time": "2026-11-15T16:53:21.150391+07:00", "ai_status": "Skipped", "mode": "RuleOnly"}
+{"stage": "clinical", "case_id": "CLIN-047", "event": "start", "time": "2026-11-15T16:53:21.155011+07:00"}
+{"stage": "clinical", "case_id": "CLIN-047", "event": "end", "time": "2026-11-15T16:53:21.156613+07:00", "ai_status": "Skipped", "mode": "RuleOnly"}
+{"stage": "clinical", "case_id": "CLIN-048", "event": "start", "time": "2026-11-15T16:53:21.161188+07:00"}
+{"stage": "clinical", "case_id": "CLIN-048", "event": "end", "time": "2026-11-15T16:53:21.162731+07:00", "ai_status": "Skipped", "mode": "RuleOnly"}
+{"stage": "clinical", "case_id": "CLIN-049", "event": "start", "time": "2026-11-15T16:53:21.168769+07:00"}
+{"stage": "clinical", "case_id": "CLIN-049", "event": "end", "time": "2026-11-15T16:53:21.170329+07:00", "ai_status": "Skipped", "mode": "RuleOnly"}
+{"stage": "clinical", "case_id": "CLIN-050", "event": "start", "time": "2026-11-15T16:53:21.175705+07:00"}
+{"stage": "clinical", "case_id": "CLIN-050", "event": "end", "time": "2026-11-15T16:53:21.177346+07:00", "ai_status": "Skipped", "mode": "RuleOnly"}
+{"stage": "clinical", "case_id": "CLIN-051", "event": "start", "time": "2026-11-15T16:53:21.183044+07:00"}
+{"stage": "clinical", "case_id": "CLIN-051", "event": "end", "time": "2026-11-15T16:53:21.184912+07:00", "ai_status": "Skipped", "mode": "RuleOnly"}
+{"stage": "clinical", "case_id": "CLIN-052", "event": "start", "time": "2026-11-15T16:53:21.190293+07:00"}
+{"stage": "clinical", "case_id": "CLIN-052", "event": "end", "time": "2026-11-15T16:53:21.192048+07:00", "ai_status": "Skipped", "mode": "RuleOnly"}
+{"stage": "clinical", "case_id": "CLIN-053", "event": "start", "time": "2026-11-15T16:53:21.198255+07:00"}
+{"stage": "clinical", "case_id": "CLIN-053", "event": "end", "time": "2026-11-15T16:53:21.199859+07:00", "ai_status": "Skipped", "mode": "RuleOnly"}
+{"stage": "clinical", "case_id": "CLIN-054", "event": "start", "time": "2026-11-15T16:53:21.204261+07:00"}
+{"stage": "clinical", "case_id": "CLIN-054", "event": "end", "time": "2026-11-15T16:53:21.205949+07:00", "ai_status": "Skipped", "mode": "RuleOnly"}
+{"stage": "clinical", "case_id": "CLIN-055", "event": "start", "time": "2026-11-15T16:53:21.210526+07:00"}
+{"stage": "clinical", "case_id": "CLIN-055", "event": "end", "time": "2026-11-15T16:53:21.211973+07:00", "ai_status": "Skipped", "mode": "RuleOnly"}
+{"stage": "clinical", "case_id": "CLIN-056", "event": "start", "time": "2026-11-15T16:53:21.216727+07:00"}
+{"stage": "clinical", "case_id": "CLIN-056", "event": "end", "time": "2026-11-15T16:53:21.218139+07:00", "ai_status": "Skipped", "mode": "RuleOnly"}
+{"stage": "clinical", "case_id": "CLIN-057", "event": "start", "time": "2026-11-15T16:53:21.223356+07:00"}
+{"stage": "clinical", "case_id": "CLIN-057", "event": "end", "time": "2026-11-15T16:53:21.224882+07:00", "ai_status": "Skipped", "mode": "RuleOnly"}
+{"stage": "clinical", "case_id": "CLIN-058", "event": "start", "time": "2026-11-15T16:53:21.229891+07:00"}
+{"stage": "clinical", "case_id": "CLIN-058", "event": "end", "time": "2026-11-15T16:53:21.231322+07:00", "ai_status": "Skipped", "mode": "RuleOnly"}
+{"stage": "clinical", "case_id": "CLIN-059", "event": "start", "time": "2026-11-15T16:53:21.236137+07:00"}
+{"stage": "clinical", "case_id": "CLIN-059", "event": "end", "time": "2026-11-15T16:53:21.237625+07:00", "ai_status": "Skipped", "mode": "RuleOnly"}
+{"stage": "clinical", "case_id": "CLIN-060", "event": "start", "time": "2026-11-15T16:53:21.242421+07:00"}
+{"stage": "clinical", "case_id": "CLIN-060", "event": "end", "time": "2026-11-15T16:53:21.243824+07:00", "ai_status": "Skipped", "mode": "RuleOnly"}
+{"stage": "clinical", "case_id": "CLIN-061", "event": "start", "time": "2026-11-15T16:53:21.249119+07:00"}
+{"stage": "clinical", "case_id": "CLIN-061", "event": "end", "time": "2026-11-15T16:53:21.250521+07:00", "ai_status": "Skipped", "mode": "RuleOnly"}
+{"stage": "clinical", "case_id": "CLIN-062", "event": "start", "time": "2026-11-15T16:53:21.255778+07:00"}
+{"stage": "clinical", "case_id": "CLIN-062", "event": "end", "time": "2026-11-15T16:53:21.257290+07:00", "ai_status": "Skipped", "mode": "RuleOnly"}
+{"stage": "clinical", "case_id": "CLIN-063", "event": "start", "time": "2026-11-15T16:53:21.262469+07:00"}
+{"stage": "clinical", "case_id": "CLIN-063", "event": "end", "time": "2026-11-15T16:53:21.263903+07:00", "ai_status": "Skipped", "mode": "RuleOnly"}
+{"stage": "clinical", "case_id": "CLIN-064", "event": "start", "time": "2026-11-15T16:53:21.269053+07:00"}
+{"stage": "clinical", "case_id": "CLIN-064", "event": "end", "time": "2026-11-15T16:53:21.270582+07:00", "ai_status": "Skipped", "mode": "RuleOnly"}
+{"stage": "clinical", "case_id": "CLIN-065", "event": "start", "time": "2026-11-15T16:53:21.275607+07:00"}
+{"stage": "clinical", "case_id": "CLIN-065", "event": "end", "time": "2026-11-15T16:53:21.277099+07:00", "ai_status": "Skipped", "mode": "RuleOnly"}
+{"stage": "clinical", "case_id": "CLIN-066", "event": "start", "time": "2026-11-15T16:53:21.281955+07:00"}
+{"stage": "clinical", "case_id": "CLIN-066", "event": "end", "time": "2026-11-15T16:53:21.283617+07:00", "ai_status": "Skipped", "mode": "RuleOnly"}
+{"stage": "clinical", "case_id": "CLIN-067", "event": "start", "time": "2026-11-15T16:53:21.288293+07:00"}
+{"stage": "clinical", "case_id": "CLIN-067", "event": "end", "time": "2026-11-15T16:53:21.289822+07:00", "ai_status": "Skipped", "mode": "RuleOnly"}
+{"stage": "clinical", "case_id": "CLIN-068", "event": "start", "time": "2026-11-15T16:53:21.294409+07:00"}
+{"stage": "clinical", "case_id": "CLIN-068", "event": "end", "time": "2026-11-15T16:53:21.315943+07:00", "ai_status": "Degraded", "mode": "RuleOnly"}
+{"stage": "clinical", "case_id": "CLIN-069", "event": "start", "time": "2026-11-15T16:53:21.322025+07:00"}
+{"stage": "clinical", "case_id": "CLIN-069", "event": "end", "time": "2026-11-15T16:53:21.343206+07:00", "ai_status": "Degraded", "mode": "RuleOnly"}
+{"stage": "clinical", "case_id": "CLIN-070", "event": "start", "time": "2026-11-15T16:53:21.348743+07:00"}
+{"stage": "clinical", "case_id": "CLIN-070", "event": "end", "time": "2026-11-15T16:53:21.369606+07:00", "ai_status": "Degraded", "mode": "RuleOnly"}
+{"stage": "clinical", "case_id": "CLIN-071", "event": "start", "time": "2026-11-15T16:53:21.375500+07:00"}
+{"stage": "clinical", "case_id": "CLIN-071", "event": "end", "time": "2026-11-15T16:53:21.396649+07:00", "ai_status": "Degraded", "mode": "RuleOnly"}
+{"stage": "clinical", "case_id": "CLIN-072", "event": "start", "time": "2026-11-15T16:53:21.403042+07:00"}
+{"stage": "clinical", "case_id": "CLIN-072", "event": "end", "time": "2026-11-15T16:53:21.424291+07:00", "ai_status": "Degraded", "mode": "RuleOnly"}
+{"stage": "clinical", "case_id": "CLIN-073", "event": "start", "time": "2026-11-15T16:53:21.429497+07:00"}
+{"stage": "clinical", "case_id": "CLIN-073", "event": "end", "time": "2026-11-15T16:53:21.450256+07:00", "ai_status": "Degraded", "mode": "RuleOnly"}
+{"stage": "clinical", "case_id": "CLIN-074", "event": "start", "time": "2026-11-15T16:53:21.455602+07:00"}
+{"stage": "clinical", "case_id": "CLIN-074", "event": "end", "time": "2026-11-15T16:53:21.476565+07:00", "ai_status": "Degraded", "mode": "RuleOnly"}
+{"stage": "clinical", "case_id": "CLIN-075", "event": "start", "time": "2026-11-15T16:53:21.481721+07:00"}
+{"stage": "clinical", "case_id": "CLIN-075", "event": "end", "time": "2026-11-15T16:53:21.502451+07:00", "ai_status": "Degraded", "mode": "RuleOnly"}
+{"stage": "clinical", "case_id": "CLIN-076", "event": "start", "time": "2026-11-15T16:53:21.507914+07:00"}
+{"stage": "clinical", "case_id": "CLIN-076", "event": "end", "time": "2026-11-15T16:53:21.528624+07:00", "ai_status": "Degraded", "mode": "RuleOnly"}
+{"stage": "clinical", "case_id": "CLIN-077", "event": "start", "time": "2026-11-15T16:53:21.534468+07:00"}
+{"stage": "clinical", "case_id": "CLIN-077", "event": "end", "time": "2026-11-15T16:53:21.555445+07:00", "ai_status": "Degraded", "mode": "RuleOnly"}
+{"stage": "clinical", "case_id": "CLIN-078", "event": "start", "time": "2026-11-15T16:53:21.560892+07:00"}
+{"stage": "clinical", "case_id": "CLIN-078", "event": "end", "time": "2026-11-15T16:53:51.051016+07:00", "ai_status": "Completed", "mode": "Full"}
+{"stage": "clinical", "case_id": "CLIN-079", "event": "start", "time": "2026-11-15T16:53:51.057404+07:00"}
+{"stage": "clinical", "case_id": "CLIN-079", "event": "end", "time": "2026-11-15T16:54:33.086773+07:00", "ai_status": "Completed", "mode": "Full"}
+{"stage": "clinical", "case_id": "CLIN-080", "event": "start", "time": "2026-11-15T16:54:33.093102+07:00"}
+{"stage": "clinical", "case_id": "CLIN-080", "event": "end", "time": "2026-11-15T16:55:09.938464+07:00", "ai_status": "Completed", "mode": "Full"}
+{"stage": "clinical", "case_id": "CLIN-081", "event": "start", "time": "2026-11-15T16:55:09.944393+07:00"}
+{"stage": "clinical", "case_id": "CLIN-081", "event": "end", "time": "2026-11-15T16:55:52.986528+07:00", "ai_status": "Completed", "mode": "Full"}
+{"stage": "clinical", "case_id": "CLIN-082", "event": "start", "time": "2026-11-15T16:55:52.993097+07:00"}
+{"stage": "clinical", "case_id": "CLIN-082", "event": "end", "time": "2026-11-15T16:56:30.582981+07:00", "ai_status": "Completed", "mode": "Full"}
+{"stage": "clinical", "case_id": "CLIN-083", "event": "start", "time": "2026-11-15T16:56:30.588926+07:00"}
+{"stage": "clinical", "case_id": "CLIN-083", "event": "end", "time": "2026-11-15T16:56:41.185911+07:00", "ai_status": "Completed", "mode": "Full"}
+{"stage": "clinical", "case_id": "CLIN-084", "event": "start", "time": "2026-11-15T16:56:41.193825+07:00"}
+{"stage": "clinical", "case_id": "CLIN-084", "event": "end", "time": "2026-11-15T16:56:41.196230+07:00", "ai_status": "Skipped", "mode": "RuleOnly"}
+{"stage": "extraction", "case_id": "EXT-001", "event": "start", "time": "2026-11-15T16:56:41.198088+07:00"}
+{"stage": "extraction", "case_id": "EXT-001", "event": "end", "time": "2026-11-15T16:56:49.591639+07:00", "completed": true, "failure_code": null}
+{"stage": "extraction", "case_id": "EXT-002", "event": "start", "time": "2026-11-15T16:56:49.595659+07:00"}
+{"stage": "extraction", "case_id": "EXT-002", "event": "end", "time": "2026-11-15T16:57:00.153982+07:00", "completed": true, "failure_code": null}
+{"stage": "extraction", "case_id": "EXT-003", "event": "start", "time": "2026-11-15T16:57:00.157186+07:00"}
+{"stage": "extraction", "case_id": "EXT-003", "event": "end", "time": "2026-11-15T16:57:09.684716+07:00", "completed": true, "failure_code": null}
+{"stage": "extraction", "case_id": "EXT-004", "event": "start", "time": "2026-11-15T16:57:09.688754+07:00"}
+{"stage": "extraction", "case_id": "EXT-004", "event": "end", "time": "2026-11-15T16:57:18.547517+07:00", "completed": true, "failure_code": null}
+{"stage": "extraction", "case_id": "EXT-005", "event": "start", "time": "2026-11-15T16:57:18.550722+07:00"}
+{"stage": "extraction", "case_id": "EXT-005", "event": "end", "time": "2026-11-15T16:57:26.714889+07:00", "completed": true, "failure_code": null}
+{"stage": "extraction", "case_id": "EXT-006", "event": "start", "time": "2026-11-15T16:57:26.719357+07:00"}
+{"stage": "extraction", "case_id": "EXT-006", "event": "end", "time": "2026-11-15T16:57:35.677292+07:00", "completed": true, "failure_code": null}
+{"stage": "extraction", "case_id": "EXT-007", "event": "start", "time": "2026-11-15T16:57:35.680944+07:00"}
+{"stage": "extraction", "case_id": "EXT-007", "event": "end", "time": "2026-11-15T16:57:46.583887+07:00", "completed": true, "failure_code": null}
+{"stage": "extraction", "case_id": "EXT-008", "event": "start", "time": "2026-11-15T16:57:46.587208+07:00"}
+{"stage": "extraction", "case_id": "EXT-008", "event": "end", "time": "2026-11-15T16:57:53.727020+07:00", "completed": false, "failure_code": "UNMAPPED_PHRASE"}
+{"stage": "extraction", "case_id": "EXT-009", "event": "start", "time": "2026-11-15T16:57:53.729497+07:00"}
+{"stage": "extraction", "case_id": "EXT-009", "event": "end", "time": "2026-11-15T16:58:03.285402+07:00", "completed": true, "failure_code": null}
+{"stage": "extraction", "case_id": "EXT-010", "event": "start", "time": "2026-11-15T16:58:03.289192+07:00"}
+{"stage": "extraction", "case_id": "EXT-010", "event": "end", "time": "2026-11-15T16:58:12.919386+07:00", "completed": false, "failure_code": "UNMAPPED_PHRASE"}
+{"stage": "extraction", "case_id": "EXT-011", "event": "start", "time": "2026-11-15T16:58:12.921361+07:00"}
+{"stage": "extraction", "case_id": "EXT-011", "event": "end", "time": "2026-11-15T16:58:21.404751+07:00", "completed": true, "failure_code": null}
+{"stage": "extraction", "case_id": "EXT-012", "event": "start", "time": "2026-11-15T16:58:21.408121+07:00"}
+{"stage": "extraction", "case_id": "EXT-012", "event": "end", "time": "2026-11-15T16:58:29.669815+07:00", "completed": true, "failure_code": null}
+{"stage": "extraction", "case_id": "EXT-013", "event": "start", "time": "2026-11-15T16:58:29.674880+07:00"}
+{"stage": "extraction", "case_id": "EXT-013", "event": "end", "time": "2026-11-15T16:58:38.256494+07:00", "completed": true, "failure_code": null}
+{"stage": "extraction", "case_id": "EXT-014", "event": "start", "time": "2026-11-15T16:58:38.259966+07:00"}
+{"stage": "extraction", "case_id": "EXT-014", "event": "end", "time": "2026-11-15T16:58:46.930178+07:00", "completed": true, "failure_code": null}
+{"stage": "extraction", "case_id": "EXT-016", "event": "start", "time": "2026-11-15T16:58:46.933805+07:00"}
+{"stage": "extraction", "case_id": "EXT-016", "event": "end", "time": "2026-11-15T16:58:56.404613+07:00", "completed": true, "failure_code": null}
+{"stage": "extraction", "case_id": "EXT-017", "event": "start", "time": "2026-11-15T16:58:56.407843+07:00"}
+{"stage": "extraction", "case_id": "EXT-017", "event": "end", "time": "2026-11-15T16:59:03.669798+07:00", "completed": true, "failure_code": null}
+{"stage": "extraction", "case_id": "EXT-018", "event": "start", "time": "2026-11-15T16:59:03.673666+07:00"}
+{"stage": "extraction", "case_id": "EXT-018", "event": "end", "time": "2026-11-15T16:59:13.982430+07:00", "completed": true, "failure_code": null}
+{"stage": "extraction", "case_id": "EXT-019", "event": "start", "time": "2026-11-15T16:59:13.986433+07:00"}
+{"stage": "extraction", "case_id": "EXT-019", "event": "end", "time": "2026-11-15T16:59:22.663677+07:00", "completed": true, "failure_code": null}
+{"stage": "extraction", "case_id": "EXT-020", "event": "start", "time": "2026-11-15T16:59:22.667492+07:00"}
+{"stage": "extraction", "case_id": "EXT-020", "event": "end", "time": "2026-11-15T16:59:29.477450+07:00", "completed": true, "failure_code": null}
+{"stage": "extraction", "case_id": "EXT-021", "event": "start", "time": "2026-11-15T16:59:29.481448+07:00"}
+{"stage": "extraction", "case_id": "EXT-021", "event": "end", "time": "2026-11-15T16:59:38.934285+07:00", "completed": true, "failure_code": null}
+{"stage": "extraction", "case_id": "EXT-022", "event": "start", "time": "2026-11-15T16:59:38.937935+07:00"}
+{"stage": "extraction", "case_id": "EXT-022", "event": "end", "time": "2026-11-15T16:59:47.529391+07:00", "completed": true, "failure_code": null}
+{"stage": "extraction", "case_id": "EXT-023", "event": "start", "time": "2026-11-15T16:59:47.532596+07:00"}
+{"stage": "extraction", "case_id": "EXT-023", "event": "end", "time": "2026-11-15T16:59:54.622036+07:00", "completed": true, "failure_code": null}
+{"stage": "extraction", "case_id": "EXT-024", "event": "start", "time": "2026-11-15T16:59:54.625473+07:00"}
+{"stage": "extraction", "case_id": "EXT-024", "event": "end", "time": "2026-11-15T17:00:02.285077+07:00", "completed": true, "failure_code": null}
+{"stage": "extraction", "case_id": "EXT-025", "event": "start", "time": "2026-11-15T17:00:02.288366+07:00"}
+{"stage": "extraction", "case_id": "EXT-025", "event": "end", "time": "2026-11-15T17:00:10.785231+07:00", "completed": true, "failure_code": null}
+{"stage": "extraction", "case_id": "EXT-026", "event": "start", "time": "2026-11-15T17:00:10.788695+07:00"}
+{"stage": "extraction", "case_id": "EXT-026", "event": "end", "time": "2026-11-15T17:00:17.226960+07:00", "completed": true, "failure_code": null}
+{"stage": "extraction", "case_id": "EXT-027", "event": "start", "time": "2026-11-15T17:00:17.231576+07:00"}
+{"stage": "extraction", "case_id": "EXT-027", "event": "end", "time": "2026-11-15T17:00:26.692396+07:00", "completed": true, "failure_code": null}
+{"stage": "extraction", "case_id": "EXT-028", "event": "start", "time": "2026-11-15T17:00:26.696683+07:00"}
+{"stage": "extraction", "case_id": "EXT-028", "event": "end", "time": "2026-11-15T17:00:38.690116+07:00", "completed": false, "failure_code": "UNMAPPED_PHRASE"}
+{"stage": "extraction", "case_id": "EXT-029", "event": "start", "time": "2026-11-15T17:00:38.691805+07:00"}
+{"stage": "extraction", "case_id": "EXT-029", "event": "end", "time": "2026-11-15T17:00:48.808312+07:00", "completed": true, "failure_code": null}
+{"stage": "extraction", "case_id": "EXT-030", "event": "start", "time": "2026-11-15T17:00:48.811856+07:00"}
+{"stage": "extraction", "case_id": "EXT-030", "event": "end", "time": "2026-11-15T17:00:57.430523+07:00", "completed": true, "failure_code": null}

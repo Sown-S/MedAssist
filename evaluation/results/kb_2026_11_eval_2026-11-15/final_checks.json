@@ -1,0 +1,176 @@
+{
+  "all_checks": "PASS",
+  "independent_metrics": "PASS",
+  "cases_per_mode": {
+    "clinical": 82,
+    "extraction": 29
+  },
+  "attempts_per_mode": {
+    "RuleOnly": 1,
+    "Full": 1
+  },
+  "knowledge_files": 179,
+  "combined_sha256": "4e7b58cffc3cd950e1411a131919e36976ea94f209c426821886b03708cd368d",
+  "source_files_match_HEAD_LF": {
+    "server/scripts/run_eval.py": "48f08ecbff2139e1f9ad571c93443be61eec774508a2a50fc8515ff0a0b886e1",
+    "server/app/core/config.py": "3f4b9e155e53a668fb24570ed5e474b5b754d776d51d605a293520c40acd1408",
+    "evaluation/testset/manifest_freeze.json": "bc771d08ca1ff08f84fe2d2e3ce3b3ac3bdd630aa2f1096ce5597e2b43bce2b1",
+    "server/app/ai/llm/prompts/__init__.py": "7f8b4c0864298a919b9c191f56fb00a494dbe49d4f9658abe3884920e66e6317",
+    "server/app/ai/llm/prompts/extraction_phrases_compact_v3.txt": "49407e952a609b1da7df5791b670c7d1b63ab75a1e42cb8531f65f271d5fbeee",
+    "server/app/ai/llm/prompts/extraction_phrases_v2.txt": "b92b4f45900fda78ca1421a5905d2d1f0c172391cba782fe9b5197826d943b6d",
+    "server/app/ai/llm/prompts/extraction_v1.txt": "7b178ecb9883b50de160b447c603d44b060b607c03039916ad06867857a8acee",
+    "server/app/ai/llm/prompts/extraction_v2.txt": "05a41e6e19a8fd1db411f91c4a303c43a78d2ebbda150b24d22d38e41cd66277",
+    "server/app/ai/llm/prompts/reasoning_v1.txt": "5a14c0498c8040e7da411e67ae0579e2fd391344dffd7cf16bb5595eb8a730bc",
+    "server/app/ai/llm/prompts/reasoning_v2.txt": "2affccbef26cf0bf31de5bd45ad801e057a91444daf058d9ae64bc1474ae0688",
+    "server/app/ai/llm/prompts/reasoning_v3.txt": "117f40d631987510b0d3a5e7a4bcf65742ad9898cff2a5f53107c379209551ee"
+  },
+  "local_markdown_links_checked": 10,
+  "secret_patterns_checked": 4,
+  "tracked_diff": [],
+  "preexisting_docs_file_preserved": "docs/dien-tap-tailscale-2026-11-16.md",
+  "new_repo_file_scope": "evaluation/results/kb_2026_11_eval_2026-11-15/",
+  "log_encoding_check": "BOM-aware UTF-8/UTF-16; original logs unchanged",
+  "review_status": "PENDING",
+  "cleanup": {
+    "before_count": 48,
+    "removed_count": 17,
+    "after_count": 31,
+    "preserved_files_byte_hash_checked": 24,
+    "removed_files_not_regenerated": true,
+    "no_benchmark_or_database_calls": true
+  },
+  "cleanup_branch": "eval/kb202611-results-cleanup",
+  "report_review_responsibility": {
+    "status": "USER_CONFIRMED_DIRECT_TECHNICAL_REVIEW",
+    "reviewer": "Tuấn",
+    "basis": "Explicit user answer in conversation",
+    "user_confirmation": "Tuấn trực tiếp rà kỹ thuật và xác nhận báo cáo",
+    "scope": "Technical report review only",
+    "clinical_review_status": "PENDING",
+    "benchmark_or_database_calls": 0
+  },
+  "readme_alignment": {
+    "status": "PASS",
+    "branch": "eval/kb202611-tuan-direct-review",
+    "user_readme_input_sha256": "cb39d5585e11a8a0e5af2ea474eb0a9db1e4be6d9db64227a3eced624c2e1e8c",
+    "consistent_report_headers": 3,
+    "preserved_evidence_file_hashes_checked": 24,
+    "artifact_count": 31,
+    "benchmark_or_database_calls": 0,
+    "findings_corrected": [
+      "Aligned responsible owner across README/templates/generated reports/metadata",
+      "Scoped PENDING to clinical review; kept verification-support history separate from current report review",
+      "Header check reads actual review line and uses UTF8 PowerShell stdin"
+    ],
+    "basis": "Latest explicit user confirmation of direct technical report review"
+  },
+  "direct_report_review_confirmation": {
+    "status": "USER_CONFIRMED_DIRECT_TECHNICAL_REVIEW",
+    "reviewer": "Tuấn",
+    "basis": "Explicit user answer in conversation",
+    "user_confirmation": "Tuấn trực tiếp rà kỹ thuật và xác nhận báo cáo",
+    "scope": "Technical report review only",
+    "clinical_review_status": "PENDING",
+    "benchmark_or_database_calls": 0
+  },
+  "verification_support_history": {
+    "status": "VERIFICATION_SUPPORT_COMPLETED",
+    "decision": "DAT_CO_DIEU_KIEN",
+    "authorization": "Explicit user delegation in conversation",
+    "scope": "Historical verification support only; not the current direct technical report review",
+    "clinical_review_status": "PENDING",
+    "separate_fraction_recomputation": {
+      "rule_only": {
+        "clinical_cases": 82,
+        "extraction_cases": 29,
+        "red_flag_hits": 48,
+        "false_alarms": 0,
+        "priority_correct": 82,
+        "ddx_cases": 18,
+        "top1_hits": 15,
+        "top3_hits": 17,
+        "extraction_tp_fp_fn": [
+          57,
+          39,
+          42
+        ],
+        "f1_fraction": "38/65",
+        "real_model_envelopes": 29,
+        "clinical_llm_ids_match_full_mode": true
+      },
+      "rule_llm": {
+        "clinical_cases": 82,
+        "extraction_cases": 29,
+        "red_flag_hits": 48,
+        "false_alarms": 0,
+        "priority_correct": 82,
+        "ddx_cases": 18,
+        "top1_hits": 16,
+        "top3_hits": 17,
+        "extraction_tp_fp_fn": [
+          57,
+          39,
+          42
+        ],
+        "f1_fraction": "38/65",
+        "real_model_envelopes": 53,
+        "clinical_llm_ids_match_full_mode": true
+      }
+    },
+    "preserved_evidence_file_hashes_checked": 24,
+    "report_defects_corrected": [
+      "Stale root before/after snapshot reference after cleanup",
+      "Ambiguous technical vs human/clinical review status"
+    ],
+    "branch": "eval/kb202611-report-review",
+    "benchmark_or_database_calls": 0,
+    "record_scope": "Historical support record; current report reviewer is Tuan as explicitly confirmed by the user",
+    "performed_by": "AI assistant (historical report preparation and verification support)",
+    "is_current_report_review": false
+  },
+  "review_metadata_cleanup": {
+    "status": "PASS",
+    "branch": "eval/kb202611-review-metadata",
+    "current_reviewer": "Tuấn",
+    "historical_record": "verification_support_history",
+    "historical_performer_retained": true,
+    "historical_calculations_preserved": true,
+    "preserved_evidence_hashes_checked": 24,
+    "clinical_review_status": "PENDING",
+    "artifact_count": 31,
+    "benchmark_or_database_calls": 0
+  },
+  "staging_lifecycle": {
+    "decision_by": "Tuấn",
+    "decision_date": "2026-11-15",
+    "decision_source": "Explicit user instruction in conversation",
+    "user_statement": "thế thì tôi quyết định cho dừng trước",
+    "action": "STOP_ONLY_KEEP_DATA",
+    "container": "medassist-kb202611-eval-20261115",
+    "stop_command": "docker stop medassist-kb202611-eval-20261115",
+    "status_after_stop": "exited",
+    "running_after_stop": false,
+    "container_retained": true,
+    "data_volume_retained": true,
+    "data_volume_exists_verified": true,
+    "results_directory_retained": true,
+    "permanent_deletion_requested": false,
+    "verification_commands": [
+      "docker inspect medassist-kb202611-eval-20261115",
+      "docker volume inspect <staging data volume>"
+    ],
+    "database_connections_for_documentation": 0
+  },
+  "staging_stop_documentation": {
+    "status": "PASS",
+    "branch": "eval/kb202611-staging-stop-decision",
+    "decision_by": "Tuấn",
+    "decision_record": "staging_lifecycle",
+    "documents_consistent": 3,
+    "preserved_evidence_hashes_checked": 24,
+    "historical_staging_snapshots_unchanged": true,
+    "artifact_count": 31,
+    "benchmark_or_database_calls": 0,
+    "docker_checks": "Read-only inspect; stopped container and retained volume verified"
+  }
+}

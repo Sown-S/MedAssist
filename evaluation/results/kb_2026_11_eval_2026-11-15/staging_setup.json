@@ -1,0 +1,12 @@
+{
+  "container": "medassist-kb202611-eval-20261115",
+  "database": "medassist_kb202611_stage_20261115",
+  "host": "127.0.0.1",
+  "port": 15435,
+  "new_dedicated_postgres_cluster": true,
+  "source_database_copied": false,
+  "medassist_database_connected": false,
+  "roles_initialized_with": "server/db/initdb/sql/01_roles.sql",
+  "credentials_saved_in_results": false,
+  "initial_setup_attempt": "stdin text-mode initialization failed before database creation; database then created explicitly; binary UTF8 stdin roles setup succeeded"
+}
