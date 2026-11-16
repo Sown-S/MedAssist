@@ -8,7 +8,7 @@ from typing import Any, Literal
 from pydantic import BaseModel, ConfigDict, Field
 
 from app.schemas.common import CleanStr
-from app.validation.knowledge_validators import ConditionCode, ConditionLogic
+from app.validation.knowledge_validators import SHORT_NAME_MAX, Aliases, ConditionCode, ConditionLogic
 
 Kind = Literal["symptoms", "conditions", "relations", "excerpts", "rules"]
 ItemStatus = Literal["Draft", "PendingApproval", "Active", "Retired"]
@@ -59,6 +59,9 @@ class SymptomDraft(BaseModel):
     model_config = ConfigDict(extra="forbid")
     symptom_name: CleanStr = Field(min_length=1, max_length=150)
     category: CleanStr | None = Field(default=None, max_length=100)
+    short_name: CleanStr | None = Field(default=None, min_length=1, max_length=SHORT_NAME_MAX)
+    aliases: Aliases = Field(default_factory=list)
+    detection: Literal["reported", "exam", "both"] = "both"
 
 
 class ConditionDraft(BaseModel):

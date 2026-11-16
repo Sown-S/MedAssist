@@ -56,9 +56,23 @@ def load_snapshot(bind: Engine) -> KnowledgeSnapshot:
             }
 
             symptoms = [
-                {"symptom_code": r.symptom_code, "symptom_name": r.symptom_name, "category": r.category}
+                {
+                    "symptom_code": r.symptom_code,
+                    "symptom_name": r.symptom_name,
+                    "category": r.category,
+                    "short_name": r.short_name,
+                    "aliases": list(r.aliases),
+                    "detection": r.detection,
+                }
                 for r in conn.execute(
-                    select(Symptom.symptom_code, Symptom.symptom_name, Symptom.category)
+                    select(
+                        Symptom.symptom_code,
+                        Symptom.symptom_name,
+                        Symptom.category,
+                        Symptom.short_name,
+                        Symptom.aliases,
+                        Symptom.detection,
+                    )
                     .where(Symptom.status == "Active")
                     .order_by(Symptom.symptom_code)
                 )
