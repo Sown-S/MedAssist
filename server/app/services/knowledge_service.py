@@ -35,7 +35,12 @@ from app.validation.knowledge_validators import (
 
 # kind -> (model, cột khóa, cột nội dung, tên bảng cho nhật ký)
 KINDS: dict[str, tuple[Any, tuple[str, ...], tuple[str, ...], str]] = {
-    "symptoms": (Symptom, ("symptom_code",), ("symptom_name", "category"), "symptom"),
+    "symptoms": (
+        Symptom,
+        ("symptom_code",),
+        ("symptom_name", "category", "short_name", "aliases", "detection"),
+        "symptom",
+    ),
     "conditions": (
         Condition,
         ("condition_code",),
@@ -393,7 +398,49 @@ def _cross_check(db: Session, rel: KnowledgeRelease, kind: str, key: str, values
     elif kind == "excerpts":
         _require(db, rel, "conditions", {values["condition_code"]}, "condition_code")
     elif kind == "rules":
-        _require(db, rel, "symptoms", logic_symptom_codes(values["condition_logic"]), "condition_logic")
+        codes = logic_symptom_codes(values["condition_logic"])
+        _require(db, rel, "symptoms", codes, "condition_logic")
+        exam = _exam_symptoms(db, rel, codes)
+        if exam:
+            raise AppError(
+                422,
+                "EXAM_SYMPTOM_IN_RULE",
+                "Luật không dùng được triệu chứng chỉ ghi khi khám (lễ tân không nhập được)",
+                [{"field": "condition_logic", "value": c} for c in exam],
+            )
+    elif kind == "symptoms" and values["detection"] == "exam":
+        rule = db.execute(
+            text(
+                "SELECT rule_key FROM triage_rule WHERE (status = 'Active' OR (status = 'Draft' AND release_id = :r)) "
+                "AND jsonb_path_exists(condition_logic, '$.**.symptom_code ? (@ == $c)', "
+                "jsonb_build_object('c', CAST(:c AS text))) LIMIT 1"
+            ),
+            {"c": key, "r": rel.release_id},
+        ).scalar()
+        if rule:
+            raise AppError(
+                422,
+                "EXAM_SYMPTOM_IN_RULE",
+                f"Triệu chứng đang dùng trong luật {rule}: detection phải là reported hoặc both",
+                [{"field": "detection", "in": "body"}],
+            )
+
+
+def _exam_symptoms(db: Session, rel: KnowledgeRelease, codes: set[str]) -> list[str]:
+    """Mã có detection = exam ở bản nháp này (nếu đang sửa) hoặc bản Active."""
+    if not codes:
+        return []
+    rows = db.execute(
+        select(Symptom.symptom_code, Symptom.status, Symptom.detection).where(
+            Symptom.symptom_code.in_(codes),
+            or_(Symptom.status == "Active", (Symptom.status == "Draft") & (Symptom.release_id == rel.release_id)),
+        )
+    ).all()
+    current: dict[str, str] = {}
+    for code, status, detection in rows:
+        if status == "Draft" or code not in current:
+            current[code] = detection
+    return sorted(c for c, d in current.items() if d == "exam")
 
 
 def put_draft(db: Session, kind: str, key: str, data, actor: User) -> dict[str, Any]:

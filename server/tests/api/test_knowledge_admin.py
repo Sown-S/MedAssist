@@ -406,3 +406,44 @@ def test_list_items_filters(client, admin, wk_knowledge):
     assert page["total"] >= 4 and len(page["items"]) == 2
     assert all(i["status"] == "Active" and i["key"].startswith("wk_") for i in page["items"])
     assert client.get(f"{BASE}/khong_ton_tai", headers=admin).status_code == 422
+
+
+def test_symptom_aliases_and_exam_detection(client, admin, tag, source_id):
+    _release(client, admin)
+    sym = f"ka_x_{tag}"
+    got = _ok(
+        client.put(
+            f"{BASE}/symptoms/{sym}",
+            headers=admin,
+            json={
+                "symptom_name": "Dấu hiệu Lasègue dương tính",
+                "short_name": "Lasègue (+)",
+                "aliases": [" đau  lưng lan xuống chân ", "đau thần kinh tọa"],
+                "detection": "exam",
+            },
+        )
+    )
+    assert got["values"]["aliases"] == ["đau lưng lan xuống chân", "đau thần kinh tọa"]
+    assert got["values"]["short_name"] == "Lasègue (+)" and got["values"]["detection"] == "exam"
+    for bad in (
+        {"aliases": ["ho", "HO "]},
+        {"aliases": ["x" * 61]},
+        {"short_name": "x" * 31},
+        {"detection": "lab"},
+    ):
+        r = client.put(f"{BASE}/symptoms/{sym}", headers=admin, json={"symptom_name": "x", **bad})
+        assert r.status_code == 422, bad
+
+    rule = {
+        "rule_name": "x",
+        "rule_type": "RED_FLAG",
+        "reason_text": "x",
+        "source_id": source_id,
+        "condition_logic": {"type": "symptom", "symptom_code": sym, "state": "PRESENT"},
+    }
+    r = client.put(f"{BASE}/rules/rf_kx_{tag}", headers=admin, json=rule)
+    assert r.status_code == 422 and r.json()["error"]["code"] == "EXAM_SYMPTOM_IN_RULE"
+    _ok(client.put(f"{BASE}/symptoms/{sym}", headers=admin, json={"symptom_name": "x", "detection": "both"}))
+    _ok(client.put(f"{BASE}/rules/rf_kx_{tag}", headers=admin, json=rule))
+    r = client.put(f"{BASE}/symptoms/{sym}", headers=admin, json={"symptom_name": "x", "detection": "exam"})
+    assert r.status_code == 422 and r.json()["error"]["code"] == "EXAM_SYMPTOM_IN_RULE"

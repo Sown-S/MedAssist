@@ -16,8 +16,10 @@ from app.ai.pipeline.node1_red_flag_gate import run_node1
 from app.ai.pipeline.node2_graph_retrieval import run_node2
 from app.exceptions import NotFoundError
 from app.models.ai_assessment_log import AiAssessmentLog
+from app.models.condition import Condition
 from app.models.knowledge_release import KnowledgeRelease
 from app.models.visit import Visit
+from app.services import settings_service
 
 _LEADING_SYMPTOM_TAG_RE = re.compile(r"^\s*\[([a-z0-9]+(?:_[a-z0-9]+)*)\]\s*")
 _INLINE_SYMPTOM_TAG_RE = re.compile(r"\[([a-z0-9]+(?:_[a-z0-9]+)*)\]")
@@ -181,6 +183,29 @@ def get_latest_assessment(
         "complete_now": complete_now,
         "candidates": candidates,
     }
+
+
+def mark_focus_scope(db: Session, result: dict[str, Any]) -> dict[str, Any]:
+    """Gắn ``in_focus_scope`` cho từng bệnh gợi ý theo ``ai.focus_scope``.
+    Tính lúc trả API, không lưu vào kết quả: Admin đổi phạm vi là có hiệu lực ngay."""
+    scope = settings_service.get_value(db, "ai.focus_scope")
+    codes = {c.get("condition_code") for c in result["candidates"]}
+    groups = dict(
+        db.execute(
+            select(Condition.condition_code, Condition.disease_group).where(
+                Condition.condition_code.in_(codes), Condition.status == "Active"
+            )
+        ).all()
+    )
+    result["candidates"] = [
+        {
+            **c,
+            "in_focus_scope": c.get("condition_code") in scope["conditions"]
+            or groups.get(c.get("condition_code")) in scope["groups"],
+        }
+        for c in result["candidates"]
+    ]
+    return result
 
 
 def evaluate_case_offline(

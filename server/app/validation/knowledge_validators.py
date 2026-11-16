@@ -37,6 +37,33 @@ SymptomCode = Annotated[str, AfterValidator(_slug_checker("Mã triệu chứng",
 ConditionCode = Annotated[str, AfterValidator(_slug_checker("Mã bệnh", CONDITION_CODE_MAX))]
 ExcerptKey = Annotated[str, AfterValidator(_slug_checker("Mã khuyến cáo", SLUG_KEY_MAX))]
 
+SHORT_NAME_MAX = 30  # symptom.short_name VARCHAR(30)
+ALIAS_MAX = 60
+ALIASES_MAX = 15
+DETECTIONS = ("reported", "exam", "both")
+
+
+def alias_key(value: str) -> str:
+    return " ".join(value.lower().split())
+
+
+def _check_aliases(values: list[str]) -> list[str]:
+    out, seen = [], set()
+    for raw in values:
+        value = " ".join(raw.split())
+        if not value or len(value) > ALIAS_MAX:
+            raise ValueError(f"Mỗi từ đồng nghĩa dài 1–{ALIAS_MAX} ký tự")
+        if alias_key(value) in seen:
+            raise ValueError(f"Từ đồng nghĩa trùng: {value}")
+        seen.add(alias_key(value))
+        out.append(value)
+    if len(out) > ALIASES_MAX:
+        raise ValueError(f"Tối đa {ALIASES_MAX} từ đồng nghĩa mỗi triệu chứng")
+    return out
+
+
+Aliases = Annotated[list[str], AfterValidator(_check_aliases)]
+
 
 def check_rule_key(rule_key: str, rule_type: str) -> str:
     """rule_key là slug và có tiền tố đúng loại luật (chk_triage_rule_key_format)."""

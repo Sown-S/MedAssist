@@ -325,9 +325,17 @@ def test_get_returns_exact_completed_candidate_shape(client, login, users, knowl
                 "missing": [{"symptom_code": "fever", "symptom_name": "Sốt"}],
                 "explanation": "Bằng chứng hỗ trợ từ cough.",
                 "label": "Reference Suggestion",
+                "in_focus_scope": False,
             }
         ],
     }
+
+    with SessionLocal() as db:
+        log = db.get(AiAssessmentLog, assessment_id)
+        log.candidates = [{**log.candidates[0], "condition_code": "hen_phe_quan"}]
+        db.commit()
+    got = client.get(f"/api/v1/visits/{visit_id}/assessment", headers=doctor).json()
+    assert got["candidates"][0]["in_focus_scope"] is True
 
 
 def test_missing_knowledge_reader_reports_service_unavailable(monkeypatch):
