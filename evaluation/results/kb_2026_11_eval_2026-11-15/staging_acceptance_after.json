@@ -1,0 +1,19 @@
+{
+  "database": "medassist_kb202611_stage_20261115",
+  "port": 15435,
+  "after_both_evaluations": true,
+  "release": "KB-2026.11",
+  "counts": {
+    "condition": 153,
+    "symptom": 299,
+    "relation": 1522,
+    "excerpt": 156,
+    "rule": 12,
+    "source": 11,
+    "musculoskeletal": 28
+  },
+  "changes": 0,
+  "missing": 0,
+  "clinical_review_status": "PENDING",
+  "production_database_used": false
+}

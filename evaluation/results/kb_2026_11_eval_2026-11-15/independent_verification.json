@@ -1,0 +1,251 @@
+{
+  "all_metrics_match_results": true,
+  "cases_per_mode": {
+    "clinical": 82,
+    "extraction": 29
+  },
+  "attempts_per_mode": {
+    "RuleOnly": 1,
+    "Full": 1
+  },
+  "recomputed_metrics": {
+    "rule_only": {
+      "clinical": {
+        "cases": 82,
+        "red_flag": {
+          "cases": 48,
+          "enough_cases": true,
+          "recall": 1.0,
+          "meets_target": true,
+          "missed": [],
+          "false_alarms": 0
+        },
+        "priority": {
+          "accuracy": 1.0,
+          "under_triage": [],
+          "confusion": {
+            "Emergency->Emergency": 48,
+            "HighPriority->HighPriority": 3,
+            "Routine->Routine": 31
+          }
+        },
+        "rules": {
+          "tp": 73,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "differential": {
+          "cases": 18,
+          "top1_accuracy": 0.8333333333333334,
+          "top3_accuracy": 0.9444444444444444,
+          "macro_precision": 0.5,
+          "macro_recall": 0.8981481481481483,
+          "macro_f1": 0.6203703703703705
+        },
+        "latency": {
+          "mean_ms": 7.740243902439025,
+          "p50_ms": 0.5,
+          "p95_ms": 18.5,
+          "max_ms": 63.4
+        }
+      },
+      "extraction": {
+        "cases": 29,
+        "code_and_state": {
+          "tp": 57,
+          "fp": 39,
+          "fn": 42,
+          "precision": 0.59375,
+          "recall": 0.5757575757575758,
+          "f1": 0.5846153846153846
+        },
+        "code_only": {
+          "tp": 57,
+          "fp": 39,
+          "fn": 42,
+          "precision": 0.59375,
+          "recall": 0.5757575757575758,
+          "f1": 0.5846153846153846
+        },
+        "exact_cases": 1,
+        "completed_cases": 26,
+        "failed_cases": {
+          "EXT-008": "UNMAPPED_PHRASE",
+          "EXT-010": "UNMAPPED_PHRASE",
+          "EXT-028": "UNMAPPED_PHRASE"
+        },
+        "unclassified_cases": [],
+        "empty_cases": [
+          "EXT-008",
+          "EXT-010",
+          "EXT-028"
+        ],
+        "over_budget_cases": [],
+        "latency": {
+          "mean_ms": 9041.76551724138,
+          "p50_ms": 8806.7,
+          "p95_ms": 11732.3,
+          "max_ms": 13922.7
+        }
+      }
+    },
+    "rule_llm": {
+      "clinical": {
+        "cases": 82,
+        "red_flag": {
+          "cases": 48,
+          "enough_cases": true,
+          "recall": 1.0,
+          "meets_target": true,
+          "missed": [],
+          "false_alarms": 0
+        },
+        "priority": {
+          "accuracy": 1.0,
+          "under_triage": [],
+          "confusion": {
+            "Emergency->Emergency": 48,
+            "HighPriority->HighPriority": 3,
+            "Routine->Routine": 31
+          }
+        },
+        "rules": {
+          "tp": 73,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "differential": {
+          "cases": 18,
+          "top1_accuracy": 0.8888888888888888,
+          "top3_accuracy": 0.9444444444444444,
+          "macro_precision": 0.5,
+          "macro_recall": 0.8981481481481483,
+          "macro_f1": 0.6203703703703705
+        },
+        "latency": {
+          "mean_ms": 9186.747560975611,
+          "p50_ms": 1.8,
+          "p95_ms": 36845.5,
+          "max_ms": 43042.3
+        }
+      },
+      "extraction": {
+        "cases": 29,
+        "code_and_state": {
+          "tp": 57,
+          "fp": 39,
+          "fn": 42,
+          "precision": 0.59375,
+          "recall": 0.5757575757575758,
+          "f1": 0.5846153846153846
+        },
+        "code_only": {
+          "tp": 57,
+          "fp": 39,
+          "fn": 42,
+          "precision": 0.59375,
+          "recall": 0.5757575757575758,
+          "f1": 0.5846153846153846
+        },
+        "exact_cases": 1,
+        "completed_cases": 26,
+        "failed_cases": {
+          "EXT-008": "UNMAPPED_PHRASE",
+          "EXT-010": "UNMAPPED_PHRASE",
+          "EXT-028": "UNMAPPED_PHRASE"
+        },
+        "unclassified_cases": [],
+        "empty_cases": [
+          "EXT-008",
+          "EXT-010",
+          "EXT-028"
+        ],
+        "over_budget_cases": [],
+        "latency": {
+          "mean_ms": 8835.155172413793,
+          "p50_ms": 8673.1,
+          "p95_ms": 10906.1,
+          "max_ms": 11994.8
+        }
+      }
+    }
+  },
+  "llm_evidence": {
+    "rule_only": {
+      "http_calls": 29,
+      "http_completed": 29,
+      "http_errors": [],
+      "clinical_http_calls": 0,
+      "extraction_http_calls": 29,
+      "clinical_status_counts": {
+        "Degraded/RuleOnly": 34,
+        "Skipped/RuleOnly": 48
+      },
+      "clinical_fallback_cases": [],
+      "clinical_no_candidates_without_llm": [],
+      "json_validation_errors": [],
+      "extraction_failures": {
+        "EXT-008": "UNMAPPED_PHRASE",
+        "EXT-010": "UNMAPPED_PHRASE",
+        "EXT-028": "UNMAPPED_PHRASE"
+      }
+    },
+    "rule_llm": {
+      "http_calls": 53,
+      "http_completed": 53,
+      "http_errors": [],
+      "clinical_http_calls": 24,
+      "extraction_http_calls": 29,
+      "clinical_status_counts": {
+        "Completed/Full": 24,
+        "Skipped/RuleOnly": 48,
+        "Degraded/RuleOnly": 10
+      },
+      "clinical_fallback_cases": [
+        "CLIN-068",
+        "CLIN-069",
+        "CLIN-070",
+        "CLIN-071",
+        "CLIN-072",
+        "CLIN-073",
+        "CLIN-074",
+        "CLIN-075",
+        "CLIN-076",
+        "CLIN-077"
+      ],
+      "clinical_no_candidates_without_llm": [
+        "CLIN-068",
+        "CLIN-069",
+        "CLIN-070",
+        "CLIN-071",
+        "CLIN-072",
+        "CLIN-073",
+        "CLIN-074",
+        "CLIN-075",
+        "CLIN-076",
+        "CLIN-077"
+      ],
+      "json_validation_errors": [],
+      "extraction_failures": {
+        "EXT-008": "UNMAPPED_PHRASE",
+        "EXT-010": "UNMAPPED_PHRASE",
+        "EXT-028": "UNMAPPED_PHRASE"
+      }
+    }
+  },
+  "rank_change_cases": 2,
+  "knowledge_files": 179,
+  "knowledge_unchanged": true,
+  "combined_sha256": "4e7b58cffc3cd950e1411a131919e36976ea94f209c426821886b03708cd368d",
+  "comparison_scope": "One run per mode; Full may include explicit fallback",
+  "review_status": "PENDING",
+  "review_scope": "Clinical review only; Tuan explicitly confirmed direct technical report review and confirmation in conversation",
+  "technical_review_responsible": "Tuấn",
+  "technical_review_basis": "Explicit user confirmation of direct technical report review"
+}

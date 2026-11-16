@@ -1,0 +1,247 @@
+{
+  "scope": "evaluation/results/kb_2026_11_eval_2026-11-15",
+  "self_excluded": true,
+  "files": [
+    {
+      "path": "attempt_rule_llm.json",
+      "bytes": 1195,
+      "sha256": "778bfb56d2beaf70f5b0121dab5eb2e5014b492d75afdc8f6122e78455ea65fb",
+      "git_ignored": false
+    },
+    {
+      "path": "attempt_rule_only.json",
+      "bytes": 1203,
+      "sha256": "22c8dd9ef00625ac7e66ad9d3f6bb7684a9b53f2956dd7e646a85ee881396bb1",
+      "git_ignored": false
+    },
+    {
+      "path": "dry_run_active.log",
+      "bytes": 500,
+      "sha256": "e237d47214668ead5e4be440d2bab174e01071ae5e889c01b44bbb9e23cc389d",
+      "git_ignored": true
+    },
+    {
+      "path": "final_checks.json",
+      "bytes": 7558,
+      "sha256": "8644088ba99f0ee8345d98e3b56a5433b5ff8a5ae7444aee5a44bc5278267463",
+      "git_ignored": false
+    },
+    {
+      "path": "import_staging.log",
+      "bytes": 682,
+      "sha256": "182459e71da17e51c4b55e46a66f8e99f3037b2839db51a3cdfb89ffe9ad3c1a",
+      "git_ignored": true
+    },
+    {
+      "path": "independent_verification.json",
+      "bytes": 6761,
+      "sha256": "a11749aa4d890abdbd4fbd4573b10e2095d294657ae6ff9d5435018edaf5873e",
+      "git_ignored": false
+    },
+    {
+      "path": "knowledge_hashes_before.json",
+      "bytes": 23202,
+      "sha256": "2db0a0fcbf22c8295aab7b7047a89765cc4a930c1d25dbb2ae23b3ceb54e075f",
+      "git_ignored": false
+    },
+    {
+      "path": "rank_changes.csv",
+      "bytes": 469,
+      "sha256": "486d078f406397fd8fa4191c7400b8d4116f38b260a697ec3f4323865cd44d4f",
+      "git_ignored": false
+    },
+    {
+      "path": "README.md",
+      "bytes": 20174,
+      "sha256": "a6c3738c842ddd73d24b02d6a3e6e81abd5c2d5f0d63929d5eb047e6836cacad",
+      "git_ignored": false
+    },
+    {
+      "path": "rule_llm/cases.csv",
+      "bytes": 5197,
+      "sha256": "d052dc3e41497135229ef7ec2714d5233cfc69fe33d8829d72272fc72c021eb1",
+      "git_ignored": false
+    },
+    {
+      "path": "rule_llm/knowledge_hashes_after.json",
+      "bytes": 23202,
+      "sha256": "2db0a0fcbf22c8295aab7b7047a89765cc4a930c1d25dbb2ae23b3ceb54e075f",
+      "git_ignored": false
+    },
+    {
+      "path": "rule_llm/knowledge_hashes_before.json",
+      "bytes": 23202,
+      "sha256": "2db0a0fcbf22c8295aab7b7047a89765cc4a930c1d25dbb2ae23b3ceb54e075f",
+      "git_ignored": false
+    },
+    {
+      "path": "rule_llm/llm_calls.jsonl",
+      "bytes": 33884,
+      "sha256": "f3df87b04733394bed6d59b8f81c767cecfecaebd082378776ac074703fef15f",
+      "git_ignored": false
+    },
+    {
+      "path": "rule_llm/progress.jsonl",
+      "bytes": 28613,
+      "sha256": "2f58d57b4d1344a070339a7331f2edd248983ef61a7d68c08d2633d5876e3a6d",
+      "git_ignored": false
+    },
+    {
+      "path": "rule_llm/results.json",
+      "bytes": 63261,
+      "sha256": "ede191f3ee4fb6074d59c0fd11c29fe968fb2e4794baed34d73c60935c191072",
+      "git_ignored": false
+    },
+    {
+      "path": "rule_llm/summary.md",
+      "bytes": 2030,
+      "sha256": "94d87cccc34b85b737424d93f0ee10dc7bec9cf12ffc64edfb148ac5374b63f4",
+      "git_ignored": false
+    },
+    {
+      "path": "rule_only/cases.csv",
+      "bytes": 5525,
+      "sha256": "c952f82dbefb4c7f77fca9a7e782fa33f36d4c39683a7fd0e7dcd2e69b24260e",
+      "git_ignored": false
+    },
+    {
+      "path": "rule_only/knowledge_hashes_after.json",
+      "bytes": 23202,
+      "sha256": "2db0a0fcbf22c8295aab7b7047a89765cc4a930c1d25dbb2ae23b3ceb54e075f",
+      "git_ignored": false
+    },
+    {
+      "path": "rule_only/knowledge_hashes_before.json",
+      "bytes": 23202,
+      "sha256": "2db0a0fcbf22c8295aab7b7047a89765cc4a930c1d25dbb2ae23b3ceb54e075f",
+      "git_ignored": false
+    },
+    {
+      "path": "rule_only/llm_calls.jsonl",
+      "bytes": 18484,
+      "sha256": "8accbf1d6acd82b729b536e842331aa89ad023ff3da1daf0701a45ff98ed0935",
+      "git_ignored": false
+    },
+    {
+      "path": "rule_only/progress.jsonl",
+      "bytes": 28685,
+      "sha256": "c38d1876552d11cd9d50f2db27b8bc443e38d33d25f5137828b5e557f21755c4",
+      "git_ignored": false
+    },
+    {
+      "path": "rule_only/results.json",
+      "bytes": 63265,
+      "sha256": "f6f9987cad2ad36930659c0139a133af28e325cc9a94bdb736fc0c5f8c6812a3",
+      "git_ignored": false
+    },
+    {
+      "path": "rule_only/summary.md",
+      "bytes": 2028,
+      "sha256": "c8bce1d9122c60d62026336b72c9b28a6666b7371760dd28abe1437d5ffa5da6",
+      "git_ignored": false
+    },
+    {
+      "path": "run_eval_help.txt",
+      "bytes": 1330,
+      "sha256": "187dcb8a6c7b4ca8b99b710ec8248b98d92a04adf5f2a3f5f41521c97d7f469d",
+      "git_ignored": false
+    },
+    {
+      "path": "run_once.py",
+      "bytes": 9822,
+      "sha256": "b38fa077f254a2217bc3f5f2c2c102533f7e43abdb29da91d49cb7230de56b11",
+      "git_ignored": false
+    },
+    {
+      "path": "so_sanh.md",
+      "bytes": 8095,
+      "sha256": "df7c34dd659e58a5e631a2233f71536109a291223f288d1ef2991c7133bcab05",
+      "git_ignored": false
+    },
+    {
+      "path": "staging_acceptance_after.json",
+      "bytes": 422,
+      "sha256": "cc5157b532c1ec58ecaaad87404cdb095f8402364aa1ccc403e18505ad8ba7b1",
+      "git_ignored": false
+    },
+    {
+      "path": "staging_setup.json",
+      "bytes": 549,
+      "sha256": "ed2e21ae0ca756e10b8b3752349013b86f2645e3bd98077e0b176f30d72a0726",
+      "git_ignored": false
+    },
+    {
+      "path": "tu_danh_gia.md",
+      "bytes": 11131,
+      "sha256": "00eff6c67d26b17d95857b820f9b0a7d45b2b5b07024e5292f4c024e80378101",
+      "git_ignored": false
+    },
+    {
+      "path": "verify_compare.py",
+      "bytes": 33699,
+      "sha256": "de043c749cf14b9dfc1f68909eb3756dda739f18eb54339f776313cb85afb9ae",
+      "git_ignored": false
+    }
+  ],
+  "artifact_count_excluding_this_manifest": 30,
+  "cleanup": {
+    "preserved_file_sha256": {
+      "knowledge_hashes_before.json": "2db0a0fcbf22c8295aab7b7047a89765cc4a930c1d25dbb2ae23b3ceb54e075f",
+      "rule_llm/results.json": "ede191f3ee4fb6074d59c0fd11c29fe968fb2e4794baed34d73c60935c191072",
+      "rule_llm/knowledge_hashes_after.json": "2db0a0fcbf22c8295aab7b7047a89765cc4a930c1d25dbb2ae23b3ceb54e075f",
+      "rule_llm/summary.md": "94d87cccc34b85b737424d93f0ee10dc7bec9cf12ffc64edfb148ac5374b63f4",
+      "staging_acceptance_after.json": "cc5157b532c1ec58ecaaad87404cdb095f8402364aa1ccc403e18505ad8ba7b1",
+      "rule_only/llm_calls.jsonl": "8accbf1d6acd82b729b536e842331aa89ad023ff3da1daf0701a45ff98ed0935",
+      "rule_llm/llm_calls.jsonl": "f3df87b04733394bed6d59b8f81c767cecfecaebd082378776ac074703fef15f",
+      "dry_run_active.log": "e237d47214668ead5e4be440d2bab174e01071ae5e889c01b44bbb9e23cc389d",
+      "rule_only/knowledge_hashes_after.json": "2db0a0fcbf22c8295aab7b7047a89765cc4a930c1d25dbb2ae23b3ceb54e075f",
+      "staging_setup.json": "ed2e21ae0ca756e10b8b3752349013b86f2645e3bd98077e0b176f30d72a0726",
+      "rule_llm/cases.csv": "d052dc3e41497135229ef7ec2714d5233cfc69fe33d8829d72272fc72c021eb1",
+      "rule_only/results.json": "f6f9987cad2ad36930659c0139a133af28e325cc9a94bdb736fc0c5f8c6812a3",
+      "rule_only/cases.csv": "c952f82dbefb4c7f77fca9a7e782fa33f36d4c39683a7fd0e7dcd2e69b24260e",
+      "import_staging.log": "182459e71da17e51c4b55e46a66f8e99f3037b2839db51a3cdfb89ffe9ad3c1a",
+      "rule_only/knowledge_hashes_before.json": "2db0a0fcbf22c8295aab7b7047a89765cc4a930c1d25dbb2ae23b3ceb54e075f",
+      "rule_llm/progress.jsonl": "2f58d57b4d1344a070339a7331f2edd248983ef61a7d68c08d2633d5876e3a6d",
+      "run_eval_help.txt": "187dcb8a6c7b4ca8b99b710ec8248b98d92a04adf5f2a3f5f41521c97d7f469d",
+      "rule_only/progress.jsonl": "c38d1876552d11cd9d50f2db27b8bc443e38d33d25f5137828b5e557f21755c4",
+      "rule_only/summary.md": "c8bce1d9122c60d62026336b72c9b28a6666b7371760dd28abe1437d5ffa5da6",
+      "attempt_rule_only.json": "22c8dd9ef00625ac7e66ad9d3f6bb7684a9b53f2956dd7e646a85ee881396bb1",
+      "run_once.py": "b38fa077f254a2217bc3f5f2c2c102533f7e43abdb29da91d49cb7230de56b11",
+      "rank_changes.csv": "486d078f406397fd8fa4191c7400b8d4116f38b260a697ec3f4323865cd44d4f",
+      "rule_llm/knowledge_hashes_before.json": "2db0a0fcbf22c8295aab7b7047a89765cc4a930c1d25dbb2ae23b3ceb54e075f",
+      "attempt_rule_llm.json": "778bfb56d2beaf70f5b0121dab5eb2e5014b492d75afdc8f6122e78455ea65fb"
+    },
+    "before_count": 48,
+    "scope": "Only this evaluation results directory; no model or database calls",
+    "removed_files": [
+      "alembic_upgrade.log",
+      "dry_run_empty_staging.log",
+      "kiem_tra_lai.md",
+      "knowledge_hashes_after.json",
+      "ollama_smoke.json",
+      "preflight.json",
+      "rank_changes.json",
+      "rule_llm_runner.log",
+      "rule_only_runner.log",
+      "runtime_preflight.json",
+      "staging_acceptance.json",
+      "staging_bootstrap.log",
+      "staging_test_account.log",
+      "tien_kiem.md",
+      "verification_final.log",
+      "rule_llm/llm_calls_mapped.json",
+      "rule_only/llm_calls_mapped.json"
+    ],
+    "after_count": 31
+  },
+  "review_status": "PENDING",
+  "technical_report_review": {
+    "status": "USER_CONFIRMED_DIRECT_TECHNICAL_REVIEW",
+    "reviewer": "Tuấn",
+    "responsible": "Tuấn",
+    "decision": "DAT_CO_DIEU_KIEN",
+    "basis": "Explicit user confirmation",
+    "record": "README.md; final_checks.json",
+    "clinical_review_status": "PENDING"
+  }
+}
