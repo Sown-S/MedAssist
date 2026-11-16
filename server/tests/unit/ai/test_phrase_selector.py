@@ -113,10 +113,12 @@ def test_invalid_output_rejects_entire_result(context, output):
     assert result.suggestions == () and context[2] == []
 
 
-def test_unmapped_is_technical_failure_not_unknown_or_partial(context):
-    result = run(context, Client({**VALID, "unmapped": ["p2"]}))
-    assert result.failure_code == "UNMAPPED_PHRASE"
-    assert not result.completed and not result.suggestions
+def test_unmapped_keeps_matched_suggestions_and_returns_unmapped_phrases(context):
+    result = run(context, Client({"p1": VALID["p1"], "p2": [], "unmapped": ["p2"]}))
+    assert result.completed and result.failure_code is None
+    assert len(result.suggestions) == 1 and result.suggestions[0]["symptom_code"] == "cough_dry"
+    assert result.unmapped_phrases == ("không chóng mặt xoay tròn",)
+    assert "chóng mặt" not in repr(result)
 
 
 def test_all_empty_valid_output_is_successful(context):

@@ -105,14 +105,25 @@ def test_worker_selects_once_pins_snapshot_and_commits_audit_atomically(env):
 
 
 @pytest.mark.parametrize("output,code", [({}, "INVALID_SELECTION"),
-    ({**VALID, "unmapped": ["p2"]}, "UNMAPPED_PHRASE")])
+    ({"p1": VALID["p1"], "p2": [{"symptom_code": "cough_dry", "status": "ABSENT"}], "unmapped": []},
+     "CONFLICTING_SELECTION")])
 def test_incomplete_output_is_failed_and_never_partial(env, output, code):
+    if code == "CONFLICTING_SELECTION":
+        env.visit.free_text_description = "Ho khan; có ho khan."
     asyncio.run(env.process(Client(output)))
     assert env.run.status == "Failed" and env.run.error_detail == code
     assert env.run.candidates == [] and env.run.lease_until is None
     assert env.run.validation_result == {"valid": False, "reason": code}
     assert env.audits[0]["new_values"]["status"] == "Failed"
     assert env.events.index("audit") < env.events.index("commit")
+
+
+def test_unmapped_phrase_completes_and_keeps_valid_suggestions(env):
+    asyncio.run(env.process(Client({"p1": VALID["p1"], "p2": [], "unmapped": ["p2"]})))
+    assert env.run.status == "Completed"
+    assert len(env.run.candidates) == 1 and env.run.candidates[0]["symptom_code"] == "cough_dry"
+    assert env.run.validation_result == {"valid": True, "reason": None}
+    assert env.audits[0]["new_values"]["status"] == "Completed"
 
 
 def test_expired_queue_never_calls_llm(env):

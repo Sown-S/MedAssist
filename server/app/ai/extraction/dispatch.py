@@ -33,6 +33,7 @@ class ExtractionResult:
     completed: bool | None
     failure_code: str | None = None
     suggestions: tuple[feature_extractor.SymptomSuggestion, ...] = field(default=(), repr=False)
+    unmapped_phrases: tuple[str, ...] = field(default=(), repr=False)
 
 
 async def run_extraction(
@@ -53,7 +54,7 @@ async def run_extraction(
             per_phrase_limit=options.per_phrase_limit,
         )
         return ExtractionResult(options.strategy, result.prompt_version, result.completed,
-                                result.failure_code, result.suggestions)
+                                result.failure_code, result.suggestions, result.unmapped_phrases)
     suggestions = await feature_extractor.extract_symptoms(
         text, knowledge_reader, llm_client, db, gate_state=gate_state,
         identifiers=identifiers, timeout_seconds=timeout_seconds,
