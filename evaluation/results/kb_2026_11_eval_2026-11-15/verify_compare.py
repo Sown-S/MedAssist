@@ -92,8 +92,11 @@ def equal(actual, expected, path=""):
         assert actual == expected, (path, actual, expected)
 
 
-def write(name, value):
-    (HERE / name).write_text(json.dumps(value, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+def matches_snapshot(path, expected):
+    # Raw hashes lịch sử giữ nguyên; chấp nhận đúng nội dung với LF hoặc CRLF.
+    raw = path.read_bytes().replace(b"\r\n", b"\n")
+    return expected in {hashlib.sha256(raw).hexdigest(),
+                        hashlib.sha256(raw.replace(b"\n", b"\r\n")).hexdigest()}
 
 
 def main():
@@ -165,11 +168,16 @@ def main():
         assert not a[case_id]["predicted_top"] and not b[case_id]["predicted_top"]
     changes = [dict(case_id=k, rule_only=a[k]["predicted_top"][:3], rule_llm=b[k]["predicted_top"][:3],
                     full_status=b[k]["ai_status"], full_effective_mode=b[k]["mode"]) for k in a if a[k]["predicted_top"][:3] != b[k]["predicted_top"][:3]]
-    with (HERE / "rank_changes.csv").open("w", encoding="utf-8-sig", newline="") as stream:
-        writer = csv.writer(stream); writer.writerow(["case_id", "rule_only_top3", "rule_llm_top3", "full_status", "full_effective_mode"])
-        for r in changes: writer.writerow([r["case_id"], " ".join(r["rule_only"]), " ".join(r["rule_llm"]), r["full_status"], r["full_effective_mode"]])
-    current = {p.relative_to(ROOT).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted((ROOT / "knowledge").rglob("*")) if p.is_file()}
-    assert current == read(HERE / "knowledge_hashes_before.json")
+    with (HERE / "rank_changes.csv").open(encoding="utf-8-sig", newline="") as stream:
+        saved_changes = list(csv.DictReader(stream))
+    assert saved_changes == [dict(case_id=r["case_id"], rule_only_top3=" ".join(r["rule_only"]),
+                                  rule_llm_top3=" ".join(r["rule_llm"]), full_status=r["full_status"],
+                                  full_effective_mode=r["full_effective_mode"]) for r in changes]
+    current = {p.relative_to(ROOT).as_posix(): p for p in sorted((ROOT / "knowledge").rglob("*")) if p.is_file()}
+    snapshot = read(HERE / "knowledge_hashes_before.json")
+    assert set(current) == set(snapshot)
+    for relative, path in current.items():
+        assert matches_snapshot(path, snapshot[relative]), f"KB khác snapshot: {relative}"
     manifest = read(ROOT / "evaluation/testset/manifest_freeze.json"); hs = []
     for f in manifest["files"]:
         value = hashlib.sha256((ROOT / f["path"]).read_bytes().replace(b"\r\n", b"\n")).hexdigest()
@@ -184,9 +192,10 @@ def main():
                  attempts_per_mode=dict(RuleOnly=1, Full=1), recomputed_metrics=computed, llm_evidence=evidence,
                  rank_change_cases=len(changes), knowledge_files=len(current), knowledge_unchanged=True,
                  combined_sha256=combined, comparison_scope="One run per mode; Full may include explicit fallback", review_status="PENDING", review_scope="Clinical review pending; technical checks do not establish clinical approval", technical_review_responsible="Tuấn", technical_review_basis="Recorded technical report review; see final_checks.json")
-    write("independent_verification.json", audit)
-    (HERE / "so_sanh.md").write_text(render(computed, all_data, ledgers, evidence, changes, combined), encoding="utf-8")
-    print(json.dumps(dict(status="PASS", cases_per_mode=audit["cases_per_mode"], rank_changes=len(changes), evidence=evidence), ensure_ascii=False, indent=2))
+    print(json.dumps(dict(status="PASS", audit=audit, cases_per_mode=audit["cases_per_mode"],
+                          rank_changes=changes, evidence=evidence,
+                          knowledge_clinical_content_unchanged=True,
+                          repository_files_written=0), ensure_ascii=False, indent=2))
 
 
 def render(computed, data, ledgers, evidence, changes, combined):
