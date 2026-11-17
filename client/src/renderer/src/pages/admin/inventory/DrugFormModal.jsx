@@ -92,7 +92,7 @@ export default function DrugFormModal({ drug, onClose }) {
         <button className="btn btn-outline" onClick={onClose}>
           Cancel
         </button>
-        <button className="btn btn-primary" disabled={busy} onClick={save}>
+        <button data-shortcut="save" className="btn btn-primary" disabled={busy} onClick={save}>
           {drug.id ? 'Save' : 'Add drug'}
         </button>
       </div>

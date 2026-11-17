@@ -2,13 +2,13 @@ import { Fragment, useEffect, useRef, useState } from 'react'
 import Icon from './Icon'
 import Modal, { ModalHeader } from './Modal'
 import ChangePasswordModal from './ChangePasswordModal'
-import { useToast } from '../context/ToastContext'
 import { LANGUAGES, getLang, setLang, translate } from '../i18n'
 import { useNavigate } from 'react-router-dom'
 import { useQueue, isMine, inRoom, atLabs, isPendingFlag } from '../api/queueStore'
 import { useInventory, stockOf } from '../api/inventoryStore'
 import SettingsModal from './SettingsModal'
 import Clip from './Clip'
+import { OPEN_EVENT } from './useGlobalKeys'
 
 // Thông báo tính tại máy từ hàng chờ và kho.
 const hm = (iso) =>
@@ -19,17 +19,33 @@ const hm = (iso) =>
   })
 
 // Phím tắt theo vai trò — hiện thành bảng phím trong hộp Trợ giúp.
+// Bảng phím tắt trong Trợ giúp: phần chung cho mọi vai trò + phần riêng từng vai trò.
+const SHORTCUTS_COMMON = [
+  ['Alt+1 … Alt+9', 'Open menu item 1 … 9'],
+  ['Ctrl+B', 'Collapse / expand the menu bar'],
+  ['Ctrl+F', 'Jump to the search box on the page'],
+  ['Ctrl+S', 'Save the form that is open'],
+  ['↑ ↓ ← →', 'Move between items in a list, tabs or button group'],
+  ['Enter', 'Open / choose the highlighted item'],
+  ['Esc', 'Close the dialog'],
+  ['F1 / ?', 'Open help & shortcuts'],
+  ['Ctrl+,', 'Open settings']
+]
 const SHORTCUTS = {
   doctor: [
     ['Alt+N', 'Call next patient'],
+    ['Alt+T', 'Jump to the drug search box'],
+    ['Alt+D', 'Accept the top AI suggestion'],
     ['Alt+L', 'Order lab tests'],
-    ['Ctrl+Enter', 'Finalize the visit']
+    ['Ctrl+Enter', 'Finalize the visit'],
+    ['Ctrl+Shift+Enter', 'Finalize and call the next patient']
   ],
   reception: [
     ['F2', 'Register new patient'],
-    ['F3 / Ctrl+K', 'Find patient']
+    ['F3 / Ctrl+K', 'Find patient'],
+    ['↓ then Enter', 'In Find patient: pick a result and check in']
   ],
-  admin: [['Esc', 'Close the dialog']]
+  admin: []
 }
 const HELP_ICON = {
   Consultation: 'stethoscope',
@@ -150,13 +166,17 @@ export default function TopActions({ user, onSignOut }) {
       ]
     : []
   const notifications = [...live, ...stock]
-  const { showToast } = useToast()
-
+  // Đổi ngôn ngữ: giao diện đổi ngay, không hiện thông báo.
   function chooseLanguage(code) {
-    if (code === getLang()) return
-    setLang(code)
-    showToast('Language updated')
+    if (code !== getLang()) setLang(code)
   }
+
+  // Phím tắt chung (F1 / ? → Trợ giúp, Ctrl+, → Cài đặt).
+  useEffect(() => {
+    const on = (e) => setOpen(e.detail)
+    window.addEventListener(OPEN_EVENT, on)
+    return () => window.removeEventListener(OPEN_EVENT, on)
+  }, [])
 
   // Các menu thả xuống (chuông, ngôn ngữ, tài khoản) đóng khi bấm ra ngoài.
   useEffect(() => {
@@ -269,7 +289,7 @@ export default function TopActions({ user, onSignOut }) {
         )}
       </div>
 
-      <Modal open={open === 'help'} onClose={() => setOpen(null)}>
+      <Modal open={open === 'help'} onClose={() => setOpen(null)} wide>
         <ModalHeader title="Help" onClose={() => setOpen(null)} />
         <div className="modal-b">
           <p className="help-intro">What you can do as {user.role}:</p>
@@ -285,14 +305,35 @@ export default function TopActions({ user, onSignOut }) {
             </div>
           ))}
           <div className="sec-t">Keyboard shortcuts</div>
-          <div className="keys">
-            {SHORTCUTS[user.roleKey].map(([k, d]) => (
-              <Fragment key={k}>
-                <kbd>{k}</kbd>
-                <span>{translate(d)}</span>
-              </Fragment>
-            ))}
+          <div className="keys-grid">
+            {SHORTCUTS[user.roleKey].length > 0 && (
+              <div className="keys-col">
+                <div className="keys-h">{translate('For your role')}</div>
+                {SHORTCUTS[user.roleKey].map(([k, d]) => (
+                  <div className="keys-row" key={k}>
+                    <span className="kbds">
+                      {k.split(' ').map((p, i) => (p === '/' || p === '…' || p === 'then' ? <span key={i} className="muted small">{translate(p)}</span> : <kbd key={i}>{p}</kbd>))}
+                    </span>
+                    <span>{translate(d)}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+            <div className="keys-col">
+              <div className="keys-h">{translate('Everywhere')}</div>
+              {SHORTCUTS_COMMON.map(([k, d]) => (
+                <div className="keys-row" key={k}>
+                  <span className="kbds">
+                    {k.split(' ').map((p, i) => (p === '/' || p === '…' ? <span key={i} className="muted small">{p}</span> : <kbd key={i}>{p}</kbd>))}
+                  </span>
+                  <span>{translate(d)}</span>
+                </div>
+              ))}
+            </div>
           </div>
+          <p className="help-intro small" style={{ marginTop: 10 }}>
+            {translate('Arrow keys do not move between input boxes: inside a box they move the cursor or change the value, as usual. Use Tab / Shift+Tab to go to the next / previous box.')}
+          </p>
           <p className="help-intro" style={{ marginTop: 14 }}>
             Forgot your password or need another account? Ask an administrator to reset or create it under Admin → Staff accounts.
           </p>

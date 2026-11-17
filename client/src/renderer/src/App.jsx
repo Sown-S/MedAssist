@@ -20,6 +20,7 @@ import { translate } from './i18n'
 import { OfflineBanner, TopProgress, SlowNotice } from './components/NetStatus'
 import { LeaveVisitModal } from './pages/doctor/doctorShared'
 import VersionBanners from './components/VersionBanners'
+import useGlobalKeys from './components/useGlobalKeys'
 
 // Menu theo vai trò nằm ở components/SideNav.jsx. Lịch hẹn, sổ quỹ, chốt ca nằm ngoài phạm vi.
 
@@ -163,6 +164,7 @@ export function Shell() {
 function ShellLayout({ user, onSignOut, children }) {
   const title = useCurrentLabel(user)
   const [collapsed, setCollapsed] = useSideCollapsed()
+  useGlobalKeys({ onToggleSidebar: () => setCollapsed((v) => !v) })
   return (
     <div className={'app' + (collapsed ? ' collapsed' : '')}>
       <SideNav user={user} collapsed={collapsed} onToggle={() => setCollapsed((v) => !v)} />

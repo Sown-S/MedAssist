@@ -54,7 +54,7 @@ export default function ChangePasswordModal({ open, onClose }) {
           <button type="button" className="btn btn-outline" onClick={onClose}>
             Cancel
           </button>
-          <button type="submit" className="btn btn-primary" disabled={busy || !form.old || !form.np}>
+          <button data-shortcut="save" type="submit" className="btn btn-primary" disabled={busy || !form.old || !form.np}>
             Change password
           </button>
         </div>

@@ -86,12 +86,36 @@ export default function SearchModal({ open, onClose, onCheckIn, readOnly }) {
                   setQ(e.target.value)
                   setPicked(null)
                 }}
+                onKeyDown={(e) => {
+                  // ↓ từ ô tìm: xuống kết quả đầu tiên; Enter: tiếp đón người đang chọn.
+                  if (e.key === 'ArrowDown') {
+                    e.preventDefault()
+                    e.currentTarget.closest('.srch')?.querySelector('.sr')?.focus()
+                  } else if (e.key === 'Enter' && sel && !readOnly && !busy) {
+                    e.preventDefault()
+                    onCheckIn(sel)
+                  }
+                }}
               />
             </div>
             {results.map((r) => {
               const v = todayOf(r)
               return (
-                <button key={r.id} type="button" className={'sr' + (r.id === sel?.id ? ' on' : '')} onClick={() => setPicked(r.id)}>
+                <button
+                  key={r.id}
+                  type="button"
+                  className={'sr' + (r.id === sel?.id ? ' on' : '')}
+                  onClick={() => setPicked(r.id)}
+                  onFocus={() => setPicked(r.id)}
+                  onDoubleClick={() => sel?.id === r.id && !readOnly && !busy && onCheckIn(sel)}
+                  onKeyDown={(e) => {
+                    // Enter trên kết quả đang chọn (đã tải xong chi tiết) = Tiếp đón & cấp số.
+                    if (e.key === 'Enter' && sel?.id === r.id && !readOnly && !busy) {
+                      e.preventDefault()
+                      onCheckIn(sel)
+                    }
+                  }}
+                >
                   <span className="ava">{initials(r.name)}</span>
                   <span className="t">
                     <b>{r.name}</b>

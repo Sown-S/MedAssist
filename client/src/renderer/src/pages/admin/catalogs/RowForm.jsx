@@ -7,6 +7,7 @@ import { todayISO } from '../../../api/inventoryStore'
 import { fmtMoney, fmtDateTime } from '../inventory/shared'
 import { SCHEMAS, resolveRef, packageTotal } from './schemas'
 import { saveLiveRow, livePriceHistory } from '../../../api/serviceCatalogLive'
+import DateField from '../../../components/DateField'
 
 export function RowForm({ catalogKey, row, all, cats, inv, onClose }) {
   const s = SCHEMAS[catalogKey]
@@ -146,7 +147,7 @@ export function RowForm({ catalogKey, row, all, cats, inv, onClose }) {
         <button className="btn btn-outline" onClick={onClose}>
           Cancel
         </button>
-        <button className="btn btn-primary" onClick={save} disabled={saving}>
+        <button data-shortcut="save" className="btn btn-primary" onClick={save} disabled={saving}>
           <Icon name="save" /> <span>Save</span>
         </button>
       </div>
@@ -166,7 +167,7 @@ function FieldInput({ fd, value, onChange, cats, inv }) {
       </select>
     )
   if (fd.type === 'textarea') return <textarea className="input" rows={2} value={value ?? ''} onChange={(e) => onChange(e.target.value)} />
-  if (fd.type === 'date') return <input type="date" value={value ?? ''} onChange={(e) => onChange(e.target.value)} />
+  if (fd.type === 'date') return <DateField value={value ?? ''} onChange={onChange} />
   if (fd.type === 'money' || fd.type === 'number')
     return <input className="input" type="number" min="0" step={fd.type === 'money' ? 1000 : 'any'} value={value ?? ''} onChange={(e) => onChange(e.target.value)} />
   if (fd.type === 'pkgItems') return <PackageItems value={value ?? []} onChange={onChange} cats={cats} />

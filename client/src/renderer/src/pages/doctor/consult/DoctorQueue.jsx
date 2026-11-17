@@ -37,17 +37,18 @@ export default function DoctorQueue({ visits, user, mine, current, onSelect, tak
   const now = useNow()
   const fresh = useNewIds(visits.map((v) => v.id))
   const groups = [
-    { key: 'mine', title: 'In my room', list: mine },
+    { key: 'mine', title: 'In my room', icon: 'stethoscope', list: mine },
     // Chỉ người mình chỉ định — bệnh nhân vẫn thuộc bác sĩ đó trong lúc đi xét nghiệm, bác sĩ khác không nhận được.
-    { key: 'labs', title: 'Out for lab tests', list: visits.filter((v) => atLabs(v) && isMine(v, user)) },
+    { key: 'labs', title: 'Out for lab tests', icon: 'flask', list: visits.filter((v) => atLabs(v) && isMine(v, user)) },
     // Người đã check-in (mời được) đứng trước người chưa check-in.
-    { key: 'waiting', title: 'Waiting', list: [...readyOrder(visits), ...waitingOrder(visits).filter((v) => v.status === ST.WAITING)] },
+    { key: 'waiting', title: 'Waiting', icon: 'users', list: [...readyOrder(visits), ...waitingOrder(visits).filter((v) => v.status === ST.WAITING)] },
     {
       key: 'done',
       title: 'Done today',
+      icon: 'circle-check',
       list: visits.filter((v) => (v.status === ST.PRESCRIBED || v.status === ST.FINISHED) && isMine(v, user)).sort((a, b) => b.statusAt.localeCompare(a.statusAt))
     },
-    { key: 'other', title: 'With other doctors', list: visits.filter((v) => inRoom(v) && !isMine(v, user)) }
+    { key: 'other', title: 'With other doctors', icon: 'door-open', list: visits.filter((v) => inRoom(v) && !isMine(v, user)) }
   ]
 
   function onItem(g, v) {
@@ -86,7 +87,8 @@ export default function DoctorQueue({ visits, user, mine, current, onSelect, tak
           return (
             <div key={g.key} className={'qa-g' + (on ? ' open' : '')}>
               <button className="qa-h" onClick={() => toggle(g.key)} aria-expanded={!!on}>
-                <span>{translate(g.title)}</span>
+                <Icon name={g.icon} className="qa-ic" />
+                <span className="qa-t">{translate(g.title)}</span>
                 <span className="cnt">{g.list.length}</span>
                 <Icon name="chevron-right" />
               </button>

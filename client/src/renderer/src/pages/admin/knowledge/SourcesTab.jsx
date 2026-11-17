@@ -6,6 +6,7 @@ import { createSource } from '../../../api/knowledgeApi'
 import { Empty } from '../ui'
 import { errorText } from './shared'
 import { ErrorNote } from '../../../components/DataState'
+import DateField from '../../../components/DateField'
 
 // Mọi quan hệ, trích dẫn và luật phải trích một nguồn.
 export default function SourcesTab({ data, canEdit, onChanged }) {
@@ -118,11 +119,11 @@ function SourceModal({ open, onClose, onSaved }) {
           </div>
           <div className="field">
             <label>Publication date (optional)</label>
-            <input type="date" value={f.publication_date} onChange={(e) => set({ publication_date: e.target.value })} />
+            <DateField value={f.publication_date} onChange={(v) => set({ publication_date: v })} />
           </div>
           <div className="field">
             <label>Accessed on (optional)</label>
-            <input type="date" value={f.accessed_date} onChange={(e) => set({ accessed_date: e.target.value })} />
+            <DateField value={f.accessed_date} onChange={(v) => set({ accessed_date: v })} />
           </div>
           <div className="field full">
             <label>Link (optional)</label>

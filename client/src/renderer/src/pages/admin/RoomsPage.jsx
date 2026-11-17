@@ -109,7 +109,7 @@ export default function RoomsPage({ onNavigate }) {
               <button type="button" className="btn btn-ghost" onClick={() => setForm(null)}>
                 Cancel
               </button>
-              <button type="submit" className="btn btn-primary">
+              <button data-shortcut="save" type="submit" className="btn btn-primary">
                 <Icon name="check" /> Save
               </button>
             </div>

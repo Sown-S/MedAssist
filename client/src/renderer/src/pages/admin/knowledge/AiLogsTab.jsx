@@ -5,6 +5,7 @@ import { AI_MODES, AI_RUN_TYPES, AI_STATUSES, listAiLogs } from '../../../api/re
 import { shortDateTime } from '../../../utils/format'
 import Skeleton from '../../../components/Skeleton'
 import { ErrorNote } from '../../../components/DataState'
+import DateField from '../../../components/DateField'
 
 // Mỗi lượt chạy AI kèm phiên bản tri thức / model / prompt, độ trễ và quyết định của bác sĩ — truy vết được mà không lộ
 // bệnh nhân (server không trả họ tên, triệu chứng hay đầu ra thô của LLM).
@@ -57,11 +58,11 @@ export default function AiLogsTab() {
       <div className="fg3">
         <div className="field">
           <label>From</label>
-          <input type="date" value={draft.from} onChange={(e) => setDraft({ ...draft, from: e.target.value })} />
+          <DateField value={draft.from} onChange={(v) => setDraft({ ...draft, from: v })} />
         </div>
         <div className="field">
           <label>To</label>
-          <input type="date" value={draft.to} onChange={(e) => setDraft({ ...draft, to: e.target.value })} />
+          <DateField value={draft.to} onChange={(v) => setDraft({ ...draft, to: v })} />
         </div>
         <div className="field">
           <label>Run type</label>

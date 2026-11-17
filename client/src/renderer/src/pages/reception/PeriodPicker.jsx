@@ -1,5 +1,7 @@
 import { PERIODS } from './shared'
 import { ymd } from '../../utils/format'
+import DateField from '../../components/DateField'
+import { translate } from '../../i18n'
 
 export default function PeriodPicker({ period, date, onChange }) {
   return (
@@ -11,15 +13,7 @@ export default function PeriodPicker({ period, date, onChange }) {
           </button>
         ))}
       </div>
-      <input
-        type="date"
-        className={'input' + (period === 'date' ? ' on' : '')}
-        style={{ width: 160, height: 40 }}
-        value={period === 'date' ? date : ''}
-        max={ymd(new Date())}
-        title="Pick a date"
-        onChange={(e) => onChange(e.target.value ? 'date' : 'today', e.target.value)}
-      />
+      <DateField className={period === 'date' ? 'on' : ''} style={{ width: 160 }} value={period === 'date' ? date : ''} max={ymd(new Date())} title={translate('Pick a date')} onChange={(v) => onChange(v ? 'date' : 'today', v)} />
     </div>
   )
 }

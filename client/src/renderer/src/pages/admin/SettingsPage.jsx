@@ -15,12 +15,12 @@ import { OpsTab } from './settings/OpsTab'
 import { IDLE, getAt, setAt, validate } from './settings/settingsForm'
 
 const TABS = [
-  { key: 'clinic', label: 'Clinic', icon: 'stethoscope' },
-  { key: 'print', label: 'Printing & numbering', icon: 'printer' },
-  { key: 'security', label: 'Security', icon: 'shieldCheck' },
-  { key: 'connection', label: 'Connection & AI', icon: 'wifi' },
-  { key: 'device', label: 'This computer', icon: 'monitor' },
-  { key: 'ops', label: 'Operations', icon: 'settings' }
+  { key: 'clinic', label: 'Clinic', icon: 'stethoscope', desc: 'Name, address, licence, director' },
+  { key: 'print', label: 'Printing & numbering', icon: 'printer', desc: 'Paper size, footer, queue numbers' },
+  { key: 'security', label: 'Security', icon: 'shieldCheck', desc: 'Sign-in, session timeout, lockout' },
+  { key: 'connection', label: 'Connection & AI', icon: 'wifi', desc: 'Server, database and AI status' },
+  { key: 'device', label: 'This computer', icon: 'monitor', desc: 'Patient call board at the front desk' },
+  { key: 'ops', label: 'Operations', icon: 'settings', desc: 'Stock alerts, case clusters, payments' }
 ]
 // Tab “Kết nối & AI” chỉ hiển thị trạng thái, không có giá trị lưu.
 const TAB_OF = (path) => path.split('.')[0]
@@ -99,9 +99,14 @@ export default function SettingsPage({ params, onNavigate, setLeaveGuard }) {
         <nav className="card vtabs" aria-label={translate('Settings sections')}>
           {TABS.map((t) => (
             <button key={t.key} className={'vtab' + (tab === t.key ? ' on' : '')} aria-current={tab === t.key ? 'page' : undefined} onClick={() => setTab(t.key)}>
-              <Icon name={t.icon} />
-              <span>{t.label}</span>
-              {tabChanged(t.key) && <span className="set-dot" style={{ marginLeft: 'auto' }} title="Unsaved changes" />}
+              <span className="vtab-ic">
+                <Icon name={t.icon} />
+              </span>
+              <span className="vtab-t">
+                <b>{translate(t.label)}</b>
+                <small>{translate(t.desc)}</small>
+              </span>
+              {tabChanged(t.key) && <span className="set-dot" title={translate('Unsaved changes')} />}
             </button>
           ))}
         </nav>
@@ -167,7 +172,7 @@ export default function SettingsPage({ params, onNavigate, setLeaveGuard }) {
               <button className="btn btn-ghost btn-sm" disabled={!dirty} onClick={() => setDraft(saved.values)}>
                 Discard changes
               </button>
-              <button className="btn btn-primary btn-sm" disabled={!dirty || errCount > 0 || blockedOffline} onClick={save}>
+              <button data-shortcut="save" className="btn btn-primary btn-sm" disabled={!dirty || errCount > 0 || blockedOffline} onClick={save}>
                 <Icon name="save" /> <span>Save</span>
               </button>
             </div>

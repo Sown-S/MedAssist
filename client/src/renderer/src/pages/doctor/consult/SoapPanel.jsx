@@ -5,6 +5,7 @@ import AssessmentCard from '../AssessmentCard'
 import { SecondaryDx } from './SecondaryDx'
 import { ConfirmedSymptoms } from './ConfirmedSymptoms'
 import { ReminderPanel } from './ReminderPanel'
+import DateField from '../../../components/DateField'
 
 // Tab "Khám (SOAP)": S lời kể + triệu chứng đã xác nhận + kết quả cận lâm sàng (labs), O khám, gợi ý AI,
 // chẩn đoán ICD-10 chính / phụ, P hướng xử trí + hẹn tái khám.
@@ -65,7 +66,7 @@ export default function SoapPanel({ visit, d, set, tried, ai, aiDecision, decide
         </div>
         <div className="field">
           <label>{translate('Follow-up visit')}</label>
-          <input className="input" type="date" value={d.followUp} onChange={(e) => set({ followUp: e.target.value })} />
+          <DateField value={d.followUp} onChange={(v) => set({ followUp: v })} />
           <div className="tpl">
             {[3, 7, 14, 30].map((n) => (
               <button key={n} type="button" onClick={() => followIn(n)}>

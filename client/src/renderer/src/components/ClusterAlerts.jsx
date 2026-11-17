@@ -38,8 +38,10 @@ export default function ClusterAlerts({ onOpenReport }) {
     setSeen(signature(report))
   }
   return (
-    <div className="bell-pop warn cluster-pop" role="status">
-      <div className="ico w">
+    // Mức độ màu của popup: đỏ = cấp cứu, vàng = vấn đề cần xử lý (thuốc hết hạn, tồn thấp), xanh = thông tin thường.
+    // Cụm ca là thông tin xu hướng (không cần làm gì ngay) → xanh.
+    <div className="bell-pop info cluster-pop" role="status">
+      <div className="ico p">
         <Icon name="trending-up" />
       </div>
       <div className="bp-t">

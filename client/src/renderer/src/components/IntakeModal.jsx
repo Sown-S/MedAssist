@@ -332,7 +332,7 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
         <button className="btn btn-outline" onClick={close}>
           Cancel
         </button>
-        <button className={'btn btn-primary' + (done ? ' is-done' : '')} onClick={() => handleSave(false)} disabled={busy || (touched && invalid && !existing)} aria-busy={busy || undefined}>
+        <button data-shortcut="save" className={'btn btn-primary' + (done ? ' is-done' : '')} onClick={() => handleSave(false)} disabled={busy || (touched && invalid && !existing)} aria-busy={busy || undefined}>
           {done ? <Icon name="check" /> : busy ? <span className="spinner btn-spinner" aria-hidden="true" /> : <Icon name="ticket" />}
           {done ? translate('Saved') : busy ? translate('Saving…') : translate(existing ? 'Create visit & issue number' : 'Save & issue number')}
         </button>

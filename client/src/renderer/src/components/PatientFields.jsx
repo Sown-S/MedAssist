@@ -68,7 +68,7 @@ export function EditPatient({ p, onSaved }) {
         </div>
       </div>
       <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-        <button className="btn btn-primary btn-sm" disabled={bad} onClick={save}>
+        <button data-shortcut="save" className="btn btn-primary btn-sm" disabled={bad} onClick={save}>
           <Icon name="check" /> Save changes
         </button>
       </div>

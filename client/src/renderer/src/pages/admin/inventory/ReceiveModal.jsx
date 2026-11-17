@@ -5,6 +5,7 @@ import { useToast } from '../../../context/ToastContext'
 import { translate } from '../../../i18n'
 import { receiveStock, daysLeft, todayISO } from '../../../api/inventoryStore'
 import { unitLabel, fmtMoney } from './shared'
+import DateField from '../../../components/DateField'
 
 // Nhập kho = tạo một lô mới. Không quản lý nhà cung cấp / công nợ (ngoài phạm vi).
 export default function ReceiveModal({ drug, drugs, onClose }) {
@@ -69,7 +70,7 @@ export default function ReceiveModal({ drug, drugs, onClose }) {
             <label>
               Expiry date <span className="req">*</span>
             </label>
-            <input type="date" min={todayISO()} value={f.expiry} onChange={(e) => set('expiry', e.target.value)} />
+            <DateField min={todayISO()} value={f.expiry} onChange={(v) => set('expiry', v)} />
           </div>
           <div className="field">
             <label>
@@ -111,7 +112,7 @@ export default function ReceiveModal({ drug, drugs, onClose }) {
         <button className="btn btn-outline" onClick={onClose}>
           Cancel
         </button>
-        <button className="btn btn-primary" onClick={save}>
+        <button data-shortcut="save" className="btn btn-primary" onClick={save}>
           Receive stock
         </button>
       </div>

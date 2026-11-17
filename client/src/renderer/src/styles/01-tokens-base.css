@@ -56,7 +56,7 @@ body{
 }
 h1,h2,h3,.display{font-family:var(--font);}
 button,input,select,textarea{font-family:inherit;}
-.mono{font-family:'IBM Plex Mono',monospace;letter-spacing:0.02em;}
+.mono{font-variant-numeric:tabular-nums;letter-spacing:0.02em;}
 html{background:var(--bg-solid);color-scheme:light;}
 ::-webkit-scrollbar{width:8px;height:8px;}
 ::-webkit-scrollbar-track,::-webkit-scrollbar-corner{background:transparent;}

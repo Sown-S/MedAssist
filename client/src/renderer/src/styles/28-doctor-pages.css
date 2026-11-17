@@ -6,10 +6,6 @@
 /* Hồ sơ bệnh nhân */
 .lookup2{display:flex;flex-direction:column;gap:16px;}
 .lookup2>.card{margin:0;}
-.pl-results{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:6px;margin-top:12px;max-height:320px;overflow:auto;}
-.pl-results .pl-row{display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;column-gap:10px;align-items:center;border:1px solid var(--border);}
-.pl-results .pl-row .avatar{grid-row:1/3;}
-.pl-hint{font-size:13.5px;margin:10px 2px 0;}
 .avatar.sm{width:32px;height:32px;font-size:12.5px;}
 .avatar.lg{width:56px;height:56px;font-size:18px;font-weight:700;}
 .lookup-grid{display:grid;grid-template-columns:320px minmax(0,1fr);gap:16px;align-items:start;}

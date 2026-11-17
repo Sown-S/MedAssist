@@ -184,8 +184,13 @@ export default function SideNav({ user, collapsed, onToggle }) {
       {role === 'doctor' &&
         (user.room ? (
           <div className="room" title={translate('Your consultation room')}>
-            <Icon name="door-open" />
-            <span className="t">{user.room}</span>
+            <span className="room-ic">
+              <Icon name="door-open" />
+            </span>
+            <span className="t">
+              <small>{translate('Your consultation room')}</small>
+              <b>{user.room}</b>
+            </span>
           </div>
         ) : (
           <div className="room warn" title={translate('Reception cannot direct patients to you until you have a room.')}>

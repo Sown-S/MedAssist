@@ -31,27 +31,44 @@ export default function ServerAddress({ onSaved, onClose, variant }) {
     onSaved?.(r.url)
   }
 
-  // Màn đăng nhập: đúng ô "Địa chỉ máy chủ" của bản mẫu (ô nhập + nút Kiểm tra, dòng trạng thái có chấm màu).
+  // Màn đăng nhập (và màn khởi động): thẻ địa chỉ máy chủ — ô nhập rộng hết thẻ, hai nút bằng nhau bên dưới,
+  // dòng trạng thái đổi màu theo kết quả (xám = chưa kiểm tra, xanh = kết nối được + độ trễ, đỏ = lỗi).
   if (variant === 'login') {
-    const st = status.state === 'fail' ? 'bad' : status.state === 'checking' ? 'wait' : ''
+    const st = status.state === 'fail' ? 'bad' : status.state === 'ok' ? 'good' : status.state === 'checking' ? 'wait' : 'idle'
+    const changed = normalizeUrl(value) !== current
     return (
-      <div className="srv-box">
-        <div className="field">
-          <label htmlFor="srv">Clinic server address</label>
-          <div className="srv">
-            <input className="input" id="srv" value={value} spellCheck={false} placeholder="https://192.168.1.10" onChange={(e) => (setValue(e.target.value), setStatus({ state: 'idle' }))} onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), test())} />
-            <Button className="btn btn-outline" loading={status.state === 'checking'} onClick={test}>
-              <Icon name="plug-zap" />
-              <span>{translate('Test connection')}</span>
-            </Button>
-            <button type="button" className="btn btn-primary" disabled={normalizeUrl(value) === current} onClick={save}>
-              {translate('Save')}
-            </button>
+      <div className="srv-card">
+        <div className="srv-card-h">
+          <span className="srv-ic">
+            <Icon name="server" />
+          </span>
+          <div>
+            <b>{translate('Clinic server address')}</b>
+            <span>{translate('Saved on this computer only — ask the administrator for the address.')}</span>
           </div>
         </div>
-        <div className={'srv-st ' + st}>
-          <span className={'dot ' + (st === 'bad' ? 'bad' : st === 'wait' ? 'warn' : 'live')} />
-          {status.text ?? translate('Address of the clinic server — saved on this computer only.')}
+        <div className={'srv-input' + (st === 'bad' ? ' bad' : st === 'good' ? ' good' : '')}>
+          <Icon name="globe" />
+          <input id="srv" value={value} spellCheck={false} placeholder="https://192.168.1.10" aria-label={translate('Clinic server address')} onChange={(e) => (setValue(e.target.value), setStatus({ state: 'idle' }))} onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), test())} />
+          {value && (
+            <button type="button" className="srv-clear" title={translate('Clear')} onClick={() => (setValue(''), setStatus({ state: 'idle' }))}>
+              <Icon name="x" />
+            </button>
+          )}
+        </div>
+        <div className="srv-acts">
+          <Button className="btn btn-outline" loading={status.state === 'checking'} onClick={test}>
+            <Icon name="plug-zap" />
+            {translate('Test connection')}
+          </Button>
+          <button type="button" className="btn btn-primary" disabled={!changed} onClick={save} title={changed ? undefined : translate('The address has not changed')}>
+            <Icon name="save" />
+            {translate('Save address')}
+          </button>
+        </div>
+        <div className={'srv-state ' + st} role="status">
+          <Icon name={st === 'bad' ? 'circle-alert' : st === 'good' ? 'circle-check' : st === 'wait' ? 'loader' : 'info'} />
+          <span>{status.text ?? translate('Example: https://192.168.1.10 or http://127.0.0.1:8000 when the server runs on this computer.')}</span>
         </div>
       </div>
     )

@@ -7,6 +7,7 @@ import { ageOf } from '../../api/patient'
 import ServerHistory from './ServerHistory'
 import DocumentModal from './DocumentModal'
 import { ErrorNote } from '../../components/DataState'
+import Skeleton from '../../components/Skeleton'
 
 // Một ô tìm cho mọi khoá (mã BN, SĐT, CCCD, năm sinh, họ tên). Server tự ghi nhật ký VIEW mỗi lần xem.
 export default function PatientLookup() {
@@ -45,6 +46,8 @@ export default function PatientLookup() {
     }
   }
   const p = sel
+  // Đang gõ tìm (hoặc bấm quay lại danh sách): kết quả chiếm khung chính; chọn một người thì hiện hồ sơ.
+  const showList = !!q.trim() && (listOpen || !p)
   const subject = p && {
     ...p,
     age: ageOf(p.dob),
@@ -80,32 +83,91 @@ export default function PatientLookup() {
             />
           </div>
           <ErrorNote>{err}</ErrorNote>
-          {listOpen && q.trim() && (
-            <div className="pl-results">
-              {results.map((r) => (
-                <button key={r.id} className={'pl-row' + (r.id === p?.id ? ' active' : '')} onClick={() => open(r.id)}>
-                  <span className="ava" style={{ width: 30, height: 30, fontSize: 12 }}>
-                    {initials(r.name)}
-                  </span>
-                  <span className="nm">{r.name}</span>
-                  <span className="sub">
-                    <span className="num">{r.code}</span> · {r.dob} · <span className="num">{r.phone || '—'}</span>
-                  </span>
-                </button>
-              ))}
-              {searching && <p className="muted pl-hint">{translate('Loading…')}</p>}
-              {!searching && !results.length && !err && <p className="muted pl-hint">No patient matches.</p>}
-            </div>
-          )}
           {!q.trim() && !p && (
-            <p className="muted small" style={{ marginTop: 8 }}>
-              Type at least part of a name, phone number or record ID.
+            <p className="muted small" style={{ margin: '8px 0 0' }}>
+              {translate('Type at least part of a name, phone number or record ID.')}
             </p>
           )}
         </div>
       </div>
 
-      {p ? (
+      {showList ? (
+        <div className="card">
+          <div className="card-h">
+            <h3>
+              <Icon name="users" />
+              {translate('Search results')}
+              <span className="muted" style={{ fontWeight: 400 }}>
+                · {results.length}
+              </span>
+            </h3>
+            {p && (
+              <button className="btn btn-ghost btn-sm" onClick={() => setListOpen(false)}>
+                {translate('Back to')} {p.name}
+              </button>
+            )}
+          </div>
+          <div className="card-b">
+            {searching && !results.length ? (
+              <Skeleton rows={4} cols={4} />
+            ) : results.length ? (
+              <div className="tbl-wrap">
+                <table className="pl-table">
+                  <thead>
+                    <tr>
+                      <th>{translate('Patient')}</th>
+                      <th>{translate('Record ID')}</th>
+                      <th>{translate('Date of birth')}</th>
+                      <th>{translate('Phone')}</th>
+                      <th className="r" />
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {results.map((r) => (
+                      <tr key={r.id} className={'click' + (r.id === p?.id ? ' on' : '')} onClick={() => open(r.id)}>
+                        <td>
+                          <span className="pl-who">
+                            <span className="ava">{initials(r.name)}</span>
+                            <b>{r.name}</b>
+                          </span>
+                        </td>
+                        <td className="num">{r.code}</td>
+                        <td className="num">
+                          {r.dob}
+                          {ageOf(r.dob) !== '' && <span className="muted"> · {ageOf(r.dob)} {translate('yrs')}</span>}
+                        </td>
+                        <td className="num">{r.phone || '—'}</td>
+                        <td className="r">
+                          <button
+                            className="btn btn-outline btn-sm"
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              open(r.id)
+                            }}
+                          >
+                            {translate('View record')}
+                            <Icon name="chevron-right" />
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              !err && (
+                <div className="empty">
+                  <div className="ill">
+                    <Icon name="user-search" />
+                  </div>
+                  <b>{translate('No patient matches.')}</b>
+                  <span>{translate('Check the spelling, or search by phone number or record ID instead.')}</span>
+                </div>
+              )
+            )}
+          </div>
+        </div>
+      ) : p ? (
         <div className="lookup-grid">
           <div className="card pt-card">
             <div className="pt-id">
@@ -147,6 +209,12 @@ export default function PatientLookup() {
             </button>
           </div>
           <div className="card">
+            {results.length > 1 && (
+              <button className="link-btn small pl-back" onClick={() => setListOpen(true)}>
+                <Icon name="chevron-left" />
+                {translate('Search results')} ({results.length})
+              </button>
+            )}
             <ServerHistory key={p.id} patientId={p.id} onLoaded={(h) => setLast(h.items.find((v) => v.diagnoses.length) ?? null)} />
           </div>
         </div>
@@ -156,8 +224,8 @@ export default function PatientLookup() {
             <div className="ill">
               <Icon name="search" />
             </div>
-            <b>Find a patient</b>
-            <span>Search by name, phone number or record ID to see their full history or print a referral letter.</span>
+            <b>{translate('Find a patient')}</b>
+            <span>{translate('Search by name, phone number or record ID to see their full history or print a referral letter.')}</span>
           </div>
         </div>
       )}

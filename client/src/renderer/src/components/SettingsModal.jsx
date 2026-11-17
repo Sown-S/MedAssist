@@ -1,10 +1,9 @@
 import { useState } from 'react'
 import Icon from './Icon'
 import Modal, { ModalHeader } from './Modal'
-import { useToast } from '../context/ToastContext'
 import { LANGUAGES, getLang, setLang, translate } from '../i18n'
 import { SIDEBAR_THEMES, getSidebarTheme, setSidebarTheme } from '../api/sidebarTheme'
-import { COLOR_MODES, FONT_SIZES, getColorMode, setColorMode, getFontSize, setFontSize, getReduceMotion, setReduceMotion } from '../api/appTheme'
+import { COLOR_MODES, UI_SCALES, getColorMode, setColorMode, getUiScale, setUiScale, getReduceMotion, setReduceMotion } from '../api/appTheme'
 
 // Cài đặt cá nhân của máy này (nút bánh răng trên thanh trên): Giao diện, Ngôn ngữ, Tài khoản.
 // Mọi lựa chọn áp dụng ngay và chỉ lưu trên máy này — không ảnh hưởng máy khác, không cần nút Lưu.
@@ -61,21 +60,19 @@ const TABS = [
 ]
 
 export default function SettingsModal({ open, onClose, user, onChangePassword }) {
-  const { showToast } = useToast()
   const [tab, setTab] = useState('look')
   const [mode, setMode] = useState(getColorMode)
   const [sidebar, setSidebar] = useState(getSidebarTheme)
-  const [font, setFont] = useState(getFontSize)
+  const [scale, setScale] = useState(getUiScale)
   const [calm, setCalm] = useState(getReduceMotion)
 
   const pickMode = (v) => (setMode(v), setColorMode(v))
   const pickSidebar = (v) => (setSidebar(v), setSidebarTheme(v))
-  const pickFont = (v) => (setFont(v), setFontSize(v))
+  const pickScale = (v) => (setScale(v), setUiScale(v))
   const pickCalm = (v) => (setCalm(v), setReduceMotion(v))
+  // Đổi ngôn ngữ: giao diện đổi ngay là đủ, không hiện thêm thông báo.
   function chooseLanguage(code) {
-    if (code === getLang()) return
-    setLang(code)
-    showToast('Language updated')
+    if (code !== getLang()) setLang(code)
   }
 
   return (
@@ -119,50 +116,48 @@ export default function SettingsModal({ open, onClose, user, onChangePassword })
                 <section className="pset-sec">
                   <h4>{translate('Menu bar color')}</h4>
                   <p className="hint">{translate(mode === 'dark' ? 'In dark mode the menu bar follows the dark palette.' : 'Only the left menu bar changes; pages stay light.')}</p>
-                  <div className="swatches" role="radiogroup" aria-label={translate('Menu bar color')}>
+                  <div className="pick-grid" role="radiogroup" aria-label={translate('Menu bar color')}>
                     {SIDEBAR_THEMES.map((t) => (
-                      <button
-                        key={t.key}
-                        type="button"
-                        role="radio"
-                        aria-checked={sidebar === t.key}
-                        disabled={mode === 'dark'}
-                        className={'swatch' + (sidebar === t.key ? ' on' : '')}
-                        onClick={() => pickSidebar(t.key)}
-                        title={translate(t.label)}
-                      >
-                        <span className="sw-chip" style={{ background: t.bg, color: t.ink }}>
-                          <i style={{ background: t.active }} />
-                          <i />
-                          <i />
+                      <button key={t.key} type="button" role="radio" aria-checked={sidebar === t.key} disabled={mode === 'dark'} className={'pick' + (sidebar === t.key ? ' on' : '')} onClick={() => pickSidebar(t.key)}>
+                        <MiniApp mode="light" sidebar={t} />
+                        <span className="pick-l">
+                          <span className="sw-dot" style={{ background: t.bg }} />
+                          {translate(t.label)}
+                          {sidebar === t.key && <Icon name="circle-check" className="pick-ok" />}
                         </span>
-                        <span>{translate(t.label)}</span>
                       </button>
                     ))}
                   </div>
                 </section>
 
                 <section className="pset-sec">
-                  <h4>{translate('Text size')}</h4>
-                  <p className="hint">{translate('Larger text helps on high-resolution screens or when reading from a distance.')}</p>
-                  <div className="seg" role="radiogroup" aria-label={translate('Text size')}>
-                    {FONT_SIZES.map((f) => (
-                      <button key={f.key} type="button" role="radio" aria-checked={font === f.key} className={(font === f.key ? 'on' : '') + ' fs-' + f.key} onClick={() => pickFont(f.key)}>
-                        <span className="aa">{'Aa'}</span> {translate(f.label)}
-                      </button>
-                    ))}
+                  <div className="pset-pair">
+                    <div className="pset-tile">
+                      <div className="pset-tile-h">
+                        <Icon name="a-large-small" />
+                        <h4>{translate('Text size')}</h4>
+                        <span className="pset-val num">{Math.round(scale * 100)}%</span>
+                      </div>
+                      <div className="scale-pick" role="radiogroup" aria-label={translate('Text size')}>
+                        {UI_SCALES.map((v) => (
+                          <button key={v} type="button" role="radio" aria-checked={scale === v} className={scale === v ? 'on' : ''} onClick={() => pickScale(v)} title={Math.round(v * 100) + '%'}>
+                            <span style={{ fontSize: 10 + (v - 0.9) * 22 }}>{'A'}</span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="pset-tile">
+                      <div className="pset-tile-h">
+                        <Icon name="sparkle" />
+                        <h4>{translate('Reduce motion')}</h4>
+                        <label className="sw">
+                          <input type="checkbox" checked={calm} onChange={(e) => pickCalm(e.target.checked)} aria-label={translate('Reduce motion')} />
+                          <span />
+                        </label>
+                      </div>
+                      <p className="pset-tile-note">{translate(calm ? 'Transition effects are off.' : 'Transition effects are on.')}</p>
+                    </div>
                   </div>
-                </section>
-
-                <section className="pset-sec row">
-                  <div>
-                    <h4>{translate('Reduce motion')}</h4>
-                    <p className="hint">{translate('Turns off transition effects. Windows’ “Animation effects: off” setting is always respected.')}</p>
-                  </div>
-                  <label className="sw">
-                    <input type="checkbox" checked={calm} onChange={(e) => pickCalm(e.target.checked)} aria-label={translate('Reduce motion')} />
-                    <span />
-                  </label>
                 </section>
               </>
             )}

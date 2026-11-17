@@ -1,8 +1,8 @@
-import { contextBridge, ipcRenderer } from 'electron'
+import { contextBridge, ipcRenderer, webFrame } from 'electron'
 
 // Cầu nối duy nhất giữa giao diện và Electron (giao diện không truy cập Node.js trực tiếp).
 // secureStore: token mã hoá bằng safeStorage của hệ điều hành; config: cấu hình riêng của máy này;
-// updates: bản mới trên GitHub (main process gọi, chỉ thông báo) và mở trang Releases.
+// updates: bản mới trên GitHub (main process gọi, chỉ thông báo) và mở trang Releases; view: thu phóng giao diện.
 const api = {
   secureStore: {
     get: (key) => ipcRenderer.invoke('secure:get', key),
@@ -16,6 +16,11 @@ const api = {
   updates: {
     check: () => ipcRenderer.invoke('update:check'),
     openReleases: () => ipcRenderer.invoke('update:open')
+  },
+  // Thu phóng toàn bộ giao diện (Cài đặt › Cỡ chữ): phóng cả chữ, khoảng cách, icon cùng tỉ lệ.
+  view: {
+    setZoom: (factor) => webFrame.setZoomFactor(factor),
+    getZoom: () => webFrame.getZoomFactor()
   }
 }
 

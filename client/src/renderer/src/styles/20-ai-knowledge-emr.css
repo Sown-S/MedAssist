@@ -17,7 +17,7 @@
 .kb-logic-add{display:flex;gap:6px;flex-wrap:wrap;}
 .kb-logic-preview{margin-top:8px;display:flex;gap:6px;align-items:center;flex-wrap:wrap;}
 .kb-grow{flex:1;min-width:180px;}
-.kb-num{width:90px;padding:7px 9px;border:1px solid var(--border);border-radius:8px;background:var(--field-bg);color:var(--ink);font-family:'IBM Plex Mono',monospace;}
+.kb-num{width:90px;padding:7px 9px;border:1px solid var(--border);border-radius:8px;background:var(--field-bg);color:var(--ink);font-variant-numeric:tabular-nums;}
 .kb-check{flex-direction:row !important;align-items:center;gap:8px;}
 .kb-changes{display:flex;flex-direction:column;gap:8px;}
 .kb-change{border:1px solid var(--border);border-radius:10px;padding:9px 12px;background:var(--surface);}

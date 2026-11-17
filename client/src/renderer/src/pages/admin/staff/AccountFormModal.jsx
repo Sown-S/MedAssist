@@ -79,7 +79,7 @@ export default function AccountFormModal({ form, setForm, editing, me, rooms, fo
             <button type="button" className="btn btn-outline" onClick={() => setForm(null)}>
               Cancel
             </button>
-            <button type="submit" className="btn btn-primary">
+            <button data-shortcut="save" type="submit" className="btn btn-primary">
               {editing ? 'Save' : 'Create account'}
             </button>
           </div>

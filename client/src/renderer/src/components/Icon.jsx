@@ -1,4 +1,6 @@
 import {
+  MessageSquare,
+  Loader,
   PanelLeft,
   Sparkle,
   UserRound,
@@ -194,6 +196,8 @@ const ICONS = {
   'message-square-warning': MessageSquareWarning,
   monitor: Monitor,
   package: Package,
+  'message-square': MessageSquare,
+  loader: Loader,
   'panel-left': PanelLeft,
   sparkle: Sparkle,
   'user-round': UserRound,
@@ -291,7 +295,7 @@ const ICONS = {
 export function Logo({ className = '' }) {
   return (
     <svg className={'logo ' + className} viewBox="5 11 31 19" aria-hidden="true">
-      <path d="M7 22h5l3-9 5 15 4-11 2.5 5H33" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+      <path pathLength="100" d="M7 22h5l3-9 5 15 4-11 2.5 5H33" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
       <circle cx="33" cy="22" r="1.8" fill="currentColor" />
     </svg>
   )

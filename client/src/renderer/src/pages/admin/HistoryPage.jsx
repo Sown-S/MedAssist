@@ -6,6 +6,7 @@ import { ACTION_TYPES, ACTION_LABEL, ACTION_TONE as TONE, listAuditLogs, exportA
 import Skeleton from '../../components/Skeleton'
 import { ErrorNote } from '../../components/DataState'
 import Clip from '../../components/Clip'
+import DateField from '../../components/DateField'
 
 // Nhật ký hoạt động trên server (US09). Với bệnh nhân / lượt khám chỉ ghi tên trường thay đổi, không ghi giá trị (Quy định v5 §7).
 const PAGE = 50
@@ -82,24 +83,8 @@ export default function HistoryPage() {
                 </option>
               ))}
             </select>
-            <input
-              className="input"
-              type="date"
-              style={{ width: 160, height: 40 }}
-              title={translate('From')}
-              aria-label={translate('From')}
-              value={draft.from}
-              onChange={(e) => setDraft({ ...draft, from: e.target.value })}
-            />
-            <input
-              className="input"
-              type="date"
-              style={{ width: 160, height: 40 }}
-              title={translate('To')}
-              aria-label={translate('To')}
-              value={draft.to}
-              onChange={(e) => setDraft({ ...draft, to: e.target.value })}
-            />
+            <DateField style={{ width: 160 }} title={translate('From')} aria-label={translate('From')} placeholder={translate('From')} value={draft.from} onChange={(v) => setDraft({ ...draft, from: v })} />
+            <DateField style={{ width: 160 }} title={translate('To')} aria-label={translate('To')} placeholder={translate('To')} value={draft.to} onChange={(v) => setDraft({ ...draft, to: v })} />
             <input
               className="input"
               style={{ width: 210, height: 40 }}

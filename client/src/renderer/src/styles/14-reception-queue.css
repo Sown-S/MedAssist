@@ -2,7 +2,7 @@
 
 /* Hàng chờ, ca cờ đỏ */
 
-.p-ticket{font-family:'IBM Plex Mono',monospace;font-size:22px;font-weight:700;line-height:1;color:var(--accent);min-width:50px;text-align:center;}
+.p-ticket{font-variant-numeric:tabular-nums;font-size:22px;font-weight:700;line-height:1;color:var(--accent);min-width:50px;text-align:center;}
 .dev-tools{display:flex;align-items:center;gap:10px;margin-bottom:14px;padding:6px 10px;border:1px dashed var(--border);border-radius:10px;font-size:12px;color:var(--ink-soft);width:fit-content;}
 .dev-tools label{display:flex;align-items:center;gap:6px;cursor:pointer;}
 /* Sinh hiệu + triệu chứng ba trạng thái */

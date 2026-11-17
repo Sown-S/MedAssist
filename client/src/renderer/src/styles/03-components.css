@@ -1,6 +1,6 @@
 /* Tab trong trang, thẻ bệnh nhân, modal, form, bảng, badge, khung khám, cảnh báo, hoá đơn */
 
-.time{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-soft);}
+.time{font-variant-numeric:tabular-nums;font-size:12px;color:var(--ink-soft);}
 
 .field{display:flex;flex-direction:column;gap:5px;}
 .field.full{grid-column:1/-1;}

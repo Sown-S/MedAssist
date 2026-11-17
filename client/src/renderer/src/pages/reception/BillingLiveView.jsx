@@ -8,6 +8,7 @@ import { hhmm, methodLabel, PAY_STATUS } from './shared'
 import { money, fold, ymd } from '../../utils/format'
 import { MiniStat, MiniStats } from '../../components/MiniStat'
 import Skeleton from '../../components/Skeleton'
+import DateField from '../../components/DateField'
 
 // Hoá đơn / Đơn thuốc của Lễ tân khi chạy với server: các lượt còn việc ở quầy (GET /billing/awaiting).
 // Tab Hoá đơn có thêm lịch sử theo ngày; đơn cũ xem ở lịch sử của từng bệnh nhân.
@@ -160,15 +161,7 @@ function InvoiceHistory({ readOnly, onPay, reloadKey }) {
         </div>
         <div className="card-b">
           <div className="toolbar" style={{ marginBottom: 14 }}>
-            <input
-              className="input"
-              type="date"
-              style={{ width: 160, height: 40 }}
-              title={translate('Choose a day')}
-              value={date}
-              max={ymd(new Date())}
-              onChange={(e) => setDate(e.target.value || ymd(new Date()))}
-            />
+            <DateField style={{ width: 160 }} title={translate('Choose a day')} value={date} max={ymd(new Date())} onChange={(v) => setDate(v || ymd(new Date()))} />
             <div className="sp" />
             <label className="check">
               <input type="checkbox" checked={withCancelled} onChange={(e) => setWithCancelled(e.target.checked)} />
