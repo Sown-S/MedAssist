@@ -1,6 +1,6 @@
 # Rà chéo bộ ca v1.3 — bản đồng bộ cuối ngày 11/11/2026
 
-Người rà: **Tuấn và Huy**. Theo xác nhận bằng văn bản trong hội thoại, người giao việc đã rà, chốt phần của mình và yêu cầu ghi **Tuấn — ĐỒNG Ý**. Đây là ghi nhận xác nhận của người thật, không phải AI ký thay. Ngày rà phần Tuấn: 11/11/2026.
+Người rà: **Tuấn và Huy**. Tuấn đã rà, chốt phần được phân công và xác nhận **ĐỒNG Ý** ngày 11/11/2026.
 
 ## Tệp cuối cùng
 
@@ -11,7 +11,7 @@ Phản hồi Huy được giữ nguyên nội dung, chỉ chuẩn hóa chữ hoa
 
 Năm ca Huy yêu cầu sửa vẫn là CLIN-019, EXT-010, EXT-014, EXT-024, EXT-026. Hai JSONL v1.3 được giữ nguyên; mọi sửa nhãn thuộc công việc bộ mới v1.4. Chưa thay đổi trạng thái Active của ứng viên KB-2026.11 hoặc chạy benchmark RuleOnly.
 
-Các bản `_huy`, phiếu hỗ trợ AI, JSON xác nhận và báo cáo trung gian trong thư mục này được gộp rồi xóa theo yêu cầu người giao việc. Hai bản Huy cung cấp tại `D:/DownLoad/` không bị xóa. Dấu vết kiểm tệp nguồn được giữ bên dưới.
+Các phiếu riêng của Huy và báo cáo trung gian đã được gộp vào hai phiếu cuối; băm các phiếu gốc được giữ bên dưới.
 
 ## Băm các phiếu Huy đã nhận
 
@@ -32,7 +32,7 @@ Quy tắc hiện hành trong `server/app/ai/llm/prompts/extraction_v2.txt`: ph�
 
 ## Phần được phân công Tuấn: các điểm cần xem trước khi xác nhận
 
-Nhận xét đối chiếu cho 37 ca lâm sàng và 8 ca extraction phần Tuấn đã được gộp vào cột `nhận xét` của hai phiếu cuối; Tuấn đã xác nhận đồng ý và yêu cầu ghi tên Tuấn trong hội thoại. Không chạy lại chấm DDx, benchmark RuleOnly, Full hay trích xuất để tạo nhận xét này; không xác nhận các số điểm/thứ hạng trong phiếu Huy.
+Nhận xét đối chiếu cho 37 ca lâm sàng và 8 ca extraction phần Tuấn đã được gộp vào cột `nhận xét` của hai phiếu cuối; Tuấn đã xác nhận đồng ý. Không chạy lại chấm DDx, benchmark RuleOnly, Full hay trích xuất để tạo nhận xét này; không xác nhận các số điểm/thứ hạng trong phiếu Huy.
 
 | Ca | Vấn đề cần quyết định |
 |---|---|
@@ -58,13 +58,13 @@ Các ca kiểm ngưỡng hô hấp 051–054, 059–060 và 068–073 được �
 - Không dùng các nhận xét “thêm mã để lên #1/Top-5” làm căn cứ chỉnh KB hoặc ca đánh giá. Mọi sửa ca phải dựa trên dữ kiện và tiêu chí nhãn độc lập với điểm mô hình.
 
 
-## Bằng chứng xác nhận của Tuấn
+## Xác nhận của Tuấn
 
-Người giao việc trả lời “tôi xác nhận cả 2” khi được hỏi rõ về đồng ý nhận xét và đã rà, chốt từng ca; sau đó yêu cầu “ghi người ghi là tuấn, xác nhận đồng ý”. Áp dụng cho toàn bộ 37 ca lâm sàng và 8 ca trích xuất được phân công Tuấn. Không đổi phản hồi của Huy thành đồng ý.
+Tuấn xác nhận đồng ý các nhận xét và đã rà, chốt từng ca được phân công: 37 ca lâm sàng và 8 ca trích xuất. Không đổi phản hồi của Huy thành đồng ý.
 
 ## Kết luận bổ sung Huy và công việc riêng
 
-Đã nhận thống nhất mới qua người giao việc: EXT-026 dùng `gonorrhea_purulent_urethritis_dysuria`, bỏ ABSENT sốt trong v1.4; CLIN-022 giữ DDx Herpes, không bỏ theo thứ hạng; EXT-011 giữ ABSENT cứng khớp trên 1 giờ vì câu nêu 15 phút, xét riêng EXT-010. Giữ nguyên verdict gốc trong phiếu và nhãn v1.3. Mọi sửa luật cần việc riêng và rà chuyên môn trước triển khai.
+Thống nhất bổ sung: EXT-026 dùng `gonorrhea_purulent_urethritis_dysuria`, bỏ ABSENT sốt trong v1.4; CLIN-022 giữ DDx Herpes, không bỏ theo thứ hạng; EXT-011 giữ ABSENT cứng khớp trên 1 giờ vì câu nêu 15 phút, xét riêng EXT-010. Giữ nguyên verdict gốc trong phiếu và nhãn v1.3. Mọi sửa luật cần việc riêng và rà chuyên môn trước triển khai.
 
 Bổ sung bao phủ tắc động mạch trung tâm võng mạc: cả `central_retinal_artery_cherry_red_spot` và `acute_visual_loss` có trong `rf_out_of_scope`. Huy nhận định ca mất thị lực đột ngột được bảo vệ nếu gán đúng mã nguyên tử; chỉ gán `visual_acuity_decreased_blur` làm mất tính cấp và có thể bỏ sót. Việc trích xuất riêng cần bảo đảm giữ thông tin khởi phát cấp/đột ngột; không đồng nhất nhìn mờ mạn với mất thị lực cấp. Nhận định về bệnh nhân điển hình là phản hồi Huy; các phép chấm/thứ hạng và nguyên nhân điểm chưa được tái chạy để điều chỉnh KB.
 

@@ -1,6 +1,6 @@
 # Hướng dẫn kiểm thử MedAssist
 
-Dành cho giảng viên và người kiểm thử ngoài nhóm. Toàn bộ hệ thống chạy trên **một máy** Windows, macOS hoặc Linux:
+Dành cho người kiểm thử. Toàn bộ hệ thống chạy trên **một máy** Windows, macOS hoặc Linux:
 máy chủ (CSDL, API, worker AI) trong Docker, ứng dụng desktop trên chính máy đó. Lần đầu mất khoảng 15–30 phút, phần lớn là tải
 image và thư viện.
 
@@ -84,7 +84,7 @@ Mật khẩu chung: **`Kiemthu@2026`** (đổi được trong `deploy/eval.env` 
 Dữ liệu nạp sẵn:
 
 - Danh mục: 386 thuốc có lô (3 lô hết hạn sau 20 ngày, 3 thuốc dưới ngưỡng tồn), 28 dịch vụ và xét nghiệm, 3 gói khám,
-  374 cơ sở nhận chuyển tuyến, bản tri thức Active (199 bệnh, 97 triệu chứng, 12 luật).
+  374 cơ sở nhận chuyển tuyến, bản tri thức Active (153 bệnh, 299 triệu chứng, 12 luật).
 - Lượt khám cũ trong 2–3 tuần trước ngày nạp: 34 lượt, gồm 31 lượt đã xong (có chẩn đoán, đơn thuốc, hóa đơn), 2 lượt chuyển
   tuyến, 1 lượt hủy.
   Báo cáo, lịch sử khám, danh sách đơn thuốc theo tuần/tháng có số liệu ngay.
@@ -145,4 +145,4 @@ khi tắt, lễ tân chọn triệu chứng từ danh sách.
 
 Ghi lại thao tác, thời điểm, tài khoản và **mã yêu cầu** (`request_id`) hiện trong thông báo lỗi, kèm log:
 `docker compose -f deploy/docker-compose.eval.yml --env-file deploy/eval.env logs api worker > medassist-log.txt`.
-Gửi cho nhóm C1SE.28 (trưởng nhóm: Võ Nguyễn Trung Sơn, sonvong.10.11@gmail.com).
+Mở issue trên GitHub của repo (nhóm C1SE.28).

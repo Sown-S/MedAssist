@@ -207,7 +207,11 @@ async def _process_phrase_extraction(
         if result.completed and _remaining_budget(queued_at, feature_extractor.EXTRACTION_TIMEOUT_SECONDS) <= 0:
             result = SelectionResult(False, "EXTRACTION_TIMEOUT")
         run.model_name, run.prompt_version = model_name, result.prompt_version
-        run.validation_result = {"valid": result.completed, "reason": result.failure_code}
+        validation = {"valid": result.completed, "reason": result.failure_code}
+        if getattr(result, "unmapped_phrases", ()):
+            # Cụm đã che định danh; chỉ để soạn từ đồng nghĩa (scripts.export_unmapped), không ghi log/audit
+            validation["unmapped_phrases"] = list(result.unmapped_phrases)
+        run.validation_result = validation
         run.llm_output_raw = None
         run.latency_total_ms = int((time.monotonic() - started) * 1000)
         if gate is not None:
