@@ -302,6 +302,16 @@ chỉ để kiểm tra luồng chạy, không dùng số liệu của nó cho b�
 trích xuất trả rỗng và số ca vượt 30 s để so các cách trích xuất. Chỉnh thuật toán bằng bộ ca phát triển
 (`--extraction-cases`); bộ đóng băng chỉ dùng để chấm cuối.
 
+### Cụm lời kể không khớp triệu chứng (`scripts.export_unmapped`)
+
+Mỗi lượt trích xuất theo cụm lưu các cụm không khớp mã nào (đã che định danh) trong `validation_result`. Script gộp
+theo khoảng ngày, xuất CSV chỉ gồm `phrase, count` (không kèm lượt khám hay bệnh nhân) để soạn `aliases` cho
+`symptom_catalog.md`; mỗi lần xuất ghi một dòng audit `EXPORT`.
+
+```powershell
+python -m scripts.export_unmapped --since 2026-11-20 --until 2026-11-30 --min-count 2 --out ..\unmapped.csv
+```
+
 ### Dữ liệu cho môi trường kiểm thử (`scripts.seed_eval`)
 
 Nạp một lượt: tài khoản `admin`, `bs01`, `bs02`, `letan01` (mật khẩu chung lấy từ biến `EVAL_PASSWORD`, mặc định
@@ -380,7 +390,7 @@ Tiền tố `/api/v1`. Chi tiết tham số và schema: **Swagger `/docs`** (lu�
 | Tài khoản | `GET/POST admin/users`; `GET/PATCH admin/users/{id}`; `POST admin/users/{id}/reset-password`, `…/unlock` | Admin |
 | Phòng | `GET rooms` (`include_inactive`); `POST admin/rooms`; `PATCH admin/rooms/{id}` | Mọi vai trò xem; Admin sửa. Gán bác sĩ vào phòng bằng `room_id` của tài khoản |
 | Nhật ký | `GET admin/audit-logs`; `GET admin/audit-logs/export` (xlsx mặc định, csv) | Admin |
-| Báo cáo, nhật ký AI | `GET reports/summary` (`date_from`, `date_to`, mặc định hôm nay); `GET admin/ai-logs` (lọc ngày, `run_type`, `status`, `mode`; chỉ metadata) | Admin |
+| Báo cáo, nhật ký AI | `GET reports/summary` (`date_from`, `date_to`, mặc định hôm nay); `GET admin/ai-logs` (lọc ngày, `run_type`, `status`, `mode`; chỉ metadata, lượt trích xuất có `unmapped_count`) | Admin |
 | Cảnh báo cụm ca | `GET reports/clusters` (`date_to`, mặc định hôm nay): chẩn đoán đã xác nhận hoặc triệu chứng PRESENT có ≥ M bệnh nhân trong N ngày và gấp R lần trung bình 4 kỳ trước; ngưỡng ở khóa `alerts.cluster`; chỉ số đếm | Admin, Physician |
 | Tham số | `GET admin/settings`; `PUT admin/settings/{key}` | Admin |
 | Bệnh nhân | `GET/POST patients`; `GET patients/lookup` (mã, SĐT, CCCD, năm sinh); `GET/PATCH patients/{id}`; `GET patients/{id}/visits` | Nurse tạo/sửa; Physician, Nurse xem |
@@ -451,7 +461,7 @@ server/
 ├── alembic/           # migration 0001–0006 (alembic.ini ở server/)
 ├── db/                # initdb (vai trò, múi giờ, medassist_test), lược đồ v1.8, tài khoản system
 ├── data/              # drugs.csv, services.csv, hospitals.csv, eval_cases.jsonl + README
-├── scripts/           # create_user, seed_drugs, seed_services, seed_referral_facilities, import_okf, seed_eval
+├── scripts/           # create_user, seed_drugs, seed_services, seed_referral_facilities, import_okf, seed_eval, run_eval, export_unmapped
 ├── tests/             # api/, unit/ (kể cả unit/ai/) — chạy trên medassist_test
 ├── Dockerfile         # image dùng chung cho api, worker, migrate trên máy admin
 ├── .env.example

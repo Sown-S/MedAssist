@@ -122,7 +122,7 @@ def test_unmapped_phrase_completes_and_keeps_valid_suggestions(env):
     asyncio.run(env.process(Client({"p1": VALID["p1"], "p2": [], "unmapped": ["p2"]})))
     assert env.run.status == "Completed"
     assert len(env.run.candidates) == 1 and env.run.candidates[0]["symptom_code"] == "cough_dry"
-    assert env.run.validation_result == {"valid": True, "reason": None}
+    assert env.run.validation_result == {"valid": True, "reason": None, "unmapped_phrases": ["không chóng mặt xoay tròn"]}
     assert env.audits[0]["new_values"]["status"] == "Completed"
 
 

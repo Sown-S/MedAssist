@@ -233,6 +233,12 @@ def _ai_log_query(
     return stmt
 
 
+def _unmapped_count(validation_result) -> int | None:
+    if not isinstance(validation_result, dict):
+        return None
+    return len(validation_result.get("unmapped_phrases") or [])
+
+
 def ai_logs(
     db: Session,
     date_from: datetime.date | None,
@@ -261,6 +267,7 @@ def ai_logs(
             "priority_rule": r.priority_rule,
             "priority_final": r.priority_final,
             "suggested_codes": _suggested_codes(r.candidates),
+            "unmapped_count": _unmapped_count(r.validation_result) if r.run_type == "Extraction" else None,
             "model_name": r.model_name,
             "prompt_version": r.prompt_version,
             "knowledge_release_label": label,
