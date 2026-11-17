@@ -57,10 +57,12 @@ def test_invalid_compact_output_is_rejected_without_echo(output):
 
 def test_unmapped_and_empty_remain_distinct():
     plan = plan_for()
-    result = validate_selection(decode_selection({"p1": [], "p2": [], "unmapped": ["p1"]}, plan), plan)
-    assert result.failure_code == "UNMAPPED_PHRASE"
+    result = validate_selection(decode_selection({"p1": [], "p2": ["c1:A"], "unmapped": ["p1"]}, plan), plan)
+    assert result.completed and result.failure_code is None
+    assert len(result.suggestions) == 1 and result.suggestions[0]["status"] == "ABSENT"
+    assert result.unmapped_phrases == ("Ho khan",)
     result = validate_selection(decode_selection({"p1": [], "p2": [], "unmapped": []}, plan), plan)
-    assert result.completed and result.suggestions == ()
+    assert result.completed and result.suggestions == () and result.unmapped_phrases == ()
 
 
 def test_identical_repetitions_share_selection_without_losing_original_groups():
