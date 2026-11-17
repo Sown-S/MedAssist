@@ -18,7 +18,7 @@ xem [`docs/huong-dan-kiem-thu.md`](../docs/huong-dan-kiem-thu.md).
 
 | Cách | Máy chủ chạy bằng | Nhập ở ô **Máy chủ** của app | Chứng chỉ |
 |---|---|---|---|
-| Một máy (kiểm thử, giảng viên) | `docker-compose.eval.yml` ([docs/huong-dan-kiem-thu.md](../docs/huong-dan-kiem-thu.md)); AI tùy chọn qua `eval.env` | `http://127.0.0.1:8000` (mặc định của bản cài trên GitHub) | Không cần |
+| Một máy (kiểm thử) | `docker-compose.eval.yml` ([docs/huong-dan-kiem-thu.md](../docs/huong-dan-kiem-thu.md)); AI tùy chọn qua `eval.env` | `http://127.0.0.1:8000` (mặc định của bản cài trên GitHub) | Không cần |
 | Máy admin, dùng ngay trên máy đó | `docker-compose.yml` (mục dưới) | `https://localhost` | Có `localhost`, `127.0.0.1` |
 | Máy admin qua Tailscale (mỗi máy một mạng) | `docker-compose.yml` | `https://<tên Tailscale của máy admin>`, vd `https://medassist-server` | Có tên ngắn, tên `.ts.net`, IP 100.x |
 | Máy admin trong một mạng chung (router, điểm phát Wi-Fi) | `docker-compose.yml` | `https://<IP LAN của máy admin>` | Có IP LAN |
@@ -73,7 +73,7 @@ Chạy PowerShell tại thư mục gốc repo.
    iex "$dc exec api python -m scripts.seed_referral_facilities"
    iex "$dc exec api python -m scripts.import_okf --submit --approve-as bs.duyet"
    ```
-   - `seed_drugs --no-batches`: chỉ nạp danh mục 386 thuốc; nhập lô thật ở màn Kho. Bỏ `--no-batches` nếu cần kho mẫu để demo.
+   - `seed_drugs --no-batches`: chỉ nạp danh mục 386 thuốc; nhập lô thật ở màn Kho. Bỏ `--no-batches` nếu cần kho mẫu.
    - `seed_services`: danh mục dịch vụ, xét nghiệm, gói khám với giá mẫu; Admin sửa giá thật ở **Quản trị › Danh mục** trước khi thu tiền.
    - `seed_referral_facilities`: danh mục bệnh viện, trung tâm y tế để gợi ý nơi chuyển tuyến (vẫn gõ tự do được).
    - `import_okf --submit --approve-as <bác sĩ>`: nạp thư mục `knowledge/` (gắn vào container ở `/knowledge`) và kích hoạt ngay.
@@ -161,7 +161,7 @@ di động. Không dùng `-OllamaLan` khi có máy ngoài nhóm trong tailnet.
 - `deploy\.env`, `deploy\certs\` (khóa riêng của CA) và `deploy\backups\` **không bao giờ commit**.
 - Giữ một bản `medassist-root-ca.key` ngoài máy admin (USB cất riêng): mất khóa này thì phải tạo CA mới và cài lại app trên mọi máy client.
 - Chỉ Caddy mở cổng ra LAN. Ollama không có xác thực, nên chỉ mở cổng 11434 (`-OllamaLan`) trong giai đoạn phát triển;
-  **không dùng** trên máy demo, máy giao cho giảng viên, hoặc khi tailnet có máy ngoài nhóm.
+  **không dùng** trên máy chủ phòng khám, máy kiểm thử bàn giao, hoặc khi tailnet có máy ngoài nhóm.
 - Sao lưu dùng vai trò chỉ đọc `medassist_backup`; API dùng `medassist_app`, không có quyền sửa / xóa nhật ký và sổ kho.
 - Máy từng khôi phục bằng `restore.ps1` bản trước 01/11/2026 (`pg_restore --clean` trên CSDL đang chạy) đã bị cấp lại quyền
   UPDATE thừa. Thu hồi một lần:
