@@ -1,6 +1,7 @@
 """Kiểm v1.4 riêng bằng byte gốc và nhãn; chỉ đọc, không chạy pipeline/LLM/CSDL."""
 import csv
 from collections import Counter
+from datetime import date, datetime
 import hashlib
 import json
 from pathlib import Path
@@ -42,11 +43,75 @@ def labels(obj):
     return {k: obj[k] for k in names}
 
 
-def verify():
-    manifest = load(HERE / "manifest_freeze_v1.4.json")
+def verify(manifest_override=None):
+    manifest = load(HERE / "manifest_freeze.json") if manifest_override is None else manifest_override
+    assert {p.name for p in HERE.glob("*.jsonl")} == {"clinical_cases_labeled.jsonl", "symptom_extraction_testset.jsonl"}
+    assert manifest["combined_order"] == ["symptom_extraction_testset.jsonl", "clinical_cases_labeled.jsonl"]
+    assert manifest["cross_review"]["status"] == "PENDING_CROSS_REVIEW"
+    assert manifest["cross_review"]["reviewer_expected"] == "Huy"
+    assert manifest["cross_review"]["reviewed_at"] is None
     assert manifest["review_status"] == "PENDING_CROSS_REVIEW"
-    assert manifest["is_separate_testset"] is True and manifest["is_frozen"] is False
+    assert manifest["is_separate_testset"] is True and type(manifest["is_frozen"]) is bool
+    if manifest["is_frozen"]:
+        assert manifest["freeze_version"] == "testset-v1.4-frozen"
+        frozen_at = datetime.fromisoformat(manifest["frozen_at"])
+        assert frozen_at.utcoffset() is not None and frozen_at.utcoffset().total_seconds() == 7 * 3600
+        decision = manifest["freeze_decision"]
+        assert decision["decided_by"] == "Tuấn"
+        assert decision["accepted_known_limitations"] == sorted(manifest["known_limitations"])
+        assert decision["clinical_approval_inferred"] is False
+        assert decision["data_combined_sha256"] == manifest["combined_sha256"]
+        assert decision["jsonl_raw_sha256"] == {e["path"]: e["raw_sha256"] for e in manifest["files"]}
+    else:
+        assert manifest["freeze_version"] == "testset-v1.4-draft"
+        assert "freeze_decision" not in manifest and "frozen_at" not in manifest
     assert manifest["benchmark_status"] == "NOT_RUN"
+    feedback = manifest["cross_review"].get("feedback")
+    if feedback:
+        assert feedback["reported_reviewer"] == "Huy"
+        assert feedback["forwarded_by"] == "Tuấn"
+        assert feedback["status"] == "FEEDBACK_RECEIVED_FOR_FIVE_CASES"
+        assert set(feedback["confirmed_case_ids"]) == TARGETS
+        assert date.fromisoformat(feedback["reported_review_date"]).isoformat() == feedback["reported_review_date"]
+        assert feedback["full_testset_confirmation"] is False
+        assert feedback["freeze_authorized"] is False
+        assert feedback["current_artifact_hashes_confirmed_by_reviewer"] is False
+        assert feedback["current_matching_data_combined_sha256"] == manifest["combined_sha256"]
+        assert sha((ROOT / feedback["source_path"]).read_bytes()) == feedback["source_raw_sha256"]
+        if feedback.get("source_text_sha256"):
+            source_text = (ROOT / feedback["source_path"]).read_text(encoding="utf-8")
+            response_text = source_text.split("<!-- BEGIN HUY_FEEDBACK_2026_11_16 -->", 1)[1].split(
+                "<!-- END HUY_FEEDBACK_2026_11_16 -->", 1
+            )[0].strip()
+            assert sha(response_text.encode("utf-8")) == feedback["source_text_sha256"]
+        followup = feedback.get("followup")
+        if followup:
+            assert sha((ROOT / followup["source_path"]).read_bytes()) == followup["source_raw_sha256"]
+            assert set(followup["content_confirmation_scope"]) == TARGETS
+            assert followup["reviewer_ran_verify_v1_4"] is False
+            assert followup["full_testset_confirmation"] is False
+            scope = manifest["scope_decision"]
+            assert scope["decided_by"] == "Tuấn" and scope["decision"] == "KEEP_FIVE_IDS"
+            assert set(scope["changed_case_ids"]) == TARGETS
+            assert set(scope["retained_known_label_limitations"]) == {"EXT-022", "EXT-023"}
+            assert scope["clinical_approval_inferred"] is False and scope["freeze_authorized"] is False
+        for entry in manifest["case_changes"]:
+            assert entry["followup_feedback"]["reported_reviewer"] == "Huy"
+            assert entry["followup_feedback"]["verdict"] == "ĐỒNG Ý"
+            assert entry["followup_feedback"]["reported_review_date"] == feedback["reported_review_date"]
+            assert entry["followup_feedback"]["source_path"] == feedback["source_path"]
+    technical_review = manifest.get("technical_cross_review")
+    if technical_review:
+        report = ROOT / technical_review["report_path"]
+        assert sha(report.read_bytes()) == technical_review["report_raw_sha256"]
+        assert technical_review["integrity_status"] == "PASS"
+        assert technical_review["reviewed_combined_sha256"] == manifest["combined_sha256"]
+        assert technical_review["reviewed_file_raw_sha256"] == {
+            entry["path"]: entry["raw_sha256"] for entry in manifest["files"]
+        }
+        assert technical_review["clinical_review_status"] == "PENDING"
+        assert technical_review["human_cross_review_status"] == "PENDING_CROSS_REVIEW"
+        assert technical_review["freeze_ready"] is False
     parent = manifest["parent_testset"]
     original_manifest_path = ROOT / parent["manifest_path"]
     assert sha(original_manifest_path.read_bytes()) == parent["manifest_raw_sha256"]
@@ -97,8 +162,8 @@ def verify():
     kb = {p.relative_to(ROOT).as_posix(): sha(p.read_bytes()) for p in sorted((ROOT / "knowledge").rglob("*")) if p.is_file()}
     assert kb == manifest["knowledge_file_sha256_before"]
 
-    source_names = {"clinical_cases_labeled_v1.4.jsonl": ("clinical_cases_labeled.jsonl", 82),
-                    "symptom_extraction_testset_v1.4.jsonl": ("symptom_extraction_testset.jsonl", 29)}
+    source_names = {"clinical_cases_labeled.jsonl": ("clinical_cases_labeled.jsonl", 82),
+                    "symptom_extraction_testset.jsonl": ("symptom_extraction_testset.jsonl", 29)}
     changes = {x["case_id"]: x for x in manifest["case_changes"]}
     assert len(changes) == 5 and set(changes) == set(manifest["changed_case_ids"]) == TARGETS
     old_all, new_all, new_raw_all, diffs, file_reports, new_hashes = {}, {}, {}, [], [], {}
@@ -155,6 +220,11 @@ def verify():
     for key in ("EXT-014", "EXT-024", "EXT-026"):
         assert "sốt" not in new_all[key]["clinical_note"].casefold()
         assert "fever_high" not in new_all[key]["expected_symptoms"]
+    if manifest.get("scope_decision"):
+        for key in ("EXT-022", "EXT-023"):
+            assert new_all[key]["expected_symptoms"]["fever_high"] == "ABSENT"
+            assert "sốt" not in new_all[key]["clinical_note"].casefold()
+            assert new_all[key] == old_all[key]
     expected_14 = dict(old_all["EXT-014"]["expected_symptoms"])
     expected_14.pop("fever_high")
     assert new_all["EXT-014"]["expected_symptoms"] == expected_14
@@ -188,9 +258,10 @@ def verify():
     assert sha(new_raw_all["EXT-011"]) == manifest["latest_decision_update"]["EXT_011_raw_sha256"]
     for key, expected_hash in manifest["latest_decision_update"]["preserved_applied_case_raw_sha256"].items():
         assert sha(new_raw_all[key]) == expected_hash
-    combined = sha((new_hashes["symptom_extraction_testset_v1.4.jsonl"] + ":" + new_hashes["clinical_cases_labeled_v1.4.jsonl"]).encode("utf-8"))
+    combined = sha((new_hashes["symptom_extraction_testset.jsonl"] + ":" + new_hashes["clinical_cases_labeled.jsonl"]).encode("utf-8"))
     assert combined == manifest["combined_sha256"]
-    return {"status": "PASS", "files": file_reports, "diff": sorted(diffs, key=lambda x: x["case_id"]),
+    return {"status": "PASS", "is_frozen": manifest["is_frozen"], "freeze_version": manifest["freeze_version"],
+            "files": file_reports, "diff": sorted(diffs, key=lambda x: x["case_id"]),
             "changed_records": len(diffs), "unchanged_record_bytes": unchanged,
             "label_changed_ids": sorted(LABEL_CHANGED), "pending_labels_retained_ids": sorted(PENDING),
             "EXT_010_selected_option": "A", "EXT_011_unchanged_bytes": True,

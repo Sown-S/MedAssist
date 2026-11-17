@@ -31,9 +31,12 @@ from app.models.user import SYSTEM_USER_ID
 from app.services import audit_service as audit
 from app.services import knowledge_service
 from app.validation.knowledge_validators import (
+    SHORT_NAME_MAX,
+    Aliases,
     ConditionCode,
     ExcerptKey,
     SymptomCode,
+    alias_key,
     check_rule_key,
     condition_logic_errors,
     logic_symptom_codes,
@@ -70,6 +73,9 @@ class SymptomItem(_Strict):
     symptom_code: SymptomCode
     symptom_name: str = Field(min_length=1, max_length=150)
     category: str | None = Field(default=None, max_length=100)
+    short_name: str | None = Field(default=None, min_length=1, max_length=SHORT_NAME_MAX)
+    aliases: Aliases = Field(default_factory=list)
+    detection: Literal["reported", "exam", "both"] = "both"
 
 
 class SymptomCatalogFile(_Strict):
@@ -271,8 +277,18 @@ def _cross_check(v: Vault) -> None:
             source_ok(where, r)
         for e in c.excerpts:
             source_ok(e.excerpt_key, e)
+    owner: dict[str, str] = {}
+    for s in v.symptoms.values():
+        for a in s.aliases:
+            other = owner.setdefault(alias_key(a), s.symptom_code)
+            if other != s.symptom_code:
+                v.errors.append(f"{s.symptom_code}: từ đồng nghĩa '{a}' trùng với {other}")
     for r in v.rules.values():
         source_ok(r.rule_key, r)
+        # Luật chạy lúc tiếp đón: mã khám mới ghi được (exam) thì lễ tân không nhập, cờ đỏ bỏ sót
+        for code in sorted(logic_symptom_codes(r.condition_logic) & set(v.symptoms)):
+            if v.symptoms[code].detection == "exam":
+                v.errors.append(f"{r.rule_key}: luật dùng {code} nên detection phải là reported hoặc both")
         for code in sorted(logic_symptom_codes(r.condition_logic) - set(v.symptoms)):
             v.errors.append(f"{r.rule_key}: condition_logic dùng triệu chứng không có trong catalog: {code}")
         try:  # chạy thử bằng bộ đánh giá của pipeline
@@ -354,6 +370,9 @@ def desired_items(v: Vault, sids: dict[str, Any]) -> dict[str, dict[str, dict[st
             "symptom_code": s.symptom_code,
             "symptom_name": s.symptom_name,
             "category": s.category,
+            "short_name": s.short_name,
+            "aliases": s.aliases,
+            "detection": s.detection,
         }
     for c in v.conditions.values():
         items["condition"][c.condition_code] = {

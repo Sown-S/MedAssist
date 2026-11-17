@@ -96,8 +96,11 @@ def put_symptoms(db: Session, visit_id: uuid.UUID, data: SymptomsPut, actor: Use
 def active_catalog(db: Session) -> list[dict]:
     """Danh mục triệu chứng Active cho màn tiếp đón (mã OKF chuẩn, dùng cho PUT /visits/{id}/symptoms)."""
     rows = db.execute(
-        select(Symptom.symptom_code, Symptom.symptom_name, Symptom.category)
+        select(Symptom.symptom_code, Symptom.symptom_name, Symptom.category, Symptom.short_name, Symptom.detection)
         .where(Symptom.status == "Active")
         .order_by(Symptom.category.nulls_last(), Symptom.symptom_name)
     ).all()
-    return [{"symptom_code": c, "symptom_name": n, "category": cat} for c, n, cat in rows]
+    return [
+        {"symptom_code": c, "symptom_name": n, "category": cat, "short_name": short, "detection": det}
+        for c, n, cat, short, det in rows
+    ]

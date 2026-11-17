@@ -53,6 +53,7 @@ class CandidateOut(BaseModel):
     missing: list[MissingInformationOut]
     explanation: str | None
     label: Literal["Reference Suggestion"]
+    in_focus_scope: bool
 
 
 class AssessmentOut(BaseModel):

@@ -95,6 +95,12 @@ def test_symptom_catalog_for_clinical_roles(client, nurse, login, wk_knowledge):
     r = client.get("/api/v1/symptoms", headers=nurse)
     assert r.status_code == 200
     got = {s["symptom_code"]: s for s in r.json()}
-    assert got["wk_fever_high"] == {"symptom_code": "wk_fever_high", "symptom_name": "Sốt cao", "category": "test"}
+    assert got["wk_fever_high"] == {
+        "symptom_code": "wk_fever_high",
+        "symptom_name": "Sốt cao",
+        "category": "test",
+        "short_name": None,
+        "detection": "both",
+    }
     assert client.get("/api/v1/symptoms", headers=login("bs")).status_code == 200
     assert client.get("/api/v1/symptoms", headers=login("admin")).status_code == 403

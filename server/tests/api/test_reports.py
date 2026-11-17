@@ -8,7 +8,7 @@ from sqlalchemy import select, update
 
 from app.core.config import settings
 from app.core.database import SessionLocal
-from app.models import AiAssessmentLog, Diagnosis, User, Visit
+from app.models import AiAssessmentLog, AuditLog, Diagnosis, User, Visit
 from app.services import health_service
 from tests.api.intake import save_intake
 
@@ -265,6 +265,26 @@ def test_ai_logs_filters_and_paging(client, admin, past_runs):
     assert [i["physician_decision"] for i in rule["items"]] == ["ChoseOther"]
     page = client.get("/api/v1/admin/ai-logs", headers=admin, params={**base, "limit": 2, "offset": 4}).json()
     assert page["total"] == 5 and len(page["items"]) == 1
+
+
+def test_export_unmapped_phrases(past_runs, tmp_path, capsys):
+    from scripts import export_unmapped
+
+    day = datetime.datetime.combine(PAST, datetime.time(10), datetime.UTC)
+    for phrases in (["Đau lưng  lan chân", "mỏi gối"], ["đau lưng lan chân"], []):
+        rid = _run(past_runs, run_type="Extraction", queued_at=day)
+        with SessionLocal() as db:
+            db.get(AiAssessmentLog, rid).validation_result = {"valid": True, "unmapped_phrases": phrases}
+            db.commit()
+    out = tmp_path / "unmapped.csv"
+    assert export_unmapped.main(["--since", PAST.isoformat(), "--until", PAST.isoformat(), "--out", str(out)]) == 0
+    assert out.read_text(encoding="utf-8-sig").splitlines() == ["phrase,count", "đau lưng lan chân,2", "mỏi gối,1"]
+    with SessionLocal() as db:
+        row = db.scalars(
+            select(AuditLog).where(AuditLog.action_type == "EXPORT").order_by(AuditLog.created_at.desc())
+        ).first()
+    assert row.new_values["source"] == "scripts.export_unmapped" and row.new_values["phrases"] == 2
+    assert "đau" not in str(row.new_values)
 
 
 def test_ai_logs_admin_only(client, nurse, doctor):
