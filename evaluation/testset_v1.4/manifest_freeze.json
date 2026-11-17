@@ -43,13 +43,13 @@
   },
   "files": [
     {
-      "path": "evaluation/testset_v1.4/clinical_cases_labeled_v1.4.jsonl",
+      "path": "evaluation/testset_v1.4/clinical_cases_labeled.jsonl",
       "num_cases": 82,
       "sha256": "2019c6f01d57081513e52c7d29e49b2c568a4842a0fad265184be2f267f21177",
       "raw_sha256": "bf08786b00fabf2b3fb51b7b1e44de66466f8b9538138a656d579bf6fb4bcea5"
     },
     {
-      "path": "evaluation/testset_v1.4/symptom_extraction_testset_v1.4.jsonl",
+      "path": "evaluation/testset_v1.4/symptom_extraction_testset.jsonl",
       "num_cases": 29,
       "sha256": "b1cdf74efa2ba69c9d5443ddafef80be9e5bd779ea0dfee230a138644c31e373",
       "raw_sha256": "b4e7a6f2415d5d68f1912de5947e59cba0cfc5ab66da3ddd3bc9a5dd9f762681"
@@ -59,14 +59,14 @@
   "combined_sha256_formula": "sha256((sha_ext + \":\" + sha_clin).encode(\"utf-8\"))",
   "combined_sha256": "a136d072e8c5149f25409591b245b61865e3320a5233ad73ef9d4d54aec86161",
   "combined_order": [
-    "symptom_extraction_testset_v1.4.jsonl",
-    "clinical_cases_labeled_v1.4.jsonl"
+    "symptom_extraction_testset.jsonl",
+    "clinical_cases_labeled.jsonl"
   ],
   "case_changes": [
     {
       "case_id": "CLIN-019",
       "source_file": "evaluation/testset/clinical_cases_labeled.jsonl",
-      "target_file": "evaluation/testset_v1.4/clinical_cases_labeled_v1.4.jsonl",
+      "target_file": "evaluation/testset_v1.4/clinical_cases_labeled.jsonl",
       "source_reviewer": "Huy",
       "source_review_date": "2026-11-11",
       "source_verdict": "CẦN SỬA",
@@ -114,12 +114,19 @@
             "details": "evaluation/testset_v1.4/CHANGES.md"
           }
         }
+      },
+      "followup_feedback": {
+        "reported_reviewer": "Huy",
+        "verdict": "ĐỒNG Ý",
+        "reported_review_date": "2026-11-16",
+        "source_path": "evaluation/testset_v1.4/CHANGES.md",
+        "scope": "Giữ CLIN-019 chờ bác sĩ"
       }
     },
     {
       "case_id": "EXT-010",
       "source_file": "evaluation/testset/symptom_extraction_testset.jsonl",
-      "target_file": "evaluation/testset_v1.4/symptom_extraction_testset_v1.4.jsonl",
+      "target_file": "evaluation/testset_v1.4/symptom_extraction_testset.jsonl",
       "source_reviewer": "Huy",
       "source_review_date": "2026-11-11",
       "source_verdict": "CẦN SỬA",
@@ -165,12 +172,19 @@
             "enthesitis_achilles_heel": "PRESENT"
           }
         }
+      },
+      "followup_feedback": {
+        "reported_reviewer": "Huy",
+        "verdict": "ĐỒNG Ý",
+        "reported_review_date": "2026-11-16",
+        "source_path": "evaluation/testset_v1.4/CHANGES.md",
+        "scope": "Phương án nhãn của ca hiện tại"
       }
     },
     {
       "case_id": "EXT-014",
       "source_file": "evaluation/testset/symptom_extraction_testset.jsonl",
-      "target_file": "evaluation/testset_v1.4/symptom_extraction_testset_v1.4.jsonl",
+      "target_file": "evaluation/testset_v1.4/symptom_extraction_testset.jsonl",
       "source_reviewer": "Huy",
       "source_review_date": "2026-11-11",
       "source_verdict": "CẦN SỬA",
@@ -212,12 +226,19 @@
             "tendinitis_finkelstein_trigger_elbow": "PRESENT"
           }
         }
+      },
+      "followup_feedback": {
+        "reported_reviewer": "Huy",
+        "verdict": "ĐỒNG Ý",
+        "reported_review_date": "2026-11-16",
+        "source_path": "evaluation/testset_v1.4/CHANGES.md",
+        "scope": "Phương án nhãn của ca hiện tại"
       }
     },
     {
       "case_id": "EXT-024",
       "source_file": "evaluation/testset/symptom_extraction_testset.jsonl",
-      "target_file": "evaluation/testset_v1.4/symptom_extraction_testset_v1.4.jsonl",
+      "target_file": "evaluation/testset_v1.4/symptom_extraction_testset.jsonl",
       "source_reviewer": "Huy",
       "source_review_date": "2026-11-11",
       "source_verdict": "CẦN SỬA",
@@ -265,12 +286,19 @@
             "scabies_interdigital_burrows_nocturnal": "PRESENT"
           }
         }
+      },
+      "followup_feedback": {
+        "reported_reviewer": "Huy",
+        "verdict": "ĐỒNG Ý",
+        "reported_review_date": "2026-11-16",
+        "source_path": "evaluation/testset_v1.4/CHANGES.md",
+        "scope": "Phương án nhãn của ca hiện tại"
       }
     },
     {
       "case_id": "EXT-026",
       "source_file": "evaluation/testset/symptom_extraction_testset.jsonl",
-      "target_file": "evaluation/testset_v1.4/symptom_extraction_testset_v1.4.jsonl",
+      "target_file": "evaluation/testset_v1.4/symptom_extraction_testset.jsonl",
       "source_reviewer": "Huy",
       "source_review_date": "2026-11-11",
       "source_verdict": "CẦN SỬA",
@@ -314,6 +342,13 @@
             "gonorrhea_purulent_urethritis_dysuria": "PRESENT"
           }
         }
+      },
+      "followup_feedback": {
+        "reported_reviewer": "Huy",
+        "verdict": "ĐỒNG Ý",
+        "reported_review_date": "2026-11-16",
+        "source_path": "evaluation/testset_v1.4/CHANGES.md",
+        "scope": "Phương án nhãn của ca hiện tại"
       }
     }
   ],
@@ -622,5 +657,151 @@
     },
     "EXT_011_raw_sha256": "75c8351fe17fec53c583399cb05b92bd8eeeef4ce7447e4630a07eed54a58dc1"
   },
-  "updated_date": "2026-11-16"
+  "updated_date": "2026-11-16",
+  "cross_review": {
+    "reviewer_expected": "Huy",
+    "status": "PENDING_CROSS_REVIEW",
+    "reviewed_at": null,
+    "review_record": null,
+    "freeze_gate": "Chỉ đóng băng sau khi hoàn tất rà chéo v1.4 và ghi nhận các vấn đề còn tồn đọng; CLIN-019 tiếp tục CẦN BÁC SĨ QUYẾT nếu chưa có xác minh lâm sàng.",
+    "feedback": {
+      "reported_reviewer": "Huy",
+      "forwarded_by": "Tuấn",
+      "recorded_date": "2026-11-16",
+      "reported_review_date": "2026-11-16",
+      "reported_reviewed_file_count": 6,
+      "reported_reviewed_file_names": [
+        "README.md",
+        "CROSS_REVIEW.md",
+        "manifest_freeze.json",
+        "CHANGES.md",
+        "clinical_cases_labeled.jsonl",
+        "symptom_extraction_testset.jsonl"
+      ],
+      "status": "FEEDBACK_RECEIVED_FOR_FIVE_CASES",
+      "confirmed_case_ids": [
+        "CLIN-019",
+        "EXT-010",
+        "EXT-014",
+        "EXT-024",
+        "EXT-026"
+      ],
+      "full_testset_confirmation": false,
+      "freeze_authorized": false,
+      "source_path": "evaluation/testset_v1.4/CHANGES.md",
+      "source_raw_sha256": "bcdbc5325ceecd54b045b6e0c15e70435132c0468374bfd338f0ef6df6492680",
+      "current_matching_data_combined_sha256": "a136d072e8c5149f25409591b245b61865e3320a5233ad73ef9d4d54aec86161",
+      "current_artifact_hashes_confirmed_by_reviewer": false,
+      "unresolved_items_acknowledged_in_feedback": [
+        "CLIN-019"
+      ],
+      "unresolved_items_not_addressed_in_feedback": [],
+      "followup": {
+        "source_path": "evaluation/testset_v1.4/CHANGES.md",
+        "source_raw_sha256": "bcdbc5325ceecd54b045b6e0c15e70435132c0468374bfd338f0ef6df6492680",
+        "recorded_date": "2026-11-16",
+        "reported_reviewer": "Huy",
+        "content_confirmation_scope": [
+          "CLIN-019",
+          "EXT-010",
+          "EXT-014",
+          "EXT-024",
+          "EXT-026"
+        ],
+        "full_testset_confirmation": false,
+        "reviewer_ran_verify_v1_4": false,
+        "reported_review_method": "Đọc tài liệu và đối chiếu trực tiếp hai JSONL được gửi",
+        "recommendation_EXT_022_EXT_023": "Bỏ fever_high=ABSENT trước đóng băng; nếu giữ phạm vi năm ID phải ghi rõ giới hạn",
+        "CLIN_019_disposition": "Giữ nhãn, CẦN BÁC SĨ QUYẾT",
+        "EXT_024_disposition": "Giữ nhãn; giới hạn trích đoạn BYT không chặn đóng băng testset theo Huy",
+        "extraction_phrases_v4": "Huy cho biết là bản nháp untracked cục bộ, không được kiểm trực tiếp trong lượt này",
+        "source_section": "pham-vi"
+      },
+      "source_section": "phan-hoi-huy",
+      "source_text_sha256": "b31df255e1b62aa64ca5c6a07d20cddf760192e0bf51e5ddb320ea9742b79648"
+    }
+  },
+  "technical_cross_review": {
+    "date": "2026-11-16",
+    "review_type": "technical_document_and_data_check",
+    "integrity_status": "PASS",
+    "clinical_review_status": "PENDING",
+    "human_cross_review_status": "PENDING_CROSS_REVIEW",
+    "report_path": "evaluation/testset_v1.4/CHANGES.md",
+    "report_raw_sha256": "bcdbc5325ceecd54b045b6e0c15e70435132c0468374bfd338f0ef6df6492680",
+    "reviewed_combined_sha256": "a136d072e8c5149f25409591b245b61865e3320a5233ad73ef9d4d54aec86161",
+    "cases_checked_for_integrity": 111,
+    "cases_checked_against_text_and_comments": [
+      "CLIN-019",
+      "EXT-010",
+      "EXT-014",
+      "EXT-024",
+      "EXT-026"
+    ],
+    "unresolved_case_ids": [
+      "CLIN-019",
+      "EXT-022",
+      "EXT-023"
+    ],
+    "reviewed_file_raw_sha256": {
+      "evaluation/testset_v1.4/clinical_cases_labeled.jsonl": "bf08786b00fabf2b3fb51b7b1e44de66466f8b9538138a656d579bf6fb4bcea5",
+      "evaluation/testset_v1.4/symptom_extraction_testset.jsonl": "b4e7a6f2415d5d68f1912de5947e59cba0cfc5ab66da3ddd3bc9a5dd9f762681"
+    },
+    "freeze_ready": false,
+    "report_section": "kiem-chung"
+  },
+  "scope_decision": {
+    "decided_by": "Tuấn",
+    "date": "2026-11-16",
+    "decision": "KEEP_FIVE_IDS",
+    "changed_case_ids": [
+      "CLIN-019",
+      "EXT-010",
+      "EXT-014",
+      "EXT-024",
+      "EXT-026"
+    ],
+    "retained_known_label_limitations": [
+      "EXT-022",
+      "EXT-023"
+    ],
+    "clinical_approval_inferred": false,
+    "freeze_authorized": false,
+    "source_path": "evaluation/testset_v1.4/CHANGES.md"
+  },
+  "known_limitations": {
+    "EXT-022": "Giữ fever_high=ABSENT dù lời kể không nhắc sốt; Huy khuyến nghị bỏ, Tuấn giữ phạm vi năm ID và ghi giới hạn",
+    "EXT-023": "Giữ fever_high=ABSENT dù lời kể không nhắc sốt; Huy khuyến nghị bỏ, Tuấn giữ phạm vi năm ID và ghi giới hạn",
+    "CLIN-019": "Giữ nhãn v1.3, CẦN BÁC SĨ QUYẾT",
+    "EXT-024": "Giữ nhãn; thiếu trích đoạn toàn văn BYT là giới hạn KB không chặn đóng băng testset theo phản hồi Huy",
+    "inherited_other_cases": "CLIN-021/022, mã gộp EXT-018/019/021/027/028: giữ nguyên các điểm chờ ở README_review.md"
+  },
+  "document_consolidation": {
+    "date": "2026-11-16",
+    "changes_record": "evaluation/testset_v1.4/CHANGES.md",
+    "workflow": "evaluation/README.md",
+    "original_documents": [
+      {
+        "path": "evaluation/testset_v1.4/CHANGES.md",
+        "raw_sha256": "03cd5018339369eadf5b78f65a86cdf908edbd0c233c5c093e9c781056f3fce7"
+      },
+      {
+        "path": "evaluation/testset_v1.4/CROSS_REVIEW.md",
+        "raw_sha256": "3af9fc879315ba544322c301aeeb6fb8cce7e02fc1a4bc3b6e328ec6967fd8e2"
+      },
+      {
+        "path": "evaluation/testset_v1.4/HUY_FEEDBACK.md",
+        "raw_sha256": "23ee72674bdca7bb24962823204eb9393199f0a397dc3eb5cb7cf48e88b6da00"
+      },
+      {
+        "path": "evaluation/testset_v1.4/HUY_FOLLOWUP.md",
+        "raw_sha256": "ba81b7b170abed67aadb296f9764778cf6e1600b944368e1b0f4b6c1c8d021e6"
+      },
+      {
+        "path": "evaluation/testset_v1.4/FREEZE.md",
+        "raw_sha256": "0cf0e7802c436a7588cf238750311ce5ef62367bdeb793951dc73a72a4f5d271"
+      }
+    ],
+    "preserved": "Original five reviewer comments remain in case_changes and CHANGES; forwarded feedback text preserved in marked section; technical findings and scope decisions consolidated; workflow moved to evaluation/README.md"
+  }
 }

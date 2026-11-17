@@ -1,271 +1,134 @@
-# Đề xuất thay đổi v1.4 và tự đánh giá
+# Thay đổi, rà chéo và giới hạn testset v1.4
 
-Bản riêng, chưa đóng băng; rà chéo PENDING_CROSS_REVIEW. Chỉ dựa vào phản hồi Huy, dữ kiện ca và nguồn đã có. Không chạy pipeline hoặc sử dụng chỉ số/thứ hạng từ kết quả đánh giá để chọn nhãn.
+Ngày tổng hợp: 16/11/2026. Bộ riêng cho KB-2026.11; trạng thái hiện tại lấy từ manifest. Phạm vi **5 ID** đã được Tuấn chốt, 4 ca đổi nhãn; **106 bản ghi khác nguyên byte**, gồm EXT-011. Hai JSONL giữ nguyên sau lượt rà. Không chạy pipeline/LLM/CSDL hoặc dùng thứ hạng để chọn nhãn.
 
-## Nguồn đã đọc
+## Nhãn thay đổi
 
-- [README rà chéo](../review/README_review.md) và hai phiếu [lâm sàng](../review/review_sheet_clinical_v1.3.csv), [trích xuất](../review/review_sheet_extraction_v1.3.csv): đọc đủ 82 và 29 dòng; 5 nhận xét CẦN SỬA được lưu nguyên văn trong manifest và dưới đây.
-- [Catalog](../../knowledge/symptoms/symptom_catalog.md), [trích dẫn ghẻ](../../knowledge/conditions/dermatology/benh_ghe.md), [trích dẫn lậu](../../knowledge/conditions/dermatology/benh_lau.md) cùng [nguồn BYT 75/2015](../../knowledge/sources/moh_qd_75_2015.md). Không sửa các file nguồn này.
-- [Quy tắc trích xuất hiện có](../../server/app/ai/llm/prompts/extraction_v2.txt): không nhắc triệu chứng thì bỏ, chỉ phủ định mới gán ABSENT. Đây là căn cứ kiểm nhãn; không sửa prompt.
+| ID | Phương án đang lưu |
+|---|---|
+| CLIN-019 | Giữ toàn bộ nhãn, sinh hiệu, ưu tiên và DDx v1.3; chỉ đổi metadata chờ bác sĩ. Không thêm lời kể/mã. |
+| EXT-010 | Phương án A: bỏ mechanical_spinal_pain_stiffness=ABSENT; giữ inflammatory_sacroiliac_back_pain và enthesitis_achilles_heel PRESENT. Không thay EXT-011. |
+| EXT-014 | Giữ tendinitis_finkelstein_trigger_elbow=PRESENT; bỏ fever_high=ABSENT vì không nhắc sốt. |
+| EXT-024 | Giữ hai mã ngứa/mụn nước; thêm scabies_interdigital_burrows_nocturnal=PRESENT; bỏ fever_high=ABSENT. Không suy thêm vị trí sinh dục. |
+| EXT-026 | Giữ genital_ulcer_chancre_discharge=PRESENT; thêm gonorrhea_purulent_urethritis_dysuria=PRESENT; bỏ fever_high=ABSENT. Không suy thêm loét/săng. |
 
-## Phạm vi thay đổi
+Nhãn cũ/mới đầy đủ, nhận xét gốc và các trường đổi nằm trong manifest_freeze.json mục case_changes. Hai JSONL v1.3 và manifest v1.3 không đổi.
 
-Đúng 5 ID khác byte so với v1.3. Cập nhật ngày 16/11/2026: 4 ID thay nhãn, CLIN-019 chỉ đổi metadata và giữ nhãn chờ bác sĩ. 106 ca khác nguyên từng byte, gồm EXT-011. Mọi clinical_note giữ nguyên; không thêm clinical_note vào CLIN-019. Phản hồi mới do người giao việc cung cấp trong hội thoại, không suy ra chữ ký bác sĩ hoặc ghi APPROVED.
+## Nhận xét gốc của Huy ngày 11/11/2026
 
-## CLIN-019
-
-Nhận xét Huy đầy đủ trong phiếu ngày 2026-11-11 (giữ làm lịch sử):
+### CLIN-019
 
 > PRESENT hiện chỉ có 2 mã chung (pruritus_intense_skin_itch;vesicular_blister_rash), thiếu mã then chốt scabies_interdigital_burrows_nocturnal hoặc atopic_dermatitis_flexural_eczema nên cả benh_ghe (#7) và viem_da_co_dia (#15) đều rớt khỏi Top-5. Đề xuất bổ sung scabies_interdigital_burrows_nocturnal ở v1.4.
 
-Nhãn cũ v1.3:
-
-```json
-{
-  "symptoms": {
-    "pruritus_intense_skin_itch": "PRESENT",
-    "vesicular_blister_rash": "PRESENT",
-    "fever_high": "ABSENT"
-  },
-  "expected_priority": "Routine",
-  "expected_triggered_rules": [],
-  "expected_top_conditions": [
-    "benh_ghe",
-    "viem_da_co_dia"
-  ]
-}
-```
-
-Nhãn trong bản v1.4 hiện tại:
-
-```json
-{
-  "symptoms": {
-    "pruritus_intense_skin_itch": "PRESENT",
-    "vesicular_blister_rash": "PRESENT",
-    "fever_high": "ABSENT"
-  },
-  "expected_priority": "Routine",
-  "expected_triggered_rules": [],
-  "expected_top_conditions": [
-    "benh_ghe",
-    "viem_da_co_dia"
-  ]
-}
-```
-
-Theo xác nhận người giao việc ngày 16/11/2026, giữ nguyên toàn bộ nhãn và sinh hiệu v1.3; không thêm clinical_note hoặc mã ghẻ/viêm da cơ địa. CẦN BÁC SĨ QUYẾT sau khi xác minh dữ kiện; checklist nằm ngoài JSONL trong CHANGES.md. Không dùng thứ hạng DDx để sửa nhãn.
-
-Trạng thái: **CẦN BÁC SĨ QUYẾT**.
-
-Phản hồi người giao việc ngày 16/11: đồng ý giữ nguyên nhãn và chờ bác sĩ. Ca chỉ có tuổi 14, nhiệt độ 36,9°C, ngứa/mụn nước PRESENT và fever_high ABSENT; không có clinical_note. Không có căn cứ tự thêm mã ghẻ hoặc viêm da cơ địa, không dùng thứ hạng DDx làm căn cứ.
-
-Checklist cần bác sĩ xác minh từ dữ kiện thật (chỉ để ngoài JSONL):
-
-1. Thời điểm ngứa: có tăng dữ dội về đêm không?
-2. Phân bố/hình thái: vị trí mụn nước và có/không đường hầm trên nền da lành; phân biệt với tổn thương chàm ở nếp gấp. Các vị trí kẽ ngón, ngấn cổ tay, vùng da mỏng/quanh rốn/sinh dục hoặc nếp gấp khuỷu/khoeo/cổ là câu hỏi người giao việc đề nghị kiểm tra, không phải dữ kiện đã có của ca.
-3. Dịch tễ/tiền sử: người tiếp xúc có ngứa tương tự không, có tiền sử dị ứng bản thân/gia đình không? Không mặc định có một trong các dữ kiện này.
-4. Nếu thực sự đã làm: kết quả soi tìm ký sinh trùng tại thương tổn. Không tự ghi là đã làm hoặc đã dương tính.
-
-Căn cứ thuật ngữ: [trích dẫn ghẻ](../../knowledge/conditions/dermatology/benh_ghe.md), [trích dẫn viêm da cơ địa](../../knowledge/conditions/dermatology/viem_da_co_dia.md), catalog và nguồn QĐ 75/QĐ-BYT sẵn có. Tài liệu viêm da cơ địa nêu tổn thương nếp gấp và tiền sử dị ứng; ghẻ nêu ngứa về đêm, mụn nước trên da lành và soi tìm ký sinh trùng. Chỉ ánh xạ mã/bổ sung clinical_note sau khi có dữ kiện bác sĩ xác minh và chỉ dẫn cập nhật riêng. **CẦN BÁC SĨ QUYẾT**.
-## EXT-010
-
-Nhận xét Huy đầy đủ trong phiếu ngày 2026-11-11 (giữ làm lịch sử):
+### EXT-010
 
 > 2 mã PRESENT (inflammatory_sacroiliac_back_pain, enthesitis_achilles_heel) khớp sát văn bản. Tuy nhiên nhãn ABSENT gán mechanical_spinal_pain_stiffness từ cụm 'nằm nghỉ không giảm' là suy luận loại trừ lâm sàng chứ câu văn không phủ định trực tiếp đau cơ học; nếu chấm extraction chặt nên cân nhắc bỏ khỏi ABSENT ở bản v1.4.
 
-Nhãn cũ v1.3:
-
-```json
-{
-  "expected_symptoms": {
-    "inflammatory_sacroiliac_back_pain": "PRESENT",
-    "enthesitis_achilles_heel": "PRESENT",
-    "mechanical_spinal_pain_stiffness": "ABSENT"
-  }
-}
-```
-
-Nhãn trong bản v1.4 hiện tại:
-
-```json
-{
-  "expected_symptoms": {
-    "inflammatory_sacroiliac_back_pain": "PRESENT",
-    "enthesitis_achilles_heel": "PRESENT"
-  }
-}
-```
-
-Áp dụng phương án A theo xác nhận rõ của người giao việc ngày 16/11/2026: bỏ mechanical_spinal_pain_stiffness=ABSENT; chỉ giữ inflammatory_sacroiliac_back_pain=PRESENT và enthesitis_achilles_heel=PRESENT. Văn bản mô tả tính chất đau kiểu viêm, không phủ định trực tiếp đau kiểu cơ học; không suy luận loại trừ giữa hai mã khác nhau. Chính sách không đảo thống nhất EXT-011 về đối chiếu 15 phút với ngưỡng >1 giờ trên cùng thông số thời gian.
-
-Trạng thái: **USER_CONFIRMED_PROPOSAL; PENDING_CROSS_REVIEW**.
-
-## Phạm vi chính sách EXT-010 đã được chọn
-
-**Phương án A đã được người giao việc xác nhận ngày 16/11/2026.** Câu “tập thể dục vận động thì đỡ đau nhưng nằm nghỉ không giảm” mô tả thuộc tính đau kiểu viêm, không phủ định trực tiếp đau kiểu cơ học; không suy luận loại trừ từ một mã bệnh lý/cơ chế sang mã khác để gán ABSENT.
-
-| Phương án | Nội dung | Trạng thái |
-|---|---|---|
-| A | Bỏ mechanical_spinal_pain_stiffness=ABSENT, giữ hai PRESENT. | ĐÃ CHỌN theo người giao việc |
-| B | Giữ ABSENT theo suy luận thuộc tính giữa hai mã. | KHÔNG CHỌN; chỉ giữ lịch sử phương án |
-
-Ngoại lệ phạm vi đã được xác nhận: **không đảo EXT-011**. Đối chiếu 15 phút với ngưỡng >1 giờ là trên cùng một thông số thời gian cứng khớp; không áp dụng ngược chính sách loại trừ giữa hai mã khác nhau. EXT-011 giữ nguyên byte cả so với v1.3 và v1.4 trước cập nhật. Phạm vi toàn bộ v1.4 vẫn đúng 5 ID.
-
-Đã đọc lại extraction_v2.txt và [extraction_phrases_v2.txt](../../server/app/ai/llm/prompts/extraction_phrases_v2.txt): mã không được nhắc phải bỏ, ABSENT dành cho phủ định rõ. Phản hồi người giao việc có nhắc v4; **chưa tìm thấy tệp extraction_phrases_v4 trong repo hiện tại**, nên không ghi là đã đối chiếu v4 và không sửa/bổ sung prompt đó. Không sửa prompt, KB hoặc luật trong việc này.
-## EXT-014
-
-Nhận xét Huy đầy đủ (phiếu ngày 2026-11-11):
+### EXT-014
 
 > PRESENT (tendinitis_finkelstein_trigger_elbow) khớp chính xác. Tuy nhiên văn bản KHÔNG nhắc tới sốt nhưng nhãn ABSENT lại có fever_high; cần bỏ fever_high khỏi ABSENT (hoặc thêm 'không sốt' vào câu văn) nếu tách v1.4 để không phạt oan bộ trích xuất.
 
-Nhãn cũ:
-
-```json
-{
-  "expected_symptoms": {
-    "tendinitis_finkelstein_trigger_elbow": "PRESENT",
-    "fever_high": "ABSENT"
-  }
-}
-```
-
-Nhãn trong bản v1.4:
-
-```json
-{
-  "expected_symptoms": {
-    "tendinitis_finkelstein_trigger_elbow": "PRESENT"
-  }
-}
-```
-
-Văn bản không đề cập sốt và không có dữ kiện phủ định sốt: bỏ fever_high=ABSENT; không chèn thêm không sốt vào văn bản.
-
-Trạng thái: **USER_CONFIRMED_PROPOSAL; PENDING_CROSS_REVIEW**. Người giao việc đã đồng ý trong phản hồi ngày 16/11; bản ghi JSONL này giữ nguyên byte so với v1.4 trước cập nhật.
-
-## EXT-024
-
-Nhận xét Huy đầy đủ (phiếu ngày 2026-11-11):
+### EXT-024
 
 > Cần sửa 2 điểm nếu tách v1.4: (1) Văn bản nêu rõ 'ngứa dữ dội về đêm ở các kẽ ngón tay... kèm đường hầm luống ghẻ' nhưng PRESENT lại thiếu mã then chốt scabies_interdigital_burrows_nocturnal; (2) Văn bản không nhắc tới sốt nhưng ABSENT lại gán fever_high.
 
-Nhãn cũ:
-
-```json
-{
-  "expected_symptoms": {
-    "pruritus_intense_skin_itch": "PRESENT",
-    "vesicular_blister_rash": "PRESENT",
-    "fever_high": "ABSENT"
-  }
-}
-```
-
-Nhãn trong bản v1.4:
-
-```json
-{
-  "expected_symptoms": {
-    "pruritus_intense_skin_itch": "PRESENT",
-    "vesicular_blister_rash": "PRESENT",
-    "scabies_interdigital_burrows_nocturnal": "PRESENT"
-  }
-}
-```
-
-Bỏ fever_high=ABSENT vì không nhắc sốt; thêm mã scabies_interdigital_burrows_nocturnal=PRESENT có sẵn, vì chính văn bản có ngứa đêm, kẽ ngón và đường hầm luống ghẻ. Không suy ra vị trí sinh dục chưa được nêu.
-
-Trạng thái: **USER_CONFIRMED_PROPOSAL; PENDING_CROSS_REVIEW**. Người giao việc đã đồng ý trong phản hồi ngày 16/11; bản ghi JSONL này giữ nguyên byte so với v1.4 trước cập nhật.
-
-Đối chiếu văn bản: “ngứa dữ dội về đêm”, “kẽ ngón tay”, “đường hầm luống ghẻ” có ngay trong clinical_note. Catalog có sẵn scabies_interdigital_burrows_nocturnal; không có khoảng trống mã cho đặc trưng này và không tạo mã mới. Tên mã là mô tả gộp nhiều vị trí; không suy ra tổn thương sinh dục từ ca này. Không sửa quan hệ/trọng số/ICD của KB.
-
-## EXT-026
-
-Nhận xét Huy đầy đủ (phiếu ngày 2026-11-11):
+### EXT-026
 
 > PRESENT (genital_ulcer_chancre_discharge) khớp đúng triệu chứng tiểu buốt, chảy mủ niệu đạo. Tuy nhiên văn bản không nhắc tới sốt nhưng ABSENT lại gán fever_high; đề xuất bỏ fever_high khỏi ABSENT ở v1.4.
 
-Nhãn cũ:
+<a id="kiem-chung"></a>
+## Kiểm chứng kỹ thuật và căn cứ
 
-```json
-{
-  "expected_symptoms": {
-    "genital_ulcer_chancre_discharge": "PRESENT",
-    "fever_high": "ABSENT"
-  }
-}
-```
+- 82 ca lâm sàng + 29 ca trích xuất; không ID trùng, mã lạ; 179 tệp KB khớp snapshot. So với v1.3: đúng năm ID khác byte; 106 bản ghi nguyên byte; mọi lời kể và EXT-011 nguyên byte.
+- Quy tắc [extraction_v2.txt](../../server/app/ai/llm/prompts/extraction_v2.txt) và [extraction_phrases_v2.txt](../../server/app/ai/llm/prompts/extraction_phrases_v2.txt): chỉ phủ định rõ mới ABSENT, triệu chứng không nhắc phải bỏ. EXT-010 không suy loại trừ giữa hai mã cơ chế khác nhau; ngoại lệ thời gian cùng thông số ở EXT-011 được giữ theo quyết định đã chốt.
+- Đối chiếu [catalog](../../knowledge/symptoms/symptom_catalog.md), [ghẻ](../../knowledge/conditions/dermatology/benh_ghe.md), [lậu](../../knowledge/conditions/dermatology/benh_lau.md), [viêm da cơ địa](../../knowledge/conditions/dermatology/viem_da_co_dia.md), [QĐ 75/QĐ-BYT](../../knowledge/sources/moh_qd_75_2015.md). Các mã đặc trưng đã có trong KB. Trích đoạn hồ sơ không phải toàn văn BYT; cụm đường hầm ghẻ có trong ca/catalog nhưng thiếu nguyên cụm trong trích đoạn benh_ghe.md.
+- CLIN-019 chưa có dữ kiện đặc trưng để thêm mã. Bác sĩ cần xác minh thời điểm ngứa, phân bố/hình thái, người tiếp xúc/tiền sử dị ứng và kết quả soi ký sinh trùng nếu thực sự có làm; checklist không phải bệnh sử mới và không đưa vào JSONL.
+- Kiểm kỹ thuật PASS không thay thẩm định lâm sàng. Huy chỉ xác nhận nội dung năm ID; 106 ca sao từ v1.3 giữ cả trạng thái và vấn đề lịch sử, không được coi là đã hết vấn đề.
 
-Nhãn trong bản v1.4:
+<a id="phan-hoi-huy"></a>
+## Phản hồi Huy ngày 16/11/2026
 
-```json
-{
-  "expected_symptoms": {
-    "genital_ulcer_chancre_discharge": "PRESENT",
-    "gonorrhea_purulent_urethritis_dysuria": "PRESENT"
-  }
-}
-```
+Nguồn: nội dung Huy do Tuấn chuyển lại; ngày phản hồi và ghi nhận 16/11/2026. Đoạn dưới giữ nội dung phản hồi ban đầu. Tên tệp được nhắc phản ánh thời điểm gửi; các biên bản nay đã gộp vào tài liệu này.
 
-Bỏ fever_high=ABSENT vì không nhắc sốt. Bổ sung gonorrhea_purulent_urethritis_dysuria=PRESENT theo thống nhất đã ghi ở README_review.md; văn bản nêu đái buốt, đái rắt và giọt mủ vàng xanh buổi sáng. Giữ mã chung genital_ulcer_chancre_discharge=PRESENT đã được Huy nhận xét phù hợp; không thay hoặc xóa mã chung.
+<!-- BEGIN HUY_FEEDBACK_2026_11_16 -->
+Tuấn ơi, mình đã đọc kỹ CHANGES.md và rà 6 file bộ v1.4 bạn gửi. Mình phản hồi từng ID như sau:
 
-Trạng thái: **USER_CONFIRMED_PROPOSAL; PENDING_CROSS_REVIEW**. Người giao việc đã đồng ý trong phản hồi ngày 16/11; bản ghi JSONL này giữ nguyên byte so với v1.4 trước cập nhật.
+1. EXT-010 — ĐỒNG Ý với hướng đưa ra 2 phương án để chốt, và mình chọn PHƯƠNG ÁN A:
+- Phương án chọn: A — chỉ nhận phủ định trực tiếp; bỏ `mechanical_spinal_pain_stiffness: ABSENT` khỏi `expected_symptoms` của EXT-010 (chỉ giữ `inflammatory_sacroiliac_back_pain: PRESENT` và `enthesitis_achilles_heel: PRESENT`).
+- Lý do: Quy tắc trích xuất hiện hành (`extraction_v2.txt` và `extraction_phrases_v2/v4`) đều quy định chỉ gán `ABSENT` khi biểu hiện đó được phủ định rõ trong văn bản; câu "tập thể dục vận động thì đỡ đau nhưng nằm nghỉ không giảm" đang mô tả đặc tính đau kiểu viêm, không hề nhắc hay phủ định "đau kiểu cơ học". Không nên buộc bước trích xuất phải suy luận loại trừ sang một mã hội chứng/cơ chế đau khác.
+- Phạm vi chính sách của Phương án A: Áp dụng cho việc **suy luận loại trừ giữa hai mã bệnh lý/cơ chế khác nhau** (như đau kiểu viêm vs đau kiểu cơ học ở EXT-010). **Không** áp dụng ngược lại để đảo thống nhất đã chốt cho EXT-011 (15 phút đối chiếu trực tiếp với ngưỡng > 1 giờ trên cùng một thông số thời gian cứng khớp, và vẫn giữ phạm vi v1.4 đúng 5 ID).
 
-Ngoài nhận xét gốc, README_review.md mục “Kết luận bổ sung Huy và công việc riêng” đã ghi thống nhất dùng gonorrhea_purulent_urethritis_dysuria và bỏ ABSENT sốt trong v1.4. Vì vậy bổ sung mã cụ thể là dựa trên thống nhất đã được ghi, không tự quyết từ kết quả benchmark. Catalog mô tả “Tiểu buốt, tiểu rắt kèm chảy mủ niệu đạo đặc vàng xanh (giọt mủ ban mai)”; ca có đủ các dữ kiện đó. Giữ mã chung được Huy nhận xét phù hợp, không tự suy ra loét/săng hoặc biểu hiện khác trong tên mã gộp.
+2. CLIN-019 — ĐỒNG Ý giữ nguyên nhãn v1.3 và gắn trạng thái CẦN BÁC SĨ QUYẾT:
+- Lý do: Dữ kiện hiện có của ca chỉ là 14 tuổi, nhiệt độ 36.9°C, `pruritus_intense_skin_itch: PRESENT`, `vesicular_blister_rash: PRESENT`, `fever_high: ABSENT` và không có `clinical_note`. Hoàn toàn không có căn cứ nào trong ca để tự thêm `scabies_interdigital_burrows_nocturnal` hay `atopic_dermatitis_flexural_eczema`, và mình thống nhất không dùng thứ hạng DDx để sửa nhãn.
+- Đánh giá hướng làm rõ dữ kiện & các dữ kiện có thể xác minh: Mình đồng ý với khung thu thập dữ kiện bạn đề xuất trong CHANGES.md (để ngoài JSONL). Khi nhờ bác sĩ lâm sàng rà/bổ sung cho ca 14 tuổi ngứa + mụn nước không sốt này, cần xác minh các dữ kiện sau (dựa theo mô tả QĐ 75/QĐ-BYT trong `benh_ghe.md` và `viem_da_co_dia.md`):
+  (1) Thời điểm ngứa: có ngứa tăng dữ dội về đêm không;
+  (2) Vị trí phân bố và hình thái tổn thương: mụn nước ở kẽ ngón tay, ngấn cổ tay, vùng da mỏng/quanh rốn/sinh dục và có đường hầm luống ghẻ trên nền da lành hay là tổn thương dạng chàm ở nếp gấp (khuỷu, khoeo, cổ);
+  (3) Dịch tễ/tiền sử: có người nhà/bạn bè cùng ngứa tương tự không, hoặc tiền sử dị ứng bản thân/gia đình (hen, viêm mũi dị ứng);
+  (4) Cận lâm sàng (nếu thực sự có làm): kết quả soi tìm ký sinh trùng (cái ghẻ) tại thương tổn.
+- Nếu bổ sung ở v1.4 sau khi bác sĩ chốt ca: nên kèm `clinical_note` đã được bác sĩ xác minh các dữ kiện trên rồi mới ánh xạ mã; hiện tại cứ giữ nguyên nhãn v1.3 chờ bác sĩ quyết.
 
-## Các mục còn chờ và ngoài phạm vi
+3. EXT-014 — ĐỒNG Ý:
+- Lý do: Câu văn không nhắc tới sốt và không có phủ định sốt. Giữ nguyên `clinical_note`, bỏ `fever_high: ABSENT` và chỉ giữ `tendinitis_finkelstein_trigger_elbow: PRESENT` là đúng quy tắc trích xuất và phản hồi ngày 11/11.
 
-- CLIN-019: CẦN BÁC SĨ QUYẾT; nhãn/sinh hiệu giữ v1.3, không có clinical_note mới. Checklist cần xác minh ở trên chưa phải dữ kiện ca.
-- EXT-010: phương án A đã chọn theo xác nhận người giao việc; không còn CHỜ TUẤN+HUY QUYẾT về A/B. Không đảo EXT-011.
-- EXT-014/024/026: người giao việc đã đồng ý, dữ liệu giữ nguyên so với bản v1.4 trước cập nhật.
-- Manifest toàn bộ vẫn PENDING_CROSS_REVIEW, chưa đóng băng hoặc chạy benchmark, không tự ghi thẩm định lâm sàng. Những ca ngoài 5 ID và những vấn đề khác trong README_review.md không sửa.
+4. EXT-024 — ĐỒNG Ý:
+- Lý do:
+  (1) Văn bản không nhắc tới sốt → bỏ `fever_high: ABSENT` là đúng;
+  (2) Chính văn bản nêu rõ "ngứa dữ dội về đêm ở các kẽ ngón tay... kèm đường hầm luống ghẻ" và "mụn nước", khớp với mã có sẵn `scabies_interdigital_burrows_nocturnal: PRESENT` (cùng 2 mã chung `pruritus_intense_skin_itch` và `vesicular_blister_rash`, không suy thêm vị trí sinh dục).
 
-## Kết quả diff tự động
+5. EXT-026 — ĐỒNG Ý:
+- Lý do:
+  (1) Văn bản không nhắc sốt → bỏ `fever_high: ABSENT` là đúng;
+  (2) Văn bản mô tả trực tiếp "đái buốt, đái rắt và chảy giọt mủ vàng xanh từ miệng sáo vào buổi sáng", khớp đúng với mã `gonorrhea_purulent_urethritis_dysuria` trong `symptom_catalog.md` và thống nhất trước đó trong `README_review.md`; vẫn giữ mã chung `genital_ulcer_chancre_discharge: PRESENT` và không suy diễn thêm loét/săng.
 
-```text
-clinical_cases_labeled_v1.4.jsonl: 82 ca; khác 1; giống byte 81
-symptom_extraction_testset_v1.4.jsonl: 29 ca; khác 4; giống byte 25
-CLIN-019: review_status, revision_note; nhãn GIỮ V1.3
-EXT-010: expected_symptoms, review_status, revision_note; nhãn ĐỔI
-EXT-014: expected_symptoms, review_status, revision_note; nhãn ĐỔI
-EXT-024: expected_symptoms, review_status, revision_note; nhãn ĐỔI
-EXT-026: expected_symptoms, review_status, revision_note; nhãn ĐỔI
-TỔNG: khác 5 ID; 106 ca giống từng byte; EXT-011 nguyên byte; EXT-010 chọn A
-```
+Bạn cập nhật Phương án A cho EXT-010 (bỏ `mechanical_spinal_pain_stiffness: ABSENT`), giữ `CLIN-019` chờ bác sĩ quyết và áp dụng 3 ca EXT-014/024/026 nhé. Về phần lưu ý `run_eval.py` đọc file chưa có hậu tố `_v1.4`, khi nào cần chạy benchmark v1.4 mình và Sơn sẽ phối hợp xử lý ở việc riêng như bạn ghi.
+<!-- END HUY_FEEDBACK_2026_11_16 -->
 
-## Tự đánh giá A–E — cập nhật 16/11/2026
+<a id="pham-vi"></a>
+## Phản hồi bổ sung và quyết định phạm vi
 
-| A — Yêu cầu gốc và phản hồi mới | Đã làm / bằng chứng | E — Kết luận |
+Nguồn: phản hồi bổ sung Huy do Tuấn chuyển lại, ghi nhận 16/11/2026. Nội dung dưới là bản tổng hợp đã ghi nhận, không phải xác nhận chạy công cụ trên máy Huy. Các tên CROSS_REVIEW/CHANGES trong danh sách tệp Huy đã đọc là tên lịch sử trước khi gộp.
+
+## Phạm vi xác nhận
+
+- Huy đã đọc README.md, CROSS_REVIEW.md, manifest_freeze.json, CHANGES.md và đối chiếu hai JSONL được gửi.
+- Huy chỉ xác nhận nhãn/nội dung **5 ID**: CLIN-019, EXT-010, EXT-014, EXT-024, EXT-026. Không xác nhận mới toàn bộ 111 ca; 106 ca còn lại giữ dữ liệu và các vấn đề từ v1.3.
+- Huy đối chiếu thủ công thấy EXT-010 áp dụng A; EXT-014/024/026 khớp phương án; CLIN-019 và EXT-011 giữ nhãn v1.3. Huy **chưa tự chạy verify_v1_4.py** vì thư mục v1.4 chưa có trên nhánh của Huy; không có hash tệp được Huy xác nhận.
+
+## Kết luận từng điểm
+
+| Điểm | Phản hồi Huy | Trạng thái ghi nhận |
 |---|---|---|
-| Giữ bộ riêng 82+29 ca, đúng 5 ID khác và 106 ca nguyên byte | Hai JSONL, manifest và kết quả diff trên; v1.3 và KB không đổi. | ĐẠT |
-| EXT-010 áp dụng A, chỉ còn hai PRESENT | expected_symptoms bỏ mechanical_spinal_pain_stiffness; manifest selected_option=A, có nguồn xác nhận và phạm vi. | ĐẠT |
-| Không đảo EXT-011 | Verifier so byte với v1.3 và hash trước cập nhật v1.4; không đổi nhãn 15 phút/>1 giờ. | ĐẠT |
-| CLIN-019 giữ nhãn, chờ bác sĩ và không tự thêm dữ kiện | Chỉ đổi revision_note sang CẦN BÁC SĨ QUYẾT; toàn bộ nhãn/sinh hiệu giữ v1.3, clinical_note vẫn không có. Checklist ở ngoài JSONL. | ĐẠT CÓ ĐIỀU KIỆN: bác sĩ xác minh |
-| Áp dụng EXT-014/024/026 như đã đồng ý | Đã có đúng nhãn đề xuất từ bản trước, giữ nguyên byte ba bản ghi; verifier đối chiếu các hash trước cập nhật. | ĐẠT |
-| Nhận xét Huy đầy đủ và nhãn cũ/mới có lý do | Năm nhận xét gốc vẫn nguyên chuỗi từ CSV trong manifest và trên tài liệu; phản hồi mới được ghi là do người giao việc cung cấp. | ĐẠT |
-| Tái lập hash/công thức, kiểm mã/ID/KB | Verifier và phép tính PowerShell độc lập; không mã lạ/ID trùng, toàn bộ 179 file KB giữ nguyên. | ĐẠT |
-| Chưa thẩm định/đóng băng hoặc benchmark, không sửa runner | PENDING_CROSS_REVIEW, is_frozen=false, NOT_RUN; lưu ý tên file run_eval.py vẫn giữ trong README. | ĐẠT |
+| CLIN-019 | Giữ nhãn v1.3, ghi CẦN BÁC SĨ QUYẾT; không thêm lời kể/mã khi thiếu xác minh bác sĩ. | Chấp nhận giữ nguyên với giới hạn; checklist ngoài JSONL. |
+| EXT-022/023 | Khuyến nghị bỏ fever_high=ABSENT trước khi đóng băng vì lời kể không nhắc sốt, để nhất quán quy tắc trích xuất. Nếu vẫn giữ phạm vi năm ID thì phải nêu rõ giới hạn. | Tuấn chọn **giữ đúng năm ID**, ghi rõ giới hạn EXT-022/023. Hai ca giữ nguyên; khuyến nghị sửa của Huy được bảo lưu cho việc riêng. |
+| EXT-024 | Giữ nhãn v1.4 và ghi rõ thiếu trích đoạn BYT. Đường hầm ghẻ có trong ca và catalog; theo Huy, giới hạn này không chặn đóng băng testset trích xuất. | Chấp nhận giới hạn cho testset; hồ sơ nguồn KB để rà riêng, không sửa KB trong việc này. |
+| Các điểm khác | Không có điểm sửa mới trong năm ID; tên ba tệp chuẩn khớp runner. CLIN-021/022 và mã gộp EXT-018/019/021/027/028 tiếp tục chờ bác sĩ/công việc riêng. | Giữ nguyên dữ liệu và ghi giới hạn; không suy ra tất cả nhãn đã được thẩm định lâm sàng. |
 
-B — Đã chạy kiểm trên bộ dữ liệu sau quyết định, và chạy lại từ đầu trên bản cuối bằng lệnh:
+Đề nghị sửa EXT-022/023 dựa trên văn bản và quy tắc nhãn. Không dùng nhận định về điểm phạt mô hình để điều chỉnh KB, prompt, luật hoặc testset.
+
+## Làm rõ tài liệu và bước tiếp theo
+
+- Theo Huy, extraction_phrases_v4 là bản nháp untracked trên máy Huy. Đây là thông tin do Huy cung cấp; không ghi thành đã kiểm tệp trên máy đó. Repo hiện có extraction_v2.txt, extraction_phrases_v2.txt và extraction_phrases_compact_v3.txt; không bổ sung hoặc sửa prompt.
+- Phản hồi này bổ sung cho [phản hồi ban đầu](#phan-hoi-huy), không thay đổi giới hạn phạm vi xác nhận năm ID.
+- Tuấn chọn giữ năm ID và ghi rõ giới hạn EXT-022/023; đây không phải xác nhận nhãn hai ca đúng hoặc phê duyệt lâm sàng. Trạng thái đóng băng hiện tại lấy từ manifest.
+
+
+## Giới hạn đi kèm bộ dữ liệu
+
+| Điểm | Cách xử lý đã chốt |
+|---|---|
+| CLIN-019 | Giữ nhãn v1.3; CẦN BÁC SĨ QUYẾT trước mọi bổ sung lời kể/mã. |
+| EXT-022/023 | Vẫn giữ fever_high=ABSENT dù lời kể không nhắc sốt. Huy khuyến nghị bỏ; Tuấn chọn giữ phạm vi năm ID và ghi rõ giới hạn. Đây không phải xác nhận nhãn phù hợp văn bản. |
+| EXT-024 | Giữ nhãn; theo Huy giới hạn trích đoạn nguồn BYT không chặn đóng băng testset trích xuất. Hoàn thiện nguồn KB là việc riêng. |
+| Các ca khác | CLIN-021/022 và mã gộp EXT-018/019/021/027/028 giữ các vấn đề chờ bác sĩ tại README_review.md. Không xác nhận mới toàn bộ 111 ca. |
+
+Theo Huy, extraction_phrases_v4 là bản nháp untracked trên máy Huy; không được kiểm trực tiếp tại đây. Repo hiện có extraction_v2, extraction_phrases_v2 và extraction_phrases_compact_v3; không sửa prompt.
+
+## Kiểm lại
 
 ```powershell
 $env:PYTHONIOENCODING = 'utf-8'
 $env:PYTHONDONTWRITEBYTECODE = '1'
 .\venv\Scripts\python.exe evaluation/testset_v1.4/verify_v1_4.py
-git status --short --untracked-files=all
-git diff --stat
-git diff --check
 ```
 
-Kết quả thực: PASS; 5 ID khác, 106 ca nguyên byte; 4 ID đổi nhãn; CLIN-019 giữ nhãn chờ bác sĩ; EXT-011 và ba bản ghi EXT-014/024/026 nguyên byte so với mốc cần giữ. SHA-256 chuẩn hóa CRLF→LF được tính lại độc lập bằng PowerShell, extraction trước clinical, và khớp manifest.
-
-C — Soát phản biện: không biến checklist thành bệnh sử có thật; không suy ra chẩn đoán hay gán mã mới cho CLIN-019; không suy loại trừ từ đau kiểu viêm sang ABSENT đau cơ học. Giữ nguyên ngoại lệ cùng thông số thời gian ở EXT-011; không mở rộng chính sách ra ngoài phạm vi được xác nhận. Nhãn mới dựa văn bản và phản hồi người giao việc, không dùng kết quả pipeline. Review_status lịch sử của 106 ca sao nguyên byte không phải phê duyệt v1.4.
-
-D — Sau tự rà đã bỏ các câu hiện hành còn nói chưa chọn A/B hoặc chỉ có ba ca đổi nhãn; giữ B riêng làm lịch sử không chọn. Đã làm rõ CLIN-019 chỉ còn chờ bác sĩ và checklist không vào JSONL. Ghi đúng giới hạn nguồn: chưa thấy prompt v4 trong repo, không tuyên bố đã đọc; chỉ dẫn v2 có thật được đối chiếu và giữ nguyên. Không phát hiện lỗi dữ liệu trong lượt kiểm; đã bổ sung kiểm giữ nguyên byte EXT-011 và ba ca đã áp dụng, sau đó lặp lại A–C trên bản cuối.
-
-E — Cập nhật theo phương án người giao việc xác nhận: ĐẠT. Toàn bộ v1.4: ĐẠT CÓ ĐIỀU KIỆN vì CLIN-019 còn CẦN BÁC SĨ QUYẾT và trạng thái toàn bộ vẫn PENDING_CROSS_REVIEW. Không gán chữ ký Huy/bác sĩ hoặc ghi APPROVED. Việc cần người thật: bác sĩ xác minh CLIN-019 trước mọi bổ sung clinical_note/mã; phần rà chéo/đóng băng và tích hợp runner v1.4 là công việc riêng. Không chạy benchmark trong lần này.
-
-Hash v1.3: `4e7b58cffc3cd950e1411a131919e36976ea94f209c426821886b03708cd368d`.
-
-Hash v1.4 sau phương án A: `a136d072e8c5149f25409591b245b61865e3320a5233ad73ef9d4d54aec86161`.
+Kỳ vọng PASS: 82+29 ca, 5 ID khác byte, 106 bản ghi nguyên byte; 179 tệp KB và hash v1.3 khớp. Combined v1.4 `a136d072e8c5149f25409591b245b61865e3320a5233ad73ef9d4d54aec86161`; v1.3 `4e7b58cffc3cd950e1411a131919e36976ea94f209c426821886b03708cd368d`.

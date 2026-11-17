@@ -34,8 +34,8 @@
     },
     {
       "path": "independent_verification.json",
-      "bytes": 6761,
-      "sha256": "a11749aa4d890abdbd4fbd4573b10e2095d294657ae6ff9d5435018edaf5873e",
+      "bytes": 6721,
+      "sha256": "b8b2d6b3c3aa92eb15878adf38cf72e2037b7b174716fa3b2aad4d402967205e",
       "git_ignored": false
     },
     {
@@ -52,8 +52,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 20174,
-      "sha256": "a6c3738c842ddd73d24b02d6a3e6e81abd5c2d5f0d63929d5eb047e6836cacad",
+      "bytes": 3908,
+      "sha256": "4aa3fe4590fc832505b32e98937380d084ab0f837d82b8370c9c7da2f0cc8059",
       "git_ignored": false
     },
     {
@@ -154,8 +154,8 @@
     },
     {
       "path": "so_sanh.md",
-      "bytes": 8095,
-      "sha256": "df7c34dd659e58a5e631a2233f71536109a291223f288d1ef2991c7133bcab05",
+      "bytes": 7966,
+      "sha256": "fc55f53ce23900f639cb3ec7e55cf11aa41b0d96f2cf4820cea633aa2964252d",
       "git_ignored": false
     },
     {
@@ -171,19 +171,13 @@
       "git_ignored": false
     },
     {
-      "path": "tu_danh_gia.md",
-      "bytes": 11131,
-      "sha256": "00eff6c67d26b17d95857b820f9b0a7d45b2b5b07024e5292f4c024e80378101",
-      "git_ignored": false
-    },
-    {
       "path": "verify_compare.py",
-      "bytes": 33699,
-      "sha256": "de043c749cf14b9dfc1f68909eb3756dda739f18eb54339f776313cb85afb9ae",
+      "bytes": 22095,
+      "sha256": "3c16ae870ff74297a0165a208483752659e8cb4b70a3735b04a6ab0e7ee7e2a5",
       "git_ignored": false
     }
   ],
-  "artifact_count_excluding_this_manifest": 30,
+  "artifact_count_excluding_this_manifest": 29,
   "cleanup": {
     "preserved_file_sha256": {
       "knowledge_hashes_before.json": "2db0a0fcbf22c8295aab7b7047a89765cc4a930c1d25dbb2ae23b3ceb54e075f",
@@ -243,5 +237,14 @@
     "basis": "Explicit user confirmation",
     "record": "README.md; final_checks.json",
     "clinical_review_status": "PENDING"
+  },
+  "document_consolidation": {
+    "date": "2026-11-16",
+    "removed_duplicate": "tu_danh_gia.md",
+    "verification_records": [
+      "independent_verification.json",
+      "so_sanh.md"
+    ],
+    "reason": "Duplicate technical checks consolidated; raw benchmark evidence preserved"
   }
 }

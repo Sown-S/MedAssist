@@ -245,7 +245,7 @@
   "combined_sha256": "4e7b58cffc3cd950e1411a131919e36976ea94f209c426821886b03708cd368d",
   "comparison_scope": "One run per mode; Full may include explicit fallback",
   "review_status": "PENDING",
-  "review_scope": "Clinical review only; Tuan explicitly confirmed direct technical report review and confirmation in conversation",
+  "review_scope": "Clinical review pending; technical checks do not establish clinical approval",
   "technical_review_responsible": "Tuấn",
-  "technical_review_basis": "Explicit user confirmation of direct technical report review"
+  "technical_review_basis": "Recorded technical report review; see final_checks.json"
 }
