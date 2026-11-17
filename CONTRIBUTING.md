@@ -4,14 +4,14 @@
 
 | Nhánh | Dùng cho | Ai merge |
 |---|---|---|
-| `main` | Bản đã chốt cuối mỗi sprint | Sơn, chỉ qua PR từ `develop` |
+| `main` | Bản đã phát hành | Sơn, chỉ qua PR từ `develop` |
 | `develop` | Nhánh tích hợp | Qua PR từ nhánh tính năng, CI phải xanh |
 | `feature/backend-core` | Sơn | |
 | `feature/desktop-ui` | Anh | |
 | `feature/ai-module` | Huy | |
 | `feature/knowledge-okf` | Tuấn | |
 
-Luồng: nhánh tính năng → PR vào `develop` → cuối sprint PR `develop` → `main` và gắn tag.
+Luồng: nhánh tính năng → PR vào `develop` → khi phát hành, PR `develop` → `main` (workflow tự gắn tag và tạo Release).
 Không push thẳng `develop` hay `main`. Mỗi người chỉ sửa thư mục được phân công (bảng thư mục trong `README.md`);
 cần sửa thư mục của người khác thì báo trước và nhờ người đó duyệt PR.
 
@@ -41,7 +41,7 @@ loại(phạm-vi): mô tả ngắn bằng tiếng Việt
 | `refactor` | Sửa cấu trúc code, không đổi hành vi |
 | `build` / `ci` | Docker, đóng gói, GitHub Actions |
 | `chore` | Việc lặt vặt khác |
-| `release` | PR `develop` → `main` cuối sprint |
+| `release` | PR `develop` → `main` khi phát hành |
 
 Phạm vi gợi ý: `server`, `client`, `ai`, `okf`, `db`, `drug`, `deploy`, `tools`.
 
@@ -49,7 +49,7 @@ Ví dụ:
 - `feat(server): API lịch sử khám và tra cứu nhanh bệnh nhân`
 - `fix(server): thu hồi token khi đổi mật khẩu`
 - `data(okf): thêm nhóm bệnh hô hấp`
-- `release: Sprint 3`
+- `release: v0.2.5`
 
 CI chỉ kiểm tiêu đề PR (vì nhóm squash merge, tiêu đề PR thành commit trên `develop`).
 Commit lẻ trong nhánh của mình nên theo quy ước nhưng không bắt buộc. Không sửa lại lịch sử commit cũ.
@@ -70,21 +70,14 @@ Chạy kiểm tra của phần mình đã sửa:
 CI (`.github/workflows/ci.yml`) chạy khi mở hoặc cập nhật PR vào `develop`, `main` và khi push lên `develop`;
 PR chỉ merge khi CI xanh. Không đổi migration đã merge: thay đổi CSDL luôn đi bằng revision mới.
 
-## 4. Cuối sprint: phát hành lên `main`
+## 4. Phát hành lên `main`
 
-1. Mở PR `develop` → `main`, tiêu đề `release: Sprint N`, mô tả liệt kê card đã xong.
-2. CI xanh → **Merge commit** (không squash, để giữ lịch sử của `develop`).
-3. Gắn tag trên `main`:
-   ```powershell
-   git checkout main
-   git pull
-   git tag -a v0.N-sprintN -m "Kết thúc Sprint N"
-   git push origin v0.N-sprintN
-   ```
-4. Bản cài cho người kiểm thử: merge vào `main` thì workflow `.github/workflows/release.yml` tự build bản cài Windows và macOS,
-   tạo Release kèm tag `v<version>` theo `client/package.json` (khoảng 15 phút). Version đã có Release thì bỏ qua; cần bản cài
-   mới thì tăng `version` trong `client/package.json` (và `package-lock.json`) qua PR trước khi merge vào `main`. Không tạo
-   Release hay tag `vX.Y.Z` bằng tay trên GitHub.
+1. Khi chốt bản phát hành kế tiếp, tăng version ngay trong PR code đầu tiên của đợt: `version` trong `client/package.json`
+   (và hai dòng gói gốc trong `client/package-lock.json`), `VERSION` trong `server/app/core/config.py`.
+2. Mở PR `develop` → `main`, tiêu đề `release: vX.Y.Z`, mô tả liệt kê thay đổi chính.
+3. CI xanh → **Merge commit** (không squash, để giữ lịch sử của `develop`).
+4. Workflow `.github/workflows/release.yml` tự build bản cài Windows và macOS, tạo Release kèm tag `v<version>` theo
+   `client/package.json` (khoảng 15 phút). Version đã có Release thì bỏ qua. Không tạo Release hay tag `vX.Y.Z` bằng tay.
 5. Trên Trello: chỉ kéo card sang Done khi PR chứa code của card đã merge vào `develop`.
 
 ## 5. Quy tắc chú thích trong code

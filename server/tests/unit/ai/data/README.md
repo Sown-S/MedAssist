@@ -1,6 +1,6 @@
 # Bộ phát triển extraction AI-23
 
-`extraction_retrieval_dev_v1.jsonl` gồm 26 ca tổng hợp do Huy/agent chuẩn bị ngày
+`extraction_retrieval_dev_v1.jsonl` gồm 26 ca tổng hợp, chuẩn bị ngày
 09/11/2026 để phát triển truy xuất v0.2.4. Không lấy ca từ bộ 29 ca đóng băng.
 Tên/mã tham chiếu catalog KB-2026.10; nhãn là giả định phát triển, chưa được rà lâm sàng.
 

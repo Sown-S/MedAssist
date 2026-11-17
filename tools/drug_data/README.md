@@ -41,7 +41,7 @@ python -m drug_data.tt19_catalog run            # = fetch, extract, check (dừn
 # 3. Giá: thuốc chưa có giá -> ước tính (tra giá web tự động KHÔNG dùng được, xem "Giá tham khảo" bên dưới)
 #    quy tắc: cùng hoạt chất -> trung vị nhóm -> trung vị đơn vị; làm tròn 100 đ
 python -m drug_data.estimate_prices --dry-run      # xem trước
-python -m drug_data.estimate_prices --with-batch   # ghi giá + giá nhập + lô ban đầu (để demo cấp phát được)
+python -m drug_data.estimate_prices --with-batch   # ghi giá + giá nhập + lô ban đầu (để cấp phát được ngay)
 #    cột price_source = 'uoc-tinh:...'; giá tra được sau (fetch_prices apply) sẽ ghi đè
 
 # 4. Nạp vào DB (trong server/) — thuốc chưa có giá bị bỏ qua và in ra danh sách

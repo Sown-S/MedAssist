@@ -102,7 +102,7 @@ selector vẫn dùng extraction-phrases-v2. Bộ 10 ca scope mới tại
 7/10 exact, precision 84,21%, recall 88,89%; đây cũng là bộ phát triển.
 `manual_selection_variant_probe.py` giúp tái hiện các biến thể bằng DB read-only,
 không ghi prompt/bằng chứng thô. Thiếu alias “hụt hơi khi leo cầu thang” vẫn
-cần Tuấn rà; không thêm bảng alias trong code để thay phần DB của Sprint 5.
+cần người phụ trách tri thức bổ sung vào `aliases`; không thêm bảng alias trong code.
 
 Trước khi phát hành v0.2.4, chạy bộ kiểm thử server với DB `medassist_test`,
 kiểm trích xuất qua app và đo một lần trên 29 ca đóng băng bằng Gemma trên
