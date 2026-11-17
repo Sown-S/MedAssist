@@ -1,16 +1,21 @@
-# Testset v1.4 riêng — bản nháp chờ rà chéo
+# Testset v1.4
 
-- 82 ca lâm sàng và 29 ca trích xuất, sao từ v1.3; chỉ 5 ID có thay đổi. 106 ca còn lại giữ nguyên từng byte, kể cả xuống dòng.
-- Manifest: `manifest_freeze_v1.4.json`; `review_status=PENDING_CROSS_REVIEW`, chưa đóng băng, chưa chạy benchmark.
-- Bốn ca đổi nhãn: EXT-010, EXT-014, EXT-024, EXT-026. CLIN-019 giữ toàn bộ nhãn v1.3, chỉ cập nhật trạng thái/ghi chú chờ bác sĩ.
-- Cập nhật 16/11/2026 theo xác nhận người giao việc: EXT-010 chọn **A**, bỏ ABSENT cơ học; chỉ áp dụng suy luận loại trừ giữa hai mã khác nhau, không đảo thống nhất EXT-011 (15 phút đối chiếu >1 giờ trên cùng thông số). EXT-011 giữ nguyên byte.
-- CLIN-019: **CẦN BÁC SĨ QUYẾT**, giữ nguyên nhãn và không thêm clinical_note; checklist bác sĩ xác minh nằm ngoài JSONL trong CHANGES.md.
-- EXT-014/024/026 đã có nhãn theo đề xuất được người giao việc đồng ý; giữ nguyên ba bản ghi so với bản v1.4 trước cập nhật. Toàn bộ bộ ca vẫn chờ rà chéo, không ghi phê duyệt lâm sàng.
-- Nhận xét Huy đầy đủ, nhãn cũ → mới, nguồn và đề xuất: [CHANGES.md](CHANGES.md). Nhãn mới là đề xuất chờ rà chéo, không phải phê duyệt chuyên môn.
-- `review_status` lịch sử của 106 ca được sao nguyên byte từ v1.3, không phải xác nhận/APPROVED mới cho v1.4. Trạng thái chung của v1.4 do manifest quyết định.
-- [Manifest v1.3](../testset/manifest_freeze.json) và hai JSONL v1.3 giữ nguyên; README v1.3 chỉ nối thêm một dòng chỉ dẫn tới bộ riêng này.
+Bộ riêng cho KB-2026.11: **82 ca lâm sàng + 29 ca trích xuất**. Trạng thái, hash và quyết định đóng băng nằm trong manifest; rà chuyên môn PENDING_CROSS_REVIEW.
 
-Kiểm chứng từ root (không gọi pipeline/LLM/CSDL):
+| Tệp | Vai trò |
+|---|---|
+| `clinical_cases_labeled.jsonl` | 82 ca lâm sàng |
+| `symptom_extraction_testset.jsonl` | 29 ca trích xuất |
+| `manifest_freeze.json` | Hash, nhãn cũ/mới, phạm vi và quyết định |
+| [CHANGES.md](CHANGES.md) | Thay đổi, phản hồi Huy, rà kỹ thuật và giới hạn |
+| `verify_v1_4.py` | Kiểm chỉ đọc, hỗ trợ draft/frozen |
+| `freeze_v1_4.py` | Xem trước/áp dụng quyết định đóng băng |
+
+Chỉ **5 ID** khác v1.3: CLIN-019, EXT-010, EXT-014, EXT-024, EXT-026; 4 ID đổi nhãn, **106 bản ghi nguyên byte**. EXT-011 và mọi lời kể giữ nguyên. Huy xác nhận nội dung năm ID, chưa tự chạy verifier và không xác nhận mới toàn bộ 111 ca.
+
+Giới hạn: CLIN-019 chờ bác sĩ; EXT-022/023 giữ ABSENT sốt thiếu dữ kiện theo quyết định giữ phạm vi của Tuấn; EXT-024 giữ nhãn với giới hạn trích đoạn BYT; các vấn đề khác từ v1.3 được ghi tại CHANGES.md. KB và v1.3 không đổi; chưa chạy benchmark v1.4.
+
+Từ thư mục gốc repo:
 
 ```powershell
 $env:PYTHONIOENCODING = 'utf-8'
@@ -18,4 +23,6 @@ $env:PYTHONDONTWRITEBYTECODE = '1'
 .\venv\Scripts\python.exe evaluation/testset_v1.4/verify_v1_4.py
 ```
 
-Lưu ý tích hợp: runner hiện đọc tên file không có hậu tố phiên bản; không trỏ trực tiếp `--testset` vào thư mục này rồi cho là đã đánh giá v1.4. Điều chỉnh cách chạy v1.4 thuộc việc riêng; không sửa runner trong công việc này.
+Kỳ vọng PASS: 82+29 ca, 5 ID khác byte, 106 bản ghi nguyên byte, không mã lạ/ID trùng; 179 tệp KB và hash v1.3 khớp. Runner dùng trực tiếp `--testset evaluation/testset_v1.4`, không sửa runner.
+
+Combined v1.4: `a136d072e8c5149f25409591b245b61865e3320a5233ad73ef9d4d54aec86161`. Chuẩn hóa CRLF→LF; combined = SHA-256 của `sha_ext + ":" + sha_clin` mã hóa UTF-8. Quy trình đóng băng/commit ở [README tổng evaluation](../README.md).
