@@ -69,7 +69,10 @@ export default function ConsultForm({ visit, user, onDone, onNext }) {
     saveDraft(visit.id, d)
   }, [visit.id, d])
 
-  const ai = useAssessment(visit)
+  // Danh sách triệu chứng đã xác nhận, cập nhật khi bác sĩ lưu dấu hiệu khi khám; aiRun tăng khi đã chạy lại AI.
+  const [symptoms, setSymptoms] = useState(visit.symptoms ?? [])
+  const [aiRun, setAiRun] = useState(0)
+  const ai = useAssessment(visit, aiRun)
   function decideAi(c, decision) {
     setAiDecision((x) => ({ ...x, [c.condition_code]: decision }))
     if (decision === 'accepted') set({ diagnosis: [c.icd10_code, c.name_vi].filter(Boolean).join(' — ') })
@@ -165,7 +168,9 @@ export default function ConsultForm({ visit, user, onDone, onNext }) {
           </button>
         </div>
         <div className="card-b">
-          {tab === 'clin' && <SoapPanel visit={visit} d={d} set={set} tried={tried} ai={ai} aiDecision={aiDecision} decideAi={decideAi} />}
+          {tab === 'clin' && (
+            <SoapPanel visit={visit} symptoms={symptoms} onSymptoms={setSymptoms} onRerunAi={() => setAiRun((n) => n + 1)} d={d} set={set} tried={tried} ai={ai} aiDecision={aiDecision} decideAi={decideAi} />
+          )}
 
           {tab === 'vitals' && <VitalsTab visit={visit} vitals={d.vitals} onChange={setVital} tried={tried} needWeight={needWeight} vitalErr={vitalErr} />}
           {tab === 'hist' && <HistoryTab visit={visit} />}

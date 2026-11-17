@@ -2,9 +2,9 @@ import { useEffect, useState } from 'react'
 import Modal, { ModalHeader } from '../../../components/Modal'
 import { translate } from '../../../i18n'
 import { putDraft, RULE_PREFIX } from '../../../api/knowledgeApi'
-import { KIND_META, errorText, usableCodes } from './shared'
+import { KIND_META, errorText, usableCodes, groupByKey } from './shared'
 import { LogicEditor, LogicView } from './logic'
-import { initial, bodyOf, problem } from './itemForm'
+import { initial, bodyOf, problem, aliasList, DETECTIONS, SHORT_NAME_MAX, ALIASES_MAX } from './itemForm'
 import { ErrorNote } from '../../../components/DataState'
 
 // group = null: thêm mới. Lưu = tạo / cập nhật bản nháp trong bản phát hành đang mở.
@@ -26,6 +26,9 @@ export default function ItemFormModal({ open, kind, group, data, names, onClose,
   if (!open) return null
   const set = (patch) => setF((x) => ({ ...x, ...patch }))
   const symptoms = usableCodes(data.items.symptoms)
+  // Luật không dùng được dấu hiệu khi khám (server chặn EXAM_SYMPTOM_IN_RULE).
+  const detectionOf = Object.fromEntries(groupByKey(data.items.symptoms ?? []).map((g) => [g.key, (g.open ?? g.active ?? g.latest)?.values?.detection]))
+  const ruleSymptoms = symptoms.filter((c) => detectionOf[c] !== 'exam')
   const conditions = usableCodes(data.items.conditions)
   const sources = data.sources.filter((s) => s.is_active)
 
@@ -82,6 +85,31 @@ export default function ItemFormModal({ open, kind, group, data, names, onClose,
               <div className="field">
                 <label>Group (optional)</label>
                 <input className="input" value={f.category} onChange={(e) => set({ category: e.target.value })} />
+              </div>
+              <div className="field">
+                <label>Short name (optional)</label>
+                <input className="input" value={f.short_name ?? ''} maxLength={SHORT_NAME_MAX} placeholder={translate('e.g. Fever')} onChange={(e) => set({ short_name: e.target.value })} />
+                <small className="muted">
+                  {translate('Shown in check-in and consultation lists; empty = the full name.')} {(f.short_name ?? '').trim().length}/{SHORT_NAME_MAX}
+                </small>
+              </div>
+              <div className="field">
+                <label>How it is found</label>
+                <select className="input" value={f.detection ?? 'both'} onChange={(e) => set({ detection: e.target.value })}>
+                  {DETECTIONS.map(([k, l]) => (
+                    <option key={k} value={k}>
+                      {translate(l)}
+                    </option>
+                  ))}
+                </select>
+                <small className="muted">{translate('“Found on examination” is hidden at check-in, only the doctor records it, and it cannot be used in rules.')}</small>
+              </div>
+              <div className="field full">
+                <label>Synonyms (optional, one per line)</label>
+                <textarea className="input" rows={3} value={f.aliases ?? ''} placeholder={'nóng sốt\nsốt nóng'} onChange={(e) => set({ aliases: e.target.value })} />
+                <small className="muted">
+                  {translate('Words patients use for this symptom; helps reading the patient’s description. No two symptoms may share a synonym.')} {aliasList(f.aliases).length}/{ALIASES_MAX}
+                </small>
               </div>
             </>
           )}
@@ -207,7 +235,7 @@ export default function ItemFormModal({ open, kind, group, data, names, onClose,
                 <label>Condition (when this rule applies)</label>
                 <LogicEditor
                   node={f.condition_logic.op ? f.condition_logic : { op: 'AND', args: [f.condition_logic] }}
-                  symptoms={symptoms}
+                  symptoms={ruleSymptoms}
                   names={names}
                   onChange={(v) => set({ condition_logic: v })}
                 />

@@ -82,7 +82,15 @@ export function Summary({ kind, values, names }) {
   if (kind === 'symptoms')
     return (
       <span>
-        <b>{v.symptom_name}</b> {v.category && <span className="muted">· {v.category}</span>}
+        <b>{v.symptom_name}</b> {v.short_name && <span className="muted">· {v.short_name}</span>} {v.category && <span className="muted">· {v.category}</span>}
+        {v.detection === 'exam' && <span className="kb-tag exam">{translate('Found on examination')}</span>}
+        {v.detection === 'reported' && <span className="kb-tag rep">{translate('Reported by patient')}</span>}
+        {v.aliases?.length > 0 && (
+          <span className="muted">
+            {' '}
+            · {v.aliases.length} {translate('synonyms')}
+          </span>
+        )}
       </span>
     )
   if (kind === 'conditions')

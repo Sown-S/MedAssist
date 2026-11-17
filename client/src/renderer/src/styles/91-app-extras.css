@@ -444,3 +444,21 @@ kbd{display:inline-grid;place-items:center;min-width:24px;height:24px;padding:0 
 .vtab-t small{font-size:12.5px;color:var(--ink-3);line-height:1.35}
 .settings .vtab .set-dot{margin-top:6px}
 @container root (max-width:1400px){.settings{grid-template-columns:250px 1fr}}
+
+/* 0.2.6 — dấu hiệu khi khám (phần O) và nhãn ngoài phạm vi trọng tâm */
+.exam-signs{border:1px solid var(--border);border-radius:var(--radius);background:var(--surface-2,var(--surface));padding:12px 14px}
+.exam-signs-head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.exam-signs-head .lab{display:inline-flex;align-items:center;gap:6px;font-weight:600;color:var(--ink);margin:0}
+.exam-signs-head .lab svg{width:16px;height:16px;color:var(--primary)}
+.exam-signs-head .cnt{min-width:20px;height:20px;padding:0 6px;border-radius:999px;background:var(--primary);color:#fff;font-size:12px;display:inline-grid;place-items:center}
+.exam-signs-head small{font-size:13px}
+.exam-signs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:6px;max-height:280px;overflow:auto}
+.exam-signs-foot{display:flex;align-items:center;justify-content:flex-end;gap:8px;margin-top:10px;flex-wrap:wrap}
+.exam-signs-note{margin-right:auto;display:inline-flex;align-items:flex-start;gap:6px;font-size:13px;color:var(--ink-3);max-width:60ch}
+.exam-signs-note svg{width:15px;height:15px;flex-shrink:0;margin-top:2px;color:var(--primary)}
+.sug .scope-tag{order:5;flex-basis:100%;display:flex;align-items:flex-start;gap:5px;margin-left:32px;padding:3px 8px;border-radius:6px;line-height:1.35;background:var(--warning-soft);color:var(--warning);font-size:12px;font-weight:600}
+.sug .scope-tag svg{width:13px;height:13px;flex-shrink:0;margin-top:2px}
+.sug .acts{order:6}
+.kb-tag{display:inline-flex;align-items:center;padding:1px 8px;border-radius:999px;font-size:12px;font-weight:600;margin-left:4px}
+.kb-tag.exam{background:var(--primary-soft);color:var(--primary-ink,var(--primary))}
+.kb-tag.rep{background:var(--surface-2,#f1f5f9);color:var(--ink-3)}

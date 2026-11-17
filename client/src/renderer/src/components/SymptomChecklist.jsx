@@ -1,14 +1,16 @@
 import { useState } from 'react'
 import Icon from './Icon'
 import { translate } from '../i18n'
-import { STATES, useSymptomCatalog, groupSymptoms, searchSymptoms, symptomName, isDangerSymptom, DANGER, OUT_OF_SCOPE } from '../api/symptoms'
+import { STATES, useSymptomCatalog, groupSymptoms, searchSymptoms, symptomName, isDangerSymptom, isExamSign, displayName, fullNameTitle, DANGER, OUT_OF_SCOPE } from '../api/symptoms'
 
 // Danh sách triệu chứng cho y tá, từ trên xuống: ô tìm (gõ không dấu) → “Đã xác nhận” → Dấu hiệu nguy hiểm (mở sẵn)
 // → các nhóm khác (đóng sẵn, tiêu đề có số đã chọn). Mục đã chọn vẫn nằm trong nhóm của nó, được tô nổi.
+// Hiện tên ngắn (rê chuột xem tên đầy đủ). Dấu hiệu khi khám (detection = exam) không hiện ở đây: bác sĩ ghi lúc khám.
 const SOURCE_LABEL = { Form: 'Picked by nurse', Extracted: 'From description', Prompt: 'Asked (missing info)' }
 // Kết quả tìm hiện trước bấy nhiêu mục; nhiều hơn thì có nút hiện hết, để không ai tưởng chỉ có bấy nhiêu.
 const RESULTS_SHOWN = 8
-const nameOf = (s) => (s.key === OUT_OF_SCOPE ? translate('Dangerous sign not in the list') : translate(s.label))
+const nameOf = (s) => (s.key === OUT_OF_SCOPE ? translate('Dangerous sign not in the list') : translate(displayName(s)))
+const titleOf = (s) => (s.key === OUT_OF_SCOPE ? undefined : fullNameTitle(s))
 const OutOfScopeHint = () => <small>{translate('e.g. multiple trauma, heavy bleeding — describe it in the patient’s description')}</small>
 
 const TRI = { PRESENT: 'y', ABSENT: 'n', UNKNOWN: 'u' }
@@ -28,7 +30,7 @@ function Row({ s, value, onSet, disabled }) {
   const cur = value[s.key]?.state ?? 'UNKNOWN'
   return (
     <div className={'sym-r' + (isDangerSymptom(s) ? ' d' : '') + (cur !== 'UNKNOWN' ? ' set' : '')}>
-      <span className="sn">
+      <span className="sn" title={titleOf(s)}>
         {nameOf(s)}
         {s.key === OUT_OF_SCOPE && <OutOfScopeHint />}
       </span>
@@ -42,7 +44,8 @@ export default function SymptomChecklist({ value, onSet, disabled = false }) {
   const [query, setQuery] = useState('')
   const [showAll, setShowAll] = useState(false)
   const [openGroups, setOpenGroups] = useState({})
-  const groups = groupSymptoms(catalog.list)
+  const askable = catalog.list.filter((s) => !isExamSign(s))
+  const groups = groupSymptoms(askable)
   const byKey = new Map(catalog.list.map((s) => [s.key, s]))
 
   // Đã xác nhận: dấu hiệu nguy hiểm lên đầu, còn lại giữ thứ tự chọn.
@@ -50,7 +53,7 @@ export default function SymptomChecklist({ value, onSet, disabled = false }) {
     .filter(([, x]) => x && x.state !== 'UNKNOWN')
     .map(([key, x]) => ({ s: byKey.get(key) ?? { key, label: symptomName(key) }, ...x }))
     .sort((a, b) => isDangerSymptom(b.s) - isDangerSymptom(a.s))
-  const results = searchSymptoms(catalog.list, query)
+  const results = searchSymptoms(askable, query)
   const hidden = showAll ? 0 : Math.max(0, results.length - RESULTS_SHOWN)
   const shown = hidden ? results.slice(0, RESULTS_SHOWN) : results
 
@@ -113,7 +116,7 @@ export default function SymptomChecklist({ value, onSet, disabled = false }) {
             <div className="sym-grid">
               {confirmed.map(({ s, state, source }) => (
                 <div key={s.key} className={'sym-r set' + (isDangerSymptom(s) ? ' d' : '')}>
-                  <span className="sn">
+                  <span className="sn" title={titleOf(s)}>
                     {nameOf(s)}
                     <small>{translate(SOURCE_LABEL[source] ?? SOURCE_LABEL.Form)}</small>
                   </span>

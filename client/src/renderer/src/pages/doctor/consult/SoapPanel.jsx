@@ -6,10 +6,11 @@ import { SecondaryDx } from './SecondaryDx'
 import { ConfirmedSymptoms } from './ConfirmedSymptoms'
 import { ReminderPanel } from './ReminderPanel'
 import DateField from '../../../components/DateField'
+import ExamSigns from './ExamSigns'
 
 // Tab "Khám (SOAP)": S lời kể + triệu chứng đã xác nhận + kết quả cận lâm sàng (labs), O khám, gợi ý AI,
 // chẩn đoán ICD-10 chính / phụ, P hướng xử trí + hẹn tái khám.
-export default function SoapPanel({ visit, d, set, tried, ai, aiDecision, decideAi }) {
+export default function SoapPanel({ visit, symptoms, onSymptoms, onRerunAi, d, set, tried, ai, aiDecision, decideAi }) {
   const followIn = (days) => {
     const x = new Date()
     x.setDate(x.getDate() + days)
@@ -22,7 +23,7 @@ export default function SoapPanel({ visit, d, set, tried, ai, aiDecision, decide
         <p className="story">
           {translate('At check-in')}: “{translate(visit.reason)}”
         </p>
-        <ConfirmedSymptoms list={visit.symptoms} />
+        <ConfirmedSymptoms list={symptoms} />
       </div>
 
       <AssessmentCard a={ai} decisions={aiDecision} onAccept={(c) => decideAi(c, 'accepted')} onDismiss={(c) => decideAi(c, 'dismissed')} />
@@ -41,6 +42,9 @@ export default function SoapPanel({ visit, d, set, tried, ai, aiDecision, decide
             {translate('— Objective · Physical examination')}
           </label>
           <textarea className="input" value={d.exam} onChange={(e) => set({ exam: e.target.value })} placeholder="Findings on examination…" />
+        </div>
+        <div className="field full">
+          <ExamSigns visitId={visit.id} symptoms={symptoms} onSaved={onSymptoms} onRerun={onRerunAi} />
         </div>
         <div className={'field full' + (tried && !d.diagnosis.trim() ? ' invalid' : '')}>
           <label>

@@ -18,8 +18,12 @@ const EMPTY = {
 }
 
 // Kết quả AI của lượt khám (GET /visits/{id}/assessment, 404 = chưa được đánh giá), hỏi lại mỗi 2 giây tới khi có kết quả cuối.
-export function useAssessment(visit) {
+// rerun đổi (đã gọi POST chạy lại) → về trạng thái chờ và hỏi lại.
+export function useAssessment(visit, rerun = 0) {
   const [a, setA] = useState(EMPTY)
+  useEffect(() => {
+    if (rerun) setA(EMPTY)
+  }, [rerun])
   const done = ['Ready', 'Degraded', 'Failed', 'Skipped', 'None'].includes(a.ai_status)
   useEffect(() => {
     if (done) return
@@ -115,6 +119,13 @@ export default function AssessmentCard({ a, decisions, onAccept, onDismiss }) {
                 <b title={c.name_vi}>{c.name_vi}</b>
                 {c.icd10_code && <span>{'ICD-10 ' + c.icd10_code}</span>}
               </span>
+              {/* Chỉ khi server báo rõ false; server cũ không có trường này thì không gắn nhãn. */}
+              {c.in_focus_scope === false && (
+                <span className="scope-tag" title={translate('Outside the clinic’s focus scope — the knowledge for this condition has not been clinically validated yet.')}>
+                  <Icon name="triangle-alert" />
+                  {translate('Outside focus scope, not clinically validated')}
+                </span>
+              )}
               <span className="pc num" title={translate('Match score')}>
                 {Math.round(c.score * 100)}%
               </span>

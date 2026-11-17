@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import Icon from './Icon'
 import SymptomChecklist from './SymptomChecklist'
 import { translate } from '../i18n'
-import { symptomName, extractionStale } from '../api/symptoms'
+import { symptomOf, displayName, fullNameTitle, isExamCode, extractionStale } from '../api/symptoms'
 import { useAiHealth } from '../api/connectivity'
 
 // Server tự kết thúc lượt trích xuất sau 30 giây tính từ POST (kể cả lúc xếp hàng). Client đếm từ lúc bấm và chờ thêm
@@ -67,8 +67,9 @@ export default function SymptomPanel({ value, onChange, text, onText, disabled =
       const r = await onExtract(text, { signal: c.signal, onProgress, timeoutMs: EXTRACTION_TIMEOUT_MS - (Date.now() - startedAt) })
       // Đã bấm Hủy hoặc chạy lần mới: bỏ qua kết quả về muộn.
       if (ctrl.current !== c) return
-      setProposals(r.proposals.filter((p) => !value[p.symptom_code]))
-      setUnsure(r.unsure ?? [])
+      // Dấu hiệu khi khám không đưa cho lễ tân xác nhận.
+      setProposals(r.proposals.filter((p) => !value[p.symptom_code] && !isExamCode(p.symptom_code)))
+      setUnsure((r.unsure ?? []).filter((u) => !isExamCode(u.symptom_code)))
       const src = { text, textChanged: !!r.textChanged }
       setFrom(src)
       onVitals?.(r.vitalProposals ?? [], src)
@@ -120,8 +121,8 @@ export default function SymptomPanel({ value, onChange, text, onText, disabled =
   const aiDown = !ai.ok && ai.reason !== 'disabled'
 
   const chip = (p) => (
-    <span key={p.symptom_code} className={'pchip ' + p.state.toLowerCase()}>
-      {translate(symptomName(p.symptom_code))}
+    <span key={p.symptom_code} className={'pchip ' + p.state.toLowerCase()} title={fullNameTitle(symptomOf(p.symptom_code))}>
+      {translate(displayName(symptomOf(p.symptom_code) ?? { key: p.symptom_code }))}
       {p.state === 'ABSENT' && <span className="muted small">· {translate('No')}</span>}
       <button type="button" disabled={disabled || stale} onClick={() => flip(p)} title={translate(p.state === 'PRESENT' ? 'Switch to No' : 'Switch to Yes')} aria-label={translate('Switch Yes / No')}>
         <Icon name="repeat" />
@@ -227,7 +228,7 @@ export default function SymptomPanel({ value, onChange, text, onText, disabled =
           )}
           {askAgain.length > 0 && (
             <div className="hint-w">
-              <Icon name="triangle-alert" /> {translate('Not sure — ask the patient again:')} {askAgain.map((u) => u.name || translate(symptomName(u.symptom_code))).join(', ')}
+              <Icon name="triangle-alert" /> {translate('Not sure — ask the patient again:')} {askAgain.map((u) => (symptomOf(u.symptom_code) ? translate(displayName(symptomOf(u.symptom_code))) : u.name || u.symptom_code)).join(', ')}
             </div>
           )}
 
