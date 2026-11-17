@@ -1,6 +1,6 @@
 # So sánh RuleOnly và Full — KB-2026.11
 
-Rà kỹ thuật báo cáo: Tuấn trực tiếp rà kỹ thuật và xác nhận báo cáo; kết luận ĐẠT CÓ ĐIỀU KIỆN, xem [biên bản trong README](README.md). Rà chuyên môn lâm sàng: PENDING. Đây là kết quả kỹ thuật, không phải phê duyệt lâm sàng.
+Báo cáo kỹ thuật mô tả một lượt mỗi chế độ. Rà chuyên môn lâm sàng: PENDING; kết quả không thay thế thẩm định lâm sàng.
 
 Mỗi chế độ chạy đúng một lần trên staging riêng medassist_kb202611_stage_20261115 (127.0.0.1:15435), server 0.2.5, commit c6a6916a80134b2611990e6193136bbeee17fffd. Không dùng/sao CSDL medassist.
 
