@@ -30,6 +30,21 @@ def test_defaults_are_valid_and_cover_all_keys():
         "billing.consultation_service_code": "DV01",
         "security.idle_logout_minutes": 15,
         "alerts.cluster": {"window_days": 7, "min_cases": 5, "ratio": 2.0},
+        "ai.focus_scope": {
+            "groups": ["musculoskeletal"],
+            "conditions": [
+                "cum_mua",
+                "hong_thanh_quan_viem_mui_hong_cap_tinh",
+                "viem_hong_cap_tinh",
+                "viem_amidan_cap_va_man_tinh",
+                "viem_thanh_quan_cap_tinh",
+                "viem_mui_xoang_cap_tinh",
+                "viem_mui_xoang_di_ung",
+                "viem_tai_giua_cap_tinh_tre_em",
+                "hen_phe_quan",
+                "phoi_tac_nghen_man_tinh",
+            ],
+        },
     }
 
 
@@ -94,6 +109,8 @@ def test_valid_values(key, value, expected):
         ("alerts.cluster", {"window_days": 7, "min_cases": 5, "ratio": 0.5}),
         ("alerts.cluster", {"window_days": 7, "min_cases": 5}),
         ("alerts.cluster", {"window_days": 7, "min_cases": 5, "ratio": 2, "x": 1}),
+        ("ai.focus_scope", {"groups": [], "conditions": ["Cum-Mua"]}),
+        ("ai.focus_scope", {"groups": ["ent"]}),
     ],
 )
 def test_invalid_values(key, value):

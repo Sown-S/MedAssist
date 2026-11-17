@@ -94,6 +94,7 @@ class AiLogOut(BaseModel):
     priority_rule: str | None
     priority_final: str | None
     suggested_codes: list[str]
+    unmapped_count: int | None
     model_name: str | None
     prompt_version: str | None
     knowledge_release_label: str | None

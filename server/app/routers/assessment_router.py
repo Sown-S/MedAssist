@@ -69,7 +69,7 @@ def _latest_or_404(db: Session, visit_id: uuid.UUID, knowledge_reader: Knowledge
     result = assessment_service.get_latest_assessment(db, visit_id, knowledge_reader)
     if result is None:
         raise NotFoundError("Chưa có kết quả đánh giá AI cho lượt khám này")
-    return result
+    return assessment_service.mark_focus_scope(db, result)
 
 
 @router.post(
