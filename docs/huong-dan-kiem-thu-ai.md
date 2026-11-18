@@ -13,7 +13,7 @@ Số đo chính thức cho báo cáo dùng bộ test đóng băng ở [`evaluati
 4. Kho: nếu cần kho mẫu, `exec api python -m scripts.seed_drugs` (có lô ban đầu); nếu đã nạp `--no-batches` thì nhập vài lô ở màn Kho.
 5. Máy client: cài bản `MedAssist Setup`, đặt địa chỉ máy chủ, kiểm tra không báo lỗi chứng chỉ.
 6. Sao lưu trước khi kiểm thử: `.\deploy\scripts\backup.ps1`.
-7. Lần gọi LLM đầu tiên sau khi bật máy chậm hơn (nạp model vào VRAM): chạy thử 1–2 ca trước khi đo thời gian.
+7. `start.ps1` đã nạp sẵn model vào VRAM; nếu khởi động lại riêng container `ollama` thì lần gọi đầu chậm hơn (~20 s), chạy thử 1–2 ca trước khi đo thời gian.
 
 ## 2. Luồng kiểm thử đầu-cuối
 
