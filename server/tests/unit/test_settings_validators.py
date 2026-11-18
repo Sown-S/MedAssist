@@ -33,6 +33,7 @@ def test_defaults_are_valid_and_cover_all_keys():
         "ai.focus_scope": {
             "groups": ["musculoskeletal"],
             "conditions": [
+                "cam_lanh_thong_thuong",
                 "cum_mua",
                 "hong_thanh_quan_viem_mui_hong_cap_tinh",
                 "viem_hong_cap_tinh",

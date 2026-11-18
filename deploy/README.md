@@ -61,7 +61,8 @@ Chạy PowerShell tại thư mục gốc repo.
    `deploy\certs\` (hoặc chép lại `medassist-root-ca.crt` + `.key` từ bản cất riêng trước khi chạy bước 2) để không phải phát hành lại app.
    Chỉ khi tạo CA mới mới chép `deploy\certs\medassist-root-ca.crt` (chỉ file `.crt`) sang `client\certs\` qua PR và build lại bản cài
    (`client/README.md` mục 1). Bản cài không có CA khớp sẽ từ chối kết nối.
-4. **Bật hệ thống**: `.\deploy\scripts\start.ps1` (hoặc `start.ps1 -Cpu`). Lần đầu build image, tạo CSDL, chạy migration, tải model.
+4. **Bật hệ thống**: `.\deploy\scripts\start.ps1` (hoặc `start.ps1 -Cpu`). Lần đầu build image, tạo CSDL, chạy migration, tải model;
+   mỗi lần bật, script nạp sẵn model vào VRAM để lần gọi AI đầu tiên không bị chậm.
    Kiểm tra: mở `https://192.168.1.10/health` trên máy admin, phải thấy `"database": {"ok": true}` và `"ai": {"ok": true}`.
 5. **Tài khoản và dữ liệu**, chạy trong container `api` (mỗi lệnh `create_user` hỏi mật khẩu, tối thiểu 8 ký tự):
    ```powershell
