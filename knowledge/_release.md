@@ -1,8 +1,15 @@
 ---
 schema: okf_release_v1
-label: KB-2026.11
-description: Bản phát hành tri thức 153 bệnh, 299 triệu chứng, 12 luật, 1522 quan hệ; trọng số 0.9/0.6/0.3; còn các mục chờ rà chuyên môn.
+label: KB-2026.12
+description: Bản phát hành tri thức 154 bệnh, 299 triệu chứng, 12 luật, 1530 quan hệ, 11 nguồn và 157 trích dẫn.
 ---
+
+## Changelog KB-2026.12
+
+- Thêm `cam_lanh_thong_thuong` (Cảm lạnh thông thường, nhóm hô hấp), 8 quan hệ SUPPORTS và 1 trích dẫn về triệu chứng toàn thân và cơ năng. Dùng nguồn đã có `moh_qd_5643_2015`, chương Viêm mũi họng cấp tính, mục 3.1.1. [Quyết định 5643/QĐ-BYT](https://kcb.vn/upload/2005611/20210723/HD%C4%90T-TMH.pdf).
+- ICD-10 J00 theo danh mục WHO. Tuấn và Huy thống nhất giữ song song hai hồ sơ J00 và giữ nguyên tên hiển thị, nội dung hồ sơ Tai Mũi Họng `hong_thanh_quan_viem_mui_hong_cap_tinh`. Hồ sơ mới giới hạn ở viêm mũi họng cấp do virus. Cần xác nhận riêng cách mã hóa J00 tại cơ sở khi hai hồ sơ cùng xuất hiện. [Danh mục ICD-10 của WHO](https://icd.who.int/browse10/Content/statichtml/ICD10Volume2_en_2019.pdf).
+- Tuấn và Huy thống nhất giữ 0 triệu chứng then chốt. Mục lâm sàng dùng chung cho nhiều nguyên nhân. CHƯA RÀ LÂM SÀNG. `author: "Tuan"`, `cross_reviewer: "Huy"`, `review_status: PENDING_CROSS_REVIEW`.
+- Tuấn và Huy thống nhất dùng `fever_low_grade` và `cough_productive_sputum` ở mức 0.3. Nguồn chỉ ghi có đờm và hồ sơ ghi rõ giới hạn của ánh xạ với catalog. Bốn câu hỏi về J00, triệu chứng then chốt và hai ánh xạ catalog nằm trong [phiếu hỏi chuyên gia KB-2026.12](../evaluation/review/expert_questions_kb_2026_12.csv).
 
 ## Changelog KB-2026.11
 
