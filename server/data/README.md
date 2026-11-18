@@ -90,5 +90,7 @@ Cột `service_packages.csv`: `code`, `name`, `price`, `items` (`MÃ:số lượ
 Dùng bởi `python -m scripts.seed_eval` để tạo lượt khám các ngày trước và hàng đợi hôm nay. Mỗi dòng một ca: `category`
 (`typical`, `variant`, `red_flag`, `priority_floor`, `ambiguous`), `condition_code` (bệnh dùng làm chẩn đoán cho lượt khám cũ,
 có thể rỗng), `patient`, `visit` (lời kể, sinh hiệu) và `symptoms` (mã triệu chứng → `PRESENT` / `ABSENT` / `UNKNOWN`).
-Lấy từ bộ ca mẫu v2, bỏ các ca dùng mã triệu chứng không có trong bản tri thức hiện tại. Bộ ca chỉ để thao tác
-kiểm thử; số đo đánh giá dùng `evaluation/testset/`.
+Lấy từ bộ ca mẫu v2, bỏ các ca dùng mã triệu chứng không có trong bản tri thức hiện tại. Mọi `condition_code` và mã
+triệu chứng phải có trong KB-2026.11; ca của bệnh đã gỡ khỏi kho được viết lại thành bệnh nhóm trọng tâm (cơ xương khớp,
+bệnh phổ biến), ca cờ đỏ / sàn ưu tiên để `condition_code` rỗng. Bộ ca chỉ để thao tác kiểm thử; số đo đánh giá dùng
+`evaluation/testset/`.

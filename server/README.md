@@ -155,6 +155,10 @@ python -m scripts.import_okf --approve-as bs01  # máy dev: tạo bản phát h�
 - Không có `--approve-as`: tạo bản **Draft** (thêm `--submit` để gửi duyệt) chờ bác sĩ duyệt qua API quản trị tri thức.
 - Người duyệt phải là Physician khác người soạn (mặc định người soạn là tài khoản `system`, đổi bằng `--as <admin>`).
 - `--retire-missing`: mục đang Active mà đã bị xóa khỏi thư mục sẽ bị tắt khi kích hoạt.
+- `symptoms/symptom_catalog.md` nhận thêm 3 trường tùy chọn cho mỗi triệu chứng: `short_name` (≤ 30 ký tự, tên hiện cho
+  lễ tân), `aliases` (cách nói thường ngày, tối đa 15 mục, dùng ở bước tìm ứng viên khi trích xuất) và `detection`
+  (`reported` bệnh nhân kể / `exam` dấu hiệu khi khám / `both`, mặc định `both`). Script báo lỗi khi hai triệu chứng
+  trùng từ đồng nghĩa, hoặc khi luật cờ đỏ / sàn ưu tiên dùng triệu chứng `exam` (lễ tân không nhập được lúc tiếp đón).
 
 ### 2.8. Chạy test (nên làm lần đầu để chắc môi trường đúng)
 
