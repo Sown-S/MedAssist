@@ -291,7 +291,7 @@ tr.row-new>td{animation:rownew 2.4s ease-out}
 .xclip.cut:hover{color:var(--primary-ink);background:var(--primary-soft)}
 .xclip-full{white-space:pre-wrap;line-height:1.6;color:var(--ink)}
 /* Thanh menu thu gọn: nút mở rộng nằm dưới logo, không đè lên logo */
-.app.collapsed .collapse-btn{top:60px}
+.app.collapsed .collapse-btn{top:18px}
 
 /* ===== Thẻ địa chỉ máy chủ (màn đăng nhập, màn khởi động) ===== */
 .srv-card{display:flex;flex-direction:column;gap:12px;padding:16px;border:1px solid var(--border);border-radius:var(--radius-lg);background:var(--surface);box-shadow:var(--shadow);animation:fade .2s;text-align:left}
@@ -508,9 +508,9 @@ kbd{display:inline-grid;place-items:center;min-width:24px;height:24px;padding:0 
 .lang-card{min-width:0;display:flex;align-items:center;gap:14px;padding:16px;border:1px solid var(--border);border-radius:14px;background:var(--surface);text-align:left;cursor:pointer;font:inherit;color:inherit;transition:border-color .15s,box-shadow .15s,background .15s}
 .lang-card:hover{border-color:var(--border-strong)}
 .lang-card.on{border-color:var(--primary);background:linear-gradient(135deg,var(--primary-soft),var(--surface) 75%);box-shadow:0 0 0 3px color-mix(in srgb,var(--primary) 14%,transparent)}
-.lang-badge{width:46px;height:46px;flex:none;border-radius:12px;display:grid;place-items:center;font-weight:700;font-size:14px;letter-spacing:.04em;color:#fff}
-.lang-badge.vi{background:linear-gradient(135deg,#E53935,#C62828)}
-.lang-badge.en{background:linear-gradient(135deg,#3B6FE0,#1F4FB8)}
+.lang-badge{width:46px;height:46px;flex:none;border-radius:12px;display:grid;place-items:center;font-weight:700;font-size:14px;letter-spacing:.04em;background:var(--surface);border:1.5px solid currentColor}
+.lang-badge.vi{color:#D93636;border-color:color-mix(in srgb,#D93636 45%,transparent)}
+.lang-badge.en{color:#2F62D6;border-color:color-mix(in srgb,#2F62D6 45%,transparent)}
 .lang-txt{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
 .lang-txt b{font-size:15px;color:var(--ink)}
 .lang-sample{font-size:13px;color:var(--ink-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -535,13 +535,13 @@ kbd{display:inline-grid;place-items:center;min-width:24px;height:24px;padding:0 
 
 /* Cài đặt — Tài khoản */
 .acct-hero{display:flex;align-items:center;gap:18px;padding:20px;border-radius:16px;background:linear-gradient(120deg,var(--primary-soft),var(--surface) 72%);border:1px solid color-mix(in srgb,var(--primary) 18%,var(--border))}
-.acct-ava{width:68px;height:68px;flex:none;border-radius:50%;display:grid;place-items:center;font-size:24px;font-weight:700;color:#fff;background:linear-gradient(135deg,#4C8DF6,#1666D8);box-shadow:0 10px 24px -10px rgba(24,119,242,.6);border:3px solid var(--surface)}
+.acct-ava{width:64px;height:64px;flex:none;border-radius:50%;display:grid;place-items:center;font-size:22px;font-weight:700;color:var(--primary-ink);background:var(--primary-soft);border:2px solid var(--surface);box-shadow:0 0 0 1px color-mix(in srgb,var(--primary) 18%,transparent)}
 .acct-id b{display:block;font-size:20px;color:var(--ink);line-height:1.2}
 .acct-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
 .acct-tag{display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 11px;border-radius:999px;background:var(--surface);border:1px solid var(--border);font-size:13px;color:var(--ink-2)}
 .acct-tag svg{width:14px;height:14px;color:var(--ink-3)}
-.acct-tag.is-role{background:var(--primary);border-color:var(--primary);color:#fff;font-weight:600}
-.acct-tag.is-role svg{color:#fff}
+.acct-tag.is-role{background:var(--primary-soft);border-color:color-mix(in srgb,var(--primary) 30%,transparent);color:var(--primary-ink);font-weight:600}
+.acct-tag.is-role svg{color:var(--primary)}
 .acct-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;border-bottom:0}
 .acct-box{display:flex;flex-direction:column;align-items:stretch;gap:12px;padding:16px 18px;border:1px solid var(--border);border-radius:14px;background:var(--surface)}
 .acct-box-h{display:flex;align-items:center;gap:10px}
@@ -571,10 +571,10 @@ kbd{display:inline-grid;place-items:center;min-width:24px;height:24px;padding:0 
 .main .tile.rt.htile.a{--tone:#E08A00;--tone-2:#FFB53D;--tone-soft:#FFF2DC}
 .main .tile.rt.htile.t{--tone:#0E9AA7;--tone-2:#39C3CF;--tone-soft:#DDF5F7}
 /* vòng màu trang trí góc phải trên */
-.main .tile.rt.htile::before{content:'';position:absolute;z-index:-1;right:-48px;top:-58px;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle at 35% 65%,var(--tone-soft),transparent 72%);opacity:.85;transition:transform .3s}
+.main .tile.rt.htile::before{content:'';position:absolute;z-index:-1;inset:0;background:linear-gradient(270deg,var(--tone-soft) 0%,color-mix(in srgb,var(--tone-soft) 45%,var(--surface)) 35%,var(--surface) 72%);opacity:.9;transition:opacity .2s}
 .main .tile.rt.htile.click{cursor:pointer}
 .main .tile.rt.htile.click:hover{transform:translateY(-3px);border-color:color-mix(in srgb,var(--tone) 35%,var(--border));box-shadow:0 2px 4px rgba(16,24,40,.05),0 18px 36px -20px color-mix(in srgb,var(--tone) 55%,transparent)}
-.main .tile.rt.htile.click:hover::before{transform:scale(1.12)}
+.main .tile.rt.htile.click:hover::before{opacity:1}
 .main .tile.rt.htile .htile-h{display:flex;align-items:center;gap:12px;min-width:0;padding-right:22px}
 .main .tile.rt.htile .htile-ic{width:46px;height:46px;flex:none;border-radius:13px;display:grid;place-items:center;color:var(--tone);background:var(--surface);border:1.5px solid color-mix(in srgb,var(--tone) 45%,transparent)}
 .main .tile.rt.htile .htile-ic svg{width:22px;height:22px;stroke-width:1.6}
@@ -609,7 +609,7 @@ kbd{display:inline-grid;place-items:center;min-width:24px;height:24px;padding:0 
 .summary .sum.t-w{--tone:#E08A00;--tone-2:#FFB53D;--tone-soft:#FFF2DC}
 .summary .sum.t-d{--tone:#E5383B;--tone-2:#FF6B6E;--tone-soft:#FDE7E8}
 .summary .sum.t-n{--tone:#6B7A88;--tone-2:#9AA7B4;--tone-soft:#EEF1F4}
-.summary .sum::before{content:'';position:absolute;z-index:-1;right:-36px;top:-46px;width:120px;height:120px;border-radius:50%;background:radial-gradient(circle at 35% 65%,var(--tone-soft),transparent 72%)}
+.summary .sum::before{content:'';position:absolute;z-index:-1;inset:0;background:linear-gradient(270deg,var(--tone-soft) 0%,color-mix(in srgb,var(--tone-soft) 45%,var(--surface)) 35%,var(--surface) 72%);opacity:.9}
 .summary .sum>.ico{width:48px;height:48px;flex:none;border-radius:13px;display:grid;place-items:center;color:var(--tone);background:var(--surface);border:1.5px solid color-mix(in srgb,var(--tone) 45%,transparent)}
 .summary .sum>.ico svg{width:22px;height:22px;stroke-width:1.6;color:var(--tone)}
 .summary .sum b{font-size:24px;font-weight:700;line-height:1.05;letter-spacing:-.015em;color:var(--ink)}
@@ -626,7 +626,7 @@ kbd{display:inline-grid;place-items:center;min-width:24px;height:24px;padding:0 
 .main .kpis .kpi:has(.ico.w){--tone:#E08A00;--tone-2:#FFB53D;--tone-soft:#FFF2DC}
 .main .kpis .kpi:has(.ico.d){--tone:#E5383B;--tone-2:#FF6B6E;--tone-soft:#FDE7E8}
 .main .kpis .kpi:has(.ico.n){--tone:#7353E8;--tone-2:#9C84FF;--tone-soft:#EFEAFE}
-.main .kpis .kpi::before{content:'';position:absolute;z-index:-1;right:-48px;top:-58px;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle at 35% 65%,var(--tone-soft),transparent 72%)}
+.main .kpis .kpi::before{content:'';position:absolute;z-index:-1;inset:0;background:linear-gradient(270deg,var(--tone-soft) 0%,color-mix(in srgb,var(--tone-soft) 45%,var(--surface)) 35%,var(--surface) 72%);opacity:.9}
 .main .kpis .kpi .kpi-h{gap:12px;font-size:16px;font-weight:600;color:var(--ink-2)}
 .main .kpis .kpi .kpi-h .ico{width:46px;height:46px;border-radius:13px;color:var(--tone);background:var(--surface);border:1.5px solid color-mix(in srgb,var(--tone) 45%,transparent)}
 .main .kpis .kpi .kpi-h .ico svg{width:22px;height:22px;color:var(--tone);stroke-width:1.6}
