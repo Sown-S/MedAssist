@@ -748,7 +748,14 @@ kbd{display:inline-grid;place-items:center;min-width:24px;height:24px;padding:0 
 /* Tiêu đề màn đăng nhập: bóng nhiều lớp mềm cho chữ có chiều sâu (phần xanh có bóng ngả xanh) */
 .fbx-t h1{text-shadow:0 1px 0 rgba(255,255,255,.9),0 2px 2px rgba(16,24,40,.10),0 8px 18px rgba(16,24,40,.14),0 18px 36px rgba(16,24,40,.10)}
 .fbx-t h1 span{text-shadow:0 1px 0 rgba(255,255,255,.9),0 2px 2px rgba(24,119,242,.16),0 8px 18px rgba(24,119,242,.26),0 18px 38px rgba(24,119,242,.18)}
-.login-left .brand .t{text-shadow:0 2px 6px rgba(16,24,40,.12)}
 :root[data-theme="dark"] .fbx-t h1{text-shadow:0 2px 2px rgba(0,0,0,.45),0 10px 24px rgba(0,0,0,.55)}
 :root[data-theme="dark"] .fbx-t h1 span{text-shadow:0 2px 2px rgba(0,0,0,.4),0 8px 22px rgba(59,130,246,.45),0 0 36px rgba(59,130,246,.22)}
-:root[data-theme="dark"] .login-left .brand .t{text-shadow:0 2px 8px rgba(0,0,0,.5)}
+
+/* ===== Logo: nét chuyển xanh dương → xanh ngọc. Sáng: nét dày hơn, bóng xanh mềm để nổi. Tối: màu sáng hơn, phát sáng nhẹ ===== */
+:root{--logo-a:#1877F2;--logo-b:#0FA89A}
+.brand .t b,.boot .boot-logo b{background:linear-gradient(90deg,var(--logo-a),var(--logo-b));-webkit-background-clip:text;background-clip:text;color:transparent!important;font-weight:700;text-shadow:none}
+.brand .logo{filter:drop-shadow(0 3px 5px rgba(24,119,242,.28))}
+.brand .t b{filter:drop-shadow(0 2px 4px rgba(24,119,242,.22))}
+:root[data-theme="dark"],:root[data-sidebar="dark"] .side,:root[data-sidebar="indigo"] .side{--logo-a:#5AA8FF;--logo-b:#2EE0C4}
+:root[data-theme="dark"] .brand .logo,:root[data-sidebar="dark"] .side .brand .logo,:root[data-sidebar="indigo"] .side .brand .logo{filter:drop-shadow(0 0 4px rgba(90,168,255,.7)) drop-shadow(0 0 12px rgba(46,224,196,.45))}
+:root[data-theme="dark"] .brand .t b,:root[data-sidebar="dark"] .side .brand .t b,:root[data-sidebar="indigo"] .side .brand .t b{filter:drop-shadow(0 0 6px rgba(90,168,255,.55)) drop-shadow(0 0 14px rgba(46,224,196,.3))}

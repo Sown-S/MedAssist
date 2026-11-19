@@ -15,7 +15,7 @@
       .boot-mark circle{animation:bootdot 1.8s ease-in-out infinite}
       .boot-mark.still path,.boot-mark.still circle{animation:none;stroke-dashoffset:0;opacity:1}
       .boot-logo{font-size:30px;font-weight:700;color:#16222B;letter-spacing:-.02em;line-height:1}
-      .boot-logo b{color:#1877F2;font-weight:700}
+      .boot-logo b{font-weight:700;background:linear-gradient(90deg,#1877F2,#12B5A6);-webkit-background-clip:text;background-clip:text;color:transparent}
       .boot-tag{margin:-4px 0 6px;font-size:14px;color:#5F6E7A}
       .boot-bar{position:relative;width:180px;height:4px;border-radius:4px;background:#DCE3EB;overflow:hidden}
       .boot-bar i{position:absolute;top:0;bottom:0;width:40%;border-radius:4px;background:linear-gradient(90deg,#5AA2FF,#1877F2);animation:bootbar 1.2s cubic-bezier(.2,.7,.2,1) infinite}
@@ -33,7 +33,7 @@
       <div class="boot" role="status">
         <div class="boot-card">
           <div class="boot-mark">
-            <svg viewBox="5 11 31 19" aria-hidden="true"><path pathLength="100" d="M7 22h5l3-9 5 15 4-11 2.5 5H33" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" /><circle cx="33" cy="22" r="1.8" fill="currentColor" /></svg>
+            <svg viewBox="5 11 31 19" aria-hidden="true"><defs><linearGradient id="bootlg" x1="7" y1="0" x2="35" y2="0" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#1877F2"/><stop offset="1" stop-color="#12B5A6"/></linearGradient></defs><path pathLength="100" d="M7 22h5l3-9 5 15 4-11 2.5 5H33" fill="none" stroke="url(#bootlg)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /><circle cx="33" cy="22" r="1.9" fill="#12B5A6" /></svg>
           </div>
           <div class="boot-logo">Med<b>Assist</b></div>
           <p class="boot-tag">Hỗ trợ khám ngoại trú cho phòng khám</p>

@@ -1,3 +1,4 @@
+import { useId } from 'react'
 import {
   AtSign,
   Menu,
@@ -300,11 +301,19 @@ const ICONS = {
   chartLine: ChartLine
 }
 
+// Logo nhịp tim: nét chuyển xanh dương → xanh ngọc (màu lấy từ --logo-a / --logo-b, đổi theo nền sáng / tối).
 export function Logo({ className = '' }) {
+  const id = 'lg' + useId().replace(/:/g, '')
   return (
     <svg className={'logo ' + className} viewBox="5 11 31 19" aria-hidden="true">
-      <path pathLength="100" d="M7 22h5l3-9 5 15 4-11 2.5 5H33" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-      <circle cx="33" cy="22" r="1.8" fill="currentColor" />
+      <defs>
+        <linearGradient id={id} x1="7" y1="0" x2="35" y2="0" gradientUnits="userSpaceOnUse">
+          <stop offset="0" style={{ stopColor: 'var(--logo-a, #1877F2)' }} />
+          <stop offset="1" style={{ stopColor: 'var(--logo-b, #12B5A6)' }} />
+        </linearGradient>
+      </defs>
+      <path pathLength="100" d="M7 22h5l3-9 5 15 4-11 2.5 5H33" fill="none" stroke={`url(#${id})`} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      <circle cx="33" cy="22" r="1.9" style={{ fill: 'var(--logo-b, #12B5A6)' }} />
     </svg>
   )
 }
