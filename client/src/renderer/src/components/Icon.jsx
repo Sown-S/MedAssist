@@ -1,4 +1,5 @@
 import {
+  ArrowLeftRight,
   MessageSquare,
   Loader,
   PanelLeft,
@@ -196,6 +197,7 @@ const ICONS = {
   'message-square-warning': MessageSquareWarning,
   monitor: Monitor,
   package: Package,
+  'arrow-left-right': ArrowLeftRight,
   'message-square': MessageSquare,
   loader: Loader,
   'panel-left': PanelLeft,

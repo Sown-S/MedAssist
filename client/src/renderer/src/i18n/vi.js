@@ -1,7 +1,6 @@
 // Bản dịch tiếng Việt. Khoá = đúng chuỗi tiếng Anh đang hiển thị trên giao diện (đã bỏ khoảng trắng 2 đầu).
 // Chuỗi nào không có ở đây sẽ giữ nguyên tiếng Anh. Chuỗi có phần thay đổi (tên, số...) khai ở PATTERNS.
 export const VI = {
-  'Open release page': 'Mở trang phát hành',
   // ===== Giao diện mới: khung, trang chủ, trang Bệnh nhân =====
   Disconnected: 'Mất kết nối',
   'Slow response': 'Phản hồi chậm',
@@ -2060,6 +2059,19 @@ export const VI = {
   'No matching sign.': 'Không có dấu hiệu phù hợp.',
   'Undo changes': 'Hoàn tác',
   'Save examination signs': 'Lưu dấu hiệu khi khám',
+  'A newer app version is available': 'Đã có bản ứng dụng mới hơn',
+  'The clinic server is not up to date': 'Máy chủ phòng khám chưa cập nhật',
+  'The server has moved to a newer version. Update the app so your work is saved correctly.': 'Máy chủ đã lên bản mới. Cập nhật ứng dụng để công việc của bạn được lưu đúng.',
+  'Some new features may not work yet. Ask your administrator to update the server.': 'Một vài tính năng mới có thể chưa dùng được. Hãy báo quản trị viên cập nhật máy chủ.',
+  'Versions': 'Phiên bản',
+  'In the app': 'Ứng dụng',
+  'On the server': 'Máy chủ',
+  'Get the new version': 'Tải bản mới',
+  'Hide this notice': 'Ẩn thông báo này',
+  'Hide until the app is reopened': 'Ẩn tới lần mở ứng dụng sau',
+  'You are on version': 'Bạn đang dùng bản',
+  'Update when it is convenient — your data stays on the clinic server.': 'Cập nhật khi tiện, dữ liệu vẫn nằm an toàn trên máy chủ phòng khám.',
+  'See what’s new': 'Xem có gì mới',
 }
 
 export const PATTERNS = [
@@ -2137,7 +2149,6 @@ export const PATTERNS = [
   [/^Diagnosis (.+): (\d+) cases in (\d+) days \(previous periods averaged (.+)\)$/, 'Chẩn đoán $1: $2 ca trong $3 ngày (trung bình các kỳ trước $4)'],
   [/^Symptom (.+): (\d+) cases in (\d+) days \(previous periods averaged (.+)\)$/, 'Triệu chứng $1: $2 ca trong $3 ngày (trung bình các kỳ trước $4)'],
   // Phiên bản (VersionBanners)
-  [/^Version (.+) is available$/, 'Đã có bản $1'],
   [/^Trying again in (\d+) s$/, 'Thử lại sau $1 giây'],
-  [/^App version \((.+)\) differs from the server \((.+)\), update to avoid errors$/, 'Phiên bản ứng dụng ($1) khác máy chủ ($2), hãy cập nhật để tránh lỗi'],
+  [/^MedAssist (.+) is available$/, 'Đã có MedAssist $1'],
 ]
