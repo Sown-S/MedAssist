@@ -732,6 +732,16 @@ kbd{display:inline-grid;place-items:center;min-width:24px;height:24px;padding:0 
 .cx-ln{display:block;height:9px;border-radius:5px;background:var(--surface-2);margin-top:10px}
 .cx-ln.s{width:60%}
 .cx-circle{left:340px;bottom:-6px;width:150px;height:150px;border-radius:50%;overflow:hidden;border:5px solid var(--primary);background:#fff;box-shadow:0 16px 36px -10px rgba(24,119,242,.5);z-index:3}
-@container lleft (min-width:1050px){.fbx-c{zoom:1.08}}
+/* Cụm ảnh chiếm phần lớn nửa trái (như Facebook) và to dần theo bề rộng; thay các bậc .6 / .92 cũ (màn Windows 125% bị .6, ảnh nhỏ) */
+.fbx{grid-template-columns:minmax(0,.72fr) minmax(0,1.28fr)}
+.fbx-c{zoom:1}
+@container lleft (max-width:1000px){.fbx-c{zoom:.86}}
+@container lleft (max-width:900px){.fbx-c{zoom:.78}}
+@container lleft (max-width:780px){.fbx-c{zoom:.68}}
+@container lleft (min-width:1001px){.fbx-c{zoom:1.02}}
+@container lleft (min-width:1100px){.fbx-c{zoom:1.14}}
+@container lleft (min-width:1250px){.fbx-c{zoom:1.26}}
+@container lleft (max-width:640px){.fbx{grid-template-columns:1fr}}
 :root[data-motion="reduce"] .cx-post{animation:none}
 @media (prefers-reduced-motion:reduce){.cx-post{animation:none}}
+.fbx-t h1{font-size:clamp(36px,4.6cqw,58px)!important;line-height:1.08}
