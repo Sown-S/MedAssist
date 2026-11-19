@@ -26,4 +26,11 @@ if ($missing) {
     docker @Compose exec -T ollama ollama pull $model
     if ($LASTEXITCODE) { throw "Tải model thất bại" }
 }
+
+# Nạp sẵn model vào VRAM: không thì lần gọi AI đầu tiên mất ~20 s nạp lạnh, sát ngân sách trích xuất 30 s
+Write-Host "Nạp sẵn model vào bộ nhớ..."
+$ErrorActionPreference = "Continue"
+docker @Compose exec -T worker python -c "import httpx; httpx.post('http://ollama:11434/api/generate', json={'model': '$model', 'keep_alive': '24h'}, timeout=300).raise_for_status()"
+if ($LASTEXITCODE) { Write-Warning "Chưa nạp sẵn được model; lần gọi AI đầu tiên sẽ chậm hơn" }
+$ErrorActionPreference = "Stop"
 docker @Compose ps

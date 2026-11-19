@@ -18,7 +18,7 @@ xem [`docs/huong-dan-kiem-thu.md`](../docs/huong-dan-kiem-thu.md).
 
 | Cách | Máy chủ chạy bằng | Nhập ở ô **Máy chủ** của app | Chứng chỉ |
 |---|---|---|---|
-| Một máy (kiểm thử, giảng viên) | `docker-compose.eval.yml` ([docs/huong-dan-kiem-thu.md](../docs/huong-dan-kiem-thu.md)); AI tùy chọn qua `eval.env` | `http://127.0.0.1:8000` (mặc định của bản cài trên GitHub) | Không cần |
+| Một máy (kiểm thử) | `docker-compose.eval.yml` ([docs/huong-dan-kiem-thu.md](../docs/huong-dan-kiem-thu.md)); AI tùy chọn qua `eval.env` | `http://127.0.0.1:8000` (mặc định của bản cài trên GitHub) | Không cần |
 | Máy admin, dùng ngay trên máy đó | `docker-compose.yml` (mục dưới) | `https://localhost` | Có `localhost`, `127.0.0.1` |
 | Máy admin qua Tailscale (mỗi máy một mạng) | `docker-compose.yml` | `https://<tên Tailscale của máy admin>`, vd `https://medassist-server` | Có tên ngắn, tên `.ts.net`, IP 100.x |
 | Máy admin trong một mạng chung (router, điểm phát Wi-Fi) | `docker-compose.yml` | `https://<IP LAN của máy admin>` | Có IP LAN |
@@ -61,7 +61,8 @@ Chạy PowerShell tại thư mục gốc repo.
    `deploy\certs\` (hoặc chép lại `medassist-root-ca.crt` + `.key` từ bản cất riêng trước khi chạy bước 2) để không phải phát hành lại app.
    Chỉ khi tạo CA mới mới chép `deploy\certs\medassist-root-ca.crt` (chỉ file `.crt`) sang `client\certs\` qua PR và build lại bản cài
    (`client/README.md` mục 1). Bản cài không có CA khớp sẽ từ chối kết nối.
-4. **Bật hệ thống**: `.\deploy\scripts\start.ps1` (hoặc `start.ps1 -Cpu`). Lần đầu build image, tạo CSDL, chạy migration, tải model.
+4. **Bật hệ thống**: `.\deploy\scripts\start.ps1` (hoặc `start.ps1 -Cpu`). Lần đầu build image, tạo CSDL, chạy migration, tải model;
+   mỗi lần bật, script nạp sẵn model vào VRAM để lần gọi AI đầu tiên không bị chậm.
    Kiểm tra: mở `https://192.168.1.10/health` trên máy admin, phải thấy `"database": {"ok": true}` và `"ai": {"ok": true}`.
 5. **Tài khoản và dữ liệu**, chạy trong container `api` (mỗi lệnh `create_user` hỏi mật khẩu, tối thiểu 8 ký tự):
    ```powershell
@@ -73,7 +74,7 @@ Chạy PowerShell tại thư mục gốc repo.
    iex "$dc exec api python -m scripts.seed_referral_facilities"
    iex "$dc exec api python -m scripts.import_okf --submit --approve-as bs.duyet"
    ```
-   - `seed_drugs --no-batches`: chỉ nạp danh mục 386 thuốc; nhập lô thật ở màn Kho. Bỏ `--no-batches` nếu cần kho mẫu để demo.
+   - `seed_drugs --no-batches`: chỉ nạp danh mục 386 thuốc; nhập lô thật ở màn Kho. Bỏ `--no-batches` nếu cần kho mẫu.
    - `seed_services`: danh mục dịch vụ, xét nghiệm, gói khám với giá mẫu; Admin sửa giá thật ở **Quản trị › Danh mục** trước khi thu tiền.
    - `seed_referral_facilities`: danh mục bệnh viện, trung tâm y tế để gợi ý nơi chuyển tuyến (vẫn gõ tự do được).
    - `import_okf --submit --approve-as <bác sĩ>`: nạp thư mục `knowledge/` (gắn vào container ở `/knowledge`) và kích hoạt ngay.
@@ -104,6 +105,7 @@ Trên mỗi máy client: cài bản `MedAssist Setup *.exe`, ở màn đăng nh�
 | Khôi phục | `.\deploy\scripts\restore.ps1 -File deploy\backups\<file>.dump` (gõ `KHOIPHUC` để xác nhận): khôi phục vào CSDL mới, kiểm quyền rồi mới thay CSDL đang chạy; CSDL cũ giữ tên `medassist_truoc_<thời điểm>` |
 | Cấp lại chứng chỉ (đổi IP, sắp hết hạn) | `new-certs.ps1 -HostName <IP>` rồi `... restart caddy` |
 | Nạp bản tri thức mới | Đổi `label` trong `knowledge/_release.md`, `start.ps1`, rồi `... exec api python -m scripts.import_okf --submit --approve-as <bác sĩ> --retire-missing`. Có bỏ bệnh, triệu chứng, luật khỏi `knowledge/` thì bắt buộc `--retire-missing` kèm `--approve-as`: không có hai cờ này, mục đã bỏ vẫn Active (chạy `--dry-run` trước để xem danh sách sẽ bị tắt) |
+| Xuất cụm lời kể không khớp (soạn từ đồng nghĩa) | `... exec api python -m scripts.export_unmapped --since <YYYY-MM-DD> --out /tmp/unmapped.csv`, rồi `... cp api:/tmp/unmapped.csv .\unmapped.csv`. File chỉ có cụm và số lần gặp, không kèm bệnh nhân |
 | Cho máy dev mượn Ollama (chỉ giai đoạn phát triển) | `.\deploy\scripts\start.ps1 -OllamaLan`; chạy lại `start.ps1` không có `-OllamaLan` để đóng cổng 11434 |
 
 `...` là `docker compose -f deploy\docker-compose.yml --env-file deploy\.env`.
@@ -161,7 +163,7 @@ di động. Không dùng `-OllamaLan` khi có máy ngoài nhóm trong tailnet.
 - `deploy\.env`, `deploy\certs\` (khóa riêng của CA) và `deploy\backups\` **không bao giờ commit**.
 - Giữ một bản `medassist-root-ca.key` ngoài máy admin (USB cất riêng): mất khóa này thì phải tạo CA mới và cài lại app trên mọi máy client.
 - Chỉ Caddy mở cổng ra LAN. Ollama không có xác thực, nên chỉ mở cổng 11434 (`-OllamaLan`) trong giai đoạn phát triển;
-  **không dùng** trên máy demo, máy giao cho giảng viên, hoặc khi tailnet có máy ngoài nhóm.
+  **không dùng** trên máy chủ phòng khám, máy kiểm thử bàn giao, hoặc khi tailnet có máy ngoài nhóm.
 - Sao lưu dùng vai trò chỉ đọc `medassist_backup`; API dùng `medassist_app`, không có quyền sửa / xóa nhật ký và sổ kho.
 - Máy từng khôi phục bằng `restore.ps1` bản trước 01/11/2026 (`pg_restore --clean` trên CSDL đang chạy) đã bị cấp lại quyền
   UPDATE thừa. Thu hồi một lần:

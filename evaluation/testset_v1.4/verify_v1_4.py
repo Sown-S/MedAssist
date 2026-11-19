@@ -1,10 +1,12 @@
-"""Kiểm v1.4 riêng bằng byte gốc và nhãn; chỉ đọc, không chạy pipeline/LLM/CSDL."""
+"""Kiểm nội dung v1.4 chuẩn hóa CRLF→LF và nhãn; chỉ đọc, không chạy pipeline/LLM/CSDL."""
+import argparse
 import csv
 from collections import Counter
 from datetime import date, datetime
 import hashlib
 import json
 from pathlib import Path
+import tempfile
 
 import yaml
 
@@ -19,6 +21,51 @@ def sha(raw):
     return hashlib.sha256(raw).hexdigest()
 
 
+def text_bytes(path):
+    return path.read_bytes().replace(b"\r\n", b"\n")
+
+
+def verify_text_file(path, manifest):
+    relative = path.relative_to(ROOT).as_posix()
+    assert sha(text_bytes(path)) == manifest["text_file_sha256"][relative], f"Nội dung khác: {relative}"
+
+
+def verify_full_review(manifest):
+    """Kiểm đủ phạm vi; giới hạn biên bản cần quyết định riêng của Tuấn."""
+    review = manifest["cross_review"].get("full_review", {})
+    submission = manifest["cross_review"].get("full_review_submission", {})
+    if not review:
+        authorization = manifest.get("freeze_authorization", {})
+        assert submission.get("status") == "NEEDS_CLARIFICATION", "Chưa có biên bản Huy rà đủ 111 ca"
+        assert authorization.get("decided_by") == "Tuấn", "Cần quyết định của Tuấn về giới hạn biên bản"
+        assert authorization.get("decision") == "FREEZE_WITH_RECORDED_REVIEW_LIMITATIONS"
+        assert authorization.get("combined_sha256") == manifest["combined_sha256"]
+        assert authorization.get("clinical_approval_inferred") is False
+        assert set(authorization.get("accepted_review_limitations", [])) == {
+            "CLIN_021_SUMMARY_COUNT", "HUY_CURRENT_VERIFIER_NOT_RUN"}
+        assert {"review_summary_CLIN_021", "reviewer_verifier_confirmation"} <= manifest["known_limitations"].keys()
+        assert submission.get("missing_clinical_verdict_ids") == ["CLIN-021"]
+        assert submission.get("reviewer_ran_current_verifier") is False
+        assert submission.get("full_testset_confirmation_reported") is True
+        source = ROOT / authorization["record_path"]
+        assert source.resolve().is_relative_to(ROOT.resolve()) and source.is_file()
+        assert sha(text_bytes(source)) == authorization["record_sha256"]
+        assert date.fromisoformat(authorization["decided_at"]).isoformat() == authorization["decided_at"]
+        review = submission
+    else:
+        assert review.get("status") == "COMPLETED" and review.get("full_testset_confirmation") is True
+    assert review.get("reviewer") == "Huy", "Chưa có biên bản Huy rà đủ 111 ca"
+    assert review.get("combined_sha256") == manifest["combined_sha256"], "Biên bản không khớp bộ ca hiện tại"
+    expected = {key for entry in manifest["files"] for key, _, _ in records(ROOT / entry["path"])[0]}
+    reviewed = review.get("reviewed_case_ids", [])
+    assert len(reviewed) == len(set(reviewed)) == 111 and set(reviewed) == expected
+    assert date.fromisoformat(review["reviewed_at"]).isoformat() == review["reviewed_at"]
+    source = ROOT / review["record_path"]
+    assert source.resolve().is_relative_to(ROOT.resolve()), "Biên bản phải nằm trong repo"
+    assert source.is_file() and text_bytes(source).strip(), "Thiếu biên bản rà soát"
+    assert sha(text_bytes(source)) == review["record_sha256"], "Biên bản rà soát đã thay đổi"
+
+
 def load(path):
     return json.loads(path.read_text(encoding="utf-8"))
 
@@ -28,7 +75,7 @@ def front(path):
 
 
 def records(path):
-    chunks = path.read_bytes().splitlines(keepends=True)
+    chunks = text_bytes(path).splitlines(keepends=True)
     data = []
     for raw in chunks:
         if raw.strip():
@@ -43,6 +90,66 @@ def labels(obj):
     return {k: obj[k] for k in names}
 
 
+def verify_reference_files(manifest, root=ROOT):
+    assert manifest["reference_file_hash_normalization"] == "CRLF to LF before hashing"
+    expected = manifest["reference_file_sha256"]
+    assert set(expected) == set(manifest["reference_file_raw_sha256"])
+    for reference, expected_hash in expected.items():
+        value = sha((root / reference).read_bytes().replace(b"\r\n", b"\n"))
+        assert value == expected_hash, f"Nội dung tham chiếu khác: {reference}"
+
+
+def self_test_reference_files():
+    manifest = load(HERE / "manifest_freeze.json")
+    with tempfile.TemporaryDirectory(prefix="medassist-reference-eol-") as directory:
+        root = Path(directory)
+        for ending in (b"\n", b"\r\n"):
+            for reference in manifest["reference_file_sha256"]:
+                data = (ROOT / reference).read_bytes().replace(b"\r\n", b"\n")
+                target = root / reference
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_bytes(data.replace(b"\n", ending))
+            verify_reference_files(manifest, root)
+        reference = next(iter(manifest["reference_file_sha256"]))
+        target = root / reference
+        target.write_bytes(target.read_bytes() + b"\nCONTENT_CHANGED_FOR_NEGATIVE_TEST\n")
+        try:
+            verify_reference_files(manifest, root)
+        except AssertionError:
+            return {"status": "PASS", "reference_files": len(manifest["reference_file_sha256"]),
+                    "LF": "PASS", "CRLF": "PASS", "content_change_rejected": True,
+                    "source_files_modified": False}
+        raise AssertionError("Không phát hiện nội dung prompt đã thay đổi")
+
+
+def self_test_portability():
+    global ROOT, HERE
+    original_root, original_here = ROOT, HERE
+    manifest = load(HERE / "manifest_freeze.json")
+    paths = set(manifest["text_file_sha256"]) | {manifest["source_readme_append"]["path"]}
+    try:
+        with tempfile.TemporaryDirectory(prefix="medassist-v14-eol-") as directory:
+            ROOT = Path(directory)
+            HERE = ROOT / original_here.relative_to(original_root)
+            for ending in (b"\n", b"\r\n"):
+                for relative in paths:
+                    target = ROOT / relative
+                    target.parent.mkdir(parents=True, exist_ok=True)
+                    target.write_bytes(text_bytes(original_root / relative).replace(b"\n", ending))
+                result = verify(manifest)
+                assert result["unchanged_record_bytes"] == 106
+            changed = ROOT / manifest["cross_review"]["feedback"]["source_path"]
+            changed.write_bytes(changed.read_bytes() + b"\nCONTENT_CHANGED_FOR_NEGATIVE_TEST\n")
+            try:
+                verify(manifest)
+            except AssertionError:
+                return {"status": "PASS", "LF": "PASS", "CRLF": "PASS",
+                        "content_change_rejected": True, "source_files_modified": False}
+            raise AssertionError("Không phát hiện thay nội dung báo cáo")
+    finally:
+        ROOT, HERE = original_root, original_here
+
+
 def verify(manifest_override=None):
     manifest = load(HERE / "manifest_freeze.json") if manifest_override is None else manifest_override
     assert {p.name for p in HERE.glob("*.jsonl")} == {"clinical_cases_labeled.jsonl", "symptom_extraction_testset.jsonl"}
@@ -53,6 +160,7 @@ def verify(manifest_override=None):
     assert manifest["review_status"] == "PENDING_CROSS_REVIEW"
     assert manifest["is_separate_testset"] is True and type(manifest["is_frozen"]) is bool
     if manifest["is_frozen"]:
+        verify_full_review(manifest)
         assert manifest["freeze_version"] == "testset-v1.4-frozen"
         frozen_at = datetime.fromisoformat(manifest["frozen_at"])
         assert frozen_at.utcoffset() is not None and frozen_at.utcoffset().total_seconds() == 7 * 3600
@@ -62,6 +170,7 @@ def verify(manifest_override=None):
         assert decision["clinical_approval_inferred"] is False
         assert decision["data_combined_sha256"] == manifest["combined_sha256"]
         assert decision["jsonl_raw_sha256"] == {e["path"]: e["raw_sha256"] for e in manifest["files"]}
+        assert decision["review_authorization"] == manifest.get("freeze_authorization")
     else:
         assert manifest["freeze_version"] == "testset-v1.4-draft"
         assert "freeze_decision" not in manifest and "frozen_at" not in manifest
@@ -77,16 +186,24 @@ def verify(manifest_override=None):
         assert feedback["freeze_authorized"] is False
         assert feedback["current_artifact_hashes_confirmed_by_reviewer"] is False
         assert feedback["current_matching_data_combined_sha256"] == manifest["combined_sha256"]
-        assert sha((ROOT / feedback["source_path"]).read_bytes()) == feedback["source_raw_sha256"]
+        verify_text_file(ROOT / feedback["source_path"], manifest)
         if feedback.get("source_text_sha256"):
             source_text = (ROOT / feedback["source_path"]).read_text(encoding="utf-8")
             response_text = source_text.split("<!-- BEGIN HUY_FEEDBACK_2026_11_16 -->", 1)[1].split(
                 "<!-- END HUY_FEEDBACK_2026_11_16 -->", 1
             )[0].strip()
             assert sha(response_text.encode("utf-8")) == feedback["source_text_sha256"]
+        latest_update = feedback.get("latest_update")
+        if latest_update:
+            assert latest_update["reported_reviewer"] == "Huy"
+            assert latest_update["reported_verify_compare_result"] == "PASS"
+            assert latest_update["verify_v1_4_after_fix_result_reported"] is None
+            assert set(latest_update["content_confirmation_scope"]) == TARGETS
+            assert latest_update["full_testset_confirmation"] is False
+            verify_text_file(ROOT / latest_update["source_path"], manifest)
         followup = feedback.get("followup")
         if followup:
-            assert sha((ROOT / followup["source_path"]).read_bytes()) == followup["source_raw_sha256"]
+            verify_text_file(ROOT / followup["source_path"], manifest)
             assert set(followup["content_confirmation_scope"]) == TARGETS
             assert followup["reviewer_ran_verify_v1_4"] is False
             assert followup["full_testset_confirmation"] is False
@@ -103,7 +220,7 @@ def verify(manifest_override=None):
     technical_review = manifest.get("technical_cross_review")
     if technical_review:
         report = ROOT / technical_review["report_path"]
-        assert sha(report.read_bytes()) == technical_review["report_raw_sha256"]
+        verify_text_file(report, manifest)
         assert technical_review["integrity_status"] == "PASS"
         assert technical_review["reviewed_combined_sha256"] == manifest["combined_sha256"]
         assert technical_review["reviewed_file_raw_sha256"] == {
@@ -114,14 +231,15 @@ def verify(manifest_override=None):
         assert technical_review["freeze_ready"] is False
     parent = manifest["parent_testset"]
     original_manifest_path = ROOT / parent["manifest_path"]
-    assert sha(original_manifest_path.read_bytes()) == parent["manifest_raw_sha256"]
+    assert manifest["text_file_hash_normalization"] == "CRLF to LF before hashing"
+    verify_text_file(original_manifest_path, manifest)
     original_manifest = load(original_manifest_path)
     assert manifest["combined_sha256_formula"] == original_manifest["combined_sha256_formula"]
     assert manifest["sha256_normalization"] == original_manifest["sha256_normalization"]
     original_hashes = []
     for expected in parent["files"]:
         raw = (ROOT / expected["path"]).read_bytes()
-        assert sha(raw) == expected["raw_sha256"]
+        verify_text_file(ROOT / expected["path"], manifest)
         value = sha(raw.replace(b"\r\n", b"\n"))
         assert value == expected["sha256"]
         assert value == next(x["sha256"] for x in original_manifest["files"] if x["path"] == expected["path"])
@@ -131,24 +249,22 @@ def verify(manifest_override=None):
     assert original_combined == "4e7b58cffc3cd950e1411a131919e36976ea94f209c426821886b03708cd368d"
 
     append = manifest["source_readme_append"]
-    readme = (ROOT / append["path"]).read_bytes()
-    prefix = readme[:append["original_byte_length"]]
-    assert sha(prefix) == append["original_raw_sha256"]
-    assert readme[append["original_byte_length"]:] == bytes.fromhex(append["appended_bytes_hex"])
-    assert len(readme[append["original_byte_length"]:].splitlines()) == 1
+    readme = text_bytes(ROOT / append["path"])
+    suffix = bytes.fromhex(append["appended_bytes_hex"]).replace(b"\r\n", b"\n")
+    assert readme.endswith(suffix) and len(suffix.splitlines()) == 1
+    assert sha(readme[:-len(suffix)]) == append["original_sha256"]
 
     reviews = {}
     for source in manifest["sources"]:
         path = ROOT / source["path"]
-        assert sha(path.read_bytes()) == source["raw_sha256"]
+        verify_text_file(path, manifest)
         if path.suffix == ".csv":
             with path.open(encoding="utf-8-sig", newline="") as stream:
                 rows = list(csv.DictReader(stream))
             assert len(rows) == source["rows"] and len(rows) == len({r["case_id"] for r in rows})
             reviews.update({r["case_id"]: r for r in rows})
     assert {key for key, row in reviews.items() if row["verdict"] == "CẦN SỬA"} == TARGETS
-    for reference, expected_hash in manifest["reference_file_raw_sha256"].items():
-        assert sha((ROOT / reference).read_bytes()) == expected_hash
+    verify_reference_files(manifest)
 
     catalog = {row["symptom_code"]: row["symptom_name"] for row in front(ROOT / "knowledge/symptoms/symptom_catalog.md")["symptoms"]}
     condition_data = [front(p) for p in (ROOT / "knowledge/conditions").rglob("*.md")]
@@ -159,8 +275,10 @@ def verify(manifest_override=None):
     assert len(list((ROOT / "knowledge/rules").rglob("*.md"))) == 12
     assert manifest["knowledge_snapshot"]["groups"] == dict(Counter(x["disease_group"] for x in condition_data))
     assert front(ROOT / "knowledge/_release.md")["label"] == "KB-2026.11"
-    kb = {p.relative_to(ROOT).as_posix(): sha(p.read_bytes()) for p in sorted((ROOT / "knowledge").rglob("*")) if p.is_file()}
-    assert kb == manifest["knowledge_file_sha256_before"]
+    kb = {p.relative_to(ROOT).as_posix(): sha(text_bytes(p)) for p in sorted((ROOT / "knowledge").rglob("*")) if p.is_file()}
+    assert set(kb) == set(manifest["knowledge_file_sha256_before"])
+    for relative in kb:
+        verify_text_file(ROOT / relative, manifest)
 
     source_names = {"clinical_cases_labeled.jsonl": ("clinical_cases_labeled.jsonl", 82),
                     "symptom_extraction_testset.jsonl": ("symptom_extraction_testset.jsonl", 29)}
@@ -176,7 +294,7 @@ def verify(manifest_override=None):
         assert old_blanks == new_blanks
         assert len(old_records) == len(new_records) == entry["num_cases"] == expected_count
         assert [x[0] for x in old_records] == [x[0] for x in new_records]
-        assert sha(path.read_bytes()) == entry["raw_sha256"]
+        verify_text_file(path, manifest)
         new_hashes[path.name] = sha(path.read_bytes().replace(b"\r\n", b"\n"))
         assert new_hashes[path.name] == entry["sha256"]
         file_changed, file_unchanged = [], 0
@@ -255,8 +373,7 @@ def verify(manifest_override=None):
         assert set(options[name]["proposed_labels"]) <= catalog.keys()
     original_11 = next(raw for key, raw, _ in records(ROOT / "evaluation/testset/symptom_extraction_testset.jsonl")[0] if key == "EXT-011")
     assert new_raw_all["EXT-011"] == original_11
-    assert sha(new_raw_all["EXT-011"]) == manifest["latest_decision_update"]["EXT_011_raw_sha256"]
-    for key, expected_hash in manifest["latest_decision_update"]["preserved_applied_case_raw_sha256"].items():
+    for key, expected_hash in manifest["latest_decision_update"]["preserved_applied_case_sha256"].items():
         assert sha(new_raw_all[key]) == expected_hash
     combined = sha((new_hashes["symptom_extraction_testset.jsonl"] + ":" + new_hashes["clinical_cases_labeled.jsonl"]).encode("utf-8"))
     assert combined == manifest["combined_sha256"]
@@ -272,5 +389,9 @@ def verify(manifest_override=None):
 
 
 if __name__ == "__main__":
-    result = verify()
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--self-test-reference-hashes", action="store_true", help="Kiểm LF/CRLF và phát hiện đổi nội dung bằng bản sao tạm")
+    parser.add_argument("--self-test-portability", action="store_true", help="Kiểm toàn bộ verifier trên bản sao LF/CRLF và từ chối thay nội dung")
+    args = parser.parse_args()
+    result = self_test_portability() if args.self_test_portability else self_test_reference_files() if args.self_test_reference_hashes else verify()
     print(json.dumps(result, ensure_ascii=False, indent=2))

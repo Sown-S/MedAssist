@@ -86,7 +86,7 @@ Bạn cập nhật Phương án A cho EXT-010 (bỏ `mechanical_spinal_pain_stif
 <a id="pham-vi"></a>
 ## Phản hồi bổ sung và quyết định phạm vi
 
-Nguồn: phản hồi bổ sung Huy do Tuấn chuyển lại, ghi nhận 16/11/2026. Nội dung dưới là bản tổng hợp đã ghi nhận, không phải xác nhận chạy công cụ trên máy Huy. Các tên CROSS_REVIEW/CHANGES trong danh sách tệp Huy đã đọc là tên lịch sử trước khi gộp.
+Nguồn: phản hồi bổ sung Huy do Tuấn chuyển lại, ghi nhận 16/11/2026. Nội dung dưới là bản tổng hợp tại thời điểm phản hồi trước; cập nhật về PR #152 và verifier nằm ở mục kế tiếp. Các tên CROSS_REVIEW/CHANGES trong danh sách tệp Huy đã đọc là tên lịch sử trước khi gộp.
 
 ## Phạm vi xác nhận
 
@@ -112,6 +112,17 @@ Nguồn: phản hồi bổ sung Huy do Tuấn chuyển lại, ghi nhận 16/11/2
 - Tuấn chọn giữ năm ID và ghi rõ giới hạn EXT-022/023; đây không phải xác nhận nhãn hai ca đúng hoặc phê duyệt lâm sàng. Trạng thái đóng băng hiện tại lấy từ manifest.
 
 
+<a id="pr-152"></a>
+## Cập nhật Huy về PR #152 và kiểm hash tham chiếu
+
+Ghi nhận ngày 16/11/2026 từ phản hồi Huy do Tuấn chuyển lại:
+
+- Huy cho biết đã pull PR #152, đọc tài liệu và đối chiếu hai JSONL; chỉ xác nhận nội dung năm ID thay đổi, không duyệt mới 106 ca giữ nguyên.
+- Huy báo đã chạy `evaluation/results/kb_2026_11_eval_2026-11-15/verify_compare.py` trên máy mình và nhận PASS. Đây là kết quả do Huy báo; không ghi thành PASS của verify_v1_4.py sau sửa.
+- Huy chỉ ra hash tham chiếu extraction_v2.txt khác giữa LF (`05a41e6…`) và CRLF (`7708c28…`). Kiểm tại repo xác nhận cùng nội dung nhưng hai raw hash khác nhau; extraction_phrases_v2.txt cũng có tình trạng này. Verifier hiện kiểm hash chuẩn hóa CRLF→LF cho cả hai tệp; hash raw cũ giữ trong manifest làm lịch sử. Không đổi byte prompt hoặc JSONL.
+- Huy cho biết bản nháp extraction_phrases_v4.txt trên máy Huy đã dọn bỏ. Repo dùng các tệp v2/v2/compact_v3 hiện có; không sao chép bản nháp hoặc sửa prompt.
+- Khuyến nghị EXT-022/023 và các kết luận CLIN-019/EXT-024 giữ như trước. Quyết định Tuấn giữ đúng năm ID và ghi rõ giới hạn tiếp tục có hiệu lực; không mở rộng sửa ca hoặc đóng băng trong bước sửa hash.
+
 ## Giới hạn đi kèm bộ dữ liệu
 
 | Điểm | Cách xử lý đã chốt |
@@ -132,3 +143,59 @@ $env:PYTHONDONTWRITEBYTECODE = '1'
 ```
 
 Kỳ vọng PASS: 82+29 ca, 5 ID khác byte, 106 bản ghi nguyên byte; 179 tệp KB và hash v1.3 khớp. Combined v1.4 `a136d072e8c5149f25409591b245b61865e3320a5233ad73ef9d4d54aec86161`; v1.3 `4e7b58cffc3cd950e1411a131919e36976ea94f209c426821886b03708cd368d`.
+
+## Sửa công cụ kiểm Sprint 4 — 17/11/2026
+
+- Verifier kiểm nội dung sau chuẩn hóa CRLF→LF cho JSONL, CSV, README, manifest nguồn, báo cáo, snapshot KB và prompt. Các hash byte thô cũ được giữ để tra lịch sử; map `text_file_sha256` kiểm nội dung hiện tại.
+- `verify_compare.py` chỉ đọc và in kết quả ra màn hình; đối chiếu `rank_changes.csv` đã lưu thay vì ghi lại báo cáo.
+- Chưa đóng băng v1.4. Cả xem trước và áp dụng đều bị chặn cho đến khi có biên bản Huy rà đủ 111 ca, danh sách ID và combined hash khớp bộ hiện tại. Phản hồi năm ca trước đó không thay cho biên bản này.
+- Cập nhật OKF, chuyển CSV từ đồng nghĩa và hồ sơ Cảm lạnh thuộc Sprint 5, chưa thực hiện trong đợt này. Không đổi knowledge hoặc dữ liệu JSONL.
+
+## Biên bản Huy ngày 17/11/2026 — chờ làm rõ tổng kết CLIN-021
+
+Tuấn chuyển tiếp biên bản của Huy, ngày rà 17/11/2026. Huy báo đã rà đủ 111 ca trên KB-2026.11 (153 bệnh, 299 triệu chứng, 12 luật), đối chiếu README_review.md. Phạm vi nêu trong biên bản khớp đúng các ID hiện có:
+
+- 82 ca lâm sàng: CLIN-001..CLIN-011, CLIN-013..CLIN-015, CLIN-017..CLIN-084.
+- 29 ca trích xuất: EXT-001..EXT-014, EXT-016..EXT-030.
+- Combined SHA-256 chuẩn hóa CRLF→LF: `a136d072e8c5149f25409591b245b61865e3320a5233ad73ef9d4d54aec86161`.
+
+### Kết quả do Huy báo cáo
+
+- Huy báo đã đối chiếu Node 1/Node 2: 82/82 ca khớp expected_priority và expected_triggered_rules. Đây là kết quả được Huy báo lại; không phải lượt chạy độc lập tại đây và không phải xác nhận của bác sĩ.
+- Biên bản ghi “79 ca ĐỒNG Ý”, liệt kê CLIN-001..CLIN-010, CLIN-013..CLIN-015, CLIN-017..CLIN-018, CLIN-020, CLIN-023..CLIN-084; bảo lưu ghi chú CLIN-017 và CLIN-021.
+- CLIN-019: giữ nhãn v1.3, CẦN BÁC SĨ QUYẾT. Huy báo hai bệnh ghẻ/viêm da cơ địa ngoài Top-4; không dùng thứ hạng để thay nhãn.
+- CLIN-011: đồng ý với giới hạn DDx; Huy báo viêm cột sống dính khớp #1, viêm khớp phản ứng ngoài Top-4.
+- CLIN-022: đồng ý giữ nhãn, bảo lưu chờ bác sĩ mắt; Huy báo nấm #1, vi khuẩn #2, herpes ngoài Top-4.
+- EXT-010/014/024/026: đồng ý các sửa đổi đã lưu; EXT-010 theo phương án A, không đảo EXT-011. EXT-024 giữ giới hạn nguồn BYT; EXT-026 giữ mã chung và thêm mã niệu đạo đặc trưng.
+- EXT-022/023: cần sửa ABSENT sốt thiếu dữ kiện; Huy đồng ý đóng băng theo phạm vi năm ID nếu ghi rõ hai giới hạn này, không coi nhãn là đúng văn bản.
+- 23 ca trích xuất còn lại: đồng ý giữ nhãn v1.3, bảo lưu các điểm chuyên môn EXT-006/017/018/019/021/027/028.
+- Huy kết luận đồng ý đóng băng kèm các giới hạn CLIN-019, CLIN-021/022 và các ca trích xuất đã nêu; không suy ra 111 ca được bác sĩ thẩm định.
+- Huy chưa chạy bản verifier sửa ngày 17/11. Theo Huy, nhánh feature/ai-module tại 1c5bde5 còn bản cũ lỗi CRLF/LF ở extraction_v2.txt. Chưa có xác nhận PASS của Huy cho bản sửa hiện tại; PASS tại máy Tuấn phải ghi riêng.
+
+### Điểm cần Huy bổ sung trước khi chốt biên bản
+
+Danh sách “79 ca ĐỒNG Ý” thực tế chỉ có **78 ID**. Cộng ba ca ghi riêng CLIN-011/019/022 mới có 81 ca; **CLIN-021 thiếu kết luận trong phân nhóm**, dù có ghi chú bảo lưu chờ bác sĩ mắt. Cần Huy bổ sung CLIN-021 vào nhóm phù hợp và chốt lại tổng số; không tự ghi thay verdict của Huy.
+
+Phạm vi 111 ID và combined hash khớp; biên bản được lưu ở trạng thái **NEEDS_CLARIFICATION**, chưa dùng để mở điều kiện freeze. Giữ nguyên JSONL, các giới hạn đã biết và trạng thái chưa đóng băng. Việc Huy pull/chạy lại verifier cần xác nhận riêng; chưa push hoặc chạy lại Node 1/Node 2 trong lượt ghi nhận này.
+
+## Quyết định đóng băng của Tuấn — 17/11/2026
+
+Sau khi được thông báo chỗ lệch tổng kết CLIN-021 và việc Huy chưa chạy verifier mới, Tuấn quyết định: “tôi vẫn đồng ý cho phép đóng băng bây giờ ca cần quyết định của bác sĩ thì để đó chờ quyết đinh, trước khi đóng băng tôi yêu cầu thực hiện và đối chiếu lại với yêu cầu của thằng sơn trước đó”.
+
+Áp dụng quyết định cho đúng combined hash `a136d072e8c5149f25409591b245b61865e3320a5233ad73ef9d4d54aec86161` và phạm vi 111 ID Huy đã báo rà. Bảo lưu trạng thái NEEDS_CLARIFICATION của phần tổng kết, không tự thêm verdict CLIN-021 hoặc ghi PASS trên máy Huy. Tuấn chấp nhận hai giới hạn vận hành này để đóng băng nội dung hiện tại. Những điểm chờ bác sĩ và lỗi nhãn ABSENT đã biết vẫn giữ nguyên; không suy ra phê duyệt lâm sàng.
+
+### Đối chiếu yêu cầu của Sơn trước đóng băng
+
+| Yêu cầu | Kết quả đối chiếu |
+|---|---|
+| v1.4 có tên file runner đọc trực tiếp | Có clinical_cases_labeled.jsonl, symptom_extraction_testset.jsonl và manifest_freeze.json; khớp các tên run_eval.py đọc qua --testset. Không chạy benchmark mới. |
+| README kết quả 15/11 gọn, script kiểm có trong repo | README giữ cấu hình, bảng kết quả, giới hạn và lệnh kiểm; các script hiện có trong workspace, chưa tạo commit mới trong lượt này. |
+| 1. Chuẩn hóa CRLF→LF trước băm | Verifier kiểm nội dung đã chuẩn hóa cho dữ liệu và tài liệu; kiểm hồi quy trên bản sao LF/CRLF, có kiểm từ chối đổi nội dung. Raw hash cũ giữ cho lịch sử. |
+| 2. Script kiểm không ghi đè báo cáo | verify_compare.py chỉ đọc, tính lại và in kết quả; đối chiếu CSV đã lưu, không ghi independent_verification.json, so_sanh.md hoặc rank_changes.csv. |
+| 3. Dọn cách diễn đạt nội bộ, xóa PR_DESCRIPTION.md | Đã dọn hai tài liệu README_review.md và safety_coverage.md; PR_DESCRIPTION.md đã xóa khỏi workspace, cần đưa thao tác xóa vào commit. |
+| 4. Huy rà đủ 111 ca trước freeze | Biên bản chuyển tiếp ngày 17/11 xác nhận phạm vi 82+29 ID và đúng hash; giữ chỗ lệch tổng kết CLIN-021 cùng việc Huy chưa chạy verifier mới là giới hạn, theo quyết định rõ ràng của Tuấn. |
+| 5. OKF, CSV từ đồng nghĩa, Cảm lạnh | Ngoài phạm vi Sprint 4 theo quyết định của Tuấn; để Sprint 5, không thay knowledge. |
+
+Tiền kiểm phải PASS trước khi áp dụng. Chạy freeze_v1_4.py bằng --dry-run rồi --apply; không đổi JSONL, KB hoặc testset v1.3. Sau áp dụng, manifest là nguồn xác định trạng thái frozen và thời điểm; các đoạn “chưa đóng băng” phía trên phản ánh thời điểm ghi nhận trước quyết định này.
+
+Kết quả tiền kiểm local ngày 17/11: verify_v1_4.py **PASS** (82+29 ca, đúng 5 ID khác v1.3, 106 bản ghi giữ nguyên nội dung); self-test toàn bộ LF/CRLF và phát hiện sửa nội dung **PASS**; self-test hash prompt **PASS**; verify_compare.py **PASS**; verify_expert_questions.py **PASS** (615 câu); freeze dry-run **DRY_RUN**, không ghi manifest. So sánh hash toàn bộ evaluation/ và knowledge/ trước/sau các phép kiểm xác nhận không đổi nội dung. Kiểm âm từ chối thiếu quyết định của Tuấn, hash quyết định sai, chưa chấp nhận giới hạn, phạm vi chỉ năm ca, hash biên bản hoặc hash bộ ca sai. Đây là kết quả tại máy Tuấn, không ghi thay PASS trên máy Huy.
