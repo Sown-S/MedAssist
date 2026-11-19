@@ -654,7 +654,10 @@ kbd{display:inline-grid;place-items:center;min-width:24px;height:24px;padding:0 
 
 /* Kiểu B: thẻ trắng, màu chỉ ở biểu tượng và con số (tông đậm của màu ô); ô cảnh báo vẫn nền đỏ nhạt */
 .main .tile.rt.htile .htile-n,.summary .sum b,.main .kpis .kpi .val{color:color-mix(in srgb,var(--tone) 82%,#000)}
-:root[data-theme="dark"] .main .tile.rt.htile .htile-n,:root[data-theme="dark"] .summary .sum b,:root[data-theme="dark"] .main .kpis .kpi .val{color:color-mix(in srgb,var(--tone) 70%,#fff)}
 .main .tile.rt.htile.alert .htile-n,.summary .sum.alert b,.main .kpis .kpi.alert .val{color:var(--danger)}
 /* màu đỏ chỉ dành cho lúc thật sự cần xử lý: ô tông đỏ khi bình thường dùng màu chữ thường */
 .main .tile.rt.htile.r:not(.alert) .htile-n,.summary .sum.t-d:not(.alert) b,.main .kpis .kpi:not(.alert):has(.ico.d) .val{color:var(--ink)}
+/* Giao diện tối: giữ kiểu nền nhạt dần từ phải sang theo màu ô, số màu chữ thường */
+:root[data-theme="dark"] .main .tile.rt.htile::before,:root[data-theme="dark"] .summary .sum::before,:root[data-theme="dark"] .main .kpis .kpi::before{content:'';position:absolute;z-index:-1;inset:0;background:linear-gradient(270deg,var(--tone-soft) 0%,color-mix(in srgb,var(--tone-soft) 45%,var(--surface)) 35%,var(--surface) 72%);opacity:.9}
+:root[data-theme="dark"] .main .tile.rt.htile:not(.alert) .htile-n,:root[data-theme="dark"] .summary .sum:not(.alert) b,:root[data-theme="dark"] .main .kpis .kpi:not(.alert) .val{color:var(--ink)}
+:root[data-theme="dark"] .main .kpis .kpi{--tone-soft:color-mix(in srgb,var(--tone) 18%,transparent)}
