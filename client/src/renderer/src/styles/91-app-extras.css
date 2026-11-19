@@ -571,10 +571,8 @@ kbd{display:inline-grid;place-items:center;min-width:24px;height:24px;padding:0 
 .main .tile.rt.htile.a{--tone:#E08A00;--tone-2:#FFB53D;--tone-soft:#FFF2DC}
 .main .tile.rt.htile.t{--tone:#0E9AA7;--tone-2:#39C3CF;--tone-soft:#DDF5F7}
 /* vòng màu trang trí góc phải trên */
-.main .tile.rt.htile::before{content:'';position:absolute;z-index:-1;inset:0;background:linear-gradient(270deg,var(--tone-soft) 0%,color-mix(in srgb,var(--tone-soft) 45%,var(--surface)) 35%,var(--surface) 72%);opacity:.9;transition:opacity .2s}
 .main .tile.rt.htile.click{cursor:pointer}
 .main .tile.rt.htile.click:hover{transform:translateY(-3px);border-color:color-mix(in srgb,var(--tone) 35%,var(--border));box-shadow:0 2px 4px rgba(16,24,40,.05),0 18px 36px -20px color-mix(in srgb,var(--tone) 55%,transparent)}
-.main .tile.rt.htile.click:hover::before{opacity:1}
 .main .tile.rt.htile .htile-h{display:flex;align-items:center;gap:12px;min-width:0;padding-right:22px}
 .main .tile.rt.htile .htile-ic{width:46px;height:46px;flex:none;border-radius:13px;display:grid;place-items:center;color:var(--tone);background:var(--surface);border:1.5px solid color-mix(in srgb,var(--tone) 45%,transparent)}
 .main .tile.rt.htile .htile-ic svg{width:22px;height:22px;stroke-width:1.6}
@@ -609,7 +607,6 @@ kbd{display:inline-grid;place-items:center;min-width:24px;height:24px;padding:0 
 .summary .sum.t-w{--tone:#E08A00;--tone-2:#FFB53D;--tone-soft:#FFF2DC}
 .summary .sum.t-d{--tone:#E5383B;--tone-2:#FF6B6E;--tone-soft:#FDE7E8}
 .summary .sum.t-n{--tone:#6B7A88;--tone-2:#9AA7B4;--tone-soft:#EEF1F4}
-.summary .sum::before{content:'';position:absolute;z-index:-1;inset:0;background:linear-gradient(270deg,var(--tone-soft) 0%,color-mix(in srgb,var(--tone-soft) 45%,var(--surface)) 35%,var(--surface) 72%);opacity:.9}
 .summary .sum>.ico{width:48px;height:48px;flex:none;border-radius:13px;display:grid;place-items:center;color:var(--tone);background:var(--surface);border:1.5px solid color-mix(in srgb,var(--tone) 45%,transparent)}
 .summary .sum>.ico svg{width:22px;height:22px;stroke-width:1.6;color:var(--tone)}
 .summary .sum b{font-size:24px;font-weight:700;line-height:1.05;letter-spacing:-.015em;color:var(--ink)}
@@ -626,7 +623,6 @@ kbd{display:inline-grid;place-items:center;min-width:24px;height:24px;padding:0 
 .main .kpis .kpi:has(.ico.w){--tone:#E08A00;--tone-2:#FFB53D;--tone-soft:#FFF2DC}
 .main .kpis .kpi:has(.ico.d){--tone:#E5383B;--tone-2:#FF6B6E;--tone-soft:#FDE7E8}
 .main .kpis .kpi:has(.ico.n){--tone:#7353E8;--tone-2:#9C84FF;--tone-soft:#EFEAFE}
-.main .kpis .kpi::before{content:'';position:absolute;z-index:-1;inset:0;background:linear-gradient(270deg,var(--tone-soft) 0%,color-mix(in srgb,var(--tone-soft) 45%,var(--surface)) 35%,var(--surface) 72%);opacity:.9}
 .main .kpis .kpi .kpi-h{gap:12px;font-size:16px;font-weight:600;color:var(--ink-2)}
 .main .kpis .kpi .kpi-h .ico{width:46px;height:46px;border-radius:13px;color:var(--tone);background:var(--surface);border:1.5px solid color-mix(in srgb,var(--tone) 45%,transparent)}
 .main .kpis .kpi .kpi-h .ico svg{width:22px;height:22px;color:var(--tone);stroke-width:1.6}
@@ -655,3 +651,10 @@ kbd{display:inline-grid;place-items:center;min-width:24px;height:24px;padding:0 
 .ubell-empty span{font-size:13px;color:var(--ink-3)}
 :root[data-motion="reduce"] .ubell-btn.ring svg,:root[data-motion="reduce"] .ubell-dot,:root[data-motion="reduce"] .ubell-pop{animation:none}
 @media (prefers-reduced-motion:reduce){.ubell-btn.ring svg,.ubell-dot,.ubell-pop{animation:none}}
+
+/* Kiểu B: thẻ trắng, màu chỉ ở biểu tượng và con số (tông đậm của màu ô); ô cảnh báo vẫn nền đỏ nhạt */
+.main .tile.rt.htile .htile-n,.summary .sum b,.main .kpis .kpi .val{color:color-mix(in srgb,var(--tone) 82%,#000)}
+:root[data-theme="dark"] .main .tile.rt.htile .htile-n,:root[data-theme="dark"] .summary .sum b,:root[data-theme="dark"] .main .kpis .kpi .val{color:color-mix(in srgb,var(--tone) 70%,#fff)}
+.main .tile.rt.htile.alert .htile-n,.summary .sum.alert b,.main .kpis .kpi.alert .val{color:var(--danger)}
+/* màu đỏ chỉ dành cho lúc thật sự cần xử lý: ô tông đỏ khi bình thường dùng màu chữ thường */
+.main .tile.rt.htile.r:not(.alert) .htile-n,.summary .sum.t-d:not(.alert) b,.main .kpis .kpi:not(.alert):has(.ico.d) .val{color:var(--ink)}
