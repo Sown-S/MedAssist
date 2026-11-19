@@ -41,14 +41,7 @@ export const VI = {
   'The right patient,': 'Khám đúng người,',
   'at the right time.': 'đúng lúc, đúng ca.',
   'Bright ethics, solid expertise, complete trust.': 'Sáng y đức, vững chuyên môn, niềm tin trọn vẹn.',
-  'Clinic management': 'Quản lý phòng khám',
-  'Lean operations': 'Vận hành tinh gọn',
-  'Digital-first care': 'Định hướng số',
-  Optimisation: 'Tối ưu hoá',
-  'On-premise AI assistant': 'Trợ lý AI cục bộ',
-  'Local data': 'Data cục bộ',
   Data: 'Dữ liệu',
-  'Tightly controlled': 'Kiểm soát chặt chẽ',
   // ===== Vai trò, đăng nhập, tài khoản =====
   Doctor: 'Bác sĩ',
   Receptionist: 'Lễ tân',
@@ -2089,6 +2082,7 @@ export const VI = {
   'You are on the latest version': 'Bạn đang dùng bản mới nhất',
   'Server URL': 'Máy chủ',
   'Change address': 'Đổi địa chỉ',
+  'Clinic team': 'Đội ngũ phòng khám',
 }
 
 export const PATTERNS = [

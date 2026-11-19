@@ -715,3 +715,23 @@ kbd{display:inline-grid;place-items:center;min-width:24px;height:24px;padding:0 
 :root[data-theme="dark"] .login.view .input:focus,:root[data-theme="dark"] .login.view input:focus{border-color:var(--primary);box-shadow:0 0 0 3px color-mix(in srgb,var(--primary) 25%,transparent)}
 :root[data-theme="dark"] .login.view .srv-card{background:#16212C;border-color:#26323F}
 :root[data-theme="dark"] .login.view .srv-input input{background:transparent;border:0;box-shadow:none}
+
+/* ===== Màn đăng nhập: 4 ảnh xếp chồng (kiểu trang đăng nhập Facebook) ===== */
+.fbx-c .cx-photo{z-index:1}
+.fbx-c .cx-dot{z-index:4}
+.cx-room,.cx-post,.cx-circle{position:absolute}
+.cx-room img,.cx-post-ph img,.cx-circle img{display:block;width:100%;height:100%;object-fit:cover}
+.cx-room{left:30px;top:120px;width:230px;height:250px;border-radius:26px;overflow:hidden;box-shadow:0 20px 44px -18px rgba(16,24,40,.35);z-index:0}
+.cx-tag{position:absolute;left:14px;top:14px;width:34px;height:34px;border-radius:10px;background:rgba(255,255,255,.94);display:grid;place-items:center;color:var(--primary)}
+.cx-tag svg{width:18px;height:18px}
+.cx-post{left:80px;top:318px;width:250px;padding:12px 12px 14px;border-radius:20px;background:var(--surface);border:1px solid var(--border);box-shadow:0 24px 48px -18px rgba(16,24,40,.35);z-index:2;animation:float 6s ease-in-out infinite;animation-delay:-3s}
+.cx-post-h{display:flex;align-items:center;gap:8px;margin-bottom:10px;font-size:13px;font-weight:600;color:var(--ink)}
+.cx-post-h span{width:26px;height:26px;border-radius:8px;background:var(--primary);color:#fff;display:grid;place-items:center}
+.cx-post-h svg{width:15px;height:15px}
+.cx-post-ph{height:150px;border-radius:14px;overflow:hidden}
+.cx-ln{display:block;height:9px;border-radius:5px;background:var(--surface-2);margin-top:10px}
+.cx-ln.s{width:60%}
+.cx-circle{left:340px;bottom:-6px;width:150px;height:150px;border-radius:50%;overflow:hidden;border:5px solid var(--primary);background:#fff;box-shadow:0 16px 36px -10px rgba(24,119,242,.5);z-index:3}
+@container lleft (min-width:1050px){.fbx-c{zoom:1.08}}
+:root[data-motion="reduce"] .cx-post{animation:none}
+@media (prefers-reduced-motion:reduce){.cx-post{animation:none}}

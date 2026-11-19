@@ -8,6 +8,9 @@ import LoginSettings from "../components/LoginSettings";
 import AppIcon, { Logo } from "../components/Icon";
 import { translate } from "../i18n";
 import loginPhoto from "../assets/login-clinic.jpg";
+import roomPhoto from "../assets/login-room.jpg";
+import teamPhoto from "../assets/login-team.jpg";
+import recordsPhoto from "../assets/login-records.jpg";
 import Button from "../components/Button";
 import { version as appVersion } from "../../../../package.json";
 
@@ -178,7 +181,8 @@ export default function Login() {
 }
 
 // Nửa trái màn đăng nhập (kiểu trang đăng nhập Facebook): logo, tiêu đề lớn, ảnh ghép giới thiệu hệ thống.
-// Ảnh: anhnen2.jpg do nhóm cung cấp (Tài liệu sửa đổi), cắt dọc phần bác sĩ khám cho bệnh nhân, 720×960 để nét khi phóng to. Các thẻ là minh hoạ tĩnh.
+// Ảnh do nhóm cung cấp (Tài liệu sửa đổi), xếp chồng kiểu trang đăng nhập Facebook: phòng khám (sau trái), bác sĩ khám (giữa),
+// thẻ đội ngũ (đè góc dưới trái), bác sĩ cầm hồ sơ (vòng tròn). Các thẻ là minh hoạ tĩnh.
 function LoginHero() {
   return (
     <section className="login-left" aria-hidden="true">
@@ -196,6 +200,12 @@ function LoginHero() {
           <p>{translate("Bright ethics, solid expertise, complete trust.")}</p>
         </div>
         <div className="fbx-c">
+          <div className="cx-room">
+            <img src={roomPhoto} alt="" />
+            <span className="cx-tag">
+              <AppIcon name="plus" />
+            </span>
+          </div>
           <div className="cx-photo">
             <div className="cx-bar">
               <i />
@@ -206,46 +216,6 @@ function LoginHero() {
               08:30 · {translate("No.")} 012
             </span>
           </div>
-          <div className="cx-card cx-queue">
-            <h4>
-              <AppIcon name="grid" />
-              {translate("Clinic management")}
-            </h4>
-            {[
-              ["userCheck", "Lean operations", "Receptionist"],
-              ["stethoscope", "Digital-first care", "Doctor"],
-              ["package", "Optimisation", "Admin"],
-            ].map(([ic, t, r]) => (
-              <div className="row" key={t}>
-                <span>
-                  <AppIcon name={ic} />
-                  {translate(t)}
-                </span>
-                <span className="plain">{translate(r)}</span>
-              </div>
-            ))}
-          </div>
-          <div className="cx-card cx-vitals">
-            <h4>
-              <AppIcon name="sparkles" />
-              {translate("On-premise AI assistant")}
-            </h4>
-            <div className="v">
-              <span>{translate("Model")}</span>
-              <b>Gemma SEA-LION 9B</b>
-            </div>
-            <div className="v">
-              <span>{translate("Knowledge")}</span>
-              <b>{translate("Local data")}</b>
-            </div>
-            <div className="v">
-              <span>{translate("Data")}</span>
-              <b className="ok">
-                <AppIcon name="shieldCheck" />
-                {translate("Tightly controlled")}
-              </b>
-            </div>
-          </div>
           <div className="cx-dot cx-ai">
             <AppIcon name="sparkles" />
           </div>
@@ -254,8 +224,21 @@ function LoginHero() {
               <path d="M9 3.5h6a1 1 0 0 1 1 1V8h3.5a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1H16v3.5a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1V16H4.5a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1H8V4.5a1 1 0 0 1 1-1z" fill="#fff" />
             </svg>
           </div>
-          <div className="cx-ring">
-            <Logo />
+          <div className="cx-post">
+            <div className="cx-post-h">
+              <span>
+                <AppIcon name="check" />
+              </span>
+              {translate("Clinic team")}
+            </div>
+            <div className="cx-post-ph">
+              <img src={teamPhoto} alt="" />
+            </div>
+            <i className="cx-ln" />
+            <i className="cx-ln s" />
+          </div>
+          <div className="cx-circle">
+            <img src={recordsPhoto} alt="" />
           </div>
         </div>
       </div>
