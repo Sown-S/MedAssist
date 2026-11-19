@@ -38,7 +38,7 @@ export default function BootGate({ children }) {
   return (
     <div className="boot" role="status" aria-live="polite">
       <div className="boot-card">
-        <div className="boot-mark">
+        <div className={'boot-mark' + (state === 'checking' ? '' : ' still')}>
           <Logo />
         </div>
         <div className="boot-logo">

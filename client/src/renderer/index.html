@@ -7,15 +7,13 @@
     <style>
       /* Màn khởi động tĩnh: hiện ngay khi cửa sổ mở, trước khi React tải xong (BootGate vẽ lại đúng hình này). */
       html,body{margin:0;background:#F0F2F5}
-      .boot{position:fixed;inset:0;display:grid;place-items:center;font-family:'Be Vietnam Pro',system-ui,sans-serif;color:#3C434D;background:radial-gradient(900px 520px at 50% 38%,#FFFFFF 0%,#EEF4FE 55%,#E6ECF4 100%);overflow:hidden}
-      .boot::before,.boot::after{content:'';position:absolute;border-radius:50%;filter:blur(2px);opacity:.55;pointer-events:none}
-      .boot::before{width:520px;height:520px;left:-160px;bottom:-220px;background:radial-gradient(circle,#D7E7FD,transparent 70%)}
-      .boot::after{width:420px;height:420px;right:-120px;top:-160px;background:radial-gradient(circle,#E3F6EC,transparent 70%)}
+      .boot{position:fixed;inset:0;display:grid;place-items:center;font-family:'Be Vietnam Pro',system-ui,sans-serif;color:#3C434D;background:#FFFFFF;overflow:hidden}
       .boot-card{position:relative;z-index:1;width:min(440px,calc(100vw - 48px));display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center;animation:bootin .5s cubic-bezier(.2,.7,.2,1) both}
       .boot-mark{width:92px;height:92px;border-radius:26px;display:grid;place-items:center;background:#fff;box-shadow:0 18px 40px -18px rgba(24,119,242,.45),0 0 0 1px rgba(24,119,242,.08);margin-bottom:6px}
       .boot-mark svg{width:62px;height:38px;color:#1877F2;overflow:visible}
       .boot-mark path{stroke-dasharray:100;stroke-dashoffset:100;animation:bootdraw 1.8s cubic-bezier(.6,0,.3,1) infinite}
       .boot-mark circle{animation:bootdot 1.8s ease-in-out infinite}
+      .boot-mark.still path,.boot-mark.still circle{animation:none;stroke-dashoffset:0;opacity:1}
       .boot-logo{font-size:30px;font-weight:700;color:#16222B;letter-spacing:-.02em;line-height:1}
       .boot-logo b{color:#1877F2;font-weight:700}
       .boot-tag{margin:-4px 0 6px;font-size:14px;color:#5F6E7A}

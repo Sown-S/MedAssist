@@ -7,7 +7,7 @@ import ServerAddress from "../components/ServerAddress";
 import VersionBanners from "../components/VersionBanners";
 import AppIcon, { Logo } from "../components/Icon";
 import { translate } from "../i18n";
-import loginPhoto from "../assets/login-clinic.jpg";
+import loginPhoto from "../assets/login-clinic.svg";
 import Button from "../components/Button";
 import { version as appVersion } from "../../../../package.json";
 
@@ -189,7 +189,7 @@ export default function Login() {
 }
 
 // Nửa trái màn đăng nhập (kiểu trang đăng nhập Facebook): logo, tiêu đề lớn, ảnh ghép giới thiệu hệ thống.
-// Ảnh: Pexels 14438786 (giấy phép Pexels, dùng miễn phí). Các thẻ là minh hoạ tĩnh, không phải dữ liệu thật.
+// Hình: minh hoạ vector tự vẽ (assets/login-clinic.svg), nét ở mọi cỡ màn hình. Các thẻ là minh hoạ tĩnh, không phải dữ liệu thật.
 function LoginHero() {
   return (
     <section className="login-left" aria-hidden="true">
