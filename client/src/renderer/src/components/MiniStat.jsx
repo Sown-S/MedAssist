@@ -8,7 +8,7 @@ export function MiniStat({ icon = 'chart', value, label, tone = 'p', alert, acti
   const Tag = onClick ? 'button' : 'div'
   return (
     <Tag
-      className={'sum' + (alert ? ' alert' : '') + (onClick ? ' click' : '') + (active ? ' on' : '')}
+      className={'sum t-' + tone + (alert ? ' alert' : '') + (onClick ? ' click' : '') + (active ? ' on' : '')}
       onClick={onClick}
       {...(onClick ? { type: 'button', 'aria-pressed': !!active } : {})}
     >

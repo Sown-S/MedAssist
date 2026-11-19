@@ -1,4 +1,7 @@
 import {
+  AtSign,
+  Menu,
+  ArrowRightLeft,
   ArrowLeftRight,
   MessageSquare,
   Loader,
@@ -197,6 +200,9 @@ const ICONS = {
   'message-square-warning': MessageSquareWarning,
   monitor: Monitor,
   package: Package,
+  'at-sign': AtSign,
+  menu: Menu,
+  'arrow-right-left': ArrowRightLeft,
   'arrow-left-right': ArrowLeftRight,
   'message-square': MessageSquare,
   loader: Loader,

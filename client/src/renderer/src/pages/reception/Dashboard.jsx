@@ -1,3 +1,4 @@
+import { HomeTile } from '../../components/StatCard'
 import Icon from '../../components/Icon'
 import { translate } from '../../i18n'
 import { useQueue, isQueued, isPendingFlag, isIntakeOpen, inRoom, atLabs, ST } from '../../api/queueStore'
@@ -28,15 +29,19 @@ export default function Dashboard({ go, readOnly, onPay }) {
 
   // Ô số liệu: nhãn trên, số dưới trái, icon góc dưới phải. Ca cấp cứu chưa bác sĩ xem → ô đỏ nổi bật.
   const tiles = [
-    { go: 'queue', icon: 'users', tone: 'g', title: 'Waiting queue', value: waiting },
-    { go: 'queue', icon: 'siren', tone: 'r', title: 'Emergency cases', value: redFlags.length, alert: redFlags.some((r) => isPendingFlag(r) && !r.doctorReview) },
-    { go: 'prescriptions', icon: 'file-text', tone: 'b', title: 'Prescriptions today', value: rxCount },
+    { go: 'queue', icon: 'users', tone: 'g', title: 'Waiting queue', value: waiting, sub: translate(waiting ? 'patients waiting for a doctor' : 'No one is waiting.') },
+    (() => {
+      const pending = redFlags.filter((r) => isPendingFlag(r) && !r.doctorReview).length
+      return { go: 'queue', icon: 'siren', tone: 'r', title: 'Emergency cases', value: redFlags.length, alert: pending > 0, sub: pending ? `${pending} ${translate('waiting for a doctor to review')}` : translate('No case needs action') }
+    })(),
+    { go: 'prescriptions', icon: 'file-text', tone: 'b', title: 'Prescriptions today', value: rxCount, sub: translate('written by doctors today') },
     {
       go: 'invoices',
       icon: 'wallet',
-      tone: 'b',
+      tone: 'v',
       title: 'Collected today',
       value: money(revenue),
+      sub: `${unpaid.length} ${translate('not paid')} · ${processing} ${translate('waiting for transfer')}`,
       hint: `${unpaid.length} ${translate('not paid')} · ${processing} ${translate('waiting for transfer')} · ${paid} ${translate('paid')}`
     }
   ]
@@ -65,15 +70,7 @@ export default function Dashboard({ go, readOnly, onPay }) {
     <>
       <div className="kpis rk">
         {tiles.map((c) => (
-          <button key={c.title} className={'tile rt ' + c.tone + (c.alert ? ' alert' : '')} onClick={() => go(c.go)} title={c.hint}>
-            <span className="tl">{translate(c.title)}</span>
-            <div className="rt-b">
-              <b className="num rt-n val">{c.value}</b>
-              <span className="chip">
-                <Icon name={c.icon} />
-              </span>
-            </div>
-          </button>
+          <HomeTile key={c.title} tone={c.tone} icon={c.icon} label={c.title} value={c.value} sub={c.sub} alert={c.alert} title={c.hint} onClick={() => go(c.go)} />
         ))}
       </div>
 

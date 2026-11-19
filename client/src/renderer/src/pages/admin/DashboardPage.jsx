@@ -175,10 +175,10 @@ export default function DashboardPage({ onNavigate }) {
       {ready && (
         <>
           <div className="kpis tiles4 ak">
-            <StatCard value={summary?.visits.total ?? NA} label="Visits today" icon="users" onClick={() => navigate('/reports')} />
-            <StatCard value={byStatus ? countOf(byStatus, 'Waiting', 'CheckedIn') : NA} label="Waiting for consultation" icon="clock" tone="g" />
-            <StatCard value={byStatus ? countOf(byStatus, 'Prescribed') : NA} label="Awaiting payment" icon="banknote" />
-            <StatCard value={summary?.visits.red_flags ?? NA} label="Red-flag referrals" icon="ambulance" tone="r" alert={summary?.visits.red_flags > 0} />
+            <StatCard value={summary?.visits.total ?? NA} label="Visits today" icon="users" tone="b" sub={translate('all rooms, since opening')} onClick={() => navigate('/reports')} />
+            <StatCard value={byStatus ? countOf(byStatus, 'Waiting', 'CheckedIn') : NA} label="Waiting for consultation" icon="clock" tone="g" sub={translate('checked in or waiting at the desk')} />
+            <StatCard value={byStatus ? countOf(byStatus, 'Prescribed') : NA} label="Awaiting payment" icon="banknote" tone="a" sub={translate('prescribed, not paid yet')} />
+            <StatCard value={summary?.visits.red_flags ?? NA} label="Red-flag referrals" icon="ambulance" tone="r" alert={summary?.visits.red_flags > 0} sub={translate(summary?.visits.red_flags > 0 ? 'referred today' : 'No referrals today')} />
           </div>
 
           <div className="grid-2">

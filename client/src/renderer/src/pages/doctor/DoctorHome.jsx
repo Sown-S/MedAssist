@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { HomeTile } from '../../components/StatCard'
 import Icon from '../../components/Icon'
 import HomeGreeting from '../../components/HomeGreeting'
 import { useAuth } from '../../context/AuthContext'
@@ -44,9 +45,10 @@ export default function DoctorHome({ go }) {
       hint: ready[0] ? translate('Next') + ': ' + no(ready[0].ticket) + ' — ' + ready[0].name : waiting.length ? translate('Nobody checked in yet') : translate('No one is waiting.'),
       run: () => setWaitOpen('')
     },
-    { icon: 'door-open', title: 'In my room', value: mine.length, hint: mine[0] ? mine[0].name : translate('No patient in your room'), run: () => go('consult', mine[0]?.id) },
-    { icon: 'flask-conical', title: 'Lab tests', value: labs.length, hint: `${labs.length} ${translate('patients out for lab tests')}`, run: () => setLabOpen(true) },
+    { tone: 'b', icon: 'door-open', title: 'In my room', value: mine.length, hint: mine[0] ? mine[0].name : translate('No patient in your room'), run: () => go('consult', mine[0]?.id) },
+    { tone: 'a', icon: 'flask-conical', title: 'Lab tests', value: labs.length, hint: `${labs.length} ${translate('patients out for lab tests')}`, run: () => setLabOpen(true) },
     {
+      tone: 'v',
       icon: 'file-text',
       title: 'My prescriptions',
       value: rxWeek,
@@ -54,6 +56,7 @@ export default function DoctorHome({ go }) {
       run: () => go('prescriptions')
     },
     {
+      tone: 't',
       icon: 'pill',
       title: 'Drug cabinet',
       value: inv.drugs.filter((d) => d.active && d.kind === 'drug').length,
@@ -72,7 +75,7 @@ export default function DoctorHome({ go }) {
     { icon: 'stethoscope', title: 'Consultation room', sub: 'Examine, diagnose and prescribe', run: () => go('consult') },
     { icon: 'file-text', title: 'My prescriptions', sub: 'By day, week or month', run: () => go('prescriptions') },
     { icon: 'pill', title: 'Drug cabinet', sub: 'Stock, expiry dates and price of each drug', run: () => go('drugs') },
-    { icon: 'flask-conical', title: 'Lab tests', sub: `${labs.length} ${translate('patients out for lab tests')}`, run: () => setLabOpen(true) }
+    { tone: 'a', icon: 'flask-conical', title: 'Lab tests', sub: `${labs.length} ${translate('patients out for lab tests')}`, run: () => setLabOpen(true) }
   ]
   const first = waiting[0]
   const callNext = (
@@ -111,15 +114,7 @@ export default function DoctorHome({ go }) {
 
       <div className="grid-3 dk">
         {tiles.map((c) => (
-          <button key={c.title} className={'tile rt ' + (c.tone || 'b') + (c.alert ? ' alert' : '')} onClick={c.run} title={c.hint}>
-            <span className="tl">{translate(c.title)}</span>
-            <div className="rt-b">
-              <b className="num rt-n val">{c.value}</b>
-              <span className="chip">
-                <Icon name={c.icon} />
-              </span>
-            </div>
-          </button>
+          <HomeTile key={c.title} tone={c.tone || 'b'} icon={c.icon} label={c.title} value={c.value} sub={c.hint} alert={c.alert} title={c.hint} onClick={c.run} />
         ))}
       </div>
 

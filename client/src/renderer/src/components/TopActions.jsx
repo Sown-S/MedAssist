@@ -238,41 +238,43 @@ export default function TopActions({ user, onSignOut }) {
         {(versionUnseen || ((unread || live.length > 0) && notifications.length > 0)) && <span className={'badge-dot' + (versionUnseen ? ' pulse' : '')} />}
         {open === 'bell' && (
           <div className={'menu open bell-menu' + (versions.keys.length ? ' wide' : '')}>
-            {versions.keys.length > 0 && (
-              <>
-                <div className="mh">{translate('Updates')}</div>
-                <div className="bell-updates">
-                  <VersionNoticeList notices={versions} onAction={() => setOpen(null)} />
+            <div className="bell-scroll">
+              {versions.keys.length > 0 && (
+                <>
+                  <div className="mh">{translate('Updates')}</div>
+                  <div className="bell-updates">
+                    <VersionNoticeList notices={versions} onAction={() => setOpen(null)} />
+                  </div>
+                </>
+              )}
+              <div className="mh">Notifications</div>
+              {notifications.map((n) => (
+                <div
+                  className="ni"
+                  key={n.id}
+                  style={n.to ? { cursor: 'pointer' } : undefined}
+                  onClick={() => {
+                    if (!n.to) return
+                    setOpen(null)
+                    navigate(n.to)
+                  }}
+                >
+                  <div className={'ico ' + (n.urgent ? 'd' : n.icon ? 'n' : 'w')} style={{ width: 30, height: 30 }}>
+                    <Icon name={n.icon ?? 'package-x'} />
+                  </div>
+                  <div style={{ minWidth: 0, flex: 1 }}>
+                    <Clip as="b" title={n.title}>
+                      {n.title}
+                    </Clip>
+                    <Clip lines={2} className="muted" title={n.title} full={n.note + (n.time ? ' · ' + n.time : '')}>
+                      {n.note}
+                      {n.time ? ' · ' + n.time : ''}
+                    </Clip>
+                  </div>
                 </div>
-              </>
-            )}
-            <div className="mh">Notifications</div>
-            {notifications.map((n) => (
-              <div
-                className="ni"
-                key={n.id}
-                style={n.to ? { cursor: 'pointer' } : undefined}
-                onClick={() => {
-                  if (!n.to) return
-                  setOpen(null)
-                  navigate(n.to)
-                }}
-              >
-                <div className={'ico ' + (n.urgent ? 'd' : n.icon ? 'n' : 'w')} style={{ width: 30, height: 30 }}>
-                  <Icon name={n.icon ?? 'package-x'} />
-                </div>
-                <div style={{ minWidth: 0, flex: 1 }}>
-                  <Clip as="b" title={n.title}>
-                    {n.title}
-                  </Clip>
-                  <Clip lines={2} className="muted" title={n.title} full={n.note + (n.time ? ' · ' + n.time : '')}>
-                    {n.note}
-                    {n.time ? ' · ' + n.time : ''}
-                  </Clip>
-                </div>
-              </div>
-            ))}
-            {!notifications.length && <div className="ni muted">No notifications.</div>}
+              ))}
+              {!notifications.length && <div className="ni muted">No notifications.</div>}
+            </div>
           </div>
         )}
       </div>
@@ -355,7 +357,15 @@ export default function TopActions({ user, onSignOut }) {
                 {SHORTCUTS[user.roleKey].map(([k, d]) => (
                   <div className="keys-row" key={k}>
                     <span className="kbds">
-                      {k.split(' ').map((p, i) => (p === '/' || p === '…' || p === 'then' ? <span key={i} className="muted small">{translate(p)}</span> : <kbd key={i}>{p}</kbd>))}
+                      {k.split(' ').map((p, i) =>
+                        p === '/' || p === '…' || p === 'then' ? (
+                          <span key={i} className="muted small">
+                            {translate(p)}
+                          </span>
+                        ) : (
+                          <kbd key={i}>{p}</kbd>
+                        )
+                      )}
                     </span>
                     <span>{translate(d)}</span>
                   </div>
@@ -367,19 +377,31 @@ export default function TopActions({ user, onSignOut }) {
               {SHORTCUTS_COMMON.map(([k, d]) => (
                 <div className="keys-row" key={k}>
                   <span className="kbds">
-                    {k.split(' ').map((p, i) => (p === '/' || p === '…' ? <span key={i} className="muted small">{p}</span> : <kbd key={i}>{p}</kbd>))}
+                    {k.split(' ').map((p, i) =>
+                      p === '/' || p === '…' ? (
+                        <span key={i} className="muted small">
+                          {p}
+                        </span>
+                      ) : (
+                        <kbd key={i}>{p}</kbd>
+                      )
+                    )}
                   </span>
                   <span>{translate(d)}</span>
                 </div>
               ))}
             </div>
           </div>
-          <p className="help-intro small" style={{ marginTop: 10 }}>
-            {translate('Arrow keys do not move between input boxes: inside a box they move the cursor or change the value, as usual. Use Tab / Shift+Tab to go to the next / previous box.')}
-          </p>
-          <p className="help-intro" style={{ marginTop: 14 }}>
-            Forgot your password or need another account? Ask an administrator to reset or create it under Admin → Staff accounts.
-          </p>
+          <div className="help-tips">
+            <span className="help-tip">
+              <Icon name="arrow-right-left" />
+              {translate('Use Tab / Shift+Tab to go to the next / previous box')}
+            </span>
+            <span className="help-tip">
+              <Icon name="key-round" />
+              {translate('Forgot your password or need another account? Ask an administrator to reset or create it under Admin')}
+            </span>
+          </div>
         </div>
         <div className="modal-f">
           <button className="btn btn-primary" onClick={() => setOpen(null)}>
