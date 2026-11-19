@@ -29,7 +29,7 @@ h1,h2,h3,h4{margin:0;font-weight:600;line-height:1.3}
 p{margin:0}
 .num{font-variant-numeric:tabular-nums}
 svg.lucide{width:18px;height:18px;stroke-width:2;flex:none}
-#root{container:root/inline-size}
+/* Không đặt container trên #root: ở Electron 31 (Chromium 126) container-type tạo khối chứa cho phần tử position:fixed, #root cao 0 khi chỉ có màn khởi động/đăng nhập → màn hình trắng. Câu hỏi theo bề rộng cửa sổ dùng @media. */
 
 /* ---------- Thành phần chung ---------- */
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:40px;padding:0 16px;border-radius:var(--radius);border:1px solid transparent;cursor:pointer;font-weight:600;white-space:nowrap;transition:background .15s,border-color .15s,box-shadow .15s,transform .08s,opacity .15s;text-decoration:none}
@@ -385,7 +385,7 @@ tr.dim td{color:var(--ink-3)}
 .pipe-g b{display:block;font-size:22px;line-height:1.1}.pipe-g span:not(.pi){font-size:var(--fs-sm);color:var(--ink-3)}
 .c0{--c:#94A1AC}.c1{--c:#0EA5E9}.c2{--c:#1877F2}.c3{--c:#D97706}.c4{--c:#7C3AED}.c5{--c:#16A34A}
 .pipe-bar i{background:var(--c)}.pipe-g .pi{background:color-mix(in srgb,var(--c) 14%,transparent);color:var(--c)}
-@container root (max-width:1280px){.quick.q4{grid-template-columns:repeat(2,minmax(0,1fr))}.grid-dk{grid-template-columns:1fr}}
+@media (max-width:1280px){.quick.q4{grid-template-columns:repeat(2,minmax(0,1fr))}.grid-dk{grid-template-columns:1fr}}
 @media (min-height:900px){body:not(.framed) .rhome{gap:clamp(24px,2.6vh,36px);padding-top:clamp(6px,1.6vh,22px)}body:not(.framed) .rhome .dash-h{margin-bottom:0}body:not(.framed) .rhome .kpis .tile{min-height:clamp(136px,15vh,180px)}body:not(.framed) .rhome .tile .tb b{font-size:clamp(32px,3.8vh,44px)}body:not(.framed) .rhome .tile .ti svg{width:clamp(30px,3.4vh,38px);height:clamp(30px,3.4vh,38px)}body:not(.framed) .rhome .quick .qa{padding:clamp(18px,2.2vh,26px) 18px}body:not(.framed) .rhome .quick{gap:clamp(12px,1.6vh,18px)}}
 .quick.q2{grid-template-columns:repeat(2,1fr)}
 .dash-acts{display:flex;gap:10px}.dash-acts .btn{height:40px}.dash-acts kbd{margin-left:4px}.dash-acts .btn-primary{font-weight:500}.dash-acts .s-ico{width:280px;padding:0 14px;justify-content:flex-start;color:var(--ink-3);border:1px solid var(--border);background:var(--surface)}.dash-acts .s-ico:hover{border-color:var(--primary);color:var(--primary)}.dash-acts .btn-primary kbd{background:rgba(255,255,255,.18);border-color:rgba(255,255,255,.35);color:#fff}
@@ -768,9 +768,9 @@ tr.dim td{color:var(--ink-3)}
 .sr .t{flex:1}.sr .t b{display:block;font-weight:500}.sr .t span{font-size:13px;color:var(--ink-3)}
 
 /* ---------- Co giãn theo bề rộng khung app ---------- */
-@container root (max-width:1380px){.login-hero h1{font-size:44px}}
-@container root (max-width:1280px){.dash{grid-template-columns:1fr}.kpis{grid-template-columns:repeat(2,1fr)}.grid-2,.grid-2e{grid-template-columns:1fr}.quick{grid-template-columns:repeat(2,1fr)}.steps-strip{grid-template-columns:repeat(3,1fr)}.road{grid-template-columns:1fr}.top .sbtn{min-width:0}.top .sbtn span{display:none}.acct .who{display:none}}
-@container root (max-width:900px){.login{grid-template-columns:1fr}.login-left{display:none}.app{grid-template-columns:1fr}.side{display:none}.doc,.settings{grid-template-columns:1fr}.queue,.vtabs{position:static}.form-grid,.soap{grid-template-columns:1fr}}
+@media (max-width:1380px){.login-hero h1{font-size:44px}}
+@media (max-width:1280px){.dash{grid-template-columns:1fr}.kpis{grid-template-columns:repeat(2,1fr)}.grid-2,.grid-2e{grid-template-columns:1fr}.quick{grid-template-columns:repeat(2,1fr)}.steps-strip{grid-template-columns:repeat(3,1fr)}.road{grid-template-columns:1fr}.top .sbtn{min-width:0}.top .sbtn span{display:none}.acct .who{display:none}}
+@media (max-width:900px){.login{grid-template-columns:1fr}.login-left{display:none}.app{grid-template-columns:1fr}.side{display:none}.doc,.settings{grid-template-columns:1fr}.queue,.vtabs{position:static}.form-grid,.soap{grid-template-columns:1fr}}
 @container main (max-width:760px){.ev-grid{grid-template-columns:1fr}.soap{grid-template-columns:1fr}}
 @media (max-width:980px){.intake,.srch{grid-template-columns:1fr}.intake > section + section,.srch > div + div{border-left:0;border-top:1px solid var(--border)}}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
