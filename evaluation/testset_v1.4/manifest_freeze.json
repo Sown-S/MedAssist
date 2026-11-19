@@ -751,7 +751,7 @@
       "reviewer": "Huy",
       "forwarded_by": "Tuấn",
       "reviewed_at": "2026-11-17",
-      "status": "NEEDS_CLARIFICATION",
+      "status": "CLARIFIED",
       "full_testset_confirmation_reported": true,
       "combined_sha256": "a136d072e8c5149f25409591b245b61865e3320a5233ad73ef9d4d54aec86161",
       "reviewed_case_ids": [
@@ -868,13 +868,20 @@
         "EXT-030"
       ],
       "record_path": "evaluation/testset_v1.4/CHANGES.md",
-      "record_sha256": "0802ef2f3c6e0d2f3b7638e2f66b2d74a891f60bb253865ae58e2a684e5f47b4",
+      "record_sha256": "333d8d80c27a70deebb96710ba395ba66dfd7ebd990cf4e1c83c93975bbca5f0",
       "record_type": "Attributed summary of user-forwarded review",
       "reported_clinical_agree_count": 79,
-      "enumerated_clinical_agree_count": 78,
-      "missing_clinical_verdict_ids": [
-        "CLIN-021"
-      ],
+      "enumerated_clinical_agree_count": 79,
+      "missing_clinical_verdict_ids": [],
+      "clarification": {
+        "recorded_at": "2026-11-19",
+        "forwarded_by": "Sơn",
+        "reported_reviewer": "Huy",
+        "case_id": "CLIN-021",
+        "verdict": "ĐỒNG Ý",
+        "previous_enumerated_clinical_agree_count": 78,
+        "limitation": "Chờ bác sĩ mắt rà mức ưu tiên."
+      },
       "reviewer_ran_current_verifier": false,
       "reviewer_current_verifier_result": null,
       "freeze_consent_reported": "WITH_KNOWN_LIMITATIONS",
@@ -935,7 +942,7 @@
     "CLIN-019": "Giữ nhãn v1.3, CẦN BÁC SĨ QUYẾT",
     "EXT-024": "Giữ nhãn; thiếu trích đoạn toàn văn BYT là giới hạn KB không chặn đóng băng testset theo phản hồi Huy",
     "inherited_other_cases": "CLIN-021/022, mã gộp EXT-018/019/021/027/028: giữ nguyên các điểm chờ ở README_review.md",
-    "review_summary_CLIN_021": "Huy báo rà đủ 111 ca; nhóm 79 ca ĐỒNG Ý chỉ liệt kê 78 ID, thiếu CLIN-021 trong phân nhóm dù có ghi chú chờ bác sĩ mắt. Tuấn chấp nhận đóng băng, không tự thêm verdict của Huy.",
+    "review_summary_CLIN_021": "Khi đóng băng ngày 17/11, nhóm 79 ca ĐỒNG Ý chỉ liệt kê 78 ID. Phụ lục ngày 19/11 ghi nhận Huy đã bổ sung CLIN-021 vào tổng kết, kèm bảo lưu chờ bác sĩ mắt.",
     "reviewer_verifier_confirmation": "Huy chưa chạy verifier sửa ngày 17/11; kết quả PASS tại máy Tuấn được kiểm riêng, không ghi thay xác nhận của Huy. Tuấn chấp nhận đóng băng với giới hạn này."
   },
   "document_consolidation": {
@@ -979,7 +986,7 @@
     "evaluation/testset/clinical_cases_labeled.jsonl": "10fc9b2b5c21cd5d28ec79717780e60979a9d409c87b4664e46246936b968412",
     "evaluation/testset/manifest_freeze.json": "bc771d08ca1ff08f84fe2d2e3ce3b3ac3bdd630aa2f1096ce5597e2b43bce2b1",
     "evaluation/testset/symptom_extraction_testset.jsonl": "92e62bf63fa63a78f9595c41b8a4fdb26ca8c4517006e828031a19b390949b34",
-    "evaluation/testset_v1.4/CHANGES.md": "0802ef2f3c6e0d2f3b7638e2f66b2d74a891f60bb253865ae58e2a684e5f47b4",
+    "evaluation/testset_v1.4/CHANGES.md": "333d8d80c27a70deebb96710ba395ba66dfd7ebd990cf4e1c83c93975bbca5f0",
     "evaluation/testset_v1.4/clinical_cases_labeled.jsonl": "2019c6f01d57081513e52c7d29e49b2c568a4842a0fad265184be2f267f21177",
     "evaluation/testset_v1.4/symptom_extraction_testset.jsonl": "b1cdf74efa2ba69c9d5443ddafef80be9e5bd779ea0dfee230a138644c31e373",
     "knowledge/_release.md": "e15f7c1a7bda2c88907d635623d13448ca8abb2fab5ad01f7e1dd8c099d2930c",
