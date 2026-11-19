@@ -2088,6 +2088,7 @@ export const VI = {
   'Updates — a new version is available': 'Cập nhật — có phiên bản mới',
   'You are on the latest version': 'Bạn đang dùng bản mới nhất',
   'Server URL': 'Máy chủ',
+  'Change address': 'Đổi địa chỉ',
 }
 
 export const PATTERNS = [

@@ -2,9 +2,9 @@ import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { changePassword } from "../api/authApi";
 import { usePasswordMinLength } from "../api/accountStore";
-import { LANGUAGES, getLang, setLang } from "../i18n";
 import ServerAddress from "../components/ServerAddress";
 import UpdateBell from "../components/VersionBanners";
+import LoginSettings from "../components/LoginSettings";
 import AppIcon, { Logo } from "../components/Icon";
 import { translate } from "../i18n";
 import loginPhoto from "../assets/login-clinic.jpg";
@@ -91,8 +91,11 @@ export default function Login() {
     <div className="login view">
       <LoginHero />
       <section className="login-right">
-        {/* Bản mới trên GitHub / lệch version với máy chủ: chuông ở góc phải trên, hiện ngay khi kết nối, trước khi đăng nhập. */}
-        <UpdateBell />
+        {/* Góc phải trên: chuông cập nhật (bản mới / lệch version với máy chủ) và cài đặt (ngôn ngữ, giao diện, máy chủ). */}
+        <div className="login-tools">
+          <UpdateBell />
+          <LoginSettings onServer={() => setServerOpen((v) => !v)} />
+        </div>
         {!pending ? (
           <form className="login-form" noValidate onSubmit={handleSubmit}>
             <div>
@@ -138,18 +141,6 @@ export default function Login() {
             </div>
             <div className={'srv-panel' + (serverOpen ? ' open' : '')}>
               <div>{serverOpen && <ServerAddress variant="login" />}</div>
-            </div>
-            <div className="lang">
-              <button type="button" className={serverOpen ? 'on' : ''} onClick={() => setServerOpen(!serverOpen)} title="Clinic server address">
-                <AppIcon name="wifi" />
-                Server
-              </button>
-              <span className="sep" />
-              {[...LANGUAGES].sort((a) => (a.code === 'vi' ? -1 : 1)).map((l) => (
-                <button type="button" key={l.code} className={getLang() === l.code ? 'on' : ''} onClick={() => setLang(l.code)} title={l.name}>
-                  {l.code.toUpperCase()}
-                </button>
-              ))}
             </div>
           </form>
         ) : (

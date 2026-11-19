@@ -3,7 +3,7 @@ import { render, screen, cleanup, fireEvent } from '@testing-library/react'
 import { version } from '../package.json'
 
 let serverVersion = null
-vi.mock('../src/renderer/src/api/connectivity', () => ({ useServerVersion: () => serverVersion }))
+vi.mock('../src/renderer/src/api/connectivity', () => ({ useServerVersion: () => serverVersion, useServerOnline: () => true }))
 const { default: UpdateBell } = await import('../src/renderer/src/components/VersionBanners.jsx')
 
 afterEach(() => {
@@ -79,6 +79,22 @@ describe('Chuông cập nhật ở màn đăng nhập', () => {
     serverVersion = '0.0.1'
     const { default: Login } = await import('../src/renderer/src/pages/Login.jsx')
     render(<Login />)
-    expect(document.querySelector('.login-right > .ubell .ubell-btn.ring')).toBeTruthy()
+    expect(document.querySelector('.login-right > .login-tools .ubell .ubell-btn.ring')).toBeTruthy()
+  })
+
+  it('nút cài đặt cạnh chuông: đổi giao diện tối ngay, có mục máy chủ', async () => {
+    vi.doMock('../src/renderer/src/context/AuthContext', () => ({
+      useAuth: () => ({ authenticate: vi.fn(), startSession: vi.fn(), logout: vi.fn(), notice: '' })
+    }))
+    vi.doMock('../src/renderer/src/api/accountStore', () => ({ usePasswordMinLength: () => 8 }))
+    serverVersion = version
+    const { default: Login } = await import('../src/renderer/src/pages/Login.jsx')
+    render(<Login />)
+    fireEvent.click(screen.getByRole('button', { name: 'Settings' }))
+    fireEvent.click(screen.getByRole('radio', { name: 'Dark' }))
+    expect(document.documentElement.dataset.theme).toBe('dark')
+    fireEvent.click(screen.getByRole('radio', { name: 'Light' }))
+    expect(document.documentElement.dataset.theme).toBe('light')
+    expect(screen.getByText('Change address')).toBeTruthy()
   })
 })

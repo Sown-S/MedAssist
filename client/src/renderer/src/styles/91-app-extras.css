@@ -215,7 +215,7 @@ tr.row-new>td{animation:rownew 2.4s ease-out}
   --surface-hover:#1E2934; --warn-ink:#FF8A8A;
 }
 /* Những chỗ là “giấy” hoặc màn đăng nhập giữ bảng màu sáng */
-:root[data-theme="dark"] :is(.login,.preview,.set-print-preview,.boot){--ink:#16222B;--ink-2:#3E4C57;--ink-3:#5F6E7A;--surface:#FFFFFF;--surface-2:#F6F7F9;--border:#E1E4E8;--border-strong:#C5CCD3;--bg:#F0F2F5;--primary:#1877F2;--primary-soft:#E7F0FD;--primary-ink:#0B4BA3;color-scheme:light;color:var(--ink)}
+:root[data-theme="dark"] :is(.preview,.set-print-preview,.boot){--ink:#16222B;--ink-2:#3E4C57;--ink-3:#5F6E7A;--surface:#FFFFFF;--surface-2:#F6F7F9;--border:#E1E4E8;--border-strong:#C5CCD3;--bg:#F0F2F5;--primary:#1877F2;--primary-soft:#E7F0FD;--primary-ink:#0B4BA3;color-scheme:light;color:var(--ink)}
 :root[data-theme="dark"] .app.collapsed .nav:hover::after{background:#2A3746}
 :root[data-theme="dark"] .btn-on-blue{background:#E6EDF3}
 :root[data-theme="dark"] .calling{box-shadow:none}
@@ -633,7 +633,7 @@ kbd{display:inline-grid;place-items:center;min-width:24px;height:24px;padding:0 
 .main .kpis .kpi.alert .val{color:var(--danger)}
 
 /* Màn đăng nhập: chuông cập nhật ở góc phải trên, popup ngay dưới chuông */
-.ubell{position:absolute;top:22px;right:26px;z-index:20}
+.ubell{position:relative}
 .ubell-btn{position:relative;width:44px;height:44px;border-radius:12px;border:1px solid var(--border);background:var(--surface);color:var(--ink-2);display:grid;place-items:center;cursor:pointer;transition:background .15s,border-color .15s,color .15s}
 .ubell-btn:hover{border-color:var(--border-strong);color:var(--ink)}
 .ubell-btn svg{width:21px;height:21px;stroke-width:1.75}
@@ -661,3 +661,57 @@ kbd{display:inline-grid;place-items:center;min-width:24px;height:24px;padding:0 
 :root[data-theme="dark"] .main .tile.rt.htile::before,:root[data-theme="dark"] .summary .sum::before,:root[data-theme="dark"] .main .kpis .kpi::before{content:'';position:absolute;z-index:-1;inset:0;background:linear-gradient(270deg,var(--tone-soft) 0%,color-mix(in srgb,var(--tone-soft) 45%,var(--surface)) 35%,var(--surface) 72%);opacity:.9}
 :root[data-theme="dark"] .main .tile.rt.htile:not(.alert) .htile-n,:root[data-theme="dark"] .summary .sum:not(.alert) b,:root[data-theme="dark"] .main .kpis .kpi:not(.alert) .val{color:var(--ink)}
 :root[data-theme="dark"] .main .kpis .kpi{--tone-soft:color-mix(in srgb,var(--tone) 18%,transparent)}
+
+/* ===== Giao diện sáng có chiều sâu: tông xám xanh mát, 3 tầng nền / thẻ / ô con, bóng 2 lớp, chữ đậm hơn ===== */
+:root:not([data-theme="dark"]){--bg:#EAEEF4;--surface-2:#F5F7FB;--border:#DFE4EB;--border-strong:#C3CCD7;--ink:#101828;--ink-2:#344150;--ink-3:#566474;--sidebar-muted:#6A7888;--shadow:0 1px 2px rgba(16,24,40,.06),0 6px 18px -8px rgba(16,24,40,.14)}
+:root:not([data-theme="dark"]) body,:root:not([data-theme="dark"]) .main{background:var(--bg)}
+:root:not([data-theme="dark"]) .main .card,:root:not([data-theme="dark"]) .main .tile.rt.htile,:root:not([data-theme="dark"]) .summary .sum,:root:not([data-theme="dark"]) .main .kpis .kpi{border-color:#E1E6ED;box-shadow:0 1px 2px rgba(16,24,40,.06),0 6px 18px -8px rgba(16,24,40,.14)}
+:root:not([data-theme="dark"]) .main .card .qa,:root:not([data-theme="dark"]) .pipe-g>div{background:var(--surface-2);border-color:#E6EBF1}
+:root:not([data-theme="dark"]) .main .card .qa:hover{background:var(--surface)}
+:root:not([data-theme="dark"]) .top{border-bottom:1px solid var(--border);box-shadow:0 1px 3px rgba(16,24,40,.04)}
+:root:not([data-theme="dark"]) .card-h h3,:root:not([data-theme="dark"]) .main .tile.rt.htile .tl{color:var(--ink);font-weight:600}
+/* menu dọc (màu sáng): trắng ngả xanh rất nhẹ, viền phải rõ, mục đang chọn có vạch xanh bên trái */
+:root:not([data-theme="dark"]):not([data-sidebar="dark"]):not([data-sidebar="indigo"]) .side{background:linear-gradient(180deg,#FFFFFF 0%,#FAFBFE 100%);border-right:1px solid var(--border)}
+:root:not([data-theme="dark"]):not([data-sidebar="dark"]):not([data-sidebar="indigo"]) .side .nav:hover:not(.on){background:#F1F5FB}
+:root:not([data-theme="dark"]):not([data-sidebar="dark"]):not([data-sidebar="indigo"]) .side .nav.on{box-shadow:inset 3px 0 0 var(--primary)}
+:root:not([data-theme="dark"]):not([data-sidebar="dark"]):not([data-sidebar="indigo"]) .side .room{background:var(--surface-2);border-color:var(--border)}
+/* Cài đặt: cột trái xám xanh, tab đang chọn là thẻ trắng nổi; thân trắng */
+:root:not([data-theme="dark"]) .pset-nav{background:var(--surface-2);border-right-color:var(--border)}
+:root:not([data-theme="dark"]) .pset-nav .vtab.on{background:var(--surface);color:var(--primary-ink);border-color:var(--border);box-shadow:0 1px 2px rgba(16,24,40,.06),0 4px 12px -6px rgba(16,24,40,.12)}
+:root:not([data-theme="dark"]) .pset-nav .vtab.on svg{color:var(--primary)}
+:root:not([data-theme="dark"]) .pset-nav .vtab:hover:not(.on){background:#EBF0F6}
+:root:not([data-theme="dark"]) .modal .modal-f{background:var(--surface-2);border-top-color:var(--border)}
+
+/* ===== Màn đăng nhập: góc phải trên (chuông + cài đặt) ===== */
+.login-tools{position:absolute;top:22px;right:26px;z-index:20;display:flex;gap:8px}
+.lset{position:relative}
+.lset-pop{position:absolute;top:calc(100% + 10px);right:0;width:370px;padding:14px;border-radius:16px;background:var(--surface);border:1px solid var(--border);box-shadow:var(--shadow-lg);animation:bellpop .16s ease-out}
+.lset-pop::before{content:"";position:absolute;top:-7px;right:16px;width:12px;height:12px;background:var(--surface);border-left:1px solid var(--border);border-top:1px solid var(--border);transform:rotate(45deg)}
+.lset-h{font-size:15px;font-weight:600;color:var(--ink);margin:0 2px 10px}
+.lset-sec{padding:12px 2px 10px;border-top:1px solid var(--border)}
+.lset-l{font-size:12px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-3);margin-bottom:8px}
+.lset-seg{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;border-radius:10px;background:var(--surface-2);border:1px solid var(--border)}
+.lset-seg.three{grid-template-columns:1fr 1fr 1.45fr}
+.lset-seg button{height:34px;display:inline-flex;align-items:center;justify-content:center;gap:6px;border:0;border-radius:7px;background:transparent;color:var(--ink-2);font:inherit;font-size:13.5px;font-weight:500;cursor:pointer;white-space:nowrap}
+.lset-seg button svg{width:15px;height:15px}
+.lset-seg button:hover:not(.on){color:var(--ink)}
+.lset-seg button.on{background:var(--surface);color:var(--primary-ink);box-shadow:0 1px 3px rgba(16,24,40,.12);font-weight:600}
+.lset-srv{display:flex;align-items:center;gap:10px}
+.lset-srv-t{flex:1;min-width:0;display:flex;flex-direction:column;font-size:13px}
+.lset-srv-t b{color:var(--ink);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lset-srv-t small{color:var(--danger)}.lset-srv-t small.ok{color:var(--success)}
+.lset-dot{width:9px;height:9px;flex:none;border-radius:50%;background:var(--danger)}.lset-dot.ok{background:var(--success)}
+:root[data-motion="reduce"] .lset-pop{animation:none}
+
+/* ===== Màn đăng nhập ở giao diện tối ===== */
+:root[data-theme="dark"] .login.view{background:#0D141B;color:var(--ink)}
+:root[data-theme="dark"] .login.view .login-left{background:#0D141B}
+:root[data-theme="dark"] .login.view .login-right{background:#111A23;border-left-color:#1F2A36;box-shadow:none}
+:root[data-theme="dark"] .login.view .cx-card,:root[data-theme="dark"] .login.view .cx-time{background:#16212C;border-color:#26323F;color:var(--ink)}
+:root[data-theme="dark"] .login.view .cx-photo{background:#16212C}
+:root[data-theme="dark"] .login.view .ubell-btn{background:#16212C;border-color:#2A3746;color:var(--ink-2)}
+:root[data-theme="dark"] .login.view .ubell-dot{border-color:#16212C}
+:root[data-theme="dark"] .login.view .input,:root[data-theme="dark"] .login.view input{background:#16212C;border-color:#2A3746;color:var(--ink)}
+:root[data-theme="dark"] .login.view .input:focus,:root[data-theme="dark"] .login.view input:focus{border-color:var(--primary);box-shadow:0 0 0 3px color-mix(in srgb,var(--primary) 25%,transparent)}
+:root[data-theme="dark"] .login.view .srv-card{background:#16212C;border-color:#26323F}
+:root[data-theme="dark"] .login.view .srv-input input{background:transparent;border:0;box-shadow:none}
