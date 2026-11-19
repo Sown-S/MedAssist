@@ -168,17 +168,6 @@ function ShellLayout({ user, onSignOut, children }) {
       <div className="main">
         <header className="top">
           <div className="ttl">
-            {/* Nút ba gạch: thu gọn / mở rộng menu bên trái (cũng là Ctrl+B). */}
-            <button
-              type="button"
-              className="menu-toggle"
-              onClick={() => setCollapsed((v) => !v)}
-              aria-label={translate(collapsed ? 'Expand menu' : 'Collapse menu')}
-              title={translate(collapsed ? 'Expand menu' : 'Collapse menu') + ' (Ctrl+B)'}
-              aria-expanded={!collapsed}
-            >
-              <Icon name="menu" />
-            </button>
             <h1>{title}</h1>
           </div>
           <div className="top-r">

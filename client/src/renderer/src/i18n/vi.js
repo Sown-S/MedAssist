@@ -2068,15 +2068,10 @@ export const VI = {
   'Update when it is convenient — your data stays on the clinic server.': 'Cập nhật khi tiện, dữ liệu vẫn nằm an toàn trên máy chủ phòng khám.',
   'See what’s new': 'Xem có gì mới',
   'Updates': 'Cập nhật',
-  'Notifications — a new version is available': 'Thông báo — có phiên bản mới',
   'Use Tab / Shift+Tab to go to the next / previous box': 'Dùng Tab / Shift+Tab để sang ô sau / ô trước',
   'Forgot your password or need another account? Ask an administrator to reset or create it under Admin': 'Quên mật khẩu hoặc cần thêm tài khoản? Nhờ quản trị viên đặt lại hoặc tạo mới tại Quản trị',
   'Applies right away to menus, buttons and messages on this computer.': 'Áp dụng ngay cho menu, nút và thông báo trên máy này.',
-  'Date, time & formats': 'Ngày giờ & định dạng',
-  '24-hour': 'Định dạng 24 giờ',
-  'Money': 'Tiền',
-  'Password & security': 'Mật khẩu & bảo mật',
-  'Change your password regularly and never share it with colleagues.': 'Đổi mật khẩu định kỳ và không chia sẻ cho đồng nghiệp.',
+  'Date & time': 'Ngày giờ',
   'Clinic server': 'Máy chủ phòng khám',
   'Connection': 'Kết nối',
   'Offline': 'Mất kết nối',
@@ -2089,6 +2084,10 @@ export const VI = {
   'prescribed, not paid yet': 'đã kê đơn, chưa thanh toán',
   'referred today': 'ca chuyển tuyến hôm nay',
   'No referrals today': 'Hôm nay chưa có ca chuyển tuyến',
+  'Sign-in & security': 'Đăng nhập & bảo mật',
+  'Updates — a new version is available': 'Cập nhật — có phiên bản mới',
+  'You are on the latest version': 'Bạn đang dùng bản mới nhất',
+  'Server URL': 'Máy chủ',
 }
 
 export const PATTERNS = [

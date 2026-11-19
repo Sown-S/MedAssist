@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { version as appVersion } from '../../../../package.json'
 import Icon from './Icon'
 import { translate } from '../i18n'
@@ -140,13 +140,77 @@ export function VersionNoticeList({ notices, onAction }) {
   )
 }
 
-// Màn đăng nhập (chưa có thanh trên cùng nên chưa có chuông): hiện thẳng các thẻ. margin: lề của khối.
-export default function VersionBanners({ margin = '12px 24px 0' }) {
+// Màn đăng nhập: chuông ở góc phải trên. Có bản mới / lệch phiên bản chưa xem → chuông rung nhẹ + chấm đỏ;
+// bấm → popup ngay dưới chuông với các thẻ cập nhật (không có gì thì báo đang dùng bản mới nhất). Xem rồi thì thôi rung trong phiên.
+const SEEN_KEY = 'medassist_version_notice_seen'
+const readSeen = () => {
+  try {
+    return sessionStorage.getItem(SEEN_KEY) || ''
+  } catch {
+    return ''
+  }
+}
+
+export default function UpdateBell() {
   const notices = useVersionNotices()
-  if (!notices.keys.length) return null
+  const [open, setOpen] = useState(false)
+  const [seen, setSeen] = useState(readSeen)
+  const ref = useRef(null)
+  const unseen = notices.keys.some((k) => !seen.split('|').includes(k))
+
+  useEffect(() => {
+    if (!open) return
+    const close = (e) => !ref.current?.contains(e.target) && setOpen(false)
+    const esc = (e) => e.key === 'Escape' && setOpen(false)
+    document.addEventListener('mousedown', close)
+    document.addEventListener('keydown', esc)
+    return () => {
+      document.removeEventListener('mousedown', close)
+      document.removeEventListener('keydown', esc)
+    }
+  }, [open])
+
+  const toggle = () => {
+    setOpen(!open)
+    if (!unseen) return
+    const next = [seen, ...notices.keys].filter(Boolean).join('|')
+    try {
+      sessionStorage.setItem(SEEN_KEY, next)
+    } catch {
+      /* chỉ nhớ tới khi tải lại */
+    }
+    setSeen(next)
+  }
+
+  const label = translate(unseen ? 'Updates — a new version is available' : 'Updates')
   return (
-    <div className="vnotes" style={{ margin }}>
-      <VersionNoticeList notices={notices} />
+    <div className="ubell" ref={ref}>
+      <button type="button" className={'ubell-btn' + (unseen && !open ? ' ring' : '')} onClick={toggle} aria-label={label} title={label} aria-haspopup="dialog" aria-expanded={open}>
+        <Icon name="bell" />
+        {unseen && <span className="ubell-dot" />}
+      </button>
+      {open && (
+        <div className="ubell-pop" role="dialog" aria-label={translate('Updates')}>
+          <div className="ubell-h">{translate('Updates')}</div>
+          {notices.keys.length ? (
+            <div className="ubell-list">
+              <VersionNoticeList notices={notices} onAction={() => setOpen(false)} />
+            </div>
+          ) : (
+            <div className="ubell-empty">
+              <span className="ubell-empty-ic">
+                <Icon name="circle-check" />
+              </span>
+              <div>
+                <b>{translate('You are on the latest version')}</b>
+                <span>
+                  MedAssist <span className="num">{clean(appVersion)}</span>
+                </span>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   )
 }

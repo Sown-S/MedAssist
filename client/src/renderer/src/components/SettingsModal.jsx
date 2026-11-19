@@ -59,7 +59,7 @@ function MiniApp({ mode, sidebar }) {
 const LANG_SAMPLE = { vi: 'Hôm nay 12 bệnh nhân chờ khám', en: '12 patients waiting today' }
 const ROLE_ICON = { doctor: 'stethoscope', reception: 'clipboard-list', admin: 'shield' }
 
-// Đồng hồ giờ Việt Nam và ví dụ định dạng ngày, giờ, tiền đang dùng trong app (cập nhật mỗi 15 giây).
+// Đồng hồ giờ Việt Nam (cập nhật mỗi 15 giây).
 function ClockCard() {
   const [now, setNow] = useState(() => new Date())
   useEffect(() => {
@@ -69,7 +69,6 @@ function ClockCard() {
   const tz = 'Asia/Ho_Chi_Minh'
   const time = now.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: tz })
   const day = now.toLocaleDateString(getLang() === 'en' ? 'en-GB' : 'vi-VN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: tz })
-  const short = now.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric', timeZone: tz })
   return (
     <div className="clock-card">
       <div className="clock-main">
@@ -84,21 +83,6 @@ function ClockCard() {
           <Icon name="globe" />
           {translate('Vietnam time (GMT+7)')}
         </span>
-      </div>
-      <div className="clock-fmts">
-        <div>
-          <span>{translate('Date')}</span>
-          <b className="num">{short}</b>
-        </div>
-        <div>
-          <span>{translate('Time')}</span>
-          <b className="num">{time}</b>
-          <small>{translate('24-hour')}</small>
-        </div>
-        <div>
-          <span>{translate('Money')}</span>
-          <b className="num">89.000 đ</b>
-        </div>
       </div>
     </div>
   )
@@ -252,7 +236,7 @@ export default function SettingsModal({ open, onClose, user, onChangePassword })
                   </p>
                 </section>
                 <section className="pset-sec">
-                  <h4>{translate('Date, time & formats')}</h4>
+                  <h4>{translate('Date & time')}</h4>
                   <ClockCard />
                 </section>
               </>
@@ -270,10 +254,6 @@ export default function SettingsModal({ open, onClose, user, onChangePassword })
                           <Icon name={ROLE_ICON[user.roleKey] ?? 'user-round'} />
                           {user.role}
                         </span>
-                        <span className="acct-tag">
-                          <Icon name="at-sign" />
-                          <span className="num">{user.username}</span>
-                        </span>
                         {user.room && (
                           <span className="acct-tag">
                             <Icon name="door-open" />
@@ -290,14 +270,20 @@ export default function SettingsModal({ open, onClose, user, onChangePassword })
                       <span className="acct-box-ic">
                         <Icon name="shield-check" />
                       </span>
-                      <b>{translate('Password & security')}</b>
+                      <b>{translate('Sign-in & security')}</b>
                     </div>
-                    <p>{translate('Change your password regularly and never share it with colleagues.')}</p>
-                    <button className="btn btn-outline btn-sm" onClick={onChangePassword}>
+                    <dl className="acct-dl">
+                      <dt>{translate('Username')}</dt>
+                      <dd className="num">{user.username}</dd>
+                      <dt>{translate('Role')}</dt>
+                      <dd>{user.role}</dd>
+                      <dt>{translate('Password')}</dt>
+                      <dd className="acct-pw">••••••••</dd>
+                    </dl>
+                    <button className="btn btn-outline btn-sm acct-act" onClick={onChangePassword}>
                       <Icon name="key-round" />
                       {translate('Change password')}
                     </button>
-                    <small className="muted">{translate('Forgot your password or need another account? Ask an administrator to reset or create it under Admin')}</small>
                   </div>
                   <div className="acct-box">
                     <div className="acct-box-h">
@@ -307,15 +293,15 @@ export default function SettingsModal({ open, onClose, user, onChangePassword })
                       <b>{translate('This computer')}</b>
                     </div>
                     <dl className="acct-dl">
-                      <dt className="full">{translate('Clinic server')}</dt>
-                      <dd className="full num" title={getBaseUrl()}>
+                      <dt>{translate('Server URL')}</dt>
+                      <dd className="num" title={getBaseUrl()}>
                         <span className="acct-url">{getBaseUrl()}</span>
                       </dd>
                       <dt>{translate('Connection')}</dt>
                       <dd>
                         <ConnState />
                       </dd>
-                      <dt>{translate('App version')}</dt>
+                      <dt>{translate('Version')}</dt>
                       <dd className="num">{appVersion}</dd>
                     </dl>
                   </div>

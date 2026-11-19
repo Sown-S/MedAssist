@@ -4,7 +4,7 @@ import { changePassword } from "../api/authApi";
 import { usePasswordMinLength } from "../api/accountStore";
 import { LANGUAGES, getLang, setLang } from "../i18n";
 import ServerAddress from "../components/ServerAddress";
-import VersionBanners from "../components/VersionBanners";
+import UpdateBell from "../components/VersionBanners";
 import AppIcon, { Logo } from "../components/Icon";
 import { translate } from "../i18n";
 import loginPhoto from "../assets/login-clinic.jpg";
@@ -91,10 +91,8 @@ export default function Login() {
     <div className="login view">
       <LoginHero />
       <section className="login-right">
-        {/* Bản mới trên GitHub / lệch version với máy chủ: hiện ngay khi kết nối, trước khi đăng nhập. */}
-        <div className="login-banners" style={{ maxWidth: 460, margin: '0 auto', width: '100%' }}>
-          <VersionBanners margin="0 0 16px" />
-        </div>
+        {/* Bản mới trên GitHub / lệch version với máy chủ: chuông ở góc phải trên, hiện ngay khi kết nối, trước khi đăng nhập. */}
+        <UpdateBell />
         {!pending ? (
           <form className="login-form" noValidate onSubmit={handleSubmit}>
             <div>
