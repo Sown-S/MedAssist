@@ -33,13 +33,12 @@ const writeHidden = (v) => {
   }
 }
 
-// Hai thông báo về phiên bản, chỉ báo, không tự cài:
-// 1. Phiên bản ứng dụng khác máy chủ (đọc /health, chạy được trong LAN không có Internet). Nói rõ bên nào cũ hơn và ai cần làm gì:
+// Trạng thái thông báo phiên bản, dùng chung cho thẻ ở màn đăng nhập và chuông trên thanh trên cùng:
+// 1. Phiên bản ứng dụng khác máy chủ (đọc /health, chạy được trong LAN không có Internet). Nói rõ bên nào cũ hơn:
 //    ứng dụng cũ hơn → người dùng tải bản mới; máy chủ cũ hơn → báo quản trị viên cập nhật máy chủ.
 // 2. GitHub có bản mới hơn (main process kiểm 1 lần mỗi lần mở app; mất mạng hay lỗi thì không hiện gì).
-// Cả hai là thẻ thông báo cùng một kiểu: biểu tượng, tiêu đề, một câu giải thích, cặp phiên bản, nút hành động và nút ẩn.
-// margin: lề của khối; màn đăng nhập đặt sát trên khung đăng nhập.
-export default function VersionBanners({ margin = '12px 24px 0' }) {
+// keys: khoá của các thông báo đang hiện (để chuông biết đã xem hay chưa); hide(key): ẩn tới lần mở app sau.
+export function useVersionNotices() {
   const [latest, setLatest] = useState(null)
   const [hidden, setHidden] = useState(readHidden)
   const serverVersion = useServerVersion()
@@ -59,81 +58,95 @@ export default function VersionBanners({ margin = '12px 24px 0' }) {
   const cmp = server ? compareVersions(app, server) : 0
   const mismatchKey = `mismatch:${app}:${server}`
   const latestKey = `latest:${clean(latest)}`
-  const showMismatch = cmp !== 0 && !hidden.includes(mismatchKey)
-  const showLatest = !!latest && compareVersions(latest, app) > 0 && !hidden.includes(latestKey)
-  if (!showMismatch && !showLatest) return null
-
+  const mismatch = cmp !== 0 && !hidden.includes(mismatchKey) ? { key: mismatchKey, app, server, appOlder: cmp < 0 } : null
+  const update = latest && compareVersions(latest, app) > 0 && !hidden.includes(latestKey) ? { key: latestKey, app, latest: clean(latest) } : null
   const hide = (key) => {
-    const next = [hidden, key].filter(Boolean).join('|')
+    const next = [readHidden(), key].filter(Boolean).join('|')
     writeHidden(next)
     setHidden(next)
   }
-  const openReleases = () => window.api?.updates?.openReleases?.()
-  const appOlder = cmp < 0
+  return { mismatch, update, hide, keys: [mismatch?.key, update?.key].filter(Boolean) }
+}
 
+const openReleases = () => window.api?.updates?.openReleases?.()
+
+// Danh sách thẻ thông báo (biểu tượng, tiêu đề, một câu giải thích, cặp phiên bản, nút hành động, nút ẩn).
+export function VersionNoticeList({ notices, onAction }) {
+  const { mismatch, update, hide } = notices
+  const act = () => {
+    openReleases()
+    onAction?.()
+  }
   return (
-    <div className="vnotes" style={{ margin }}>
-      {showMismatch && (
-        <div className={'vnote ' + (appOlder ? 'warn' : 'info')} role="status">
+    <>
+      {mismatch && (
+        <div className={'vnote ' + (mismatch.appOlder ? 'warn' : 'info')} role="status">
           <span className="vnote-ic">
-            <Icon name={appOlder ? 'download' : 'server'} />
+            <Icon name={mismatch.appOlder ? 'download' : 'server'} />
           </span>
           <div className="vnote-body">
-            <b className="vnote-t">{translate(appOlder ? 'A newer app version is available' : 'The clinic server is not up to date')}</b>
+            <b className="vnote-t">{translate(mismatch.appOlder ? 'A newer app version is available' : 'The clinic server is not up to date')}</b>
             <p className="vnote-d">
-              {translate(
-                appOlder
-                  ? 'The server has moved to a newer version. Update the app so your work is saved correctly.'
-                  : 'Some new features may not work yet. Ask your administrator to update the server.'
-              )}
+              {translate(mismatch.appOlder ? 'The server has moved to a newer version. Update the app so your work is saved correctly.' : 'Some new features may not work yet. Ask your administrator to update the server.')}
             </p>
             <div className="vnote-foot">
               <div className="vnote-vers" aria-label={translate('Versions')}>
-                <span className={'vchip' + (appOlder ? ' old' : '')}>
+                <span className={'vchip' + (mismatch.appOlder ? ' old' : '')}>
                   <Icon name="monitor" />
-                  {translate('In the app')} <b className="num">{app}</b>
+                  {translate('In the app')} <b className="num">{mismatch.app}</b>
                 </span>
                 <Icon name="arrow-left-right" className="vnote-sep" />
-                <span className={'vchip' + (appOlder ? '' : ' old')}>
+                <span className={'vchip' + (mismatch.appOlder ? '' : ' old')}>
                   <Icon name="server" />
-                  {translate('On the server')} <b className="num">{server}</b>
+                  {translate('On the server')} <b className="num">{mismatch.server}</b>
                 </span>
               </div>
-              {appOlder && (
-                <button type="button" className="btn btn-primary btn-sm" onClick={openReleases}>
+              {mismatch.appOlder && (
+                <button type="button" className="btn btn-primary btn-sm" onClick={act}>
                   <Icon name="download" />
                   {translate('Get the new version')}
                 </button>
               )}
             </div>
           </div>
-          <button type="button" className="vnote-x" onClick={() => hide(mismatchKey)} aria-label={translate('Hide this notice')} title={translate('Hide until the app is reopened')}>
+          <button type="button" className="vnote-x" onClick={() => hide(mismatch.key)} aria-label={translate('Hide this notice')} title={translate('Hide until the app is reopened')}>
             <Icon name="x" />
           </button>
         </div>
       )}
-      {showLatest && (
+      {update && (
         <div className="vnote info" role="status">
           <span className="vnote-ic">
             <Icon name="sparkles" />
           </span>
           <div className="vnote-body">
-            <b className="vnote-t">{translate(`MedAssist ${clean(latest)} is available`)}</b>
+            <b className="vnote-t">{translate(`MedAssist ${update.latest} is available`)}</b>
             <p className="vnote-d">
-              {translate('You are on version')} <b className="num">{app}</b>. {translate('Update when it is convenient — your data stays on the clinic server.')}
+              {translate('You are on version')} <b className="num">{update.app}</b>. {translate('Update when it is convenient — your data stays on the clinic server.')}
             </p>
             <div className="vnote-foot">
               <span />
-              <button type="button" className="btn btn-outline btn-sm" onClick={openReleases}>
+              <button type="button" className="btn btn-outline btn-sm" onClick={act}>
                 {translate('See what’s new')}
               </button>
             </div>
           </div>
-          <button type="button" className="vnote-x" onClick={() => hide(latestKey)} aria-label={translate('Hide this notice')} title={translate('Hide until the app is reopened')}>
+          <button type="button" className="vnote-x" onClick={() => hide(update.key)} aria-label={translate('Hide this notice')} title={translate('Hide until the app is reopened')}>
             <Icon name="x" />
           </button>
         </div>
       )}
+    </>
+  )
+}
+
+// Màn đăng nhập (chưa có thanh trên cùng nên chưa có chuông): hiện thẳng các thẻ. margin: lề của khối.
+export default function VersionBanners({ margin = '12px 24px 0' }) {
+  const notices = useVersionNotices()
+  if (!notices.keys.length) return null
+  return (
+    <div className="vnotes" style={{ margin }}>
+      <VersionNoticeList notices={notices} />
     </div>
   )
 }

@@ -9,6 +9,17 @@ import { useInventory, stockOf } from '../api/inventoryStore'
 import SettingsModal from './SettingsModal'
 import Clip from './Clip'
 import { OPEN_EVENT } from './useGlobalKeys'
+import { useVersionNotices, VersionNoticeList } from './VersionBanners'
+
+// Thông báo phiên bản đã xem (mở chuông) trong phiên này: chuông thôi rung, chấm đỏ tắt.
+const SEEN_KEY = 'medassist_version_notice_seen'
+const readSeen = () => {
+  try {
+    return sessionStorage.getItem(SEEN_KEY) || ''
+  } catch {
+    return ''
+  }
+}
 
 // Thông báo tính tại máy từ hàng chờ và kho.
 const hm = (iso) =>
@@ -166,6 +177,20 @@ export default function TopActions({ user, onSignOut }) {
       ]
     : []
   const notifications = [...live, ...stock]
+  // Bản cập nhật / lệch phiên bản với máy chủ: chuông rung và có chấm đỏ tới khi mở chuông xem.
+  const versions = useVersionNotices()
+  const [seen, setSeen] = useState(readSeen)
+  const versionUnseen = versions.keys.some((k) => !seen.split('|').includes(k))
+  const markVersionsSeen = () => {
+    if (!versionUnseen) return
+    const next = [seen, ...versions.keys].filter(Boolean).join('|')
+    try {
+      sessionStorage.setItem(SEEN_KEY, next)
+    } catch {
+      /* chỉ nhớ tới khi tải lại */
+    }
+    setSeen(next)
+  }
   // Đổi ngôn ngữ: giao diện đổi ngay, không hiện thông báo.
   function chooseLanguage(code) {
     if (code !== getLang()) setLang(code)
@@ -196,13 +221,31 @@ export default function TopActions({ user, onSignOut }) {
   return (
     <>
       <div className="tb bell" ref={bellRef}>
-        {ib('bell', 'Notifications', () => {
-          setOpen(open === 'bell' ? null : 'bell')
-          setUnread(false)
-        })}
-        {(unread || live.length > 0) && notifications.length > 0 && <span className="badge-dot" />}
+        <button
+          className={'btn btn-ghost btn-icon' + (versionUnseen && open !== 'bell' ? ' bell-ring' : '')}
+          title={translate(versionUnseen ? 'Notifications — a new version is available' : 'Notifications')}
+          aria-label={translate(versionUnseen ? 'Notifications — a new version is available' : 'Notifications')}
+          aria-haspopup="dialog"
+          aria-expanded={open === 'bell'}
+          onClick={() => {
+            setOpen(open === 'bell' ? null : 'bell')
+            setUnread(false)
+            markVersionsSeen()
+          }}
+        >
+          <Icon name="bell" />
+        </button>
+        {(versionUnseen || ((unread || live.length > 0) && notifications.length > 0)) && <span className={'badge-dot' + (versionUnseen ? ' pulse' : '')} />}
         {open === 'bell' && (
-          <div className="menu open" style={{ width: 320 }}>
+          <div className={'menu open bell-menu' + (versions.keys.length ? ' wide' : '')}>
+            {versions.keys.length > 0 && (
+              <>
+                <div className="mh">{translate('Updates')}</div>
+                <div className="bell-updates">
+                  <VersionNoticeList notices={versions} onAction={() => setOpen(null)} />
+                </div>
+              </>
+            )}
             <div className="mh">Notifications</div>
             {notifications.map((n) => (
               <div

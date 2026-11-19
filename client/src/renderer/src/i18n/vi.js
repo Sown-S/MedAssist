@@ -2072,6 +2072,8 @@ export const VI = {
   'You are on version': 'Bạn đang dùng bản',
   'Update when it is convenient — your data stays on the clinic server.': 'Cập nhật khi tiện, dữ liệu vẫn nằm an toàn trên máy chủ phòng khám.',
   'See what’s new': 'Xem có gì mới',
+  'Updates': 'Cập nhật',
+  'Notifications — a new version is available': 'Thông báo — có phiên bản mới',
 }
 
 export const PATTERNS = [

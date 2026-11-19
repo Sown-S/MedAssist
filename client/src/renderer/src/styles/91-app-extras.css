@@ -485,3 +485,27 @@ kbd{display:inline-grid;place-items:center;min-width:24px;height:24px;padding:0 
 .vnote-x{margin:-4px 0 0;width:28px;height:28px;border-radius:8px;border:0;background:transparent;color:var(--ink-3);display:grid;place-items:center;cursor:pointer}
 .vnote-x:hover{background:var(--surface-2,#F1F3F5);color:var(--ink)}
 .vnote-x svg{width:16px;height:16px}
+
+/* Chuông: rung nhẹ khi có bản cập nhật chưa xem (lặp mỗi ~4s), chấm đỏ có vòng lan; popup ở góc phải trên */
+@keyframes bellring{0%{transform:rotate(0)}3%{transform:rotate(16deg)}6%{transform:rotate(-14deg)}9%{transform:rotate(10deg)}12%{transform:rotate(-7deg)}15%{transform:rotate(3deg)}18%,100%{transform:rotate(0)}}
+@keyframes dotpulse{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--danger) 55%,transparent)}70%{box-shadow:0 0 0 7px transparent}100%{box-shadow:0 0 0 0 transparent}}
+.tb .bell-ring svg{transform-origin:50% 10%;animation:bellring 4s ease-in-out infinite}
+.tb .badge-dot.pulse{animation:dotpulse 2s ease-out infinite}
+.bell-menu{width:340px;max-height:min(640px,calc(100vh - 90px));overflow:auto}
+
+.bell-updates{display:flex;flex-direction:column;gap:8px;padding:2px 4px 8px}
+.bell-updates .vnote{box-shadow:none;padding:12px 8px 12px 12px}
+.bell-updates .vnote-t{font-size:14px}
+@media (prefers-reduced-motion:reduce){.tb .bell-ring svg,.tb .badge-dot.pulse{animation:none}}
+:root[data-motion="reduce"] .tb .bell-ring svg,:root[data-motion="reduce"] .tb .badge-dot.pulse{animation:none}
+/* Popup chuông ghim ở góc phải trên màn hình; nút trong thẻ cập nhật không bị kiểu mục menu ghi đè */
+.top .tb.bell .bell-menu{position:fixed;top:68px;right:16px;left:auto;z-index:60;animation:bellpop .16s ease-out}
+@keyframes bellpop{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+:root[data-motion="reduce"] .top .tb.bell .bell-menu{animation:none}
+.menu .bell-updates .btn{width:auto;padding:0 12px;border-radius:var(--radius);justify-content:center;gap:6px;height:34px;font-weight:600}
+.menu .bell-updates .btn-primary{background:var(--primary);color:#fff;border-color:transparent}
+.menu .bell-updates .btn-primary:hover{background:var(--primary-hover)}
+.menu .bell-updates .btn-outline{background:var(--surface);border:1px solid var(--border-strong);color:var(--ink)}
+.menu .bell-updates .vnote-x{width:28px;padding:0;justify-content:center;flex:0 0 auto}
+.bell-menu.wide{width:420px}
+.top .tb.bell:has(.bell-menu) .bell-stack{display:none}
