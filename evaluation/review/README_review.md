@@ -11,7 +11,7 @@ Phản hồi Huy được giữ nguyên nội dung, chỉ chuẩn hóa chữ hoa
 
 Năm ca Huy yêu cầu sửa vẫn là CLIN-019, EXT-010, EXT-014, EXT-024, EXT-026. Hai JSONL v1.3 được giữ nguyên; mọi sửa nhãn thuộc công việc bộ mới v1.4. Chưa thay đổi trạng thái Active của ứng viên KB-2026.11 hoặc chạy benchmark RuleOnly.
 
-Các bản `_huy`, phiếu hỗ trợ AI, JSON xác nhận và báo cáo trung gian trong thư mục này được gộp rồi xóa theo yêu cầu của Tuấn. Dấu vết kiểm tệp nguồn được giữ bên dưới.
+Các phiếu riêng của Huy và báo cáo trung gian đã được gộp vào hai phiếu cuối; băm các phiếu gốc được giữ bên dưới.
 
 ## Băm các phiếu Huy đã nhận
 
