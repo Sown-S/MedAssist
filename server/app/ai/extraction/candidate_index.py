@@ -1,11 +1,13 @@
 """Chỉ mục từ vựng trong bộ nhớ từ KnowledgeReader Active, không LLM/embedding.
 
+Đọc ``symptom_name``, ``aliases`` và ``detection`` từ reader Active; loại các mã
+``detection == "exam"`` khỏi ứng viên trích xuất và không tự tạo alias trong code.
 Điểm chỉ xếp hạng truy xuất, không phải confidence, trạng thái hoặc chẩn đoán.
-Không tự tạo alias. Các kết quả phải được Gemma chọn và validation/HITL sau đó.
+Các kết quả phải được Gemma chọn và validation/HITL sau đó.
 """
 
 from collections import OrderedDict, defaultdict
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from hashlib import sha256
 import json
@@ -14,10 +16,11 @@ import re
 from threading import Lock
 from types import MappingProxyType
 
-from app.ai.extraction.feature_extractor import _catalogue, _normalise, _strip_accents
+from app.ai.extraction.feature_extractor import _CODES, _normalise, _strip_accents
 from app.ai.interfaces import KnowledgeReader
+from app.validation import knowledge_validators
 
-INDEX_VERSION = "lexical-phrases-v1"
+INDEX_VERSION = "lexical-phrases-v2"
 # Chỉ bỏ từ chức năng ở truy vấn, không đổi lời kể/context gửi bước chọn mã.
 # Tách bản có dấu để không xóa nhầm từ y khoa ('da', 'cơ', 'cổ', 'bí', 'khí', 'rát', 'thị', 'lực').
 _STOP_ACCENTED = frozenset(
@@ -103,6 +106,15 @@ class Candidate:
 class _Document:
     code: str
     name: str
+    aliases: tuple[str, ...]
+    features: frozenset[str]
+    grams: frozenset[str]
+
+
+@dataclass(frozen=True)
+class _Entry:
+    doc_id: int
+    is_alias: bool
     features: frozenset[str]
     grams: frozenset[str]
 
@@ -112,6 +124,7 @@ class CandidateIndex:
     snapshot_key: str
     catalogue_sha256: str
     documents: tuple[_Document, ...]
+    entries: tuple[_Entry, ...]
     postings: Mapping[str, tuple[int, ...]]
     gram_postings: Mapping[str, tuple[int, ...]]
     idf: Mapping[str, float]
@@ -123,62 +136,137 @@ class CandidateIndex:
         features, grams = _features(phrase, is_query=True), _grams(phrase, is_query=True)
         lexical = defaultdict(float)
         for feature in sorted(features):
-            for doc_id in self.postings.get(feature, ()):
-                lexical[doc_id] += self.idf[feature] * _feature_weight(feature)
+            for entry_id in self.postings.get(feature, ()):
+                lexical[entry_id] += self.idf[feature] * _feature_weight(feature)
         gram_hits = defaultdict(int)
         for gram in sorted(grams):
-            for doc_id in self.gram_postings.get(gram, ()):
-                gram_hits[doc_id] += 1
+            for entry_id in self.gram_postings.get(gram, ()):
+                gram_hits[entry_id] += 1
         query_weight = sum(self.idf.get(feature, 0) * _feature_weight(feature) for feature in sorted(features))
-        result = []
-        for doc_id in sorted(lexical.keys() | gram_hits.keys()):
-            doc = self.documents[doc_id]
-            lexical_score = lexical[doc_id] / max(1.0, query_weight)
+        # Chấm điểm từng bề mặt (tên chính hoặc từng alias) rồi lấy mức khớp cao nhất cho mỗi mã.
+        best: dict[int, tuple[float, bool, tuple[str, ...]]] = {}
+        for entry_id in sorted(lexical.keys() | gram_hits.keys()):
+            entry = self.entries[entry_id]
+            lexical_score = lexical[entry_id] / max(1.0, query_weight)
             # Giảm ưu thế của tên hội chứng ghép dài chỉ trùng vài từ phổ biến.
-            lexical_score /= math.sqrt(max(1.0, len(doc.features) / max(1, len(features))))
-            gram_score = 2 * gram_hits[doc_id] / max(1, len(grams) + len(doc.grams))
+            lexical_score /= math.sqrt(max(1.0, len(entry.features) / max(1, len(features))))
+            gram_score = 2 * gram_hits[entry_id] / max(1, len(grams) + len(entry.grams))
             if not lexical_score and gram_score < 0.15:
                 continue
-            sources = tuple(name for name, active in (
-                ("lexical", lexical_score > 0), ("character_ngram", gram_score > 0),
-            ) if active)
-            result.append(Candidate(doc.code, doc.name, lexical_score + 0.35 * gram_score, sources))
+            score = lexical_score + 0.35 * gram_score
+            sources = tuple(
+                name
+                for name, active in (
+                    ("lexical", lexical_score > 0),
+                    ("character_ngram", gram_score > 0),
+                    ("alias", entry.is_alias),
+                )
+                if active
+            )
+            prev = best.get(entry.doc_id)
+            if prev is None or (score, not entry.is_alias) > (prev[0], not prev[1]):
+                best[entry.doc_id] = (score, entry.is_alias, sources)
+        result = [
+            Candidate(self.documents[doc_id].code, self.documents[doc_id].name, score, sources)
+            for doc_id, (score, _, sources) in best.items()
+        ]
         result.sort(key=lambda candidate: (-candidate.score, candidate.symptom_code))
         return tuple(result[:limit])
 
 
 def _read_catalogue(reader: KnowledgeReader):
     release = dict(reader.active_release())
-    rows = _catalogue(reader)  # Dùng validator SymptomCode chung đã có.
+    raw_rows = reader.active_symptoms()
+    try:
+        rows_list = list(raw_rows)
+        codes = _CODES.validate_python([row["symptom_code"] for row in rows_list], strict=True)
+        if len(set(codes)) != len(codes):
+            raise ValueError
+        validated: list[dict[str, object]] = []
+        for row, code in zip(rows_list, codes, strict=True):
+            name = row.get("symptom_name", code)
+            if not isinstance(name, str) or not name.strip():
+                raise ValueError
+            raw_detection = row.get("detection", "both")
+            detection = "both" if raw_detection is None else raw_detection
+            if not isinstance(detection, str) or detection not in knowledge_validators.DETECTIONS:
+                raise ValueError
+            raw_aliases = row.get("aliases", ())
+            if raw_aliases is None:
+                raw_aliases = ()
+            if not isinstance(raw_aliases, Sequence) or isinstance(raw_aliases, (str, bytes)):
+                raise ValueError
+            alias_map: dict[str, str] = {}
+            for raw_alias in raw_aliases:
+                if not isinstance(raw_alias, str):
+                    raise ValueError
+                cleaned = " ".join(raw_alias.split())
+                if not cleaned:
+                    raise ValueError
+                alias_map.setdefault(knowledge_validators.alias_key(cleaned), cleaned)
+            aliases = sorted(alias_map.values(), key=lambda item: (knowledge_validators.alias_key(item), item))
+            validated.append({
+                "symptom_code": code,
+                "symptom_name": name,
+                "aliases": aliases,
+                "detection": detection,
+            })
+    except (KeyError, TypeError, ValueError):
+        # Validator mã dùng chung quản lý quy tắc slug/độ dài; ẩn chi tiết đầu vào.
+        raise ValueError("Invalid Active symptom catalogue.") from None
     if dict(reader.active_release()) != release:
         raise ValueError("Knowledge snapshot changed while building candidate index.")
-    catalogue_hash = sha256(json.dumps(rows, ensure_ascii=True, sort_keys=True).encode()).hexdigest()
-    # Có fingerprint để cả reader thiếu epoch hoặc sửa tên cùng metadata cũng không hit cache cũ.
+    validated.sort(key=lambda item: str(item["symptom_code"]))
+    catalogue_hash = sha256(json.dumps(validated, ensure_ascii=True, sort_keys=True).encode()).hexdigest()
+    # Có fingerprint để cả reader thiếu epoch hoặc sửa tên/alias/detection vẫn không hit cache cũ.
     key = sha256(json.dumps({
         "version": INDEX_VERSION, "release_id": release.get("release_id"),
         "epoch": release.get("epoch"), "catalogue": catalogue_hash,
     }, sort_keys=True, default=str).encode()).hexdigest()
+    # Chỉ giữ triệu chứng có thể do bệnh nhân kể (reported hoặc both), bỏ mã thuần khám thực thể (exam).
+    rows = [item for item in validated if item["detection"] != "exam"]
     return key, catalogue_hash, rows
 
 
-def _build(key: str, catalogue_hash: str, rows: list[dict[str, str]]) -> CandidateIndex:
-    documents = []
-    postings, gram_postings = defaultdict(list), defaultdict(list)
+def _build(key: str, catalogue_hash: str, rows: list[dict[str, object]]) -> CandidateIndex:
+    documents: list[_Document] = []
+    entries: list[_Entry] = []
+    postings: dict[str, list[int]] = defaultdict(list)
+    gram_postings: dict[str, list[int]] = defaultdict(list)
+    # IDF tính trên số triệu chứng duy nhất chứa đặc trưng, tránh lạm phát DF khi có nhiều alias.
+    doc_freq: dict[str, set[int]] = defaultdict(set)
     for row in rows:
         doc_id = len(documents)
-        name, code = row["symptom_name"], row["symptom_code"]
-        features = _features(name) | _features(code.replace("_", " "))
-        grams = _grams(name)
-        documents.append(_Document(code, name, features, grams))
-        for feature in sorted(features):
-            postings[feature].append(doc_id)
-        for gram in sorted(grams):
-            gram_postings[gram].append(doc_id)
+        code = str(row["symptom_code"])
+        name = str(row["symptom_name"])
+        aliases = tuple(row["aliases"])
+        name_features = _features(name) | _features(code.replace("_", " "))
+        name_grams = _grams(name)
+        documents.append(_Document(code, name, aliases, name_features, name_grams))
+        surfaces: list[tuple[bool, frozenset[str], frozenset[str]]] = [
+            (False, name_features, name_grams),
+        ]
+        for alias in aliases:
+            alias_features = _features(alias)
+            alias_grams = _grams(alias)
+            if alias_features or alias_grams:
+                surfaces.append((True, alias_features, alias_grams))
+        for is_alias, entry_features, entry_grams in surfaces:
+            entry_id = len(entries)
+            entries.append(_Entry(doc_id, is_alias, entry_features, entry_grams))
+            for feature in sorted(entry_features):
+                postings[feature].append(entry_id)
+                doc_freq[feature].add(doc_id)
+            for gram in sorted(entry_grams):
+                gram_postings[gram].append(entry_id)
     return CandidateIndex(
-        key, catalogue_hash, tuple(documents),
+        key,
+        catalogue_hash,
+        tuple(documents),
+        tuple(entries),
         MappingProxyType({feature: tuple(ids) for feature, ids in postings.items()}),
         MappingProxyType({gram: tuple(ids) for gram, ids in gram_postings.items()}),
-        MappingProxyType({feature: math.log(1 + len(documents) / len(ids)) for feature, ids in postings.items()}),
+        MappingProxyType({feature: math.log(1 + len(documents) / len(ids)) for feature, ids in doc_freq.items()}),
     )
 
 
