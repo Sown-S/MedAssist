@@ -32,7 +32,7 @@ bàn giao bệnh nhân, giấy nghỉ ốm, tóm tắt bệnh án, phân quyền
 
 ## 1. Chạy dự án
 
-Yêu cầu: **Node.js 18+** (đã thử với Node 24). Electron mở cửa sổ thật nên phải chạy trên máy, không chạy trong trình duyệt.
+Yêu cầu: **Node.js 22.12+** (Vite 8, Vitest 5; CI dùng Node 22). Electron mở cửa sổ thật nên phải chạy trên máy, không chạy trong trình duyệt.
 
 ```powershell
 cd client

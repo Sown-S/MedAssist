@@ -17,7 +17,7 @@ còn lại cài ứng dụng desktop. Không gửi dữ liệu bệnh nhân ra n
 **Module AI** (chỉ hỗ trợ, bác sĩ quyết định):
 
 1. **Node 1 – Cổng cờ đỏ**: luật tất định trên triệu chứng đã xác nhận và sinh hiệu. Cờ đỏ thì xếp Cấp cứu ngay và không chạy LLM.
-2. **Node 2 – Truy xuất**: chấm điểm bệnh trong kho tri thức (153 bệnh, 299 triệu chứng, 12 luật, nguồn Bộ Y tế).
+2. **Node 2 – Truy xuất**: chấm điểm bệnh trong kho tri thức (154 bệnh, 299 triệu chứng, 12 luật, nguồn Bộ Y tế).
 3. **Node 3 – Suy luận**: LLM cục bộ (Gemma-SEA-LION 9B qua Ollama) xếp hạng lại và giải thích bằng tiếng Việt.
 4. **Node 4 – Kiểm tra đầu ra**: chỉ giữ bệnh có trong danh sách Node 2, đúng schema; lỗi thì quay về kết quả theo luật.
 
@@ -82,7 +82,7 @@ uvicorn app.main:app --reload      # http://127.0.0.1:8000/docs
 |---|---|
 | Backend | Python 3.14, FastAPI, SQLAlchemy 2, Alembic, PostgreSQL 16, JWT + Argon2id |
 | AI | Pipeline 4 node, Ollama, Gemma-SEA-LION-v3-9B-IT (GGUF Q4_K_M) |
-| Client | Electron 31, React 18, electron-vite, Vitest |
+| Client | Electron 45, React 18, React Router 7, electron-vite 6 (Vite 8), Vitest 5 |
 | Triển khai | Docker Compose, Caddy (HTTPS bằng CA riêng của dự án), sao lưu `pg_dump` hằng ngày |
 | Kiểm thử | pytest (hơn 1.000 test, CI yêu cầu độ phủ ≥ 90%), Vitest + ESLint cho client, GitHub Actions; bản cài Windows / macOS build tự động khi đẩy tag |
 
