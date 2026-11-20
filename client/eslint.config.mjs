@@ -41,6 +41,11 @@ export default [
     languageOptions: { sourceType: 'module', globals: { ...globals.node } }
   },
   {
+    // Script Node (vd scripts/smoke.mjs); hàm truyền vào cửa sổ Electron chạy trong trình duyệt nên cần cả globals.browser.
+    files: ['scripts/**/*.mjs'],
+    languageOptions: { sourceType: 'module', globals: { ...globals.node, ...globals.browser } }
+  },
+  {
     files: ['tests/**/*.{js,jsx}'],
     languageOptions: { sourceType: 'module', globals: { ...globals.browser, ...globals.node }, parserOptions: { ecmaFeatures: { jsx: true } } },
     // Test giao diện (.jsx) dùng component trong JSX và hook như code app.

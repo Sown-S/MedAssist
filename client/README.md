@@ -48,6 +48,7 @@ npm run dev        # Vite dev server + cửa sổ Electron, sửa code thấy ng
 | `npm start` | Chạy thử bản đã build trong `out/` |
 | `npm run build:win` | Build + đóng gói bản cài Windows (NSIS) vào `dist/`, kèm `certs/*.crt`. `:mac`, `:linux` tương tự |
 | `npm run eval` | Build theo `.env.eval` (nối `http://127.0.0.1:8000` của `deploy/docker-compose.eval.yml`) rồi mở app: kiểm thử trên một máy, xem [`docs/huong-dan-kiem-thu.md`](../docs/huong-dan-kiem-thu.md) |
+| `npm run smoke` | Build bản eval, mở Electron thật và kiểm tra màn khởi động (chưa có server) + màn đăng nhập (server giả trên cổng 8000) vẽ kín cửa sổ, không trắng; ảnh chụp ở `out/smoke/`. Cổng 8000 phải trống (tắt Docker eval trước). Linux không có màn hình: `xvfb-run -a npm run smoke` |
 | `npm run dist:eval` | Bản cài kiểm thử cho hệ điều hành đang dùng. Bản Windows + macOS do workflow `.github/workflows/release.yml` build khi merge vào `main` |
 
 **Biến môi trường**: chép `.env.example` thành `.env` (file riêng của máy, không commit), sửa rồi chạy lại `npm run dev`:
@@ -435,7 +436,7 @@ Thẻ **Gợi ý tham khảo** theo `ai_status`: `Pending` (đang phân tích), 
 | `ui-screens.test.jsx`, `ui-error-boundary.test.jsx` | Mọi màn chính của 3 vai trò dựng được; lưới bắt lỗi giao diện |
 | `i18n.test.js`, `profile.test.js` | Mọi chuỗi giao diện có bản dịch; tham số `--profile` |
 
-CI (`.github/workflows/ci.yml`, job *Client*) chạy `npm run lint` và `npm test` cho mỗi PR; trước khi commit nên tự chạy thêm `npm run build`.
+CI (`.github/workflows/ci.yml`, job *Client*) chạy `npm run lint`, `npm test` và `npm run smoke` (Electron thật dưới xvfb; lỗi thì tải ảnh chụp ở mục Artifacts của lần chạy) cho mỗi PR; trước khi commit nên tự chạy thêm `npm run build`.
 
 ## 13. Lưu ý quan trọng và lỗi hay gặp
 
