@@ -401,8 +401,8 @@ Tiền tố `/api/v1`. Chi tiết tham số và schema: **Swagger `/docs`** (lu�
 | Hồ sơ khám (EMR) | `GET patients/{id}/history`; `GET visits/{id}/record` | Physician, Nurse |
 | Lượt khám | `POST visits`; `GET/PATCH visits/{id}`; `PATCH visits/{id}/check-in`, `/start-exam`, `/release`, `/cancel`; `GET queue`; `GET visits/stale`; `POST visits/stale/cancel` | Nurse; Physician (nhận khám, trả lại, hủy lượt của mình) |
 | Thuốc, kho | `GET/POST drugs`; `GET/PATCH drugs/{id}`; `GET inventory/stock`, `/alerts`, `/reconciliation`; `GET/POST inventory/batches`; `GET inventory/batches/{id}`; `POST …/top-up`, `…/adjustments`; `GET …/movements` | Admin, Nurse; Physician xem |
-| Triệu chứng (HITL) | `GET symptoms` (danh mục Active, kèm `short_name` và `detection`: `reported` bệnh nhân kể, `exam` khi khám, `both`); `GET/PUT visits/{id}/symptoms` | Nurse, Physician (lượt khám còn mở) |
-| Đánh giá AI | `POST visits/{id}/assessment` (chạy luật ngay, xếp việc cho worker); `GET visits/{id}/assessment` (polling; mỗi bệnh gợi ý có `in_focus_scope` theo khóa `ai.focus_scope`) | Nurse chạy; Physician, Nurse xem |
+| Triệu chứng (HITL) | `GET symptoms` (danh mục Active, kèm `short_name`, `aliases` (từ đồng nghĩa) và `detection`: `reported` bệnh nhân kể, `exam` khi khám, `both`); `GET/PUT visits/{id}/symptoms` | Nurse, Physician (lượt khám còn mở) |
+| Đánh giá AI | `POST visits/{id}/assessment` (chạy luật ngay, xếp việc cho worker); `GET visits/{id}/assessment` (polling; mỗi bệnh gợi ý có `in_focus_scope` theo khóa `ai.focus_scope`) | Nurse chạy; Physician chạy lại lượt mình đang khám; Physician, Nurse xem |
 | Trích xuất triệu chứng | `POST visits/{id}/symptom-extraction`; `GET …/symptom-extraction` (gợi ý, phải xác nhận qua `PUT …/symptoms`) | Nurse chạy; Physician, Nurse xem |
 | Chẩn đoán | `GET/POST visits/{id}/diagnoses`; `PATCH diagnoses/{id}`; `POST diagnoses/{id}/retract` | Physician đang khám; Nurse xem |
 | Đơn thuốc | `GET/PUT/DELETE visits/{id}/prescription`; `POST …/prescription/confirm`, `…/prescription/reopen`; `POST visits/{id}/complete-exam` | Physician đang khám; Nurse xem |
