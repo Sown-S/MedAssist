@@ -21,7 +21,7 @@ export default function ItemFormModal({ open, kind, group, data, names, onClose,
     setKey(group?.key ?? (kind === 'rules' ? 'rf_' : ''))
     setF(initial(kind, base, data.sources))
     setErr('')
-  }, [open, kind, group]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [open, kind, group]) // eslint-disable-line react-hooks/exhaustive-deps -- chỉ đặt lại form lúc mở; data làm mới không được xoá dữ liệu đang nhập
 
   if (!open) return null
   const set = (patch) => setF((x) => ({ ...x, ...patch }))

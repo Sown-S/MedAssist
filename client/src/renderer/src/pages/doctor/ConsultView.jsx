@@ -46,7 +46,7 @@ export default function ConsultView({ visitId, onSelect }) {
             </div>
             <b>No patient in your room</b>
             <span>Call the next patient, or pick someone from the queue on the left.</span>
-            <button className="btn btn-primary" style={{ marginTop: 14 }} onClick={next} disabled={!waitingOrder(visits).length}>
+            <button className="btn btn-primary mt-14" onClick={next} disabled={!waitingOrder(visits).length}>
               <Icon name="megaphone" /> Call next patient
             </button>
           </div>

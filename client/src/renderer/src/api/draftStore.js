@@ -1,3 +1,4 @@
+import { ymd } from '../utils/format'
 // Phiếu khám đang viết dở, lưu trên máy để tắt app hay app treo không mất. Chỉ giữ trong ngày, chỉ cho người viết:
 // - bác sĩ bấm Đăng xuất (đã xong mọi ca) → xoá;
 // - người khác đăng nhập trên máy này → xoá;
@@ -5,7 +6,6 @@
 // Tự đăng xuất khi không thao tác / hết phiên thì giữ, để bác sĩ đăng nhập lại là khám tiếp.
 
 const KEY = 'medassist_consult_drafts_v1'
-const today = () => new Date().toLocaleDateString('sv-SE') // yyyy-mm-dd theo giờ máy
 
 function read() {
   try {
@@ -20,13 +20,13 @@ function wipeDisk() {
   } catch {/* không truy cập được thì thôi */}
 }
 
-let day = today()
+let day = ymd()
 let owner = null
 let drafts = {}
 let timer = null
 function load() {
   const saved = read()
-  if (saved?.day === today()) {
+  if (saved?.day === ymd()) {
     owner = saved.owner ?? null
     drafts = saved.drafts ?? {}
   } else if (saved) wipeDisk() // bản của ngày trước: xoá ngay, không đợi lần ghi sau
@@ -35,8 +35,8 @@ load()
 
 // App để mở qua đêm: bản trong bộ nhớ là của hôm qua → bỏ, không ghi lại với ngày hôm nay.
 function rollDay() {
-  if (day === today()) return
-  day = today()
+  if (day === ymd()) return
+  day = ymd()
   drafts = {}
   clearTimeout(timer)
   wipeDisk()

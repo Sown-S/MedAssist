@@ -9,7 +9,7 @@ import { labRows, syncQueue } from '../../api/queueStore'
 import { searchFacilities, referVisit, emergencyReferral, updateReferral } from '../../api/clinicApi'
 import { apiMessage } from '../../api/serviceStore'
 import { printHtml, esc } from '../admin/inventory/shared'
-import { dmy } from '../reception/shared'
+import { dmy } from '../../utils/format'
 
 // Giấy chuyển tuyến. Chuyển tuyến kết thúc lượt khám và lưu ở server (ERD v2.0). mode:
 // 'print' chỉ điền và in, không lưu · 'doctor' chuyển lượt đang khám (PATCH /visits/{id}/refer) · 'desk' lễ tân chuyển lượt
@@ -182,16 +182,16 @@ export default function DocumentModal({ subject, onClose, mode = 'print', target
             </select>
           </div>
           {desk && (
-            <div className="field" style={{ gridColumn: '1 / -1' }}>
+            <div className="field span-all">
               <label>Warning signs</label>
               <input className="input" type="text" value={ref.signs} onChange={(e) => setR({ signs: e.target.value })} placeholder="e.g. Crushing chest pain, sweating" />
             </div>
           )}
-          <div className="field" style={{ gridColumn: '1 / -1' }}>
+          <div className="field span-all">
             <label>Diagnosis {!desk && <span className="req">*</span>}</label>
             <input className="input" type="text" value={ref.diagnosis} onChange={(e) => setR({ diagnosis: e.target.value })} />
           </div>
-          <div className="field" style={{ gridColumn: '1 / -1' }}>
+          <div className="field span-all">
             <label>Clinical summary</label>
             <textarea className="input doc-ta" rows="3" value={ref.summary} onChange={(e) => setR({ summary: e.target.value })} />
           </div>

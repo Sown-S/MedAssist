@@ -1,8 +1,8 @@
 import Icon from '../../../components/Icon'
 import { ROLES, hasDefaultName, usePasswordPolicy } from '../../../api/accountStore'
-import { fmtDate, fmtDateTime } from '../inventory/shared'
 import { translate } from '../../../i18n'
 import { STATUS_FILTERS, isIdle } from './staffShared'
+import { fmtDate, fmtDateTime } from '../../../utils/format'
 
 // Bảng tài khoản: tìm, lọc theo vai trò / trạng thái, và các thao tác trên từng dòng.
 const initials = (name = '') =>

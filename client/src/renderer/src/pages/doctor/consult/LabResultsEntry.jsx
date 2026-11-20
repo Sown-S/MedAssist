@@ -1,9 +1,9 @@
 import Icon from '../../../components/Icon'
 import { translate } from '../../../i18n'
 import { labOrderSummary, labRows } from '../../../api/queueStore'
-import { hhmm } from '../../reception/shared'
 import { printLabOrder } from '../LabOrderModal'
 import { ErrorNote } from '../../../components/DataState'
+import { hhmm } from '../../../utils/format'
 
 // Kết quả cận lâm sàng nhập từ phiếu giấy: từng dòng chỉ định + kết luận của phiếu. Chưa lưu thì giữ trong bản nháp.
 export default function LabResultsEntry({ visit, labOrders, labResults, resultOf, conclusionOf, onResult, onConclusion, onCancelRow, onSave, error }) {
@@ -18,10 +18,10 @@ export default function LabResultsEntry({ visit, labOrders, labResults, resultOf
       </div>
       <div className="card-b">
         {labOrders.map((o) => (
-          <div key={o.id} style={{ marginBottom: 14 }}>
-            <div className="toolbar" style={{ marginBottom: 8 }}>
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <b style={{ fontWeight: 600 }}>{labOrderSummary(o)}</b>
+          <div className="mb-14" key={o.id}>
+            <div className="toolbar mb-8">
+              <div className="grow minw-0">
+                <b className="fw-600">{labOrderSummary(o)}</b>
                 <div className="muted small">
                   {hhmm(o.at)} · {o.by}
                   {o.note ? ' · ' + o.note : ''}
@@ -58,7 +58,7 @@ export default function LabResultsEntry({ visit, labOrders, labResults, resultOf
                           {r.ref && <span className="muted small"> · {r.ref}</span>}
                         </td>
                         <td>
-                          <input className="input" style={{ height: 36 }} type="text" value={resultOf(r)} onChange={(e) => onResult(r.key, e.target.value)} placeholder="Result, e.g. 13.2 G/L (high)" aria-label={r.name} />
+                          <input className="input h-36" type="text" value={resultOf(r)} onChange={(e) => onResult(r.key, e.target.value)} placeholder="Result, e.g. 13.2 G/L (high)" aria-label={r.name} />
                         </td>
                         <td>
                           <div className="acts">
@@ -75,12 +75,12 @@ export default function LabResultsEntry({ visit, labOrders, labResults, resultOf
                 </tbody>
               </table>
             </div>
-            <div className="field" style={{ marginTop: 10 }}>
+            <div className="field mt-10">
               <input className="input" value={conclusionOf(o)} onChange={(e) => onConclusion(o.id, e.target.value)} placeholder="Conclusion of this order, e.g. Raised inflammatory markers…" />
             </div>
           </div>
         ))}
-        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+        <div className="d-flex justify-end">
           <button className="btn btn-outline btn-sm" onClick={() => onSave()}>
             <Icon name="save" />
             {translate('Save lab results')}

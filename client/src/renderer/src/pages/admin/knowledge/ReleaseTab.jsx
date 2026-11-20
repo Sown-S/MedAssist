@@ -31,10 +31,10 @@ export default function ReleaseTab({ data, names, onChanged, autoCreate }) {
   useEffect(() => {
     setDetail(null)
     if (open) getRelease(open.release_id).then(setDetail, (e) => setErr(errorText(e)))
-  }, [open?.release_id, open?.status, data]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [open?.release_id, open?.status, data]) // eslint-disable-line react-hooks/exhaustive-deps -- open suy ra từ data, theo dõi id/trạng thái là đủ
   useEffect(() => {
     if (autoCreate && !open) setCreating(true)
-  }, [autoCreate]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [autoCreate]) // eslint-disable-line react-hooks/exhaustive-deps -- chỉ tự mở form tạo khi vừa được yêu cầu, không mở lại khi bản phát hành đóng
 
   async function run(fn, ok) {
     setErr('')
@@ -53,7 +53,7 @@ export default function ReleaseTab({ data, names, onChanged, autoCreate }) {
       {!open ? (
         <div className="kb-release-empty">
           <Empty icon="folder" title="No release is being drafted" text="Open a release to group your changes; a doctor approves the whole release at once." />
-          <div style={{ textAlign: 'center' }}>
+          <div className="text-center">
             <button className="btn btn-primary" onClick={() => setCreating(true)}>
               + Open a release
             </button>
@@ -92,7 +92,7 @@ export default function ReleaseTab({ data, names, onChanged, autoCreate }) {
         </div>
       )}
 
-      <div className="card" style={{ marginTop: 14 }}>
+      <div className="card mt-14">
         <div className="card-h">
           <h3>Release history</h3>
         </div>
@@ -138,7 +138,7 @@ function CreateReleaseModal({ open, suggested, onClose, onCreate }) {
           <label>Release label</label>
           <input className="input num" value={label} maxLength={30} onChange={(e) => setLabel(e.target.value)} />
         </div>
-        <div className="field" style={{ marginTop: 10 }}>
+        <div className="field mt-10">
           <label>What changes (optional)</label>
           <textarea className="input" rows={3} value={desc} onChange={(e) => setDesc(e.target.value)} placeholder="vd: Thêm nhóm bệnh da liễu" />
         </div>

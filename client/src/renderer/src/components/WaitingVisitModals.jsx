@@ -47,7 +47,7 @@ export function EditWaitingModal({ visit, onClose }) {
         setLoaded(true)
       })
       .catch((e) => showToast(translate(e.message), 'error'))
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- chỉ nạp lại khi đổi lượt khám, không nạp lại mỗi lần render
   }, [visit.id])
   const vit = vitalCheck(f)
 
@@ -123,8 +123,7 @@ export function EditWaitingModal({ visit, onClose }) {
       </div>
       <div className="modal-f">
         <button
-          className="btn btn-danger-outline"
-          style={{ marginRight: 'auto' }}
+          className="btn btn-danger-outline mr-auto"
           onClick={() => setReferring(true)}
           title={translate('Accident, critical condition, severe breathing difficulty… — beyond the clinic: transfer now')}
         >
@@ -158,11 +157,11 @@ export function CancelVisitModal({ visit, onClose }) {
     <Modal open onClose={onClose}>
       <ModalHeader title={translate('Cancel visit') + ' — ' + ticketNo(visit.ticket) + ' ' + visit.name} onClose={onClose} />
       <div className="modal-b">
-        <p className="muted small" style={{ marginTop: 0 }}>
+        <p className="muted small mt-0">
           The visit leaves the queue and is kept as “left without finishing” with your reason. The patient record is not deleted.
         </p>
         {pendingFlag && (
-          <div className="banner d" style={{ marginBottom: 10 }}>
+          <div className="banner d mb-10">
             <Icon name="ban" />
             <div className="txt">{translate('This patient has warning signs waiting for a doctor — let the doctor decide first.')}</div>
           </div>
@@ -174,7 +173,7 @@ export function CancelVisitModal({ visit, onClose }) {
             </label>
           ))}
         </div>
-        <div className="field" style={{ marginTop: 10 }}>
+        <div className="field mt-10">
           <label>
             Note {reason === 'other' && <span className="req">*</span>}
           </label>

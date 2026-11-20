@@ -7,8 +7,8 @@ import { useToast } from '../../context/ToastContext'
 import { translate } from '../../i18n'
 import { takePatient, takeNext, minutesSince, labRows, releaseVisit, leaveVisit, LEFT_REASONS, ST, useQueue, myInvite, inviteAgain, dropInvite } from '../../api/queueStore'
 import { deleteDraft } from '../../api/draftStore'
-import { dmy, hhmm } from '../reception/shared'
 import { vitalsText } from '../../api/vitals'
+import { dmy, hhmm } from '../../utils/format'
 
 
 const no = (t) => String(t).padStart(3, '0')
@@ -53,7 +53,7 @@ export function useTakePatient(open) {
           </p>
         </div>
         {busy.target.priority && (
-          <div className="banner w" style={{ marginTop: 14 }}>
+          <div className="banner w mt-14">
             <Icon name="zap" />
             <div className="txt">
               <b>

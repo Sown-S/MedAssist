@@ -1,7 +1,7 @@
 // Kiểm tra nhanh bản build trên Electron thật (Chromium của Electron, không phải jsdom như vitest):
 //   1. Không có máy chủ  → màn khởi động phải hiện, phủ kín cửa sổ, báo "không tới được máy chủ".
 //   2. Bật máy chủ giả   → bấm "Thử lại" → màn đăng nhập phải hiện, phủ kín cửa sổ.
-// Bắt được lỗi kiểu "trắng màn hình" (CSS vỡ trên Chromium 126) mà test jsdom không thấy.
+// Bắt được lỗi kiểu "trắng màn hình" (CSS vỡ trên Chromium của Electron, từng gặp ở bản 31) mà test jsdom không thấy.
 // Chạy: npm run smoke (build --mode eval rồi chạy file này). Trên Linux không có màn hình: xvfb-run -a npm run smoke.
 // Không cần thư viện thêm: nói chuyện với cửa sổ qua Chrome DevTools Protocol (WebSocket có sẵn trong Node 22).
 import { spawn } from 'node:child_process'

@@ -13,7 +13,7 @@ export function SecondaryDx({ list, onChange }) {
   return (
     <>
       {list.length > 0 && (
-        <div className="dx-tags" style={{ marginBottom: 6 }}>
+        <div className="dx-tags mb-6">
           {list.map((x) => (
             <span key={x} className="dx-tag sec">
               {x}
@@ -24,11 +24,11 @@ export function SecondaryDx({ list, onChange }) {
           ))}
         </div>
       )}
-      <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
-        <div style={{ flex: 1 }}>
+      <div className="d-flex gap-8 items-start">
+        <div className="grow">
           <ICDPicker value={text} onChange={setText} onPick={add} />
         </div>
-        <button className="btn btn-ghost btn-sm" style={{ marginTop: 4 }} disabled={!text.trim()} onClick={() => add(text)}>
+        <button className="btn btn-ghost btn-sm mt-4" disabled={!text.trim()} onClick={() => add(text)}>
           <Icon name="plus" />
           {translate('Add')}
         </button>

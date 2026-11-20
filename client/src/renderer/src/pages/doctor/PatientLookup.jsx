@@ -68,7 +68,7 @@ export default function PatientLookup() {
     <div className="lookup2">
       <div className="card lookup-search">
         <div className="card-b">
-          <div className="search" style={{ width: '100%' }}>
+          <div className="search w-full">
             <Icon name="search" />
             <input
               className="input"
@@ -97,7 +97,7 @@ export default function PatientLookup() {
             <h3>
               <Icon name="users" />
               {translate('Search results')}
-              <span className="muted" style={{ fontWeight: 400 }}>
+              <span className="muted fw-400">
                 · {results.length}
               </span>
             </h3>
@@ -171,7 +171,7 @@ export default function PatientLookup() {
         <div className="lookup-grid">
           <div className="card pt-card">
             <div className="pt-id">
-              <span className="ava" style={{ width: 48, height: 48, fontSize: 'var(--fs-md)' }}>
+              <span className="ava w-48 h-48 fs-md">
                 {initials(p.name)}
               </span>
               <div>

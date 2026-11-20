@@ -100,12 +100,12 @@ export default function AssessmentCard({ a, decisions, onAccept, onDismiss }) {
         </p>
       )}
       {a.ai_status === 'Pending' && (
-        <p className="muted small" style={{ marginTop: 8 }}>
+        <p className="muted small mt-8">
           {translate('Waiting for the result — you can keep examining; it appears here automatically.')}
         </p>
       )}
       {a.ai_status === 'Preliminary' && (
-        <p className="muted small" style={{ marginTop: 8 }}>
+        <p className="muted small mt-8">
           {translate('Preliminary ranking by the approved rules — the AI explanation will appear here automatically.')}
         </p>
       )}
@@ -201,7 +201,7 @@ export default function AssessmentCard({ a, decisions, onAccept, onDismiss }) {
       )}
 
       {['Ready', 'Degraded'].includes(a.ai_status) && !a.candidates.length && (
-        <p className="muted small" style={{ marginTop: 8 }}>
+        <p className="muted small mt-8">
           {translate('No condition in the approved knowledge base matches the symptoms recorded at check-in.')}
         </p>
       )}
@@ -217,7 +217,7 @@ export default function AssessmentCard({ a, decisions, onAccept, onDismiss }) {
         </p>
       )}
       {open && (
-        <p className="muted small" style={{ marginTop: 8 }}>
+        <p className="muted small mt-8">
           {translate('Knowledge')} {a.knowledge_release ?? '—'} · {translate('model')} {a.model_version ?? '—'} · {translate('prompt')} {a.prompt_version ?? '—'}
         </p>
       )}

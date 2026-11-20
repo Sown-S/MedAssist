@@ -84,7 +84,7 @@ Mật khẩu chung: **`Kiemthu@2026`** (đổi được trong `deploy/eval.env` 
 Dữ liệu nạp sẵn:
 
 - Danh mục: 386 thuốc có lô (3 lô hết hạn sau 20 ngày, 3 thuốc dưới ngưỡng tồn), 28 dịch vụ và xét nghiệm, 3 gói khám,
-  374 cơ sở nhận chuyển tuyến, bản tri thức Active (153 bệnh, 299 triệu chứng, 12 luật).
+  374 cơ sở nhận chuyển tuyến, bản tri thức Active (154 bệnh, 299 triệu chứng, 12 luật).
 - Lượt khám cũ trong 2–3 tuần trước ngày nạp: 34 lượt, gồm 31 lượt đã xong (có chẩn đoán, đơn thuốc, hóa đơn), 2 lượt chuyển
   tuyến, 1 lượt hủy.
   Báo cáo, lịch sử khám, danh sách đơn thuốc theo tuần/tháng có số liệu ngay.

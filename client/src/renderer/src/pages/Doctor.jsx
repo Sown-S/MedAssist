@@ -7,13 +7,13 @@ import { useQueue, useQueueSync, reviewRedFlag, inviteAgain, isPendingFlag, ST }
 import { useToast } from '../context/ToastContext'
 import { useTakePatient } from './doctor/doctorShared'
 import { translate } from '../i18n'
-import { hhmm } from './reception/shared'
 import DoctorHome from './doctor/DoctorHome'
 import ConsultView from './doctor/ConsultView'
 import DrugCabinetView from './doctor/DrugCabinetView'
 import PrescriptionsLive from './reception/PrescriptionsLive'
 import PatientLookup from './doctor/PatientLookup'
 import ClusterAlerts from '../components/ClusterAlerts'
+import { hhmm } from '../utils/format'
 
 const VIEWS = {
   home: { icon: 'home', tab: 'Overview', title: 'Doctor dashboard', sub: 'Today’s queue, your patients and prescriptions at a glance' },

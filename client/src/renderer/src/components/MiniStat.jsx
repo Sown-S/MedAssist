@@ -3,8 +3,7 @@ import { translate } from '../i18n'
 
 // Ô tóm tắt nhỏ theo bản mẫu (.summary > .sum): icon vuông bên trái, số và nhãn bên phải.
 // tone: 'p' xanh dương (mặc định) | 's' xanh lá | 'w' cam | 'd' đỏ | 'n' xám. onClick → ô bấm được để lọc.
-// eslint-disable-next-line no-unused-vars
-export function MiniStat({ icon = 'chart', value, label, tone = 'p', alert, active, onClick, mono, children }) {
+export function MiniStat({ icon = 'chart', value, label, tone = 'p', alert, active, onClick, children }) {
   const Tag = onClick ? 'button' : 'div'
   return (
     <Tag

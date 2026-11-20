@@ -1,7 +1,7 @@
 import { translate } from '../../i18n'
 import { findDrugByName } from '../../api/inventoryStore'
 import { unitLabel, printHtml, esc } from '../admin/inventory/shared'
-import { dmy } from '../reception/shared'
+import { dmy } from '../../utils/format'
 
 // Danh mục thuốc của phòng khám chỉ có thuốc thường nên mọi dòng in trên một đơn.
 export function printPrescription(rx, drugs, doctorName) {

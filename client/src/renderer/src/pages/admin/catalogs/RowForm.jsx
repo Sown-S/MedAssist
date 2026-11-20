@@ -3,11 +3,10 @@ import Icon from '../../../components/Icon'
 import Modal, { ModalHeader } from '../../../components/Modal'
 import { translate } from '../../../i18n'
 import { useToast } from '../../../context/ToastContext'
-import { todayISO } from '../../../api/inventoryStore'
-import { fmtMoney, fmtDateTime } from '../inventory/shared'
 import { SCHEMAS, resolveRef, packageTotal } from './schemas'
 import { saveLiveRow, livePriceHistory } from '../../../api/serviceCatalogLive'
 import DateField from '../../../components/DateField'
+import { fmtMoney, fmtDateTime, ymd } from '../../../utils/format'
 
 export function RowForm({ catalogKey, row, all, cats, inv, onClose }) {
   const s = SCHEMAS[catalogKey]
@@ -25,7 +24,7 @@ export function RowForm({ catalogKey, row, all, cats, inv, onClose }) {
       if (init[fd.key] === undefined) init[fd.key] = fd.type === 'select' ? (fd.options[0]?.key ?? '') : ['pkgItems', 'rxItems', 'advicePick'].includes(fd.type) ? [] : ''
     }
     if (catalogKey === 'address' && isNew) init.level = 'commune'
-    if (catalogKey === 'services') init.priceFrom = todayISO()
+    if (catalogKey === 'services') init.priceFrom = ymd()
     return init
   })
   const [tried, setTried] = useState(false)

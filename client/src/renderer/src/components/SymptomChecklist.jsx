@@ -70,8 +70,8 @@ export default function SymptomChecklist({ value, onSet, disabled = false }) {
       )}
 
       {catalog.list.length > 0 && (
-        <div style={{ marginTop: 12 }}>
-          <div className="search" style={{ width: '100%' }}>
+        <div className="mt-12">
+          <div className="search w-full">
             <Icon name="search" />
             <input
               className="input"
@@ -85,12 +85,12 @@ export default function SymptomChecklist({ value, onSet, disabled = false }) {
             />
           </div>
           {query.trim() && (
-            <div className="sym-sec open sym-results" style={{ marginTop: 8 }}>
-              <div className="sym-grid" style={{ paddingTop: 10 }}>
+            <div className="sym-sec open sym-results mt-8">
+              <div className="sym-grid pt-10">
                 {results.length ? (
                   shown.map((s) => <Row key={s.key} s={s} value={value} onSet={onSet} disabled={disabled} />)
                 ) : (
-                  <p className="sym-empty" style={{ padding: 0 }}>
+                  <p className="sym-empty p-0">
                     {translate('No matching symptom.')}
                   </p>
                 )}

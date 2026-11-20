@@ -6,11 +6,12 @@ import { useAuth } from '../../../context/AuthContext'
 import { useToast } from '../../../context/ToastContext'
 import { useInventory } from '../../../api/inventoryStore'
 import { ConfirmDialog, Empty } from '../ui'
-import { Pager, paginate, fmtDate, fmtDateTime } from '../inventory/shared'
+import { Pager, paginate } from '../inventory/shared'
 import { SCHEMAS, optLabel } from './schemas'
 import { useLiveCatalog, setLiveActive } from '../../../api/serviceCatalogLive'
 import { RowForm } from './RowForm'
 import { exportCatalog } from './catalogCsv'
+import { fmtDate, fmtDateTime } from '../../../utils/format'
 
 export default function CatalogDetailPage({ catalogKey, params, onNavigate }) {
   const s = SCHEMAS[catalogKey]

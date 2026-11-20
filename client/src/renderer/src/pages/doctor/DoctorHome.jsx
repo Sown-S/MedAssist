@@ -7,10 +7,10 @@ import { translate } from '../../i18n'
 import { useQueue, waitingOrder, minutesSince, isMine, inRoom, atLabs, ST, readyOrder } from '../../api/queueStore'
 import { usePrescriptions } from '../../api/prescriptionApi'
 import { useInventory, stockOf } from '../../api/inventoryStore'
-import { useNow, periodRange, dmy, hhmm, PAY_STATUS } from '../reception/shared'
+import { useNow, periodRange, PAY_STATUS } from '../reception/shared'
 import { useTakePatient, pastVisitsOf, InviteBar } from './doctorShared'
 import { WaitingModal, LabListModal, no } from './DoctorHomeModals'
-import { ymd } from '../../utils/format'
+import { ymd, dmy, hhmm } from '../../utils/format'
 
 export default function DoctorHome({ go }) {
   const { user } = useAuth()
@@ -147,8 +147,8 @@ export default function DoctorHome({ go }) {
           {first ? (
             <div className="next-card">
               <span className="no num">{no(first.ticket)}</span>
-              <div style={{ flex: 1, minWidth: 0, cursor: 'pointer' }} onClick={() => setWaitOpen(first.id)} title={translate('View the patient summary')}>
-                <b style={{ fontSize: 'var(--fs-md)' }}>{first.name}</b>{' '}
+              <div className="grow minw-0 pointer" onClick={() => setWaitOpen(first.id)} title={translate('View the patient summary')}>
+                <b className="fs-md">{first.name}</b>{' '}
                 {first.triage === 'emergency' ? <span className="badge b-danger">{translate('Emergency')}</span> : first.priority && <span className="badge b-warning">{translate('Priority')}</span>}
                 {first.status === ST.WAITING && <span className="badge b-neutral">{translate('Not checked in')}</span>}
                 <div className="muted small">
@@ -204,7 +204,7 @@ export default function DoctorHome({ go }) {
                       return (
                         <tr key={r.id} className="clickable" onClick={() => go('prescriptions')} title={translate('View & review the prescription')}>
                           <td>
-                            <b style={{ fontWeight: 500 }}>{r.name}</b>
+                            <b className="fw-500">{r.name}</b>
                           </td>
                           <td className="muted">{r.diagnosis || '—'}</td>
                           <td>

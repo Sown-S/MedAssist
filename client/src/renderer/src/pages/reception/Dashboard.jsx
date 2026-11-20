@@ -3,10 +3,9 @@ import Icon from '../../components/Icon'
 import { translate } from '../../i18n'
 import { useQueue, isQueued, isPendingFlag, isIntakeOpen, inRoom, atLabs, ST } from '../../api/queueStore'
 import { ticketNo } from '../../components/queuePrint'
-import { dmy } from './shared'
 import { useAwaiting, fromAwaiting, useTodayInvoices } from '../../api/billingApi'
 import { usePrescriptions } from '../../api/prescriptionApi'
-import { money, ymd } from '../../utils/format'
+import { money, ymd, dmy } from '../../utils/format'
 
 // Chờ thu tiền lấy từ GET /billing/awaiting (có hoá đơn và số tiền).
 
@@ -108,7 +107,7 @@ export default function Dashboard({ go, readOnly, onPay }) {
                 <div className="rows">
                   {unpaid.map((v) => (
                     <div className="r" key={v.id}>
-                      <span className="stt num" style={{ width: 40, fontWeight: 700 }}>
+                      <span className="stt num w-40 fw-700">
                         {ticketNo(v.ticket)}
                       </span>
                       <div className="t">

@@ -39,7 +39,7 @@ export function ConfirmDialog({ open, title, message, children, confirmLabel = '
         )}
         {children}
         {requireNote && (
-          <div className="field" style={{ marginTop: 12 }}>
+          <div className="field mt-12">
             <label>
               Reason for this change <span className="req">*</span>
             </label>

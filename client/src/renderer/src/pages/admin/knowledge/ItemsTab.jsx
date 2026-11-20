@@ -7,7 +7,7 @@ import { KINDS, itemVersions, previewDeactivate, deactivate } from '../../../api
 import { Empty } from '../ui'
 import ItemFormModal from './ItemFormModal'
 import { KIND_META, StatusBadge, Summary, groupByKey, errorText } from './shared'
-import { shortDateTime } from '../../../utils/format'
+import { fmtDateTime } from '../../../utils/format'
 import Skeleton from '../../../components/Skeleton'
 import { ErrorNote } from '../../../components/DataState'
 
@@ -48,7 +48,7 @@ export default function ItemsTab({ data, names, canEdit, openRelease, onChanged,
   return (
     <>
       {canEdit && !editable && (
-        <div className="banner i" style={{ marginBottom: 14 }}>
+        <div className="banner i mb-14">
           <Icon name="lock" />
           <div className="txt">
             {openRelease?.status === 'PendingApproval'
@@ -220,7 +220,7 @@ function HistoryModal({ kind, group, names, onClose }) {
                     <td>
                       <Summary kind={kind} values={r.values} names={names} />
                     </td>
-                    <td className="small">{shortDateTime(r.created_at)}</td>
+                    <td className="small">{fmtDateTime(r.created_at)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -280,14 +280,14 @@ function DeactivateModal({ kind, group, names, onClose, onDone }) {
           </p>
         </div>
         {isRedFlag && (
-          <div className="banner d" style={{ marginTop: 14 }}>
+          <div className="banner d mt-14">
             <Icon name="siren" />
             <div className="txt">{translate('Warning: this is a red-flag rule. Turning it off means doctors will NOT be alerted for this emergency sign.')}</div>
           </div>
         )}
         {!deps && !err && <Skeleton rows={2} cols={2} compact />}
         {deps && deps.length > 0 && (
-          <div className="banner w" style={{ marginTop: 14 }}>
+          <div className="banner w mt-14">
             <Icon name="triangle-alert" />
             <div className="txt">
               <b>These items will be turned off too:</b>
@@ -301,7 +301,7 @@ function DeactivateModal({ kind, group, names, onClose, onDone }) {
             </div>
           </div>
         )}
-        <div className="field" style={{ marginTop: 12 }}>
+        <div className="field mt-12">
           <label>
             Reason <span className="req">*</span>
           </label>

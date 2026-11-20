@@ -5,8 +5,9 @@ import LineChart from '../components/LineChart'
 import { MiniStat, MiniStats } from '../components/MiniStat'
 import Icon from '../components/Icon'
 import { useApiData } from '../hooks/useApiData'
-import { PERIODS, rangeOf, reportPath, fillDays, vnd, percent } from '../api/reportsApi'
+import { PERIODS, rangeOf, reportPath, fillDays, percent } from '../api/reportsApi'
 import { translate } from '../i18n'
+import { vnd, fmtDate } from '../utils/format'
 
 // Báo cáo vận hành: số liệu tổng hợp chỉ đọc. Precision / Recall không tính ở đây — phòng khám không có nhãn đúng.
 function HBar({ label, value, of, text, tone = '' }) {
@@ -25,7 +26,6 @@ function HBar({ label, value, of, text, tone = '' }) {
 }
 
 const PERIOD_SUB = { today: 'Today', week: 'This week', month: 'This month' }
-const dmy = (iso) => iso.split('-').reverse().join('/')
 
 export default function Reports() {
   const [period, setPeriod] = useState('today')
@@ -42,7 +42,7 @@ export default function Reports() {
   const decided = d ? d.accepted_top + d.chose_other + d.no_suggestion : 0
   const sub = translate(PERIOD_SUB[period])
 
-  const when = sub + ' · ' + (range[0] === range[1] ? dmy(range[0]) : dmy(range[0]) + ' → ' + dmy(range[1]))
+  const when = sub + ' · ' + (range[0] === range[1] ? fmtDate(range[0]) : fmtDate(range[0]) + ' → ' + fmtDate(range[1]))
   return (
     <div className="content view">
       <div className="pg-h">
@@ -124,13 +124,13 @@ export default function Reports() {
                   </div>
                 </div>
               </div>
-              <div style={{ marginTop: 18 }}>
+              <div className="mt-18">
                 <MiniStats>
                   <MiniStat icon="clock" tone="n" value={a.avg_latency_ms == null ? '—' : (a.avg_latency_ms / 1000).toFixed(1).replace('.', ',') + ' s'} label="Average AI assessment time" />
                   <MiniStat icon="fileText" tone="n" value={ai.extractions.completed + ' / ' + ai.extractions.total} label="Free-text extractions completed" />
                 </MiniStats>
               </div>
-              <p className="muted small" style={{ marginTop: 12 }}>
+              <p className="muted small mt-12">
                 <Icon name="info" /> <span>Precision, recall and F1 are measured on the frozen test set, not on clinic data.</span>
               </p>
             </div>

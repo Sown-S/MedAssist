@@ -31,7 +31,7 @@
 /* Thẻ đã theo cấu trúc bản mẫu (.card-h + .card-b) không có padding ở khung ngoài */
 .card:has(>.card-h),.card:has(>.card-b){padding:0}
 /* Chưa có ai cần gọi: dải gọi vẫn giữ khung xanh như bản mẫu, chỉ nhẹ hơn (số mờ, bóng nhỏ) */
-.calling.idle{background:linear-gradient(120deg,var(--primary),color-mix(in srgb,var(--primary) 78%,#5AA2FF));box-shadow:var(--shadow)}.calling.idle .no{opacity:.55}.calling.idle .txt-idle{opacity:.92}
+.calling.idle{background:linear-gradient(120deg,var(--primary),color-mix(in srgb,var(--primary) 78%,#5AA2FF));box-shadow:var(--shadow)}.calling.idle .no{opacity:.55}
 .pg-h>:not(:first-child){display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 /* Ca cờ đỏ ở bảng Ca cấp cứu: việc lễ tân cần làm ngay dưới badge kết quả */
 .rf-todo{display:flex;flex-direction:column;align-items:flex-start;gap:6px;margin-top:6px;max-width:420px}
@@ -57,7 +57,7 @@ tr.clickable{cursor:pointer}tr.clickable:hover td{background:var(--surface-2)}
 .sum.click:hover{border-color:var(--border-strong)}
 .sum.on{border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-soft)}
 .seg button.err{color:var(--danger)}
-.qa-b .none{padding:6px 12px 12px;color:var(--ink-3);font-size:var(--fs-sm)}
+.qa-b .none{color:var(--ink-3);font-size:var(--fs-sm)}
 .sug{flex-wrap:wrap}.sug .acts{flex-basis:100%;justify-content:flex-start;padding-left:32px;gap:6px}.sug.on{border-color:var(--success);background:var(--success-soft)}
 .link-btn{border:0;background:none;padding:0;color:var(--primary-ink);font:inherit;cursor:pointer}
 .card.queue{padding:0}
@@ -142,7 +142,7 @@ td.num,td .num{white-space:nowrap}
 .net-bar i{position:absolute;top:0;bottom:0;width:35%;border-radius:0 2px 2px 0;background:linear-gradient(90deg,transparent,var(--primary) 30%,var(--primary));animation:netbar 1.1s var(--ease) infinite}
 @keyframes netbar{0%{left:-35%}100%{left:100%}}
 /* Thông báo nổi khi một yêu cầu chờ quá 5 giây. */
-.net-toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:90;display:flex;gap:12px;align-items:flex-start;max-width:min(520px,calc(100vw - 32px));padding:12px 16px;border-radius:var(--radius-lg);background:var(--ink);color:#fff;box-shadow:var(--shadow-lg);animation:nettoast .2s var(--ease)}
+.net-toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:90;display:flex;gap:12px;align-items:flex-start;max-width:min(520px,calc(100vw - 32px));padding:12px 16px;border-radius:var(--radius-lg);color:#fff;box-shadow:var(--shadow-lg);animation:nettoast .2s var(--ease)}
 .net-toast b{display:block;font-weight:600}.net-toast span{font-size:13px;opacity:.82}
 .net-toast .spin{flex:none;width:18px;height:18px;margin-top:2px;border-radius:50%;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;animation:rot .8s linear infinite}
 @keyframes nettoast{from{opacity:0;transform:translate(-50%,8px)}to{opacity:1;transform:translate(-50%,0)}}
@@ -175,7 +175,7 @@ tr.row-new>td{animation:rownew 2.4s ease-out}
 .boot .muted{margin:0;font-size:var(--fs-sm)}
 .boot .banner{width:100%}
 .boot-acts{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
-.boot-addr{width:100%;text-align:left;padding:14px;border:1px solid var(--border);border-radius:var(--radius-lg);background:var(--surface);animation:fade .2s}
+.boot-addr{width:100%;text-align:left;border-radius:var(--radius-lg);animation:fade .2s}
 .app.collapsed .side .nav .t{flex:0 0 0}
 /* Ảnh màn đăng nhập (vuông): canh để bác sĩ và bệnh nhân nằm giữa khung dọc. */
 .cx-photo img{object-position:46% 50%}
@@ -262,22 +262,12 @@ tr.row-new>td{animation:rownew 2.4s ease-out}
 .mini.split .mini-dark{position:absolute;inset:0 0 0 50%;display:flex;clip-path:polygon(18% 0,100% 0,100% 100%,0 100%)}
 /* Màu thanh menu */
 .swatches{display:flex;gap:10px;flex-wrap:wrap}
-.swatch{display:flex;align-items:center;gap:10px;padding:6px 14px 6px 6px;border:1.5px solid var(--border);border-radius:999px;background:var(--surface);cursor:pointer;font-size:var(--fs-sm);font-weight:500;color:var(--ink);transition:border-color .15s,box-shadow .15s}
-.swatch:hover:not(:disabled){border-color:var(--border-strong)}
-.swatch.on{border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-soft)}
-.swatch:disabled{opacity:.45;cursor:not-allowed}
-.sw-chip{width:34px;height:26px;border-radius:999px;display:flex;flex-direction:column;justify-content:center;gap:2px;padding:0 8px;border:1px solid var(--border)}
-.sw-chip i{display:block;height:3px;border-radius:2px;background:currentColor;opacity:.5}.sw-chip i:first-child{opacity:1}
-/* Cỡ chữ */
-.seg .aa{font-weight:700;margin-right:2px}.seg .fs-sm .aa{font-size:12px}.seg .fs-md .aa{font-size:15px}.seg .fs-lg .aa{font-size:18px}
 /* Ngôn ngữ */
 .lang-pick{display:grid;grid-template-columns:repeat(2,minmax(0,200px));gap:12px}
 .pick.lang{flex-direction:row;align-items:center;padding:10px 12px}
 .pick.lang .flag{display:grid;place-items:center;width:36px;height:28px;border-radius:6px;background:var(--surface-2);border:1px solid var(--border);font-size:12px;font-weight:700;color:var(--ink-2);letter-spacing:.04em}
 .pick.lang .pick-l{flex:1}
 /* Tài khoản */
-.acct-card{display:flex;align-items:center;gap:14px;padding:14px;margin-bottom:8px;border:1px solid var(--border);border-radius:var(--radius-lg);background:linear-gradient(135deg,var(--primary-soft),transparent 70%)}
-.acct-card b{display:block;font-size:var(--fs-md)}
 .ava.lg{width:52px;height:52px;font-size:var(--fs-md)}
 @media (max-width:760px){.pset{grid-template-columns:1fr}.pset-nav{flex-direction:row;border-right:0;border-bottom:1px solid var(--border)}.pset-note{display:none}.pick-grid{grid-template-columns:1fr 1fr}}
 /* Ô tóm tắt đều nhau trên mọi trang (Cấp phát, Hoá đơn, Đơn thuốc, Kho…) */
@@ -445,7 +435,7 @@ kbd{display:inline-grid;place-items:center;min-width:24px;height:24px;padding:0 
 .settings .vtab .set-dot{margin-top:6px}
 @media (max-width:1400px){.settings{grid-template-columns:250px 1fr}}
 
-/* 0.2.6 — dấu hiệu khi khám (phần O) và nhãn ngoài phạm vi trọng tâm */
+/* 0.2.5 — dấu hiệu khi khám (phần O) và nhãn ngoài phạm vi trọng tâm */
 .exam-signs{border:1px solid var(--border);border-radius:var(--radius);background:var(--surface-2,var(--surface));padding:12px 14px}
 .exam-signs-head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:10px}
 .exam-signs-head .lab{display:inline-flex;align-items:center;gap:6px;font-weight:600;color:var(--ink);margin:0}
@@ -464,7 +454,6 @@ kbd{display:inline-grid;place-items:center;min-width:24px;height:24px;padding:0 
 .kb-tag.rep{background:var(--surface-2,#f1f5f9);color:var(--ink-3)}
 
 /* Thông báo phiên bản (VersionBanners): thẻ gọn, có biểu tượng, tiêu đề, giải thích, cặp phiên bản và hành động */
-.vnotes{display:flex;flex-direction:column;gap:10px}
 .vnote{--tone:var(--primary);--tone-soft:var(--primary-soft);position:relative;display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:start;padding:14px 10px 14px 14px;border-radius:14px;background:var(--surface);border:1px solid color-mix(in srgb,var(--tone) 22%,var(--border));box-shadow:0 1px 2px rgba(16,24,40,.04),0 8px 24px -16px rgba(16,24,40,.18);overflow:hidden}
 .vnote.warn{--tone:var(--warning);--tone-soft:var(--warning-soft)}
 .vnote-ic{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;background:var(--tone-soft);color:var(--tone)}
@@ -526,12 +515,6 @@ kbd{display:inline-grid;place-items:center;min-width:24px;height:24px;padding:0 
 .clock-d{font-size:13.5px;color:var(--ink-3);text-transform:capitalize}
 .clock-tz{margin-left:auto;display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 12px;border-radius:999px;background:var(--surface);border:1px solid var(--border);font-size:12.5px;font-weight:600;color:var(--ink-2);white-space:nowrap}
 .clock-tz svg{width:14px;height:14px;color:var(--primary)}
-.clock-fmts{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--border)}
-.clock-fmts>div{display:flex;flex-direction:column;gap:3px;padding:12px 18px}
-.clock-fmts>div+div{border-left:1px solid var(--border)}
-.clock-fmts span{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-3);font-weight:600}
-.clock-fmts b{font-size:16px;color:var(--ink)}
-.clock-fmts small{font-size:12px;color:var(--ink-3)}
 
 /* Cài đặt — Tài khoản */
 .acct-hero{display:flex;align-items:center;gap:18px;padding:20px;border-radius:16px;background:linear-gradient(120deg,var(--primary-soft),var(--surface) 72%);border:1px solid color-mix(in srgb,var(--primary) 18%,var(--border))}
@@ -579,11 +562,10 @@ kbd{display:inline-grid;place-items:center;min-width:24px;height:24px;padding:0 
 .main .tile.rt.htile .tl{flex:1;min-width:0;font-size:16px;font-weight:600;color:var(--ink-2);line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .main .tile.rt.htile .htile-go{position:absolute;top:16px;right:16px;width:18px;height:18px;color:var(--tone);opacity:0;transform:translate(-4px,4px);transition:opacity .18s,transform .18s}
 .main .tile.rt.htile.click:hover .htile-go,.main .tile.rt.htile.click:focus-visible .htile-go{opacity:1;transform:none}
-.main .tile.rt.htile .htile-n{display:block;margin-top:16px;font-size:34px;font-weight:700;line-height:1;letter-spacing:-.02em;color:var(--ink)}
+.main .tile.rt.htile .htile-n{display:block;margin-top:16px;font-size:34px;font-weight:700;line-height:1;letter-spacing:-.02em}
 .main .tile.rt.htile .htile-s{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-top:8px;font-size:13.5px;line-height:1.45;color:var(--ink-3)}
 /* cảnh báo: nền đỏ nhạt, số đỏ, chấm nhấp nháy */
 .main .tile.rt.htile.alert{border-color:color-mix(in srgb,var(--danger) 40%,transparent);background:linear-gradient(160deg,color-mix(in srgb,var(--danger-soft) 85%,var(--surface)),var(--surface) 70%)}
-.main .tile.rt.htile.alert .htile-n{color:var(--danger)}
 .main .tile.rt.htile.alert .htile-s{color:color-mix(in srgb,var(--danger) 80%,var(--ink-3));font-weight:500}
 .main .tile.rt.htile .htile-ping{width:9px;height:9px;flex:none;border-radius:50%;background:var(--danger);animation:dotpulse 1.8s ease-out infinite}
 :root[data-motion="reduce"] .main .tile.rt.htile .htile-ping{animation:none}
@@ -609,12 +591,11 @@ kbd{display:inline-grid;place-items:center;min-width:24px;height:24px;padding:0 
 .summary .sum.t-n{--tone:#6B7A88;--tone-2:#9AA7B4;--tone-soft:#EEF1F4}
 .summary .sum>.ico{width:48px;height:48px;flex:none;border-radius:13px;display:grid;place-items:center;color:var(--tone);background:var(--surface);border:1.5px solid color-mix(in srgb,var(--tone) 45%,transparent)}
 .summary .sum>.ico svg{width:22px;height:22px;stroke-width:1.6;color:var(--tone)}
-.summary .sum b{font-size:24px;font-weight:700;line-height:1.05;letter-spacing:-.015em;color:var(--ink)}
+.summary .sum b{font-size:24px;font-weight:700;line-height:1.05;letter-spacing:-.015em}
 .summary .sum span{display:block;margin-top:4px;font-size:14px;color:var(--ink-3)}
 .summary .sum.click:hover{transform:translateY(-2px);border-color:color-mix(in srgb,var(--tone) 35%,var(--border));box-shadow:0 2px 4px rgba(16,24,40,.05),0 14px 30px -20px color-mix(in srgb,var(--tone) 55%,transparent)}
 .summary .sum.on{border-color:var(--tone);box-shadow:0 0 0 3px color-mix(in srgb,var(--tone) 18%,transparent)}
 .summary .sum.alert{border-color:color-mix(in srgb,var(--danger) 35%,transparent);background:linear-gradient(160deg,color-mix(in srgb,var(--danger-soft) 70%,var(--surface)),var(--surface) 70%)}
-.summary .sum.alert b{color:var(--danger)}
 :root[data-theme="dark"] .summary .sum{--tone-soft:color-mix(in srgb,var(--tone) 18%,transparent)}
 
 /* ===== Ô KPI trang Báo cáo: cùng ngôn ngữ với ô trang chủ ===== */
@@ -630,7 +611,6 @@ kbd{display:inline-grid;place-items:center;min-width:24px;height:24px;padding:0 
 .main .kpis .kpi .go{display:block;margin-top:8px;font-size:13.5px;color:var(--ink-3)}
 .main .kpis .kpi:hover{border-color:color-mix(in srgb,var(--tone) 35%,var(--border))}
 .main .kpis .kpi.alert{border-color:color-mix(in srgb,var(--danger) 40%,transparent);background:linear-gradient(160deg,color-mix(in srgb,var(--danger-soft) 85%,var(--surface)),var(--surface) 70%)}
-.main .kpis .kpi.alert .val{color:var(--danger)}
 
 /* Màn đăng nhập: chuông cập nhật ở góc phải trên, popup ngay dưới chuông */
 .ubell{position:relative}
@@ -707,7 +687,7 @@ kbd{display:inline-grid;place-items:center;min-width:24px;height:24px;padding:0 
 :root[data-theme="dark"] .login.view{background:#0D141B;color:var(--ink)}
 :root[data-theme="dark"] .login.view .login-left{background:#0D141B}
 :root[data-theme="dark"] .login.view .login-right{background:#111A23;border-left-color:#1F2A36;box-shadow:none}
-:root[data-theme="dark"] .login.view .cx-card,:root[data-theme="dark"] .login.view .cx-time{background:#16212C;border-color:#26323F;color:var(--ink)}
+:root[data-theme="dark"] .login.view .cx-time{background:#16212C;border-color:#26323F;color:var(--ink)}
 :root[data-theme="dark"] .login.view .cx-photo{background:#16212C}
 :root[data-theme="dark"] .login.view .ubell-btn{background:#16212C;border-color:#2A3746;color:var(--ink-2)}
 :root[data-theme="dark"] .login.view .ubell-dot{border-color:#16212C}
@@ -769,3 +749,15 @@ kbd{display:inline-grid;place-items:center;min-width:24px;height:24px;padding:0 
 .fbx-c .cx-photo::after{content:"";position:absolute;left:0;right:0;bottom:0;height:38%;background:linear-gradient(0deg,rgba(24,119,242,.35),transparent);pointer-events:none}
 :root[data-theme="dark"] .fbx-c .cx-photo{border-color:#5AA8FF;box-shadow:0 0 0 6px rgba(90,168,255,.16),0 0 28px rgba(90,168,255,.35),0 24px 50px -18px rgba(0,0,0,.6)}
 :root[data-theme="dark"] .fbx-c .cx-photo::after{background:linear-gradient(0deg,rgba(59,130,246,.38),transparent)}
+
+/* Ghi chú lỗi / cảnh báo sinh hiệu dưới ô nhập (form tiếp đón) */
+.vit-note{margin:4px 0 8px}
+
+/* Dòng trạng thái (Cài đặt › Kết nối server) và khối tên + mô tả hai dòng (cũng dùng trong hộp đăng xuất của bác sĩ).
+   CSS này mất khi viết lại giao diện ở 0.2.5 → chữ “Server API”, “Cơ sở dữ liệu”… dính liền vào giá trị. */
+.alert-txt{display:flex;flex-direction:column;gap:2px;flex:1;min-width:0}
+.alert-txt b{font-size:14px;font-weight:600;color:var(--ink)}
+.alert-txt span{font-size:12.5px;color:var(--ink-3);overflow-wrap:anywhere}
+.status-row{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--border)}
+.status-row:last-of-type{border-bottom:none}
+.status-row .badge{flex:none}

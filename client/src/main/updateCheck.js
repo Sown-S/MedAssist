@@ -1,6 +1,6 @@
 // Kiểm tra bản phát hành mới trên GitHub (chỉ thông báo, không tự tải hay cài). Thuần JS, không import Electron để kiểm thử được.
 // Gọi từ main process: renderer bị chặn gọi ra ngoài, kết quả chuyển sang qua IPC (update:check).
-export const RELEASES_URL = 'https://github.com/Sown-S/MedAssist/releases'
+export const RELEASES_URL = 'https://github.com/Sown-S/MedAssist/releases/latest'
 export const LATEST_RELEASE_API = 'https://api.github.com/repos/Sown-S/MedAssist/releases/latest'
 const TIMEOUT_MS = 8000
 

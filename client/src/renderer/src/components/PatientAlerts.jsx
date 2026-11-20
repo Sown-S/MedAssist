@@ -9,7 +9,7 @@ export default function PatientAlerts({ p, compact = false }) {
   // Dạng gọn trong bảng (Hàng chờ…): một dòng đỏ "Dị ứng …" như bản mẫu.
   if (compact)
     return allergies ? (
-      <span className="allergy" style={{ display: 'flex' }}>
+      <span className="allergy d-flex">
         <Icon name="triangle-alert" />
         {translate('Allergy')} {translate(allergies)}
       </span>

@@ -3,7 +3,8 @@ import Modal, { ModalHeader, ModalCloseFooter } from '../../../components/Modal'
 import Icon from '../../../components/Icon'
 import { translate } from '../../../i18n'
 import { reasonLabel, loadMovesFor } from '../../../api/inventoryStore'
-import { MOVE_TYPES, fmtDateTime, unitLabel, exportCsv } from './shared'
+import { MOVE_TYPES, unitLabel, exportCsv } from './shared'
+import { fmtDateTime } from '../../../utils/format'
 
 // Phiếu kho nạp từ server khi mở (loadMovesFor).
 export default function StockCardModal({ drug, moves, onClose }) {

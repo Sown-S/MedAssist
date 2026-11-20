@@ -7,7 +7,7 @@ import { getRelease, approveRelease, rejectRelease } from '../../../api/knowledg
 import { Empty } from '../ui'
 import { errorText } from './shared'
 import { ReleaseBadge, ChangeList, ctxOf, ReleaseHistory, ReleaseModal } from './releaseParts'
-import { shortDateTime } from '../../../utils/format'
+import { fmtDateTime } from '../../../utils/format'
 import { ErrorNote } from '../../../components/DataState'
 
 // Bác sĩ: duyệt bản chờ duyệt
@@ -25,7 +25,7 @@ export function ReviewPanel({ data, names, onChanged }) {
   useEffect(() => {
     setDetail(null)
     if (pending) getRelease(pending.release_id).then(setDetail, (e) => setErr(errorText(e)))
-  }, [pending?.release_id]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [pending?.release_id]) // eslint-disable-line react-hooks/exhaustive-deps -- chỉ nạp lại khi đổi bản phát hành
 
   async function run(fn, ok) {
     setErr('')
@@ -53,7 +53,7 @@ export function ReviewPanel({ data, names, onChanged }) {
             <div>
               <h3 className="num">{pending.label}</h3>
               <span className="muted small">
-                <span>Submitted</span> {shortDateTime(pending.submitted_at)}
+                <span>Submitted</span> {fmtDateTime(pending.submitted_at)}
                 {detail ? ' · ' + detail.changes.length + ' ' + translate('changes') : ''}
               </span>
             </div>
@@ -61,12 +61,12 @@ export function ReviewPanel({ data, names, onChanged }) {
           </div>
           <div className="card-b">
             {pending.description && (
-              <p className="small muted" style={{ marginBottom: 10 }}>
+              <p className="small muted mb-10">
                 {pending.description}
               </p>
             )}
             <ChangeList detail={detail} ctx={ctx} />
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 16 }}>
+            <div className="d-flex justify-end gap-8 mt-16">
               <button className="btn btn-danger-outline" onClick={() => setRejecting(true)}>
                 <Icon name="x" />
                 {translate('Reject')}

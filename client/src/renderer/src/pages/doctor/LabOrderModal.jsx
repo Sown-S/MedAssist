@@ -8,8 +8,7 @@ import { createServiceOrder } from '../../api/serviceApi'
 import { useServiceCatalog, orderable, toLabOrder, apiMessage } from '../../api/serviceStore'
 import { LAB_GROUPS, SERVICE_GROUPS, SAMPLES } from '../admin/catalogs/schemas'
 import { printHtml, esc } from '../admin/inventory/shared'
-import { dmy, hhmm } from '../reception/shared'
-import { fold, money } from '../../utils/format'
+import { fold, money, dmy, hhmm } from '../../utils/format'
 import Skeleton from '../../components/Skeleton'
 
 // Xét nghiệm làm thủ công: bác sĩ lập và in phiếu, bệnh nhân cầm phiếu đi làm rồi mang kết quả giấy quay lại.
@@ -115,7 +114,7 @@ export default function LabOrderModal({ open, visit, diagnosis, onClose, onSent 
             </select>
           </div>
         )}
-        <div className="search" style={{ width: '100%' }}>
+        <div className="search w-full">
           <Icon name="search" />
           <input className="input" type="search" autoFocus value={q} onChange={(e) => setQ(e.target.value)} placeholder={translate('Search tests by name or code…')} />
         </div>
@@ -139,7 +138,7 @@ export default function LabOrderModal({ open, visit, diagnosis, onClose, onSent 
           {!cat.loaded && <Skeleton rows={4} cols={2} compact />}
           {cat.loaded && !groups.length && <p className="muted">{translate('No tests match your search.')}</p>}
         </div>
-        <div className="fg" style={{ marginTop: 12 }}>
+        <div className="fg mt-12">
           <div className="field">
             <label>Other tests (not in the catalog)</label>
             <input className="input" type="text" value={other} onChange={(e) => setOther(e.target.value)} placeholder="e.g. Abdominal ultrasound" />

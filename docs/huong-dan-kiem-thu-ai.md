@@ -7,7 +7,7 @@ Số đo chính thức cho báo cáo dùng bộ test đóng băng ở [`evaluati
 ## 1. Chuẩn bị máy chủ
 
 1. Kéo `develop` mới nhất, `.\deploy\scripts\start.ps1`. Mở `https://<IP máy admin>/health`: `database.ok` và `ai.ok` phải là `true`.
-2. Kiểm tra bản tri thức Active ở **Quản trị › Cấu hình AI** đúng số bệnh của `knowledge/` hiện tại (153 bệnh, 299 triệu chứng, 12 luật).
+2. Kiểm tra bản tri thức Active ở **Quản trị › Cấu hình AI** đúng số bệnh của `knowledge/` hiện tại (154 bệnh, 299 triệu chứng, 12 luật).
    Nhãn bản phát hành không tự đổi theo nội dung, nên so số lượng chứ không so nhãn.
 3. Tài khoản: 1 Quản trị, 1–2 Bác sĩ đã **gắn phòng**, 1 Lễ tân; đăng nhập thử từng tài khoản và đổi mật khẩu lần đầu.
 4. Kho: nếu cần kho mẫu, `exec api python -m scripts.seed_drugs` (có lô ban đầu); nếu đã nạp `--no-batches` thì nhập vài lô ở màn Kho.

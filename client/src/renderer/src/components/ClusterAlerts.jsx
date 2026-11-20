@@ -54,7 +54,7 @@ export default function ClusterAlerts({ onOpenReport }) {
           ))}
         </div>
         {alerts.length > SHOWN && (
-          <span className="bp-acts" style={{ marginBottom: 8 }}>
+          <span className="bp-acts mb-8">
             <button type="button" className="cl-more" onClick={() => setAll(!all)}>
               {all ? translate('Show less') : translate('Show all') + ' (' + alerts.length + ')'}
             </button>
