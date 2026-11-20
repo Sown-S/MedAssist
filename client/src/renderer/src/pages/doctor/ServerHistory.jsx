@@ -9,11 +9,12 @@ import DocumentModal from './DocumentModal'
 import { useAuth } from '../../context/AuthContext'
 import { ageFrom } from '../../api/clinicApi'
 import { money, shortDateTime } from '../../utils/format'
+import Skeleton from '../../components/Skeleton'
+import { ErrorNote } from '../../components/DataState'
 
 // Lịch sử khám từ server (FR04); bấm một lượt để xem đầy đủ. excludeVisitId = lượt đang khám;
 // onLoaded(history) để trang cha lấy thông tin bệnh nhân.
 const PAGE = 10
-const TONE = { Finished: 'ok', Cancelled: 'muted', Prescribed: 'warn', Examining: 'info' }
 
 export default function ServerHistory({ patientId, excludeVisitId, onLoaded }) {
   const [items, setItems] = useState([])
@@ -44,61 +45,66 @@ export default function ServerHistory({ patientId, excludeVisitId, onLoaded }) {
   }, [patientId, withCancelled])
 
   const list = items.filter((v) => v.visit_id !== excludeVisitId)
+  const shown = Math.max(0, total - (items.some((v) => v.visit_id === excludeVisitId) ? 1 : 0))
   return (
     <div>
-      <div className="ai-toolbar">
-        <div className="section-label" style={{ margin: 0 }}>
-          Visits <span className="itab-cnt">{Math.max(0, total - (items.some((v) => v.visit_id === excludeVisitId) ? 1 : 0))}</span>
-        </div>
-        <label className="ai-small ai-soft" style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
-          <input type="checkbox" checked={withCancelled} onChange={(e) => setWithCancelled(e.target.checked)} /> <span>Show cancelled visits</span>
+      <div className="toolbar" style={{ marginBottom: 12 }}>
+        <h3 style={{ fontSize: 'var(--fs-md)' }}>
+          {translate('Visits')} <span className="plain">· {shown}</span>
+        </h3>
+        <div className="sp" />
+        <label className="check">
+          <input type="checkbox" checked={withCancelled} onChange={(e) => setWithCancelled(e.target.checked)} />
+          {translate('Show cancelled visits')}
         </label>
       </div>
-      {err && <div className="kb-error">{err}</div>}
-      {!list.length && !loading && !err && <p className="ai-soft" style={{ fontSize: 13 }}>No earlier visits in the system.</p>}
-      <div className="timeline">
-        {list.map((v) => (
-          <div key={v.visit_id} className="emr-visit">
-            <button className="emr-visit-head" onClick={() => setOpen(open === v.visit_id ? null : v.visit_id)}>
-              <span className="mono ai-small">{shortDateTime(v.visit_date)}</span>
-              <span className={'badge ' + (TONE[v.status] ?? '')}>{translate(VISIT_STATUS_LABEL[v.status] ?? v.status)}</span>
+      <ErrorNote>{err}</ErrorNote>
+      {!list.length && !loading && !err && <p className="muted small">{translate('No earlier visits in the system.')}</p>}
+      {list.map((v) => {
+        const isOpen = open === v.visit_id
+        const title = v.diagnoses.length ? (v.diagnoses.find((d) => d.is_primary)?.diagnosis_name ?? v.diagnoses[0].diagnosis_name) : translate(VISIT_STATUS_LABEL[v.status] ?? v.status)
+        return (
+          <div key={v.visit_id} className={'visit' + (isOpen ? ' open' : '')}>
+            <div
+              className="visit-h"
+              role="button"
+              tabIndex={0}
+              aria-expanded={isOpen}
+              onClick={() => setOpen(isOpen ? null : v.visit_id)}
+              onKeyDown={(e) => e.key === 'Enter' && setOpen(isOpen ? null : v.visit_id)}
+            >
+              <div className="ico n">
+                <Icon name="calendar" />
+              </div>
+              <div className="t">
+                <b>
+                  {shortDateTime(v.visit_date)} · {title}
+                </b>
+                <span>
+                  {v.physician_name ?? ''}
+                  {v.physician_name ? ' · ' : ''}
+                  {translate(VISIT_STATUS_LABEL[v.status] ?? v.status)}
+                  {!isOpen && v.prescription ? ' · ' + v.prescription.items.map((x) => `${x.drug_label} × ${x.quantity}`).join(', ') : ''}
+                </span>
+              </div>
               {v.outcome === 'Referred' && (
-                <span className="badge low">
+                <span className="badge b-danger">
                   {translate('Referred')}
                   {v.referral_facility ? ' → ' + v.referral_facility : ''}
                 </span>
               )}
-              {v.is_red_flag && <span className="badge low">Red flag</span>}
-              {v.triage_priority && v.triage_priority !== 'Routine' && !v.is_red_flag && <span className="badge warn">{translate(PRIORITY_LABEL[v.triage_priority] ?? v.triage_priority)}</span>}
-              <span className="emr-dx">
-                {v.diagnoses.length ? (
-                  v.diagnoses.map((d, i) => (
-                    <span key={i} className={d.is_primary ? '' : 'ai-soft'}>
-                      {i > 0 && ' · '}
-                      {d.icd10_code && <b className="mono">{d.icd10_code}</b>} {d.diagnosis_name}
-                    </span>
-                  ))
-                ) : (
-                  <span className="ai-soft">{v.chief_complaint}</span>
-                )}
-              </span>
-              <span className="ai-small ai-soft">{v.physician_name ?? ''}</span>
-              <span className="emr-caret">{open === v.visit_id ? '▴' : '▾'}</span>
-            </button>
-            {v.prescription && open !== v.visit_id && (
-              <div className="emr-rx-sum ai-small">
-                <Icon name="clipboard" />{' '}
-                {v.prescription.items.map((x) => `${x.drug_label} × ${x.quantity}`).join(', ')}
-              </div>
-            )}
-            {open === v.visit_id && <VisitDetail visitId={v.visit_id} />}
+              {v.is_red_flag && <span className="badge b-danger">{translate('Red flag')}</span>}
+              {v.triage_priority && v.triage_priority !== 'Routine' && !v.is_red_flag && <span className="badge b-warning">{translate(PRIORITY_LABEL[v.triage_priority] ?? v.triage_priority)}</span>}
+              <Icon name="chevron-down" className="chev" />
+            </div>
+            <div className="visit-b">{isOpen && <VisitDetail visitId={v.visit_id} />}</div>
           </div>
-        ))}
-      </div>
-      {loading && <p className="ai-soft">{translate('Loading…')}</p>}
+        )
+      })}
+      {loading && <Skeleton rows={3} compact />}
       {!loading && items.length < total && (
         <button className="btn btn-ghost btn-sm" onClick={() => load(items.length, true)}>
-          Show older visits
+          {translate('Show older visits')}
         </button>
       )}
     </div>
@@ -125,11 +131,11 @@ function ReferralBox({ record, onSaved }) {
   return (
     <div className="emr-referral">
       <div className="emr-referral-head">
-        <span className="badge low">
+        <span className="badge b-danger">
           <Icon name="ban" /> {translate('Referred')}
         </span>
         <b>{f.facility_name}</b>
-        <span className="ai-small ai-soft">
+        <span className="small muted">
           {f.reason}
           {f.transport ? ' · ' + translate(TRANSPORT_LABEL[f.transport] ?? f.transport) : ''}
         </span>
@@ -138,16 +144,16 @@ function ReferralBox({ record, onSaved }) {
         </button>
       </div>
       {f.diagnosis && (
-        <div className="ai-small">
+        <div className="small">
           <span>Diagnosis</span>: {f.diagnosis}
         </div>
       )}
       {f.signs && (
-        <div className="ai-small">
+        <div className="small">
           <span>Warning signs</span>: {f.signs}
         </div>
       )}
-      <div className="ai-small ai-soft">
+      <div className="small muted">
         {translate(f.referred_by_role === 'Nurse' ? 'Recorded by' : 'Doctor')} {f.referred_by_name} · {shortDateTime(f.referred_at)}
         {f.amended_by_name ? ' · ' + translate('amended by') + ' ' + f.amended_by_name + ' ' + shortDateTime(f.amended_at) : ''}
       </div>
@@ -162,98 +168,84 @@ function VisitDetail({ visitId }) {
   useEffect(() => {
     getVisitRecord(visitId).then(setR, (e) => setErr(e.message))
   }, [visitId])
-  if (err) return <div className="kb-error">{err}</div>
-  if (!r) return <p className="ai-soft ai-small">{translate('Loading…')}</p>
+  if (err)
+    return (
+      <div className="hint-w" style={{ gridColumn: '1 / -1' }}>
+        {err}
+      </div>
+    )
+  if (!r)
+    return (
+      <p className="muted small" style={{ gridColumn: '1 / -1' }}>
+        {translate('Loading…')}
+      </p>
+    )
   const v = r.visit
   const vit = v.vital_signs ? vitalsText(v.vital_signs) : ''
+  const payLabel = (st) => (st === 'Paid' ? 'Paid' : st === 'Cancelled' ? 'Cancelled' : 'Awaiting payment')
   return (
-    <div className="emr-detail">
-      <div className="emr-grid">
-        <div>
-          <div className="section-label">Reason for visit</div>
-          <div>{v.chief_complaint}</div>
-          {v.free_text_description && <div className="ai-small ai-soft">{v.free_text_description}</div>}
-        </div>
-        <div>
-          <div className="section-label">Vital signs</div>
-          <div className="ai-small">{vit || '—'}</div>
-        </div>
-        <div>
-          <div className="section-label">Staff</div>
-          <div className="ai-small">
-            <span>Reception</span>: {r.nurse_name ?? '—'} · <span>Doctor</span>: {r.physician_name ?? '—'}
-          </div>
-        </div>
-      </div>
+    <>
+      <span className="k">{translate('Reason for visit')}</span>
+      <span>
+        {v.chief_complaint}
+        {v.free_text_description && v.free_text_description !== v.chief_complaint && <span className="muted"> — {v.free_text_description}</span>}
+      </span>
+      <span className="k">{translate('Vital signs')}</span>
+      <span>{vit || '—'}</span>
       {v.is_red_flag && v.red_flag_reason && (
-        <div className="kb-error">
-          <b>Red flag:</b> {v.red_flag_reason}
-        </div>
-      )}
-      {v.outcome === 'Referred' && v.referral && <ReferralBox record={r} onSaved={() => getVisitRecord(visitId).then(setR, () => {})} />}
-
-      <div className="section-label">Diagnoses</div>
-      {r.diagnoses.length ? (
-        r.diagnoses.map((d) => (
-          <div key={d.diagnosis_id} className={'emr-dx-row' + (d.confirmed_by_physician ? '' : ' retracted')}>
-            <span className={'badge ' + (d.is_primary ? 'info' : 'muted')}>{d.is_primary ? 'Primary' : 'Secondary'}</span> {d.icd10_code && <b className="mono">{d.icd10_code}</b>} {d.diagnosis_name}
-            {!d.confirmed_by_physician && <span className="ai-small ai-soft"> ({translate('withdrawn')})</span>}
-            {d.clinical_notes && <div className="emr-notes">{d.clinical_notes}</div>}
-          </div>
-        ))
-      ) : (
-        <p className="ai-soft ai-small">No diagnosis recorded.</p>
-      )}
-
-      {/* Phiếu chỉ định và kết quả bác sĩ ghi từ phiếu giấy. */}
-      {(r.service_orders ?? []).length > 0 && (
         <>
-          <div className="section-label">Lab tests &amp; diagnostics</div>
-          {r.service_orders.map((o) => (
-            <LabOrderResults key={o.order_id} order={toLabOrder(o)} />
-          ))}
+          <span className="k">{translate('Red flag')}</span>
+          <span style={{ color: 'var(--danger)' }}>{v.red_flag_reason}</span>
         </>
       )}
-
-      <div className="section-label">Prescription</div>
-      {r.prescription?.items.length ? (
-        <table className="dt">
-          <tbody>
-            {r.prescription.items.map((x) => (
-              <tr key={x.item_id}>
-                <td>
-                  <b>{x.drug_label}</b>
-                  <div className="ai-small ai-soft">{[x.dosage, x.frequency, x.duration_days + ' ' + translate('days')].join(' · ')}</div>
-                  {x.instruction && <div className="ai-small ai-soft">{x.instruction}</div>}
-                </td>
-                <td className="num mono">
-                  {x.quantity} {x.unit}
-                </td>
-                <td>
-                  <span className={'badge ' + (x.dispense_status === 'Dispensed' ? 'ok' : x.dispense_status === 'Skipped' ? 'muted' : 'warn')}>
-                    {translate(x.dispense_status === 'Dispensed' ? 'Dispensed' : x.dispense_status === 'Skipped' ? 'Skipped' : 'Waiting to dispense')}
-                  </span>
-                  {x.skip_reason && <div className="ai-small ai-soft">{x.skip_reason}</div>}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      ) : (
-        <p className="ai-soft ai-small">No prescription.</p>
-      )}
-
+      <span className="k">{translate('Diagnoses')}</span>
+      <span>
+        {r.diagnoses.length
+          ? r.diagnoses.map((d) => (
+              <div key={d.diagnosis_id} style={d.confirmed_by_physician ? undefined : { textDecoration: 'line-through', color: 'var(--ink-3)' }}>
+                {d.icd10_code && <b className="num">{d.icd10_code}</b>} {d.diagnosis_name}
+                {!d.is_primary && <span className="muted"> · {translate('Secondary')}</span>}
+                {!d.confirmed_by_physician && <span className="muted"> ({translate('withdrawn')})</span>}
+                {d.clinical_notes && <div className="muted">{d.clinical_notes}</div>}
+              </div>
+            ))
+          : translate('No diagnosis recorded.')}
+      </span>
+      <span className="k">{translate('Lab tests & diagnostics')}</span>
+      <span>{(r.service_orders ?? []).length ? r.service_orders.map((o) => <LabOrderResults key={o.order_id} order={toLabOrder(o)} />) : translate('None ordered')}</span>
+      <span className="k">{translate('Prescription')}</span>
+      <span>
+        {r.prescription?.items.length
+          ? r.prescription.items.map((x) => (
+              <div key={x.item_id}>
+                {x.drug_label} ×{x.quantity} {x.unit}
+                <span className="muted">
+                  {' '}
+                  · {[x.dosage, x.frequency, x.duration_days + ' ' + translate('days')].join(' · ')}
+                  {x.dispense_status !== 'Dispensed' ? ' · ' + translate(x.dispense_status === 'Skipped' ? 'Skipped' : 'Waiting to dispense') : ''}
+                  {x.skip_reason ? ' — ' + x.skip_reason : ''}
+                </span>
+              </div>
+            ))
+          : translate('No prescription.')}
+      </span>
       {r.invoice && (
-        <div className="ai-small">
-          <span className="section-label" style={{ display: 'inline' }}>
-            Invoice
-          </span>{' '}
-          <span className="mono">{r.invoice.invoice_code}</span> · <b className="mono">{money(r.invoice.total_amount)}</b> ·{' '}
-          <span className={'badge ' + (r.invoice.payment_status === 'Paid' ? 'ok' : r.invoice.payment_status === 'Cancelled' ? 'muted' : 'warn')}>
-            {translate(r.invoice.payment_status === 'Paid' ? 'Paid' : r.invoice.payment_status === 'Cancelled' ? 'Cancelled' : 'Awaiting payment')}
+        <>
+          <span className="k">{translate('Invoice')}</span>
+          <span>
+            <span className="num">{money(r.invoice.total_amount)}</span> · {translate(payLabel(r.invoice.payment_status))} · <span className="num muted">{r.invoice.invoice_code}</span>
           </span>
+        </>
+      )}
+      <span className="k">{translate('Staff')}</span>
+      <span>
+        {translate('Reception')}: {r.nurse_name ?? '—'} · {translate('Doctor')}: {r.physician_name ?? '—'}
+      </span>
+      {v.outcome === 'Referred' && v.referral && (
+        <div style={{ gridColumn: '1 / -1' }}>
+          <ReferralBox record={r} onSaved={() => getVisitRecord(visitId).then(setR, () => {})} />
         </div>
       )}
-    </div>
+    </>
   )
 }

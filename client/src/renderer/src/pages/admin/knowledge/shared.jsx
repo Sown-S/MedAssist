@@ -12,11 +12,11 @@ export const KIND_META = {
 }
 
 const STATUS_LABEL = { Active: 'In use', Draft: 'Draft', PendingApproval: 'Awaiting approval', Retired: 'Retired' }
-const STATUS_TONE = { Active: 'ok', Draft: '', PendingApproval: 'info', Retired: 'muted' }
+const STATUS_TONE = { Active: 'b-success', Draft: '', PendingApproval: 'b-info', Retired: 'b-neutral' }
 export const StatusBadge = ({ status }) => <span className={'badge ' + (STATUS_TONE[status] ?? '')}>{STATUS_LABEL[status] ?? status}</span>
 
 const RULE_TYPE_LABEL = { RED_FLAG: 'Red flag', PRIORITY_FLOOR: 'Priority floor' }
-const RuleTypeBadge = ({ type }) => <span className={'badge ' + (type === 'RED_FLAG' ? 'low' : 'warn')}>{RULE_TYPE_LABEL[type] ?? type}</span>
+const RuleTypeBadge = ({ type }) => <span className={'badge ' + (type === 'RED_FLAG' ? 'b-danger' : 'b-warning')}>{RULE_TYPE_LABEL[type] ?? type}</span>
 
 
 export function errorText(e) {
@@ -82,27 +82,35 @@ export function Summary({ kind, values, names }) {
   if (kind === 'symptoms')
     return (
       <span>
-        <b>{v.symptom_name}</b> {v.category && <span className="ai-soft">· {v.category}</span>}
+        <b>{v.symptom_name}</b> {v.short_name && <span className="muted">· {v.short_name}</span>} {v.category && <span className="muted">· {v.category}</span>}
+        {v.detection === 'exam' && <span className="kb-tag exam">{translate('Found on examination')}</span>}
+        {v.detection === 'reported' && <span className="kb-tag rep">{translate('Reported by patient')}</span>}
+        {v.aliases?.length > 0 && (
+          <span className="muted">
+            {' '}
+            · {v.aliases.length} {translate('synonyms')}
+          </span>
+        )}
       </span>
     )
   if (kind === 'conditions')
     return (
       <span>
-        <b>{v.name_vi}</b> {v.icd10_code && <span className="mono">· {v.icd10_code}</span>} {v.disease_group && <span className="ai-soft">· {v.disease_group}</span>}
+        <b>{v.name_vi}</b> {v.icd10_code && <span className="num">· {v.icd10_code}</span>} {v.disease_group && <span className="muted">· {v.disease_group}</span>}
       </span>
     )
   if (kind === 'relations')
     return (
       <span>
-        <b>{names.condition[v.condition_code] ?? v.condition_code}</b> <span className="ai-soft">↔</span> {names.symptom[v.symptom_code] ?? v.symptom_code}{' '}
-        <span className={'badge ' + (v.polarity === 'CONTRADICTS' ? 'low' : 'ok')}>{v.polarity === 'CONTRADICTS' ? 'Contradicts' : 'Supports'}</span>{' '}
-        <span className="mono">{Number(v.weight).toFixed(2)}</span> {v.is_key && <span className="badge info">Key symptom</span>}
+        <b>{names.condition[v.condition_code] ?? v.condition_code}</b> <span className="muted">↔</span> {names.symptom[v.symptom_code] ?? v.symptom_code}{' '}
+        <span className={'badge ' + (v.polarity === 'CONTRADICTS' ? 'b-danger' : 'b-success')}>{v.polarity === 'CONTRADICTS' ? 'Contradicts' : 'Supports'}</span>{' '}
+        <span className="num">{Number(v.weight).toFixed(2)}</span> {v.is_key && <span className="badge b-info">Key symptom</span>}
       </span>
     )
   if (kind === 'excerpts')
     return (
       <span>
-        <b>{v.title}</b> <span className="ai-soft">· {names.condition[v.condition_code] ?? v.condition_code}</span>
+        <b>{v.title}</b> <span className="muted">· {names.condition[v.condition_code] ?? v.condition_code}</span>
       </span>
     )
   if (kind === 'rules')

@@ -15,12 +15,12 @@ import { OpsTab } from './settings/OpsTab'
 import { IDLE, getAt, setAt, validate } from './settings/settingsForm'
 
 const TABS = [
-  { key: 'clinic', label: 'Clinic' },
-  { key: 'print', label: 'Printing & numbering' },
-  { key: 'security', label: 'Security' },
-  { key: 'connection', label: 'Connection & AI' },
-  { key: 'device', label: 'This computer' },
-  { key: 'ops', label: 'Operations' }
+  { key: 'clinic', label: 'Clinic', icon: 'stethoscope', desc: 'Name, address, licence, director' },
+  { key: 'print', label: 'Printing & numbering', icon: 'printer', desc: 'Paper size, footer, queue numbers' },
+  { key: 'security', label: 'Security', icon: 'shieldCheck', desc: 'Sign-in, session timeout, lockout' },
+  { key: 'connection', label: 'Connection & AI', icon: 'wifi', desc: 'Server, database and AI status' },
+  { key: 'device', label: 'This computer', icon: 'monitor', desc: 'Patient call board at the front desk' },
+  { key: 'ops', label: 'Operations', icon: 'settings', desc: 'Stock alerts, case clusters, payments' }
 ]
 // Tab “Kết nối & AI” chỉ hiển thị trạng thái, không có giá trị lưu.
 const TAB_OF = (path) => path.split('.')[0]
@@ -88,91 +88,100 @@ export default function SettingsPage({ params, onNavigate, setLeaveGuard }) {
 
   return (
     <div className="settings-page">
-      <div className="page-head">
+      <div className="pg-h">
         <div>
-          <h1>System settings</h1>
+          <h2>System settings</h2>
           <p>Settings for the whole clinic. Each change is recorded in the activity log with the old and new value.</p>
         </div>
       </div>
 
-      <div className="itabs ai-tabs">
-        {TABS.map((t) => (
-          <button key={t.key} className={'itab' + (tab === t.key ? ' active' : '')} onClick={() => setTab(t.key)}>
-            {t.label}
-            {tabChanged(t.key) && <span className="set-dot" title="Unsaved changes" />}
-          </button>
-        ))}
+      <div className="settings">
+        <nav className="card vtabs" aria-label={translate('Settings sections')}>
+          {TABS.map((t) => (
+            <button key={t.key} className={'vtab' + (tab === t.key ? ' on' : '')} aria-current={tab === t.key ? 'page' : undefined} onClick={() => setTab(t.key)}>
+              <span className="vtab-ic">
+                <Icon name={t.icon} />
+              </span>
+              <span className="vtab-t">
+                <b>{translate(t.label)}</b>
+                <small>{translate(t.desc)}</small>
+              </span>
+              {tabChanged(t.key) && <span className="set-dot" title={translate('Unsaved changes')} />}
+            </button>
+          ))}
+        </nav>
+        <div className="set-main">
+          {tab === 'clinic' && <ClinicTab form={form} readOnly={!online} />}
+
+          {tab === 'print' && <PrintTab form={form} draft={draft} readOnly={!online} />}
+
+          {tab === 'security' && (
+            <div className="card">
+              <div className="set-grid">
+                {/* Chính sách mật khẩu do server quy định — chỉ hiển thị. */}
+                <Field path="security.policy" wide hint="Fixed on the clinic server — shown for reference only.">
+                  <div className="banner n">
+                    {policy
+                      ? translate(`At least ${policy.minLength} characters`) + (policy.requireMix ? ' · ' + translate('letters and digits') : '')
+                      : translate('Cannot read the password policy from the server.')}
+                  </div>
+                </Field>
+                <Field path="security.lock" wide hint="Fixed on the clinic server — shown for reference only. Administrators can unlock earlier in Staff accounts.">
+                  <div className="banner n">
+                    {policy
+                      ? translate(`${policy.maxFailed} wrong passwords within ${policy.failedWindow} minutes → the account is locked for ${policy.lockMinutes} minutes.`)
+                      : translate('5 wrong passwords within 15 minutes (20 from one computer) → the account is locked for 5 minutes.')}
+                  </div>
+                </Field>
+                <Field {...fp('security.idleMinutes')} hint="Recommended on shared clinic computers: patient data stays on screen otherwise.">
+                  <select className="input" value={idleNow} disabled={!online} onChange={(e) => set('security.idleMinutes', Number(e.target.value))}>
+                    {idleOptions.map((x) => (
+                      <option key={x.key} value={x.key}>
+                        {x.label}
+                      </option>
+                    ))}
+                  </select>
+                </Field>
+              </div>
+              <p className="muted small foot-note">
+                <Icon name="lock" /> <span>Saving security settings asks for your password. The server enforces the same rules — the interface only mirrors them.</span>
+              </p>
+            </div>
+          )}
+
+          {tab === 'connection' && <ConnectionTab onNavigate={onNavigate} />}
+          {tab === 'device' && <DeviceTab />}
+
+          {tab === 'ops' && <OpsTab form={form} />}
+
+          {(dirty || errCount > 0) && tab !== 'connection' && (
+            <div className="set-savebar">
+              <span>
+                {errCount > 0 ? (
+                  <span className="set-err">
+                    <span className="num">{errCount}</span> <span>fields need fixing</span>
+                  </span>
+                ) : blockedOffline ? (
+                  <span className="set-err">No connection to the clinic server — clinic details and shared settings cannot be saved now.</span>
+                ) : (
+                  <>
+                    <span className="num">{changed.size}</span> <span>unsaved changes</span>
+                  </>
+                )}
+              </span>
+              <button className="btn btn-ghost btn-sm" disabled={!dirty} onClick={() => setDraft(saved.values)}>
+                Discard changes
+              </button>
+              <button data-shortcut="save" className="btn btn-primary btn-sm" disabled={!dirty || errCount > 0 || blockedOffline} onClick={save}>
+                <Icon name="save" /> <span>Save</span>
+              </button>
+            </div>
+          )}
+        </div>
       </div>
 
-      {tab === 'clinic' && <ClinicTab form={form} readOnly={!online} />}
-
-      {tab === 'print' && <PrintTab form={form} draft={draft} readOnly={!online} />}
-
-      {tab === 'security' && (
-        <div className="card">
-          <div className="set-grid">
-            {/* Chính sách mật khẩu do server quy định — chỉ hiển thị. */}
-            <Field path="security.policy" wide hint="Fixed on the clinic server — shown for reference only.">
-              <div className="symptom-box" style={{ padding: '8px 11px', fontSize: 13.5 }}>
-                {policy
-                  ? translate(`At least ${policy.minLength} characters`) + (policy.requireMix ? ' · ' + translate('letters and digits') : '')
-                  : translate('Cannot read the password policy from the server.')}
-              </div>
-            </Field>
-            <Field path="security.lock" wide hint="Fixed on the clinic server — shown for reference only. Administrators can unlock earlier in Staff accounts.">
-              <div className="symptom-box" style={{ padding: '8px 11px', fontSize: 13.5 }}>
-                {policy
-                  ? translate(`${policy.maxFailed} wrong passwords within ${policy.failedWindow} minutes → the account is locked for ${policy.lockMinutes} minutes.`)
-                  : translate('5 wrong passwords within 15 minutes (20 from one computer) → the account is locked for 5 minutes.')}
-              </div>
-            </Field>
-            <Field {...fp('security.idleMinutes')} hint="Recommended on shared clinic computers: patient data stays on screen otherwise.">
-              <select value={idleNow} disabled={!online} onChange={(e) => set('security.idleMinutes', Number(e.target.value))}>
-                {idleOptions.map((x) => (
-                  <option key={x.key} value={x.key}>
-                    {x.label}
-                  </option>
-                ))}
-              </select>
-            </Field>
-          </div>
-          <p className="ai-foot-note">
-            <Icon name="lock" /> <span>Saving security settings asks for your password. The server enforces the same rules — the interface only mirrors them.</span>
-          </p>
-        </div>
-      )}
-
-      {tab === 'connection' && <ConnectionTab onNavigate={onNavigate} />}
-      {tab === 'device' && <DeviceTab />}
-
-      {tab === 'ops' && <OpsTab form={form} />}
-
-      {(dirty || errCount > 0) && tab !== 'connection' && (
-        <div className="set-savebar">
-          <span>
-            {errCount > 0 ? (
-              <span className="set-err">
-                <span className="mono">{errCount}</span> <span>fields need fixing</span>
-              </span>
-            ) : blockedOffline ? (
-              <span className="set-err">No connection to the clinic server — clinic details and shared settings cannot be saved now.</span>
-            ) : (
-              <>
-                <span className="mono">{changed.size}</span> <span>unsaved changes</span>
-              </>
-            )}
-          </span>
-          <button className="btn btn-ghost btn-sm" disabled={!dirty} onClick={() => setDraft(saved.values)}>
-            Discard changes
-          </button>
-          <button className="btn btn-primary btn-sm" disabled={!dirty || errCount > 0 || blockedOffline} onClick={save}>
-            <Icon name="save" /> <span>Save</span>
-          </button>
-        </div>
-      )}
-
       <ReauthModal open={!!reauth} title="Save security settings" confirmLabel="Save" onClose={() => setReauth(null)} onConfirm={doSave}>
-        <p className="ai-soft">These settings protect patient data. Confirm with your password.</p>
+        <p className="muted">These settings protect patient data. Confirm with your password.</p>
         <ul className="perm-diff">
           {[...changed].map((p) => (
             <li key={p}>
@@ -184,4 +193,3 @@ export default function SettingsPage({ params, onNavigate, setLeaveGuard }) {
     </div>
   )
 }
-

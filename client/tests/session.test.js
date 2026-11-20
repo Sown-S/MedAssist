@@ -110,7 +110,7 @@ describe('Đăng nhập', () => {
 })
 
 describe('Server chậm / treo', () => {
-  it('quá 10 giây bật cờ “đang chậm”, quá 45 giây báo TIMEOUT và tắt cờ', async () => {
+  it('quá 5 giây bật cờ “đang chậm”, quá 45 giây báo TIMEOUT và tắt cờ', async () => {
     vi.useFakeTimers()
     // Server không bao giờ trả lời: chỉ dừng khi bị huỷ.
     vi.stubGlobal('fetch', vi.fn((url, init) => new Promise((_, fail) => init.signal.addEventListener('abort', () => fail(new DOMException('aborted', 'AbortError'))))))

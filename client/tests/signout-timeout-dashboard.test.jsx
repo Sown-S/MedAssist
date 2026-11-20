@@ -62,6 +62,17 @@ describe('Bản nháp phiếu khám trên máy (draftStore)', () => {
   })
 })
 
+// Nút Đăng xuất nằm trong menu tài khoản trên thanh trên cùng.
+async function openSignOut() {
+  const acct = await waitFor(() => {
+    const b = document.querySelector('.acct')
+    if (!b) throw new Error('chưa có menu tài khoản')
+    return b
+  })
+  fireEvent.click(acct)
+  fireEvent.click(await screen.findByText('Sign out', { selector: '.logout-btn' }))
+}
+
 describe('Đăng xuất của bác sĩ', () => {
   beforeAll(() => installFakeServer())
   afterEach(() => cleanup())
@@ -70,19 +81,19 @@ describe('Đăng xuất của bác sĩ', () => {
   it('còn bệnh nhân trong phòng → không đăng xuất được, có nút mở lượt khám', async () => {
     await syncQueue()
     renderPage(<Shell />, { user: DOC_A, path: '/doctor' })
-    fireEvent.click(await screen.findByText('Sign out', { selector: '.logout-btn' }))
+    await openSignOut()
     expect(await screen.findByText('Finish your visits before signing out')).toBeTruthy()
     const row = screen.getByText('Nguyễn Văn An', { selector: '.signout-row b' }).closest('.signout-row')
     expect(row.textContent).toContain('In my room')
     expect(row.textContent).toContain('Open visit')
-    expect(screen.getByText('Sign out', { selector: '.modal-foot button' }).disabled).toBe(true)
+    expect(screen.getByText('Sign out', { selector: '.modal-f button' }).disabled).toBe(true)
     expect(screen.queryByText('Sign out anyway')).toBeNull()
   })
 
   it('bệnh nhân đi xét nghiệm không quay lại → đóng lượt ngay từ hộp thoại', async () => {
     await syncQueue()
     renderPage(<Shell />, { user: DOC_B, path: '/doctor' })
-    fireEvent.click(await screen.findByText('Sign out', { selector: '.logout-btn' }))
+    await openSignOut()
     const row = (await screen.findByText('Hoàng Thị Em', { selector: '.signout-row b' })).closest('.signout-row')
     expect(row.textContent).toContain('Out for lab tests')
     fireEvent.click(screen.getByText('Did not come back'))
@@ -93,7 +104,7 @@ describe('Đăng xuất của bác sĩ', () => {
     saveDraft('v-old', { exam: 'nháp' })
     await flush()
     renderPage(<Shell />, { user: DESK, path: '/reception' })
-    fireEvent.click(await screen.findByText('Sign out', { selector: '.logout-btn' }))
+    await openSignOut()
     await waitFor(() => expect(getDraft('v-old')).toBeUndefined())
     expect(localStorage.getItem(KEY)).toBeNull()
   })
@@ -117,14 +128,14 @@ describe('Gọi server có giới hạn thời gian', () => {
     vi.unstubAllGlobals()
   })
 
-  it('quá 10 giây → bật cờ "đang chậm"; quá 45 giây → lỗi TIMEOUT kèm câu báo, tắt cờ', async () => {
+  it('quá 5 giây → bật cờ "đang chậm"; quá 45 giây → lỗi TIMEOUT kèm câu báo, tắt cờ', async () => {
     const p = client.apiGet('/api/v1/queue')
     const settled = p.catch((e) => e)
-    await vi.advanceTimersByTimeAsync(9900)
+    await vi.advanceTimersByTimeAsync(4900)
     expect(client.isServerSlow()).toBe(false)
     await vi.advanceTimersByTimeAsync(200)
     expect(client.isServerSlow()).toBe(true)
-    await vi.advanceTimersByTimeAsync(35000)
+    await vi.advanceTimersByTimeAsync(40000)
     const e = await settled
     expect(e).toBeInstanceOf(client.ApiError)
     expect(e.code).toBe('TIMEOUT')
@@ -155,9 +166,9 @@ describe('Dashboard Admin', () => {
 
   it('ô "Đang chờ khám" ra số, không phải NaN (hôm nay chưa ai check-in)', async () => {
     renderPage(<Admin onNavigate={() => {}} />, { user: ADMIN, path: '/admin' })
-    const card = (await screen.findByText('Waiting for consultation')).closest('.stat-card')
+    const card = (await screen.findByText('Waiting for consultation')).closest('.tile')
     await waitFor(() => expect(card.querySelector('.val').textContent).toBe('1'))
-    expect(screen.getByText('Awaiting payment').closest('.stat-card').querySelector('.val').textContent).toBe('0')
+    expect(screen.getByText('Awaiting payment').closest('.tile').querySelector('.val').textContent).toBe('0')
     expect(document.body.textContent).not.toContain('NaN')
   })
 

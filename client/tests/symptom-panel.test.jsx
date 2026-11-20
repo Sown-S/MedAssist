@@ -102,7 +102,7 @@ describe('Khung “Đọc lời kể & đề xuất”', () => {
     const c = controlled()
     render(<Harness onExtract={c.fn} />)
     fireEvent.click(mainButton())
-    expect(mainButton()).toBeNull() // đang chạy: ẩn nút chính, hiện tiến trình
+    expect(mainButton().disabled).toBe(true) // đang chạy: nút chính tắt, hiện tiến trình (như bản mẫu)
     expect(step('Description saved').className).toBe('active')
     c.progress('Queued', 2)
     expect(step('Description saved').className).toBe('done')
@@ -123,10 +123,9 @@ describe('Khung “Đọc lời kể & đề xuất”', () => {
     expect(screen.queryByRole('progressbar')).toBeNull()
     expect(screen.getByText('Last read: 18 s · 2 suggestions')).toBeTruthy()
     expect(mainButton().disabled).toBe(false)
-    // Đề xuất chia hai cột Có / Không.
-    const [yes, no] = document.querySelectorAll('.sym-prop-col')
-    expect(within(yes).getByText('Sốt cao')).toBeTruthy()
-    expect(within(no).getByText('Ho khan')).toBeTruthy()
+    // Đề xuất: chip Có / chip Không.
+    expect(document.querySelector('.pchip.present').textContent).toContain('Sốt cao')
+    expect(document.querySelector('.pchip.absent').textContent).toContain('Ho khan')
   })
 
   it('client chờ tối đa 35 giây tính từ lúc bấm (gửi phần còn lại cho hàm trích xuất)', () => {
@@ -149,7 +148,7 @@ describe('Khung “Đọc lời kể & đề xuất”', () => {
     fireEvent.click(mainButton())
     act(() => vi.advanceTimersByTime(35000))
     await act(async () => c.fail(Object.assign(new Error('aborted'), { code: 'ABORTED' })))
-    const box = screen.getByText('No result within 30 seconds.').closest('.sym-alert')
+    const box = screen.getByText('No result within 30 seconds.').closest('.banner')
     expect(box.textContent).toContain('Pick the symptoms in the list below.')
     fireEvent.click(within(box).getByText('Try again'))
     expect(c.fn).toHaveBeenCalledTimes(2)
@@ -159,7 +158,7 @@ describe('Khung “Đọc lời kể & đề xuất”', () => {
     const c = controlled()
     render(<Harness onExtract={c.fn} />)
     fireEvent.click(mainButton())
-    fireEvent.click(screen.getByText('Cancel'))
+    fireEvent.click(screen.getByText('Stop waiting for the result'))
     expect(c.opts.signal.aborted).toBe(true)
     expect(mainButton()).toBeTruthy()
     await c.resolve()
@@ -190,7 +189,7 @@ describe('Danh sách triệu chứng', () => {
   it('tìm không dấu → chọn Có ngay trong kết quả', async () => {
     render(<Harness onExtract={vi.fn()} />)
     fireEvent.change(await screen.findByRole('searchbox'), { target: { value: 'dau bung' } })
-    const row = within(document.querySelector('.sym-results')).getByText('Đau bụng').closest('.sym-row')
+    const row = within(document.querySelector('.sym-results')).getByText('Đau bụng').closest('.sym-r')
     fireEvent.click(within(row).getByText('Yes'))
     expect(syms()).toEqual({ abdominal_pain: { state: 'PRESENT', source: 'Form' } })
   })
@@ -198,10 +197,10 @@ describe('Danh sách triệu chứng', () => {
   it('“Đã xác nhận”: dấu hiệu nguy hiểm lên đầu, nhãn nguồn, đổi Có/Không, bỏ chọn', async () => {
     render(<Harness onExtract={vi.fn()} initial={{ cough_dry: { state: 'PRESENT', source: 'Extracted' }, sym_seizures: { state: 'PRESENT', source: 'Form' } }} />)
     await screen.findByRole('searchbox')
-    const box = document.querySelector('.sym-section.confirmed')
-    expect(box.querySelector('.sym-count').textContent).toBe('2')
-    const rows = [...box.querySelectorAll('.sym-row')]
-    expect(rows.map((r) => r.querySelector('.sym-name').firstChild.textContent)).toEqual(['Co giật toàn thân', 'Ho khan'])
+    const box = document.querySelector('.sym-sec.conf')
+    expect(box.querySelector('.sym-c').textContent).toBe('2')
+    const rows = [...box.querySelectorAll('.sym-r')]
+    expect(rows.map((r) => r.querySelector('.sn').firstChild.textContent)).toEqual(['Co giật toàn thân', 'Ho khan'])
     expect(rows[0].textContent).toContain('Picked by nurse')
     expect(rows[1].textContent).toContain('From description')
     fireEvent.click(within(rows[1]).getByText('No'))
@@ -213,7 +212,7 @@ describe('Danh sách triệu chứng', () => {
   it('Dấu hiệu nguy hiểm mở sẵn (có mục “ngoài danh mục” kèm gợi ý); nhóm khác đóng, tiêu đề có số đã chọn', async () => {
     render(<Harness onExtract={vi.fn()} initial={{ cough_dry: { state: 'PRESENT', source: 'Form' } }} />)
     await screen.findByRole('searchbox')
-    const danger = document.querySelector('.sym-section.danger')
+    const danger = document.querySelector('.sym-sec.danger')
     expect(within(danger).getByText('Dangerous sign not in the list')).toBeTruthy()
     expect(within(danger).getByText(/multiple trauma, heavy bleeding/)).toBeTruthy()
     const resp = screen.getByText('Respiratory').closest('button')
@@ -221,6 +220,6 @@ describe('Danh sách triệu chứng', () => {
     expect(resp.textContent).toContain('1 selected')
     expect(screen.queryByText('Other')).toBeNull()
     fireEvent.click(resp)
-    expect(resp.closest('.sym-section').querySelector('.sym-row.set')).toBeTruthy()
+    expect(resp.closest('.sym-sec').querySelector('.sym-r.set')).toBeTruthy()
   })
 })

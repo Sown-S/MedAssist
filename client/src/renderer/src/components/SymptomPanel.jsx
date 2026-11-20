@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import Icon from './Icon'
 import SymptomChecklist from './SymptomChecklist'
 import { translate } from '../i18n'
-import { symptomName, extractionStale } from '../api/symptoms'
+import { symptomOf, displayName, fullNameTitle, isExamCode, extractionStale } from '../api/symptoms'
 import { useAiHealth } from '../api/connectivity'
 
 // Server tự kết thúc lượt trích xuất sau 30 giây tính từ POST (kể cả lúc xếp hàng). Client đếm từ lúc bấm và chờ thêm
@@ -67,8 +67,9 @@ export default function SymptomPanel({ value, onChange, text, onText, disabled =
       const r = await onExtract(text, { signal: c.signal, onProgress, timeoutMs: EXTRACTION_TIMEOUT_MS - (Date.now() - startedAt) })
       // Đã bấm Hủy hoặc chạy lần mới: bỏ qua kết quả về muộn.
       if (ctrl.current !== c) return
-      setProposals(r.proposals.filter((p) => !value[p.symptom_code]))
-      setUnsure(r.unsure ?? [])
+      // Dấu hiệu khi khám không đưa cho lễ tân xác nhận.
+      setProposals(r.proposals.filter((p) => !value[p.symptom_code] && !isExamCode(p.symptom_code)))
+      setUnsure((r.unsure ?? []).filter((u) => !isExamCode(u.symptom_code)))
       const src = { text, textChanged: !!r.textChanged }
       setFrom(src)
       onVitals?.(r.vitalProposals ?? [], src)
@@ -120,15 +121,16 @@ export default function SymptomPanel({ value, onChange, text, onText, disabled =
   const aiDown = !ai.ok && ai.reason !== 'disabled'
 
   const chip = (p) => (
-    <span key={p.symptom_code} className={'sym-chip pending ' + p.state.toLowerCase()}>
-      <span className="sym-chip-name">{translate(symptomName(p.symptom_code))}</span>
-      <button type="button" className="sym-chip-state" disabled={disabled || stale} onClick={() => flip(p)} title={translate('Switch Yes / No')}>
-        {translate(p.state === 'PRESENT' ? 'Switch to No' : 'Switch to Yes')}
+    <span key={p.symptom_code} className={'pchip ' + p.state.toLowerCase()} title={fullNameTitle(symptomOf(p.symptom_code))}>
+      {translate(displayName(symptomOf(p.symptom_code) ?? { key: p.symptom_code }))}
+      {p.state === 'ABSENT' && <span className="muted small">· {translate('No')}</span>}
+      <button type="button" disabled={disabled || stale} onClick={() => flip(p)} title={translate(p.state === 'PRESENT' ? 'Switch to No' : 'Switch to Yes')} aria-label={translate('Switch Yes / No')}>
+        <Icon name="repeat" />
       </button>
-      <button type="button" className="sym-chip-ok" disabled={disabled || stale} onClick={() => accept(p)} title={translate('Confirm')}>
+      <button type="button" className="ok" disabled={disabled || stale} onClick={() => accept(p)} title={translate('Confirm')} aria-label={translate('Confirm')}>
         <Icon name="check" />
       </button>
-      <button type="button" className="sym-chip-x" disabled={disabled} onClick={() => drop(p)} title={translate('Discard')}>
+      <button type="button" disabled={disabled} onClick={() => drop(p)} title={translate('Discard')} aria-label={translate('Discard')}>
         <Icon name="x" />
       </button>
     </span>
@@ -136,112 +138,111 @@ export default function SymptomPanel({ value, onChange, text, onText, disabled =
 
   return (
     <div className="sym-panel">
-      <div className="field full">
-        <label>Patient’s description (free text, Vietnamese)</label>
-        <textarea rows="3" disabled={disabled || textLocked} placeholder="Sốt cao 2 ngày, ho có đờm, đau họng, không khó thở…" value={text} onChange={(e) => onText(e.target.value)} />
+      <div className="field">
+        <label>
+          {translate('Patient’s description (free text, Vietnamese)')}
+          <span className="req">*</span>
+        </label>
+        <textarea
+          className="input"
+          rows="3"
+          disabled={disabled || textLocked}
+          placeholder="Sốt cao 2 ngày, ho có đờm, đau họng, không khó thở…"
+          value={text}
+          onChange={(e) => onText(e.target.value)}
+        />
       </div>
 
       {ai.reason !== 'disabled' && (
         <div className="sym-ai" aria-live="polite">
           {aiDown && (
-            <div className="sym-alert">
-              <Icon name="alert" />
-              <span>
+            <div className="banner w" style={{ marginTop: 8 }}>
+              <Icon name="triangle-alert" />
+              <div className="txt">
                 <b>{translate('Suggestions from the description are unavailable for now — pick the symptoms in the list below.')}</b>
-                {ai.detail && <span className="sym-alert-detail">{ai.detail}</span>}
-              </span>
+                {ai.detail && <span>{ai.detail}</span>}
+              </div>
             </div>
           )}
-          {!running && (
-            <div className="sym-ai-head">
-              <button type="button" className="btn btn-primary" disabled={disabled || textLocked || !text.trim() || aiDown} onClick={extract}>
-                <Icon name="bulb" /> Read description & suggest
-              </button>
-              {job.status === 'done' && (
-                <span className="ai-soft sym-ai-last">{translate(`Last read: ${job.seconds} s · ${job.count} suggestions`)}</span>
-              )}
-              {job.status === 'idle' && !aiDown && <span className="ai-soft">Takes at most 30 seconds.</span>}
-            </div>
-          )}
+          <div className="extract">
+            <button type="button" className="btn btn-outline btn-sm" disabled={running || disabled || textLocked || !text.trim() || aiDown} onClick={extract}>
+              <Icon name="sparkles" />
+              {translate('Read description & suggest')}
+            </button>
+            {running && (
+              <div className="progress" role="progressbar" aria-valuemin={0} aria-valuemax={SERVER_LIMIT_S} aria-valuenow={Math.min(SERVER_LIMIT_S, Math.round(elapsed))}>
+                <i style={{ width: Math.min(100, (elapsed / SERVER_LIMIT_S) * 100) + '%', animation: 'none' }} />
+              </div>
+            )}
+            {running ? (
+              <>
+                <span className="muted small">
+                  <b className="num">{translate(`${Math.floor(elapsed)} s`)}</b> · <span>{translate(`at most ${left} s left`)}</span>
+                </span>
+                <span className="muted small">{translate('You can enter vital signs while waiting.')}</span>
+                <button type="button" className="btn btn-ghost btn-sm" onClick={cancel}>
+                  {translate('Stop waiting for the result')}
+                </button>
+              </>
+            ) : job.status === 'done' ? (
+              <span className="muted small">{translate(`Last read: ${job.seconds} s · ${job.count} suggestions`)}</span>
+            ) : (
+              job.status === 'idle' && !aiDown && <span className="muted small">{translate('Takes at most 30 seconds.')}</span>
+            )}
+          </div>
 
           {running && (
-            <div className="sym-progress">
-              <ol className="sym-steps">
-                {STEPS.map(([key, label], i) => (
-                  <li key={key} className={i < step ? 'done' : i === step ? 'active' : ''}>
-                    <span className="dot">{i < step ? <Icon name="check" /> : i + 1}</span>
-                    <span>{translate(label)}</span>
-                    {key === 'queued' && step === 1 && job.queueAhead > 0 && <small className="sym-ahead">{translate(`${job.queueAhead} ahead in line`)}</small>}
-                  </li>
-                ))}
-              </ol>
-              <div className="sym-bar" role="progressbar" aria-valuemin={0} aria-valuemax={SERVER_LIMIT_S} aria-valuenow={Math.min(SERVER_LIMIT_S, Math.round(elapsed))}>
-                <span style={{ width: Math.min(100, (elapsed / SERVER_LIMIT_S) * 100) + '%' }} />
-              </div>
-              <div className="sym-ai-meta">
-                <span>
-                  <b className="sym-secs">{translate(`${Math.floor(elapsed)} s`)}</b> · {translate(`at most ${left} s left`)} · {translate('max 30 seconds')}
-                </span>
-                <span className="sym-cancel">
-                  <button type="button" className="btn btn-ghost btn-sm" onClick={cancel}>
-                    <Icon name="x" /> Cancel
-                  </button>
-                  <small>Stop waiting for the result</small>
-                </span>
-              </div>
-              <p className="ai-soft sym-ai-hint">You can enter vital signs while waiting.</p>
-            </div>
+            <ol className="steps-inline">
+              {STEPS.map(([key, label], i) => (
+                <li key={key} className={i < step ? 'done' : i === step ? 'active' : ''}>
+                  <span>{translate(label)}</span>
+                  {key === 'queued' && step === 1 && job.queueAhead > 0 && <small>{translate(`${job.queueAhead} ahead in line`)}</small>}
+                </li>
+              ))}
+            </ol>
           )}
-
           {job.status === 'failed' && (
-            <div className="sym-alert">
-              <Icon name="alert" />
-              <span>
+            <div className="banner w" style={{ marginTop: 10 }}>
+              <Icon name="triangle-alert" />
+              <div className="txt">
                 <b>{translate(job.timeout ? 'No result within 30 seconds.' : 'The model could not read the description this time.')}</b>
-                {job.message && <span className="sym-alert-detail">{translate(job.message)}</span>}
-                <span className="sym-alert-detail">{translate('Pick the symptoms in the list below.')}</span>
-              </span>
-              <button type="button" className="btn btn-ghost btn-sm" disabled={disabled || textLocked || !text.trim() || aiDown} onClick={extract}>
-                <Icon name="repeat" /> Try again
+                {job.message && <span>{translate(job.message)} </span>}
+                <span>{translate('Pick the symptoms in the list below.')}</span>
+              </div>
+              <button type="button" className="btn btn-outline btn-sm" disabled={disabled || textLocked || !text.trim() || aiDown} onClick={extract}>
+                <Icon name="repeat" />
+                {translate('Try again')}
               </button>
             </div>
           )}
           {stale && !running && (
-            <span className="sym-warn">
-              <Icon name="alert" /> {translate('The description changed after the last suggestion — run it again.')}
-            </span>
+            <div className="hint-w">
+              <Icon name="triangle-alert" /> {translate('The description changed after the last suggestion — run it again.')}
+            </div>
           )}
           {/* Rỗng có thể do mô hình bỏ sót hoặc không khớp được danh mục: không được đọc thành “bệnh nhân không có triệu chứng”. */}
           {job.status === 'done' && !proposals.length && job.count === 0 && !askAgain.length && (
-            <p className="sym-warn">
-              <Icon name="alert" /> {translate('The model did not recognise any symptom in the description. This does not mean the patient has none — ask again and pick in the list below.')}
-            </p>
+            <div className="hint-w">
+              <Icon name="triangle-alert" /> {translate('The model did not recognise any symptom in the description. This does not mean the patient has none — ask again and pick in the list below.')}
+            </div>
           )}
           {askAgain.length > 0 && (
-            <p className="sym-warn">
-              <Icon name="alert" /> {translate('Not sure — ask the patient again:')} {askAgain.map((u) => u.name || translate(symptomName(u.symptom_code))).join(', ')}
-            </p>
+            <div className="hint-w">
+              <Icon name="triangle-alert" /> {translate('Not sure — ask the patient again:')} {askAgain.map((u) => (symptomOf(u.symptom_code) ? translate(displayName(symptomOf(u.symptom_code))) : u.name || u.symptom_code)).join(', ')}
+            </div>
           )}
 
           {proposals.length > 0 && (
-            <div className="sym-proposals">
-              <div className="sym-proposals-head">
-                <b>{translate('Suggested — confirm before use')}</b>
-                <button type="button" className="btn btn-primary btn-sm" disabled={disabled || stale} onClick={acceptAll}>
-                  <Icon name="check" /> {translate('Confirm all')}
-                </button>
+            <div className="proposals">
+              <div className="h">
+                <Icon name="sparkles" />
+                {translate('Suggested from the description — confirm each symptom before use')}
               </div>
-              <div className="sym-prop-cols">
-                {[
-                  ['PRESENT', 'Yes'],
-                  ['ABSENT', 'No']
-                ].map(([state, label]) => (
-                  <div key={state} className={'sym-prop-col ' + state.toLowerCase()}>
-                    <div className="sym-prop-title">{translate(label)}</div>
-                    <div className="sym-chips">{proposals.filter((p) => p.state === state).map(chip)}</div>
-                  </div>
-                ))}
-              </div>
+              {proposals.map(chip)}
+              <button type="button" className="btn btn-ghost btn-sm" disabled={disabled || stale} onClick={acceptAll}>
+                <Icon name="check-check" />
+                {translate('Confirm all')}
+              </button>
             </div>
           )}
         </div>

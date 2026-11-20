@@ -1,43 +1,64 @@
 /* Biến màu, reset, font, thanh cuộn */
 
 :root{
-  /* Phong cách “dark glass” (tham khảo dhruvpatel16120/clinic-management-system). Tên biến giữ nguyên để component không phải sửa. */
-  --bg-solid:#0f172a;
-  --surface:rgba(255,255,255,.05);
-  --surface-alt:rgba(255,255,255,.08);
-  --surface-hover:rgba(255,255,255,.12);
-  --solid:#1e293b;
-  --ink:#F8FAFC;
-  --ink-soft:#94A3B8;
-  --primary:#3B82F6;
-  --primary-dark:#2563EB;
-  --primary-soft:rgba(59,130,246,.16);
-  --accent:#22D3EE;
-  --priority:#F59E0B;
-  --priority-soft:rgba(245,158,11,.16);
-  --warn:#EF4444;
-  --warn-soft:rgba(239,68,68,.16);
-  --success:#22C55E;
-  --border:rgba(255,255,255,.10);
-  --field-bg:rgba(255,255,255,.05);
-  --radius:16px;
-  --blur:blur(20px);
+  /* Nền sáng, xanh chủ đạo #1877F2; chỉ ngoại lệ mới có màu. Tên biến cũ giữ nguyên để component không phải sửa. */
+  --font:'Be Vietnam Pro',system-ui,sans-serif;
+  --bg-solid:#F0F2F5;
+  --surface:#FFFFFF;
+  --surface-alt:#F6F7F9;
+  --surface-hover:#EEF1F4;
+  --solid:#FFFFFF;
+  --ink:#16222B;
+  --ink-2:#3E4C57;
+  --ink-soft:#5F6E7A;
+  --primary:#1877F2;
+  --primary-dark:#0F63D1;
+  --primary-soft:#E7F0FD;
+  --primary-ink:#0B4BA3;
+  --accent:#1877F2;
+  --priority:#D97706;
+  --priority-soft:#FEF3E2;
+  --priority-ink:#B45309;
+  --warn:#DC2626;
+  --warn-soft:#FDECEC;
+  --warn-ink:#B91C1C;
+  --success:#15803D;
+  --success-soft:#E8F6EC;
+  --success-ink:#15803D;
+  --violet:#7C3AED;
+  --border:#E1E4E8;
+  --border-strong:#C5CCD3;
+  --field-bg:#FFFFFF;
+  --radius:12px;
+  --blur:none;
+  --shadow:0 1px 2px rgba(16,24,40,.05),0 1px 3px rgba(16,24,40,.06);
+  --shadow-lg:0 12px 32px rgba(16,24,40,.14);
+  /* Thanh menu bên trái — đổi theo theme (Cài đặt › Giao diện thanh menu) */
+  --sidebar:#FFFFFF;
+  --sidebar-ink:#3E4C57;
+  --sidebar-muted:#6B7A86;
+  --sidebar-active:#E7F0FD;
+  --sidebar-active-ink:#0B4BA3;
+  --sidebar-dots:rgba(24,119,242,.28);
 }
+:root[data-sidebar="dark"]{--sidebar:#0F1B2D;--sidebar-ink:#C3CED8;--sidebar-muted:#7F91A4;--sidebar-active:#1877F2;--sidebar-active-ink:#fff;--sidebar-dots:rgba(125,179,255,.28);}
+:root[data-sidebar="indigo"]{--sidebar:#1F2A44;--sidebar-ink:#C9D1E3;--sidebar-muted:#8F9BB8;--sidebar-active:#1877F2;--sidebar-active-ink:#fff;--sidebar-dots:rgba(125,179,255,.28);}
 *{box-sizing:border-box;}
 body{
   margin:0;
   min-height:100vh;
-  background:linear-gradient(135deg,#0F172A 0%,#1E3A8A 50%,#0F172A 100%);
-  background-attachment:fixed;
+  background:var(--bg-solid);
   color:var(--ink);
-  font-family:'Plus Jakarta Sans Variable',sans-serif;
+  font-family:var(--font);
+  font-size:15.5px;
+  line-height:1.5;
   -webkit-font-smoothing:antialiased;
 }
-h1,h2,h3,.display{font-family:'Plus Jakarta Sans Variable',sans-serif;}
-.mono{font-family:'IBM Plex Mono',monospace;letter-spacing:0.02em;}
-/* Nền tối cho cả khung cửa sổ và thanh cuộn: không lộ dải trắng ở mép phải khi trang phải cuộn. */
-html{background:#0F172A;color-scheme:dark;}
-::-webkit-scrollbar{width:7px;height:7px;}
+h1,h2,h3,.display{font-family:var(--font);}
+button,input,select,textarea{font-family:inherit;}
+.mono{font-variant-numeric:tabular-nums;letter-spacing:0.02em;}
+html{background:var(--bg-solid);color-scheme:light;}
+::-webkit-scrollbar{width:8px;height:8px;}
 ::-webkit-scrollbar-track,::-webkit-scrollbar-corner{background:transparent;}
-::-webkit-scrollbar-thumb{background:rgba(255,255,255,.18);border-radius:10px;}
-::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,.3);}
+::-webkit-scrollbar-thumb{background:rgba(16,24,40,.18);border-radius:10px;}
+::-webkit-scrollbar-thumb:hover{background:rgba(16,24,40,.32);}

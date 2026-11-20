@@ -28,15 +28,22 @@ export function ConfirmDialog({ open, title, message, children, confirmLabel = '
   return (
     <Modal open={open} onClose={onCancel}>
       <ModalHeader title={title} onClose={onCancel} />
-      <div className="modal-body">
-        {message && <p className="ai-confirm-msg">{message}</p>}
+      <div className="modal-b">
+        {message && (
+          <div className="confirm">
+            <div className={'ico ' + (danger ? 'd' : 'w')}>
+              <Icon name="triangle-alert" />
+            </div>
+            <p>{message}</p>
+          </div>
+        )}
         {children}
         {requireNote && (
           <div className="field" style={{ marginTop: 12 }}>
             <label>
-              Reason for this change <span className="ai-req">*</span>
+              Reason for this change <span className="req">*</span>
             </label>
-            <textarea
+            <textarea className="input"
               rows={3}
               value={note}
               placeholder={notePlaceholder ?? 'Recorded in the change log (at least 5 characters)'}
@@ -45,8 +52,8 @@ export function ConfirmDialog({ open, title, message, children, confirmLabel = '
           </div>
         )}
       </div>
-      <div className="modal-foot">
-        <button className="btn btn-ghost" onClick={onCancel}>
+      <div className="modal-f">
+        <button className="btn btn-outline" onClick={onCancel}>
           Cancel
         </button>
         <button
@@ -63,12 +70,12 @@ export function ConfirmDialog({ open, title, message, children, confirmLabel = '
 
 export function Empty({ icon = 'search', title, text }) {
   return (
-    <div className="empty-state">
-      <div className="ic">
+    <div className="empty">
+      <div className="ill">
         <Icon name={icon} />
       </div>
       <b>{title}</b>
-      {text && <p>{text}</p>}
+      {text && <span>{text}</span>}
     </div>
   )
 }

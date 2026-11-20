@@ -3,6 +3,7 @@ import Modal from '../../components/Modal'
 import ReauthModal from '../../components/ReauthModal'
 import ChangePasswordModal from '../../components/ChangePasswordModal'
 import Icon from '../../components/Icon'
+import { translate } from '../../i18n'
 import { LoadingBlock, ErrorBlock } from '../../components/DataState'
 import { useToast } from '../../context/ToastContext'
 import { useAuth } from '../../context/AuthContext'
@@ -156,18 +157,18 @@ export default function StaffPage() {
   const meAccount = accounts?.find((a) => a.id === me.id)
 
   return (
-    <div>
-      <div className="breadcrumb">
-        Roles &amp; permissions / <b>Staff accounts</b>
-      </div>
-      <div className="page-head">
+    <div className="vflow">
+      <div className="pg-h">
         <div>
-          <h1>Staff accounts</h1>
+          <h2>Staff accounts</h2>
           <p>Create and manage Doctor, Receptionist and Administrator accounts. Only administrators can create accounts.</p>
         </div>
-        <button className="btn btn-primary" onClick={() => openCreate()}>
-          + New account
-        </button>
+        <div className="act">
+          <button className="btn btn-primary" onClick={() => openCreate()}>
+            <Icon name="user-plus" />
+            {translate('Create account')}
+          </button>
+        </div>
       </div>
 
       {!accounts && !error && <LoadingBlock />}
@@ -180,7 +181,7 @@ export default function StaffPage() {
               <Icon name="user" />
               <div>
                 <b>Your account still has the default name “System Administrator”.</b>
-                <div className="ai-soft ai-small">Change it to your real name so the activity log shows who did what.</div>
+                <div className="muted small">Change it to your real name so the activity log shows who did what.</div>
               </div>
               <button className="btn btn-ghost btn-sm" onClick={() => openEdit(meAccount)}>
                 <Icon name="pencil" /> <span>Edit my details</span>
@@ -193,7 +194,7 @@ export default function StaffPage() {
               <Icon name="users" />
               <div>
                 <b>Create the first accounts for Doctor and Receptionist</b>
-                <div className="ai-soft ai-small">Only the administrator account exists so far. Each staff member should have their own account.</div>
+                <div className="muted small">Only the administrator account exists so far. Each staff member should have their own account.</div>
               </div>
               <button className="btn btn-primary btn-sm" onClick={() => openCreate('doctor')}>
                 + Doctor account
@@ -227,7 +228,7 @@ export default function StaffPage() {
       <AccountFormModal form={form} setForm={setForm} editing={editing} me={me} rooms={rooms} formErr={formErr} onSubmit={submitForm} />
 
       <ReauthModal open={!!reauth} title={reauth?.title ?? ''} confirmLabel={reauth?.confirmLabel} danger={reauth?.danger} onClose={() => setReauth(null)} onConfirm={() => reauth.run()}>
-        {reauth && <p className="ai-soft">{reauth.message}</p>}
+        {reauth && <p className="muted">{reauth.message}</p>}
       </ReauthModal>
 
       {/* Không đóng khi bấm ra ngoài — tránh mất mật khẩu trước khi kịp sao chép. */}
@@ -236,7 +237,6 @@ export default function StaffPage() {
       </Modal>
 
       <ChangePasswordModal open={ownPw} onClose={() => setOwnPw(false)} />
-
     </div>
   )
 }

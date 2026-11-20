@@ -59,12 +59,12 @@ describe('Ô tìm triệu chứng', () => {
     const box = await screen.findByRole('searchbox')
     fireEvent.change(box, { target: { value: 'dau' } })
     const results = () => document.querySelector('.sym-results')
-    expect(results().querySelectorAll('.sym-row')).toHaveLength(8)
+    expect(results().querySelectorAll('.sym-r')).toHaveLength(8)
     fireEvent.click(within(results()).getByText('Show 2 more'))
-    expect(results().querySelectorAll('.sym-row')).toHaveLength(10)
+    expect(results().querySelectorAll('.sym-r')).toHaveLength(10)
     expect(within(results()).queryByText(/more$/)).toBeNull()
     fireEvent.change(box, { target: { value: 'da' } })
-    expect(results().querySelectorAll('.sym-row')).toHaveLength(8)
+    expect(results().querySelectorAll('.sym-r')).toHaveLength(8)
   })
 
   it('không quá 8 kết quả thì không có nút', async () => {
