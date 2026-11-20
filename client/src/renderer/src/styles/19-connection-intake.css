@@ -1,7 +1,6 @@
 /* Địa chỉ máy chủ, lượt chưa đóng, phân loại lúc tiếp đón */
 
 /* Ô địa chỉ máy chủ (đăng nhập, Cài đặt › Kết nối) */
-.srv-box{display:flex;flex-direction:column;gap:8px;}
 .srv-top{display:flex;align-items:center;justify-content:space-between;}
 .srv-label{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--ink-soft);}
 .srv-label svg{width:14px;height:14px;}

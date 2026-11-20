@@ -6,10 +6,8 @@
 .staff-callout{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px;padding:14px 16px;border-color:rgba(251,191,36,.35);}
 .staff-callout > svg{width:20px;height:20px;color:var(--priority-ink);flex-shrink:0;}
 .staff-callout > div{flex:1 1 260px;color:var(--ink);}
-
-.staff-table td{vertical-align:top;}
 .staff-badges{display:flex;flex-direction:column;align-items:flex-start;gap:4px;}
-.staff-actions{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:4px;min-width:180px;}
+.staff-actions{min-width:180px;}
 .staff-secret{display:flex;align-items:center;gap:22px;flex-wrap:wrap;margin:14px 0 6px;padding:14px 16px;border:1px dashed var(--border);border-radius:12px;background:var(--field-bg);}
 .staff-secret .mono{font-size:15px;color:var(--ink);}
 .staff-secret-pw{font-size:17px !important;font-weight:700;letter-spacing:.04em;}

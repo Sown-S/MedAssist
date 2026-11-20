@@ -1,7 +1,6 @@
 /* Cấu hình AI */
 
 .btn:disabled{opacity:.45;cursor:not-allowed;}
-.btn-danger{background:var(--warn);color:#fff;}
 .btn-danger:hover:not(:disabled){background:#DC2626;}
 
 .ai-inline-input{padding:7px 10px;border:1px solid var(--border);border-radius:9px;background:var(--field-bg);color:var(--ink);font:13.5px var(--font);}

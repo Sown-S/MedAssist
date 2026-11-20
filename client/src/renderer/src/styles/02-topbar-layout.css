@@ -10,11 +10,6 @@
 
 /* Cửa sổ hẹp thì khối nút xuống hàng dưới thay vì bẻ chữ. */
 
-.btn{padding:10px 16px;border-radius:10px;border:none;font-weight:600;font-size:14.5px;cursor:pointer;font-family:var(--font);transition:background .15s,border-color .15s;}
-.btn-primary{background:var(--primary);color:#fff;}
-.btn-primary:hover{background:var(--primary-dark);}
-.btn-ghost{background:var(--surface);border:1px solid var(--border);color:var(--ink-soft);}
-.btn-ghost:hover{background:var(--surface-hover);color:var(--ink);}
-.btn-sm{padding:6px 12px;font-size:13px;}
-
-.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);}
+.btn{font-size:14.5px;font-family:var(--font);}
+.btn-ghost{border:1px solid var(--border);}
+.btn-ghost:hover{color:var(--ink);}

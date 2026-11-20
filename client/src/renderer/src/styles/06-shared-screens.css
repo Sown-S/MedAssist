@@ -13,9 +13,6 @@
 
 /* Báo cáo */
 
-/* Cận lâm sàng */
-@media (max-width:1100px){.lab-pick{grid-template-columns:1fr;}}
-
 /* Chọn ICD-10 / đơn mẫu */
 .icd-picker{position:relative;}
 .icd-picker>input{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:9px;font-size:14.5px;font-family:var(--font);background:var(--field-bg);color:var(--ink);}
