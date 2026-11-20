@@ -16,7 +16,7 @@
     "dist:eval": "electron-vite build --mode eval && electron-builder --publish never",
     "test": "vitest run",
     "test:watch": "vitest",
-    "lint": "eslint ."
+    "lint": "eslint . --max-warnings 0"
   },
   "dependencies": {
     "@electron-toolkit/utils": "^3.0.0",

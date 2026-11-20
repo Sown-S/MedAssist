@@ -131,7 +131,7 @@ jobs:
         run: npm ci
         env:
           ELECTRON_SKIP_BINARY_DOWNLOAD: "1"
-      - name: ESLint (giai đoạn đầu chỉ cảnh báo, không chặn PR)
+      - name: ESLint (lỗi hoặc cảnh báo đều chặn PR)
         run: npm run lint
       - name: Vitest
         run: npm test
