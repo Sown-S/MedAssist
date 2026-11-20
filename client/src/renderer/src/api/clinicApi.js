@@ -45,6 +45,27 @@ export async function lookupPatients(term, limit = 20) {
 
 export const getPatient = async (id) => toPatient(await apiGet(`${V1}/patients/${id}`))
 
+// Danh sách hồ sơ (trang Bệnh nhân của Lễ tân): GET /patients không kèm điều kiện = tất cả, mới nhất trước.
+export async function listPatients({ q = '', phone = '', idNumber = '', code = '', birthYear = '', limit = 20, offset = 0 } = {}) {
+  const qs = new URLSearchParams({ limit, offset })
+  if (q) qs.set('q', q)
+  if (phone) qs.set('phone', phone)
+  if (idNumber) qs.set('id_number', idNumber)
+  if (code) qs.set('code', code)
+  if (birthYear) qs.set('birth_year', birthYear)
+  const r = await apiGet(`${V1}/patients?${qs}`)
+  return { total: r.total, items: r.items.map((x) => ({ ...toPatient(x), dob: dmyDob(x.date_of_birth) })) }
+}
+
+// Lịch sử khám của một bệnh nhân, mới nhất trước.
+export async function patientVisits(patientId, { limit = 20, offset = 0 } = {}) {
+  const r = await apiGet(`${V1}/patients/${patientId}/visits?limit=${limit}&offset=${offset}`)
+  return {
+    total: r.total,
+    items: r.items.map((v) => ({ id: v.visit_id, at: v.visit_date, reason: v.chief_complaint, status: v.status, referred: v.outcome === 'Referred' }))
+  }
+}
+
 // 409 POSSIBLE_DUPLICATE (trùng họ tên + ngày sinh) → trả { duplicates }; người dùng xác nhận thì gửi lại với confirmDuplicate.
 export async function createPatient(f, { confirmDuplicate = false } = {}) {
   const body = {
@@ -121,6 +142,8 @@ export const updateVisit = (visitId, { text, vitals }) =>
     ...(vitals !== undefined ? { vital_signs: Object.keys(vitals).length ? vitals : null } : {})
   })
 export const putSymptoms = (visitId, symptoms) => apiRequest(`${V1}/visits/${visitId}/symptoms`, 'PUT', { symptoms })
+// Một lượt khám (trạng thái, ngày và số thứ tự) — dùng khi tạo lượt bị chặn vì bệnh nhân còn lượt đang mở.
+export const getVisit = (visitId) => apiGet(`${V1}/visits/${visitId}`)
 export const getVisitSymptoms = (visitId) => apiGet(`${V1}/visits/${visitId}/symptoms`)
 export const checkIn = (visitId) => apiRequest(`${V1}/visits/${visitId}/check-in`, 'PATCH')
 // Bác sĩ khác nhận trước → 409 VISIT_TAKEN.

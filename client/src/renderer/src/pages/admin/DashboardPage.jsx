@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import StatCard from '../../components/StatCard'
 import Icon from '../../components/Icon'
+import BellPortal from '../../components/BellPortal'
 import { LoadingBlock, ErrorBlock } from '../../components/DataState'
 import { useApiData } from '../../hooks/useApiData'
 import { listAccounts } from '../../api/accountStore'
@@ -13,6 +14,9 @@ import { rangeOf, reportPath, fillDays, vnd, percent } from '../../api/reportsAp
 import { translate } from '../../i18n'
 import { fmtDateTime } from './inventory/shared'
 import ClusterAlerts from '../../components/ClusterAlerts'
+import LineChart from '../../components/LineChart'
+import HomeGreeting from '../../components/HomeGreeting'
+import { useAuth } from '../../context/AuthContext'
 
 // by_status chỉ có trạng thái đang có lượt (hôm nay chưa ai check-in thì không có khoá CheckedIn) → thiếu là 0.
 export const countOf = (byStatus, ...keys) => keys.reduce((n, k) => n + (Number(byStatus?.[k]) || 0), 0)
@@ -27,13 +31,18 @@ function buildAlerts(inv, accounts, failed = []) {
     .forEach((d) => {
       const s = stockOf(d, batches)
       s.batches.forEach((b) => {
-        if (b.days < 0)
-          alerts.push({ level: 'critical', tag: 'Expired', title: `${d.name} has expired`, note: `Lot ${b.lot} · ${b.qty} expired — cannot be prescribed`, to: 'inventory' })
+        if (b.days < 0) alerts.push({ level: 'critical', tag: 'Expired', title: `${d.name} has expired`, note: `Lot ${b.lot} · ${b.qty} expired — cannot be prescribed`, to: 'inventory' })
         else if (b.days <= getSettings().ops.nearDays)
           alerts.push({ level: 'warning', tag: 'Near expiry', title: `${d.name} expires in ${b.days} days`, note: `Lot ${b.lot} · ${b.qty} left`, to: 'inventory' })
       })
       if (s.usable < d.threshold)
-        alerts.push({ level: s.usable === 0 ? 'critical' : 'warning', tag: 'Low stock', title: `${d.name} is below its threshold`, note: `${s.usable} left · threshold ${d.threshold}`, to: 'inventory' })
+        alerts.push({
+          level: s.usable === 0 ? 'critical' : 'warning',
+          tag: 'Low stock',
+          title: `${d.name} is below its threshold`,
+          note: `${s.usable} left · threshold ${d.threshold}`,
+          to: 'inventory'
+        })
     })
   const pending = accounts.filter((a) => a.mustChange)
   if (pending.length)
@@ -78,65 +87,43 @@ function useServerLog() {
 
 function ServerActivity({ items, onOpen }) {
   return (
-    <table className="dt">
-      <tbody>
-        <tr>
-          <th>Time</th>
-          <th>Account</th>
-          <th>Action</th>
-          <th>Object</th>
-        </tr>
-        {(items ?? []).map((x) => (
-          <tr className="row-click" key={x.log_id} onClick={onOpen}>
-            <td className="mono">{fmtDateTime(x.created_at)}</td>
-            <td>{x.username ?? x.attempted_username ?? '—'}</td>
-            <td>
-              <span className={'badge ' + (ACTION_TONE[x.action_type] ?? '')}>{translate(ACTION_LABEL[x.action_type] ?? x.action_type)}</span>
-            </td>
-            <td className="mono ai-small">{x.target_entity ?? '—'}</td>
-          </tr>
-        ))}
-        {items && !items.length && (
+    <div className="tbl-wrap">
+      <table>
+        <thead>
           <tr>
-            <td colSpan="4" className="ai-soft">
-              No activity recorded yet.
-            </td>
+            <th>Time</th>
+            <th>Account</th>
+            <th>Action</th>
+            <th>Object</th>
           </tr>
-        )}
-      </tbody>
-    </table>
-  )
-}
-
-const fmtVnd = (n) => n.toLocaleString('vi-VN') + 'đ'
-
-function RevenueChart({ days }) {
-  const [hover, setHover] = useState(null)
-  const max = Math.max(...days.map((d) => d.amt), 1) // 7 ngày đều chưa thu tiền → không chia cho 0
-  const shown = hover ?? days.length - 1
-
-  return (
-    <div className="mini-chart" onMouseLeave={() => setHover(null)}>
-      {days.map((d, i) => (
-        <div
-          className={'mini-col' + (i === shown ? ' on' : '')}
-          key={d.day}
-          onMouseEnter={() => setHover(i)}
-          aria-label={`${d.day}: ${fmtVnd(d.amt)}`}
-        >
-          <span className="mini-val">{i === shown ? fmtVnd(d.amt) : ''}</span>
-          <div className="mini-track">
-            <div className="mini-bar" style={{ height: Math.round((d.amt / max) * 100) + '%' }} />
-          </div>
-          <span className="mini-day">{d.day}</span>
-        </div>
-      ))}
+        </thead>
+        <tbody>
+          {(items ?? []).map((x) => (
+            <tr className="clickable" key={x.log_id} onClick={onOpen}>
+              <td className="num">{fmtDateTime(x.created_at)}</td>
+              <td>{x.username ?? x.attempted_username ?? '—'}</td>
+              <td>
+                <span className={'badge ' + (ACTION_TONE[x.action_type] ?? '')}>{translate(ACTION_LABEL[x.action_type] ?? x.action_type)}</span>
+              </td>
+              <td className="muted">{x.target_entity ?? '—'}</td>
+            </tr>
+          ))}
+          {items && !items.length && (
+            <tr>
+              <td colSpan="4" className="muted">
+                No activity recorded yet.
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
     </div>
   )
 }
 
 export default function DashboardPage({ onNavigate }) {
   const navigate = useNavigate()
+  const { user } = useAuth()
   // Số liệu tổng hợp, không có dữ liệu bệnh nhân nên Admin xem được. Lỗi tải → các ô hiện “—”, phần còn lại vẫn dùng được.
   const days7 = rangeOf('7d')
   const { data: summary, error: e1 } = useApiData(reportPath(rangeOf('today')))
@@ -162,139 +149,192 @@ export default function DashboardPage({ onNavigate }) {
   const server = useServerLog()
   const alerts = ready ? buildAlerts(inv, accounts, server.failed) : []
 
+  const ALERT_ICON = { inventory: 'package-x', staff: 'key-round', history: 'shield-alert' }
   return (
-    <div>
-      <div className="page-head">
-        <div>
-          <h1>Admin home</h1>
-          <p>Overview of today's clinic operations</p>
-        </div>
+    <>
+      <div className="rhome" style={{ flex: 'none' }}>
+        <HomeGreeting crumb="Admin" name={user?.name ?? ''}>
+          <button className="btn btn-outline" onClick={() => navigate('/reports')}>
+            <Icon name="chart-line" />
+            {translate('View reports')}
+          </button>
+          <button className="btn btn-primary" onClick={() => onNavigate('staff')}>
+            <Icon name="user-plus" />
+            {translate('Create account')}
+          </button>
+        </HomeGreeting>
       </div>
 
-      <ClusterAlerts />
+      <BellPortal>
+        <ClusterAlerts onOpenReport={() => navigate('/reports')} />
+      </BellPortal>
       {!ready && <LoadingBlock />}
       {e1 && <ErrorBlock message={translate('Could not load today’s figures') + ': ' + e1} />}
       {accountsError && <ErrorBlock message={translate('Could not load staff accounts') + ': ' + translate(accountsError)} />}
 
       {ready && (
         <>
-          <div className="stat-bar">
-            <StatCard value={summary?.visits.total ?? NA} label="Visits today" />
-            <StatCard value={byStatus ? countOf(byStatus, 'Waiting', 'CheckedIn') : NA} label="Waiting for consultation" />
-            <StatCard value={byStatus ? countOf(byStatus, 'Prescribed') : NA} label="Awaiting payment" />
-            <StatCard value={summary ? vnd(summary.revenue.total) : NA} label="Today's revenue" />
-            <StatCard value={summary?.visits.red_flags ?? NA} label="Red-flag referrals" />
+          <div className="kpis tiles4 ak">
+            <StatCard value={summary?.visits.total ?? NA} label="Visits today" icon="users" tone="b" sub={translate('all rooms, since opening')} onClick={() => navigate('/reports')} />
+            <StatCard value={byStatus ? countOf(byStatus, 'Waiting', 'CheckedIn') : NA} label="Waiting for consultation" icon="clock" tone="g" sub={translate('checked in or waiting at the desk')} />
+            <StatCard value={byStatus ? countOf(byStatus, 'Prescribed') : NA} label="Awaiting payment" icon="banknote" tone="a" sub={translate('prescribed, not paid yet')} />
+            <StatCard value={summary?.visits.red_flags ?? NA} label="Red-flag referrals" icon="ambulance" tone="r" alert={summary?.visits.red_flags > 0} sub={translate(summary?.visits.red_flags > 0 ? 'referred today' : 'No referrals today')} />
           </div>
 
-          <div className="dash-grid">
+          <div className="grid-2">
             <div className="card">
-              <div className="card-title">
-                Needs attention <span className="cnt">{alerts.length}</span>
+              <div className="card-h">
+                <h3>Needs attention</h3>
+                {alerts.length > 0 && <span className="plain">{alerts.length}</span>}
               </div>
-              {alerts.length === 0 && <p className="dash-empty">Nothing needs your attention right now.</p>}
-              {alerts.map((a, i) => (
-                <button className="alert-row" key={i} onClick={() => onNavigate(a.to)}>
-                  <span className={'alert-ic ' + a.level}>
-                    <Icon name={a.level === 'critical' ? 'ban' : 'alert'} />
-                  </span>
-                  <span className="alert-txt">
-                    <b>{a.title}</b>
-                    <span>{a.note}</span>
-                  </span>
-                  <span className={'badge ' + (a.level === 'critical' ? 'low' : 'warn')}>{a.tag}</span>
-                  <Icon name="chevronRight" />
-                </button>
-              ))}
-            </div>
-
-            <div className="card">
-              <div className="card-title">
-                System status
-                <span className="dash-link" onClick={() => onNavigate('settings', { tab: 'connection' })}>
-                  Settings <Icon name="chevronRight" />
-                </span>
-              </div>
-              {!health && <p className="dash-empty">Checking connection…</p>}
-              {health?.services.map((s) => (
-                <div className="status-row" key={s.key}>
-                  <span className="alert-txt">
-                    <b>{s.name}</b>
-                    <span>{s.detail}</span>
-                  </span>
-                  <span className={'badge ' + (s.ok ? 'ok' : s.ok === null ? 'muted' : 'low')}>{s.state}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="dash-grid">
-            <div className="card dash-click" onClick={() => navigate('/reports')} title="Open Reports">
-              <div className="card-title">
-                Revenue — last 7 days
-                <span className="dash-link">
-                  View reports <Icon name="chevronRight" />
-                </span>
-              </div>
-              {week ? <RevenueChart days={fillDays(week.revenue.by_day, days7)} /> : <p className="ai-soft">Not available — could not load the report.</p>}
-            </div>
-
-            <div className="dash-stack">
-              <div className="card">
-                <div className="card-title">AI decision support</div>
-                {ai ? (
-                  <>
-                    <div className="ai-metric">
-                      <span className="val">{percent(ai.decisions.acceptance_rate)}</span>
-                      <span>of AI suggestions matched the doctor's confirmed diagnosis</span>
+              <div className="card-b">
+                {alerts.length === 0 ? (
+                  <div className="empty">
+                    <div className="ill">
+                      <Icon name="circle-check-big" />
                     </div>
-                    <div className="bar-track" style={{ flex: 'none', margin: '10px 0 12px' }}>
-                      <div className="bar-fill" style={{ width: percent(ai.decisions.acceptance_rate ?? 0) }} />
-                    </div>
-                    <div className="pref-row inline">
-                      <span>AI assessments today</span>
-                      <b>{ai.assessments.total}</b>
-                    </div>
-                    <div className="pref-row inline">
-                      <span>Rule-only results (model unavailable)</span>
-                      <b>{ai.assessments.rule_only}</b>
-                    </div>
-                  </>
+                    <b>Nothing needs your attention right now.</b>
+                  </div>
                 ) : (
-                  <p className="ai-soft">Not available — could not load the report.</p>
+                  <div className="rows">
+                    {alerts.map((a, i) => (
+                      <div className="r" key={i}>
+                        <div className={'ico ' + (a.level === 'critical' ? 'd' : a.to === 'inventory' ? 'w' : 'n')}>
+                          <Icon name={a.level === 'critical' && a.to === 'inventory' ? 'package-x' : a.tag === 'Near expiry' ? 'calendar-clock' : (ALERT_ICON[a.to] ?? 'triangle-alert')} />
+                        </div>
+                        <div className="t">
+                          <b>{translate(a.title)}</b>
+                          <span>{translate(a.note)}</span>
+                        </div>
+                        <button className="btn btn-ghost btn-sm" onClick={() => onNavigate(a.to)}>
+                          {translate('Open →')}
+                        </button>
+                      </div>
+                    ))}
+                  </div>
                 )}
-                <button className="btn btn-ghost btn-sm" style={{ marginTop: 10 }} onClick={() => onNavigate('ai')}>
-                  Open AI configuration
+              </div>
+            </div>
+
+            <div className="card">
+              <div className="card-h">
+                <h3>System status</h3>
+                <button className="btn btn-ghost btn-sm" onClick={() => onNavigate('settings', { tab: 'connection' })}>
+                  {translate('Settings')}
                 </button>
               </div>
-
-              <div className="card">
-                <div className="card-title">Shortcuts</div>
-                <div className="shortcut-grid">
-                  <button className="btn btn-ghost" onClick={() => onNavigate('staff')}>
-                    <Icon name="users" /> Create account
-                  </button>
-                  <button className="btn btn-ghost" onClick={() => onNavigate('inventory')}>
-                    <Icon name="box" /> Stock in
-                  </button>
-                  <button className="btn btn-ghost" onClick={() => navigate('/reports')}>
-                    <Icon name="chart" /> View reports
-                  </button>
+              <div className="card-b">
+                {!health && <p className="muted small">{translate('Checking connection…')}</p>}
+                <div className="rows">
+                  {health?.services.map((s) => (
+                    <div className="r" key={s.key}>
+                      <div className="ico n">
+                        <Icon name={s.key === 'ai' || s.key === 'llm' ? 'cpu' : s.key === 'db' ? 'database' : 'server'} />
+                      </div>
+                      <div className="t">
+                        <b>{s.name}</b>
+                        <span>{s.detail}</span>
+                      </div>
+                      {s.ok ? <span className="plain">{s.state}</span> : <span className={'badge ' + (s.ok === null ? 'b-neutral' : 'b-danger')}>{s.state}</span>}
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="card">
-            <div className="card-title">Recent activity</div>
-            <ServerActivity items={server.recent} onOpen={() => onNavigate('history')} />
-            <div style={{ textAlign: 'right', marginTop: 10 }}>
-              <button className="btn btn-ghost btn-sm" onClick={() => onNavigate('history')}>
-                View full history →
-              </button>
+          <div className="grid-2">
+            <div className="card">
+              <div className="card-h">
+                <h3>Revenue — last 7 days</h3>
+                <button className="btn btn-ghost btn-sm" onClick={() => navigate('/reports')}>
+                  {translate('View reports')}
+                </button>
+              </div>
+              <div className="card-b">
+                {week ? (
+                  <LineChart points={fillDays(week.revenue.by_day, days7).map((x) => ({ label: x.day, value: x.amt }))} fmt={vnd} height={190} />
+                ) : (
+                  <p className="muted small">{translate('Not available — could not load the report.')}</p>
+                )}
+              </div>
+            </div>
+
+            <div className="card">
+              <div className="card-h">
+                <h3>AI decision support</h3>
+                <button className="btn btn-ghost btn-sm" onClick={() => onNavigate('ai')}>
+                  {translate('Open AI configuration')}
+                </button>
+              </div>
+              <div className="card-b">
+                {ai ? (
+                  <div className="rows">
+                    <div className="r">
+                      <div className="t">
+                        <span>{translate('AI assessments today')}</span>
+                        <b style={{ fontSize: 'var(--fs-lg)' }}>{ai.assessments.total}</b>
+                      </div>
+                    </div>
+                    <div className="r">
+                      <div className="t">
+                        <span>{translate('Rule-only results (model unavailable)')}</span>
+                        <b style={{ fontSize: 'var(--fs-lg)' }}>{ai.assessments.rule_only}</b>
+                      </div>
+                    </div>
+                    <div className="r">
+                      <div className="t">
+                        <span>{translate("of AI suggestions matched the doctor's confirmed diagnosis")}</span>
+                        <b style={{ fontSize: 'var(--fs-lg)' }}>{percent(ai.decisions.acceptance_rate)}</b>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="muted small">{translate('Not available — could not load the report.')}</p>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <div className="grid-2">
+            <div className="card">
+              <div className="card-h">
+                <h3>Recent activity</h3>
+                <button className="btn btn-ghost btn-sm" onClick={() => onNavigate('history')}>
+                  {translate('View full history →')}
+                </button>
+              </div>
+              <div className="card-b">
+                <ServerActivity items={server.recent} onOpen={() => onNavigate('history')} />
+              </div>
+            </div>
+            <div className="card">
+              <div className="card-h">
+                <h3>Shortcuts</h3>
+              </div>
+              <div className="card-b quick q2s">
+                {[
+                  ['user-plus', 'Create account', 'Receptionist, doctor or administrator', () => onNavigate('staff')],
+                  ['package-plus', 'Stock in', 'Add a new drug batch', () => onNavigate('inventory')],
+                  ['library', 'Catalog management', 'Drugs, services, lab tests', () => onNavigate('catalog')],
+                  ['brain', 'AI configuration', 'Rules and thresholds', () => onNavigate('ai')]
+                ].map(([icon, t, sub, run]) => (
+                  <button key={t} className="qa qv" onClick={run}>
+                    <div className="ico p">
+                      <Icon name={icon} />
+                    </div>
+                    <div>
+                      <b>{translate(t)}</b>
+                      <span>{translate(sub)}</span>
+                    </div>
+                    <Icon name="arrow-up-right" />
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         </>
       )}
-    </div>
+    </>
   )
 }

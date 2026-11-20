@@ -8,7 +8,7 @@ const CMP_TEXT = { '<': '<', '<=': '≤', '>': '>', '>=': '≥', '==': '=' }
 const MAX_DEPTH = 5
 
 export function LogicView({ node, names, depth = 0 }) {
-  if (!node) return <span className="ai-soft">—</span>
+  if (!node) return <span className="muted">—</span>
   if (node.op) {
     return (
       <span className="kb-logic-group">
@@ -32,7 +32,7 @@ export function LogicView({ node, names, depth = 0 }) {
     return (
       <span className="ai-chip vital">
         <span>{d?.label ?? node.vital}</span>{' '}
-        <span className="mono">
+        <span className="num">
           {CMP_TEXT[node.cmp] ?? node.cmp} {node.value} {d?.unit}
         </span>
       </span>
@@ -42,13 +42,13 @@ export function LogicView({ node, names, depth = 0 }) {
     return (
       <span className="ai-chip meta">
         <span>Age</span>{' '}
-        <span className="mono">
+        <span className="num">
           {CMP_TEXT[node.cmp] ?? node.cmp} {node.value}
         </span>{' '}
         <span>{node.unit === 'months' ? 'months' : 'years'}</span>
       </span>
     )
-  return <span className="mono ai-small">{JSON.stringify(node)}</span>
+  return <span className="num small">{JSON.stringify(node)}</span>
 }
 
 const newLeaf = (type, symptoms) =>
@@ -91,7 +91,7 @@ export function LogicEditor({ node, onChange, onRemove, symptoms, names, depth =
     return (
       <div className="kb-logic-edit-group">
         <div className="kb-logic-edit-head">
-          <select className="ai-select" value={node.op} onChange={(e) => onChange({ ...node, op: e.target.value })}>
+          <select className="input" value={node.op} onChange={(e) => onChange({ ...node, op: e.target.value })}>
             <option value="AND">All of these (AND)</option>
             <option value="OR">Any of these (OR)</option>
           </select>
@@ -112,7 +112,7 @@ export function LogicEditor({ node, onChange, onRemove, symptoms, names, depth =
             onRemove={() => onChange({ ...node, args: node.args.filter((_, j) => j !== i) })}
           />
         ))}
-        {!node.args.length && <p className="ai-small ai-soft">Add at least one condition.</p>}
+        {!node.args.length && <p className="small muted">Add at least one condition.</p>}
         <div className="kb-logic-add">
           <button type="button" className="btn btn-ghost btn-sm" onClick={() => add('symptom')}>
             + Symptom
@@ -137,11 +137,11 @@ export function LogicEditor({ node, onChange, onRemove, symptoms, names, depth =
     <div className="kb-logic-edit-leaf">
       {node.type === 'symptom' && (
         <>
-          <select className="ai-select" value={node.state} onChange={(e) => set({ state: e.target.value })}>
+          <select className="input" value={node.state} onChange={(e) => set({ state: e.target.value })}>
             <option value="PRESENT">Has</option>
             <option value="ABSENT">Does not have</option>
           </select>
-          <select className="ai-select kb-grow" value={node.symptom_code} onChange={(e) => set({ symptom_code: e.target.value })}>
+          <select className="input kb-grow" value={node.symptom_code} onChange={(e) => set({ symptom_code: e.target.value })}>
             <option value="">— Choose a symptom —</option>
             {symptoms.map((c) => (
               <option key={c} value={c}>
@@ -153,7 +153,7 @@ export function LogicEditor({ node, onChange, onRemove, symptoms, names, depth =
       )}
       {node.type === 'vital' && (
         <>
-          <select className="ai-select kb-grow" value={node.vital} onChange={(e) => set({ vital: e.target.value })}>
+          <select className="input kb-grow" value={node.vital} onChange={(e) => set({ vital: e.target.value })}>
             {VITAL_KEYS.map((v) => (
               <option key={v.key} value={v.key}>
                 {translate(v.label)} ({v.unit})
@@ -166,10 +166,10 @@ export function LogicEditor({ node, onChange, onRemove, symptoms, names, depth =
       )}
       {node.type === 'age' && (
         <>
-          <span className="ai-small">Age</span>
+          <span className="small">Age</span>
           <CmpSelect value={node.cmp} onChange={(cmp) => set({ cmp })} />
           <input className="kb-num" type="number" step="any" value={node.value} onChange={(e) => set({ value: e.target.value })} />
-          <select className="ai-select" value={node.unit} onChange={(e) => set({ unit: e.target.value })}>
+          <select className="input" value={node.unit} onChange={(e) => set({ unit: e.target.value })}>
             <option value="years">years</option>
             <option value="months">months</option>
           </select>
@@ -186,7 +186,7 @@ export function LogicEditor({ node, onChange, onRemove, symptoms, names, depth =
 
 function CmpSelect({ value, onChange }) {
   return (
-    <select className="ai-select" value={value} onChange={(e) => onChange(e.target.value)}>
+    <select className="input" value={value} onChange={(e) => onChange(e.target.value)}>
       {CMPS.map((c) => (
         <option key={c} value={c}>
           {CMP_TEXT[c]}

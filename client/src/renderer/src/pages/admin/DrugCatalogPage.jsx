@@ -48,9 +48,9 @@ export default function DrugCatalogPage({ params, onNavigate }) {
       <div className="breadcrumb">
         Catalog management / <b>Medical catalogs</b> / Drugs &amp; supplies
       </div>
-      <div className="page-head">
+      <div className="pg-h">
         <div>
-          <h1>Drugs &amp; supplies</h1>
+          <h2>Drugs &amp; supplies</h2>
           <p>Master data shared by prescribing and invoices. Stock levels are in Inventory › Stock &amp; expiry.</p>
         </div>
         <button className="btn btn-ghost btn-sm" onClick={() => onNavigate('inventory')}>
@@ -59,13 +59,11 @@ export default function DrugCatalogPage({ params, onNavigate }) {
       </div>
 
       {missingAtc > 0 && (
-        <div className="warn-banner show caution" style={{ marginTop: 0, marginBottom: 12 }}>
-          <div className="icon">
-            <Icon name="alert" />
-          </div>
+        <div className="banner w" style={{ marginTop: 0, marginBottom: 12 }}>
+          <Icon name="alert" />
           <div className="txt">
             <b>
-              <span className="mono">{missingAtc}</span> <span>drugs have no ATC code</span>
+              <span className="num">{missingAtc}</span> <span>drugs have no ATC code</span>
             </b>
             Antibiotics among them are not recognised as prescription-only.
           </div>
@@ -73,19 +71,19 @@ export default function DrugCatalogPage({ params, onNavigate }) {
       )}
 
       <div className="card">
-        <div className="ai-toolbar">
-          <div className="ai-search">
+        <div className="toolbar">
+          <div className="search">
             <Icon name="search" />
-            <input value={q} onChange={(e) => (setQ(e.target.value), setPage(1))} placeholder="Search by name, active ingredient, ATC code…" />
+            <input className="input" value={q} onChange={(e) => (setQ(e.target.value), setPage(1))} placeholder="Search by name, active ingredient, ATC code…" />
           </div>
-          <div className="ai-toolbar-right">
-            <select className="ai-select" value={kind} onChange={(e) => (setKind(e.target.value), setPage(1))}>
+          <div className="toolbar-r">
+            <select className="input" value={kind} onChange={(e) => (setKind(e.target.value), setPage(1))}>
               <option value="all">Drugs &amp; supplies</option>
               <option value="drug">Drugs only</option>
               <option value="supply">Medical supplies only</option>
               <option value="essential">Essential</option>
             </select>
-            <select className="ai-select" value={active} onChange={(e) => (setActive(e.target.value), setPage(1))}>
+            <select className="input" value={active} onChange={(e) => (setActive(e.target.value), setPage(1))}>
               <option value="active">In use</option>
               <option value="inactive">Discontinued</option>
               <option value="all">All</option>
@@ -123,8 +121,8 @@ export default function DrugCatalogPage({ params, onNavigate }) {
         {pg.total === 0 ? (
           <Empty title="No drugs match" text="Try another keyword or filter." />
         ) : (
-          <div className="ai-table-wrap">
-            <table className="dt">
+          <div className="tbl-wrap">
+            <table>
               <thead>
                 <tr>
                   <th>Code</th>
@@ -136,7 +134,7 @@ export default function DrugCatalogPage({ params, onNavigate }) {
                     ATC code
                   </SortTh>
                   <th>Unit</th>
-                  <th className="num">Purchase price</th>
+                  <th className="r num">Purchase price</th>
                   <SortTh k="price" sort={sort} onSort={setSort} className="num">
                     Selling price
                   </SortTh>
@@ -151,23 +149,23 @@ export default function DrugCatalogPage({ params, onNavigate }) {
               <tbody>
                 {pg.rows.map(({ d, s }) => (
                   <tr key={d.id} className={'row-click' + (!d.active ? ' ai-dim' : '')} onClick={() => setEdit(d)}>
-                    <td className="mono">{d.id}</td>
+                    <td className="num">{d.id}</td>
                     <td>
                       <b>{d.name}</b>
-                      {d.kind === 'supply' && <div className="ai-soft ai-small">Medical supply</div>}
+                      {d.kind === 'supply' && <div className="muted small">Medical supply</div>}
                     </td>
-                    <td>{d.ingredient || <span className="ai-soft">—</span>}</td>
-                    <td className="mono">{d.atc || <span className="ai-soft">—</span>}</td>
+                    <td>{d.ingredient || <span className="muted">—</span>}</td>
+                    <td className="num">{d.atc || <span className="muted">—</span>}</td>
                     <td>{unitLabel(d.unit)}</td>
-                    <td className="num mono">{fmtMoney(d.cost)}</td>
-                    <td className="num mono">{fmtMoney(d.price)}</td>
+                    <td className="r num">{fmtMoney(d.cost)}</td>
+                    <td className="r num">{fmtMoney(d.price)}</td>
                     <td>
                       {d.essential && <span className="essential-chip">Essential</span>}
                       {d.group === 'controlled' && <span className="essential-chip inv-ctrl">Controlled</span>}
                     </td>
-                    <td className="num mono">{fmtNum(s.usable)}</td>
-                    <td>{d.active ? <span className="badge ok">In use</span> : <span className="badge muted">Discontinued</span>}</td>
-                    <td className="ai-actions" onClick={(e) => e.stopPropagation()}>
+                    <td className="r num">{fmtNum(s.usable)}</td>
+                    <td>{d.active ? <span className="badge b-success">In use</span> : <span className="badge b-neutral">Discontinued</span>}</td>
+                    <td className="acts-td" onClick={(e) => e.stopPropagation()}>
                       <button className="btn btn-ghost btn-sm" title="Edit" onClick={() => setEdit(d)}>
                         <Icon name="pencil" />
                       </button>
@@ -182,9 +180,8 @@ export default function DrugCatalogPage({ params, onNavigate }) {
             <Pager {...pg} onPage={setPage} />
           </div>
         )}
-        <p className="ai-foot-note">
-          <Icon name="help" />{' '}
-          <span>Selling prices here fill invoices automatically; ATC codes mark antibiotics (J01) as prescription-only; the essential flag drives the checkout warning.</span>
+        <p className="muted small foot-note">
+          <Icon name="help" /> <span>Selling prices here fill invoices automatically; ATC codes mark antibiotics (J01) as prescription-only; the essential flag drives the checkout warning.</span>
         </p>
       </div>
 

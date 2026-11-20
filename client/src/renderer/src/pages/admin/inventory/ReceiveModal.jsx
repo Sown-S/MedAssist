@@ -5,6 +5,7 @@ import { useToast } from '../../../context/ToastContext'
 import { translate } from '../../../i18n'
 import { receiveStock, daysLeft, todayISO } from '../../../api/inventoryStore'
 import { unitLabel, fmtMoney } from './shared'
+import DateField from '../../../components/DateField'
 
 // Nhập kho = tạo một lô mới. Không quản lý nhà cung cấp / công nợ (ngoài phạm vi).
 export default function ReceiveModal({ drug, drugs, onClose }) {
@@ -45,11 +46,11 @@ export default function ReceiveModal({ drug, drugs, onClose }) {
   return (
     <Modal open onClose={onClose}>
       <ModalHeader title="Receive stock" onClose={onClose} />
-      <div className="modal-body">
-        <div className="ai-grid3">
-          <div className="field" style={{ gridColumn: 'span 3' }}>
+      <div className="modal-b">
+        <div className="fg">
+          <div className="field full">
             <label>Drug</label>
-            <select value={f.drugId} onChange={(e) => set('drugId', e.target.value)} disabled={!!drug.id}>
+            <select className="input" value={f.drugId} onChange={(e) => set('drugId', e.target.value)} disabled={!!drug.id}>
               {drugs
                 .filter((x) => x.active)
                 .map((x) => (
@@ -61,48 +62,44 @@ export default function ReceiveModal({ drug, drugs, onClose }) {
           </div>
           <div className="field">
             <label>
-              Lot number <span className="ai-req">*</span>
+              Lot number <span className="req">*</span>
             </label>
-            <input value={f.lot} onChange={(e) => set('lot', e.target.value)} />
+            <input className="input" value={f.lot} onChange={(e) => set('lot', e.target.value)} />
           </div>
           <div className="field">
             <label>
-              Expiry date <span className="ai-req">*</span>
+              Expiry date <span className="req">*</span>
             </label>
-            <input type="date" min={todayISO()} value={f.expiry} onChange={(e) => set('expiry', e.target.value)} />
+            <DateField min={todayISO()} value={f.expiry} onChange={(v) => set('expiry', v)} />
           </div>
           <div className="field">
             <label>
-              Quantity <span className="ai-soft">({d ? unitLabel(d.unit) : ''})</span> <span className="ai-req">*</span>
+              Quantity <span className="muted">({d ? unitLabel(d.unit) : ''})</span> <span className="req">*</span>
             </label>
-            <input type="number" min="1" value={f.qty} onChange={(e) => set('qty', e.target.value)} />
+            <input className="input" type="number" min="1" value={f.qty} onChange={(e) => set('qty', e.target.value)} />
           </div>
           <div className="field">
             <label>Purchase price (per unit)</label>
-            <input type="number" min="0" value={f.cost} placeholder={cost >= 0 ? String(cost) : ''} onChange={(e) => set('cost', e.target.value)} />
+            <input className="input" type="number" min="0" value={f.cost} placeholder={cost >= 0 ? String(cost) : ''} onChange={(e) => set('cost', e.target.value)} />
           </div>
         </div>
 
         {qty > 0 && cost >= 0 && (
           <div className="rc-facts">
             <span>
-              <span>Receipt value</span> <b className="mono">{fmtMoney(qty * cost)}</b>
+              <span>Receipt value</span> <b className="num">{fmtMoney(qty * cost)}</b>
             </span>
           </div>
         )}
         {shortLife && (
-          <div className="warn-banner show caution">
-            <div className="icon">
-              <Icon name="alert" />
-            </div>
+          <div className="banner w">
+            <Icon name="alert" />
             <div className="txt">This batch expires in less than 6 months.</div>
           </div>
         )}
         {tried && errors.length > 0 && (
-          <div className="warn-banner show danger">
-            <div className="icon">
-              <Icon name="ban" />
-            </div>
+          <div className="banner d">
+            <Icon name="ban" />
             <div className="txt">
               {errors.map((e) => (
                 <div key={e}>{e}</div>
@@ -111,11 +108,11 @@ export default function ReceiveModal({ drug, drugs, onClose }) {
           </div>
         )}
       </div>
-      <div className="modal-foot">
-        <button className="btn btn-ghost" onClick={onClose}>
+      <div className="modal-f">
+        <button className="btn btn-outline" onClick={onClose}>
           Cancel
         </button>
-        <button className="btn btn-primary" onClick={save}>
+        <button data-shortcut="save" className="btn btn-primary" onClick={save}>
           Receive stock
         </button>
       </div>

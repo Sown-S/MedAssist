@@ -1,11 +1,13 @@
 import { useState, useSyncExternalStore } from 'react'
-import { NavLink, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom'
+import { Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom'
 import { getRenderKey, subscribe } from './i18n'
 import { ToastProvider } from './context/ToastContext'
 import { AuthProvider, useAuth } from './context/AuthContext'
+import { AdminNavProvider } from './context/AdminNavContext'
 import RequireRole from './components/RequireRole'
 import Icon from './components/Icon'
 import TopActions from './components/TopActions'
+import SideNav, { useCurrentLabel, useSideCollapsed } from './components/SideNav'
 import Login from './pages/Login'
 import Reception from './pages/Reception'
 import Doctor from './pages/Doctor'
@@ -15,19 +17,11 @@ import Modal, { ModalHeader } from './components/Modal'
 import ErrorBoundary from './components/ErrorBoundary'
 import { useQueue, isMine, inRoom, atLabs } from './api/queueStore'
 import { translate } from './i18n'
-import { useServerOnline, useServerSlow } from './api/connectivity'
+import { OfflineBanner, TopProgress, SlowNotice } from './components/NetStatus'
 import { LeaveVisitModal } from './pages/doctor/doctorShared'
-import VersionBanners from './components/VersionBanners'
+import useGlobalKeys from './components/useGlobalKeys'
 
-// Tab theo vai trò. Lịch hẹn, sổ quỹ, chốt ca nằm ngoài phạm vi; xét nghiệm làm thủ công nên không có tab Cận lâm sàng.
-const TABS = [
-  { to: '/reception', icon: 'clipboard', label: 'Reception', allow: ['reception'] },
-  { to: '/doctor', icon: 'stethoscope', label: 'Consultation', allow: ['doctor'] },
-  { to: '/reports', icon: 'chart', label: 'Reports', allow: ['admin'] },
-  { to: '/admin', icon: 'settings', label: 'Admin', allow: ['admin'] },
-  // Bác sĩ duyệt tri thức trong khu Admin bằng tài khoản của mình.
-  { to: '/admin', icon: 'bulb', label: 'Knowledge review', allow: ['doctor'] }
-]
+// Menu theo vai trò nằm ở components/SideNav.jsx. Lịch hẹn, sổ quỹ, chốt ca nằm ngoài phạm vi.
 
 export function Shell() {
   const { user, logout } = useAuth()
@@ -37,73 +31,17 @@ export function Shell() {
   const [leaving, setLeaving] = useState(false)
   // Bệnh nhân đi xét nghiệm không quay lại: đóng lượt ngay từ hộp thoại đăng xuất.
   const [closing, setClosing] = useState(null)
-  const serverOnline = useServerOnline()
-  const serverSlow = useServerSlow()
   const { visits } = useQueue()
   if (!user) return <Login />
   const openVisits = user.roleKey === 'doctor' ? visits.filter((v) => (inRoom(v) || atLabs(v)) && isMine(v, user)) : []
 
-  const visibleTabs = TABS.filter((t) => t.allow.includes(user.roleKey))
-
   return (
-    <div>
-      <div className="topbar-1">
-        <div className="brand">
-          <div className="mark">M</div>
-          <span>MedAssist</span>
-        </div>
-        <div className="role-id">
-          <div className="avatar">{user.av}</div>
-          <div className="txt">
-            <span className="name">{user.name}</span>
-            <span className="role">{user.role}</span>
-          </div>
-        </div>
-        <div className="top-actions">
-          <TopActions user={user} />
-          <button className="logout-btn" onClick={() => (openVisits.length ? setLeaving(true) : logout())}>
-            Sign out
-          </button>
-        </div>
-      </div>
-      <div className="topbar-2">
-        <nav className="tabs">
-          {visibleTabs.map((t) => (
-            <NavLink key={t.to + t.label} to={t.to} className={({ isActive }) => 'tab' + (isActive ? ' active' : '')}>
-              <Icon name={t.icon} />
-              {/* NavLink là component nên chuỗi con trực tiếp không được jsx-runtime dịch → bọc <span>. */}
-              <span>{t.label}</span>
-            </NavLink>
-          ))}
-        </nav>
-      </div>
-      {/* Lễ tân có banner mất kết nối riêng trong trang; các vai trò khác dùng banner chung này. */}
-      {!serverOnline && user.roleKey !== 'reception' && (
-        <div className="warn-banner show caution" style={{ margin: '12px 24px 0' }}>
-          <div className="icon">
-            <Icon name="alert" />
-          </div>
-          <div className="txt">
-            <b>No connection to the clinic server — read-only mode</b>
-            <span>Saving is blocked until the connection returns; what is on screen was loaded earlier.</span>
-          </div>
-        </div>
-      )}
-
-      {/* Một yêu cầu chờ quá 10 giây (giới hạn 45 giây) → báo để người dùng biết app không treo. */}
-      {serverSlow && serverOnline && (
-        <div className="warn-banner show caution" role="status" style={{ margin: '12px 24px 0' }}>
-          <div className="icon">
-            <Icon name="clock" />
-          </div>
-          <div className="txt">
-            <b>The server is responding slowly — still waiting…</b>
-            <span>Your last action is still being processed. If there is no answer after 45 seconds it stops and you can try again.</span>
-          </div>
-        </div>
-      )}
-
-      <VersionBanners />
+    <AdminNavProvider>
+      <ShellLayout user={user} onSignOut={() => (openVisits.length ? setLeaving(true) : logout())}>
+      {/* Lễ tân có banner mất kết nối riêng trong trang (kèm danh sách thao tác bị khoá); các vai trò khác dùng banner chung này. */}
+      {user.roleKey !== 'reception' && <OfflineBanner style={{ margin: '12px 24px 0' }} />}
+      <TopProgress />
+      <SlowNotice />
 
       {/* Lỗi trong một trang chỉ thay trang đó; thanh trên vẫn dùng được, đổi trang là dựng lại. */}
       <ErrorBoundary resetKey={location.pathname + location.search}>
@@ -144,11 +82,12 @@ export function Shell() {
           />
         </Routes>
       </ErrorBoundary>
+      </ShellLayout>
       {/* Còn ca đã nhận thì không đăng xuất được: xong ca nào thì ca đó biến khỏi danh sách, hết ca mới mở nút. */}
       <Modal open={leaving} onClose={() => setLeaving(false)}>
         <ModalHeader title={translate('Finish your visits before signing out')} onClose={() => setLeaving(false)} />
-        <div className="modal-body">
-          <p className="ai-soft" style={{ fontSize: 13.5, marginTop: 0 }}>
+        <div className="modal-b">
+          <p className="muted small" style={{ marginTop: 0 }}>
             {openVisits.length
               ? translate('You still have patients you took. Finalize each visit, return the patient to the queue, or close the visit if the patient left — then you can sign out.')
               : translate('All your visits are finished. Your unsaved notes on this computer will be deleted when you sign out.')}
@@ -184,8 +123,8 @@ export function Shell() {
             </div>
           ))}
         </div>
-        <div className="modal-foot">
-          <button className="btn btn-ghost" onClick={() => setLeaving(false)}>
+        <div className="modal-f">
+          <button className="btn btn-outline" onClick={() => setLeaving(false)}>
             Close
           </button>
           <button
@@ -214,6 +153,29 @@ export function Shell() {
           }}
         />
       )}
+    </AdminNavProvider>
+  )
+}
+
+// Khung giao diện: menu bên trái + thanh trên cùng (tiêu đề mục đang mở, thông báo, ngôn ngữ, trợ giúp, cài đặt, tài khoản).
+function ShellLayout({ user, onSignOut, children }) {
+  const title = useCurrentLabel(user)
+  const [collapsed, setCollapsed] = useSideCollapsed()
+  useGlobalKeys({ onToggleSidebar: () => setCollapsed((v) => !v) })
+  return (
+    <div className={'app' + (collapsed ? ' collapsed' : '')}>
+      <SideNav user={user} collapsed={collapsed} onToggle={() => setCollapsed((v) => !v)} />
+      <div className="main">
+        <header className="top">
+          <div className="ttl">
+            <h1>{title}</h1>
+          </div>
+          <div className="top-r">
+            <TopActions user={user} onSignOut={onSignOut} />
+          </div>
+        </header>
+        {children}
+      </div>
     </div>
   )
 }

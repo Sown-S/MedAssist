@@ -4,6 +4,7 @@ import { translate } from '../../../i18n'
 import { useToast } from '../../../context/ToastContext'
 import { saveDrugLive } from '../../../api/inventoryStore'
 import { getSettings } from '../../../api/settingsStore'
+import { ErrorNote } from '../../../components/DataState'
 
 // Thêm / sửa thuốc khi chạy với server. Thuốc trùng (hoạt chất + tên + hàm lượng + dạng) server từ chối.
 // Không có giới hạn liều hay tương tác (ngoài phạm vi FR03).
@@ -64,16 +65,16 @@ export default function DrugFormModal({ drug, onClose }) {
   const field = (k, label, req, props = {}) => (
     <div className="field">
       <label>
-        {label} {req && <span className="ai-req">*</span>}
+        {label} {req && <span className="req">*</span>}
       </label>
-      <input value={f[k]} onChange={(e) => set(k, e.target.value)} {...props} />
+      <input className="input" value={f[k]} onChange={(e) => set(k, e.target.value)} {...props} />
     </div>
   )
   return (
     <Modal open onClose={onClose} wide>
       <ModalHeader title={drug.id ? translate('Edit drug information') + ' · ' + drug.name : 'Add drug'} onClose={onClose} />
-      <div className="modal-body">
-        <div className="form-grid cols-2">
+      <div className="modal-b">
+        <div className="fg">
           {field('generic_name', 'Active ingredient', true, { placeholder: 'Paracetamol' })}
           {field('trade_name', 'Trade name', true, { placeholder: 'Panadol' })}
           {field('strength', 'Strength', true, { placeholder: '500 mg' })}
@@ -84,14 +85,14 @@ export default function DrugFormModal({ drug, onClose }) {
           {field('drug_class', 'Drug group (optional)', false)}
           {field('active_ingredient_code', 'ATC code (optional)', false, { placeholder: 'N02BE01' })}
         </div>
-        <p className="ai-foot-note">The batch purchase price is entered when receiving stock. The system does not check drug interactions or dose limits.</p>
-        {err && <div className="kb-error">{err}</div>}
+        <p className="muted small foot-note">The batch purchase price is entered when receiving stock. The system does not check drug interactions or dose limits.</p>
+        <ErrorNote>{err}</ErrorNote>
       </div>
-      <div className="modal-foot">
-        <button className="btn btn-ghost" onClick={onClose}>
+      <div className="modal-f">
+        <button className="btn btn-outline" onClick={onClose}>
           Cancel
         </button>
-        <button className="btn btn-primary" disabled={busy} onClick={save}>
+        <button data-shortcut="save" className="btn btn-primary" disabled={busy} onClick={save}>
           {drug.id ? 'Save' : 'Add drug'}
         </button>
       </div>

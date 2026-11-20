@@ -15,6 +15,7 @@ ROOT = HERE.parents[1]
 TARGETS = {"CLIN-019", "EXT-010", "EXT-014", "EXT-024", "EXT-026"}
 PENDING = {"CLIN-019"}
 LABEL_CHANGED = TARGETS - PENDING
+REVIEW_ADDENDUM = "\n## Bổ sung biên bản".encode("utf-8")
 
 
 def sha(raw):
@@ -36,7 +37,7 @@ def verify_full_review(manifest):
     submission = manifest["cross_review"].get("full_review_submission", {})
     if not review:
         authorization = manifest.get("freeze_authorization", {})
-        assert submission.get("status") == "NEEDS_CLARIFICATION", "Chưa có biên bản Huy rà đủ 111 ca"
+        assert submission.get("status") in {"NEEDS_CLARIFICATION", "CLARIFIED"}, "Chưa có biên bản Huy rà đủ 111 ca"
         assert authorization.get("decided_by") == "Tuấn", "Cần quyết định của Tuấn về giới hạn biên bản"
         assert authorization.get("decision") == "FREEZE_WITH_RECORDED_REVIEW_LIMITATIONS"
         assert authorization.get("combined_sha256") == manifest["combined_sha256"]
@@ -44,12 +45,23 @@ def verify_full_review(manifest):
         assert set(authorization.get("accepted_review_limitations", [])) == {
             "CLIN_021_SUMMARY_COUNT", "HUY_CURRENT_VERIFIER_NOT_RUN"}
         assert {"review_summary_CLIN_021", "reviewer_verifier_confirmation"} <= manifest["known_limitations"].keys()
-        assert submission.get("missing_clinical_verdict_ids") == ["CLIN-021"]
         assert submission.get("reviewer_ran_current_verifier") is False
         assert submission.get("full_testset_confirmation_reported") is True
         source = ROOT / authorization["record_path"]
         assert source.resolve().is_relative_to(ROOT.resolve()) and source.is_file()
-        assert sha(text_bytes(source)) == authorization["record_sha256"]
+        original_record, marker, _ = text_bytes(source).partition(REVIEW_ADDENDUM)
+        assert sha(original_record) == authorization["record_sha256"]
+        if submission["status"] == "CLARIFIED":
+            clarification = submission["clarification"]
+            assert marker and clarification["case_id"] == "CLIN-021"
+            assert clarification["reported_reviewer"] == submission["reviewer"]
+            assert clarification["verdict"] == "ĐỒNG Ý"
+            assert clarification["previous_enumerated_clinical_agree_count"] + 1 == (
+                submission["enumerated_clinical_agree_count"]
+            ) == submission["reported_clinical_agree_count"]
+            assert submission["missing_clinical_verdict_ids"] == []
+        else:
+            assert not marker and submission.get("missing_clinical_verdict_ids") == ["CLIN-021"]
         assert date.fromisoformat(authorization["decided_at"]).isoformat() == authorization["decided_at"]
         review = submission
     else:
@@ -127,6 +139,8 @@ def self_test_portability():
     original_root, original_here = ROOT, HERE
     manifest = load(HERE / "manifest_freeze.json")
     paths = set(manifest["text_file_sha256"]) | {manifest["source_readme_append"]["path"]}
+    paths = {p for p in paths if not p.startswith("knowledge/")}
+    paths.update(p.relative_to(ROOT).as_posix() for p in (ROOT / "knowledge").rglob("*") if p.is_file())
     try:
         with tempfile.TemporaryDirectory(prefix="medassist-v14-eol-") as directory:
             ROOT = Path(directory)
@@ -269,16 +283,21 @@ def verify(manifest_override=None):
     catalog = {row["symptom_code"]: row["symptom_name"] for row in front(ROOT / "knowledge/symptoms/symptom_catalog.md")["symptoms"]}
     condition_data = [front(p) for p in (ROOT / "knowledge/conditions").rglob("*.md")]
     conditions = {x["condition_code"] for x in condition_data}
-    assert len(catalog) == 299 and len(conditions) == 153
-    assert sum(x["disease_group"] == "musculoskeletal" for x in condition_data) == 28
-    assert len(list((ROOT / "knowledge/sources").glob("*.md"))) == 11
-    assert len(list((ROOT / "knowledge/rules").rglob("*.md"))) == 12
-    assert manifest["knowledge_snapshot"]["groups"] == dict(Counter(x["disease_group"] for x in condition_data))
-    assert front(ROOT / "knowledge/_release.md")["label"] == "KB-2026.11"
-    kb = {p.relative_to(ROOT).as_posix(): sha(text_bytes(p)) for p in sorted((ROOT / "knowledge").rglob("*")) if p.is_file()}
-    assert set(kb) == set(manifest["knowledge_file_sha256_before"])
-    for relative in kb:
-        verify_text_file(ROOT / relative, manifest)
+    rules = {front(p)["rule_key"] for p in (ROOT / "knowledge/rules").rglob("*.md")}
+    release = front(ROOT / "knowledge/_release.md")["label"]
+    snapshot = manifest["knowledge_snapshot"]
+    snapshot_matches_release = release == snapshot["kb_release"]
+    unchanged_kb_files = None
+    if snapshot_matches_release:
+        assert len(catalog) == snapshot["total_symptoms"] and len(conditions) == snapshot["total_conditions"]
+        assert len(rules) == snapshot["total_triage_rules"]
+        assert len(list((ROOT / "knowledge/sources").glob("*.md"))) == snapshot["total_sources"]
+        assert snapshot["groups"] == dict(Counter(x["disease_group"] for x in condition_data))
+        kb_paths = {p.relative_to(ROOT).as_posix() for p in (ROOT / "knowledge").rglob("*") if p.is_file()}
+        assert kb_paths == set(manifest["knowledge_file_sha256_before"])
+        for relative in kb_paths:
+            verify_text_file(ROOT / relative, manifest)
+        unchanged_kb_files = len(kb_paths)
 
     source_names = {"clinical_cases_labeled.jsonl": ("clinical_cases_labeled.jsonl", 82),
                     "symptom_extraction_testset.jsonl": ("symptom_extraction_testset.jsonl", 29)}
@@ -303,8 +322,13 @@ def verify(manifest_override=None):
             old_all[case_id], new_all[case_id] = old, new
             new_raw_all[case_id] = new_raw
             codes = new.get("symptoms", new.get("expected_symptoms", {}))
-            assert set(codes) <= catalog.keys(), case_id
-            assert set(new.get("expected_top_conditions", [])) <= conditions, case_id
+            assert not (missing := set(codes) - catalog.keys()), f"{case_id}: mã triệu chứng thiếu {sorted(missing)}"
+            assert not (missing := set(new.get("expected_top_conditions", [])) - conditions), (
+                f"{case_id}: mã bệnh thiếu {sorted(missing)}"
+            )
+            assert not (missing := set(new.get("expected_triggered_rules", [])) - rules), (
+                f"{case_id}: mã luật thiếu {sorted(missing)}"
+            )
             assert set(codes.values()) <= {"PRESENT", "ABSENT", "UNKNOWN"}
             if old_raw == new_raw:
                 unchanged += 1
@@ -382,8 +406,9 @@ def verify(manifest_override=None):
             "changed_records": len(diffs), "unchanged_record_bytes": unchanged,
             "label_changed_ids": sorted(LABEL_CHANGED), "pending_labels_retained_ids": sorted(PENDING),
             "EXT_010_selected_option": "A", "EXT_011_unchanged_bytes": True,
-            "unknown_symptom_codes": [], "unknown_condition_codes": [], "duplicate_ids": [],
-            "knowledge_files_unchanged": len(kb), "v1_3_combined_sha256": original_combined,
+            "unknown_symptom_codes": [], "unknown_condition_codes": [], "unknown_rule_keys": [], "duplicate_ids": [],
+            "knowledge_release": release, "knowledge_snapshot_release": snapshot["kb_release"],
+            "knowledge_files_unchanged": unchanged_kb_files, "v1_3_combined_sha256": original_combined,
             "v1_4_combined_sha256": combined, "v1_3_readme_only_one_line_appended": True,
             "pipeline_llm_database_calls": 0}
 

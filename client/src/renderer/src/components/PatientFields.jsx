@@ -13,7 +13,7 @@ export const ID_RE = /^\d{12}$/
 
 // Hiển thị dd/mm/yyyy cố định: ô date gốc của Chromium theo vùng của Windows (máy en-US thành mm/dd/yyyy).
 // Nút lịch mở bảng chọn ngày gốc, không cho chọn ngày tương lai.
-export function DobInput({ value, onChange, className }) {
+export function DobInput({ value, onChange, className = 'input' }) {
   const picker = useRef(null)
   return (
     <div className="dob-input">
@@ -42,10 +42,10 @@ export function EditPatient({ p, onSaved }) {
   const bind = (k) => ({ value: f[k], onChange: (e) => setF({ ...f, [k]: e.target.value }) })
   return (
     <div className="clin-edit">
-      <div className="form-grid">
+      <div className="fg">
         <div className="field">
           <label>Full name *</label>
-          <input type="text" {...bind('name')} />
+          <input className="input" type="text" {...bind('name')} />
         </div>
         <div className="field">
           <label>Date of birth *</label>
@@ -53,22 +53,22 @@ export function EditPatient({ p, onSaved }) {
         </div>
         <div className="field">
           <label>Gender</label>
-          <select {...bind('gender')}>
+          <select className="input" {...bind('gender')}>
             <option value="Female">Female</option>
             <option value="Male">Male</option>
           </select>
         </div>
         <div className="field">
           <label>Phone number *</label>
-          <input type="text" {...bind('phone')} />
+          <input className="input" type="text" {...bind('phone')} />
         </div>
         <div className="field">
           <label>ID card number (CCCD)</label>
-          <input type="text" inputMode="numeric" {...bind('idNumber')} />
+          <input className="input" type="text" inputMode="numeric" {...bind('idNumber')} />
         </div>
       </div>
       <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-        <button className="btn btn-primary btn-sm" disabled={bad} onClick={save}>
+        <button data-shortcut="save" className="btn btn-primary btn-sm" disabled={bad} onClick={save}>
           <Icon name="check" /> Save changes
         </button>
       </div>
@@ -78,68 +78,84 @@ export function EditPatient({ p, onSaved }) {
 
 // Bệnh nhân mới: họ tên, ngày sinh, giới, SĐT, CCCD, dị ứng, bệnh nền. err(k) = ô k sai và đã bấm lưu.
 export function NewPatientFields({ form, field, err, onDob }) {
+  const fcls = (k, extra = '') => 'field' + (extra ? ' ' + extra : '') + (err(k) ? ' invalid' : '')
+  const msg = (text) => (
+    <span className="msg">
+      <Icon name="circle-alert" />
+      {translate(text)}
+    </span>
+  )
+  const req = <span className="req">*</span>
   return (
     <>
-      <div className="section-label" style={{ marginTop: 0 }}>
-        Patient details
+      <div className="sec-t">
+        <Icon name="user" />
+        <span>Patient details</span>
       </div>
-      <div className="form-grid">
-        <div className="field">
-          <label>Full name *</label>
-          <input type="text" placeholder="Nguyễn Văn A" className={err('name') ? 'field-error' : ''} autoFocus {...field('name')} />
+      <div className="fg fg-3">
+        <div className={fcls('name')}>
+          <label>
+            {translate('Full name')}
+            {req}
+          </label>
+          <input type="text" placeholder="Nguyễn Văn A" className="input" autoFocus {...field('name')} />
+          {msg('Required')}
         </div>
-        <div className="field">
-          <label>Date of birth *</label>
-          <DobInput className={err('dob') ? 'field-error' : ''} value={form.dob} onChange={onDob} />
-          <div className={'field-error-msg' + (err('dob') ? ' show' : '')}>Enter a valid date (dd/mm/yyyy)</div>
+        <div className={fcls('dob')}>
+          <label>
+            {translate('Date of birth')}
+            {req}
+          </label>
+          <DobInput className="input" value={form.dob} onChange={onDob} />
+          {msg('Enter a valid date (dd/mm/yyyy)')}
         </div>
         <div className="field">
           <label>Gender</label>
-          <select {...field('gender')}>
+          <select className="input" {...field('gender')}>
             <option value="Female">Female</option>
             <option value="Male">Male</option>
           </select>
         </div>
-        <div className="field">
-          <label>Phone number *</label>
-          <input type="text" placeholder="09xx xxx xxx" className={err('phone') ? 'field-error' : ''} {...field('phone')} />
-          <div className={'field-error-msg' + (err('phone') ? ' show' : '')}>Invalid phone number (10 digits required)</div>
+        <div className={fcls('phone')}>
+          <label>
+            {translate('Phone number')}
+            {req}
+          </label>
+          <input type="text" placeholder="09xx xxx xxx" className="input" {...field('phone')} />
+          {msg('Invalid phone number (10 digits required)')}
         </div>
-        <div className="field">
+        <div className={fcls('idNumber')}>
           <label>ID card number (CCCD)</label>
-          <input type="text" inputMode="numeric" placeholder="0xx xxx xxx xxx" className={err('idNumber') ? 'field-error' : ''} {...field('idNumber')} />
-          <div className={'field-error-msg' + (err('idNumber') ? ' show' : '')}>12 digits, or leave empty</div>
+          <input type="text" inputMode="numeric" placeholder="0xx xxx xxx xxx" className="input" {...field('idNumber')} />
+          {msg('12 digits, or leave empty')}
         </div>
         <div className="field">
           <label>Drug allergies</label>
-          <input type="text" placeholder="Penicillin…" {...field('allergies')} />
+          <input className="input" type="text" placeholder="Penicillin…" {...field('allergies')} />
         </div>
         <div className="field full">
           <label>Medical history (chronic conditions)</label>
-          <input type="text" placeholder="Hypertension, diabetes…" {...field('history')} />
+          <input className="input" type="text" placeholder="Hypertension, diabetes…" {...field('history')} />
         </div>
       </div>
     </>
   )
 }
 
-// Cùng SĐT, hoặc cùng họ tên + ngày sinh với hồ sơ đã có. allowNew = false khi trùng CCCD (không được tạo hồ sơ mới).
 export function DuplicateBanner({ dupes, allowNew, onPick, onCreateNew }) {
   return (
-    <div className="warn-banner show caution">
-      <div className="icon">
-        <Icon name="alert" />
-      </div>
+    <div className="banner w">
+      <Icon name="alert" />
       <div className="txt" style={{ flex: 1 }}>
         <b>This patient may already have a record</b>
         <span>Same phone number, or same name and date of birth. Use the existing record if it is the same person.</span>
         <div className="dupe-list">
           {dupes.map((d) => (
             <div className="dupe-row" key={d.id}>
-              <span className="mono">{d.id}</span>
+              <span className="num">{d.id}</span>
               <b>{d.name}</b>
               <span>{d.dob}</span>
-              <span className="mono">{d.phone}</span>
+              <span className="num">{d.phone}</span>
               <button className="btn btn-primary btn-sm" onClick={() => onPick(d)}>
                 Use this record
               </button>

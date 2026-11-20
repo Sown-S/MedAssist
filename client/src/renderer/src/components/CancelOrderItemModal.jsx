@@ -4,6 +4,7 @@ import Icon from './Icon'
 import { translate } from '../i18n'
 import { cancelServiceOrderItem } from '../api/serviceApi'
 import { apiMessage } from '../api/serviceStore'
+import { ErrorNote } from './DataState'
 
 // Huỷ một dòng chỉ định bệnh nhân không làm (ERD v2.1). Bác sĩ: lượt đang khám; lễ tân: lượt chờ thu tiền
 // (hoá đơn tự lập lại). Dòng đã có kết quả thì server từ chối.
@@ -27,16 +28,16 @@ export default function CancelOrderItemModal({ item, onClose, onDone }) {
   return (
     <Modal open onClose={onClose}>
       <ModalHeader title={translate('Cancel order line') + ' — ' + item.name} onClose={onClose} />
-      <div className="modal-body">
-        <p className="ai-soft">The patient did not have this test or service done. It is removed from the invoice; the order keeps the line as cancelled.</p>
+      <div className="modal-b">
+        <p className="muted">The patient did not have this test or service done. It is removed from the invoice; the order keeps the line as cancelled.</p>
         <div className="field">
           <label>Reason *</label>
-          <input type="text" autoFocus value={reason} onChange={(e) => setReason(e.target.value)} placeholder="e.g. Patient declined the ultrasound" />
+          <input className="input" type="text" autoFocus value={reason} onChange={(e) => setReason(e.target.value)} placeholder="e.g. Patient declined the ultrasound" />
         </div>
-        {error && <div className="login-err show">{error}</div>}
+        <ErrorNote style={{ marginBottom: 12 }}>{error}</ErrorNote>
       </div>
-      <div className="modal-foot">
-        <button className="btn btn-ghost" onClick={onClose}>
+      <div className="modal-f">
+        <button className="btn btn-outline" onClick={onClose}>
           Keep it
         </button>
         <button className="btn btn-primary" disabled={busy} onClick={submit}>

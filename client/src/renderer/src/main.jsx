@@ -4,7 +4,12 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { HashRouter } from 'react-router-dom'
 import App from './App'
-import '@fontsource-variable/plus-jakarta-sans'
+// Be Vietnam Pro đóng gói cùng app (máy trong LAN không tải font từ Internet).
+import '@fontsource/be-vietnam-pro/400.css'
+import '@fontsource/be-vietnam-pro/500.css'
+import '@fontsource/be-vietnam-pro/600.css'
+import '@fontsource/be-vietnam-pro/700.css'
+import '@fontsource/be-vietnam-pro/800.css'
 // Đóng gói font cùng app: máy không cài IBM Plex Mono sẽ hiện font có chân.
 import '@fontsource/ibm-plex-mono/400.css'
 import '@fontsource/ibm-plex-mono/500.css'
@@ -13,6 +18,12 @@ import '@fontsource/ibm-plex-mono/700.css'
 import './global.css'
 import { loadServerConfig } from './api/serverConfig'
 import { loadClientConfig } from './api/settingsStore'
+import { applySidebarTheme } from './api/sidebarTheme'
+import { applyAppearance } from './api/appTheme'
+import BootGate from './components/BootGate'
+
+applySidebarTheme()
+applyAppearance()
 
 // HashRouter vì bản build chạy từ app:// của Electron, không có server phục vụ các route như /doctor.
 // Thông tin phòng khám, tự đăng xuất: nạp nền, không chờ — mất kết nối thì dùng bản đệm trên máy.
@@ -20,9 +31,11 @@ loadServerConfig().then(() => {
   loadClientConfig()
   ReactDOM.createRoot(document.getElementById('root')).render(
     <React.StrictMode>
-      <HashRouter>
-        <App />
-      </HashRouter>
+      <BootGate>
+        <HashRouter>
+          <App />
+        </HashRouter>
+      </BootGate>
     </React.StrictMode>
   )
 })

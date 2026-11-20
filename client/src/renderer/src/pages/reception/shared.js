@@ -8,11 +8,11 @@ export const dmy = (iso) => new Date(iso).toLocaleDateString('vi-VN', { day: '2-
 export const methodLabel = (k) => (k ? PAYMENT_METHODS.find((m) => m.key === k)?.label ?? k : '—')
 
 export const PAY_STATUS = {
-  unpaid: { label: 'Not paid', cls: 'low' },
-  pending: { label: 'Awaiting payment', cls: 'warn' },
-  processing: { label: 'Waiting for transfer', cls: 'warn' },
-  paid: { label: 'Paid', cls: 'ok' },
-  cancelled: { label: 'Cancelled', cls: 'muted' }
+  unpaid: { label: 'Not paid', cls: 'b-warning' },
+  pending: { label: 'Awaiting payment', cls: 'b-warning' },
+  processing: { label: 'Waiting for transfer', cls: 'b-info' },
+  paid: { label: 'Paid', cls: '' },
+  cancelled: { label: 'Cancelled', cls: 'b-neutral' }
 }
 
 export function useNow() {

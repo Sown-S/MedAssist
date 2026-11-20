@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import Icon from '../../../components/Icon'
 import { translate } from '../../../i18n'
+import { ErrorNote } from '../../../components/DataState'
 import { useAuth } from '../../../context/AuthContext'
 import { useToast } from '../../../context/ToastContext'
 import { useInventory } from '../../../api/inventoryStore'
@@ -26,7 +27,7 @@ export default function CatalogDetailPage({ catalogKey, params, onNavigate }) {
   const [status, setStatus] = useState('active')
   const [sub, setSub] = useState('all')
   const [page, setPage] = useState(1)
-  const [edit, setEdit] = useState(params?.openId ? all.find((r) => r.id === params.openId) ?? null : null)
+  const [edit, setEdit] = useState(params?.openId ? (all.find((r) => r.id === params.openId) ?? null) : null)
   const [toggle, setToggle] = useState(null)
 
   const term = q.trim().toLowerCase()
@@ -39,7 +40,6 @@ export default function CatalogDetailPage({ catalogKey, params, onNavigate }) {
   const lastUpdate = all.reduce((m, r) => (r.updatedAt > m ? r.updatedAt : m), '')
   const reset = (fn) => (v) => (fn(v), setPage(1))
 
-
   return (
     <div>
       <div className="breadcrumb">
@@ -48,26 +48,25 @@ export default function CatalogDetailPage({ catalogKey, params, onNavigate }) {
         </span>{' '}
         / <b>{s.title}</b>
       </div>
-      <div className="page-head">
+      <div className="pg-h">
         <div>
-          <h1>{s.title}</h1>
+          <h2>{s.title}</h2>
           <p>{s.desc}</p>
         </div>
-        <div className="ai-soft ai-small">
-          <span>Last updated</span> <span className="mono">{fmtDateTime(lastUpdate)}</span>
+        <div className="muted small">
+          <span>Last updated</span> <span className="num">{fmtDateTime(lastUpdate)}</span>
         </div>
       </div>
 
-
       <div className="card">
-        <div className="ai-toolbar">
-          <div className="ai-search">
+        <div className="toolbar">
+          <div className="search">
             <Icon name="search" />
-            <input value={q} onChange={(e) => reset(setQ)(e.target.value)} placeholder="Search code or name…" />
+            <input className="input" value={q} onChange={(e) => reset(setQ)(e.target.value)} placeholder="Search code or name…" />
           </div>
-          <div className="ai-toolbar-right">
+          <div className="toolbar-r">
             {s.filter && (
-              <select className="ai-select" value={sub} onChange={(e) => reset(setSub)(e.target.value)}>
+              <select className="input" value={sub} onChange={(e) => reset(setSub)(e.target.value)}>
                 <option value="all">All groups</option>
                 {s.filter.options.map((o) => (
                   <option key={o.key} value={o.key}>
@@ -76,13 +75,13 @@ export default function CatalogDetailPage({ catalogKey, params, onNavigate }) {
                 ))}
               </select>
             )}
-            <div className="ai-seg">
+            <div className="seg">
               {[
                 ['active', 'In use'],
                 ['inactive', 'Discontinued'],
                 ['all', 'All']
               ].map(([k, l]) => (
-                <button key={k} className={status === k ? 'active' : ''} onClick={() => reset(setStatus)(k)}>
+                <button key={k} className={status === k ? 'on' : ''} onClick={() => reset(setStatus)(k)}>
                   {l}
                 </button>
               ))}
@@ -96,14 +95,14 @@ export default function CatalogDetailPage({ catalogKey, params, onNavigate }) {
           </div>
         </div>
 
-        {lc.error && <div className="warn-banner show danger">{lc.error}</div>}
+        <ErrorNote>{lc.error}</ErrorNote>
         {!lc.loaded ? (
-          <p className="ai-soft">{translate('Loading the catalog…')}</p>
+          <p className="muted">{translate('Loading the catalog…')}</p>
         ) : pg.total === 0 ? (
           <Empty title="No records match" text="Try another keyword or filter, or import the list from a file." />
         ) : (
-          <div className="ai-table-wrap">
-            <table className="dt">
+          <div className="tbl-wrap">
+            <table>
               <thead>
                 <tr>
                   <th>Code</th>
@@ -121,21 +120,21 @@ export default function CatalogDetailPage({ catalogKey, params, onNavigate }) {
               <tbody>
                 {pg.rows.map((r) => (
                   <tr key={r.id} className={'row-click' + (r.active ? '' : ' ai-dim')} onClick={() => setEdit(r)}>
-                    <td className="mono">{r.code}</td>
+                    <td className="num">{r.code}</td>
                     <td>
                       <b>{r.name}</b>
                     </td>
                     {columns.map((c) => (
                       <td key={c.key} className={c.num ? 'num' : ''}>
-                        {c.render ? c.render(r, cats, inv, c.key) : r[c.key] || <span className="ai-soft">—</span>}
+                        {c.render ? c.render(r, cats, inv, c.key) : r[c.key] || <span className="muted">—</span>}
                       </td>
                     ))}
-                    <td>{r.active ? <span className="badge ok">In use</span> : <span className="badge muted">Discontinued</span>}</td>
-                    <td className="ai-small">
-                      <span className="mono">{fmtDate(r.updatedAt)}</span>
-                      <div className="ai-soft">{r.updatedBy}</div>
+                    <td>{r.active ? <span className="badge b-success">In use</span> : <span className="badge b-neutral">Discontinued</span>}</td>
+                    <td className="small">
+                      <span className="num">{fmtDate(r.updatedAt)}</span>
+                      <div className="muted">{r.updatedBy}</div>
                     </td>
-                    <td className="ai-actions" onClick={(e) => e.stopPropagation()}>
+                    <td className="acts-td" onClick={(e) => e.stopPropagation()}>
                       <button className="btn btn-ghost btn-sm" title="Edit" onClick={() => setEdit(r)}>
                         <Icon name="pencil" />
                       </button>
@@ -150,9 +149,8 @@ export default function CatalogDetailPage({ catalogKey, params, onNavigate }) {
             <Pager {...pg} onPage={setPage} />
           </div>
         )}
-        <p className="ai-foot-note">
-          <Icon name="lock" />{' '}
-          <span>Records are never deleted — discontinued codes stay readable on old records and invoices. Every change is written to the activity history.</span>
+        <p className="muted small foot-note">
+          <Icon name="lock" /> <span>Records are never deleted — discontinued codes stay readable on old records and invoices. Every change is written to the activity history.</span>
         </p>
       </div>
 
@@ -176,4 +174,3 @@ export default function CatalogDetailPage({ catalogKey, params, onNavigate }) {
 }
 
 export { optLabel }
-

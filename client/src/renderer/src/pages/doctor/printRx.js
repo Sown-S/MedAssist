@@ -23,7 +23,7 @@ export function printPrescription(rx, drugs, doctorName) {
       <table><thead><tr><th>#</th><th>${esc(t('Drug'))}</th><th class="num">${esc(t('Quantity'))}</th></tr></thead><tbody>${rowsOf(lines)}</tbody></table>
       ${rx.plan ? `<p class="meta">${esc(t('Advice'))}: ${esc(rx.plan)}</p>` : ''}
       ${rx.followUp ? `<p class="meta"><b>${esc(t('Follow-up visit'))}: ${esc(dmy(rx.followUp + 'T12:00:00'))}</b></p>` : ''}
-      <p class="meta" style="margin-top:18px;text-align:right">${esc(dmy(rx.rxAt ?? new Date().toISOString()))}<br>${esc(t('Prescribing doctor'))}<br><small>${esc(t('(signature, full name)'))}</small><br><br><b>${esc(doctorName ?? '')}</b></p>`
+      <div class="sig">${esc(dmy(rx.rxAt ?? new Date().toISOString()))}<br><b>${esc(t('Prescribing doctor'))}</b><small>${esc(t('(signature, full name)'))}</small><b>${esc(doctorName ?? '')}</b></div>`
   const lines = rx.rx ?? []
   printHtml(t('Prescription'), lines.length ? page(t('Prescription'), lines) : '', 'prescription')
 }

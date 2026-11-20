@@ -199,3 +199,9 @@ Sau khi được thông báo chỗ lệch tổng kết CLIN-021 và việc Huy c
 Tiền kiểm phải PASS trước khi áp dụng. Chạy freeze_v1_4.py bằng --dry-run rồi --apply; không đổi JSONL, KB hoặc testset v1.3. Sau áp dụng, manifest là nguồn xác định trạng thái frozen và thời điểm; các đoạn “chưa đóng băng” phía trên phản ánh thời điểm ghi nhận trước quyết định này.
 
 Kết quả tiền kiểm local ngày 17/11: verify_v1_4.py **PASS** (82+29 ca, đúng 5 ID khác v1.3, 106 bản ghi giữ nguyên nội dung); self-test toàn bộ LF/CRLF và phát hiện sửa nội dung **PASS**; self-test hash prompt **PASS**; verify_compare.py **PASS**; verify_expert_questions.py **PASS** (615 câu); freeze dry-run **DRY_RUN**, không ghi manifest. So sánh hash toàn bộ evaluation/ và knowledge/ trước/sau các phép kiểm xác nhận không đổi nội dung. Kiểm âm từ chối thiếu quyết định của Tuấn, hash quyết định sai, chưa chấp nhận giới hạn, phạm vi chỉ năm ca, hash biên bản hoặc hash bộ ca sai. Đây là kết quả tại máy Tuấn, không ghi thay PASS trên máy Huy.
+
+## Bổ sung biên bản ngày 19/11/2026
+
+Theo cập nhật của Sơn, Huy đã bổ sung CLIN-021 vào tổng kết. Đối chiếu với nhóm 79 ca ĐỒNG Ý đã báo ngày 17/11 và phiếu rà CLIN-021 của Huy, ghi CLIN-021 vào nhóm ĐỒNG Ý kèm bảo lưu chờ bác sĩ mắt rà mức ưu tiên. Danh sách nhóm nay đủ 79 ID. Cộng ba ca ghi riêng CLIN-011, CLIN-019 và CLIN-022, tổng kết bao phủ đủ 82 ca lâm sàng.
+
+Manifest ghi `CLARIFIED` cho phần tổng kết CLIN-021. Việc Huy chạy lại verifier vẫn chờ xác nhận riêng. Phụ lục chỉ cập nhật biên bản rà cho cùng combined SHA-256 và quyết định đóng băng ngày 17/11.

@@ -80,7 +80,7 @@ describe('Bác sĩ duyệt bản phát hành', () => {
     renderPage(<ReviewPanel data={pending} names={names} onChanged={() => {}} />, { user: DOC_A })
     await screen.findByText('Ho khan')
     fireEvent.click(screen.getByText('Approve release'))
-    expect(document.querySelector('.ai-confirm-msg b').textContent).toBe('1')
+    expect(document.querySelector('.confirm b.num').textContent).toBe('1')
     fireEvent.click(screen.getByText('Approve'))
     await waitFor(() => expect(sent('POST', `${BASE}/releases/rel1/approve`)).toHaveLength(1))
   })
