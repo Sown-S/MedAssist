@@ -1,8 +1,12 @@
 ---
 schema: okf_release_v1
-label: KB-2026.12
+label: KB-2026.12.1
 description: Bản phát hành tri thức 154 bệnh, 299 triệu chứng, 12 luật, 1530 quan hệ, 11 nguồn và 157 trích dẫn.
 ---
+
+## Changelog KB-2026.12.1
+
+- Bổ sung `short_name`, `aliases` và `detection` cho 135 mã triệu chứng nhóm trọng tâm, gồm 359 alias. Huy đã rà chéo và đồng ý tích hợp CSV v2. [Biên bản rà chéo KB-2026.12.1](../evaluation/review/ghi_chu_symptom_catalog_kb_2026_12_1.md).
 
 ## Changelog KB-2026.12
 

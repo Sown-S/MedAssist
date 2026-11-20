@@ -4,36 +4,104 @@ symptoms:
 - symptom_code: fever_high
   symptom_name: Sốt cao (>= 38.5°C hoặc sốt cao đột ngột, liên tục)
   category: constitutional
+  short_name: "Sốt cao"
+  aliases:
+    - "sốt cao"
+    - "sốt cao đột ngột"
+    - "sốt từ 38,5 độ"
+  detection: both
 - symptom_code: fever_low_grade
   symptom_name: Sốt nhẹ hoặc sốt vừa (37.5°C - 38.4°C)
   category: constitutional
+  short_name: "Sốt nhẹ hoặc vừa"
+  aliases:
+    - "sốt nhẹ"
+    - "chỉ sốt nhẹ đến vừa"
+    - "đo nhiệt độ thấy sốt từ 37,5 đến 38,4 độ"
+  detection: both
 - symptom_code: fever_prolonged
   symptom_name: Sốt dai dẳng kéo dài nhiều ngày hoặc nhiều tuần
   category: constitutional
+  short_name: "Sốt kéo dài"
+  aliases:
+    - "sốt dai dẳng nhiều ngày"
+    - "sốt liền mấy tuần"
+    - "sốt kéo dài mãi chưa dứt"
+  detection: both
 - symptom_code: chills_rigors
   symptom_name: Ớn lạnh, gai rét hoặc rét run thành cơn
   category: constitutional
+  short_name: "Ớn lạnh, rét run"
+  aliases:
+    - "lạnh run từng cơn"
+    - "ớn lạnh đến run người"
+    - "người gai rét"
+  detection: both
 - symptom_code: sweating_profuse
   symptom_name: Vã mồ hôi nhiều hoặc ra mồ hôi trộm ban đêm
   category: constitutional
+  short_name: "Vã mồ hôi hoặc đổ mồ hôi đêm"
+  aliases:
+    - "ra mồ hôi như tắm"
+    - "đêm ngủ ra mồ hôi trộm"
+    - "vã nhiều mồ hôi khắp người"
+  detection: both
 - symptom_code: fatigue_malaise
   symptom_name: Mệt mỏi, uể oải, suy nhược toàn thân
   category: constitutional
+  short_name: "Mệt mỏi, uể oải"
+  aliases:
+    - "uể oải cả người"
+    - "mệt rã rời toàn thân"
+    - "cảm giác mệt mỏi, người rệu rã"
+  detection: both
 - symptom_code: weight_loss_anorexia
   symptom_name: Gầy sút cân, chán ăn, ăn bú kém
   category: constitutional
+  short_name: "Sụt cân hoặc ăn bú kém"
+  aliases:
+    - "gầy đi, cân nặng giảm"
+    - "ăn không ngon, không muốn ăn"
+    - "bé ăn kém hoặc bú kém"
+  detection: both
 - symptom_code: headache_dull
   symptom_name: Đau nhức đầu âm ỉ hoặc dữ dội
   category: constitutional
+  short_name: "Đau đầu"
+  aliases:
+    - "nhức đầu âm ỉ"
+    - "đau âm ỉ trong đầu"
+    - "đau đầu âm ỉ"
+  detection: both
 - symptom_code: dizziness_vertigo
   symptom_name: Chóng mặt xoay tròn, hoa mắt, mất thăng bằng hoặc động mắt
   category: neurological
+  short_name: "Chóng mặt, hoa mắt"
+  aliases:
+    - "chóng mặt"
+    - "chóng mặt hoa mắt"
+    - "mọi thứ như quay vòng"
+    - "hoa mắt và mất thăng bằng"
+  detection: both
 - symptom_code: lymphadenopathy_splenomegaly
   symptom_name: Hạch ngoại vi sưng to (hạch cổ, góc hàm, trước tai, bẹn), gan to hoặc lách to
   category: constitutional
+  short_name: "Nổi hạch hoặc gan lách to"
+  aliases:
+    - "nổi hạch cổ"
+    - "sưng hạch cổ"
+    - "sưng hạch ở góc hàm"
+    - "nổi hạch trước tai hoặc vùng bẹn"
+  detection: both
 - symptom_code: anemia_pallor_jaundice
   symptom_name: Da xanh xao, niêm mạc nhợt (thiếu máu) hoặc vàng da, vàng mắt
   category: constitutional
+  short_name: "Da xanh, vàng da mắt"
+  aliases:
+    - "da xanh xao trông nhợt nhạt"
+    - "da và lòng trắng mắt ngả vàng"
+    - "mắt vàng, da cũng vàng"
+  detection: both
 - symptom_code: meningeal_neck_stiffness_kernig
   symptom_name: 'Hội chứng màng não: cứng gáy, dấu hiệu Kernig/Brudzinski dương tính, nôn vọt'
   category: neurological
@@ -75,51 +143,138 @@ symptoms:
 - symptom_code: hearing_loss_deafness
   symptom_name: Nghe kém, giảm thính lực (dẫn truyền, tiếp nhận hoặc hỗn hợp), điếc
   category: ent
+  short_name: "Nghe kém hoặc điếc"
+  aliases:
+    - "nghe kém"
+    - "tai nghe kém hẳn"
+    - "giảm thính lực"
+    - "bị điếc"
+  detection: both
 - symptom_code: tinnitus_ear_fullness
   symptom_name: Ù tai (tiếng ve kêu, tiếng trầm/cao), cảm giác đầy nặng trong tai
   category: ent
+  short_name: "Ù tai hoặc đầy tai"
+  aliases:
+    - "ù tai"
+    - "đầy nặng trong tai"
+    - "tai ù như tiếng ve kêu"
+    - "nghe tiếng ù trầm hoặc cao trong tai"
+  detection: both
 - symptom_code: otorrhea_ear_discharge
   symptom_name: Chảy dịch tai, chảy mủ tai (nhầy trong, đặc vàng hoặc thối khẳn) hoặc chảy máu tai
   category: ent
 - symptom_code: otalgia_ear_pain
   symptom_name: Đau nhức trong tai, đau vùng xương chũm hoặc đau tăng khi kéo vành tai
   category: ent
+  short_name: "Đau tai"
+  aliases:
+    - "đau tai"
+    - "đau nhức tai"
+    - "đau nhức trong tai"
+    - "kéo vành tai thì đau hơn"
+    - "nhức ở vùng xương sau tai"
+  detection: reported
 - symptom_code: tympanic_membrane_lesion
   symptom_name: Màng nhĩ thủng, co lõm, phồng đục hoặc có khối cholesteatoma
   category: ent
+  short_name: "Bất thường màng nhĩ"
+  aliases: []
+  detection: both
 - symptom_code: facial_nerve_palsy_bell
   symptom_name: Liệt mặt ngoại biên (mặt lệch, mắt nhắm không kín, dấu hiệu Charles Bell dương tính)
   category: neurological
 - symptom_code: external_ear_swelling_fistula
   symptom_name: Sưng tấy, nhọt, biến dạng vành tai/ống tai ngoài hoặc lỗ rò luân nhĩ
   category: ent
+  short_name: "Sưng hoặc nổi nhọt ở tai ngoài"
+  aliases:
+    - "vành tai sưng tấy"
+    - "nổi nhọt trong ống tai ngoài"
+    - "có lỗ nhỏ ở trước vành tai"
+  detection: both
 - symptom_code: nasal_obstruction_stuffiness
   symptom_name: Ngạt tắc mũi một bên hoặc hai bên, thở bằng miệng, nói giọng mũi kín
   category: ent
+  short_name: "Nghẹt mũi"
+  aliases:
+    - "ngạt mũi"
+    - "nghẹt mũi"
+    - "tắc mũi"
+    - "nghẹt cả hai bên mũi"
+    - "tắc một bên mũi"
+    - "nghẹt mũi phải thở miệng"
+  detection: both
 - symptom_code: rhinorrhea_nasal_congestion
   symptom_name: Sổ mũi, chảy nước mũi trong, dịch nhầy hoặc mủ xanh vàng
   category: ent
+  short_name: "Sổ mũi"
+  aliases:
+    - "sổ mũi"
+    - "chảy nước mũi"
+    - "chảy nước mũi trong"
+    - "nước mũi nhầy"
+    - "xì mũi ra dịch xanh vàng"
+  detection: both
 - symptom_code: allergic_sneezing_nasal_itch
   symptom_name: Ngứa mũi, hắt hơi từng tràng liên tục, niêm mạc mũi nhợt phù nề
   category: ent
+  short_name: "Hắt hơi tràng, ngứa mũi"
+  aliases:
+    - "hắt xì từng tràng"
+    - "ngứa mũi, hắt xì liên tục"
+    - "mũi ngứa ran rồi hắt hơi liên hồi"
+  detection: both
 - symptom_code: facial_sinus_pain_anosmia
   symptom_name: Đau nhức vùng mặt/hốc mắt/trán và giảm hoặc mất khứu giác (mất ngửi)
   category: ent
+  short_name: "Đau vùng xoang, giảm ngửi"
+  aliases:
+    - "đau vùng trán và ngửi kém"
+    - "đau quanh hốc mắt kèm mất ngửi"
+    - "nhức vùng mặt và khó ngửi thấy mùi"
+  detection: reported
 - symptom_code: nasal_polyp_sinonasal_mass
   symptom_name: Khối polyp hốc mũi, u nhú, u nhầy hoặc khối u vùng mũi xoang/vòm mũi họng
   category: ent
+  short_name: "Khối trong mũi hoặc xoang"
+  aliases: []
+  detection: exam
 - symptom_code: epistaxis_nasal_bleeding
   symptom_name: Chảy máu mũi (chảy máu cam) tái diễn hoặc xì mũi lẫn máu
   category: ent
+  short_name: "Chảy máu cam"
+  aliases:
+    - "chảy máu mũi nhiều lần"
+    - "xì mũi thấy lẫn máu"
+    - "máu cam tái đi tái lại"
+  detection: reported
 - symptom_code: tonsillitis_adenoid_pharyngitis
   symptom_name: Niêm mạc họng đỏ, amidan hoặc VA sưng to có chấm mủ/giả mạc, nuốt đau/vướng
   category: ent
+  short_name: "Họng đỏ, amidan to, nuốt đau"
+  aliases:
+    - "sưng amidan, nuốt đau"
+    - "họng đỏ, nuốt đau"
+    - "amidan sưng to, nuốt vướng"
+  detection: both
 - symptom_code: snoring_sleep_apnea
   symptom_name: Ngủ ngáy to, cơn ngừng thở tắc nghẽn khi ngủ (AHI tăng) và buồn ngủ ban ngày
   category: ent
+  short_name: "Ngáy to, ngừng thở lúc ngủ"
+  aliases:
+    - "ngủ ngáy to, có lúc ngưng thở"
+    - "đang ngủ có lúc ngừng thở"
+    - "mới ban ngày đã buồn ngủ, đêm lại ngáy to"
+  detection: both
 - symptom_code: hoarseness_dysphonia_stridor
   symptom_name: Khàn tiếng, mất tiếng, rối loạn giọng hoặc khó thở thanh quản (thở rít thì hít vào)
   category: ent
+  short_name: "Khàn tiếng hoặc thở rít"
+  aliases:
+    - "giọng bị khàn"
+    - "khàn tiếng đến mức mất giọng"
+    - "hít vào nghe tiếng rít"
+  detection: both
 - symptom_code: head_neck_mass_fistula_trauma
   symptom_name: Khối u vùng cổ/lưỡi/tuyến nước bọt/tuyến giáp, lỗ rò bẩm sinh vùng cổ hoặc vết thương
     đầu cổ
@@ -130,9 +285,21 @@ symptoms:
 - symptom_code: maculopapular_rash
   symptom_name: Dát đỏ, hồng ban hoặc phát ban dát sẩn trên da
   category: dermatologic
+  short_name: "Da nổi ban đỏ"
+  aliases:
+    - "nổi ban đỏ có chỗ hơi gồ"
+    - "da nổi nhiều dát đỏ phẳng"
+    - "nổi ban hồng lấm tấm trên da"
+  detection: both
 - symptom_code: vesicular_blister_rash
   symptom_name: Phỏng nước, mụn nước hoặc bọng nước nông/sâu, dập vỡ tạo vết trợt và đóng vảy tiết
   category: dermatologic
+  short_name: "Da nổi mụn nước"
+  aliases:
+    - "da nổi mụn nước"
+    - "nổi bọng nước rồi vỡ, để lại vết trợt"
+    - "bọng nước trên da vỡ và đóng vảy"
+  detection: both
 - symptom_code: pustular_furuncle_folliculitis
   symptom_name: Sẩn viêm nang lông, mụn mủ, nhọt có ngòi mủ hoặc nhân trứng cá (comedon)
   category: dermatologic
@@ -160,112 +327,331 @@ symptoms:
 - symptom_code: oral_mucosal_ulcers
   symptom_name: Loét niêm mạc miệng, lợi, lưỡi (aphthose) hoặc mũi họng
   category: dermatologic
+  short_name: "Vết loét trong miệng"
+  aliases:
+    - "có vết loét trong miệng"
+    - "lợi hay lưỡi có chỗ loét"
+    - "trong miệng nổi vết nhiệt loét"
+  detection: both
 - symptom_code: malar_butterfly_photosensitivity
   symptom_name: Ban đỏ hình cánh bướm ở mặt, ban dạng đĩa, nhạy cảm ánh sáng
   category: dermatologic
+  short_name: "Ban đỏ hai má, nhạy nắng"
+  aliases:
+    - "ban đỏ qua sống mũi và hai má như cánh bướm"
+    - "ban đỏ hình cánh bướm trên mặt"
+    - "nhạy với ánh nắng kèm ban đỏ hai má"
+  detection: both
 - symptom_code: salmon_pink_evanescent_rash
   symptom_name: Ban màu cá hồi thoáng qua xuất hiện khi sốt cao
   category: dermatologic
+  short_name: "Ban hồng thoáng qua lúc sốt"
+  aliases:
+    - "lúc sốt cao có ban hồng cá hồi rồi lặn"
+    - "ban hồng màu cá hồi chỉ nổi thoáng qua khi sốt cao"
+    - "sốt cao kèm ban màu cá hồi thoắt hiện thoắt lặn"
+  detection: reported
 - symptom_code: skin_sclerosis_raynaud
   symptom_name: Dày da, xơ cứng da đầu chi/lan tỏa kèm hội chứng Raynaud
   category: dermatologic
+  short_name: "Da dày cứng, đổi màu đầu chi"
+  aliases:
+    - "da dày cứng, đầu ngón đổi màu từng cơn"
+    - "da ngón tay cứng, đầu ngón hay đổi màu"
+    - "da dày cứng lan rộng, đầu ngón hay đổi màu"
+  detection: both
 - symptom_code: heliotrope_gottron_sign
   symptom_name: Ban đỏ tím quanh mi mắt (Heliotrope) hoặc sẩn Gottron ở khớp ngón tay
   category: dermatologic
+  short_name: "Ban tím mí, sẩn khớp ngón"
+  aliases:
+    - "mí mắt nổi ban đỏ tím"
+    - "da quanh mí chuyển đỏ tím"
+    - "nổi sẩn ở trên các khớp ngón tay"
+  detection: both
 - symptom_code: psoriatic_plaque_nail_pitting
   symptom_name: Mảng da vảy nến bong vảy trắng hoặc loạn dưỡng móng (móng rỗ, dày)
   category: dermatologic
+  short_name: "Da bong vảy hoặc móng rỗ"
+  aliases:
+    - "mảng da vảy nến bong vảy trắng"
+    - "móng bị rỗ lấm tấm"
+    - "móng dày lên kèm mảng da vảy nến"
+  detection: both
 - symptom_code: erythema_nodosum_shins
   symptom_name: Sẩn cục hồng ban nút rắn đau dưới da mặt trước hai cẳng chân
   category: dermatologic
+  short_name: "Cục đỏ đau ở cẳng chân"
+  aliases:
+    - "có cục đỏ cứng đau dưới da mặt trước cẳng chân"
+    - "nổi cục đau dưới da trước ống chân"
+    - "hai ống chân nổi cục đỏ cứng, đau"
+  detection: both
 - symptom_code: skin_cellulitis_pus_abscess
   symptom_name: Da và mô mềm sưng nóng đỏ đau, ổ áp xe hoặc chảy mủ
   category: dermatologic
+  short_name: "Da sưng nóng đỏ, có thể có mủ"
+  aliases:
+    - "vùng da sưng nóng, đỏ và đau"
+    - "vùng da sưng tấy đau rồi chảy mủ"
+    - "vùng da tấy đỏ, sưng đau, có ổ mủ"
+  detection: both
 - symptom_code: petechiae_mucosal_bleeding
   symptom_name: Chấm xuất huyết dưới da hoặc chảy máu niêm mạc
   category: dermatologic
+  short_name: "Chấm xuất huyết hoặc chảy máu"
+  aliases:
+    - "nổi chấm xuất huyết dưới da"
+    - "dưới da có những chấm máu nhỏ"
+    - "dưới da nổi chấm xuất huyết kèm chảy máu ở niêm mạc"
+  detection: both
 - symptom_code: conjunctivitis_uveitis_red_eye
   symptom_name: Đỏ mắt, viêm kết mạc, viêm màng bồ đào, chảy nước mắt hoặc sợ ánh sáng
   category: infectious_sign
+  short_name: "Mắt đỏ, chảy nước mắt"
+  aliases:
+    - "mắt đỏ kèm chảy nước mắt"
+    - "mắt đỏ và thấy chói khi gặp ánh sáng"
+    - "mắt đỏ và sợ ánh sáng"
+  detection: both
 - symptom_code: cough_dry
   symptom_name: Ho khan hoặc ho từng cơn
   category: respiratory
+  short_name: "Ho khan"
+  aliases:
+    - "ho khan"
+    - "ho khô từng cơn"
+    - "ho khan từng tràng"
+  detection: both
 - symptom_code: cough_productive_sputum
   symptom_name: Ho khạc đờm mạn tính hoặc đờm nhầy mủ
   category: respiratory
+  short_name: "Ho có đờm"
+  aliases:
+    - "ho có đờm"
+    - "ho khạc đờm nhầy"
+    - "ho lâu ngày kèm đờm"
+    - "ho khạc ra đờm mủ"
+  detection: both
 - symptom_code: sore_throat_dysphagia
   symptom_name: Đau rát họng, nuốt đau hoặc nuốt nghẹn
   category: respiratory
+  short_name: "Đau rát họng, nuốt đau"
+  aliases:
+    - "đau họng"
+    - "đau cổ họng"
+    - "rát cổ họng"
+    - "họng đau rát"
+    - "nuốt thấy đau họng"
+    - "nuốt thấy nghẹn ở họng"
+  detection: reported
 - symptom_code: dyspnea_chronic_exertional
   symptom_name: Khó thở khi gắng sức hoặc khó thở tiến triển tăng dần
   category: respiratory
+  short_name: "Khó thở khi gắng sức"
+  aliases:
+    - "khó thở khi leo cầu thang"
+    - "hụt hơi khi leo cầu thang"
+    - "khó thở khi gắng sức"
+    - "khó thở tăng dần"
+    - "làm việc nặng thì bị hụt hơi"
+  detection: both
 - symptom_code: wheezing_bronchospasm
   symptom_name: Thở khò khè, cò cử, thở rít thì thở ra (nghe phổi có ran rít, ran ngáy)
   category: respiratory
+  short_name: "Thở khò khè"
+  aliases:
+    - "thở nghe tiếng khò khè"
+    - "thở ra nghe tiếng rít"
+    - "thở nghe tiếng cò cử"
+  detection: both
 - symptom_code: nocturnal_asthma_dyspnea
   symptom_name: Cơn khó thở, ho, nặng ngực xuất hiện về đêm hoặc sáng sớm, thay đổi theo mùa
   category: respiratory
+  short_name: "Cơn khó thở về đêm"
+  aliases:
+    - "lên cơn khó thở về đêm"
+    - "bị ho và tức nặng ngực lúc gần sáng"
+    - "nửa đêm lên cơn khó thở kèm ho"
+  detection: both
 - symptom_code: history_smoking_dust_exposure
   symptom_name: Tiền sử hút thuốc lá, thuốc lào hoặc tiếp xúc khói bụi độc hại lâu năm
   category: respiratory
+  short_name: "Từng hút thuốc hoặc hít bụi"
+  aliases:
+    - "hút thuốc lá lâu năm"
+    - "từng hút thuốc lào nhiều năm"
+    - "tiếp xúc với khói bụi độc hại lâu năm"
+  detection: both
 - symptom_code: serositis_pleural_pericardial
   symptom_name: Tràn dịch màng phổi, tràn dịch màng ngoài tim (viêm đa màng)
   category: respiratory
+  short_name: "Dịch quanh phổi hoặc tim"
+  aliases: []
+  detection: exam
 - symptom_code: nausea_vomiting_diarrhea
   symptom_name: Buồn nôn, nôn ói, đau bụng hoặc tiêu chảy phân lỏng nhiều lần
   category: gastrointestinal
+  short_name: "Buồn nôn, ói hoặc tiêu chảy"
+  aliases:
+    - "nôn ói kèm đi ngoài phân lỏng"
+    - "buồn nôn và đau bụng"
+    - "đi ngoài phân lỏng nhiều lần"
+  detection: both
 - symptom_code: myalgia_arthralgia
   symptom_name: Đau mỏi cơ, đau nhức khớp
   category: musculoskeletal
+  short_name: "Đau mỏi cơ, nhức khớp"
+  aliases:
+    - "nhức mỏi cơ bắp và các khớp"
+    - "đau mỏi khắp cơ khớp"
+    - "các khớp đau nhức kèm mỏi cơ"
+  detection: both
 - symptom_code: morning_stiffness_over_1h
   symptom_name: Cứng khớp buổi sáng kéo dài trên 1 giờ
   category: musculoskeletal
+  short_name: "Cứng khớp sáng trên 1 giờ"
+  aliases:
+    - "sáng dậy cứng khớp hơn một tiếng"
+    - "khớp cứng buổi sáng trên một giờ"
+    - "cứng khớp khi thức dậy, hơn một giờ mới đỡ"
+  detection: both
 - symptom_code: morning_stiffness_under_30m
   symptom_name: Cứng khớp buổi sáng ngắn dưới 30 phút (dấu hiệu phá rỉ khớp)
   category: musculoskeletal
+  short_name: "Cứng khớp sáng dưới 30 phút"
+  aliases:
+    - "sáng dậy cứng khớp chưa tới nửa tiếng"
+    - "cứng khớp buổi sáng dưới 30 phút"
+    - "khớp cứng lúc thức dậy rồi đỡ trong chưa đầy nửa giờ"
+  detection: both
 - symptom_code: symmetric_polyarthritis_hands
   symptom_name: Viêm đa khớp đối xứng hai bên (đặc biệt khớp cổ tay, bàn ngón, ngón gần)
   category: musculoskeletal
+  short_name: "Viêm khớp tay hai bên"
+  aliases:
+    - "nhiều khớp cổ tay và bàn tay viêm đối xứng"
+    - "khớp ngón tay hai bên cùng sưng đau"
+    - "nhiều khớp ở hai bàn tay cùng bị viêm"
+  detection: both
 - symptom_code: asymmetric_oligoarthritis_lower
   symptom_name: Viêm một hoặc vài khớp không đối xứng (ưu thế các khớp lớn chi dưới)
   category: musculoskeletal
+  short_name: "Viêm vài khớp lệch bên"
+  aliases:
+    - "chỉ vài khớp lớn ở chân bị sưng đau, lệch hai bên"
+    - "vài khớp chân bị viêm không đều hai bên"
+    - "viêm một bên ở khớp lớn của chân"
+  detection: both
 - symptom_code: acute_podagra_tophi
   symptom_name: Sưng nóng đỏ đau dữ dội đột ngột khớp bàn - ngón chân cái hoặc có hạt Tôphi
   category: musculoskeletal
+  short_name: "Ngón chân cái bỗng sưng đau"
+  aliases:
+    - "khớp ngón chân cái đột ngột sưng nóng đỏ"
+    - "đau dữ dội ở khớp ngón chân cái"
+    - "ngón chân cái bỗng sưng đau dữ dội"
+  detection: both
 - symptom_code: inflammatory_sacroiliac_back_pain
   symptom_name: Đau cột sống thắt lưng kiểu viêm (>= 3 tháng, giảm khi tập) và đau khớp cùng chậu
   category: musculoskeletal
+  short_name: "Đau lưng dưới đỡ khi tập"
+  aliases:
+    - "đau lưng dưới nhiều tháng, vận động tập thì đỡ"
+    - "đau thắt lưng kéo dài, tập luyện lại đỡ"
+    - "đau vùng khớp ở chỗ nối xương cùng và xương chậu"
+  detection: both
 - symptom_code: enthesitis_achilles_heel
   symptom_name: Viêm đau điểm bám tận của gân (gân gót Achilles, cân gan chân)
   category: musculoskeletal
+  short_name: "Đau chỗ gân bám vào gót"
+  aliases:
+    - "đau ở chỗ gân sau gót bám vào xương"
+    - "đau ngay điểm bám gân ở gót chân"
+    - "đau chỗ dải gân dưới lòng chân bám gần gót"
+  detection: both
 - symptom_code: mechanical_spinal_pain_stiffness
   symptom_name: Đau cột sống thắt lưng hoặc cổ kiểu cơ học (tăng khi vận động, giảm khi nghỉ)
   category: musculoskeletal
+  short_name: "Đau cổ lưng, nghỉ thì đỡ"
+  aliases:
+    - "đau lưng dưới khi cử động, nghỉ thì đỡ"
+    - "đau cổ tăng lúc vận động và dịu lúc nghỉ"
+    - "đau cột sống lúc hoạt động, nghỉ ngơi giảm đau"
+  detection: both
 - symptom_code: sciatica_lasegue_positive
   symptom_name: Đau dọc đường đi dây thần kinh tọa lan xuống chân, dấu hiệu Lasègue và Valleix dương tính
   category: musculoskeletal
+  short_name: "Đau lưng lan xuống chân"
+  aliases:
+    - "đau lưng lan xuống chân"
+    - "đau từ lưng chạy dọc xuống chân"
+    - "cơn đau từ vùng lưng lan dọc chân"
+  detection: both
 - symptom_code: cervical_radiculopathy_spurling
   symptom_name: Đau cổ gáy lan xuống vai, cánh tay kèm tê bì kiểu rễ (nghiệm pháp Spurling dương tính)
   category: musculoskeletal
+  short_name: "Đau cổ lan tay, tê bì"
+  aliases:
+    - "đau cổ lan xuống tay"
+    - "đau từ gáy xuống vai và cánh tay"
+    - "cổ gáy đau lan xuống tay kèm tê bì"
+  detection: both
 - symptom_code: knee_effusion_crepitus_locking
   symptom_name: Sưng đau khớp gối, tràn dịch khớp gối, tiếng lục khục hoặc dấu hiệu kẹt khớp
   category: musculoskeletal
+  short_name: "Gối sưng, lục cục, kẹt khớp"
+  aliases:
+    - "gối sưng, kêu lục cục, kẹt khớp"
+    - "đầu gối sưng đau, gập duỗi nghe lục cục"
+    - "gối hay bị kẹt khi cử động"
+  detection: both
 - symptom_code: hip_groin_pain_limping
   symptom_name: Đau khớp háng/bẹn, đi khập khiễng, hạn chế động tác dạng và xoay trong khớp háng
   category: musculoskeletal
+  short_name: "Đau háng, đi khập khiễng"
+  aliases:
+    - "đau bẹn nên đi khập khiễng"
+    - "đau khớp háng, bước đi khập khiễng"
+    - "đau háng, khó dạng chân hoặc xoay đùi vào trong"
+  detection: both
 - symptom_code: shoulder_periarthritis_restricted
   symptom_name: Đau vùng khớp vai, giả liệt khớp vai hoặc đông cứng hạn chế vận động khớp vai
   category: musculoskeletal
+  short_name: "Đau vai, khó cử động"
+  aliases:
+    - "khớp vai đau và cứng đơ"
+    - "đau ở vai đến mức không cử động được"
+    - "đau vai kèm khớp vai bị đông cứng"
+  detection: both
 - symptom_code: tendinitis_finkelstein_trigger_elbow
   symptom_name: 'Viêm gân cục bộ: đau mỏm trâm quay (Finkelstein +), ngón tay lò xo hoặc đau lồi cầu ngoài'
   category: musculoskeletal
+  short_name: "Đau gân cổ tay, ngón, khuỷu"
+  aliases:
+    - "đau ở phía cổ tay sát ngón cái"
+    - "ngón tay gập rồi bật ra khi duỗi"
+    - "đau ở phía ngoài khuỷu tay"
+  detection: both
 - symptom_code: proximal_muscle_weakness_wasting
   symptom_name: Yếu cơ vùng gốc chi đối xứng hai bên, teo cơ tiến triển hoặc giả phì đại bắp chân
   category: musculoskeletal
+  short_name: "Yếu cơ gần vai háng"
+  aliases:
+    - "cơ gần vai và háng yếu cả hai bên"
+    - "phần trên của cả hai tay và hai chân yếu dần"
+    - "cơ gần vai háng yếu đối xứng kèm teo cơ"
+  detection: both
 - symptom_code: bone_pain_fracture_lesion
   symptom_name: Đau nhức xương sâu (tăng về đêm), biến dạng xương, lún xẹp đốt sống hoặc gãy xương bệnh
     lý
   category: musculoskeletal
+  short_name: "Đau sâu trong xương"
+  aliases:
+    - "đau nhức sâu trong xương về đêm"
+    - "đau âm sâu trong xương"
+    - "nhức sâu trong xương, đêm đau hơn"
+  detection: both
 - symptom_code: sym_respiratory_failure
   symptom_name: Khó thở nặng, thở co kéo, tím tái (dấu hiệu suy hô hấp cấp)
   category: red_flag_sign
@@ -302,23 +688,53 @@ symptoms:
 - symptom_code: vocal_fatigue_phonasthenia
   symptom_name: Mỏi giọng, nói nhanh mệt, nói hụt hơi hoặc phải gắng sức khi phát âm
   category: ent
+  short_name: "Mỏi giọng khi nói"
+  aliases:
+    - "nói một lúc thấy mỏi giọng"
+    - "nói nhanh bị mệt hoặc hụt hơi"
+    - "phải gắng sức mới nói thành tiếng"
+  detection: reported
 - symptom_code: voice_pitch_timbre_alteration
   symptom_name: Biến đổi âm sắc, cao độ hoặc cường độ giọng nói (giọng thều thào, giọng đôi, mất âm sắc)
   category: ent
+  short_name: "Giọng đổi cao độ, âm sắc"
+  aliases:
+    - "giọng nói thều thào"
+    - "giọng nói như có hai âm cùng lúc"
+    - "âm sắc giọng nói thay đổi"
+  detection: reported
 - symptom_code: glottic_closure_mucosal_wave_deficit
   symptom_name: Dây thanh khép không kín, giảm hoặc mất sóng niêm mạc dây thanh trên soi hoạt nghiệm thanh
     quản
   category: ent
+  short_name: "Dây thanh khép không kín"
+  aliases: []
+  detection: exam
 - symptom_code: vocal_abuse_phonotrauma_strain
   symptom_name: Tiền sử lạm dụng giọng nói (nói nhiều, nói to kéo dài) hoặc căng mỏi cơ vùng cổ - thanh
     quản
   category: ent
+  short_name: "Dùng giọng quá sức"
+  aliases:
+    - "thường xuyên nói to kéo dài"
+    - "hay phải nói nhiều và nói lớn"
+    - "căng mỏi cơ vùng cổ do dùng giọng nhiều"
+  detection: reported
 - symptom_code: laryngeal_paresthesia_throat_clearing
   symptom_name: Cảm giác khô rát, vướng mắc hoặc dị cảm vùng họng - thanh quản, hay phải đằng hắng giọng
   category: ent
+  short_name: "Vướng họng, hay đằng hắng"
+  aliases:
+    - "cảm giác vướng trong họng, cứ phải hắng giọng"
+    - "họng khô rát, hay đằng hắng"
+    - "liên tục hắng giọng vì vướng họng"
+  detection: reported
 - symptom_code: conductive_hearing_loss
   symptom_name: Nghe kém dẫn truyền (Rinne âm tính, Weber lệch bên bệnh)
   category: ent
+  short_name: "Nghe kém kiểu dẫn truyền"
+  aliases: []
+  detection: both
 - symptom_code: sensorineural_hearing_loss
   symptom_name: Nghe kém tiếp nhận thần kinh giác quan (tổn thương ốc tai)
   category: ent
@@ -331,36 +747,72 @@ symptoms:
 - symptom_code: tympanic_marginal_attic_perforation
   symptom_name: Thủng màng nhĩ sát khung xương hoặc vùng màng chùng (thượng nhĩ)
   category: ent
+  short_name: "Thủng màng nhĩ sát rìa"
+  aliases: []
+  detection: exam
 - symptom_code: tympanic_retraction_pocket
   symptom_name: Túi co kéo màng nhĩ hoặc xẹp nhĩ dính vào thành trong hòm tai
   category: ent
 - symptom_code: fetid_cholesteatoma_otorrhea
   symptom_name: Chảy mủ tai thối khẳn, có vảy trắng óng ánh như xà cừ (cholesteatoma)
   category: ent
+  short_name: "Mủ tai thối có vảy óng"
+  aliases:
+    - "mủ tai hôi thối kèm vảy trắng óng"
+    - "tai chảy mủ thối và có vảy óng như xà cừ"
+    - "mủ tai có mùi thối khẳn lẫn vảy trắng bóng"
+  detection: both
 - symptom_code: mastoid_retroauricular_swelling
   symptom_name: Sưng nề đỏ đau vùng xương chũm sau tai, vành tai bị đẩy vểnh ra trước
   category: ent
+  short_name: "Sưng đỏ đau sau tai"
+  aliases:
+    - "sau tai sưng đỏ và đau"
+    - "vùng xương phía sau tai sưng đau"
+    - "phía sau tai sưng đau làm vành tai vểnh ra"
+  detection: both
 - symptom_code: rotatory_vertigo_meniere
   symptom_name: Cơn chóng mặt xoay tròn kịch phát kèm ù tai và giảm thính lực (Ménière)
   category: ent
 - symptom_code: spontaneous_nystagmus_vestibular
   symptom_name: Rung giật nhãn cầu (động mắt) tự phát hoặc theo tư thế
   category: ent
+  short_name: "Mắt tự rung giật"
+  aliases: []
+  detection: exam
 - symptom_code: temporal_bone_fracture_hemotympanum
   symptom_name: Chảy máu tai, chảy dịch não tủy qua tai hoặc bầm tím vùng chũm (dấu Battle)
   category: ent
 - symptom_code: otomycosis_fungal_debris
   symptom_name: Ngứa ống tai ngoài kèm mảng nấm trắng xám hoặc đen như giấy ướt
   category: ent
+  short_name: "Ngứa ống tai, có mảng"
+  aliases:
+    - "ngứa sâu trong ống tai kèm mảng trắng xám"
+    - "trong tai ngứa và có mảng đen giống giấy ướt"
+    - "ống tai ngứa, có mảng trắng xám như giấy ướt"
+  detection: both
 - symptom_code: middle_meatus_mucopurulent_discharge
   symptom_name: Mủ nhầy đọng ở khe mũi giữa hoặc chảy xuống thành sau họng
   category: ent
+  short_name: "Mủ mũi xuống sau họng"
+  aliases:
+    - "cảm thấy dịch mủ nhầy chảy từ mũi xuống họng"
+    - "dịch nhầy như mủ chảy xuống sau họng"
+    - "dịch mũi đặc như mủ chảy xuống họng"
+  detection: both
 - symptom_code: turbinate_hypertrophy_pallor
   symptom_name: Cuốn mũi dưới phù nề, quá phát hoặc đổi màu nhợt nhạt/tím xám
   category: ent
+  short_name: "Cuốn mũi sưng to"
+  aliases: []
+  detection: exam
 - symptom_code: nasal_septal_deviation_spur
   symptom_name: Vẹo vách ngăn mũi, mào hoặc gai vách ngăn gây cản trở thông khí
   category: ent
+  short_name: "Vách ngăn mũi lệch"
+  aliases: []
+  detection: exam
 - symptom_code: fungal_sinus_ball_calcification
   symptom_name: Khối nấm xoang đặc như bã đậu và hình ảnh cản quang kim loại trên CT
   category: ent
@@ -373,27 +825,63 @@ symptoms:
 - symptom_code: nasopharyngeal_carcinoma_trotter
   symptom_name: Ù tai một bên, xì mũi lẫn máu nhầy và nổi hạch cổ cao cùng bên (vòm mũi họng)
   category: ent
+  short_name: "Ù tai một bên kèm máu mũi"
+  aliases:
+    - "ù một tai, xì mũi lẫn máu"
+    - "ù một tai, hạch cổ cùng bên"
+    - "ù một tai, xì mũi lẫn máu, hạch cổ cùng bên"
+  detection: reported
 - symptom_code: adenoid_facies_mouth_breathing
   symptom_name: 'Bộ mặt V.A điển hình: luôn há miệng thở, môi trên vểnh, vòm khẩu cái lõm cao'
   category: ent
+  short_name: "Hay há miệng để thở"
+  aliases:
+    - "lúc nào cũng há miệng để thở"
+    - "miệng thường xuyên há ra để thở"
+    - "bé hay há miệng khi thở, môi trên vểnh"
+  detection: both
 - symptom_code: tonsillar_cryptic_exudate_hypertrophy
   symptom_name: Amidan sưng to quá phát, hốc amidan chứa mủ bã đậu hoặc giả mạc
   category: ent
+  short_name: "Amidan to, hốc có bã trắng"
+  aliases:
+    - "amidan có bã trắng"
+    - "amidan sưng to có bã trắng"
+    - "hốc amidan có bã đậu"
+  detection: both
 - symptom_code: granular_hypertrophic_pharyngitis
   symptom_name: Niêm mạc thành sau họng dày đỏ, nhiều tổ chức lympho quá phát thành hạt
   category: ent
+  short_name: "Thành sau họng nổi hạt"
+  aliases: []
+  detection: exam
 - symptom_code: epiglottitis_drooling_muffled_voice
   symptom_name: Nuốt đau dữ dội, chảy dãi, giọng nói ngậm hạt thị và sưng đỏ thanh thiệt
   category: ent
+  short_name: "Nuốt rất đau, chảy dãi"
+  aliases:
+    - "nuốt đau dữ dội kèm chảy dãi"
+    - "nuốt rất đau, chảy dãi và nói giọng ồm như ngậm đồ"
+    - "nước dãi chảy ra, giọng nói như đang ngậm gì"
+  detection: both
 - symptom_code: subglottic_croup_barking_cough
   symptom_name: Ho ông ổng như tiếng chó sủa, khàn tiếng và khó thở thanh quản về đêm
   category: ent
+  short_name: "Ho ông ổng, thở khó về đêm"
+  aliases:
+    - "ho ông ổng như tiếng chó sủa"
+    - "ho ông ổng, khàn giọng và đêm thở khó"
+    - "đêm ho như chó sủa kèm khó thở"
+  detection: reported
 - symptom_code: vocal_cord_nodule_polyp_reinke
   symptom_name: Hạt xơ dây thanh đối xứng, polyp dây thanh hoặc phù Reinke dây thanh
   category: ent
 - symptom_code: laryngeal_tuberculosis_monochorditis
   symptom_name: Viêm đỏ một bên dây thanh hoặc sùi loét bờ sụn phễu, đau lan lên tai (lao thanh quản)
   category: ent
+  short_name: "Viêm dây thanh, loét sụn phễu"
+  aliases: []
+  detection: both
 - symptom_code: laryngopharyngeal_reflux_globus
   symptom_name: Cảm giác vướng nghẹn họng, đắng miệng, ợ chua và phù nề mép liên phễu
   category: ent
@@ -612,6 +1100,12 @@ symptoms:
   symptom_name: Mảng đỏ ranh giới rõ phủ vảy trắng dày như sáp nến, nghiệm pháp cạo Brocq dương tính và
     hiện tượng Koebner
   category: dermatologic
+  short_name: "Mảng đỏ phủ vảy như sáp"
+  aliases:
+    - "da có mảng đỏ viền rõ phủ vảy trắng dày"
+    - "mảng đỏ phủ vảy dày trắng như sáp nến"
+    - "mảng đỏ ranh giới rõ, vảy trắng dày ở phía trên"
+  detection: both
 - symptom_code: erythroderma_generalized_exfoliation
   symptom_name: Đỏ da và bong vảy lan tỏa trên 90% diện tích cơ thể kèm rối loạn thân nhiệt (Đỏ da toàn
     thân)
@@ -702,6 +1196,12 @@ symptoms:
   symptom_name: Mảng đỏ có vảy dày dính (dấu hiệu đinh thảm) và teo da để lại sẹo ở vùng hở (Lupus đỏ
     mạn)
   category: dermatologic
+  short_name: "Mảng đỏ vảy dính, để sẹo"
+  aliases:
+    - "mảng đỏ đóng vảy dày dính ở vùng da hở"
+    - "da vùng hở có mảng đỏ vảy dày rồi để sẹo"
+    - "mảng đỏ vảy dày dính, da chỗ đó lõm thành sẹo"
+  detection: both
 - symptom_code: chlamydial_trichomonal_vaginitis_cervicitis
   symptom_name: Khí hư nhầy mủ cổ tử cung hoặc khí hư loãng có bọt màu vàng xanh kèm ngứa rát âm đạo
   category: dermatologic
@@ -711,14 +1211,29 @@ symptoms:
 - symptom_code: rheumatoid_nodules_ulnar_deviation
   symptom_name: Hạt dưới da (hạt thấp) và biến dạng khớp bàn tay hình lưng đĩa, lệch trụ hoặc cổ cò
   category: musculoskeletal
+  short_name: "Cục dưới da, khớp tay méo"
+  aliases:
+    - "sờ có cục dưới da kèm khớp tay biến dạng"
+    - "có hạt cứng dưới da và ngón tay biến dạng"
+    - "khớp tay lệch về phía ngón út kèm cục dưới da"
+  detection: both
 - symptom_code: sle_alopecia_nephritis_cytopenia
   symptom_name: Rụng tóc không sẹo, tổn thương thận (protein niệu, trụ tế bào) và giảm các dòng tế bào
     máu (Lupus)
   category: musculoskeletal
+  short_name: "Rụng tóc kèm dấu thận, máu"
+  aliases: []
+  detection: both
 - symptom_code: sclerodactyly_digital_ulcers_telangiectasia
   symptom_name: Da ngón tay dày cứng, loét/sẹo rỗ đầu ngón tay, giãn mao mạch và khó há miệng (Xơ cứng
     bì)
   category: musculoskeletal
+  short_name: "Da ngón cứng, loét đầu ngón"
+  aliases:
+    - "da ngón tay dày cứng và đầu ngón bị loét"
+    - "da ngón dày cứng, đầu ngón có sẹo rỗ"
+    - "ngón tay cứng da, miệng khó há"
+  detection: both
 - symptom_code: still_quotidian_spiking_fever_arthralgia
   symptom_name: Sốt cao thành cơn hàng ngày (>= 39°C) kèm đau khớp, ban cá hồi, đau họng và hạch/lách
     to (Bệnh Still)
@@ -727,109 +1242,274 @@ symptoms:
   symptom_name: Ban đỏ vùng cổ ngực (dấu hiệu khăn quàng), bàn tay thợ cơ khí và yếu cơ gốc chi (Viêm
     da cơ)
   category: musculoskeletal
+  short_name: "Ban cổ ngực, yếu cơ gốc chi"
+  aliases:
+    - "nổi mẩn đỏ quanh cổ ngực và yếu cơ gần vai háng"
+    - "ban đỏ ở cổ ngực kèm yếu cơ phần trên tay chân"
+    - "vùng cổ ngực nổi ban đỏ kèm yếu cơ quanh vai"
+  detection: both
 - symptom_code: jia_systemic_polyarticular_enthesitis
   symptom_name: Viêm khớp kéo dài >= 6 tuần khởi phát ở trẻ dưới 16 tuổi (Thể hệ thống, đa khớp, viêm
     điểm bám gân)
   category: musculoskeletal
+  short_name: "Trẻ viêm khớp kéo dài"
+  aliases:
+    - "trẻ bị viêm khớp từ sáu tuần trở lên"
+    - "bé viêm khớp kéo dài hơn một tháng rưỡi"
+    - "viêm khớp ít nhất sáu tuần, bắt đầu trước tuổi 16"
+  detection: both
 - symptom_code: ankylosing_spondylitis_schober_chest
   symptom_name: Hạn chế vận động cột sống thắt lưng (nghiệm pháp Schober giảm) và giảm độ giãn lồng ngực
     (VCSDK)
   category: musculoskeletal
+  short_name: "Giảm độ giãn ngực và lưng"
+  aliases: []
+  detection: both
 - symptom_code: reactive_arthritis_urethritis_conjunctivitis
   symptom_name: Tam chứng viêm khớp không đối xứng chi dưới, viêm niệu đạo và viêm kết mạc sau nhiễm khuẩn
     (Reiter)
   category: musculoskeletal
+  short_name: "Viêm khớp, niệu đạo, mắt"
+  aliases: []
+  detection: both
 - symptom_code: psoriatic_dactylitis_distal_interphalangeal
   symptom_name: Viêm ngón tay/ngón chân hình khúc dồi và viêm khớp liên đốt ngón xa kèm tổn thương da/móng
     vảy nến
   category: musculoskeletal
+  short_name: "Ngón sưng như khúc dồi"
+  aliases:
+    - "ngón tay hoặc chân sưng tròn như khúc dồi"
+    - "ngón tay sưng như xúc xích kèm vảy nến da hoặc móng"
+    - "khớp sát móng sưng, kèm vảy nến ở da hoặc móng"
+  detection: both
 - symptom_code: transient_hip_synovitis_pediatric_limp
   symptom_name: Đau khớp háng và đi khập khiễng cấp tính ở trẻ nhỏ sau nhiễm siêu vi đường hô hấp trên,
     tự giới hạn
   category: musculoskeletal
+  short_name: "Trẻ đau háng, đi khập khiễng"
+  aliases:
+    - "bé đột ngột đau háng, đi khập khiễng sau viêm hô hấp"
+    - "trẻ nhỏ bỗng đi khập khiễng vì đau háng"
+    - "sau đợt viêm hô hấp do siêu vi, bé đi khập khiễng"
+  detection: reported
 - symptom_code: gout_hyperuricemia_colchicine_response
   symptom_name: Cơn viêm khớp cấp tính dữ dội đạt đỉnh trong 24 giờ, đáp ứng tốt với Colchicin và tăng
     acid uric máu
   category: musculoskeletal
+  short_name: "Đau khớp cấp dữ dội"
+  aliases:
+    - "đau khớp dữ dội nhất ngay trong ngày đầu"
+    - "cơn đau khớp nặng nhất trong vòng một ngày"
+    - "khớp đột ngột viêm đau, đau nhất trong 24 giờ đầu"
+  detection: both
 - symptom_code: septic_arthritis_purulent_synovial_fluid
   symptom_name: Sưng nóng đỏ đau dữ dội một khớp lớn, hạn chế vận động hoàn toàn và dịch khớp đục mủ
   category: musculoskeletal
+  short_name: "Khớp viêm, dịch khớp đục mủ"
+  aliases: []
+  detection: both
 - symptom_code: pyomyositis_psoas_muscle_abscess
   symptom_name: Sưng đau nhức bắp cơ khu trú, cơ căng cứng, sốt cao và dấu hiệu cơ thắt lưng chậu dương
     tính (Áp xe cơ)
   category: musculoskeletal
+  short_name: "Bắp cơ sưng cứng, sốt cao"
+  aliases:
+    - "đau sưng một chỗ ở bắp cơ kèm sốt cao"
+    - "bắp cơ sưng đau và căng cứng tại một chỗ"
+    - "sốt cao kèm bắp cơ căng cứng đau khu trú"
+  detection: both
 - symptom_code: osteomyelitis_bone_tenderness_fistula
   symptom_name: Đau xương khu trú dữ dội, sưng nề phần mềm quanh xương hoặc lỗ rò chảy mủ và mảnh xương
     chết
   category: musculoskeletal
+  short_name: "Đau xương khu trú, rò mủ"
+  aliases:
+    - "đau dữ dội đúng một chỗ ở xương kèm sưng xung quanh"
+    - "đau xương một chỗ, có lỗ chảy mủ"
+    - "sưng phần mềm quanh chỗ xương đau dữ dội"
+  detection: both
 - symptom_code: duchene_becker_gowers_calf_hypertrophy
   symptom_name: Dáng đi lạch bạch, nghiệm pháp Gowers dương tính và phì đại giả cơ bắp chân ở trẻ trai
     (Loạn dưỡng cơ)
   category: musculoskeletal
+  short_name: "Bé trai đi lạch bạch"
+  aliases:
+    - "bé trai đi lạch bạch"
+    - "bé trai đi lắc lư lạch bạch"
+    - "bé trai đi lạch bạch, bắp chân trông to"
+  detection: both
 - symptom_code: knee_osteoarthritis_wood_planing_osteophyte
   symptom_name: Đau khớp gối kiểu cơ học, dấu hiệu bào gỗ dương tính, biến dạng trục khớp gối (chân vòng
     kiềng)
   category: musculoskeletal
+  short_name: "Đau gối khi vận động"
+  aliases:
+    - "gối đau khi đi lại hoặc cử động"
+    - "đầu gối đau khi vận động, chân vòng kiềng"
+    - "đau khớp gối mỗi khi cử động"
+  detection: both
 - symptom_code: lumbar_spondylosis_paraspinal_spasm
   symptom_name: Đau vùng thắt lưng mạn tính kiểu cơ học, co cứng cơ cạnh sống và lệch vẹo cột sống chống
     đau
   category: musculoskeletal
+  short_name: "Đau lưng lâu ngày, căng cơ"
+  aliases:
+    - "đau thắt lưng khi cử động, cơ dọc sống lưng căng cứng"
+    - "đau lưng dưới lâu ngày và cơ dọc sống lưng co cứng"
+    - "đau thắt lưng mạn, phải nghiêng người để đỡ đau"
+  detection: both
 - symptom_code: radicular_sensory_motor_reflex_deficit
   symptom_name: Tê bì dị cảm theo khoanh da rễ thần kinh, giảm phản xạ gân xương (gối/gót) hoặc yếu cơ
     ngọn chi
   category: musculoskeletal
+  short_name: "Tê dọc chi, yếu đầu chi"
+  aliases:
+    - "tê chạy theo một dải ở tay hoặc chân"
+    - "tê rần thành một dải dọc chân hoặc tay"
+    - "phần ngọn tay chân yếu kèm tê theo dải"
+  detection: both
 - symptom_code: cervical_vertebrobasilar_insufficiency
   symptom_name: Đau đầu vùng chẩm, chóng mặt, ù tai khi quay cổ do chèn ép động mạch đốt sống thân nền
   category: musculoskeletal
+  short_name: "Quay cổ chóng mặt, ù tai"
+  aliases:
+    - "quay cổ thì chóng mặt và ù tai"
+    - "xoay cổ thấy đau sau đầu kèm chóng mặt"
+    - "quay đầu thấy ù tai và choáng váng"
+  detection: reported
 - symptom_code: de_quervain_radial_styloid_tenosynovitis
   symptom_name: Sưng đau mỏm trâm quay cổ tay tăng khi vận động ngón cái và nghiệm pháp Finkelstein dương
     tính
   category: musculoskeletal
+  short_name: "Đau cổ tay khi động ngón cái"
+  aliases:
+    - "cử động ngón cái làm đau cổ tay"
+    - "sưng đau cổ tay phía ngón cái khi cử động ngón"
+    - "cổ tay bên ngón cái đau khi ngón cái cử động"
+  detection: both
 - symptom_code: trigger_finger_flexor_tendon_nodule
   symptom_name: Ngón tay bị bật hoặc kẹt ở tư thế gấp, sờ thấy hạt xơ trên gân gấp ở khớp bàn ngón tay
     (Ngón tay lò xo)
   category: musculoskeletal
+  short_name: "Ngón tay bị kẹt khi gập"
+  aliases:
+    - "gập ngón tay rồi bị kẹt không duỗi ra ngay"
+    - "ngón tay mắc lại ở tư thế gập"
+    - "ngón tay đang gập bị kẹt rồi bật ra khi duỗi"
+  detection: both
 - symptom_code: lateral_epicondylitis_tennis_elbow
   symptom_name: Đau chói vùng lồi cầu ngoài xương cánh tay lan xuống cẳng tay, tăng khi duỗi cổ tay có
     đối kháng
   category: musculoskeletal
+  short_name: "Đau ngoài khuỷu lan cẳng tay"
+  aliases:
+    - "đau mặt ngoài khuỷu tay"
+    - "đau phía ngoài khuỷu lan xuống cẳng tay"
+    - "đau từ mặt ngoài khuỷu xuống cẳng tay"
+  detection: both
 - symptom_code: osteoporosis_vertebral_collapse_kyphosis
   symptom_name: Đau lưng cấp hoặc mạn tính, giảm chiều cao, gù lưng và lún xẹp đốt sống sau chấn thương
     nhẹ (Loãng xương)
   category: musculoskeletal
+  short_name: "Đau lưng, thấp đi hoặc gù"
+  aliases:
+    - "đau lưng và thấy mình thấp đi"
+    - "đau lưng kèm lưng ngày càng gù"
+    - "lưng đau sau chấn thương nhẹ rồi thấy thấp đi"
+  detection: both
 - symptom_code: avascular_femoral_head_necrosis_groin_pain
   symptom_name: Đau khớp háng sâu vùng bẹn lan xuống mặt trong đùi, hạn chế xoay trong và dạng khớp háng
     (Hoại tử chỏm)
   category: musculoskeletal
+  short_name: "Đau sâu trong bẹn lan đùi"
+  aliases:
+    - "đau sâu trong bẹn lan xuống mặt trong đùi"
+    - "đau sâu ở háng lan xuống đùi trong"
+    - "đau sâu khớp háng, xoay háng vào trong khó"
+  detection: both
 - symptom_code: giant_cell_bone_tumor_epiphyseal_swelling
   symptom_name: Đau và sưng đầu xương dài quanh khớp gối hoặc đầu dưới xương quay, hình ảnh tiêu xương
     vỏ mỏng (U tế bào khổng lồ)
   category: musculoskeletal
+  short_name: "Sưng đau đầu xương"
+  aliases:
+    - "sưng đau ở đầu xương quanh gối"
+    - "gần cổ tay bị sưng đau ở đầu xương"
+    - "đầu xương dài quanh gối sưng và đau"
+  detection: both
 - symptom_code: fibrous_dysplasia_bone_deformity_fracture
   symptom_name: Biến dạng cong xương (xương đùi hình gậy chăn cừu), đau xương và gãy xương bệnh lý (Loạn
     sản xơ xương)
   category: musculoskeletal
+  short_name: "Xương cong, đau xương"
+  aliases:
+    - "xương bị cong kèm đau ở xương"
+    - "đùi bị cong, kèm đau xương"
+    - "xương méo cong và đau"
+  detection: both
 - symptom_code: joint_swelling_warmth_redness_effusion
   symptom_name: Sưng nề, nóng đỏ tại khớp, tràn dịch ổ khớp hoặc dày màng hoạt dịch khi sờ nắn
   category: musculoskeletal
+  short_name: "Khớp sưng, nóng đỏ"
+  aliases:
+    - "khớp sưng to kèm nóng đỏ"
+    - "chỗ khớp bị đỏ và sờ thấy nóng"
+    - "khớp nổi sưng, da chỗ đó nóng đỏ"
+  detection: both
 - symptom_code: joint_range_of_motion_limitation
   symptom_name: Hạn chế biên độ vận động chủ động và thụ động của khớp hoặc cột sống
   category: musculoskeletal
+  short_name: "Khớp, cột sống khó cử động"
+  aliases:
+    - "khớp không cử động hết tầm"
+    - "khó cử động hết tầm của cột sống"
+    - "khớp khó cử động hết tầm dù có người đỡ"
+  detection: both
 - symptom_code: joint_deformity_ankylosis_subluxation
   symptom_name: Biến dạng khớp, lệch trục chi, bán trật khớp hoặc dính khớp hoàn toàn
   category: musculoskeletal
+  short_name: "Khớp biến dạng hoặc dính"
+  aliases:
+    - "khớp méo, tay chân bị lệch trục"
+    - "khớp cứng dính hoàn toàn, không cử động được"
+    - "khớp bị biến dạng, chi trông cong lệch"
+  detection: both
 - symptom_code: periarticular_tendon_bursa_tenderness
   symptom_name: Điểm đau chói tại chỗ khi ấn vào đầu xương, khe khớp, bao gân hoặc túi thanh dịch
   category: musculoskeletal
+  short_name: "Đau chói khi ấn quanh khớp"
+  aliases:
+    - "ấn vào một điểm cạnh khớp thấy đau chói"
+    - "ấn vào khe khớp thấy đau chói"
+    - "ấn đúng một điểm trên gân thấy đau nhói"
+  detection: both
 - symptom_code: spinal_deformity_scoliosis_loss_lordosis
   symptom_name: Mất đường cong sinh lý cột sống, vẹo cột sống hoặc gù cột sống
   category: musculoskeletal
+  short_name: "Cột sống cong vẹo hoặc gù"
+  aliases:
+    - "lưng cong vẹo sang một bên"
+    - "lưng gù hoặc vẹo thấy rõ"
+    - "cột sống bị vẹo hoặc mất dáng cong tự nhiên"
+  detection: both
 - symptom_code: limb_numbness_paresthesia_tingling
   symptom_name: Tê bì, kiến bò, châm chích hoặc giảm cảm giác nông ở đầu chi
   category: musculoskeletal
+  short_name: "Đầu chi tê, châm chích"
+  aliases:
+    - "đầu ngón tay chân tê bì"
+    - "có cảm giác kiến bò ở đầu tay chân"
+    - "đầu ngón chân tay như bị kim châm"
+  detection: both
 - symptom_code: muscle_tenderness_cramps_myotonia
   symptom_name: Đau mỏi bắp cơ khi bóp, co cứng cơ hoặc teo cơ vùng chi
   category: musculoskeletal
+  short_name: "Đau mỏi khi bóp cơ"
+  aliases:
+    - "bóp vào bắp cơ thấy đau mỏi"
+    - "bắp cơ đau khi bóp và hay co cứng"
+    - "bóp bắp thịt thấy đau"
+  detection: both
 - symptom_code: eosinophilic_meningitis_paresthesia_headache
   symptom_name: Đau đầu dữ dội kéo dài, dị cảm đau rát da và tăng bạch cầu ái toan dịch não tủy sau ăn
     ốc sống
@@ -850,6 +1530,12 @@ symptoms:
   symptom_name: Sốt cao, ho, khó thở tiến triển nhanh thành viêm phổi nặng và suy hô hấp cấp ARDS sau
     tiếp xúc gia cầm (Cúm A H5N6/H7N9)
   category: respiratory
+  short_name: "Sốt ho khó thở sau gặp gia cầm"
+  aliases:
+    - "sốt cao, ho rồi khó thở nhanh sau khi gặp gia cầm"
+    - "gặp gà vịt rồi sốt cao, ho, khó thở nhanh"
+    - "tiếp xúc gia cầm rồi sốt cao, ho, khó thở tăng nhanh"
+  detection: both
 - symptom_code: viral_hepatitis_jaundice_dark_urine_ast_alt
   symptom_name: Mệt mỏi, chán ăn, sợ mỡ, đau tức hạ sườn phải, nước tiểu sẫm màu như nước vối và vàng
     da vàng mắt (Viêm gan virus)
@@ -867,60 +1553,138 @@ symptoms:
 - symptom_code: intoxication_coated_tongue_dry_lips
   symptom_name: 'Vẻ mặt nhiễm trùng nhiễm độc: môi khô, lưỡi bẩn, hơi thở hôi, mắt trũng'
   category: constitutional
+  short_name: "Khô môi, lưỡi bẩn"
+  aliases:
+    - "môi khô, lưỡi bẩn kèm hơi thở hôi"
+    - "mắt trũng, môi khô kèm lưỡi bẩn"
+    - "miệng hôi, môi khô và lưỡi bẩn"
+  detection: both
 - symptom_code: epidemiological_exposure_vector_travel
   symptom_name: Yếu tố dịch tễ tiếp xúc nguồn lây, vùng dịch lưu hành hoặc côn trùng/động vật truyền bệnh
   category: constitutional
+  short_name: "Tiếp xúc nguồn lây"
+  aliases:
+    - "từng tiếp xúc với nguồn lây"
+    - "từng đến vùng đang có dịch"
+    - "có tiếp xúc với côn trùng hoặc động vật truyền bệnh"
+  detection: reported
 - symptom_code: abdominal_distension_borborygmi_pain
   symptom_name: Đau bụng âm ỉ hoặc từng cơn, chướng bụng, đầy hơi hoặc rối loạn tiêu hóa
   category: gastrointestinal
 - symptom_code: copd_barrel_chest_pursed_lip_breathing
   symptom_name: Lồng ngực hình thùng, gõ vang, thở chúm môi và kéo dài thì thở ra (COPD)
   category: respiratory
+  short_name: "Thở ra chậm, chúm môi"
+  aliases:
+    - "chúm môi khi thở ra"
+    - "thở ra lâu, môi chúm lại"
+    - "mím chúm môi để thở ra kéo dài"
+  detection: both
 - symptom_code: copd_acute_exacerbation_sputum_purulence
   symptom_name: 'Đợt cấp COPD: khó thở tăng lên, lượng đờm tăng và đờm chuyển sang đờm mủ xanh/vàng'
   category: respiratory
+  short_name: "Khó thở tăng, nhiều đờm mủ"
+  aliases:
+    - "khó thở hơn và đờm nhiều lên chuyển màu xanh"
+    - "thở khó hơn, khạc đờm vàng nhiều hơn"
+    - "đờm chuyển vàng xanh và khó thở tăng lên"
+  detection: reported
 - symptom_code: asthma_reversible_airflow_limitation
   symptom_name: Giới hạn luồng khí thở ra biến thiên, đáp ứng nghiệm pháp hồi phục phế quản (FEV1 tăng
     >= 12% và >= 200ml)
   category: respiratory
+  short_name: "Luồng thở cải thiện khi đo"
+  aliases: []
+  detection: exam
 - symptom_code: asthma_atopy_trigger_allergen_exercise
   symptom_name: Cơn khó thở khò khè khởi phát sau tiếp xúc dị nguyên, bụi khói, không khí lạnh hoặc gắng
     sức trên cơ địa dị ứng
   category: respiratory
+  short_name: "Khò khè khi gặp tác nhân"
+  aliases:
+    - "gặp khói bụi là lên cơn khó thở khò khè"
+    - "trời lạnh thì lên cơn khò khè khó thở"
+    - "gắng sức là lên cơn thở khò khè"
+  detection: reported
 - symptom_code: tachypnea_accessory_muscle_retractions
   symptom_name: Thở nhanh nông, co kéo cơ hô hấp phụ (hõm ức, khoang liên sườn) và phập phồng cánh mũi
   category: respiratory
+  short_name: "Thở nhanh, hõm ngực rút lõm"
+  aliases:
+    - "thở nhanh nông, thấy ngực rút lõm"
+    - "thở nhanh làm cánh mũi phập phồng"
+    - "thở thấy hõm ở cổ ngực hoặc kẽ sườn rút vào"
+  detection: both
 - symptom_code: pulmonary_crackles_rales_consolidation
   symptom_name: Nghe phổi có ran ẩm, ran nổ khu trú hoặc hội chứng đông đặc phổi
   category: respiratory
+  short_name: "Tiếng ran ở phổi"
+  aliases: []
+  detection: exam
 - symptom_code: decreased_breath_sounds_hyperresonance
   symptom_name: Rì rào phế nang giảm hoặc mất, thông khí phổi giảm hai bên
   category: respiratory
+  short_name: "Tiếng thở ở phổi giảm"
+  aliases: []
+  detection: exam
 - symptom_code: chronic_cor_pulmonale_edema_jugular_vein
   symptom_name: 'Dấu hiệu tâm phế mạn: phù hai chi dưới, tĩnh mạch cổ nổi, gan to và phản hồi gan - tĩnh
     mạch cổ dương tính'
   category: respiratory
+  short_name: "Phù hai chân, tĩnh mạch cổ nổi"
+  aliases: []
+  detection: both
 - symptom_code: cyanosis_hypoxemia_central_peripheral
   symptom_name: Tím môi, tím đầu chi do giảm oxy máu động mạch
   category: respiratory
+  short_name: "Môi hoặc đầu chi tím tái"
+  aliases:
+    - "môi tím tái"
+    - "đầu ngón tay hoặc đầu ngón chân tím tái"
+    - "môi và đầu ngón chuyển tím"
+  detection: both
 - symptom_code: chest_tightness_pleuritic_pain
   symptom_name: Cảm giác nặng ngực, bó chặt lồng ngực hoặc đau ngực tăng khi ho và hít sâu
   category: respiratory
+  short_name: "Tức ngực, đau khi hít sâu"
+  aliases:
+    - "cảm giác lồng ngực bị bó chặt"
+    - "hít sâu thấy đau ngực"
+    - "ho làm đau ngực hơn"
+  detection: reported
 - symptom_code: recurrent_lower_respiratory_infections
   symptom_name: Tiền sử nhiễm trùng đường hô hấp dưới (viêm phế quản, viêm phổi) tái diễn nhiều đợt trong
     năm
   category: respiratory
+  short_name: "Viêm phế quản, phổi tái diễn"
+  aliases:
+    - "viêm phế quản tái đi tái lại nhiều đợt trong năm"
+    - "hay bị viêm phổi nhiều lần trong năm"
+    - "từng viêm phế quản hoặc viêm phổi nhiều đợt"
+  detection: reported
 - symptom_code: fixed_postbronchodilator_fev1_fvc_under_70
   symptom_name: Rối loạn thông khí tắc nghẽn không hồi phục hoàn toàn (chỉ số FEV1/FVC < 70% sau nghiệm
     pháp giãn phế quản)
   category: respiratory
+  short_name: "Tắc nghẽn sau đo hô hấp"
+  aliases: []
+  detection: exam
 - symptom_code: peak_expiratory_flow_variability
   symptom_name: Lưu lượng đỉnh thở ra (PEF) dao động lớn trong ngày hoặc cải thiện rõ sau dùng thuốc giãn
     phế quản
   category: respiratory
+  short_name: "Lưu lượng đỉnh thay đổi"
+  aliases: []
+  detection: exam
 - symptom_code: difficulty_speaking_phrases_orthopnea
   symptom_name: Khó thở phải ngồi dậy để thở, nói ngắt quãng từng cụm từ hoặc từng từ đơn
   category: respiratory
+  short_name: "Phải ngồi dậy để thở"
+  aliases:
+    - "nằm khó thở phải ngồi dậy"
+    - "khó thở đến mức phải ngắt từng cụm từ"
+    - "thở khó, nói được từng từ một"
+  detection: reported
 - symptom_code: reduced_urine_output
   symptom_name: Tiểu ít mới xuất hiện
   category: Dấu hiệu nguyên tử

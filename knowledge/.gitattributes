@@ -1,0 +1,4 @@
+# Giữ LF cho nhãn phát hành, đặc tả OKF và catalog trên mọi checkout.
+/_release.md text eol=lf
+/_spec/okf_format.md text eol=lf
+/symptoms/symptom_catalog.md text eol=lf
