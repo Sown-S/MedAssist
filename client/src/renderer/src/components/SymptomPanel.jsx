@@ -156,7 +156,7 @@ export default function SymptomPanel({ value, onChange, text, onText, disabled =
       {ai.reason !== 'disabled' && (
         <div className="sym-ai" aria-live="polite">
           {aiDown && (
-            <div className="banner w" style={{ marginTop: 8 }}>
+            <div className="banner w mt-8">
               <Icon name="triangle-alert" />
               <div className="txt">
                 <b>{translate('Suggestions from the description are unavailable for now — pick the symptoms in the list below.')}</b>
@@ -202,7 +202,7 @@ export default function SymptomPanel({ value, onChange, text, onText, disabled =
             </ol>
           )}
           {job.status === 'failed' && (
-            <div className="banner w" style={{ marginTop: 10 }}>
+            <div className="banner w mt-10">
               <Icon name="triangle-alert" />
               <div className="txt">
                 <b>{translate(job.timeout ? 'No result within 30 seconds.' : 'The model could not read the description this time.')}</b>

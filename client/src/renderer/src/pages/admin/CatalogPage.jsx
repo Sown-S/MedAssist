@@ -2,10 +2,11 @@ import { useMemo, useState } from 'react'
 import Icon from '../../components/Icon'
 import { translate } from '../../i18n'
 import { useLiveCatalog } from '../../api/serviceCatalogLive'
-import { useInventory, todayISO } from '../../api/inventoryStore'
-import { exportCsv, fmtDateTime, unitLabel } from './inventory/shared'
+import { useInventory } from '../../api/inventoryStore'
+import { exportCsv, unitLabel } from './inventory/shared'
 import { SCHEMAS } from './catalogs/schemas'
 import { exportCatalog } from './catalogs/catalogCsv'
+import { fmtDateTime, ymd, fmtNum } from '../../utils/format'
 
 // Trang trung tâm của Quản lý danh mục; Thuốc & vật tư có trang riêng (dùng chung dữ liệu với Kho).
 // Dịch vụ, Xét nghiệm, Gói khám lấy từ server.
@@ -54,7 +55,7 @@ export default function CatalogPage({ onNavigate }) {
   function exportRow(key) {
     if (key === '@drugs')
       return exportCsv(
-        `danh-muc-thuoc-${todayISO()}.csv`,
+        `danh-muc-thuoc-${ymd()}.csv`,
         ['Code', 'Name', 'Active ingredient', 'ATC code', 'Unit', 'Purchase price', 'Selling price', 'Essential', 'Controlled', 'Status'],
         inv.drugs.map((d) => [
           d.id,
@@ -84,12 +85,12 @@ export default function CatalogPage({ onNavigate }) {
 
       <div className="card">
         <div className="card-b">
-          <div className="search" style={{ width: '100%', marginBottom: 14 }}>
+          <div className="search w-full mb-14">
             <Icon name="search" />
             <input className="input" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search a code or name in every catalog (e.g. J03, Amoxicillin, Đà Nẵng)…" />
           </div>
           {q.trim().length >= 2 && (
-            <div className="rows" style={{ marginBottom: 14 }}>
+            <div className="rows mb-14">
               {results.length === 0 ? (
                 <p className="muted small">{translate('No results.')}</p>
               ) : (
@@ -137,16 +138,16 @@ export default function CatalogPage({ onNavigate }) {
                               <div className="ico n">
                                 <Icon name={CAT_ICON[key] ?? 'list'} />
                               </div>
-                              <div style={{ minWidth: 0 }}>
+                              <div className="minw-0">
                                 <b>{x.title}</b>
-                                <span className="clip" style={{ display: 'block', maxWidth: 420 }}>
+                                <span className="clip d-block maxw-420">
                                   {x.desc}
                                 </span>
                               </div>
                             </div>
                           </td>
                           <td className="r num">
-                            {active.toLocaleString('vi-VN')}
+                            {fmtNum(active)}
                             {active !== x.list.length && (
                               <div className="muted small">
                                 / <span className="num">{x.list.length}</span> <span>total</span>
@@ -159,7 +160,7 @@ export default function CatalogPage({ onNavigate }) {
                               <>
                                 <span className="badge b-warning">Needs review</span>
                                 {issues.map((t) => (
-                                  <div key={t} className="small" style={{ color: 'var(--warning)' }}>
+                                  <div key={t} className="small text-warning">
                                     {t}
                                   </div>
                                 ))}

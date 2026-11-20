@@ -3,8 +3,8 @@ import Icon from '../../../components/Icon'
 import Button from '../../../components/Button'
 import { checkHealth } from '../../../api/client'
 import ServerAddress from '../../../components/ServerAddress'
-import { fmtDateTime } from '../inventory/shared'
 import { version } from '../../../../../../package.json'
+import { fmtDateTime } from '../../../utils/format'
 
 export function ConnectionTab({ onNavigate }) {
   const [health, setHealth] = useState(null)
@@ -44,7 +44,7 @@ export function ConnectionTab({ onNavigate }) {
                 <span className={'badge ' + (s.ok ? 'b-success' : s.ok === null ? 'b-neutral' : 'b-danger')}>{s.state}</span>
               </div>
             ))}
-            <div className="small muted" style={{ marginTop: 8 }}>
+            <div className="small muted mt-8">
               <span>Checked at</span> <span className="num">{fmtDateTime(health.checkedAt)}</span>
             </div>
           </>
@@ -54,7 +54,7 @@ export function ConnectionTab({ onNavigate }) {
         </p>
       </div>
 
-      <div className="card" style={{ marginTop: 14 }}>
+      <div className="card mt-14">
         <div className="card-h">
           <h3>AI module</h3>
         </div>
@@ -77,7 +77,7 @@ export function ConnectionTab({ onNavigate }) {
         </div>
       </div>
 
-      <div className="card" style={{ marginTop: 14 }}>
+      <div className="card mt-14">
         <div className="card-h">
           <h3>About this installation</h3>
         </div>

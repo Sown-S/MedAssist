@@ -8,7 +8,7 @@ import { LabOrderResults } from './doctorShared'
 import DocumentModal from './DocumentModal'
 import { useAuth } from '../../context/AuthContext'
 import { ageFrom } from '../../api/clinicApi'
-import { money, shortDateTime } from '../../utils/format'
+import { money, fmtDateTime } from '../../utils/format'
 import Skeleton from '../../components/Skeleton'
 import { ErrorNote } from '../../components/DataState'
 
@@ -41,15 +41,15 @@ export default function ServerHistory({ patientId, excludeVisitId, onLoaded }) {
   useEffect(() => {
     setOpen(null)
     load(0, false)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- load là hàm mới mỗi lần render; chỉ nạp lại khi đổi bệnh nhân hoặc bộ lọc
   }, [patientId, withCancelled])
 
   const list = items.filter((v) => v.visit_id !== excludeVisitId)
   const shown = Math.max(0, total - (items.some((v) => v.visit_id === excludeVisitId) ? 1 : 0))
   return (
     <div>
-      <div className="toolbar" style={{ marginBottom: 12 }}>
-        <h3 style={{ fontSize: 'var(--fs-md)' }}>
+      <div className="toolbar mb-12">
+        <h3 className="fs-md">
           {translate('Visits')} <span className="plain">· {shown}</span>
         </h3>
         <div className="sp" />
@@ -78,7 +78,7 @@ export default function ServerHistory({ patientId, excludeVisitId, onLoaded }) {
               </div>
               <div className="t">
                 <b>
-                  {shortDateTime(v.visit_date)} · {title}
+                  {fmtDateTime(v.visit_date)} · {title}
                 </b>
                 <span>
                   {v.physician_name ?? ''}
@@ -154,8 +154,8 @@ function ReferralBox({ record, onSaved }) {
         </div>
       )}
       <div className="small muted">
-        {translate(f.referred_by_role === 'Nurse' ? 'Recorded by' : 'Doctor')} {f.referred_by_name} · {shortDateTime(f.referred_at)}
-        {f.amended_by_name ? ' · ' + translate('amended by') + ' ' + f.amended_by_name + ' ' + shortDateTime(f.amended_at) : ''}
+        {translate(f.referred_by_role === 'Nurse' ? 'Recorded by' : 'Doctor')} {f.referred_by_name} · {fmtDateTime(f.referred_at)}
+        {f.amended_by_name ? ' · ' + translate('amended by') + ' ' + f.amended_by_name + ' ' + fmtDateTime(f.amended_at) : ''}
       </div>
       {open && <DocumentModal subject={subject} mode={doctor ? 'amend' : 'reprint'} target={{ visitId: v.visit_id }} onDone={onSaved} onClose={() => setOpen(false)} />}
     </div>
@@ -170,13 +170,13 @@ function VisitDetail({ visitId }) {
   }, [visitId])
   if (err)
     return (
-      <div className="hint-w" style={{ gridColumn: '1 / -1' }}>
+      <div className="hint-w span-all">
         {err}
       </div>
     )
   if (!r)
     return (
-      <p className="muted small" style={{ gridColumn: '1 / -1' }}>
+      <p className="muted small span-all">
         {translate('Loading…')}
       </p>
     )
@@ -195,7 +195,7 @@ function VisitDetail({ visitId }) {
       {v.is_red_flag && v.red_flag_reason && (
         <>
           <span className="k">{translate('Red flag')}</span>
-          <span style={{ color: 'var(--danger)' }}>{v.red_flag_reason}</span>
+          <span className="text-danger">{v.red_flag_reason}</span>
         </>
       )}
       <span className="k">{translate('Diagnoses')}</span>
@@ -242,7 +242,7 @@ function VisitDetail({ visitId }) {
         {translate('Reception')}: {r.nurse_name ?? '—'} · {translate('Doctor')}: {r.physician_name ?? '—'}
       </span>
       {v.outcome === 'Referred' && v.referral && (
-        <div style={{ gridColumn: '1 / -1' }}>
+        <div className="span-all">
           <ReferralBox record={r} onSaved={() => getVisitRecord(visitId).then(setR, () => {})} />
         </div>
       )}

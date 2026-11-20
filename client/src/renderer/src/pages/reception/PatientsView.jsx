@@ -5,8 +5,8 @@ import { ageOf } from '../../api/patient'
 import { statusLabel } from '../../api/queueStore'
 import { translate } from '../../i18n'
 import { listPatients, getPatient, patientVisits } from '../../api/clinicApi'
-import { dmy } from './shared'
 import Skeleton from '../../components/Skeleton'
+import { dmy, fmtNum } from '../../utils/format'
 
 const PAGE = 20
 const EMPTY = { q: '', phone: '', idNumber: '', code: '', birthYear: '' }
@@ -65,15 +65,14 @@ export default function PatientsView({ readOnly, onCheckIn }) {
   return (
     <div className="card">
       <div className="card-b">
-        <div className="toolbar" style={{ marginBottom: 14 }}>
-          <div className="search" style={{ width: 300 }}>
+        <div className="toolbar mb-14">
+          <div className="search w-300">
             <Icon name="search" />
             <input className="input" type="search" value={f.q} onChange={set('q')} placeholder={translate('Full name (with or without accents)')} aria-label={translate('Full name')} />
           </div>
-          <input className="input" style={{ width: 160, height: 40 }} value={f.phone} onChange={set('phone')} placeholder={translate('Phone')} aria-label={translate('Phone')} inputMode="numeric" />
+          <input className="input w-160 h-40" value={f.phone} onChange={set('phone')} placeholder={translate('Phone')} aria-label={translate('Phone')} inputMode="numeric" />
           <input
-            className="input"
-            style={{ width: 150, height: 40 }}
+            className="input w-150 h-40"
             value={f.idNumber}
             onChange={set('idNumber')}
             placeholder={translate('ID card')}
@@ -81,16 +80,14 @@ export default function PatientsView({ readOnly, onCheckIn }) {
             inputMode="numeric"
           />
           <input
-            className="input"
-            style={{ width: 200, height: 40 }}
+            className="input w-200 h-40"
             value={f.code}
             onChange={set('code')}
             placeholder={translate('Patient code, e.g. BN-3F2A9C1B')}
             aria-label={translate('Record code')}
           />
           <input
-            className="input num"
-            style={{ width: 110, height: 40 }}
+            className="input num w-110 h-40"
             value={f.birthYear}
             onChange={set('birthYear')}
             placeholder={translate('Year of birth')}
@@ -122,7 +119,7 @@ export default function PatientsView({ readOnly, onCheckIn }) {
                     <td>
                       <div className="who-cell">
                         <div className="ava">{initials(p.name)}</div>
-                        <b className="clip" style={{ maxWidth: 260 }}>
+                        <b className="clip maxw-260">
                           {p.name}
                         </b>
                       </div>
@@ -161,7 +158,7 @@ export default function PatientsView({ readOnly, onCheckIn }) {
         </div>
         <div className="pager">
           <span>
-            {translate('Showing')} {from}–{to} / {data.total.toLocaleString('vi-VN')} {translate('records')}
+            {translate('Showing')} {from}–{to} / {fmtNum(data.total)} {translate('records')}
           </span>
           <span className="acts">
             {offset > 0 && (

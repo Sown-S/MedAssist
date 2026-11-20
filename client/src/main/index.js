@@ -45,24 +45,35 @@ const writeJson = (name, data) => writeFileSync(fileOf(name), JSON.stringify(dat
 const memoryOnly = new Map()
 
 function registerIpc() {
-  ipcMain.handle('secure:get', (_e, key) => {
-    if (!safeStorage.isEncryptionAvailable()) return memoryOnly.get(key) ?? null
+  // API mã hoá bất đồng bộ (Electron 45+); giải mã được cả dữ liệu đã mã hoá bằng encryptString của bản cũ.
+  // Linux không có keyring: API mới vẫn báo "có" với kiểu basic_text (khoá cố định, coi như chữ thường) → coi như
+  // không mã hoá được, giữ token trong bộ nhớ như trước.
+  const canEncrypt = async () =>
+    (await safeStorage.isAsyncEncryptionAvailable()) && !(process.platform === 'linux' && safeStorage.getSelectedStorageBackend?.() === 'basic_text')
+  const save = async (key, value) => {
+    const all = readJson('secure.json')
+    all[key] = (await safeStorage.encryptStringAsync(String(value))).toString('base64')
+    writeJson('secure.json', all)
+  }
+  ipcMain.handle('secure:get', async (_e, key) => {
+    if (!(await canEncrypt())) return memoryOnly.get(key) ?? null
     const v = readJson('secure.json')[key]
     if (!v) return null
     try {
-      return safeStorage.decryptString(Buffer.from(v, 'base64'))
+      const { result, shouldReEncrypt } = await safeStorage.decryptStringAsync(Buffer.from(v, 'base64'))
+      // Khoá của hệ điều hành đã đổi: mã hoá lại bằng khoá mới.
+      if (shouldReEncrypt) await save(key, result)
+      return result
     } catch {
       return null
     }
   })
-  ipcMain.handle('secure:set', (_e, key, value) => {
-    if (!safeStorage.isEncryptionAvailable()) {
+  ipcMain.handle('secure:set', async (_e, key, value) => {
+    if (!(await canEncrypt())) {
       memoryOnly.set(key, String(value))
       return true
     }
-    const all = readJson('secure.json')
-    all[key] = safeStorage.encryptString(String(value)).toString('base64')
-    writeJson('secure.json', all)
+    await save(key, value)
     return true
   })
   ipcMain.handle('secure:remove', (_e, key) => {

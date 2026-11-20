@@ -4,8 +4,8 @@ import { ErrorBlock, LoadingBlock } from '../../components/DataState'
 import { ticketNo } from '../../components/queuePrint'
 import { useAwaiting, fromAwaiting, listInvoices, fromServerMethod } from '../../api/billingApi'
 import { translate } from '../../i18n'
-import { hhmm, methodLabel, PAY_STATUS } from './shared'
-import { money, fold, ymd } from '../../utils/format'
+import { methodLabel, PAY_STATUS } from './shared'
+import { money, fold, ymd, hhmm } from '../../utils/format'
 import { MiniStat, MiniStats } from '../../components/MiniStat'
 import Skeleton from '../../components/Skeleton'
 import DateField from '../../components/DateField'
@@ -39,7 +39,7 @@ export default function BillingLiveView({ mode, readOnly, onPay }) {
 
       <div className="card">
         <div className="card-b">
-          <div className="toolbar" style={{ marginBottom: 14 }}>
+          <div className="toolbar mb-14">
             <div className="search">
               <Icon name="search" />
               <input className="input" type="search" placeholder="Search patient or invoice code…" value={q} onChange={(e) => setQ(e.target.value)} />
@@ -73,7 +73,7 @@ export default function BillingLiveView({ mode, readOnly, onPay }) {
                   <tr key={v.id} className="clickable" onClick={() => !readOnly && onPay(v)}>
                     <td className="num">{v.ticket ? ticketNo(v.ticket) : '—'}</td>
                     <td>
-                      <b style={{ fontWeight: 500 }}>{v.name}</b>
+                      <b className="fw-500">{v.name}</b>
                     </td>
                     {mode === 'invoices' && <td className="num">{v.invoiceCode ?? '—'}</td>}
                     <td>
@@ -160,7 +160,7 @@ function InvoiceHistory({ readOnly, onPay, reloadKey }) {
           )}
         </div>
         <div className="card-b">
-          <div className="toolbar" style={{ marginBottom: 14 }}>
+          <div className="toolbar mb-14">
             <DateField style={{ width: 160 }} title={translate('Choose a day')} value={date} max={ymd(new Date())} onChange={(v) => setDate(v || ymd(new Date()))} />
             <div className="sp" />
             <label className="check">
@@ -197,7 +197,7 @@ function InvoiceHistory({ readOnly, onPay, reloadKey }) {
                         <td className="num">{x.invoice_code}</td>
                         <td className="num">{x.queue_number ? ticketNo(x.queue_number) : '—'}</td>
                         <td>
-                          <b style={{ fontWeight: 500 }}>{x.patient_name}</b>
+                          <b className="fw-500">{x.patient_name}</b>
                         </td>
                         <td className="num muted">{hhmm(x.created_at)}</td>
                         <td>{x.payment_status === 'Paid' ? translate(methodLabel(fromServerMethod(x.payment_method))) : '—'}</td>

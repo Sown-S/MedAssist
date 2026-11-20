@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import Modal, { ModalHeader } from './Modal'
 import { useToast } from '../context/ToastContext'
 import Icon from './Icon'
-import { syncQueue, ST, statusLabel } from '../api/queueStore'
+import { syncQueue } from '../api/queueStore'
 import * as clinic from '../api/clinicApi'
 import { VITAL_KEYS, checkVitals, vitalsFromForm } from '../api/vitals'
 import { toPayload, extractionStale } from '../api/symptoms'
@@ -14,6 +14,9 @@ import { translate } from '../i18n'
 import { printTicket, ticketNo } from './queuePrint'
 import PatientAlerts from './PatientAlerts'
 import { PHONE_RE, DOB_RE, ID_RE, EditPatient, NewPatientFields, DuplicateBanner } from './PatientFields'
+import { todayVN } from '../utils/format'
+import OpenVisitBanner from './OpenVisitBanner'
+import PregnancyField from './PregnancyField'
 
 const SAVED_FLASH_MS = 650
 
@@ -32,9 +35,6 @@ const askPregnancy = (gender, age) => gender === 'Female' && age !== '' && age >
 
 // patient = null: đăng ký bệnh nhân mới (kiểm tra trùng trước khi tạo) rồi cấp số.
 // patient có sẵn: tiếp đón bệnh nhân cũ, thông tin hành chính chỉ đọc. Mức ưu tiên do luật đặt, lễ tân không nâng tay.
-// Ngày hôm nay theo giờ Việt Nam, dạng YYYY-MM-DD (so với queue_date của server).
-const todayIso = () => new Date().toLocaleDateString('sv-SE', { timeZone: 'Asia/Ho_Chi_Minh' })
-
 export default function IntakeModal({ open, onClose, onRedFlag, patient = null }) {
   const { showToast } = useToast()
   const [form, setForm] = useState(EMPTY)
@@ -119,7 +119,7 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
       if (e?.code !== 'PATIENT_HAS_OPEN_VISIT') throw e
       const id = e.details?.[0]?.visit_id
       const ov = id ? await clinic.getVisit(id).catch(() => null) : null
-      setOpenVisit({ id, status: ov?.status, ticket: ov?.queue_number, date: ov?.queue_date, today: ov?.queue_date === todayIso() })
+      setOpenVisit({ id, status: ov?.status, ticket: ov?.queue_number, date: ov?.queue_date, today: ov?.queue_date === todayVN() })
       return null
     }
     visitRef.current = v
@@ -235,11 +235,7 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
       <div className="modal-b flush">
         <div className="intake">
           <section>
-            {existing && (
-              <div className="sec-t" style={{ marginTop: 0 }}>
-                Patient details
-              </div>
-            )}
+            {existing && <div className="sec-t mt-0">Patient details</div>}
             {existing ? (
               <>
                 <div className="pl-summary">
@@ -257,46 +253,19 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
                 <PatientAlerts p={existing} />
               </>
             ) : (
-              <>
-                <NewPatientFields form={form} field={field} err={err} onDob={(dob) => setForm((f) => ({ ...f, dob }))} />
-              </>
+              <NewPatientFields form={form} field={field} err={err} onDob={(dob) => setForm((f) => ({ ...f, dob }))} />
             )}
 
             {openVisit && <OpenVisitBanner v={openVisit} onOpen={adoptOpenVisit} onClose={() => setOpenVisit(null)} />}
             {dupes && !existing && <DuplicateBanner dupes={dupes} allowNew={!idTaken} onPick={pickRecord} onCreateNew={() => handleSave(true)} />}
-            {pregnancyAsked && (
-              <>
-                <div className="sec-t">
-                  <Icon name="baby" />
-                  <span>Pregnancy</span>
-                </div>
-                <div className="seg" role="radiogroup" aria-label={translate('Pregnancy')}>
-                  {[
-                    ['', 'Not asked'],
-                    ['no', 'Not pregnant'],
-                    ['yes', 'Pregnant']
-                  ].map(([v, l]) => (
-                    <button
-                      key={v}
-                      type="button"
-                      role="radio"
-                      aria-checked={form.pregnancy === v}
-                      className={form.pregnancy === v ? 'on' : ''}
-                      onClick={() => setForm((f) => ({ ...f, pregnancy: v }))}
-                    >
-                      {translate(l)}
-                    </button>
-                  ))}
-                </div>
-              </>
-            )}
+            {pregnancyAsked && <PregnancyField value={form.pregnancy} onChange={(v) => setForm((f) => ({ ...f, pregnancy: v }))} />}
             <div className="sec-t">
               <Icon name="ticket" />
               <span>Queue number</span>
             </div>
             <div className="qno">
               <span className="n num">{visit ? ticketNo(visit.queue_number) : '—'}</span>
-              <div style={{ flex: 1 }}>
+              <div className="grow">
                 <b>{visit ? translate('Queue number') + ' ' + ticketNo(visit.queue_number) : translate('Issued when saved')}</b>
                 <div className="muted small">{translate('Issued by the server when the visit is saved')}</div>
               </div>
@@ -308,7 +277,7 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
           </section>
 
           <section>
-            <div className="sec-t" style={{ marginTop: 0 }}>
+            <div className="sec-t mt-0">
               <Icon name="message-square-text" />
               <span>Symptoms</span>
             </div>
@@ -334,12 +303,12 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
             />
             <VitalsFields value={form} onChange={(k, v) => setForm((f) => ({ ...f, [k]: v }))} errorKeys={touched ? vit.errorKeys : new Set()} requireWeight={child} />
             {touched && vit.errors.length > 0 && (
-              <p className="small" style={{ color: 'var(--danger)', margin: '4px 0 8px' }}>
+              <p className="small text-danger vit-note">
                 <Icon name="ban" /> {vit.errors.map((w) => translate(w)).join(' · ')}
               </p>
             )}
             {vWarn.length > 0 && (
-              <p className="small" style={{ color: 'var(--warning)', margin: '4px 0 8px' }}>
+              <p className="small text-warning vit-note">
                 <Icon name="alert" /> {translate('Unusual value — please double-check')}: {vWarn.map((w) => translate(w)).join(' · ')}
               </p>
             )}
@@ -373,39 +342,5 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
         </button>
       </div>
     </Modal>
-  )
-}
-
-// Bệnh nhân còn một lượt chưa kết thúc: lượt đang chờ hôm nay → mở lại ngay trong form; lượt đã vào khám → báo đang ở bước nào;
-// lượt từ ngày trước → hướng dẫn đóng ở thông báo "lượt chưa đóng".
-function OpenVisitBanner({ v, onOpen, onClose }) {
-  const canOpen = v.today && v.status === ST.WAITING
-  const where = !v.today ? translate('from a previous day') + (v.date ? ' (' + v.date.split('-').reverse().join('/') + ')' : '') : translate(statusLabel(v.status ?? ''))
-  return (
-    <div className="banner w" role="alert">
-      <Icon name="alert" />
-      <div className="txt" style={{ flex: 1 }}>
-        <b>{translate('This patient already has a visit that is not finished')}</b>
-        <span>
-          {v.ticket ? translate('No.') + ' ' + v.ticket + ' · ' : ''}
-          {where}.{' '}
-          {canOpen
-            ? translate('Open that visit to continue the check-in instead of creating a new one?')
-            : v.today
-              ? translate('A new visit cannot be created until this one is finished.')
-              : translate('Close it under “open visits from previous days” in the notifications, then check the patient in again.')}
-        </span>
-        <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
-          {canOpen && (
-            <button type="button" className="btn btn-primary btn-sm" onClick={onOpen}>
-              <Icon name="door-open" /> {translate('Open that visit')}
-            </button>
-          )}
-          <button type="button" className="btn btn-ghost btn-sm" onClick={onClose}>
-            {translate('Close')}
-          </button>
-        </div>
-      </div>
-    </div>
   )
 }

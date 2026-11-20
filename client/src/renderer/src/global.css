@@ -1,26 +1,7 @@
 /* Điểm vào của toàn bộ CSS. Thứ tự import = thứ tự cascade (file sau ghi đè file trước) — đừng đổi thứ tự;
    CSS mới thêm vào cuối file của vùng tương ứng. */
 
-@import './styles/01-tokens-base.css';
-@import './styles/02-topbar-layout.css';
-@import './styles/03-components.css';
-@import './styles/04-admin-shell.css';
-@import './styles/06-shared-screens.css';
-@import './styles/08-icons-select-notify.css';
-@import './styles/09-admin-home.css';
-@import './styles/11-ai-config.css';
-@import './styles/12-inventory-catalog.css';
-@import './styles/13-admin-history-staff-settings.css';
-@import './styles/14-reception-queue.css';
-@import './styles/16-reception-dashboard-invoices.css';
-@import './styles/17-doctor-consult.css';
-@import './styles/18-doctor-workflow.css';
-@import './styles/19-connection-intake.css';
-@import './styles/20-ai-knowledge-emr.css';
-@import './styles/22-home.css';
-@import './styles/24-modals.css';
-@import './styles/25-pages.css';
-@import './styles/26-reports-charts.css';
-@import './styles/28-doctor-pages.css';
+@import './styles/10-legacy.css';
 @import './styles/90-mock.css';
 @import './styles/91-app-extras.css';
+@import './styles/92-utilities.css';

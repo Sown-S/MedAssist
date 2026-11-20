@@ -23,7 +23,7 @@ export function ConfirmedSymptoms({ list }) {
     )
   }
   return (
-    <div className="chips" style={{ marginTop: 8 }}>
+    <div className="chips mt-8">
       {yes.map(tag)}
       {no.map(tag)}
     </div>

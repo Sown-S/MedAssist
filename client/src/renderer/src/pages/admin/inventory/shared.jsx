@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { translate } from '../../../i18n'
 import { getSettings, PAPERS } from '../../../api/settingsStore'
 import { getDevice } from '../../../api/deviceSettings'
-import { money } from '../../../utils/format'
+import { fmtDate } from '../../../utils/format'
 
 const UNITS = [
   { key: 'tablet', label: 'Tablet' },
@@ -29,21 +29,6 @@ export const MOVE_TYPES = {
   in: 'Stock in',
   out: 'Stock out',
   return: 'Returned to stock'
-}
-
-// Giá chưa có (không phải số) hiện '—' thay vì 0đ.
-export const fmtMoney = (n) => (Number.isFinite(n) ? money(Math.round(n)) : '—')
-export const fmtNum = (n) => (Number.isFinite(n) ? n.toLocaleString('vi-VN') : '—')
-export function fmtDate(iso) {
-  if (!iso) return '—'
-  const [y, m, d] = iso.slice(0, 10).split('-')
-  return `${d}/${m}/${y}`
-}
-export function fmtDateTime(iso) {
-  if (!iso) return '—'
-  const d = new Date(iso)
-  const p = (n) => String(n).padStart(2, '0')
-  return `${p(d.getDate())}/${p(d.getMonth() + 1)}/${d.getFullYear()} ${p(d.getHours())}:${p(d.getMinutes())}`
 }
 
 export function StatusBadges({ statuses }) {

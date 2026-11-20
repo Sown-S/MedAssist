@@ -4,6 +4,7 @@ import { useToast } from '../../context/ToastContext'
 import { dispenseItem, dispenseAll } from '../../api/billingApi'
 import { unitLabel, printHtml, esc } from '../../pages/admin/inventory/shared'
 import { translate } from '../../i18n'
+import { fmtDateTime } from '../../utils/format'
 
 const DS = {
   Pending: { label: 'Waiting to dispense', cls: 'b-warning' },
@@ -41,7 +42,7 @@ export default function DispenseTab({ active, visitId, items, waiting, paid, rx,
       t('Dispensing slip'),
       `<h1>${esc(t('Dispensing slip'))}</h1>
       <p class="meta">${esc(t('Patient'))}: <b>${esc(patient.name)}</b>${ticket ? ' · ' + esc(t('no.')) + ' ' + esc(ticket) : ''}</p>
-      <p class="meta">${new Date().toLocaleString('vi-VN')} · ${esc(user.name)}</p>
+      <p class="meta">${fmtDateTime(new Date())} · ${esc(user.name)}</p>
       ${rx?.patient_context?.allergy_notes ? `<p class="meta">${esc(t('Drug allergy'))}: <b>${esc(rx.patient_context.allergy_notes)}</b></p>` : ''}
       <table><thead><tr><th>#</th><th>${esc(t('Drug'))}</th><th class="num">${esc(t('Quantity'))}</th></tr></thead><tbody>${rows}</tbody></table>
       <div class="sign"><div>${esc(t('Dispensed by'))}<i>(${esc(t('Signature, full name'))})</i></div><div></div><div>${esc(t('Patient received'))}<i>(${esc(t('Signature, full name'))})</i></div></div>`,
@@ -52,7 +53,7 @@ export default function DispenseTab({ active, visitId, items, waiting, paid, rx,
   return (
     <div className={'panel' + (active ? ' on' : '')}>
       {rx?.patient_context?.allergy_notes !== undefined && (
-        <div className="alerts" style={{ marginBottom: 10 }}>
+        <div className="alerts mb-10">
           {rx.patient_context.allergy_notes ? (
             <span className="allergy">
               <Icon name="triangle-alert" />
@@ -80,7 +81,7 @@ export default function DispenseTab({ active, visitId, items, waiting, paid, rx,
               {items.map((l) => (
                 <tr key={l.item_id} className={l.dispense_status === 'Skipped' ? 'dim' : ''}>
                   <td>
-                    <b style={{ fontWeight: 500 }}>{l.drug_name}</b>
+                    <b className="fw-500">{l.drug_name}</b>
                     <div className="muted small">{[l.dosage, l.frequency, l.duration_days + ' ' + translate('days')].join(' · ')}</div>
                     {l.instruction && <div className="muted small">{l.instruction}</div>}
                     {l.skip_reason && (
@@ -113,7 +114,7 @@ export default function DispenseTab({ active, visitId, items, waiting, paid, rx,
                         </>
                       )}
                       {skipping === l.item_id && (
-                        <span className="toolbar" style={{ justifyContent: 'flex-end' }}>
+                        <span className="toolbar justify-end">
                           <input
                             className="input"
                             type="text"
@@ -140,12 +141,12 @@ export default function DispenseTab({ active, visitId, items, waiting, paid, rx,
       ) : (
         <p className="muted small">{translate('No medication to dispense for this visit.')}</p>
       )}
-      <p className="muted small" style={{ marginTop: 10 }}>
+      <p className="muted small mt-10">
         <span>
           Stock was already deducted (FEFO) when the doctor confirmed the prescription. “Dispensed” does not deduct again; “Skip” returns the stock to the same batches and re-issues the invoice.
         </span>
       </p>
-      <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', marginTop: 12 }}>
+      <div className="d-flex gap-8 justify-end mt-12">
         <button className="btn btn-outline btn-sm" onClick={printSlip}>
           <Icon name="printer" />
           {translate('Print dispensing slip')}

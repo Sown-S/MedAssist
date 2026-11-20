@@ -3,9 +3,10 @@ import Modal, { ModalHeader } from '../../../components/Modal'
 import Icon from '../../../components/Icon'
 import { useToast } from '../../../context/ToastContext'
 import { translate } from '../../../i18n'
-import { receiveStock, daysLeft, todayISO } from '../../../api/inventoryStore'
-import { unitLabel, fmtMoney } from './shared'
+import { receiveStock, daysLeft } from '../../../api/inventoryStore'
+import { unitLabel } from './shared'
 import DateField from '../../../components/DateField'
+import { fmtMoney, ymd } from '../../../utils/format'
 
 // Nhập kho = tạo một lô mới. Không quản lý nhà cung cấp / công nợ (ngoài phạm vi).
 export default function ReceiveModal({ drug, drugs, onClose }) {
@@ -17,7 +18,7 @@ export default function ReceiveModal({ drug, drugs, onClose }) {
       setF({ drugId: drug.id ?? drugs.find((d) => d.active)?.id, lot: '', expiry: '', qty: '', cost: '' })
       setTried(false)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- chỉ đặt lại form khi mở cho thuốc khác; danh sách thuốc làm mới không được xoá dữ liệu đang nhập
   }, [drug])
   if (!drug || !f) return null
   const d = drugs.find((x) => x.id === f.drugId)
@@ -70,7 +71,7 @@ export default function ReceiveModal({ drug, drugs, onClose }) {
             <label>
               Expiry date <span className="req">*</span>
             </label>
-            <DateField min={todayISO()} value={f.expiry} onChange={(v) => set('expiry', v)} />
+            <DateField min={ymd()} value={f.expiry} onChange={(v) => set('expiry', v)} />
           </div>
           <div className="field">
             <label>

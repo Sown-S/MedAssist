@@ -1,4 +1,5 @@
-import { ExpiryCell, unitLabel, fmtMoney, fmtDate } from './shared'
+import { ExpiryCell, unitLabel } from './shared'
+import { fmtMoney, fmtDate } from '../../../utils/format'
 
 export function BatchTable({ drug, stock, onReceive }) {
   return (

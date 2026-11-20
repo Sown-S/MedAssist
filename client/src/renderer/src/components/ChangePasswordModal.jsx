@@ -31,7 +31,7 @@ export default function ChangePasswordModal({ open, onClose }) {
         <ModalHeader title="Change your password" onClose={onClose} />
         <div className="modal-b">
           {form.err && (
-            <div className="banner d" style={{ marginBottom: 12 }}>
+            <div className="banner d mb-12">
               {form.err}
             </div>
           )}

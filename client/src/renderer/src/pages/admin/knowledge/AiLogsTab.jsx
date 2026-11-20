@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import Icon from '../../../components/Icon'
 import { translate } from '../../../i18n'
 import { AI_MODES, AI_RUN_TYPES, AI_STATUSES, listAiLogs } from '../../../api/reportsApi'
-import { shortDateTime } from '../../../utils/format'
+import { fmtDateTime, fmtNum } from '../../../utils/format'
 import Skeleton from '../../../components/Skeleton'
 import { ErrorNote } from '../../../components/DataState'
 import DateField from '../../../components/DateField'
@@ -52,7 +52,7 @@ export default function AiLogsTab() {
 
   return (
     <div>
-      <p className="muted small" style={{ marginTop: 0 }}>
+      <p className="muted small mt-0">
         Every AI run with the knowledge release, model and prompt versions, timing and the doctor’s decision. No patient data is shown.
       </p>
       <div className="fg3">
@@ -77,11 +77,11 @@ export default function AiLogsTab() {
           {select('mode', AI_MODES, MODE_LABEL)}
         </div>
       </div>
-      <div className="toolbar" style={{ marginTop: 12 }}>
+      <div className="toolbar mt-12">
         <span className="muted small">
           {data ? (
             <>
-              <b className="num">{data.total.toLocaleString('vi-VN')}</b> <span>runs</span>
+              <b className="num">{fmtNum(data.total)}</b> <span>runs</span>
             </>
           ) : (
             '…'
@@ -100,7 +100,7 @@ export default function AiLogsTab() {
       <ErrorNote>{err}</ErrorNote>
       {!data && !err && <Skeleton rows={6} cols={4} />}
       {data && (
-        <div className="tbl-wrap" style={{ marginTop: 10 }}>
+        <div className="tbl-wrap mt-10">
           <div className="tbl-wrap">
             <table>
               <thead>
@@ -118,8 +118,8 @@ export default function AiLogsTab() {
                 {data.items.map((x) => {
                   const st = STATUS_META[x.status] ?? { label: x.status, tone: '' }
                   return (
-                    <tr key={x.assessment_id + x.run_type} onClick={() => setOpen(open === x.assessment_id ? null : x.assessment_id)} style={{ cursor: 'pointer' }}>
-                      <td className="num small">{shortDateTime(x.queued_at)}</td>
+                    <tr className="pointer" key={x.assessment_id + x.run_type} onClick={() => setOpen(open === x.assessment_id ? null : x.assessment_id)}>
+                      <td className="num small">{fmtDateTime(x.queued_at)}</td>
                       <td className="small">
                         {translate(RUN_LABEL[x.run_type] ?? x.run_type)}
                         {x.mode && <div className="muted">{translate(MODE_LABEL[x.mode] ?? x.mode)}</div>}
@@ -146,7 +146,7 @@ export default function AiLogsTab() {
             const x = data.items.find((i) => i.assessment_id === open)
             if (!x) return null
             return (
-              <div className="card" style={{ marginTop: 10 }}>
+              <div className="card mt-10">
                 <div className="pref-row inline">
                   <span>Knowledge release</span>
                   <b className="num">{x.knowledge_release_label ?? '—'}</b>
@@ -166,7 +166,7 @@ export default function AiLogsTab() {
                 <div className="pref-row inline">
                   <span>Started → finished</span>
                   <b className="num">
-                    {shortDateTime(x.started_at)} → {shortDateTime(x.completed_at)}
+                    {fmtDateTime(x.started_at)} → {fmtDateTime(x.completed_at)}
                   </b>
                 </div>
                 <ErrorNote>{x.error_detail}</ErrorNote>
@@ -176,7 +176,7 @@ export default function AiLogsTab() {
           {!data.items.length && <p className="muted">No runs match.</p>}
         </div>
       )}
-      <div className="toolbar" style={{ marginTop: 10 }}>
+      <div className="toolbar mt-10">
         <span className="small muted">
           <span>Page</span> <span className="num">{page + 1}</span> / <span className="num">{pages}</span>
         </span>

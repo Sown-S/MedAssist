@@ -3,12 +3,8 @@
 import { useEffect, useSyncExternalStore } from 'react'
 import { getSettings } from './settingsStore'
 import { apiGet, apiPost, apiRequest, ApiError } from './client'
+import { ymd } from '../utils/format'
 
-export const todayISO = () => {
-  const d = new Date()
-  const p = (n) => String(n).padStart(2, '0')
-  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`
-}
 
 // Tồn sau mỗi phiếu (cột “Tồn cuối” của thẻ kho).
 function recomputeBalances(moves) {
@@ -123,7 +119,7 @@ export async function loadMovesFor(drugId) {
 }
 export const nearDays = () => getSettings().ops.nearDays
 export function daysLeft(iso) {
-  const t = new Date(todayISO() + 'T00:00:00')
+  const t = new Date(ymd() + 'T00:00:00')
   return Math.round((new Date(iso + 'T00:00:00') - t) / 86400000)
 }
 

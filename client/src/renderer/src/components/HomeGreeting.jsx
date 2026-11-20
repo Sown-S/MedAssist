@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import Icon from './Icon'
 import { translate, getLang } from '../i18n'
+import { hhmm } from '../utils/format'
 
 const hello = (h) => (h < 11 ? 'Good morning' : h < 13 ? 'Good midday' : h < 18 ? 'Good afternoon' : 'Good evening')
 
@@ -13,7 +14,7 @@ export default function HomeGreeting({ crumb, name, extra, children }) {
   }, [])
   const vi = getLang() === 'vi'
   const day = now.toLocaleDateString(vi ? 'vi-VN' : 'en-GB', { weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' })
-  const time = now.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit', hour12: false })
+  const time = hhmm(now)
   const h = now.getHours()
   return (
     <div className="ghead">

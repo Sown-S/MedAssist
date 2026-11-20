@@ -2,8 +2,8 @@ import Icon from '../../../components/Icon'
 import DrugPicker from '../../../components/DrugPicker'
 import { translate } from '../../../i18n'
 import { unitLabel } from '../../admin/inventory/shared'
-import { dmy } from '../../reception/shared'
 import { SLOTS, MEALS, perDay, unitVi, wholeQty } from './rxDraft'
+import { dmy } from '../../../utils/format'
 
 // Đơn mẫu: một lần bấm thêm cả nhóm thuốc.
 const TEMPLATES = [
@@ -49,7 +49,7 @@ export default function RxEditor({ rx, tried, srvDrugs, issueOf, issues, short, 
         </div>
       </div>
       <div className="card-b">
-        <div style={{ marginBottom: 12 }}>
+        <div className="mb-12">
           <DrugPicker onPick={onAdd} drugs={srvDrugs} inputId={DRUG_SEARCH_ID} title="Alt+T" />
         </div>
 
@@ -61,8 +61,8 @@ export default function RxEditor({ rx, tried, srvDrugs, issueOf, issues, short, 
                   <th>Drug</th>
                   <th>Dose per time</th>
                   <th>When</th>
-                  <th style={{ width: 80 }}>Days</th>
-                  <th style={{ width: 90 }}>Qty</th>
+                  <th className="w-80">Days</th>
+                  <th className="w-90">Qty</th>
                   <th>Directions</th>
                   <th className="r" />
                 </tr>
@@ -74,10 +74,10 @@ export default function RxEditor({ rx, tried, srvDrugs, issueOf, issues, short, 
                   const daily = perDay(it.dose)
                   return (
                     <tr key={it.id} className={bad ? 'pr-danger' : ''}>
-                      <td style={{ minWidth: 170 }}>
-                        <b style={{ fontWeight: 500 }}>{it.name}</b>
+                      <td className="minw-170">
+                        <b className="fw-500">{it.name}</b>
                         {issue ? (
-                          <div className="small" style={{ color: 'var(--danger)' }}>
+                          <div className="small text-danger">
                             {issue.text}
                             {issue.usable != null && (
                               <>
@@ -93,18 +93,17 @@ export default function RxEditor({ rx, tried, srvDrugs, issueOf, issues, short, 
                             </div>
                           )
                         )}
-                        <label className="check" style={{ marginTop: 4, fontSize: 13 }} title={translate('Reception warns the patient if they decide not to buy this drug')}>
+                        <label className="check mt-4 fs-13" title={translate('Reception warns the patient if they decide not to buy this drug')}>
                           <input type="checkbox" checked={it.essential} onChange={() => setLine(it.id, { essential: !it.essential })} />
                           {translate('Must buy — warn reception')}
                         </label>
                       </td>
                       <td>
-                        <div style={{ display: 'flex', gap: 4 }}>
+                        <div className="d-flex gap-4">
                           {SLOTS.map(([k, label]) => (
                             <input
                               key={k}
-                              className="input num"
-                              style={{ width: 46, textAlign: 'center' }}
+                              className="input num w-46 text-center"
                               type="text"
                               inputMode="decimal"
                               title={translate(label)}
@@ -131,7 +130,7 @@ export default function RxEditor({ rx, tried, srvDrugs, issueOf, issues, short, 
                       <td>
                         <input className="input num" type="number" min="1" step="1" placeholder={translate('Qty')} title={unitLabel(it.unit)} value={it.qty} onChange={(e) => setLine(it.id, { qty: e.target.value })} aria-label={translate('Qty')} />
                       </td>
-                      <td style={{ minWidth: 220 }}>
+                      <td className="minw-220">
                         <input className="input" type="text" list="rx-usages" placeholder="Directions — filled in from the dose above, or type for “as needed” drugs" value={it.usage} onChange={(e) => setLine(it.id, { usage: e.target.value })} />
                       </td>
                       <td>

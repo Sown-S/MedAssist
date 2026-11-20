@@ -1,6 +1,6 @@
+import { fmtMoney, fmtDate } from '../../../utils/format'
 // Cấu hình từng danh mục (trường nhập, cột hiển thị, cột file, bộ lọc). Thêm danh mục mới chỉ cần thêm một mục ở đây
 // và dữ liệu mẫu trong catalogStore.
-import { fmtMoney, fmtDate } from '../inventory/shared'
 
 const GENERAL_GROUPS = [
   { key: 'gender', label: 'Gender' },

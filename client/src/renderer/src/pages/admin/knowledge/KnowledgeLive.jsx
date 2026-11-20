@@ -111,7 +111,7 @@ export default function KnowledgeLive({ reviewOnly = false }) {
                     {!list.length && <p className="muted small">—</p>}
                   </div>
                   {type === 'RED_FLAG' && (
-                    <p className="muted small" style={{ marginTop: 10 }}>
+                    <p className="muted small mt-10">
                       Red-flag and priority-floor rules are decided by these rules alone, never by the AI model.
                     </p>
                   )}
@@ -139,7 +139,7 @@ export default function KnowledgeLive({ reviewOnly = false }) {
                 >
                   <span>{t.label}</span>
                   {t.key === 'review' && open?.status === 'PendingApproval' && (
-                    <span className="badge b-danger" style={{ marginLeft: 6 }}>
+                    <span className="badge b-danger ml-6">
                       1
                     </span>
                   )}

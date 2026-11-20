@@ -74,7 +74,7 @@ export default function SearchModal({ open, onClose, onCheckIn, readOnly }) {
       <div className="modal-b flush">
         <div className="srch">
           <div>
-            <div className="search" style={{ width: '100%', marginBottom: 10 }}>
+            <div className="search w-full mb-10">
               <Icon name="search" />
               <input
                 className="input"
@@ -128,13 +128,13 @@ export default function SearchModal({ open, onClose, onCheckIn, readOnly }) {
               )
             })}
             <ErrorNote>{server.error}</ErrorNote>
-            {q.trim() && !results.length && !server.error && <p className="muted small" style={{ padding: 10 }}>No patient matches. Register them as a new patient.</p>}
-            {!q.trim() && <p className="muted small" style={{ padding: 10 }}>Type at least part of a name, phone number or record ID.</p>}
+            {q.trim() && !results.length && !server.error && <p className="muted small p-10">No patient matches. Register them as a new patient.</p>}
+            {!q.trim() && <p className="muted small p-10">Type at least part of a name, phone number or record ID.</p>}
           </div>
           <div>
             {sel ? (
               <>
-                <b style={{ fontSize: 'var(--fs-md)' }}>{sel.name}</b>
+                <b className="fs-md">{sel.name}</b>
                 <div className="muted small">
                   <span className="num">{sel.code ?? sel.id}</span> · {sel.dob} ({ageOf(sel.dob)} {translate('yrs')}) · {translate(sel.gender)} · <span className="num">{sel.phone}</span>
                 </div>
@@ -146,7 +146,7 @@ export default function SearchModal({ open, onClose, onCheckIn, readOnly }) {
                     {translate('Today')}: {translate('no.')} <b>{ticketNo(today.ticket)}</b> · {translate(statusLabel(today.status))}
                   </div>
                 )}
-                <button className="btn btn-primary" style={{ marginTop: 14 }} disabled={readOnly || busy} onClick={() => onCheckIn(sel)}>
+                <button className="btn btn-primary mt-14" disabled={readOnly || busy} onClick={() => onCheckIn(sel)}>
                   <Icon name="clipboard-plus" />
                   {busy ? translate('Already in today’s queue') : translate('Check in & issue number')}
                 </button>

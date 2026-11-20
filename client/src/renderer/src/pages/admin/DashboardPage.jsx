@@ -10,13 +10,13 @@ import { useInventory, stockOf } from '../../api/inventoryStore'
 import { checkHealth } from '../../api/client'
 import { listAuditLogs, ACTION_LABEL, ACTION_TONE } from '../../api/auditApi'
 import { getSettings } from '../../api/settingsStore'
-import { rangeOf, reportPath, fillDays, vnd, percent } from '../../api/reportsApi'
+import { rangeOf, reportPath, fillDays, percent } from '../../api/reportsApi'
 import { translate } from '../../i18n'
-import { fmtDateTime } from './inventory/shared'
 import ClusterAlerts from '../../components/ClusterAlerts'
 import LineChart from '../../components/LineChart'
 import HomeGreeting from '../../components/HomeGreeting'
 import { useAuth } from '../../context/AuthContext'
+import { fmtDateTime, vnd, ymd } from '../../utils/format'
 
 // by_status chỉ có trạng thái đang có lượt (hôm nay chưa ai check-in thì không có khoá CheckedIn) → thiếu là 0.
 export const countOf = (byStatus, ...keys) => keys.reduce((n, k) => n + (Number(byStatus?.[k]) || 0), 0)
@@ -76,7 +76,7 @@ function useServerLog() {
       () => setRecent([])
     )
     const since = Date.now() - 86400000
-    const from = new Date(since).toLocaleDateString('sv-SE')
+    const from = ymd(new Date(since))
     listAuditLogs({ action_type: 'LOGIN_FAILED', from }, 200, 0).then(
       (d) => setFailed(d.items.filter((x) => new Date(x.created_at).getTime() >= since)),
       () => {}
@@ -152,7 +152,7 @@ export default function DashboardPage({ onNavigate }) {
   const ALERT_ICON = { inventory: 'package-x', staff: 'key-round', history: 'shield-alert' }
   return (
     <>
-      <div className="rhome" style={{ flex: 'none' }}>
+      <div className="rhome flex-none">
         <HomeGreeting crumb="Admin" name={user?.name ?? ''}>
           <button className="btn btn-outline" onClick={() => navigate('/reports')}>
             <Icon name="chart-line" />
@@ -273,19 +273,19 @@ export default function DashboardPage({ onNavigate }) {
                     <div className="r">
                       <div className="t">
                         <span>{translate('AI assessments today')}</span>
-                        <b style={{ fontSize: 'var(--fs-lg)' }}>{ai.assessments.total}</b>
+                        <b className="fs-lg">{ai.assessments.total}</b>
                       </div>
                     </div>
                     <div className="r">
                       <div className="t">
                         <span>{translate('Rule-only results (model unavailable)')}</span>
-                        <b style={{ fontSize: 'var(--fs-lg)' }}>{ai.assessments.rule_only}</b>
+                        <b className="fs-lg">{ai.assessments.rule_only}</b>
                       </div>
                     </div>
                     <div className="r">
                       <div className="t">
                         <span>{translate("of AI suggestions matched the doctor's confirmed diagnosis")}</span>
-                        <b style={{ fontSize: 'var(--fs-lg)' }}>{percent(ai.decisions.acceptance_rate)}</b>
+                        <b className="fs-lg">{percent(ai.decisions.acceptance_rate)}</b>
                       </div>
                     </div>
                   </div>

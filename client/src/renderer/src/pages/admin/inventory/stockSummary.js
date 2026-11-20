@@ -1,6 +1,6 @@
 import { translate } from '../../../i18n'
-import { todayISO } from '../../../api/inventoryStore'
-import { STATUS, exportCsv, unitLabel, fmtDate } from './shared'
+import { STATUS, exportCsv, unitLabel } from './shared'
+import { fmtDate, ymd } from '../../../utils/format'
 
 // Thẻ tổng của tab Tồn kho: giá trị tồn dùng được, số thuốc dưới ngưỡng / hết, lô hết hạn và sắp hết hạn theo 30 / 60 / 90 ngày.
 export function stockTotals(rows) {
@@ -23,7 +23,7 @@ export function stockTotals(rows) {
 // Xuất đúng danh sách đang lọc / sắp xếp ra CSV.
 export function exportStock(rows) {
   exportCsv(
-    `stock-${todayISO()}.csv`,
+    `stock-${ymd()}.csv`,
     ['Drug', 'Active ingredient', 'ATC code', 'Unit', 'Usable stock', 'Expired stock', 'Threshold', 'Days of cover', 'Suggested reorder', 'Nearest expiry', 'Purchase price', 'Selling price', 'Stock value', 'Status'],
     rows.map(({ d, s }) => [
       d.name,

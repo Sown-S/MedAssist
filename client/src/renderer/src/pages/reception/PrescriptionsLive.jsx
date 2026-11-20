@@ -8,8 +8,8 @@ import { useToast } from '../../context/ToastContext'
 import { printHtml, esc } from '../admin/inventory/shared'
 import { ticketNo } from '../../components/queuePrint'
 import PeriodPicker from './PeriodPicker'
-import { hhmm, dmy, periodRange, periodLabel, PAY_STATUS } from './shared'
-import { money, fold, ymd } from '../../utils/format'
+import { periodRange, periodLabel, PAY_STATUS } from './shared'
+import { money, fold, ymd, hhmm, dmy } from '../../utils/format'
 import { MiniStat, MiniStats } from '../../components/MiniStat'
 
 const STATUS_FILTERS = [
@@ -85,7 +85,7 @@ export default function PrescriptionsLive({ initialDoctorId = '', initialDoctorN
 
       <div className="card">
         <div className="card-b">
-          <div className="toolbar" style={{ marginBottom: 14 }}>
+          <div className="toolbar mb-14">
             <PeriodPicker
               period={period}
               date={date}
@@ -138,10 +138,10 @@ export default function PrescriptionsLive({ initialDoctorId = '', initialDoctorN
                     <tr className={'clickable' + (r.pay === 'cancelled' ? ' dim' : '')} onClick={() => setOpen(open === r.id ? null : r.id)}>
                       <td className="num">{r.ticket ? ticketNo(r.ticket) : '—'}</td>
                       <td>
-                        <b style={{ fontWeight: 500 }}>{r.name}</b>
+                        <b className="fw-500">{r.name}</b>
                       </td>
                       <td>{r.doctor}</td>
-                      <td style={{ maxWidth: 260 }}>
+                      <td className="maxw-260">
                         <div className="clip muted" title={r.rx.map((x) => x.name).join(', ')}>
                           {r.rx.map((x) => x.name).join(', ')}
                         </div>

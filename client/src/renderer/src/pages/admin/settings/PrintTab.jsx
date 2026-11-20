@@ -3,8 +3,9 @@ import { Switch } from '../ui'
 import { translate } from '../../../i18n'
 import { PAPERS, PRINT_DOCS } from '../../../api/settingsStore'
 import { useDevice, setDevice, getDevice } from '../../../api/deviceSettings'
-import { printHtml, printHeaderHtml, fmtMoney } from '../inventory/shared'
+import { printHtml, printHeaderHtml } from '../inventory/shared'
 import { Field } from './Field'
+import { fmtMoney } from '../../../utils/format'
 
 // Tab “In ấn”: logo, dòng tiêu đề, chân trang dùng chung mọi máy (clinic.profile, lưu bằng nút Lưu, khoá khi mất kết nối);
 // khổ giấy theo máy in của máy này (deviceSettings, lưu ngay).
@@ -33,7 +34,7 @@ export function PrintTab({ form, draft, readOnly }) {
               </div>
             </fieldset>
             <div>
-              <div className="small muted" style={{ marginBottom: 6 }}>
+              <div className="small muted mb-6">
                 Header preview
               </div>
               <div className="set-print-preview" dangerouslySetInnerHTML={{ __html: printHeaderHtml(draft) }} />
@@ -43,7 +44,7 @@ export function PrintTab({ form, draft, readOnly }) {
         </div>
       </div>
 
-      <div className="card" style={{ marginTop: 14 }}>
+      <div className="card mt-14">
         <div className="card-h">
           <h3>This computer only</h3>
         </div>
@@ -86,12 +87,12 @@ export function PrintTab({ form, draft, readOnly }) {
         </div>
       </div>
 
-      <div className="card" style={{ marginTop: 14 }}>
+      <div className="card mt-14">
         <div className="card-h">
           <h3>Document numbering</h3>
         </div>
         <div className="card-b">
-          <p className="muted small" style={{ margin: 0 }}>
+          <p className="muted small m-0">
             {translate('Read-only: the clinic server numbers documents when they are saved (e.g. invoices HD-20261017-0001) and issues queue numbers, so two computers never get the same number.')}
           </p>
         </div>
