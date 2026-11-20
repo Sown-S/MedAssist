@@ -142,6 +142,8 @@ export const updateVisit = (visitId, { text, vitals }) =>
     ...(vitals !== undefined ? { vital_signs: Object.keys(vitals).length ? vitals : null } : {})
   })
 export const putSymptoms = (visitId, symptoms) => apiRequest(`${V1}/visits/${visitId}/symptoms`, 'PUT', { symptoms })
+// Một lượt khám (trạng thái, ngày và số thứ tự) — dùng khi tạo lượt bị chặn vì bệnh nhân còn lượt đang mở.
+export const getVisit = (visitId) => apiGet(`${V1}/visits/${visitId}`)
 export const getVisitSymptoms = (visitId) => apiGet(`${V1}/visits/${visitId}/symptoms`)
 export const checkIn = (visitId) => apiRequest(`${V1}/visits/${visitId}/check-in`, 'PATCH')
 // Bác sĩ khác nhận trước → 409 VISIT_TAKEN.

@@ -2083,6 +2083,13 @@ export const VI = {
   'Server URL': 'Máy chủ',
   'Change address': 'Đổi địa chỉ',
   'Clinic team': 'Đội ngũ phòng khám',
+  'Opened the existing visit': 'Đã mở lại lượt khám đang có',
+  'This patient already has a visit that is not finished': 'Bệnh nhân đang có một lượt khám chưa kết thúc',
+  'from a previous day': 'từ ngày trước',
+  'Open that visit to continue the check-in instead of creating a new one?': 'Mở lượt đó để tiếp tục tiếp đón thay vì tạo lượt mới?',
+  'A new visit cannot be created until this one is finished.': 'Chưa thể tạo lượt mới cho tới khi lượt này kết thúc.',
+  'Close it under “open visits from previous days” in the notifications, then check the patient in again.': 'Hãy đóng lượt đó ở mục “lượt chưa đóng từ những ngày trước” trong chuông thông báo, rồi tiếp đón lại.',
+  'Open that visit': 'Mở lượt đó',
 }
 
 export const PATTERNS = [

@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import Modal, { ModalHeader } from './Modal'
 import { useToast } from '../context/ToastContext'
 import Icon from './Icon'
-import { syncQueue } from '../api/queueStore'
+import { syncQueue, ST, statusLabel } from '../api/queueStore'
 import * as clinic from '../api/clinicApi'
 import { VITAL_KEYS, checkVitals, vitalsFromForm } from '../api/vitals'
 import { toPayload, extractionStale } from '../api/symptoms'
@@ -32,6 +32,9 @@ const askPregnancy = (gender, age) => gender === 'Female' && age !== '' && age >
 
 // patient = null: đăng ký bệnh nhân mới (kiểm tra trùng trước khi tạo) rồi cấp số.
 // patient có sẵn: tiếp đón bệnh nhân cũ, thông tin hành chính chỉ đọc. Mức ưu tiên do luật đặt, lễ tân không nâng tay.
+// Ngày hôm nay theo giờ Việt Nam, dạng YYYY-MM-DD (so với queue_date của server).
+const todayIso = () => new Date().toLocaleDateString('sv-SE', { timeZone: 'Asia/Ho_Chi_Minh' })
+
 export default function IntakeModal({ open, onClose, onRedFlag, patient = null }) {
   const { showToast } = useToast()
   const [form, setForm] = useState(EMPTY)
@@ -48,6 +51,9 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
   const [visit, setVisit] = useState(null)
   const [idTaken, setIdTaken] = useState(false)
   const visitRef = useRef(null)
+  // Lượt đang mở của bệnh nhân (POST /visits trả 409 PATIENT_HAS_OPEN_VISIT); adopted: đã mở lại lượt đó trong form này.
+  const [openVisit, setOpenVisit] = useState(null)
+  const adopted = useRef(false)
   // Chờ y tá xác nhận, không tự điền.
   const [vitalProps, setVitalProps] = useState(NO_VITALS)
   const saved = useRef(false)
@@ -64,6 +70,8 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
     setIdTaken(false)
     setVitalProps(NO_VITALS)
     visitRef.current = null
+    adopted.current = false
+    setOpenVisit(null)
     saved.current = false
   }, [open, patient])
 
@@ -104,11 +112,30 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
       setExisting(p)
       setDupes(null)
     } else if (pregnancyAsked) await clinic.setPregnancy(p, form.pregnancy)
-    const v = await clinic.createVisit(p.id, { text: form.reason, vitals })
+    let v
+    try {
+      v = await clinic.createVisit(p.id, { text: form.reason, vitals })
+    } catch (e) {
+      if (e?.code !== 'PATIENT_HAS_OPEN_VISIT') throw e
+      const id = e.details?.[0]?.visit_id
+      const ov = id ? await clinic.getVisit(id).catch(() => null) : null
+      setOpenVisit({ id, status: ov?.status, ticket: ov?.queue_number, date: ov?.queue_date, today: ov?.queue_date === todayIso() })
+      return null
+    }
     visitRef.current = v
     setVisit(v)
     syncQueue()
     return v
+  }
+  // Mở lại lượt đang chờ hôm nay ngay trong form: lời kể, sinh hiệu, triệu chứng lưu vào lượt đó (PATCH khi còn Waiting).
+  async function adoptOpenVisit() {
+    const ov = await clinic.getVisit(openVisit.id)
+    visitRef.current = ov
+    adopted.current = true
+    setVisit(ov)
+    setOpenVisit(null)
+    if (!form.reason.trim() && (ov.free_text_description || ov.chief_complaint)) setForm((f) => ({ ...f, reason: ov.free_text_description || ov.chief_complaint }))
+    showToast(translate('Opened the existing visit') + ' — ' + translate('No.') + ' ' + (ov.queue_number ?? ''))
   }
   // Chuyển tuyến cấp cứu cần hồ sơ bệnh nhân — bệnh nhân mới thì tạo hồ sơ trước.
   async function ensurePatientId() {
@@ -186,7 +213,8 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
   }
   // Đóng khi lượt đã tạo mà chưa lưu xong → huỷ lượt đó để không còn lượt “ma” trong hàng chờ.
   function close() {
-    if (visitRef.current && !saved.current)
+    // Lượt mở lại (đã có từ trước) thì không huỷ.
+    if (visitRef.current && !saved.current && !adopted.current)
       clinic.cancelVisit(visitRef.current.visit_id, 'Huỷ khi đang tiếp đón (chưa lưu)').then(
         () => syncQueue(),
         () => {}
@@ -234,6 +262,7 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
               </>
             )}
 
+            {openVisit && <OpenVisitBanner v={openVisit} onOpen={adoptOpenVisit} onClose={() => setOpenVisit(null)} />}
             {dupes && !existing && <DuplicateBanner dupes={dupes} allowNew={!idTaken} onPick={pickRecord} onCreateNew={() => handleSave(true)} />}
             {pregnancyAsked && (
               <>
@@ -332,11 +361,51 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
         <button className="btn btn-outline" onClick={close}>
           Cancel
         </button>
-        <button data-shortcut="save" className={'btn btn-primary' + (done ? ' is-done' : '')} onClick={() => handleSave(false)} disabled={busy || (touched && invalid && !existing)} aria-busy={busy || undefined}>
+        <button
+          data-shortcut="save"
+          className={'btn btn-primary' + (done ? ' is-done' : '')}
+          onClick={() => handleSave(false)}
+          disabled={busy || (touched && invalid && !existing)}
+          aria-busy={busy || undefined}
+        >
           {done ? <Icon name="check" /> : busy ? <span className="spinner btn-spinner" aria-hidden="true" /> : <Icon name="ticket" />}
           {done ? translate('Saved') : busy ? translate('Saving…') : translate(existing ? 'Create visit & issue number' : 'Save & issue number')}
         </button>
       </div>
     </Modal>
+  )
+}
+
+// Bệnh nhân còn một lượt chưa kết thúc: lượt đang chờ hôm nay → mở lại ngay trong form; lượt đã vào khám → báo đang ở bước nào;
+// lượt từ ngày trước → hướng dẫn đóng ở thông báo "lượt chưa đóng".
+function OpenVisitBanner({ v, onOpen, onClose }) {
+  const canOpen = v.today && v.status === ST.WAITING
+  const where = !v.today ? translate('from a previous day') + (v.date ? ' (' + v.date.split('-').reverse().join('/') + ')' : '') : translate(statusLabel(v.status ?? ''))
+  return (
+    <div className="banner w" role="alert">
+      <Icon name="alert" />
+      <div className="txt" style={{ flex: 1 }}>
+        <b>{translate('This patient already has a visit that is not finished')}</b>
+        <span>
+          {v.ticket ? translate('No.') + ' ' + v.ticket + ' · ' : ''}
+          {where}.{' '}
+          {canOpen
+            ? translate('Open that visit to continue the check-in instead of creating a new one?')
+            : v.today
+              ? translate('A new visit cannot be created until this one is finished.')
+              : translate('Close it under “open visits from previous days” in the notifications, then check the patient in again.')}
+        </span>
+        <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+          {canOpen && (
+            <button type="button" className="btn btn-primary btn-sm" onClick={onOpen}>
+              <Icon name="door-open" /> {translate('Open that visit')}
+            </button>
+          )}
+          <button type="button" className="btn btn-ghost btn-sm" onClick={onClose}>
+            {translate('Close')}
+          </button>
+        </div>
+      </div>
+    </div>
   )
 }
