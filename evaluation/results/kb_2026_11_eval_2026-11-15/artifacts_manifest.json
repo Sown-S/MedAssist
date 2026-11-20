@@ -52,8 +52,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 3908,
-      "sha256": "4aa3fe4590fc832505b32e98937380d084ab0f837d82b8370c9c7da2f0cc8059",
+      "bytes": 3893,
+      "sha256": "a49c39dc2f6f4665e9e5be88c3a0a452428094c854d63b05fb3684eab5299a90",
       "git_ignored": false
     },
     {
@@ -172,8 +172,8 @@
     },
     {
       "path": "verify_compare.py",
-      "bytes": 22095,
-      "sha256": "3c16ae870ff74297a0165a208483752659e8cb4b70a3735b04a6ab0e7ee7e2a5",
+      "bytes": 22471,
+      "sha256": "2908c76d88202a39ef1e1a10a430e030dff576ada6573ab398154260ec1bc419",
       "git_ignored": false
     }
   ],

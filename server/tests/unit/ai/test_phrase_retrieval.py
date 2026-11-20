@@ -266,3 +266,193 @@ def test_accented_minimal_pairs_and_clinical_words_do_not_collide_via_strip_acce
     # Các từ y khoa trùng hình thức không dấu với từ chức năng ('bí'/'bị', 'cơ'/'có') không bị mất.
     assert index.search("bí tiểu", limit=1)[0].symptom_code == "urinary_retention"
     assert index.search("đau cơ", limit=1)[0].symptom_code == "myalgia"
+
+
+def test_aliases_improve_retrieval_and_preserve_canonical_name():
+    source = reader([
+        {
+            "symptom_code": "sciatica_lasegue_positive",
+            "symptom_name": "Đau thần kinh tọa kèm dấu hiệu Lasègue dương tính",
+            "aliases": [
+                "đau lưng lan xuống chân",
+                "đau dây thần kinh tọa",
+                "đau lan từ mông xuống bắp chân",
+            ],
+            "detection": "both",
+        },
+        {
+            "symptom_code": "low_back_pain",
+            "symptom_name": "Đau thắt lưng đơn thuần",
+            "aliases": [],
+            "detection": "reported",
+        },
+    ])
+    index = CandidateIndexCache().get(source)
+
+    accented = index.search("đau lưng lan xuống chân", limit=2)
+    assert accented[0].symptom_code == "sciatica_lasegue_positive"
+    assert accented[0].symptom_name == "Đau thần kinh tọa kèm dấu hiệu Lasègue dương tính"
+    assert "alias" in accented[0].match_sources
+
+    unaccented = index.search("dau lung lan xuong chan", limit=2)
+    assert unaccented[0].symptom_code == "sciatica_lasegue_positive"
+    assert unaccented[0].symptom_name == "Đau thần kinh tọa kèm dấu hiệu Lasègue dương tính"
+    assert "alias" in unaccented[0].match_sources
+
+    canonical = index.search("dấu hiệu Lasègue dương tính", limit=2)
+    assert canonical[0].symptom_code == "sciatica_lasegue_positive"
+    assert "alias" not in canonical[0].match_sources
+
+    multi_alias = index.search("đau dây thần kinh tọa, đau lưng lan xuống chân", limit=4)
+    assert [row.symptom_code for row in multi_alias].count("sciatica_lasegue_positive") == 1
+
+
+def test_many_aliases_do_not_dilute_length_normalization():
+    source = reader([
+        {
+            "symptom_code": "target_sciatica",
+            "symptom_name": "Hội chứng rễ thần kinh thắt lưng cùng mạn tính mức độ nặng",
+            "aliases": [
+                "đau lưng lan xuống chân",
+                "tê buốt mặt sau đùi",
+                "nhói dọc cẳng chân",
+                "tê bì mu bàn chân",
+                "đau âm ỉ vùng mông",
+                "rối loạn cảm giác rễ thắt lưng",
+                "khó cúi gập người",
+                "đau tăng khi ho hắt hơi",
+                "đau chói khi ngồi lâu",
+                "căng tức dọc bắp chuối",
+            ],
+        },
+        {
+            "symptom_code": "distractor_back",
+            "symptom_name": "Đau lưng",
+            "aliases": [],
+        },
+    ])
+    index = CandidateIndexCache().get(source)
+    hits = index.search("đau lưng lan xuống chân", limit=2)
+    assert hits[0].symptom_code == "target_sciatica"
+    assert "alias" in hits[0].match_sources
+
+
+def test_alias_accented_minimal_pairs_do_not_collide():
+    source = reader([
+        {
+            "symptom_code": "tinea_lesion",
+            "symptom_name": "Tổn thương dạng vòng bong vảy",
+            "aliases": ["nấm da"],
+        },
+        {
+            "symptom_code": "melasma_lesion",
+            "symptom_name": "Tăng sắc tố gò má đối xứng",
+            "aliases": ["nám da"],
+        },
+    ])
+    index = CandidateIndexCache().get(source)
+    assert index.search("bị nấm da", limit=2)[0].symptom_code == "tinea_lesion"
+    assert index.search("bị nám da", limit=2)[0].symptom_code == "melasma_lesion"
+    assert {row.symptom_code for row in index.search("bi nam da", limit=2)} == {
+        "tinea_lesion",
+        "melasma_lesion",
+    }
+
+
+def test_exam_detection_codes_are_excluded_from_extraction_index():
+    source = reader([
+        {"symptom_code": "sym_reported", "symptom_name": "Ho khan", "detection": "reported"},
+        {"symptom_code": "sym_both", "symptom_name": "Sốt nhẹ", "detection": "both"},
+        {"symptom_code": "sym_default", "symptom_name": "Mệt mỏi"},
+        {"symptom_code": "sym_none", "symptom_name": "Đau đầu", "detection": None},
+        {
+            "symptom_code": "sym_exam",
+            "symptom_name": "Nghe kém dẫn truyền khi khám Rinne âm tính",
+            "aliases": ["ho khan", "khám tai thấy bất thường"],
+            "detection": "exam",
+        },
+    ])
+    index = CandidateIndexCache().get(source)
+    assert {doc.code for doc in index.documents} == {
+        "sym_reported",
+        "sym_both",
+        "sym_default",
+        "sym_none",
+    }
+    assert index.search("Nghe kém dẫn truyền khi khám Rinne âm tính", limit=5) == () or all(
+        row.symptom_code != "sym_exam" for row in index.search("Nghe kém dẫn truyền khi khám Rinne âm tính", limit=5)
+    )
+    assert all(row.symptom_code != "sym_exam" for row in index.search("khám tai thấy bất thường", limit=5))
+    assert index.search("Ho khan", limit=4)[0].symptom_code == "sym_reported"
+
+
+def test_all_exam_catalogue_returns_empty_index_safely():
+    source = reader([
+        {"symptom_code": "exam_only_a", "symptom_name": "Dấu hiệu khám A", "detection": "exam"},
+        {"symptom_code": "exam_only_b", "symptom_name": "Dấu hiệu khám B", "detection": "exam"},
+    ])
+    index = CandidateIndexCache().get(source)
+    assert index.documents == ()
+    assert index.entries == ()
+    assert index.search("Dấu hiệu khám A", limit=4) == ()
+
+
+def test_cache_invalidates_when_aliases_or_detection_change():
+    cache = CandidateIndexCache(max_entries=2)
+    base_rows = [
+        {
+            "symptom_code": "dyspnea_on_exertion",
+            "symptom_name": "Khó thở khi gắng sức",
+            "aliases": ["hụt hơi", "thở dốc"],
+            "detection": "reported",
+        },
+    ]
+    source = reader(deepcopy(base_rows))
+    first = cache.get(source)
+
+    # Đảo thứ tự aliases phải giữ nguyên cache key và catalogue_sha256.
+    reordered = reader([
+        {
+            "symptom_code": "dyspnea_on_exertion",
+            "symptom_name": "Khó thở khi gắng sức",
+            "aliases": ["thở dốc", "hụt hơi"],
+            "detection": "reported",
+        },
+    ])
+    same = cache.get(reordered)
+    assert same is first
+    assert same.snapshot_key == first.snapshot_key
+    assert same.catalogue_sha256 == first.catalogue_sha256
+
+    # Đổi aliases khi giữ nguyên epoch phải tạo chỉ mục mới.
+    source._symptoms[0]["aliases"] = ["hụt hơi khi leo cầu thang"]
+    alias_changed = cache.get(source)
+    assert alias_changed is not first
+    assert alias_changed.snapshot_key != first.snapshot_key
+    assert alias_changed.catalogue_sha256 != first.catalogue_sha256
+
+    # Đổi detection khi giữ nguyên epoch cũng phải làm mới chỉ mục.
+    source._symptoms[0]["detection"] = "exam"
+    detection_changed = cache.get(source)
+    assert detection_changed is not alias_changed
+    assert detection_changed.snapshot_key != alias_changed.snapshot_key
+    assert detection_changed.catalogue_sha256 != alias_changed.catalogue_sha256
+    assert detection_changed.documents == ()
+
+
+@pytest.mark.parametrize(
+    "bad_row",
+    [
+        {"symptom_code": "ho", "symptom_name": "Ho", "detection": "PRIVATE_BAD_VALUE"},
+        {"symptom_code": "ho", "symptom_name": "Ho", "detection": 123},
+        {"symptom_code": "ho", "symptom_name": "Ho", "aliases": "PRIVATE_BAD_VALUE"},
+        {"symptom_code": "ho", "symptom_name": "Ho", "aliases": ["PRIVATE_BAD_VALUE", ""]},
+        {"symptom_code": "ho", "symptom_name": "Ho", "aliases": ["PRIVATE_BAD_VALUE", "   "]},
+        {"symptom_code": "ho", "symptom_name": "Ho", "aliases": [123]},
+    ],
+)
+def test_invalid_aliases_or_detection_in_catalogue_fail_closed_and_hide_marker(bad_row):
+    with pytest.raises(ValueError) as caught:
+        CandidateIndexCache().get(reader([bad_row]))
+    assert "Invalid Active symptom catalogue." in str(caught.value)
+    assert "PRIVATE_BAD_VALUE" not in str(caught.value)

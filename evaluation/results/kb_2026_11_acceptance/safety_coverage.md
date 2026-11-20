@@ -1,6 +1,6 @@
 # Bao phủ an toàn 11 bệnh đã gỡ — nhận xét Huy và giới hạn
 
-Nguồn: hai phản hồi Huy do người giao việc cung cấp trong hội thoại. Bảng này tổng hợp rà soát của Huy, không tự xác nhận của bác sĩ, không phải benchmark RuleOnly. `safety_coverage.csv` giữ phép kiểm mã đặc trưng đơn độc với sinh hiệu bình thường; không dùng phép kiểm đó để thay kết luận bệnh nhân điển hình.
+Nguồn: hai phản hồi của Huy do Tuấn chuyển tiếp. Bảng này tổng hợp rà soát của Huy, không tự xác nhận của bác sĩ, không phải benchmark RuleOnly. `safety_coverage.csv` giữ phép kiểm mã đặc trưng đơn độc với sinh hiệu bình thường; không dùng phép kiểm đó để thay kết luận bệnh nhân điển hình.
 
 | Bệnh đã gỡ | Mã/biểu hiện và cổng hiện tại | Khoảng trống theo nhận xét Huy |
 |---|---|---|
@@ -11,7 +11,7 @@ Nguồn: hai phản hồi Huy do người giao việc cung cấp trong hội tho
 | Viêm tổ chức hốc mắt | `orbital_cellulitis_chemosis_proptosis` → `rf_out_of_scope` Emergency | Phù mi/lồi mắt/song thị bằng mã chung, không sốt cao, có thể không kích luật. |
 | DRESS | `dress_syndrome_facial_edema_eosinophilia` chưa có cổng trực tiếp; sốt cao có sàn ưu tiên | Mã đặc trưng đơn độc chưa kích luật; triệu chứng và xét nghiệm trong mã gộp không được suy diễn từ bệnh danh. |
 | SSSS | `staphylococcal_scalded_skin_exfoliation` chưa có cổng trực tiếp; sốt cao có sàn ưu tiên | Nhánh bong da rộng AND niêm mạc chảy máu không bao phủ đầu vào không có niêm mạc chảy máu. |
-| Điếc đột ngột | `sudden_deafness_onset` không có cổng trực tiếp | Nghe kém đột ngột/ù tai ± chóng mặt không sốt có thể Routine. Người giao việc đã chấp nhận tiếp tục KB hiện tại; không coi đó là duyệt luật hay phê duyệt bác sĩ. |
+| Điếc đột ngột | `sudden_deafness_onset` không có cổng trực tiếp | Nghe kém đột ngột/ù tai ± chóng mặt không sốt có thể Routine. Tuấn đã chấp nhận tiếp tục KB hiện tại; không coi đó là duyệt luật hay phê duyệt bác sĩ. |
 | Viêm khớp nhiễm khuẩn | `sym_septic_arthritis_suspected` → `rf_septic_arthritis_suspected` Emergency | `septic_arthritis_purulent_synovial_fluid` hoặc tổ hợp sốt/sưng/giới hạn vận động chưa tương đương mã hội chứng trong logic luật hiện tại. |
 | Viêm xương tủy nhiễm khuẩn | `osteomyelitis_bone_tenderness_fistula` chưa có cổng trực tiếp; sốt cao có sàn ưu tiên | Không sốt cao hoặc chỉ mã đặc trưng có thể Routine; cần rà mức ưu tiên theo tình huống, không mặc định mọi thể mạn là Emergency. |
 | Áp xe cơ | `pyomyositis_psoas_muscle_abscess` chưa có cổng trực tiếp; sốt cao có sàn ưu tiên | Mã gộp nêu sốt không tự làm `fever_high` PRESENT; thiếu mã nguyên tử có thể không kích luật. |

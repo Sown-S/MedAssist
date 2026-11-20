@@ -34,16 +34,27 @@ Cả ba phải PASS. Kết quả mong đợi: 82+29 ca; đúng 5 ID khác v1.3, 
 .\venv\Scripts\python.exe evaluation/testset_v1.4/freeze_v1_4.py --dry-run
 ```
 
-Kỳ vọng `status=DRY_RUN`, `manifest_written=false`. Script kiểm cả manifest hiện tại và manifest frozen đề xuất trong bộ nhớ; không ghi tệp. Đọc kỹ danh sách giới hạn trước bước 3:
+Trước khi áp dụng, dry-run trả `status=DRY_RUN`, `manifest_written=false` và kiểm manifest frozen đề xuất trong bộ nhớ; không ghi tệp. Nếu manifest đã frozen, script từ chối áp dụng lại; dùng verify_v1_4.py để kiểm. Ngày 17/11 Tuấn đã chấp nhận đóng băng với các giới hạn biên bản được ghi riêng trong `freeze_authorization`, gắn đúng combined hash. Đọc kỹ danh sách giới hạn trước bước 3:
 
 - CLIN-019 giữ nhãn, CẦN BÁC SĨ QUYẾT.
 - EXT-022/023 giữ ABSENT sốt thiếu dữ kiện theo quyết định giữ phạm vi năm ID của Tuấn; khuyến nghị sửa của Huy được bảo lưu.
 - EXT-024 giữ nhãn và giới hạn trích đoạn nguồn BYT; các vấn đề khác từ v1.3 tiếp tục ghi tại testset_v1.4/CHANGES.md.
-- Huy xác nhận nội dung năm ID, đối chiếu thủ công hai JSONL, chưa tự chạy verifier và không xác nhận mới toàn bộ 111 ca.
+- Huy báo rà đủ 111 ca ngày 17/11, danh sách và hash khớp; tổng kết nhóm ĐỒNG Ý còn thiếu CLIN-021, Huy chưa chạy verifier sửa ngày 17/11. Tuấn chấp nhận đóng băng kèm hai giới hạn; không ghi thêm verdict hoặc PASS của Huy.
+
+Biên bản đầy đủ được ghi riêng tại `cross_review.full_review` trong manifest, giữ nguyên phản hồi năm ca trước đó. Các trường bắt buộc:
+
+- `reviewer: "Huy"`, `status: "COMPLETED"`, `full_testset_confirmation: true`.
+- `reviewed_at`: ngày rà dạng YYYY-MM-DD; `reviewed_case_ids`: đúng 111 ID duy nhất.
+- `combined_sha256`: khớp bộ ca hiện tại.
+- `record_path`: đường dẫn biên bản có thật trong repo; `record_sha256`: SHA-256 nội dung biên bản sau chuẩn hóa CRLF→LF.
+
+Chỉ ghi các trường này sau khi nhận biên bản thực tế của Huy.
+
+Đối với biên bản 17/11 còn lệch tổng kết, giữ nguyên `cross_review.full_review_submission.status=NEEDS_CLARIFICATION`. Script chỉ chấp nhận qua `freeze_authorization` của Tuấn với quyết định `FREEZE_WITH_RECORDED_REVIEW_LIMITATIONS`, đúng combined hash và biên bản đã băm; phải ghi nhận cả `CLIN_021_SUMMARY_COUNT` và `HUY_CURRENT_VERIFIER_NOT_RUN` trong `accepted_review_limitations`, cùng mô tả ở `known_limitations`. Vẫn bắt buộc phạm vi đủ 111 ID, hash khớp và có biên bản Huy; xác nhận năm ID không đủ. Quyết định này đã được Tuấn đưa ra ngày 17/11, không thay phê duyệt lâm sàng.
 
 ## 3. Áp dụng quyết định của Tuấn
 
-Chỉ chạy khi Tuấn quyết định đóng băng nội dung cùng các giới hạn trên:
+Chỉ chạy sau khi Huy rà đủ 111 ca và Tuấn quyết định đóng băng nội dung cùng các giới hạn trên:
 
 ```powershell
 .\venv\Scripts\python.exe evaluation/testset_v1.4/freeze_v1_4.py --apply --decision-by 'Tuấn' --accept-known-limitations

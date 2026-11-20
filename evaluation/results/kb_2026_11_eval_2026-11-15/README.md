@@ -42,6 +42,6 @@ $env:PYTHONDONTWRITEBYTECODE = '1'
 .\venv\Scripts\python.exe evaluation/results/kb_2026_11_eval_2026-11-15/verify_compare.py
 ```
 
-Kỳ vọng PASS: 82 + 29 ca/mode, một lượt/mode, toàn bộ chỉ số khớp `results.json`, hai ca đổi top-3, 179 tệp KB và hash v1.3 không đổi. Script không gọi model hoặc CSDL; chỉ tính lại và cập nhật báo cáo kiểm chứng/so sánh trong thư mục này. Không chạy lại `run_once.py` để kiểm báo cáo.
+Kỳ vọng PASS: 82 + 29 ca/mode, một lượt/mode, toàn bộ chỉ số khớp `results.json`, hai ca đổi top-3, 179 tệp KB và hash v1.3 không đổi. Script chỉ đọc đầu ra đã lưu, tính lại và in kết quả kiểm chứng ra màn hình; không ghi tệp trong repo, không gọi model hoặc CSDL. Không chạy lại `run_once.py` để kiểm báo cáo.
 
 Combined SHA-256 v1.3 sau chuẩn hóa CRLF→LF: `4e7b58cffc3cd950e1411a131919e36976ea94f209c426821886b03708cd368d`. Sáu đầu ra chuẩn và log/ledger gốc được bảo toàn; `artifacts_manifest.json` phục vụ kiểm byte. Một số log bị Git ignore; cần có đủ các tệp được liệt kê để chạy lại verifier.

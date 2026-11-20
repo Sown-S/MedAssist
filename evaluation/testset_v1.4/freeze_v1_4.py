@@ -4,7 +4,7 @@ import copy
 from datetime import datetime, timedelta, timezone
 import json
 
-from verify_v1_4 import HERE, load, verify
+from verify_v1_4 import HERE, load, verify, verify_full_review
 
 
 def main():
@@ -24,6 +24,10 @@ def main():
     verify()
     if manifest["is_frozen"]:
         parser.error("Bộ đã đóng băng; không ghi lại quyết định hoặc thay nội dung")
+    try:
+        verify_full_review(manifest)
+    except (AssertionError, KeyError, ValueError, OSError) as error:
+        parser.error(f"Chưa đủ điều kiện đóng băng: {error}")
     assert manifest["cross_review"]["feedback"]["followup"]["reported_reviewer"] == "Huy"
     assert manifest["scope_decision"]["decision"] == "KEEP_FIVE_IDS"
 
@@ -37,6 +41,7 @@ def main():
         "clinical_approval_inferred": False,
         "data_combined_sha256": manifest["combined_sha256"],
         "jsonl_raw_sha256": {e["path"]: e["raw_sha256"] for e in manifest["files"]},
+        "review_authorization": manifest.get("freeze_authorization"),
         "scope": "Đóng băng nội dung với giới hạn đã ghi; không thay xác minh lâm sàng hoặc mở rộng xác nhận của Huy",
     }
     # Kiểm trạng thái đề xuất trong bộ nhớ trước mọi thao tác ghi.

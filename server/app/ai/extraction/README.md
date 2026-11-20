@@ -71,7 +71,10 @@ v0.2.4 chọn `phrases` làm mặc định sau khi đồng bộ settings và Com
 Che PII → tách span → truy xuất K ứng viên mỗi span từ KnowledgeReader Active →
 giữ cặp phủ định phụ thuộc cùng nhóm đọc, hợp đủ ứng viên → một lần Gemma chọn
 mã → kiểm schema/enum/mâu thuẫn/Active → HITL. Chuỗi từ ba vế giữ cách tách cũ.
-Không thêm alias, không tự gán trạng thái bằng phép ghép nhóm.
+Chỉ mục `candidate_index` (`lexical-phrases-v2`) đánh chỉ mục `symptom_name`
+cùng từng `aliases` từ KnowledgeReader Active và loại mã có `detection == "exam"`
+khỏi ứng viên trích xuất; không tự tạo alias trong code, không tự gán trạng thái
+bằng phép ghép nhóm.
 
 Phrases dùng context mặc định của Ollama như reasoning (Compose hiện đặt 4096),
 không ép 8192 trên từng request. Legacy vẫn gửi 8192. Giữ `truncate=false` và
@@ -102,7 +105,7 @@ selector vẫn dùng extraction-phrases-v2. Bộ 10 ca scope mới tại
 7/10 exact, precision 84,21%, recall 88,89%; đây cũng là bộ phát triển.
 `manual_selection_variant_probe.py` giúp tái hiện các biến thể bằng DB read-only,
 không ghi prompt/bằng chứng thô. Thiếu alias “hụt hơi khi leo cầu thang” vẫn
-cần Tuấn rà; không thêm bảng alias trong code để thay phần DB của Sprint 5.
+cần người phụ trách tri thức bổ sung vào `aliases`; không thêm bảng alias trong code.
 
 Trước khi phát hành v0.2.4, chạy bộ kiểm thử server với DB `medassist_test`,
 kiểm trích xuất qua app và đo một lần trên 29 ca đóng băng bằng Gemma trên

@@ -1,23 +1,23 @@
-# Hướng dẫn demo và kiểm thử AI
+# Hướng dẫn kiểm thử module AI
 
-Chuẩn bị buổi demo / bảo vệ và kiểm tra module AI trên máy admin. Cài đặt máy chủ: [`deploy/README.md`](../deploy/README.md).
-Kiểm thử trên một máy với dữ liệu mẫu (giảng viên): [`huong-dan-kiem-thu.md`](huong-dan-kiem-thu.md).
-Số đo chính thức cho báo cáo dùng bộ test đóng băng ở [`evaluation/testset/`](../evaluation/testset/README.md), không dùng ca demo.
+Chuẩn bị máy chủ và kiểm tra module AI. Cài đặt máy chủ: [`deploy/README.md`](../deploy/README.md).
+Kiểm thử trên một máy với dữ liệu mẫu: [`huong-dan-kiem-thu.md`](huong-dan-kiem-thu.md).
+Số đo chính thức cho báo cáo dùng bộ test đóng băng ở [`evaluation/testset/`](../evaluation/testset/README.md), không dùng ca mẫu.
 
-## 1. Chuẩn bị (trước buổi demo 1 ngày)
+## 1. Chuẩn bị máy chủ
 
 1. Kéo `develop` mới nhất, `.\deploy\scripts\start.ps1`. Mở `https://<IP máy admin>/health`: `database.ok` và `ai.ok` phải là `true`.
-2. Kiểm tra bản tri thức Active ở **Quản trị › Cấu hình AI** đúng số bệnh của `knowledge/` hiện tại (199 bệnh, 97 triệu chứng, 12 luật).
+2. Kiểm tra bản tri thức Active ở **Quản trị › Cấu hình AI** đúng số bệnh của `knowledge/` hiện tại (153 bệnh, 299 triệu chứng, 12 luật).
    Nhãn bản phát hành không tự đổi theo nội dung, nên so số lượng chứ không so nhãn.
-3. Tài khoản: 1 Quản trị, 1–2 Bác sĩ đã **gắn phòng**, 1 Lễ tân; đăng nhập thử từng tài khoản và đổi mật khẩu lần đầu xong trước buổi demo.
+3. Tài khoản: 1 Quản trị, 1–2 Bác sĩ đã **gắn phòng**, 1 Lễ tân; đăng nhập thử từng tài khoản và đổi mật khẩu lần đầu.
 4. Kho: nếu cần kho mẫu, `exec api python -m scripts.seed_drugs` (có lô ban đầu); nếu đã nạp `--no-batches` thì nhập vài lô ở màn Kho.
 5. Máy client: cài bản `MedAssist Setup`, đặt địa chỉ máy chủ, kiểm tra không báo lỗi chứng chỉ.
-6. Sao lưu ngay trước buổi demo: `.\deploy\scripts\backup.ps1`.
-7. Lần gọi LLM đầu tiên sau khi bật máy chậm hơn (nạp model vào VRAM): chạy thử 1–2 ca trước khi hội đồng vào.
+6. Sao lưu trước khi kiểm thử: `.\deploy\scripts\backup.ps1`.
+7. `start.ps1` đã nạp sẵn model vào VRAM; nếu khởi động lại riêng container `ollama` thì lần gọi đầu chậm hơn (~20 s), chạy thử 1–2 ca trước khi đo thời gian.
 
-## 2. Kịch bản demo gợi ý (15–20 phút)
+## 2. Luồng kiểm thử đầu-cuối
 
-| # | Vai trò | Làm gì | Điểm cần nói |
+| # | Vai trò | Thao tác | Kết quả mong đợi |
 |---|---|---|---|
 | 1 | Lễ tân | Đăng ký bệnh nhân, nhập lời kể, bấm **Đề xuất triệu chứng**, xác nhận chip, nhập sinh hiệu | Human-in-the-loop: AI chỉ gợi ý, lễ tân xác nhận mới dùng |
 | 2 | Lễ tân | Tiếp đón một ca có SpO2 88 hoặc lơ mơ | Cờ đỏ chạy ngay, không chờ LLM; ca lên đầu hàng chờ mức Cấp cứu |
@@ -34,7 +34,7 @@ Số đo chính thức cho báo cáo dùng bộ test đóng băng ở [`evaluati
 ## 3. Nạp nhiều ca mẫu vào hàng đợi
 
 `scripts.seed_eval` nạp ca mẫu (`server/data/eval_cases.jsonl`) đi đúng luồng màn Tiếp đón: tạo lượt, lưu triệu chứng, chạy
-đánh giá, check-in. Hàng đợi chỉ tạo khi hôm nay chưa có lượt nào, nên dùng trên máy demo trống hoặc môi trường kiểm thử
+đánh giá, check-in. Hàng đợi chỉ tạo khi hôm nay chưa có lượt nào, nên dùng trên máy chưa có dữ liệu hoặc môi trường kiểm thử
 (`deploy/docker-compose.eval.yml` tự chạy). Trên máy admin đã có dữ liệu thật, không chạy script này.
 
 ```powershell
@@ -70,9 +70,9 @@ python -m app.worker                # terminal 2
 | Ngưỡng sàn (Ưu tiên cao) | Nhiệt độ ≥ 38,5°C (`pf_sot_cao`); mất nước nặng, hoặc sốt cao kèm chấm xuất huyết; ho ra máu / nôn ra máu / phân đen |
 | Giá trị đúng bằng ngưỡng | SpO2 92, mạch 130 (người lớn) không kích hoạt; nhiệt độ 38,5°C và nhịp thở 30 có kích hoạt (so sánh ≥) |
 
-## 6. Giới hạn đã biết (nên chủ động nói khi demo)
+## 6. Giới hạn đã biết
 
 - Ngưỡng nhịp thở dựa trên cân nặng (không theo tuổi), nên ca thiếu cân nặng phải hỏi thêm trước khi vào hàng chờ.
 - Một số bệnh cần xử trí sớm (uốn ván chưa co giật, viêm màng não còn tỉnh, viêm nắp thanh quản) chưa có luật cờ đỏ riêng; ra mức Thường nếu sốt dưới 38,5°C.
 - Kho tri thức trích xuất tự động từ văn bản Bộ Y tế, một số quan hệ triệu chứng chưa được bác sĩ rà soát; đây là lý do gợi ý chỉ để tham khảo.
-- AI không gợi ý thuốc và hệ thống không đánh giá đơn thuốc (phạm vi Proposal v2.0).
+- AI không gợi ý thuốc và hệ thống không đánh giá đơn thuốc (ngoài phạm vi dự án).
