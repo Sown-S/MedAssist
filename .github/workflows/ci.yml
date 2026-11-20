@@ -135,3 +135,16 @@ jobs:
         run: npm run lint
       - name: Vitest
         run: npm test
+      # Smoke: build bản eval, mở Electron 31 thật (màn hình ảo xvfb), kiểm tra màn khởi động và màn đăng nhập
+      # vẽ ra kín cửa sổ, không trắng. Bắt lỗi CSS/JS chỉ lộ trên Chromium của Electron mà vitest (jsdom) không thấy.
+      - name: Tải Electron cho smoke
+        run: node node_modules/electron/install.js
+      - name: Smoke Electron (khởi động + đăng nhập)
+        run: xvfb-run -a -s "-screen 0 1400x900x24" npm run smoke
+      - name: Lưu ảnh chụp smoke khi lỗi
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: client-smoke-screenshots
+          path: client/out/smoke/
+          if-no-files-found: ignore
