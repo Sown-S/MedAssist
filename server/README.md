@@ -151,7 +151,7 @@ python -m scripts.import_okf --approve-as bs01  # máy dev: tạo bản phát h�
 - Chỉ mục mới hoặc có nội dung khác mới tạo phiên bản mới; chạy lại khi không có gì đổi thì báo "Không có thay đổi".
 - Bản sửa sau: đổi `label` trong `knowledge/_release.md` (vd `KB-2026.02`) rồi chạy lại. Nên đổi nhãn mỗi lần nạp nội dung mới,
   nếu không sẽ khó biết máy đang chạy bản nào.
-- Kho hiện tại: 153 bệnh, 299 triệu chứng, 12 luật (9 cờ đỏ, 3 sàn ưu tiên), 11 nguồn Bộ Y tế.
+- Kho hiện tại: 154 bệnh, 299 triệu chứng, 12 luật (9 cờ đỏ, 3 sàn ưu tiên), 11 nguồn Bộ Y tế.
 - Không có `--approve-as`: tạo bản **Draft** (thêm `--submit` để gửi duyệt) chờ bác sĩ duyệt qua API quản trị tri thức.
 - Người duyệt phải là Physician khác người soạn (mặc định người soạn là tài khoản `system`, đổi bằng `--as <admin>`).
 - `--retire-missing`: mục đang Active mà đã bị xóa khỏi thư mục sẽ bị tắt khi kích hoạt.
