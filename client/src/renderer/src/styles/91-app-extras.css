@@ -764,3 +764,8 @@ kbd{display:inline-grid;place-items:center;min-width:24px;height:24px;padding:0 
 :is(:root[data-theme="dark"],:root[data-sidebar="dark"],:root[data-sidebar="indigo"]) .side .nav.on::before{content:'';position:absolute;left:0;top:9px;bottom:9px;width:3px;border-radius:0 3px 3px 0;background:linear-gradient(180deg,var(--logo-a),var(--logo-b));box-shadow:0 0 8px rgba(90,168,255,.8)}
 :is(:root[data-theme="dark"],:root[data-sidebar="dark"],:root[data-sidebar="indigo"]) .side .nav.on svg{color:#7CC0FF;filter:drop-shadow(0 0 5px rgba(90,168,255,.6))}
 :is(:root[data-theme="dark"],:root[data-sidebar="dark"],:root[data-sidebar="indigo"]) .side .nav.on .t{font-weight:600}
+/* Ảnh chính màn đăng nhập: viền xanh + quầng nhạt + lớp phủ xanh mờ ở chân ảnh; tối thì viền sáng, phát sáng nhẹ */
+.fbx-c .cx-photo{border:3px solid #1877F2;box-shadow:0 0 0 6px rgba(24,119,242,.14),0 24px 50px -18px rgba(24,119,242,.55)}
+.fbx-c .cx-photo::after{content:"";position:absolute;left:0;right:0;bottom:0;height:38%;background:linear-gradient(0deg,rgba(24,119,242,.35),transparent);pointer-events:none}
+:root[data-theme="dark"] .fbx-c .cx-photo{border-color:#5AA8FF;box-shadow:0 0 0 6px rgba(90,168,255,.16),0 0 28px rgba(90,168,255,.35),0 24px 50px -18px rgba(0,0,0,.6)}
+:root[data-theme="dark"] .fbx-c .cx-photo::after{background:linear-gradient(0deg,rgba(59,130,246,.38),transparent)}
