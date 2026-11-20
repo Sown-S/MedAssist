@@ -5,7 +5,7 @@ import { getRelease } from '../../../api/knowledgeApi'
 import { Empty } from '../ui'
 import { KIND_META, Summary, errorText } from './shared'
 import { LogicView } from './logic'
-import { shortDateTime } from '../../../utils/format'
+import { fmtDateTime } from '../../../utils/format'
 import Skeleton from '../../../components/Skeleton'
 import { ErrorNote } from '../../../components/DataState'
 import Icon from '../../../components/Icon'
@@ -204,9 +204,9 @@ export function ReleaseHistory({ releases, onView }) {
                 <td>
                   <ReleaseBadge status={r.status} />
                 </td>
-                <td className="small">{shortDateTime(r.created_at)}</td>
-                <td className="small">{shortDateTime(r.submitted_at)}</td>
-                <td className="small">{shortDateTime(r.approved_at)}</td>
+                <td className="small">{fmtDateTime(r.created_at)}</td>
+                <td className="small">{fmtDateTime(r.submitted_at)}</td>
+                <td className="small">{fmtDateTime(r.approved_at)}</td>
                 <td>
                   <button className="btn btn-ghost btn-sm" onClick={() => onView(r)}>
                     View
@@ -239,8 +239,8 @@ export function ReleaseModal({ release, ctx, onClose }) {
           <ReleaseBadge status={release.status} />
           {release.description && <span className="kb-rel-desc">{release.description}</span>}
           <span className="kb-rel-dates small muted">
-            {translate('Created')} {shortDateTime(release.created_at) || '—'} · {translate('Submitted')} {shortDateTime(release.submitted_at) || '—'} · {translate('Approved')}{' '}
-            {shortDateTime(release.approved_at) || '—'}
+            {translate('Created')} {fmtDateTime(release.created_at) || '—'} · {translate('Submitted')} {fmtDateTime(release.submitted_at) || '—'} · {translate('Approved')}{' '}
+            {fmtDateTime(release.approved_at) || '—'}
           </span>
           {release.review_note && (
             <div className="banner w">

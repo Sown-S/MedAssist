@@ -9,14 +9,9 @@ import { useInventory, stockOf } from '../api/inventoryStore'
 import SettingsModal from './SettingsModal'
 import Clip from './Clip'
 import { OPEN_EVENT } from './useGlobalKeys'
+import { hhmm } from '../utils/format'
 
 // Thông báo tính tại máy từ hàng chờ và kho.
-const hm = (iso) =>
-  new Date(iso).toLocaleTimeString('vi-VN', {
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false
-  })
 
 // Phím tắt theo vai trò — hiện thành bảng phím trong hộp Trợ giúp.
 // Bảng phím tắt trong Trợ giúp: phần chung cho mọi vai trò + phần riêng từng vai trò.
@@ -94,7 +89,7 @@ export default function TopActions({ user, onSignOut }) {
             icon: 'siren',
             title: translate('Red-flag case') + ' — ' + r.name,
             note: translate(r.signs) || '—',
-            time: hm(r.at),
+            time: hhmm(r.at),
             urgent: true,
             to: '/doctor'
           })),
@@ -105,7 +100,7 @@ export default function TopActions({ user, onSignOut }) {
             icon: 'fileText',
             title: translate('Prescription sent back') + ' — ' + v.name,
             note: v.returnNote.text || translate('not enough stock, please change these drugs'),
-            time: hm(v.returnNote.at),
+            time: hhmm(v.returnNote.at),
             urgent: true,
             to: consult(v.id)
           })),
@@ -116,7 +111,7 @@ export default function TopActions({ user, onSignOut }) {
             icon: 'flask',
             title: translate('Back from lab') + ' — ' + v.name,
             note: translate('Results are ready — resume the visit'),
-            time: hm(v.labReturnedAt),
+            time: hhmm(v.labReturnedAt),
             to: consult()
           }))
       ]
@@ -143,7 +138,7 @@ export default function TopActions({ user, onSignOut }) {
               icon: 'siren',
               title: translate('Red-flag case') + ' — ' + r.name,
               note: translate(r.signs) || '—',
-              time: hm(r.at),
+              time: hhmm(r.at),
               urgent: true,
               to: '/reception?view=queue'
             }))

@@ -4,9 +4,8 @@ import Icon from '../../components/Icon'
 import { useAuth } from '../../context/AuthContext'
 import { translate } from '../../i18n'
 import { useQueue, minutesSince, isMine, labRows, atLabs, ST } from '../../api/queueStore'
-import { dmy } from '../reception/shared'
 import { PatientBrief, LabOrderResults } from './doctorShared'
-import { fold } from '../../utils/format'
+import { fold, dmy } from '../../utils/format'
 import Clip from '../../components/Clip'
 
 // Hộp thoại của trang chủ bác sĩ: danh sách chờ khám, bệnh nhân đang đi xét nghiệm.

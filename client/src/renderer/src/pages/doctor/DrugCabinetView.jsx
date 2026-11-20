@@ -5,9 +5,9 @@ import { useToast } from '../../context/ToastContext'
 import { translate } from '../../i18n'
 import { useQueue, isMine, inRoom } from '../../api/queueStore'
 import { useInventory, stockOf, nearDays } from '../../api/inventoryStore'
-import { unitLabel, fmtMoney, fmtDate, STATUS, Pager, paginate } from '../admin/inventory/shared'
+import { unitLabel, STATUS, Pager, paginate } from '../admin/inventory/shared'
 import { addDrugToDraft } from './consult/rxDraft'
-import { fold } from '../../utils/format'
+import { fold, fmtMoney, fmtDate, fmtNum } from '../../utils/format'
 
 const STOCK_FILTERS = [
   { key: '', label: 'All stock levels' },
@@ -198,7 +198,7 @@ export default function DrugCabinetView({ go }) {
                           </span>
                         </td>
                         <td className="r num">
-                          {s.usable.toLocaleString('vi-VN')} <span>{unitLabel(d.unit)}</span>
+                          {fmtNum(s.usable)} <span>{unitLabel(d.unit)}</span>
                         </td>
                         <td className="num">
                           {s.nextExpiry ? fmtDate(s.nextExpiry.expiry) : '—'}

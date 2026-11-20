@@ -9,7 +9,7 @@ import { labRows, syncQueue } from '../../api/queueStore'
 import { searchFacilities, referVisit, emergencyReferral, updateReferral } from '../../api/clinicApi'
 import { apiMessage } from '../../api/serviceStore'
 import { printHtml, esc } from '../admin/inventory/shared'
-import { dmy } from '../reception/shared'
+import { dmy } from '../../utils/format'
 
 // Giấy chuyển tuyến. Chuyển tuyến kết thúc lượt khám và lưu ở server (ERD v2.0). mode:
 // 'print' chỉ điền và in, không lưu · 'doctor' chuyển lượt đang khám (PATCH /visits/{id}/refer) · 'desk' lễ tân chuyển lượt

@@ -7,10 +7,10 @@ import { translate } from '../../i18n'
 import { useQueue, waitingOrder, minutesSince, isMine, inRoom, atLabs, ST, readyOrder } from '../../api/queueStore'
 import { usePrescriptions } from '../../api/prescriptionApi'
 import { useInventory, stockOf } from '../../api/inventoryStore'
-import { useNow, periodRange, dmy, hhmm, PAY_STATUS } from '../reception/shared'
+import { useNow, periodRange, PAY_STATUS } from '../reception/shared'
 import { useTakePatient, pastVisitsOf, InviteBar } from './doctorShared'
 import { WaitingModal, LabListModal, no } from './DoctorHomeModals'
-import { ymd } from '../../utils/format'
+import { ymd, dmy, hhmm } from '../../utils/format'
 
 export default function DoctorHome({ go }) {
   const { user } = useAuth()

@@ -4,6 +4,7 @@ import { useToast } from '../../context/ToastContext'
 import { dispenseItem, dispenseAll } from '../../api/billingApi'
 import { unitLabel, printHtml, esc } from '../../pages/admin/inventory/shared'
 import { translate } from '../../i18n'
+import { fmtDateTime } from '../../utils/format'
 
 const DS = {
   Pending: { label: 'Waiting to dispense', cls: 'b-warning' },
@@ -41,7 +42,7 @@ export default function DispenseTab({ active, visitId, items, waiting, paid, rx,
       t('Dispensing slip'),
       `<h1>${esc(t('Dispensing slip'))}</h1>
       <p class="meta">${esc(t('Patient'))}: <b>${esc(patient.name)}</b>${ticket ? ' · ' + esc(t('no.')) + ' ' + esc(ticket) : ''}</p>
-      <p class="meta">${new Date().toLocaleString('vi-VN')} · ${esc(user.name)}</p>
+      <p class="meta">${fmtDateTime(new Date())} · ${esc(user.name)}</p>
       ${rx?.patient_context?.allergy_notes ? `<p class="meta">${esc(t('Drug allergy'))}: <b>${esc(rx.patient_context.allergy_notes)}</b></p>` : ''}
       <table><thead><tr><th>#</th><th>${esc(t('Drug'))}</th><th class="num">${esc(t('Quantity'))}</th></tr></thead><tbody>${rows}</tbody></table>
       <div class="sign"><div>${esc(t('Dispensed by'))}<i>(${esc(t('Signature, full name'))})</i></div><div></div><div>${esc(t('Patient received'))}<i>(${esc(t('Signature, full name'))})</i></div></div>`,

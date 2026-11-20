@@ -5,7 +5,7 @@ import { useToast } from '../context/ToastContext'
 import { translate } from '../i18n'
 import { useQueue, closeStaleVisit, STALE_REASONS, ST, statusLabel } from '../api/queueStore'
 import { ticketNo } from './queuePrint'
-import { dmy } from '../pages/reception/shared'
+import { dmy } from '../utils/format'
 
 // Lượt chưa đóng từ những ngày trước — Lễ tân xử lý đầu ngày: bệnh nhân quay lại trả tiền → Thu tiền;
 // còn lại → Đóng lượt kèm lý do. Còn lượt chưa đóng thì bệnh nhân chưa tiếp đón lại được.

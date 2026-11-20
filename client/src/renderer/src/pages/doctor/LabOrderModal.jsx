@@ -8,8 +8,7 @@ import { createServiceOrder } from '../../api/serviceApi'
 import { useServiceCatalog, orderable, toLabOrder, apiMessage } from '../../api/serviceStore'
 import { LAB_GROUPS, SERVICE_GROUPS, SAMPLES } from '../admin/catalogs/schemas'
 import { printHtml, esc } from '../admin/inventory/shared'
-import { dmy, hhmm } from '../reception/shared'
-import { fold, money } from '../../utils/format'
+import { fold, money, dmy, hhmm } from '../../utils/format'
 import Skeleton from '../../components/Skeleton'
 
 // Xét nghiệm làm thủ công: bác sĩ lập và in phiếu, bệnh nhân cầm phiếu đi làm rồi mang kết quả giấy quay lại.

@@ -3,10 +3,9 @@ import Icon from '../../components/Icon'
 import { translate } from '../../i18n'
 import { useQueue, isQueued, isPendingFlag, isIntakeOpen, inRoom, atLabs, ST } from '../../api/queueStore'
 import { ticketNo } from '../../components/queuePrint'
-import { dmy } from './shared'
 import { useAwaiting, fromAwaiting, useTodayInvoices } from '../../api/billingApi'
 import { usePrescriptions } from '../../api/prescriptionApi'
-import { money, ymd } from '../../utils/format'
+import { money, ymd, dmy } from '../../utils/format'
 
 // Chờ thu tiền lấy từ GET /billing/awaiting (có hoá đơn và số tiền).
 

@@ -2,8 +2,8 @@ import Icon from '../../../components/Icon'
 import DrugPicker from '../../../components/DrugPicker'
 import { translate } from '../../../i18n'
 import { unitLabel } from '../../admin/inventory/shared'
-import { dmy } from '../../reception/shared'
 import { SLOTS, MEALS, perDay, unitVi, wholeQty } from './rxDraft'
+import { dmy } from '../../../utils/format'
 
 // Đơn mẫu: một lần bấm thêm cả nhóm thuốc.
 const TEMPLATES = [

@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import Icon from '../../../components/Icon'
 import { translate } from '../../../i18n'
-import { todayISO } from '../../../api/inventoryStore'
-import { MOVE_TYPES, Pager, paginate, exportCsv, fmtDateTime } from './shared'
+import { MOVE_TYPES, Pager, paginate, exportCsv } from './shared'
+import { fmtDateTime, ymd } from '../../../utils/format'
 
 export function MovesTab({ inv }) {
   const [type, setType] = useState('all')
@@ -34,7 +34,7 @@ export function MovesTab({ inv }) {
             className="btn btn-ghost btn-sm"
             onClick={() =>
               exportCsv(
-                `stock-moves-${todayISO()}.csv`,
+                `stock-moves-${ymd()}.csv`,
                 ['Time', 'Voucher no.', 'Drug', 'Type', 'Lot', 'Quantity', 'Balance', 'By', 'Note'],
                 list.map((m) => [fmtDateTime(m.at), m.ref, name(m.drugId), translate(MOVE_TYPES[m.type]), m.lot, m.qty, m.balance, m.by, m.note ? translate(m.note) : ''])
               )

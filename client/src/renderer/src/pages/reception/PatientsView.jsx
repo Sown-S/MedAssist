@@ -5,8 +5,8 @@ import { ageOf } from '../../api/patient'
 import { statusLabel } from '../../api/queueStore'
 import { translate } from '../../i18n'
 import { listPatients, getPatient, patientVisits } from '../../api/clinicApi'
-import { dmy } from './shared'
 import Skeleton from '../../components/Skeleton'
+import { dmy, fmtNum } from '../../utils/format'
 
 const PAGE = 20
 const EMPTY = { q: '', phone: '', idNumber: '', code: '', birthYear: '' }
@@ -161,7 +161,7 @@ export default function PatientsView({ readOnly, onCheckIn }) {
         </div>
         <div className="pager">
           <span>
-            {translate('Showing')} {from}–{to} / {data.total.toLocaleString('vi-VN')} {translate('records')}
+            {translate('Showing')} {from}–{to} / {fmtNum(data.total)} {translate('records')}
           </span>
           <span className="acts">
             {offset > 0 && (

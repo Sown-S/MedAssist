@@ -3,8 +3,8 @@ import { useToast } from '../context/ToastContext'
 import Icon from './Icon'
 import * as clinic from '../api/clinicApi'
 import { ageOf } from '../api/patient'
-import { todayISO } from '../api/inventoryStore'
 import { translate } from '../i18n'
+import { ymd } from '../utils/format'
 
 // Ô thông tin hành chính của bệnh nhân dùng ở màn tiếp đón: nhập mới, sửa, cảnh báo hồ sơ có thể trùng.
 export const PHONE_RE = /^0\d{9}$/
@@ -21,7 +21,7 @@ export function DobInput({ value, onChange, className = 'input' }) {
       <button type="button" className="dob-cal" tabIndex={-1} title={translate('Choose from calendar')} onClick={() => picker.current?.showPicker()}>
         <Icon name="calendar" />
       </button>
-      <input ref={picker} type="date" className="dob-native" tabIndex={-1} aria-hidden="true" min="1900-01-01" max={todayISO()} value={clinic.isoDob(value) ?? ''} onChange={(e) => onChange(clinic.dmyDob(e.target.value))} />
+      <input ref={picker} type="date" className="dob-native" tabIndex={-1} aria-hidden="true" min="1900-01-01" max={ymd()} value={clinic.isoDob(value) ?? ''} onChange={(e) => onChange(clinic.dmyDob(e.target.value))} />
     </div>
   )
 }

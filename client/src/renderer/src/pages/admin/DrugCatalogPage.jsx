@@ -3,10 +3,11 @@ import Icon from '../../components/Icon'
 import { translate } from '../../i18n'
 import { useAuth } from '../../context/AuthContext'
 import { useToast } from '../../context/ToastContext'
-import { useInventory, stockOf, setDrugActive, todayISO } from '../../api/inventoryStore'
+import { useInventory, stockOf, setDrugActive } from '../../api/inventoryStore'
 import { ConfirmDialog, Empty } from './ui'
 import DrugFormModal from './inventory/DrugFormModal'
-import { SortTh, Pager, paginate, exportCsv, unitLabel, fmtMoney, fmtNum } from './inventory/shared'
+import { SortTh, Pager, paginate, exportCsv, unitLabel } from './inventory/shared'
+import { fmtMoney, fmtNum, ymd } from '../../utils/format'
 
 // Danh mục thuốc là dữ liệu gốc; tồn kho theo lô, nhập / xuất nằm ở Tồn kho & hạn dùng.
 export default function DrugCatalogPage({ params, onNavigate }) {
@@ -92,7 +93,7 @@ export default function DrugCatalogPage({ params, onNavigate }) {
               className="btn btn-ghost btn-sm"
               onClick={() =>
                 exportCsv(
-                  `drug-catalog-${todayISO()}.csv`,
+                  `drug-catalog-${ymd()}.csv`,
                   ['Code', 'Name', 'Type', 'Active ingredient', 'ATC code', 'Unit', 'Purchase price', 'Selling price', 'Essential', 'Controlled', 'Status'],
                   sorted.map(({ d }) => [
                     d.id,

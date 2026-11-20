@@ -7,11 +7,12 @@ import Skeleton from '../../components/Skeleton'
 import { ErrorNote } from '../../components/DataState'
 import Clip from '../../components/Clip'
 import DateField from '../../components/DateField'
+import { fmtNum, fmtDateTime } from '../../utils/format'
 
 // Nhật ký hoạt động trên server (US09). Với bệnh nhân / lượt khám chỉ ghi tên trường thay đổi, không ghi giá trị (Quy định v5 §7).
 const PAGE = 50
 const EMPTY = { username: '', action_type: '', target_entity: '', from: '', to: '' }
-const when = (iso) => new Date(iso).toLocaleString('vi-VN', { dateStyle: 'short', timeStyle: 'medium' })
+const when = (iso) => fmtDateTime(iso, { seconds: true })
 const changes = (x) => {
   const keys = [...new Set([...Object.keys(x.old_values ?? {}), ...Object.keys(x.new_values ?? {})])]
   return keys.length ? keys.join(', ') : ''
@@ -104,7 +105,7 @@ export default function HistoryPage() {
             <span className="muted small">
               {data ? (
                 <>
-                  <b className="num">{data.total.toLocaleString('vi-VN')}</b> <span>entries</span>
+                  <b className="num">{fmtNum(data.total)}</b> <span>entries</span>
                 </>
               ) : (
                 '…'

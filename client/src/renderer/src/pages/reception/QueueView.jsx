@@ -8,10 +8,11 @@ import { useToast } from '../../context/ToastContext'
 import { printTicket } from '../../components/queuePrint'
 import CallPanel from './CallPanel'
 import { EditWaitingModal, CancelVisitModal } from '../../components/WaitingVisitModals'
-import { hhmm, dmy, useNow } from './shared'
+import { useNow } from './shared'
 import { vitalsText } from '../../api/vitals'
 import useNewIds from '../../hooks/useNewIds'
 import Clip from '../../components/Clip'
+import { hhmm, dmy } from '../../utils/format'
 
 // Số phút chờ bắt đầu thành vàng / đỏ, theo từng chặng.
 const WAIT_LIMITS = { Waiting: [30, 60], CheckedIn: [15, 30], Examining: [30, 45], labs: [30, 60], Prescribed: [10, 20] }

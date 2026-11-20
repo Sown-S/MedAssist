@@ -1,9 +1,7 @@
 import { useEffect, useState } from 'react'
 import { PAYMENT_METHODS } from '../../api/settingsStore'
-import { ymd } from '../../utils/format'
+import { ymd, dmy } from '../../utils/format'
 
-export const hhmm = (iso) => new Date(iso).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit', hour12: false })
-export const dmy = (iso) => new Date(iso).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' })
 // Hoá đơn pending chưa chọn hình thức → '—'.
 export const methodLabel = (k) => (k ? PAYMENT_METHODS.find((m) => m.key === k)?.label ?? k : '—')
 

@@ -1,6 +1,6 @@
 import { PAYMENT_METHODS } from '../../../api/settingsStore'
-import { fmtMoney } from '../inventory/shared'
 import { Field } from './Field'
+import { fmtMoney } from '../../../utils/format'
 
 // Tab “Vận hành”: ngưỡng kho, cảnh báo cụm ca, phí khám và phương thức thanh toán. form = { fp, num, val, set } của SettingsPage.
 export function OpsTab({ form }) {

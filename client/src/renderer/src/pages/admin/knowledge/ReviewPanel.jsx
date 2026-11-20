@@ -7,7 +7,7 @@ import { getRelease, approveRelease, rejectRelease } from '../../../api/knowledg
 import { Empty } from '../ui'
 import { errorText } from './shared'
 import { ReleaseBadge, ChangeList, ctxOf, ReleaseHistory, ReleaseModal } from './releaseParts'
-import { shortDateTime } from '../../../utils/format'
+import { fmtDateTime } from '../../../utils/format'
 import { ErrorNote } from '../../../components/DataState'
 
 // Bác sĩ: duyệt bản chờ duyệt
@@ -53,7 +53,7 @@ export function ReviewPanel({ data, names, onChanged }) {
             <div>
               <h3 className="num">{pending.label}</h3>
               <span className="muted small">
-                <span>Submitted</span> {shortDateTime(pending.submitted_at)}
+                <span>Submitted</span> {fmtDateTime(pending.submitted_at)}
                 {detail ? ' · ' + detail.changes.length + ' ' + translate('changes') : ''}
               </span>
             </div>

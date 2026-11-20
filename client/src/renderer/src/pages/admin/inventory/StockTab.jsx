@@ -5,10 +5,11 @@ import { Empty } from '../ui'
 import DrugFormModal from './DrugFormModal'
 import ReceiveModal from './ReceiveModal'
 import StockCardModal from './StockCardModal'
-import { STATUS, StatusBadges, ExpiryCell, SortTh, Pager, paginate, unitLabel, fmtMoney, fmtNum } from './shared'
+import { STATUS, StatusBadges, ExpiryCell, SortTh, Pager, paginate, unitLabel } from './shared'
 import { BatchTable } from './BatchTable'
 import { stockTotals, exportStock } from './stockSummary'
 import { MiniStat, MiniStats } from '../../../components/MiniStat'
+import { fmtMoney, fmtNum } from '../../../utils/format'
 
 export const PAGE_SIZE = 10
 

@@ -10,13 +10,13 @@ import { useInventory, stockOf } from '../../api/inventoryStore'
 import { checkHealth } from '../../api/client'
 import { listAuditLogs, ACTION_LABEL, ACTION_TONE } from '../../api/auditApi'
 import { getSettings } from '../../api/settingsStore'
-import { rangeOf, reportPath, fillDays, vnd, percent } from '../../api/reportsApi'
+import { rangeOf, reportPath, fillDays, percent } from '../../api/reportsApi'
 import { translate } from '../../i18n'
-import { fmtDateTime } from './inventory/shared'
 import ClusterAlerts from '../../components/ClusterAlerts'
 import LineChart from '../../components/LineChart'
 import HomeGreeting from '../../components/HomeGreeting'
 import { useAuth } from '../../context/AuthContext'
+import { fmtDateTime, vnd, ymd } from '../../utils/format'
 
 // by_status chỉ có trạng thái đang có lượt (hôm nay chưa ai check-in thì không có khoá CheckedIn) → thiếu là 0.
 export const countOf = (byStatus, ...keys) => keys.reduce((n, k) => n + (Number(byStatus?.[k]) || 0), 0)
@@ -76,7 +76,7 @@ function useServerLog() {
       () => setRecent([])
     )
     const since = Date.now() - 86400000
-    const from = new Date(since).toLocaleDateString('sv-SE')
+    const from = ymd(new Date(since))
     listAuditLogs({ action_type: 'LOGIN_FAILED', from }, 200, 0).then(
       (d) => setFailed(d.items.filter((x) => new Date(x.created_at).getTime() >= since)),
       () => {}

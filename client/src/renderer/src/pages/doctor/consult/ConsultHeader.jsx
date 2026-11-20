@@ -1,9 +1,9 @@
 import Icon from '../../../components/Icon'
 import PatientAlerts from '../../../components/PatientAlerts'
 import { translate } from '../../../i18n'
-import { dmy, hhmm } from '../../reception/shared'
 import { ClinicalInfoEditor } from './ClinicalInfoEditor'
 import { num, isChild } from './rxDraft'
+import { dmy, hhmm } from '../../../utils/format'
 
 const initials = (name = '') =>
   name

@@ -7,6 +7,7 @@ import { ConfirmedSymptoms } from './ConfirmedSymptoms'
 import { ReminderPanel } from './ReminderPanel'
 import DateField from '../../../components/DateField'
 import ExamSigns from './ExamSigns'
+import { ymd } from '../../../utils/format'
 
 // Tab "Khám (SOAP)": S lời kể + triệu chứng đã xác nhận + kết quả cận lâm sàng (labs), O khám, gợi ý AI,
 // chẩn đoán ICD-10 chính / phụ, P hướng xử trí + hẹn tái khám.
@@ -14,7 +15,7 @@ export default function SoapPanel({ visit, symptoms, onSymptoms, onRerunAi, d, s
   const followIn = (days) => {
     const x = new Date()
     x.setDate(x.getDate() + days)
-    set({ followUp: [x.getFullYear(), x.getMonth() + 1, x.getDate()].map((n, i) => (i ? String(n).padStart(2, '0') : n)).join('-') })
+    set({ followUp: ymd(x) })
   }
   return (
     <>

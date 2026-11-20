@@ -7,7 +7,7 @@ import { KINDS, itemVersions, previewDeactivate, deactivate } from '../../../api
 import { Empty } from '../ui'
 import ItemFormModal from './ItemFormModal'
 import { KIND_META, StatusBadge, Summary, groupByKey, errorText } from './shared'
-import { shortDateTime } from '../../../utils/format'
+import { fmtDateTime } from '../../../utils/format'
 import Skeleton from '../../../components/Skeleton'
 import { ErrorNote } from '../../../components/DataState'
 
@@ -220,7 +220,7 @@ function HistoryModal({ kind, group, names, onClose }) {
                     <td>
                       <Summary kind={kind} values={r.values} names={names} />
                     </td>
-                    <td className="small">{shortDateTime(r.created_at)}</td>
+                    <td className="small">{fmtDateTime(r.created_at)}</td>
                   </tr>
                 ))}
               </tbody>

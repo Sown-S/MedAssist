@@ -3,8 +3,9 @@ import { Switch } from '../ui'
 import { translate } from '../../../i18n'
 import { PAPERS, PRINT_DOCS } from '../../../api/settingsStore'
 import { useDevice, setDevice, getDevice } from '../../../api/deviceSettings'
-import { printHtml, printHeaderHtml, fmtMoney } from '../inventory/shared'
+import { printHtml, printHeaderHtml } from '../inventory/shared'
 import { Field } from './Field'
+import { fmtMoney } from '../../../utils/format'
 
 // Tab “In ấn”: logo, dòng tiêu đề, chân trang dùng chung mọi máy (clinic.profile, lưu bằng nút Lưu, khoá khi mất kết nối);
 // khổ giấy theo máy in của máy này (deviceSettings, lưu ngay).

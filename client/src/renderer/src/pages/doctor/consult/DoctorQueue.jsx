@@ -2,9 +2,10 @@ import { useState } from 'react'
 import Icon from '../../../components/Icon'
 import { translate } from '../../../i18n'
 import { waitingOrder, readyOrder, ST, inRoom, atLabs, minutesSince, isMine } from '../../../api/queueStore'
-import { useNow, hhmm } from '../../reception/shared'
+import { useNow } from '../../reception/shared'
 import { InviteBar } from '../doctorShared'
 import useNewIds from '../../../hooks/useNewIds'
+import { hhmm } from '../../../utils/format'
 
 // Cột hàng đợi chia nhóm, thu gọn được; trạng thái nhớ theo máy.
 const GROUPS_KEY = 'medassist_doc_queue_groups'

@@ -8,7 +8,7 @@ import { LabOrderResults } from './doctorShared'
 import DocumentModal from './DocumentModal'
 import { useAuth } from '../../context/AuthContext'
 import { ageFrom } from '../../api/clinicApi'
-import { money, shortDateTime } from '../../utils/format'
+import { money, fmtDateTime } from '../../utils/format'
 import Skeleton from '../../components/Skeleton'
 import { ErrorNote } from '../../components/DataState'
 
@@ -78,7 +78,7 @@ export default function ServerHistory({ patientId, excludeVisitId, onLoaded }) {
               </div>
               <div className="t">
                 <b>
-                  {shortDateTime(v.visit_date)} · {title}
+                  {fmtDateTime(v.visit_date)} · {title}
                 </b>
                 <span>
                   {v.physician_name ?? ''}
@@ -154,8 +154,8 @@ function ReferralBox({ record, onSaved }) {
         </div>
       )}
       <div className="small muted">
-        {translate(f.referred_by_role === 'Nurse' ? 'Recorded by' : 'Doctor')} {f.referred_by_name} · {shortDateTime(f.referred_at)}
-        {f.amended_by_name ? ' · ' + translate('amended by') + ' ' + f.amended_by_name + ' ' + shortDateTime(f.amended_at) : ''}
+        {translate(f.referred_by_role === 'Nurse' ? 'Recorded by' : 'Doctor')} {f.referred_by_name} · {fmtDateTime(f.referred_at)}
+        {f.amended_by_name ? ' · ' + translate('amended by') + ' ' + f.amended_by_name + ' ' + fmtDateTime(f.amended_at) : ''}
       </div>
       {open && <DocumentModal subject={subject} mode={doctor ? 'amend' : 'reprint'} target={{ visitId: v.visit_id }} onDone={onSaved} onClose={() => setOpen(false)} />}
     </div>

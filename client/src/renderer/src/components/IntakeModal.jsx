@@ -14,6 +14,7 @@ import { translate } from '../i18n'
 import { printTicket, ticketNo } from './queuePrint'
 import PatientAlerts from './PatientAlerts'
 import { PHONE_RE, DOB_RE, ID_RE, EditPatient, NewPatientFields, DuplicateBanner } from './PatientFields'
+import { todayVN } from '../utils/format'
 
 const SAVED_FLASH_MS = 650
 
@@ -33,7 +34,6 @@ const askPregnancy = (gender, age) => gender === 'Female' && age !== '' && age >
 // patient = null: đăng ký bệnh nhân mới (kiểm tra trùng trước khi tạo) rồi cấp số.
 // patient có sẵn: tiếp đón bệnh nhân cũ, thông tin hành chính chỉ đọc. Mức ưu tiên do luật đặt, lễ tân không nâng tay.
 // Ngày hôm nay theo giờ Việt Nam, dạng YYYY-MM-DD (so với queue_date của server).
-const todayIso = () => new Date().toLocaleDateString('sv-SE', { timeZone: 'Asia/Ho_Chi_Minh' })
 
 export default function IntakeModal({ open, onClose, onRedFlag, patient = null }) {
   const { showToast } = useToast()
@@ -119,7 +119,7 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
       if (e?.code !== 'PATIENT_HAS_OPEN_VISIT') throw e
       const id = e.details?.[0]?.visit_id
       const ov = id ? await clinic.getVisit(id).catch(() => null) : null
-      setOpenVisit({ id, status: ov?.status, ticket: ov?.queue_number, date: ov?.queue_date, today: ov?.queue_date === todayIso() })
+      setOpenVisit({ id, status: ov?.status, ticket: ov?.queue_number, date: ov?.queue_date, today: ov?.queue_date === todayVN() })
       return null
     }
     visitRef.current = v

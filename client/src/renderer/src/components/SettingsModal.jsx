@@ -7,6 +7,7 @@ import { getBaseUrl } from '../api/serverConfig'
 import { useServerOnline } from '../api/connectivity'
 import { version as appVersion } from '../../../../package.json'
 import { COLOR_MODES, UI_SCALES, getColorMode, setColorMode, getUiScale, setUiScale, getReduceMotion, setReduceMotion } from '../api/appTheme'
+import { hhmm } from '../utils/format'
 
 // Cài đặt cá nhân của máy này (nút bánh răng trên thanh trên): Giao diện, Ngôn ngữ, Tài khoản.
 // Mọi lựa chọn áp dụng ngay và chỉ lưu trên máy này — không ảnh hưởng máy khác, không cần nút Lưu.
@@ -67,7 +68,7 @@ function ClockCard() {
     return () => clearInterval(t)
   }, [])
   const tz = 'Asia/Ho_Chi_Minh'
-  const time = now.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: tz })
+  const time = hhmm(now, tz)
   const day = now.toLocaleDateString(getLang() === 'en' ? 'en-GB' : 'vi-VN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: tz })
   return (
     <div className="clock-card">

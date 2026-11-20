@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import Icon from '../../../components/Icon'
 import { translate } from '../../../i18n'
 import { AI_MODES, AI_RUN_TYPES, AI_STATUSES, listAiLogs } from '../../../api/reportsApi'
-import { shortDateTime } from '../../../utils/format'
+import { fmtDateTime, fmtNum } from '../../../utils/format'
 import Skeleton from '../../../components/Skeleton'
 import { ErrorNote } from '../../../components/DataState'
 import DateField from '../../../components/DateField'
@@ -81,7 +81,7 @@ export default function AiLogsTab() {
         <span className="muted small">
           {data ? (
             <>
-              <b className="num">{data.total.toLocaleString('vi-VN')}</b> <span>runs</span>
+              <b className="num">{fmtNum(data.total)}</b> <span>runs</span>
             </>
           ) : (
             '…'
@@ -119,7 +119,7 @@ export default function AiLogsTab() {
                   const st = STATUS_META[x.status] ?? { label: x.status, tone: '' }
                   return (
                     <tr key={x.assessment_id + x.run_type} onClick={() => setOpen(open === x.assessment_id ? null : x.assessment_id)} style={{ cursor: 'pointer' }}>
-                      <td className="num small">{shortDateTime(x.queued_at)}</td>
+                      <td className="num small">{fmtDateTime(x.queued_at)}</td>
                       <td className="small">
                         {translate(RUN_LABEL[x.run_type] ?? x.run_type)}
                         {x.mode && <div className="muted">{translate(MODE_LABEL[x.mode] ?? x.mode)}</div>}
@@ -166,7 +166,7 @@ export default function AiLogsTab() {
                 <div className="pref-row inline">
                   <span>Started → finished</span>
                   <b className="num">
-                    {shortDateTime(x.started_at)} → {shortDateTime(x.completed_at)}
+                    {fmtDateTime(x.started_at)} → {fmtDateTime(x.completed_at)}
                   </b>
                 </div>
                 <ErrorNote>{x.error_detail}</ErrorNote>

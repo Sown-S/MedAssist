@@ -3,8 +3,8 @@ import Icon from '../../../components/Icon'
 import Button from '../../../components/Button'
 import { checkHealth } from '../../../api/client'
 import ServerAddress from '../../../components/ServerAddress'
-import { fmtDateTime } from '../inventory/shared'
 import { version } from '../../../../../../package.json'
+import { fmtDateTime } from '../../../utils/format'
 
 export function ConnectionTab({ onNavigate }) {
   const [health, setHealth] = useState(null)
