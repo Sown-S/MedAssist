@@ -1,6 +1,0 @@
-/* Báo cáo theo mẫu: thanh ngang mảnh, biểu đồ đường doanh thu, lưới hai cột */
-.grid-2e{margin-bottom:20px;align-items:stretch;}
-.grid-2e>.card{display:flex;flex-direction:column;margin:0;}
-.lc-h b{font-variant-numeric:tabular-nums;}
-.lc-empty{display:grid;place-items:center;min-height:180px;color:var(--ink-soft);font-size:14px;}
-.lc-d.down .icn{transform:scaleY(-1);}
