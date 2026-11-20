@@ -81,9 +81,9 @@ và chỉ nhận địa chỉ `https://` khi server không phải máy này.
 
 | Thành phần | Dùng gì |
 |---|---|
-| Vỏ desktop | Electron 31 (`src/main`, `src/preload`) |
-| Build | electron-vite 2 + Vite 5 + `@vitejs/plugin-react` |
-| Giao diện | React 18, react-router-dom 6 (**HashRouter**) |
+| Vỏ desktop | Electron 45 (`src/main`, `src/preload`) |
+| Build | electron-vite 6 + Vite 8 + `@vitejs/plugin-react`; đóng gói bằng electron-builder 26 |
+| Giao diện | React 18, react-router-dom 7 (**HashRouter**) |
 | Font | Plus Jakarta Sans (`@fontsource-variable`), IBM Plex Mono cho số |
 | CSS | `global.css` nạp các file trong `styles/` theo thứ tự cascade; không dùng framework CSS |
 | Trạng thái | Store module + `useSyncExternalStore` (không Redux), Context cho Auth và Toast |
