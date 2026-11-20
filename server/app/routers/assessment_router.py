@@ -20,6 +20,7 @@ from app.services import ai_queue_service, assessment_service
 router = APIRouter(tags=["assessment"])
 
 _nurse_visit = require_roles("Nurse", audit_entity="visit")
+_assess_visit = require_roles("Nurse", "Physician", audit_entity="visit")
 _view_assessment = audit_view("visit", roles=CLINICAL_ROLES, id_param="visit_id", dedupe_seconds=300)
 
 
@@ -79,11 +80,12 @@ def _latest_or_404(db: Session, visit_id: uuid.UUID, knowledge_reader: Knowledge
 )
 def trigger_assessment(
     visit_id: uuid.UUID,
-    actor: User = Depends(_nurse_visit),
+    actor: User = Depends(_assess_visit),
     db: Session = Depends(get_db),
     knowledge_reader: KnowledgeReader = Depends(get_knowledge_reader),
 ):
-    """Chạy pha luật đồng bộ rồi xếp hàng; không chạy Node 2-4 hoặc LLM trong API."""
+    """Chạy pha luật đồng bộ rồi xếp hàng; không chạy Node 2-4 hoặc LLM trong API.
+    Bác sĩ chỉ chạy lại được lượt mình đang khám (sau khi ghi dấu hiệu khi khám)."""
     ai_queue_service.enqueue_assessment(db, visit_id, actor, knowledge_reader)
     db.commit()
     return _latest_or_404(db, visit_id, knowledge_reader)
