@@ -435,7 +435,7 @@ kbd{display:inline-grid;place-items:center;min-width:24px;height:24px;padding:0 
 .settings .vtab .set-dot{margin-top:6px}
 @media (max-width:1400px){.settings{grid-template-columns:250px 1fr}}
 
-/* 0.2.6 — dấu hiệu khi khám (phần O) và nhãn ngoài phạm vi trọng tâm */
+/* 0.2.5 — dấu hiệu khi khám (phần O) và nhãn ngoài phạm vi trọng tâm */
 .exam-signs{border:1px solid var(--border);border-radius:var(--radius);background:var(--surface-2,var(--surface));padding:12px 14px}
 .exam-signs-head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:10px}
 .exam-signs-head .lab{display:inline-flex;align-items:center;gap:6px;font-weight:600;color:var(--ink);margin:0}
@@ -752,3 +752,12 @@ kbd{display:inline-grid;place-items:center;min-width:24px;height:24px;padding:0 
 
 /* Ghi chú lỗi / cảnh báo sinh hiệu dưới ô nhập (form tiếp đón) */
 .vit-note{margin:4px 0 8px}
+
+/* Dòng trạng thái (Cài đặt › Kết nối server) và khối tên + mô tả hai dòng (cũng dùng trong hộp đăng xuất của bác sĩ).
+   CSS này mất khi viết lại giao diện ở 0.2.5 → chữ “Server API”, “Cơ sở dữ liệu”… dính liền vào giá trị. */
+.alert-txt{display:flex;flex-direction:column;gap:2px;flex:1;min-width:0}
+.alert-txt b{font-size:14px;font-weight:600;color:var(--ink)}
+.alert-txt span{font-size:12.5px;color:var(--ink-3);overflow-wrap:anywhere}
+.status-row{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--border)}
+.status-row:last-of-type{border-bottom:none}
+.status-row .badge{flex:none}

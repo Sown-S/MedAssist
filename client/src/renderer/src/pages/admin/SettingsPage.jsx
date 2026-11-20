@@ -19,7 +19,7 @@ const TABS = [
   { key: 'print', label: 'Printing & numbering', icon: 'printer', desc: 'Paper size, footer, queue numbers' },
   { key: 'security', label: 'Security', icon: 'shieldCheck', desc: 'Sign-in, session timeout, lockout' },
   { key: 'connection', label: 'Connection & AI', icon: 'wifi', desc: 'Server, database and AI status' },
-  { key: 'device', label: 'This computer', icon: 'monitor', desc: 'Patient call board at the front desk' },
+  { key: 'device', label: 'Patient call board', icon: 'monitor', desc: 'This computer only — names, next patients' },
   { key: 'ops', label: 'Operations', icon: 'settings', desc: 'Stock alerts, case clusters, payments' }
 ]
 // Tab “Kết nối & AI” chỉ hiển thị trạng thái, không có giá trị lưu.
