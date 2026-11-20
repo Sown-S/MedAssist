@@ -139,8 +139,9 @@ function flatten(obj, prefix = '') {
   return out
 }
 const same = (a, b) => JSON.stringify(a) === JSON.stringify(b)
-export function changedPaths(draft) {
-  const a = flatten(state.values)
+// base: bản đang lưu để so (mặc định là bản hiện tại trong store).
+export function changedPaths(draft, base = state.values) {
+  const a = flatten(base)
   const b = flatten(draft)
   return Object.keys(b).filter((k) => !same(a[k], b[k]))
 }

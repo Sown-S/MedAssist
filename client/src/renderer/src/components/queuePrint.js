@@ -2,22 +2,21 @@
 import { printHtml, esc } from '../pages/admin/inventory/shared'
 import { PAYMENT_METHODS } from '../api/settingsStore'
 import { translate } from '../i18n'
-import { money } from '../utils/format'
+import { money, fmtDateTime } from '../utils/format'
 
 const t = translate
-const when = (iso) => new Date(iso).toLocaleString('vi-VN', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit', year: 'numeric', hour12: false })
 export const ticketNo = (n) => String(n).padStart(3, '0')
 
 export function printTicket(v) {
   printHtml(
     t('Queue ticket') + ' ' + ticketNo(v.ticket),
-    `<div style="text-align:center">
-      <p class="meta">${esc(t('Queue ticket'))}</p>
-      <div style="font-size:44px;font-weight:700;line-height:1.1">${ticketNo(v.ticket)}</div>
-      ${v.priority ? `<p class="meta"><b>${esc(t('Priority'))}</b></p>` : ''}
-      <p class="meta"><b>${esc(v.name)}</b></p>
-      <p class="meta">${esc(when(v.arrivedAt))}</p>
-      <p class="meta">${esc(t('Please wait until your number is called.'))}</p>
+    `<div class="ticket">
+      <div class="lab">${esc(t('Queue ticket'))}</div>
+      <div class="no">${ticketNo(v.ticket)}</div>
+      ${v.priority ? `<span class="pri">${esc(t('Priority'))}</span>` : ''}
+      <div class="nm">${esc(v.name)}</div>
+      <div class="meta">${esc(fmtDateTime(v.arrivedAt))}</div>
+      <div class="hint">${esc(t('Please wait until your number is called.'))}</div>
     </div>`,
     'invoice'
   )
@@ -30,9 +29,9 @@ export function printReceipt(inv) {
     t('Payment receipt') + ' ' + inv.id,
     `<h1>${esc(t('Payment receipt'))} ${esc(inv.id)}</h1>
     <p class="meta">${esc(t('Patient'))}: <b>${esc(inv.name)}</b>${inv.ticket ? ' · ' + esc(t('Queue no.')) + ' ' + ticketNo(inv.ticket) : ''}</p>
-    <p class="meta">${esc(t('Paid at'))}: ${esc(when(inv.paidAt ?? inv.createdAt))}</p>
-    <table><tbody>${rows}
-      <tr><td><b>${esc(t('Amount paid'))}</b></td><td class="num"><b>${money(inv.total)}</b></td></tr>
+    <p class="meta">${esc(t('Paid at'))}: ${esc(fmtDateTime(inv.paidAt ?? inv.createdAt))}</p>
+    <table><thead><tr><th>${esc(t('Line item'))}</th><th class="num">${esc(t('Amount'))}</th></tr></thead><tbody>${rows}
+      <tr class="total"><td>${esc(t('Amount paid'))}</td><td class="num">${money(inv.total)}</td></tr>
       <tr><td>${esc(t('Payment method'))}</td><td class="num">${esc(t(method))}${inv.ref ? ' · ' + esc(inv.ref) : ''}</td></tr>
     </tbody></table>
     <p class="meta">${esc(t('Collected by'))}: ${esc(inv.byName)}</p>`,

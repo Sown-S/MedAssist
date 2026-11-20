@@ -1,16 +1,19 @@
+import { useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import Icon from '../components/Icon'
+import BellPortal from '../components/BellPortal'
 import { useAuth } from '../context/AuthContext'
-import { useQueue, useQueueSync, isMine, reviewRedFlag, inRoom, inviteAgain, isPendingFlag, ST } from '../api/queueStore'
+import { useQueue, useQueueSync, reviewRedFlag, inviteAgain, isPendingFlag, ST } from '../api/queueStore'
 import { useToast } from '../context/ToastContext'
 import { useTakePatient } from './doctor/doctorShared'
 import { translate } from '../i18n'
-import { hhmm } from './reception/shared'
 import DoctorHome from './doctor/DoctorHome'
 import ConsultView from './doctor/ConsultView'
 import DrugCabinetView from './doctor/DrugCabinetView'
 import PrescriptionsLive from './reception/PrescriptionsLive'
 import PatientLookup from './doctor/PatientLookup'
+import ClusterAlerts from '../components/ClusterAlerts'
+import { hhmm } from '../utils/format'
 
 const VIEWS = {
   home: { icon: 'home', tab: 'Overview', title: 'Doctor dashboard', sub: 'Today’s queue, your patients and prescriptions at a glance' },
@@ -26,11 +29,15 @@ export default function Doctor() {
   const { visits, redFlags } = useQueue()
   // Ca cờ đỏ chưa bác sĩ nào xem — hiện trên mọi màn của Bác sĩ.
   const pendingRF = redFlags.filter((r) => isPendingFlag(r) && !r.doctorReview)
+  // Đóng popup chỉ ẩn trong phiên; ca vẫn nằm trong danh sách của chuông tới khi được xử lý.
+  const [hiddenRF, setHiddenRF] = useState([])
+  // Mới nhất trước; mỗi lúc chỉ một popup để không che màn hình.
+  const shownRF = pendingRF.filter((r) => !hiddenRF.includes(r.id)).sort((x, y) => String(y.at).localeCompare(String(x.at)))
+  const topRF = shownRF[0]
   const [params, setParams] = useSearchParams()
   const view = VIEWS[params.get('view')] ? params.get('view') : 'home'
   const visitId = params.get('visit')
   const go = (v, visit) => setParams(v === 'home' ? {} : { view: v, ...(visit ? { visit } : {}) })
-  const inRoomCount = visits.filter((v) => inRoom(v) && isMine(v, user)).length
   const { showToast } = useToast()
   const { take, dialog } = useTakePatient((id) => go('consult', id))
   // Ca cờ đỏ là lượt Cấp cứu đang chờ — bác sĩ mời vào khám ngay, chuyển tuyến làm trong phòng khám.
@@ -43,72 +50,65 @@ export default function Doctor() {
   }
 
   return (
-    <div className="page">
-      <div className="page-head">
-        <div>
-          <h1>{VIEWS[view].title}</h1>
-          <p>{VIEWS[view].sub}</p>
-        </div>
-      </div>
-
-      {pendingRF.map((r) => (
-        <div className="redflag-alert" key={r.id}>
-          <Icon name="ban" />
-          <div className="txt">
-            <b>
-              <span>
-                {translate('Red-flag case — top of the queue (Emergency), see the patient now')}
-              </span>{' '}
-              · {r.name}
-              {r.age !== '' && r.age != null ? ', ' + r.age : ''} · {hhmm(r.at)}
-            </b>
-            <span>{translate(r.signs) || '—'}</span>
-            <span className="hint">
-              {translate('Emergency — top of the queue. Call the patient in now; refer to hospital from the consultation if needed.')}
-              {r.by && translate('Recorded by') + ' ' + r.by}
-              {r.allergies ? ' · ' + translate('Drug allergy') + ': ' + translate(r.allergies) : ''}
-            </span>
+    <div className="content view">
+      <div className={view === 'home' ? 'rhome' : 'vflow'}>
+        {view !== 'home' && view !== 'consult' && (
+          <div className="pg-h">
+            <div>
+              <h2>{VIEWS[view].title}</h2>
+              <p>{VIEWS[view].sub}</p>
+            </div>
           </div>
-          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-            <button className="btn btn-sm" onClick={() => seeNow(r)}>
-              <Icon name="stethoscope" /> See the patient now
-            </button>
-            <button className="btn btn-ghost btn-sm" onClick={() => reviewRedFlag(r.id, 'seen', user)}>
-              Dismiss
-            </button>
-          </div>
-        </div>
-      ))}
-
-      <div className="doc-nav-row">
-      <div className="ai-seg doc-nav">
-        {Object.entries(VIEWS).map(([k, v]) => (
-          <button key={k} className={view === k ? 'active' : ''} onClick={() => go(k)}>
-            <Icon name={v.icon} /> <span>{v.tab}</span>
-            {k === 'consult' && inRoomCount > 0 && <span className="doc-nav-cnt">{inRoomCount}</span>}
-          </button>
-        ))}
-      </div>
-      <span className="doc-nav-right">
-        {user.room ? (
-          <span className="doc-room" title={translate('Your consultation room')}>
-            <Icon name="stethoscope" /> {user.room}
-          </span>
-        ) : (
-          <span className="doc-room warn" title={translate('Reception cannot direct patients to you until you have a room.')}>
-            <Icon name="alert" /> No room assigned — ask an administrator
-          </span>
         )}
-      </span>
+
+        {/* Popup cạnh chuông: ca cờ đỏ chưa bác sĩ nào xem (mới nhất, kèm số ca còn lại) và cảnh báo cụm ca ở Trang chủ. */}
+        <BellPortal>
+          {topRF && (
+            <div className="bell-pop redflag-alert" role="alert">
+              <div className="ico d">
+                <Icon name="siren" />
+              </div>
+              <div className="bp-t">
+                <b>
+                  {translate('Red-flag case in the queue')}: {topRF.name}
+                  {topRF.age !== '' && topRF.age != null ? ', ' + topRF.age : ''}
+                </b>
+                <span className="bp-sign">{translate(topRF.signs) || '—'}</span>
+                <small className="bp-meta">
+                  {hhmm(topRF.at)}
+                  {topRF.by && ' · ' + translate('Recorded by') + ' ' + topRF.by}
+                  {topRF.allergies ? ' · ' + translate('Drug allergy') + ': ' + translate(topRF.allergies) : ''}
+                </small>
+                <span className="bp-acts">
+                  <button className="btn btn-danger btn-sm" onClick={() => seeNow(topRF)}>
+                    <Icon name="stethoscope" /> See the patient now
+                  </button>
+                  <button className="btn btn-outline btn-sm" onClick={() => reviewRedFlag(topRF.id, 'seen', user)}>
+                    Dismiss
+                  </button>
+                  {shownRF.length > 1 && (
+                    <button className="btn btn-outline btn-sm bp-more" onClick={() => setHiddenRF((h) => [...h, topRF.id])}>
+                      {translate('Next case')} (+{shownRF.length - 1})
+                    </button>
+                  )}
+                </span>
+              </div>
+              <button className="btn btn-ghost btn-icon" onClick={() => setHiddenRF((h) => [...h, topRF.id])} title={translate('Close')} aria-label={translate('Close')}>
+                <Icon name="x" />
+              </button>
+            </div>
+          )}
+          {view === 'home' && <ClusterAlerts />}
+        </BellPortal>
+
+        {/* Đổi màn bằng menu bên trái (components/SideNav.jsx); phòng khám của bác sĩ hiện ở cuối menu. */}
+        {view === 'home' && <DoctorHome go={go} />}
+        {view === 'consult' && <ConsultView visitId={visitId} onSelect={(id) => go('consult', id)} />}
+        {view === 'prescriptions' && <PrescriptionsLive initialDoctorId={user.id} initialDoctorName={user.name} onRecalled={(id) => go('consult', id)} />}
+        {view === 'drugs' && <DrugCabinetView go={go} />}
+        {view === 'patients' && <PatientLookup />}
+        {dialog}
       </div>
-
-      {view === 'home' && <DoctorHome go={go} />}
-      {view === 'consult' && <ConsultView visitId={visitId} onSelect={(id) => go('consult', id)} />}
-      {view === 'prescriptions' && <PrescriptionsLive initialDoctorId={user.id} initialDoctorName={user.name} onRecalled={(id) => go('consult', id)} />}
-      {view === 'drugs' && <DrugCabinetView go={go} />}
-      {view === 'patients' && <PatientLookup />}
-      {dialog}
-
     </div>
   )
 }

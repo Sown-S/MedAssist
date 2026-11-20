@@ -2,10 +2,11 @@ import { useMemo, useState } from 'react'
 import Icon from '../../components/Icon'
 import { translate } from '../../i18n'
 import { useLiveCatalog } from '../../api/serviceCatalogLive'
-import { useInventory, todayISO } from '../../api/inventoryStore'
-import { exportCsv, fmtDateTime, unitLabel } from './inventory/shared'
+import { useInventory } from '../../api/inventoryStore'
+import { exportCsv, unitLabel } from './inventory/shared'
 import { SCHEMAS } from './catalogs/schemas'
 import { exportCatalog } from './catalogs/catalogCsv'
+import { fmtDateTime, ymd, fmtNum } from '../../utils/format'
 
 // Trang trung tâm của Quản lý danh mục; Thuốc & vật tư có trang riêng (dùng chung dữ liệu với Kho).
 // Dịch vụ, Xét nghiệm, Gói khám lấy từ server.
@@ -34,8 +35,7 @@ export default function CatalogPage({ onNavigate }) {
   const [q, setQ] = useState('')
 
   const info = (key) => {
-    if (key === '@drugs')
-      return { title: 'Drugs & supplies', desc: 'Active ingredient, ATC code, unit, prices, essential / controlled flags', list: inv.drugs, page: 'drugs', last: latest(inv.drugs) }
+    if (key === '@drugs') return { title: 'Drugs & supplies', desc: 'Active ingredient, ATC code, unit, prices, essential / controlled flags', list: inv.drugs, page: 'drugs', last: latest(inv.drugs) }
     const s = SCHEMAS[key]
     return { title: s.title, desc: s.desc, list: cats[key], page: 'cat-' + key, last: latest(cats[key]) }
   }
@@ -45,118 +45,151 @@ export default function CatalogPage({ onNavigate }) {
     if (t.length < 2) return []
     const out = []
     for (const key of SERVER_KEYS)
-      for (const r of cats[key]) if ([r.code, r.name, r.nameEn].some((x) => (x ?? '').toLowerCase().includes(t))) out.push({ key, page: 'cat-' + key, code: r.code, name: r.name, active: r.active, id: r.id })
-    for (const d of inv.drugs) if ([d.name, d.ingredient, d.atc].some((x) => (x ?? '').toLowerCase().includes(t))) out.push({ key: '@drugs', page: 'drugs', code: d.atc || d.id, name: d.name, active: d.active })
+      for (const r of cats[key])
+        if ([r.code, r.name, r.nameEn].some((x) => (x ?? '').toLowerCase().includes(t))) out.push({ key, page: 'cat-' + key, code: r.code, name: r.name, active: r.active, id: r.id })
+    for (const d of inv.drugs)
+      if ([d.name, d.ingredient, d.atc].some((x) => (x ?? '').toLowerCase().includes(t))) out.push({ key: '@drugs', page: 'drugs', code: d.atc || d.id, name: d.name, active: d.active })
     return out.slice(0, 40)
   }, [q, cats, inv])
 
   function exportRow(key) {
     if (key === '@drugs')
       return exportCsv(
-        `danh-muc-thuoc-${todayISO()}.csv`,
+        `danh-muc-thuoc-${ymd()}.csv`,
         ['Code', 'Name', 'Active ingredient', 'ATC code', 'Unit', 'Purchase price', 'Selling price', 'Essential', 'Controlled', 'Status'],
-        inv.drugs.map((d) => [d.id, d.name, d.ingredient, d.atc, translate(unitLabel(d.unit)), d.cost, d.price, d.essential ? 'x' : '', d.group === 'controlled' ? 'x' : '', translate(d.active ? 'In use' : 'Discontinued')])
+        inv.drugs.map((d) => [
+          d.id,
+          d.name,
+          d.ingredient,
+          d.atc,
+          translate(unitLabel(d.unit)),
+          d.cost,
+          d.price,
+          d.essential ? 'x' : '',
+          d.group === 'controlled' ? 'x' : '',
+          translate(d.active ? 'In use' : 'Discontinued')
+        ])
       )
     exportCatalog(key, cats[key])
   }
 
+  const CAT_ICON = { '@drugs': 'pill', services: 'clipboard-list', packages: 'package', labs: 'flask-conical', icd10: 'book-open', general: 'list' }
   return (
-    <div>
-      <div className="page-head">
+    <div className="vflow">
+      <div className="pg-h">
         <div>
-          <h1>Catalog management</h1>
+          <h2>Catalog management</h2>
           <p>Administrative &amp; medical catalogs shared across the system — click a row to open it</p>
         </div>
       </div>
 
-      <div className="card cat-search-card">
-        <div className="ai-search cat-search">
-          <Icon name="search" />
-          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search a code or name in every catalog (e.g. J03, Amoxicillin, Đà Nẵng)…" />
-        </div>
-        {q.trim().length >= 2 && (
-          <div className="cat-results">
-            {results.length === 0 ? (
-              <p className="ai-soft">No results.</p>
-            ) : (
-              results.map((r, i) => (
-                <div
-                  key={i}
-                  className={'cat-result' + (r.active ? '' : ' ai-dim')}
-                  onClick={() => onNavigate(r.page, r.page.startsWith('cat-') ? { q: r.code, openId: r.id } : { q: r.name })}
-                >
-                  <span className="badge">{info(r.key).title}</span> <b className="mono">{r.code}</b> <span>{r.name}</span>
-                  {!r.active && <span className="badge muted">Discontinued</span>}
-                </div>
-              ))
-            )}
+      <div className="card">
+        <div className="card-b">
+          <div className="search w-full mb-14">
+            <Icon name="search" />
+            <input className="input" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search a code or name in every catalog (e.g. J03, Amoxicillin, Đà Nẵng)…" />
           </div>
-        )}
-      </div>
+          {q.trim().length >= 2 && (
+            <div className="rows mb-14">
+              {results.length === 0 ? (
+                <p className="muted small">{translate('No results.')}</p>
+              ) : (
+                results.map((r, i) => (
+                  <div
+                    key={i}
+                    className={'r clickable' + (r.active ? '' : ' dim')}
+                    style={{ cursor: 'pointer' }}
+                    onClick={() => onNavigate(r.page, r.page.startsWith('cat-') ? { q: r.code, openId: r.id } : { q: r.name })}
+                  >
+                    <span className="tag">{info(r.key).title}</span>
+                    <div className="t">
+                      <b className="num">{r.code}</b> <span>{r.name}</span>
+                    </div>
+                    {!r.active && <span className="badge b-neutral">{translate('Discontinued')}</span>}
+                  </div>
+                ))
+              )}
+            </div>
+          )}
 
-      {ORDER.map(({ group, keys }) => (
-        <div className="card" style={{ marginTop: 14 }} key={group}>
-          <div className="card-title">{group}</div>
-          <table className="dt">
-            <thead>
-              <tr>
-                <th>Catalog</th>
-                <th className="num">Records</th>
-                <th>Last updated</th>
-                <th>Status</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {keys.map((key) => {
-                const x = info(key)
-                const active = x.list.filter((r) => r.active).length
-                const issues = review(key, cats, inv)
-                return (
-                  <tr key={key} className="row-click" onClick={() => onNavigate(x.page)}>
-                    <td>
-                      <b>{x.title}</b>
-                      <div className="ai-soft ai-small">{x.desc}</div>
-                    </td>
-                    <td className="num">
-                      <b className="mono">{active}</b>
-                      {active !== x.list.length && (
-                        <div className="ai-soft ai-small">
-                          / <span className="mono">{x.list.length}</span> <span>total</span>
-                        </div>
-                      )}
-                    </td>
-                    <td className="mono ai-small">{fmtDateTime(x.last)}</td>
-                    <td>
-                      {issues.length ? (
-                        <>
-                          <span className="badge warn">Needs review</span>
-                          {issues.map((t) => (
-                            <div key={t} className="ai-small sp-warn cat-issue">
-                              {t}
+          {ORDER.map(({ group, keys }) => (
+            <div key={group}>
+              {ORDER.length > 1 && <div className="sec-t">{translate(group)}</div>}
+              <div className="tbl-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Catalog</th>
+                      <th className="r">Records</th>
+                      <th>Last updated</th>
+                      <th>Status</th>
+                      <th className="r">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {keys.map((key) => {
+                      const x = info(key)
+                      const active = x.list.filter((r) => r.active).length
+                      const issues = review(key, cats, inv)
+                      return (
+                        <tr key={key} className="clickable" onClick={() => onNavigate(x.page)}>
+                          <td>
+                            <div className="who-cell">
+                              <div className="ico n">
+                                <Icon name={CAT_ICON[key] ?? 'list'} />
+                              </div>
+                              <div className="minw-0">
+                                <b>{x.title}</b>
+                                <span className="clip d-block maxw-420">
+                                  {x.desc}
+                                </span>
+                              </div>
                             </div>
-                          ))}
-                        </>
-                      ) : (
-                        <span className="badge ok">In use</span>
-                      )}
-                    </td>
-                    <td className="ai-actions" onClick={(e) => e.stopPropagation()}>
-                      <button className="btn btn-ghost btn-sm" title="Export" onClick={() => exportRow(key)}>
-                        <Icon name="download" />
-                      </button>
-                      <button className="btn btn-ghost btn-sm" title="Open" onClick={() => onNavigate(x.page)}>
-                        <Icon name="chevronRight" />
-                      </button>
-                    </td>
-                  </tr>
-                )
-              })}
-            </tbody>
-          </table>
+                          </td>
+                          <td className="r num">
+                            {fmtNum(active)}
+                            {active !== x.list.length && (
+                              <div className="muted small">
+                                / <span className="num">{x.list.length}</span> <span>total</span>
+                              </div>
+                            )}
+                          </td>
+                          <td className="num">{fmtDateTime(x.last)}</td>
+                          <td>
+                            {issues.length ? (
+                              <>
+                                <span className="badge b-warning">Needs review</span>
+                                {issues.map((t) => (
+                                  <div key={t} className="small text-warning">
+                                    {t}
+                                  </div>
+                                ))}
+                              </>
+                            ) : (
+                              <span className="plain">{translate('In use')}</span>
+                            )}
+                          </td>
+                          <td onClick={(e) => e.stopPropagation()}>
+                            <div className="acts">
+                              <button className="btn btn-ghost btn-sm" title={translate('Export')} onClick={() => exportRow(key)}>
+                                <Icon name="download" />
+                                {translate('Export')}
+                              </button>
+                              <button className="btn btn-outline btn-sm" onClick={() => onNavigate(x.page)}>
+                                {translate('Open')}
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      )
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          ))}
         </div>
-      ))}
+      </div>
     </div>
   )
 }
-

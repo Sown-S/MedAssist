@@ -20,7 +20,7 @@ export default function ICDPicker({ value, onChange, onPick = onChange }) {
 
   return (
     <div className="icd-picker">
-      <input
+      <input className="input"
         type="text"
         placeholder="Type a disease name or ICD-10 code to search (e.g. J03, tonsillitis...)"
         value={value}

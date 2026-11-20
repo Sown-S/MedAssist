@@ -5,9 +5,9 @@ import { useToast } from '../../context/ToastContext'
 import { translate } from '../../i18n'
 import { useQueue, isMine, inRoom } from '../../api/queueStore'
 import { useInventory, stockOf, nearDays } from '../../api/inventoryStore'
-import { unitLabel, fmtMoney, fmtDate, STATUS, Pager, paginate } from '../admin/inventory/shared'
+import { unitLabel, STATUS, Pager, paginate } from '../admin/inventory/shared'
 import { addDrugToDraft } from './consult/rxDraft'
-import { fold } from '../../utils/format'
+import { fold, fmtMoney, fmtDate, fmtNum } from '../../utils/format'
 
 const STOCK_FILTERS = [
   { key: '', label: 'All stock levels' },
@@ -44,7 +44,7 @@ const SORTS = [
   { key: 'expiry', label: 'Sort: nearest expiry' },
   { key: 'stock', label: 'Sort: lowest stock' }
 ]
-const PAGE_SIZE = 12
+const PAGE_SIZE = 20
 const GROUPS = [
   { key: '', label: 'All groups' },
   { key: 'essential', label: 'Essential' },
@@ -102,114 +102,142 @@ export default function DrugCabinetView({ go }) {
 
   return (
     <>
-      <div className="card" style={{ marginBottom: 16 }}>
-        <div className="cash-filters" style={{ marginBottom: 0 }}>
-          <input className="grow" type="search" placeholder="Search by drug name, active ingredient or ATC…" value={q} onChange={filter(setQ)} />
-          <select value={atc} onChange={filter(setAtc)} title={translate('Therapeutic class (ATC)')}>
-            <option value="">All drug classes (ATC)</option>
-            {classes.map((c) => (
-              <option key={c} value={c}>
-                {c} — {translate(ATC_CLASSES[c])}
-              </option>
-            ))}
-            {active.some((d) => !d.atc) && <option value="-">No ATC code</option>}
-          </select>
-          <select value={group} onChange={filter(setGroup)}>
-            {GROUPS.map((g) => (
-              <option key={g.key} value={g.key}>
-                {g.label}
-              </option>
-            ))}
-          </select>
-          <select value={stock} onChange={filter(setStock)}>
-            {STOCK_FILTERS.map((g) => (
-              <option key={g.key} value={g.key}>
-                {g.label}
-              </option>
-            ))}
-          </select>
-          <select value={expiry} onChange={filter(setExpiry)}>
-            {EXPIRY_FILTERS.map((g) => (
-              <option key={g.key} value={g.key}>
-                {g.key === 'near' ? translate('Expiring within') + ' ' + near + ' ' + translate('days') : g.label}
-              </option>
-            ))}
-          </select>
-          <select value={sort} onChange={filter(setSort)}>
-            {SORTS.map((g) => (
-              <option key={g.key} value={g.key}>
-                {g.label}
-              </option>
-            ))}
-          </select>
-          <span className="ai-soft" style={{ fontSize: 13 }}>
-            {list.length} / {active.length} {translate(active.length === 1 ? 'drug' : 'drugs')}
-          </span>
-        </div>
-        {current && (
-          <p className="ai-soft" style={{ fontSize: 12.5, margin: '10px 0 0' }}>
-            <Icon name="stethoscope" /> <span>Prescribing for</span> <b>{current.name}</b> — <span>use “Add to prescription” on a drug card.</span>
-          </p>
-        )}
-      </div>
-
-      <div className="drug-grid">
-        {pg.rows.map(({ d, s }) => {
-          const main = s.statuses.find((x) => x !== 'ok') ?? 'ok'
-          return (
-            <div className={'drug-card' + (s.usable === 0 ? ' out' : '')} key={d.id}>
-              <div className="drug-top">
-                <div>
-                  <b>{d.name}</b>
-                  <small>
-                    {d.ingredient || '—'}
-                    {d.atc ? ' · ATC ' + d.atc : ''}
-                  </small>
-                </div>
-                <span className={'badge ' + STATUS[main].cls}>{STATUS[main].label}</span>
-              </div>
-              <div className="drug-tags">
-                {d.essential && <span className="essential-chip">Essential</span>}
-                {d.group === 'controlled' && <span className="badge warn">Controlled</span>}
-                {d.kind === 'supply' && <span className="badge muted">Supply</span>}
-              </div>
-              <div className="drug-facts">
-                <span>
-                  <Icon name="box" /> <span>Usable stock</span>: <b className="mono">{s.usable.toLocaleString('vi-VN')}</b> <span>{unitLabel(d.unit)}</span>
-                </span>
-                <span>
-                  <Icon name="calendar" /> <span>Next expiry</span>: <b className="mono">{s.nextExpiry ? fmtDate(s.nextExpiry.expiry) : '—'}</b>
-                  {s.nextExpiry && (
-                    <span className={'exp-days' + (s.nextExpiry.days <= 30 ? ' soon' : s.nextExpiry.days <= near ? ' near' : '')}>{translate(s.nextExpiry.days + ' days left')}</span>
-                  )}
-                </span>
-                <span>
-                  <Icon name="banknote" /> <span>Price</span>: <b className="mono">{fmtMoney(d.price)}</b> / <span>{unitLabel(d.unit)}</span>
-                </span>
-              </div>
-              {current && d.kind === 'drug' && (
-                <button className="btn btn-ghost btn-sm" style={{ marginTop: 'auto' }} disabled={s.usable === 0} onClick={() => add(d)}>
-                  + Add to prescription
-                </button>
-              )}
-            </div>
-          )
-        })}
-      </div>
-      {list.length > PAGE_SIZE && (
-        <div className="card" style={{ marginTop: 14, padding: '4px 10px 10px' }}>
-          <Pager {...pg} onPage={setPage} />
-        </div>
-      )}
-      {!list.length && (
-        <div className="card">
-          <div className="empty-state">
-            <Icon name="box" />
-            <b>No drugs match.</b>
-            <span>Try another name or clear the filters.</span>
+      {current && (
+        <div className="banner n">
+          <Icon name="stethoscope" />
+          <div className="txt">
+            <span>Prescribing for</span> <b className="d-inline">{current.name}</b>
+            {current.allergies ? ' · ' + translate('Drug allergy') + ': ' + translate(current.allergies) : ''}
           </div>
+          <button className="btn btn-ghost btn-sm" onClick={() => go('consult', current.id)}>
+            <Icon name="arrow-left" />
+            {translate('Back to the consultation')}
+          </button>
         </div>
       )}
+      <div className="card">
+        <div className="card-b">
+          <div className="toolbar mb-14">
+            <div className="search">
+              <Icon name="search" />
+              <input className="input" type="search" placeholder="Search by drug name, active ingredient or ATC…" value={q} onChange={filter(setQ)} />
+            </div>
+            <select className="select" value={atc} onChange={filter(setAtc)} title={translate('Therapeutic class (ATC)')}>
+              <option value="">All drug classes (ATC)</option>
+              {classes.map((c) => (
+                <option key={c} value={c}>
+                  {c} — {translate(ATC_CLASSES[c])}
+                </option>
+              ))}
+              {active.some((d) => !d.atc) && <option value="-">No ATC code</option>}
+            </select>
+            <select className="select" value={group} onChange={filter(setGroup)}>
+              {GROUPS.map((g) => (
+                <option key={g.key} value={g.key}>
+                  {g.label}
+                </option>
+              ))}
+            </select>
+            <select className="select" value={stock} onChange={filter(setStock)}>
+              {STOCK_FILTERS.map((g) => (
+                <option key={g.key} value={g.key}>
+                  {g.label}
+                </option>
+              ))}
+            </select>
+            <select className="select" value={expiry} onChange={filter(setExpiry)}>
+              {EXPIRY_FILTERS.map((g) => (
+                <option key={g.key} value={g.key}>
+                  {g.key === 'near' ? translate('Expiring within') + ' ' + near + ' ' + translate('days') : g.label}
+                </option>
+              ))}
+            </select>
+            <select className="select" value={sort} onChange={filter(setSort)}>
+              {SORTS.map((g) => (
+                <option key={g.key} value={g.key}>
+                  {g.label}
+                </option>
+              ))}
+            </select>
+            <span className="muted small">
+              {list.length} / {active.length} {translate(active.length === 1 ? 'drug' : 'drugs')}
+            </span>
+          </div>
+          {list.length ? (
+            <div className="tbl-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Drug</th>
+                    <th>Labels</th>
+                    <th className="r">Usable stock</th>
+                    <th>Next expiry</th>
+                    <th className="r">Price</th>
+                    <th>Status</th>
+                    {current && <th />}
+                  </tr>
+                </thead>
+                <tbody>
+                  {pg.rows.map(({ d, s }) => {
+                    const main = s.statuses.find((x) => x !== 'ok') ?? 'ok'
+                    return (
+                      <tr key={d.id} className={s.usable === 0 ? 'dim' : ''}>
+                        <td>
+                          <b className="fw-500">{d.name}</b>
+                          <div className="muted small">
+                            {d.ingredient || '—'}
+                            {d.atc ? ' · ' + d.atc : ''}
+                          </div>
+                        </td>
+                        <td>
+                          <span className="acts justify-start">
+                            {d.essential && <span className="tag">Essential</span>}
+                            {d.group === 'controlled' && <span className="tag w">Controlled</span>}
+                            {d.kind === 'supply' && <span className="tag">Supply</span>}
+                            {!d.essential && d.group !== 'controlled' && d.kind !== 'supply' && <span className="plain">—</span>}
+                          </span>
+                        </td>
+                        <td className="r num">
+                          {fmtNum(s.usable)} <span>{unitLabel(d.unit)}</span>
+                        </td>
+                        <td className="num">
+                          {s.nextExpiry ? fmtDate(s.nextExpiry.expiry) : '—'}
+                          {s.nextExpiry && s.nextExpiry.days <= near && (
+                            <div className="small" style={{ color: s.nextExpiry.days <= 30 ? 'var(--danger)' : 'var(--warning)' }}>
+                              {translate(s.nextExpiry.days + ' days left')}
+                            </div>
+                          )}
+                        </td>
+                        <td className="r num">{fmtMoney(d.price)}</td>
+                        <td>{main === 'ok' ? <span className="plain">{translate(STATUS.ok.label)}</span> : <span className={'badge ' + STATUS[main].cls}>{STATUS[main].label}</span>}</td>
+                        {current && (
+                          <td className="r">
+                            {d.kind === 'drug' && (
+                              <button className="btn btn-outline btn-sm" disabled={s.usable === 0} onClick={() => add(d)} title={translate('Add to prescription')}>
+                                <Icon name="plus" />
+                                {translate('Add')}
+                              </button>
+                            )}
+                          </td>
+                        )}
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <div className="empty">
+              <div className="ill">
+                <Icon name="pill" />
+              </div>
+              <b>No drugs match.</b>
+              <span>Try another name or clear the filters.</span>
+            </div>
+          )}
+          {list.length > PAGE_SIZE && <Pager {...pg} onPage={setPage} />}
+        </div>
+      </div>
     </>
   )
 }

@@ -30,76 +30,92 @@ export default function PaymentSummary({ visitId, inv, paid, editable, items, pa
     if (r) onClose()
   }
 
+  const totals = [
+    ['Consultation', inv.consultation_fee],
+    ['Paraclinical', inv.paraclinical_fee],
+    ['Medication', inv.drug_fee]
+  ]
   return (
     <div>
-      <div className="sum-line">
-        <span>Consultation</span>
-        <span>{fmt(inv.consultation_fee)}</span>
-      </div>
-      <div className="sum-line">
-        <span>Paraclinical</span>
-        <span>{fmt(inv.paraclinical_fee)}</span>
-      </div>
-      <div className="sum-line">
-        <span>Medication</span>
-        <span>{fmt(inv.drug_fee)}</span>
-      </div>
-      <div className="sum-total">
-        <span>Total</span>
-        <span className="amt">{fmt(inv.total_amount)}</span>
-      </div>
-      <p className="ai-soft mono" style={{ fontSize: 12 }}>
-        {inv.invoice_code} · {translate(paid ? 'Paid' : 'Awaiting payment')}
-      </p>
-
-      {paid ? (
-        <button className="btn btn-ghost" style={{ width: '100%', marginTop: 8 }} onClick={() => printReceipt(receiptOf(inv, { name: patient.name, ticket: patient.ticket, byName: user.name }))}>
-          <Icon name="printer" /> Reprint receipt
-        </button>
-      ) : (
-        <>
-          <div className="section-label">Payment method</div>
-          <div className="ai-seg">
-            {methods.map((m) => (
-              <button key={m.key} className={method === m.key ? 'active' : ''} onClick={() => setMethod(m.key)}>
-                {m.label}
-              </button>
-            ))}
-          </div>
-          {method === 'transfer' && (
-            <p className="ai-soft" style={{ fontSize: 12.5, marginTop: 8 }}>
-              Check that the transfer has arrived in the clinic’s bank account before confirming.
-            </p>
-          )}
-          <Button className="btn btn-primary" style={{ width: '100%', marginTop: 12 }} disabled={paying || !editable} onClick={() => pay()}>
-            {method === 'transfer' ? 'Transfer received — collect' : 'Collect payment'}
-          </Button>
-          {!cancelling ? (
-            <button
-              className="btn btn-ghost"
-              style={{ width: '100%', marginTop: 8 }}
-              disabled={!editable || items.some((l) => l.dispense_status === 'Dispensed')}
-              onClick={() => setCancelling(true)}
-              title={translate('The patient left without paying or taking the medication')}
-            >
-              <Icon name="x" /> Cancel this visit
-            </button>
-          ) : (
-            <div className="field" style={{ marginTop: 10 }}>
-              <label>Reason for cancelling</label>
-              <input type="text" autoFocus value={cancelReason} onChange={(e) => setCancelReason(e.target.value)} placeholder={translate('e.g. patient left without paying')} />
-              <div style={{ display: 'flex', gap: 6, marginTop: 6 }}>
-                <button className="btn btn-ghost btn-sm" onClick={() => setCancelling(false)}>
-                  Back
-                </button>
-                <button className="btn btn-danger btn-sm" disabled={cancelReason.trim().length < 3} onClick={cancelVisitHere}>
-                  Cancel visit &amp; return stock
-                </button>
+      <div className="grid-2e mt-14">
+        <div className="field">
+          {paid ? (
+            <>
+              <span className="lab">{translate('Payment')}</span>
+              <div>
+                <span className="badge b-success">{translate('Paid')}</span>
               </div>
-            </div>
+              <button className="btn btn-outline self-start mt-8" onClick={() => printReceipt(receiptOf(inv, { name: patient.name, ticket: patient.ticket, byName: user.name }))}>
+                <Icon name="printer" />
+                {translate('Reprint receipt')}
+              </button>
+            </>
+          ) : (
+            <>
+              <span className="lab">{translate('Payment method')}</span>
+              <div className="seg self-start">
+                {methods.map((m) => (
+                  <button key={m.key} className={method === m.key ? 'on' : ''} onClick={() => setMethod(m.key)}>
+                    <Icon name={m.key === 'transfer' ? 'qr-code' : 'banknote'} />
+                    {translate(m.label)}
+                  </button>
+                ))}
+              </div>
+              {method === 'transfer' && <span className="hint">{translate('Check that the transfer has arrived in the clinic’s bank account before confirming.')}</span>}
+              <Button className="btn btn-primary" style={{ alignSelf: 'flex-start', marginTop: 8 }} disabled={paying || !editable} onClick={() => pay()}>
+                <Icon name="check" />
+                {translate(method === 'transfer' ? 'Transfer received — collect' : 'Collect payment')}
+              </Button>
+            </>
           )}
-        </>
-      )}
+        </div>
+        <div className="rows" style={{ background: 'var(--surface-2)', borderRadius: 'var(--radius)', padding: '4px 14px' }}>
+          {totals.map(([l, v]) => (
+            <div className="r" key={l}>
+              <div className="t">
+                <span>{translate(l)}</span>
+              </div>
+              <span className="num">{fmt(v)}</span>
+            </div>
+          ))}
+          <div className="r">
+            <div className="t">
+              <b>{translate('Total')}</b>
+              <span className="num">
+                {inv.invoice_code} · {translate(paid ? 'Paid' : 'Awaiting payment')}
+              </span>
+            </div>
+            <b className="num" style={{ fontSize: 'var(--fs-lg)', color: 'var(--primary-ink)' }}>
+              {fmt(inv.total_amount)}
+            </b>
+          </div>
+        </div>
+      </div>
+
+      {!paid &&
+        (!cancelling ? (
+          <button
+            className="btn btn-ghost btn-sm text-danger mt-12"
+            disabled={!editable || items.some((l) => l.dispense_status === 'Dispensed')}
+            onClick={() => setCancelling(true)}
+            title={translate('The patient left without paying or taking the medication')}
+          >
+            {translate('Cancel this visit')}
+          </button>
+        ) : (
+          <div className="field mt-12">
+            <label>Reason for cancelling</label>
+            <input className="input" type="text" autoFocus value={cancelReason} onChange={(e) => setCancelReason(e.target.value)} placeholder={translate('e.g. patient left without paying')} />
+            <div className="d-flex gap-8 mt-6">
+              <button className="btn btn-outline btn-sm" onClick={() => setCancelling(false)}>
+                Back
+              </button>
+              <button className="btn btn-danger btn-sm" disabled={cancelReason.trim().length < 3} onClick={cancelVisitHere}>
+                Cancel visit &amp; return stock
+              </button>
+            </div>
+          </div>
+        ))}
     </div>
   )
 }

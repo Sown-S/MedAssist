@@ -13,6 +13,9 @@ const VI_FILE = join(SRC, 'i18n/vi.js')
 const KEEP = new Set([
   'M',
   'MedAssist',
+  'Med',
+  'Assist',
+  'Gemma SEA-LION 9B',
   'dd/mm/yyyy',
   '09xx xxx xxx',
   '0xx xxx xxx xxx',

@@ -9,7 +9,7 @@ export function ServerVisit({ visit, children }) {
   useEffect(() => {
     getVisitDetail(visit.id, visit.patientId).then(setDetail, (e) => setError(e.message))
   }, [visit.id, visit.patientId])
-  if (error) return <p className="ai-soft">{translate(error)}</p>
-  if (!detail) return <p className="ai-soft">{translate('Loading the visit…')}</p>
+  if (error) return <p className="muted">{translate(error)}</p>
+  if (!detail) return <p className="muted">{translate('Loading the visit…')}</p>
   return children({ ...visit, ...detail })
 }

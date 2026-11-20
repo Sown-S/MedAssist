@@ -7,6 +7,7 @@ import { getRelease, createRelease, submitRelease, dropDraft, OPEN_STATUSES } fr
 import { Empty } from '../ui'
 import { errorText } from './shared'
 import { ReleaseBadge, ChangeList, ctxOf, ReleaseHistory, ReleaseModal } from './releaseParts'
+import { ErrorNote } from '../../../components/DataState'
 
 function nextLabel(releases) {
   const y = new Date().getFullYear()
@@ -30,10 +31,10 @@ export default function ReleaseTab({ data, names, onChanged, autoCreate }) {
   useEffect(() => {
     setDetail(null)
     if (open) getRelease(open.release_id).then(setDetail, (e) => setErr(errorText(e)))
-  }, [open?.release_id, open?.status, data]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [open?.release_id, open?.status, data]) // eslint-disable-line react-hooks/exhaustive-deps -- open suy ra từ data, theo dõi id/trạng thái là đủ
   useEffect(() => {
     if (autoCreate && !open) setCreating(true)
-  }, [autoCreate]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [autoCreate]) // eslint-disable-line react-hooks/exhaustive-deps -- chỉ tự mở form tạo khi vừa được yêu cầu, không mở lại khi bản phát hành đóng
 
   async function run(fn, ok) {
     setErr('')
@@ -48,11 +49,11 @@ export default function ReleaseTab({ data, names, onChanged, autoCreate }) {
 
   return (
     <>
-      {err && <div className="kb-error">{err}</div>}
+      <ErrorNote>{err}</ErrorNote>
       {!open ? (
         <div className="kb-release-empty">
           <Empty icon="folder" title="No release is being drafted" text="Open a release to group your changes; a doctor approves the whole release at once." />
-          <div style={{ textAlign: 'center' }}>
+          <div className="text-center">
             <button className="btn btn-primary" onClick={() => setCreating(true)}>
               + Open a release
             </button>
@@ -60,48 +61,44 @@ export default function ReleaseTab({ data, names, onChanged, autoCreate }) {
         </div>
       ) : (
         <div className="card kb-release">
-          <div className="ai-toolbar">
+          <div className="toolbar">
             <div>
               <div className="card-title">
-                <span className="mono">{open.label}</span> <ReleaseBadge status={open.status} />
+                <span className="num">{open.label}</span> <ReleaseBadge status={open.status} />
               </div>
-              {open.description && <div className="ai-small ai-soft">{open.description}</div>}
+              {open.description && <div className="small muted">{open.description}</div>}
             </div>
             {open.status === 'Draft' && (
-              <button
-                className="btn btn-primary btn-sm"
-                disabled={!detail?.changes.length}
-                onClick={() => run(() => submitRelease(open.release_id), 'Sent to the doctor for approval')}
-              >
+              <button className="btn btn-primary btn-sm" disabled={!detail?.changes.length} onClick={() => run(() => submitRelease(open.release_id), 'Sent to the doctor for approval')}>
                 Submit for doctor review
               </button>
             )}
           </div>
           {open.status === 'Draft' && open.review_note && (
-            <div className="kb-banner warn">
-              <Icon name="alert" />
-              <span>
-                <b>Returned by the doctor:</b> {open.review_note}
-              </span>
+            <div className="banner w">
+              <Icon name="triangle-alert" />
+              <div className="txt">
+                <b>{translate('Returned by the doctor:')}</b> {open.review_note}
+              </div>
             </div>
           )}
           {open.status === 'PendingApproval' && (
-            <div className="kb-banner">
+            <div className="banner i">
               <Icon name="clock" />
-              <span>Waiting for a doctor (not the author) to approve or reject. Changes are locked meanwhile.</span>
+              <div className="txt">{translate('Waiting for a doctor (not the author) to approve or reject. Changes are locked meanwhile.')}</div>
             </div>
           )}
-          <ChangeList
-            detail={detail}
-            ctx={ctx}
-            onDrop={open.status === 'Draft' ? (c) => run(() => dropDraft(c.kind, c.key), 'Removed from the release') : null}
-          />
+          <ChangeList detail={detail} ctx={ctx} onDrop={open.status === 'Draft' ? (c) => run(() => dropDraft(c.kind, c.key), 'Removed from the release') : null} />
         </div>
       )}
 
-      <div className="card" style={{ marginTop: 14 }}>
-        <div className="card-title">Release history</div>
-        <ReleaseHistory releases={data.releases} onView={setViewing} />
+      <div className="card mt-14">
+        <div className="card-h">
+          <h3>Release history</h3>
+        </div>
+        <div className="card-b">
+          <ReleaseHistory releases={data.releases} onView={setViewing} />
+        </div>
       </div>
 
       <CreateReleaseModal
@@ -136,19 +133,19 @@ function CreateReleaseModal({ open, suggested, onClose, onCreate }) {
   return (
     <Modal open onClose={onClose}>
       <ModalHeader title="Open a release" onClose={onClose} />
-      <div className="modal-body">
+      <div className="modal-b">
         <div className="field">
           <label>Release label</label>
-          <input className="mono" value={label} maxLength={30} onChange={(e) => setLabel(e.target.value)} />
+          <input className="input num" value={label} maxLength={30} onChange={(e) => setLabel(e.target.value)} />
         </div>
-        <div className="field" style={{ marginTop: 10 }}>
+        <div className="field mt-10">
           <label>What changes (optional)</label>
-          <textarea rows={3} value={desc} onChange={(e) => setDesc(e.target.value)} placeholder="vd: Thêm nhóm bệnh da liễu" />
+          <textarea className="input" rows={3} value={desc} onChange={(e) => setDesc(e.target.value)} placeholder="vd: Thêm nhóm bệnh da liễu" />
         </div>
-        {err && <div className="kb-error">{err}</div>}
+        <ErrorNote>{err}</ErrorNote>
       </div>
-      <div className="modal-foot">
-        <button className="btn btn-ghost" onClick={onClose}>
+      <div className="modal-f">
+        <button className="btn btn-outline" onClick={onClose}>
           Cancel
         </button>
         <button className="btn btn-primary" disabled={!label.trim()} onClick={() => onCreate(label.trim(), desc.trim()).catch((e) => setErr(errorText(e)))}>

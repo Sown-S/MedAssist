@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import ConfirmModal from '../../../components/ConfirmModal'
 import Icon from '../../../components/Icon'
 import Button from '../../../components/Button'
@@ -18,7 +18,6 @@ import { printPrescription } from '../printRx'
 import { saveDraft, deleteDraft } from '../../../api/draftStore'
 import DocumentModal from '../DocumentModal'
 import { ReleaseModal, LeaveVisitModal } from '../doctorShared'
-import { ReminderPanel } from './ReminderPanel'
 import { serverStockIssue, serverItem, draftOf } from './rxDraft'
 import { usePastVisits } from './usePastVisits'
 import ConsultHeader from './ConsultHeader'
@@ -46,6 +45,15 @@ export default function ConsultForm({ visit, user, onDone, onNext }) {
   const [labOpen, setLabOpen] = useState(false)
   const [handing, setHanding] = useState(false)
   const [leaving, setLeaving] = useState(false)
+  // Menu "…" ở thanh thao tác (Bệnh nhân bỏ về, Trả về hàng chờ, In đơn thuốc) đóng khi bấm ra ngoài.
+  const [more, setMore] = useState(false)
+  const moreRef = useRef(null)
+  useEffect(() => {
+    if (!more) return
+    const close = (e) => !moreRef.current?.contains(e.target) && setMore(false)
+    document.addEventListener('mousedown', close)
+    return () => document.removeEventListener('mousedown', close)
+  }, [more])
   const [docs, setDocs] = useState(false)
   const [tried, setTried] = useState(false)
   const [short, setShort] = useState(null)
@@ -61,7 +69,10 @@ export default function ConsultForm({ visit, user, onDone, onNext }) {
     saveDraft(visit.id, d)
   }, [visit.id, d])
 
-  const ai = useAssessment(visit)
+  // Danh sách triệu chứng đã xác nhận, cập nhật khi bác sĩ lưu dấu hiệu khi khám; aiRun tăng khi đã chạy lại AI.
+  const [symptoms, setSymptoms] = useState(visit.symptoms ?? [])
+  const [aiRun, setAiRun] = useState(0)
+  const ai = useAssessment(visit, aiRun)
   function decideAi(c, decision) {
     setAiDecision((x) => ({ ...x, [c.condition_code]: decision }))
     if (decision === 'accepted') set({ diagnosis: [c.icd10_code, c.name_vi].filter(Boolean).join(' — ') })
@@ -84,12 +95,20 @@ export default function ConsultForm({ visit, user, onDone, onNext }) {
     try {
       await syncDiagnoses(visit.id, { primary: d.diagnosis, extra: d.diagnosesExtra ?? [], notes: notes || null, candidates: ai.candidates, assessmentId: ai.assessment_id })
       if (mapped.length) {
-        await savePrescription(visit.id, mapped.map((x) => x.item))
+        await savePrescription(
+          visit.id,
+          mapped.map((x) => x.item)
+        )
         await confirmPrescription(visit.id)
       } else await completeExam(visit.id)
     } catch (e) {
       if (e.code === 'STOCK_SHORTAGE') {
-        setShort(shortageOf(e, mapped.map((x) => x.line)))
+        setShort(
+          shortageOf(
+            e,
+            mapped.map((x) => x.line)
+          )
+        )
         reloadServerDrugs()
       }
       return showToast(e.message || translate('Something went wrong'), 'error')
@@ -133,53 +152,45 @@ export default function ConsultForm({ visit, user, onDone, onNext }) {
   const vit = d.vitals
 
   return (
-    <div className="doc-work">
-      <div className="card">
-        <ConsultHeader visit={visit} vit={vit} prev={prev} alerts={ai.alerts} />
+    <div className="doc-main">
+      <ConsultHeader visit={visit} vit={vit} prev={prev} alerts={ai.alerts} />
 
-        <div className="itabs" style={{ marginTop: 12 }}>
-          <button className={'itab' + (tab === 'clin' ? ' active' : '')} onClick={() => setTab('clin')}>
+      <div className="card">
+        <div className="utabs">
+          <button className={tab === 'clin' ? 'on' : ''} onClick={() => setTab('clin')}>
             Consultation (SOAP)
           </button>
-          <button className={'itab' + (tab === 'vitals' ? ' active' : '') + (tried && needWeight ? ' itab-err' : '')} onClick={() => setTab('vitals')}>
+          <button className={(tab === 'vitals' ? 'on' : '') + (tried && needWeight ? ' err' : '')} onClick={() => setTab('vitals')}>
             Vitals
           </button>
-          <button className={'itab' + (tab === 'hist' ? ' active' : '')} onClick={() => setTab('hist')}>
+          <button className={tab === 'hist' ? 'on' : ''} onClick={() => setTab('hist')}>
             History
           </button>
         </div>
+        <div className="card-b">
+          {tab === 'clin' && (
+            <SoapPanel visit={visit} symptoms={symptoms} onSymptoms={setSymptoms} onRerunAi={() => setAiRun((n) => n + 1)} d={d} set={set} tried={tried} ai={ai} aiDecision={aiDecision} decideAi={decideAi} />
+          )}
 
-        {tab === 'clin' && (
-          <SoapPanel
-            visit={visit}
-            d={d}
-            set={set}
-            tried={tried}
-            ai={ai}
-            aiDecision={aiDecision}
-            decideAi={decideAi}
-            labs={
-              <LabResultsEntry
-                visit={visit}
-                labOrders={labOrders}
-                labResults={d.labResults}
-                resultOf={resultOf}
-                conclusionOf={conclusionOf}
-                onResult={(key, value) => set({ labResults: { ...d.labResults, [key]: value } })}
-                onConclusion={(id, value) => set({ labConclusions: { ...d.labConclusions, [id]: value } })}
-                onCancelRow={setCancelRow}
-                onSave={() => saveLabResults({ toast: true })}
-                error={so.error}
-              />
-            }
-          />
-        )}
-
-        {tab === 'vitals' && <VitalsTab visit={visit} vitals={d.vitals} onChange={setVital} tried={tried} needWeight={needWeight} vitalErr={vitalErr} />}
-        {tab === 'hist' && <HistoryTab visit={visit} />}
+          {tab === 'vitals' && <VitalsTab visit={visit} vitals={d.vitals} onChange={setVital} tried={tried} needWeight={needWeight} vitalErr={vitalErr} />}
+          {tab === 'hist' && <HistoryTab visit={visit} />}
+        </div>
       </div>
 
-      <div className="card">
+      <LabResultsEntry
+        visit={visit}
+        labOrders={labOrders}
+        labResults={d.labResults}
+        resultOf={resultOf}
+        conclusionOf={conclusionOf}
+        onResult={(key, value) => set({ labResults: { ...d.labResults, [key]: value } })}
+        onConclusion={(id, value) => set({ labConclusions: { ...d.labConclusions, [id]: value } })}
+        onCancelRow={setCancelRow}
+        onSave={() => saveLabResults({ toast: true })}
+        error={so.error}
+      />
+
+      <div className="card rx-card">
         <RxEditor
           rx={d.rx}
           tried={tried}
@@ -196,36 +207,51 @@ export default function ConsultForm({ visit, user, onDone, onNext }) {
           onRemove={setDeleteTarget}
         />
 
-        <ReminderPanel visit={visit} />
         {tried && problem && (
-          <p className="ai-soft" style={{ color: '#FCD34D', fontSize: 12.5, margin: '12px 0 0' }}>
+          <p className="small" style={{ color: 'var(--warning)', margin: '12px 0 0' }}>
             {translate(problem)}
           </p>
         )}
-        <div className="consult-footer">
-          <button className="btn btn-ghost btn-sm" onClick={() => setLeaving(true)} title={translate('The patient left or refused — close the visit without an invoice')}>
-            <Icon name="x" /> Patient left
+      </div>
+
+      <div className="actbar">
+        <div className="tb" ref={moreRef}>
+          <button className="btn btn-ghost btn-icon" onClick={() => setMore(!more)} title={translate('More actions')} aria-label={translate('More actions')} aria-haspopup="menu" aria-expanded={more}>
+            <Icon name="ellipsis" />
           </button>
-          <button className="btn btn-ghost btn-sm" onClick={() => setHanding(true)} title={translate('Leaving the room? Send this patient back to the waiting queue')}>
-            <Icon name="repeat" /> Return to queue
-          </button>
-          {/* Chuyển tuyến kết thúc lượt khám — in giấy và đóng lượt, không có hoá đơn. */}
-          <button className="btn btn-ghost btn-sm" onClick={() => setDocs(true)} title={translate('Refer & end the visit')}>
-            <Icon name="printer" /> Refer to hospital
-          </button>
-          <button className="btn btn-ghost btn-sm" onClick={() => setLabOpen(true)} title="Alt+L">
-            <Icon name="flask" /> Order lab tests
-          </button>
-          <button className="btn btn-ghost btn-sm" onClick={printRx} disabled={!d.rx.length}>
-            <Icon name="printer" /> Print prescription
-          </button>
-          <Button className="btn btn-ghost btn-sm" disabled={finalizing} onClick={() => runFinalize(false)} title="Ctrl+Enter">
-            <Icon name="check" /> Finalize
-          </Button>
-          <Button className="btn btn-primary btn-sm" disabled={finalizing} onClick={() => runFinalize(true)} title="Ctrl+Shift+Enter">
-            <Icon name="megaphone" /> Finalize &amp; call next
-          </Button>
+          {more && (
+            <div className="menu open" role="menu" style={{ top: 'auto', bottom: 'calc(100% + 6px)', left: 0, right: 'auto' }}>
+              <button role="menuitem" onClick={() => (setMore(false), setLeaving(true))} title={translate('The patient left or refused — close the visit without an invoice')}>
+                <Icon name="log-out" />
+                {translate('Patient left')}
+              </button>
+              <button role="menuitem" onClick={() => (setMore(false), setHanding(true))} title={translate('Leaving the room? Send this patient back to the waiting queue')}>
+                <Icon name="repeat" />
+                {translate('Return to queue')}
+              </button>
+              <button role="menuitem" disabled={!d.rx.length} onClick={() => (setMore(false), printRx())}>
+                <Icon name="printer" />
+                {translate('Print prescription')}
+              </button>
+            </div>
+          )}
         </div>
+        <span className="sp" />
+        {/* Chuyển tuyến kết thúc lượt khám — in giấy và đóng lượt, không có hoá đơn. */}
+        <button className="btn btn-outline btn-sm" onClick={() => setDocs(true)} title={translate('Refer & end the visit')}>
+          <Icon name="send" />
+          {translate('Refer to hospital')}
+        </button>
+        <button className="btn btn-outline btn-sm" onClick={() => setLabOpen(true)} title="Alt+L">
+          <Icon name="flask-conical" />
+          {translate('Order lab tests')}
+        </button>
+        <Button className="btn btn-outline btn-sm" disabled={finalizing} onClick={() => runFinalize(false)} title="Ctrl+Enter">
+          <Icon name="check" /> <span>Finalize</span>
+        </Button>
+        <Button className="btn btn-primary btn-sm" disabled={finalizing} onClick={() => runFinalize(true)} title="Ctrl+Shift+Enter">
+          <Icon name="check-check" /> <span>Finalize &amp; call next</span>
+        </Button>
       </div>
 
       {labOpen && (
@@ -296,4 +322,3 @@ export default function ConsultForm({ visit, user, onDone, onNext }) {
     </div>
   )
 }
-

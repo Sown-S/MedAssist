@@ -9,7 +9,7 @@ import { labRows, syncQueue } from '../../api/queueStore'
 import { searchFacilities, referVisit, emergencyReferral, updateReferral } from '../../api/clinicApi'
 import { apiMessage } from '../../api/serviceStore'
 import { printHtml, esc } from '../admin/inventory/shared'
-import { dmy } from '../reception/shared'
+import { dmy } from '../../utils/format'
 
 // Giấy chuyển tuyến. Chuyển tuyến kết thúc lượt khám và lưu ở server (ERD v2.0). mode:
 // 'print' chỉ điền và in, không lưu · 'doctor' chuyển lượt đang khám (PATCH /visits/{id}/refer) · 'desk' lễ tân chuyển lượt
@@ -35,7 +35,7 @@ function patientMeta(s, t) {
     ${s.history ? `<p class="meta">${esc(t('Chronic conditions'))}: ${esc(t(s.history))}</p>` : ''}`
 }
 const sign = (name, role, t) =>
-  `<p class="meta" style="margin-top:22px;text-align:right">${esc(dmy(new Date().toISOString()))}<br>${esc(t(role))}<br><small>${esc(t('(signature, full name)'))}</small><br><br><b>${esc(name)}</b></p>`
+  `<div class="sig">${esc(dmy(new Date().toISOString()))}<br><b>${esc(t(role))}</b><small>${esc(t('(signature, full name)'))}</small><b>${esc(name)}</b></div>`
 const labsText = (s) =>
   (s.labOrders ?? [])
     .flatMap(labRows)
@@ -157,23 +157,23 @@ export default function DocumentModal({ subject, onClose, mode = 'print', target
   return (
     <Modal open onClose={onClose} wide>
       <ModalHeader title={translate(title) + ' — ' + subject.name} onClose={onClose} />
-      <div className="modal-body">
-        {mode === 'doctor' && <p className="ai-hint">The visit ends as “Referred”: no prescription, no invoice. You can add to the letter later from the patient’s record.</p>}
-        {desk && <p className="ai-hint">Send the patient to hospital now (call 115 if needed). The visit is closed as “Referred” and doctors can complete the letter later.</p>}
-        <fieldset className="form-grid cols-2 doc-fields" disabled={mode === 'reprint'}>
+      <div className="modal-b">
+        {mode === 'doctor' && <p className="hint">The visit ends as “Referred”: no prescription, no invoice. You can add to the letter later from the patient’s record.</p>}
+        {desk && <p className="hint">Send the patient to hospital now (call 115 if needed). The visit is closed as “Referred” and doctors can complete the letter later.</p>}
+        <fieldset className="fg doc-fields" disabled={mode === 'reprint'}>
           <div className="field">
             <label>
               Referred to <span className="req">*</span>
             </label>
             {mode === 'print' || mode === 'reprint' ? (
-              <input type="text" autoFocus value={ref.to} onChange={(e) => setR({ to: e.target.value })} placeholder="e.g. Emergency department, Provincial General Hospital" />
+              <input className="input" type="text" autoFocus value={ref.to} onChange={(e) => setR({ to: e.target.value })} placeholder="e.g. Emergency department, Provincial General Hospital" />
             ) : (
               <FacilityInput value={ref.to} onChange={(to, facilityId = null) => setR({ to, facilityId })} />
             )}
           </div>
           <div className="field">
             <label>Reason for referral</label>
-            <select value={ref.reason} onChange={(e) => setR({ reason: e.target.value })}>
+            <select className="input" value={ref.reason} onChange={(e) => setR({ reason: e.target.value })}>
               {reasons.map((r) => (
                 <option key={r} value={r}>
                   {r}
@@ -182,30 +182,30 @@ export default function DocumentModal({ subject, onClose, mode = 'print', target
             </select>
           </div>
           {desk && (
-            <div className="field" style={{ gridColumn: '1 / -1' }}>
+            <div className="field span-all">
               <label>Warning signs</label>
-              <input type="text" value={ref.signs} onChange={(e) => setR({ signs: e.target.value })} placeholder="e.g. Crushing chest pain, sweating" />
+              <input className="input" type="text" value={ref.signs} onChange={(e) => setR({ signs: e.target.value })} placeholder="e.g. Crushing chest pain, sweating" />
             </div>
           )}
-          <div className="field" style={{ gridColumn: '1 / -1' }}>
+          <div className="field span-all">
             <label>Diagnosis {!desk && <span className="req">*</span>}</label>
-            <input type="text" value={ref.diagnosis} onChange={(e) => setR({ diagnosis: e.target.value })} />
+            <input className="input" type="text" value={ref.diagnosis} onChange={(e) => setR({ diagnosis: e.target.value })} />
           </div>
-          <div className="field" style={{ gridColumn: '1 / -1' }}>
+          <div className="field span-all">
             <label>Clinical summary</label>
-            <textarea className="doc-ta" rows="3" value={ref.summary} onChange={(e) => setR({ summary: e.target.value })} />
+            <textarea className="input doc-ta" rows="3" value={ref.summary} onChange={(e) => setR({ summary: e.target.value })} />
           </div>
           <div className="field">
             <label>Treatment given</label>
-            <input type="text" value={ref.treatment} onChange={(e) => setR({ treatment: e.target.value })} />
+            <input className="input" type="text" value={ref.treatment} onChange={(e) => setR({ treatment: e.target.value })} />
           </div>
           <div className="field">
             <label>Condition at referral</label>
-            <input type="text" value={ref.condition} onChange={(e) => setR({ condition: e.target.value })} placeholder="e.g. Conscious, BP 90/60, SpO2 93%" />
+            <input className="input" type="text" value={ref.condition} onChange={(e) => setR({ condition: e.target.value })} placeholder="e.g. Conscious, BP 90/60, SpO2 93%" />
           </div>
           <div className="field">
             <label>Transport</label>
-            <select value={ref.transport} onChange={(e) => setR({ transport: e.target.value })}>
+            <select className="input" value={ref.transport} onChange={(e) => setR({ transport: e.target.value })}>
               {TRANSPORTS.map(([x]) => (
                 <option key={x} value={x}>
                   {x}
@@ -215,12 +215,12 @@ export default function DocumentModal({ subject, onClose, mode = 'print', target
           </div>
         </fieldset>
       </div>
-      <div className="modal-foot">
-        <button className="btn btn-ghost" onClick={onClose}>
+      <div className="modal-f">
+        <button className="btn btn-outline" onClick={onClose}>
           Close
         </button>
         {mode === 'amend' && (
-          <button className="btn btn-ghost" onClick={() => print()}>
+          <button className="btn btn-outline" onClick={() => print()}>
             <Icon name="printer" /> Reprint
           </button>
         )}
@@ -262,7 +262,7 @@ function FacilityInput({ value, onChange }) {
   }, [value])
   return (
     <div className="fac-input">
-      <input
+      <input className="input"
         type="text"
         autoFocus
         value={value}

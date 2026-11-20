@@ -32,7 +32,7 @@ bàn giao bệnh nhân, giấy nghỉ ốm, tóm tắt bệnh án, phân quyền
 
 ## 1. Chạy dự án
 
-Yêu cầu: **Node.js 18+** (đã thử với Node 24). Electron mở cửa sổ thật nên phải chạy trên máy, không chạy trong trình duyệt.
+Yêu cầu: **Node.js 22.12+** (Vite 8, Vitest 5; CI dùng Node 22). Electron mở cửa sổ thật nên phải chạy trên máy, không chạy trong trình duyệt.
 
 ```powershell
 cd client
@@ -48,6 +48,7 @@ npm run dev        # Vite dev server + cửa sổ Electron, sửa code thấy ng
 | `npm start` | Chạy thử bản đã build trong `out/` |
 | `npm run build:win` | Build + đóng gói bản cài Windows (NSIS) vào `dist/`, kèm `certs/*.crt`. `:mac`, `:linux` tương tự |
 | `npm run eval` | Build theo `.env.eval` (nối `http://127.0.0.1:8000` của `deploy/docker-compose.eval.yml`) rồi mở app: kiểm thử trên một máy, xem [`docs/huong-dan-kiem-thu.md`](../docs/huong-dan-kiem-thu.md) |
+| `npm run smoke` | Build bản eval, mở Electron thật và kiểm tra màn khởi động (chưa có server) + màn đăng nhập (server giả trên cổng 8000) vẽ kín cửa sổ, không trắng; ảnh chụp ở `out/smoke/`. Cổng 8000 phải trống (tắt Docker eval trước). Linux không có màn hình: `xvfb-run -a npm run smoke` |
 | `npm run dist:eval` | Bản cài kiểm thử cho hệ điều hành đang dùng. Bản Windows + macOS do workflow `.github/workflows/release.yml` build khi merge vào `main` |
 
 **Biến môi trường**: chép `.env.example` thành `.env` (file riêng của máy, không commit), sửa rồi chạy lại `npm run dev`:
@@ -80,9 +81,9 @@ và chỉ nhận địa chỉ `https://` khi server không phải máy này.
 
 | Thành phần | Dùng gì |
 |---|---|
-| Vỏ desktop | Electron 31 (`src/main`, `src/preload`) |
-| Build | electron-vite 2 + Vite 5 + `@vitejs/plugin-react` |
-| Giao diện | React 18, react-router-dom 6 (**HashRouter**) |
+| Vỏ desktop | Electron 45 (`src/main`, `src/preload`) |
+| Build | electron-vite 6 + Vite 8 + `@vitejs/plugin-react`; đóng gói bằng electron-builder 26 |
+| Giao diện | React 18, react-router-dom 7 (**HashRouter**) |
 | Font | Plus Jakarta Sans (`@fontsource-variable`), IBM Plex Mono cho số |
 | CSS | `global.css` nạp các file trong `styles/` theo thứ tự cascade; không dùng framework CSS |
 | Trạng thái | Store module + `useSyncExternalStore` (không Redux), Context cho Auth và Toast |
@@ -122,7 +123,7 @@ client/
    └─ renderer/src/
       ├─ main.jsx            Khởi động: nạp i18n TRƯỚC, đọc cấu hình server, rồi HashRouter + App
       ├─ App.jsx             Khung app: thanh trên, tab theo vai trò, Routes + RequireRole
-      ├─ global.css, styles/ 01-tokens-base … 19-connection-intake: mỗi file một vùng giao diện
+      ├─ global.css, styles/ 10-legacy (CSS cũ còn dùng), 90-mock (giao diện chính), 91-app-extras (bổ sung), 92-utilities (lớp tiện ích)
       ├─ api/                LỚP DỮ LIỆU (§6, §10)
       │  ├─ client.js          apiGet / apiPost / apiRequest, ApiError, refresh token, checkHealth
       │  ├─ serverConfig.js    Địa chỉ server của máy, tokenStore (safeStorage)
@@ -360,7 +361,7 @@ Cơ chế:
 
 ## 8. Quy ước giao diện
 
-- **Design tokens** đặt ở `:root` trong `styles/01-tokens-base.css`: `--surface`, `--surface-alt`, `--surface-hover`, `--solid`, `--ink`, `--ink-soft`, `--primary`, `--primary-soft`, `--accent`, `--warn`, `--border`, `--field-bg`, `--radius`… Giao diện là **nền tối duy nhất**. Không dùng mã màu sáng kiểu `#EEF2ED` (sót lại từ mockup cũ, không hợp với nền tối).
+- **Design tokens** (màu, bo góc, bóng, cỡ chữ) đặt ở `:root` trong `styles/90-mock.css`; giao diện tối ghi đè ở `[data-theme="dark"]`. Dùng biến (`var(--surface)`, `var(--ink)`, `var(--primary)`, `var(--danger)`…) thay vì mã màu viết cứng để cả hai giao diện sáng / tối đều đúng.
 - **Lớp CSS dùng lại**: `card`, `card-title` (+ `.cnt`), `btn btn-primary|btn-ghost|btn-sm`, `icon-btn sm|danger`, `badge ok|warn|low|muted|info`, `dt` (bảng), `field`, `form-grid cols-2|cols-4`, `itabs/itab`, `ai-seg` (nút phân đoạn), `cash-filters` (thanh lọc), `empty-state`, `warn-banner danger|caution`, `dash-cards/dash-card`, `dash-actions`, `rev-cards`, `inv-stats`, `status-row`, `meter`, `drug-grid`.
 - **Icon**: `<Icon name="…" />` (SVG theo `currentColor`). **Không dùng emoji.**
 - **Modal**: dùng `Modal` + `ModalHeader`; xác nhận thì dùng `ConfirmModal`; thao tác nhạy cảm thì dùng `ReauthModal` (nhập lại mật khẩu). Không dùng `alert/confirm` của trình duyệt.
@@ -368,7 +369,9 @@ Cơ chế:
 - **Tiền**: `toLocaleString('vi-VN') + 'đ'` (`fmt` trong `reception/shared.js`, `fmtMoney` trong `admin/inventory/shared.jsx`). **Ngày** hiện `dd/mm/yyyy`, **giờ** 24h.
 - **In ấn**: `printHtml(title, bodyHtml, docKind)` trong `pages/admin/inventory/shared.jsx`. Hàm này in qua iframe ẩn, khổ giấy lấy theo **Cài đặt › In ấn** cho từng loại chứng từ (`prescription`, `labOrder`, `invoice`, `other`). Luôn `esc()` dữ liệu người dùng.
 - **Dropdown tìm kiếm**: dùng `onMouseDown` cho lựa chọn (chạy trước `onBlur` của ô nhập).
-- **CSS mới** thêm vào cuối file `styles/` của vùng tương ứng (hoặc file mới ở cuối danh sách trong `global.css`); thứ tự import là thứ tự cascade, không đổi.
+- **CSS mới** viết vào `styles/91-app-extras.css` (hoặc `90-mock.css` nếu thuộc khung giao diện chính); không thêm vào `10-legacy.css`, sửa màn nào thì chuyển dần rule cũ của màn đó sang. Thứ tự import trong `global.css` là thứ tự cascade, không đổi.
+- **Style inline** (`style={{...}}`) chỉ dùng cho giá trị theo dữ liệu (độ rộng %, toạ độ, màu theo trạng thái); khoảng cách / cỡ cố định dùng lớp trong `styles/92-utilities.css` (`mt-14`, `w-160`, `text-danger`…).
+- **Định dạng** tiền, số, ngày giờ dùng hàm trong `utils/format.js` (`money`, `fmtNum`, `fmtDateTime`, `hhmm`…), không tự gọi `toLocaleString`.
 - Màn hình hẹp: các lưới có `@media (max-width:1100px)` để chuyển còn 1–2 cột.
 
 ---
@@ -435,7 +438,7 @@ Thẻ **Gợi ý tham khảo** theo `ai_status`: `Pending` (đang phân tích), 
 | `ui-screens.test.jsx`, `ui-error-boundary.test.jsx` | Mọi màn chính của 3 vai trò dựng được; lưới bắt lỗi giao diện |
 | `i18n.test.js`, `profile.test.js` | Mọi chuỗi giao diện có bản dịch; tham số `--profile` |
 
-CI (`.github/workflows/ci.yml`, job *Client*) chạy `npm run lint` và `npm test` cho mỗi PR; trước khi commit nên tự chạy thêm `npm run build`.
+CI (`.github/workflows/ci.yml`, job *Client*) chạy `npm run lint`, `npm test` và `npm run smoke` (Electron thật dưới xvfb; lỗi thì tải ảnh chụp ở mục Artifacts của lần chạy) cho mỗi PR; trước khi commit nên tự chạy thêm `npm run build`.
 
 ## 13. Lưu ý quan trọng và lỗi hay gặp
 

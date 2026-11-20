@@ -23,12 +23,25 @@ function publish(next) {
   listeners.forEach((fn) => fn())
 }
 
+// short: tên ngắn hiển thị (server cho phép trống); aliases: từ đồng nghĩa bệnh nhân hay dùng (“sổ mũi”, “nóng sốt”),
+// chỉ dùng để tìm; detection: reported (bệnh nhân kể) | exam (dấu hiệu khi khám) | both.
+// Server cũ chưa có các trường này → không có từ đồng nghĩa, coi như both, hiện tên đầy đủ.
+const DETECTIONS = ['reported', 'exam', 'both']
+const fromRow = (r) => ({
+  key: r.symptom_code,
+  label: r.symptom_name,
+  short: r.short_name?.trim() || '',
+  aliases: Array.isArray(r.aliases) ? r.aliases.map((a) => String(a).trim()).filter(Boolean) : [],
+  category: r.category,
+  detection: DETECTIONS.includes(r.detection) ? r.detection : 'both'
+})
+
 export async function loadSymptomCatalog() {
   if (snapshot.status === 'loading') return
   publish({ status: 'loading' })
   try {
     const rows = await apiGet('/api/v1/symptoms')
-    publish({ list: rows.map((r) => ({ key: r.symptom_code, label: r.symptom_name, category: r.category })), status: 'ready' })
+    publish({ list: rows.map(fromRow), status: 'ready' })
   } catch {
     publish({ status: 'failed' })
   }
@@ -36,6 +49,13 @@ export async function loadSymptomCatalog() {
 
 // Theo danh mục đang dùng, không có thì là chính mã.
 export const symptomName = (code) => snapshot.list.find((s) => s.key === code)?.label ?? code
+// Tên hiển thị: tên ngắn nếu có, không thì tên đầy đủ. title chỉ có khi tên ngắn khác tên đầy đủ (rê chuột xem).
+export const displayName = (s) => s?.short || s?.label || s?.key || ''
+export const fullNameTitle = (s) => (s?.short && s.short !== s.label ? s.label : undefined)
+export const symptomOf = (code) => snapshot.list.find((s) => s.key === code)
+// Dấu hiệu khi khám (detection = exam): lễ tân không hỏi được, chỉ bác sĩ ghi ở phần khám.
+export const isExamSign = (s) => s?.detection === 'exam'
+export const isExamCode = (code) => isExamSign(symptomOf(code))
 
 export function useSymptomCatalog() {
   const s = useSyncExternalStore((fn) => (listeners.add(fn), () => listeners.delete(fn)), () => snapshot)
@@ -77,15 +97,23 @@ export function groupSymptoms(list) {
 // Thứ tự: tên mở đầu đúng các từ đã gõ → tên có đủ các từ nguyên vẹn → còn lại (từ cuối có thể đang gõ dở).
 const CONNECTORS = new Set(['hoac'])
 const wordsOf = (label) => fold(label).split(/[^a-z0-9]+/).filter((w) => w && !CONNECTORS.has(w))
+// Xét tên đầy đủ, tên ngắn và từ đồng nghĩa, lấy hạng tốt nhất. Cùng hạng thì khớp theo tên đứng trước khớp theo
+// từ đồng nghĩa (hạng + 0.5).
+function rankIn(label, q) {
+  const words = wordsOf(label)
+  if (!q.every((w) => words.some((x) => x.startsWith(w)))) return null
+  return q.every((w, j) => words[j] === w) ? 0 : q.every((w) => words.includes(w)) ? 1 : 2
+}
 export function searchSymptoms(list, query) {
   const q = fold(query).split(/[^a-z0-9]+/).filter(Boolean)
   if (!q.length) return []
   const hits = []
   list.forEach((s, i) => {
-    const words = wordsOf(s.label)
-    if (!q.every((w) => words.some((x) => x.startsWith(w)))) return
-    const rank = q.every((w, j) => words[j] === w) ? 0 : q.every((w) => words.includes(w)) ? 1 : 2
-    hits.push({ s, rank, i })
+    const byName = [rankIn(s.label, q), s.short ? rankIn(s.short, q) : null]
+    const byAlias = (s.aliases ?? []).map((a) => rankIn(a, q)).map((r) => (r === null ? null : r + 0.5))
+    const ranks = [...byName, ...byAlias].filter((r) => r !== null)
+    if (!ranks.length) return
+    hits.push({ s, rank: Math.min(...ranks), i })
   })
   return hits.sort((a, b) => a.rank - b.rank || a.i - b.i).map((h) => h.s)
 }

@@ -103,6 +103,8 @@ def enqueue_assessment(db: Session, visit_id: uuid.UUID, actor: User, reader: Kn
         raise AppError(
             409, "VISIT_CLOSED", "Lượt khám đã kết thúc, không chạy đánh giá AI", [{"current": visit.status}]
         )
+    if actor.role == "Physician" and (visit.status != "Examining" or visit.physician_id != actor.user_id):
+        raise AppError(409, "NOT_YOUR_VISIT", "Chỉ bác sĩ đang khám lượt này mới chạy lại được đánh giá AI")
 
     features = build_input_features(db, visit)
     if hasattr(reader, "refresh"):

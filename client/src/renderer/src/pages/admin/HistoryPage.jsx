@@ -3,11 +3,16 @@ import Icon from '../../components/Icon'
 import { useToast } from '../../context/ToastContext'
 import { translate } from '../../i18n'
 import { ACTION_TYPES, ACTION_LABEL, ACTION_TONE as TONE, listAuditLogs, exportAuditLogs } from '../../api/auditApi'
+import Skeleton from '../../components/Skeleton'
+import { ErrorNote } from '../../components/DataState'
+import Clip from '../../components/Clip'
+import DateField from '../../components/DateField'
+import { fmtNum, fmtDateTime } from '../../utils/format'
 
 // Nhật ký hoạt động trên server (US09). Với bệnh nhân / lượt khám chỉ ghi tên trường thay đổi, không ghi giá trị (Quy định v5 §7).
 const PAGE = 50
 const EMPTY = { username: '', action_type: '', target_entity: '', from: '', to: '' }
-const when = (iso) => new Date(iso).toLocaleString('vi-VN', { dateStyle: 'short', timeStyle: 'medium' })
+const when = (iso) => fmtDateTime(iso, { seconds: true })
 const changes = (x) => {
   const keys = [...new Set([...Object.keys(x.old_values ?? {}), ...Object.keys(x.new_values ?? {})])]
   return keys.length ? keys.join(', ') : ''
@@ -42,124 +47,131 @@ export default function HistoryPage() {
   const pages = data ? Math.max(1, Math.ceil(data.total / PAGE)) : 1
 
   return (
-    <div>
-      <div className="page-head">
+    <div className="vflow">
+      <div className="pg-h">
         <div>
-          <h1>Activity history</h1>
+          <h2>Activity history</h2>
           <p>Who did what and when — sign-ins, record views, changes, approvals and AI assessments. Entries can never be edited or deleted.</p>
         </div>
-        <div className="ai-toolbar-right">
-          <button className="btn btn-ghost btn-sm" onClick={() => download('xlsx')}>
-            <Icon name="download" /> Export Excel
+        <div className="act">
+          <button className="btn btn-outline" onClick={() => download('xlsx')}>
+            <Icon name="download" />
+            {translate('Export Excel')}
           </button>
-          <button className="btn btn-ghost btn-sm" onClick={() => download('csv')}>
-            <Icon name="download" /> Export CSV
+          <button className="btn btn-outline" onClick={() => download('csv')}>
+            <Icon name="download" />
+            {translate('Export CSV')}
           </button>
         </div>
       </div>
 
       <div className="card">
-        <div className="form-grid cols-4">
-          <div className="field">
-            <label>Account</label>
-            <input value={draft.username} onChange={(e) => setDraft({ ...draft, username: e.target.value })} placeholder="vd: bs01" />
-          </div>
-          <div className="field">
-            <label>Action</label>
-            <select value={draft.action_type} onChange={(e) => setDraft({ ...draft, action_type: e.target.value })}>
-              <option value="">All</option>
+        <div className="card-b">
+          <div className="toolbar mb-14">
+            <input
+              className="input w-170 h-40"
+              value={draft.username}
+              onChange={(e) => setDraft({ ...draft, username: e.target.value })}
+              placeholder={translate('Account') + ': vd bs01'}
+              aria-label={translate('Account')}
+            />
+            <select className="select" value={draft.action_type} onChange={(e) => setDraft({ ...draft, action_type: e.target.value })} aria-label={translate('Action')}>
+              <option value="">{translate('Action') + ': ' + translate('All')}</option>
               {ACTION_TYPES.map((a) => (
                 <option key={a} value={a}>
                   {translate(ACTION_LABEL[a])}
                 </option>
               ))}
             </select>
-          </div>
-          <div className="field">
-            <label>From</label>
-            <input type="date" value={draft.from} onChange={(e) => setDraft({ ...draft, from: e.target.value })} />
-          </div>
-          <div className="field">
-            <label>To</label>
-            <input type="date" value={draft.to} onChange={(e) => setDraft({ ...draft, to: e.target.value })} />
-          </div>
-          <div className="field">
-            <label>Object (table)</label>
-            <input value={draft.target_entity} onChange={(e) => setDraft({ ...draft, target_entity: e.target.value })} placeholder="vd: visit, patient, invoice" />
-          </div>
-        </div>
-        <div className="ai-toolbar" style={{ marginTop: 12 }}>
-          <span className="ai-soft ai-small">
-            {data ? (
-              <>
-                <b className="mono">{data.total.toLocaleString('vi-VN')}</b> <span>entries</span>
-              </>
-            ) : (
-              '…'
-            )}
-          </span>
-          <div className="ai-toolbar-right">
+            <DateField style={{ width: 160 }} title={translate('From')} aria-label={translate('From')} placeholder={translate('From')} value={draft.from} onChange={(v) => setDraft({ ...draft, from: v })} />
+            <DateField style={{ width: 160 }} title={translate('To')} aria-label={translate('To')} placeholder={translate('To')} value={draft.to} onChange={(v) => setDraft({ ...draft, to: v })} />
+            <input
+              className="input w-210 h-40"
+              value={draft.target_entity}
+              onChange={(e) => setDraft({ ...draft, target_entity: e.target.value })}
+              placeholder={translate('Object (table)') + ': visit, patient…'}
+              aria-label={translate('Object (table)')}
+            />
             <button className="btn btn-ghost btn-sm" onClick={() => (setDraft(EMPTY), setPage(0), setFilters(EMPTY))}>
-              Clear filters
+              {translate('Clear filters')}
             </button>
             <button className="btn btn-primary btn-sm" onClick={apply}>
-              <Icon name="search" /> Filter
+              <Icon name="search" />
+              {translate('Filter')}
             </button>
+            <div className="sp" />
+            <span className="muted small">
+              {data ? (
+                <>
+                  <b className="num">{fmtNum(data.total)}</b> <span>entries</span>
+                </>
+              ) : (
+                '…'
+              )}
+            </span>
           </div>
-        </div>
-      </div>
 
-      <div className="card" style={{ marginTop: 14 }}>
-        {err && <div className="kb-error">{err}</div>}
-        {!data && !err && <p className="ai-soft">Loading…</p>}
-        {data && (
-          <div className="ai-table-wrap">
-            <table className="dt">
-              <thead>
-                <tr>
-                  <th>Time</th>
-                  <th>Account</th>
-                  <th>Action</th>
-                  <th>Object</th>
-                  <th>Fields changed</th>
-                  <th>IP</th>
-                </tr>
-              </thead>
-              <tbody>
-                {data.items.map((x) => (
-                  <tr key={x.log_id} onClick={() => setOpen(open === x.log_id ? null : x.log_id)} style={{ cursor: 'pointer' }}>
-                    <td className="mono ai-small">{when(x.created_at)}</td>
-                    <td>{x.username ?? (x.attempted_username ? <span className="sp-warn">{x.attempted_username}</span> : <span className="ai-soft">—</span>)}</td>
-                    <td>
-                      <span className={'badge ' + (TONE[x.action_type] ?? '')}>{translate(ACTION_LABEL[x.action_type] ?? x.action_type)}</span>
-                    </td>
-                    <td className="mono ai-small">
-                      {x.target_entity}
-                      {open === x.log_id && x.entity_id && <div className="ai-soft">{x.entity_id}</div>}
-                    </td>
-                    <td className="ai-small">
-                      {changes(x) || <span className="ai-soft">—</span>}
-                      {open === x.log_id && (x.old_values || x.new_values) && <pre className="kb-json">{JSON.stringify({ old: x.old_values, new: x.new_values }, null, 2)}</pre>}
-                    </td>
-                    <td className="mono ai-small">{x.ip_address ?? '—'}</td>
+          <ErrorNote>{err}</ErrorNote>
+          {!data && !err && <Skeleton rows={6} cols={5} />}
+          {data && (
+            <div className="tbl-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Time</th>
+                    <th>Account</th>
+                    <th>Action</th>
+                    <th>Object</th>
+                    <th>Fields changed</th>
+                    <th>IP</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-            {!data.items.length && <p className="ai-soft">No entries match.</p>}
-          </div>
-        )}
-        <div className="ai-toolbar" style={{ marginTop: 10 }}>
-          <span className="ai-small ai-soft">
-            <span>Page</span> <span className="mono">{page + 1}</span> / <span className="mono">{pages}</span>
-          </span>
-          <div className="ai-toolbar-right">
-            <button className="btn btn-ghost btn-sm" disabled={page === 0} onClick={() => setPage(page - 1)}>
-              ← Previous
-            </button>
-            <button className="btn btn-ghost btn-sm" disabled={page + 1 >= pages} onClick={() => setPage(page + 1)}>
-              Next →
-            </button>
+                </thead>
+                <tbody>
+                  {data.items.map((x) => (
+                    <tr className="pointer" key={x.log_id} onClick={() => setOpen(open === x.log_id ? null : x.log_id)}>
+                      <td className="num">{when(x.created_at)}</td>
+                      <td>{x.username ?? (x.attempted_username ? <span className="sp-warn">{x.attempted_username}</span> : <span className="muted">—</span>)}</td>
+                      <td>
+                        {['low', 'warn'].includes(TONE[x.action_type]) ? (
+                          <span className={'badge ' + TONE[x.action_type]}>{translate(ACTION_LABEL[x.action_type] ?? x.action_type)}</span>
+                        ) : (
+                          translate(ACTION_LABEL[x.action_type] ?? x.action_type)
+                        )}
+                      </td>
+                      <td className="num">
+                        {x.target_entity}
+                        {open === x.log_id && x.entity_id && <div className="muted">{x.entity_id}</div>}
+                      </td>
+                      <td className="muted">
+                        {changes(x) ? (
+                          <Clip lines={2} title={translate('Changed fields')}>
+                            {changes(x)}
+                          </Clip>
+                        ) : (
+                          <span className="muted">—</span>
+                        )}
+                        {open === x.log_id && (x.old_values || x.new_values) && <pre className="kb-json">{JSON.stringify({ old: x.old_values, new: x.new_values }, null, 2)}</pre>}
+                      </td>
+                      <td className="num">{x.ip_address ?? '—'}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              {!data.items.length && <p className="muted">No entries match.</p>}
+            </div>
+          )}
+          <div className="pager">
+            <span>
+              <span>Page</span> <span className="num">{page + 1}</span> / <span className="num">{pages}</span>
+            </span>
+            <span className="acts">
+              <button className="btn btn-outline btn-sm" disabled={page === 0} onClick={() => setPage(page - 1)}>
+                {translate('← Previous')}
+              </button>
+              <button className="btn btn-outline btn-sm" disabled={page + 1 >= pages} onClick={() => setPage(page + 1)}>
+                {translate('Next →')}
+              </button>
+            </span>
           </div>
         </div>
       </div>

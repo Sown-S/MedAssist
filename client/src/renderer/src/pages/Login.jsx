@@ -2,12 +2,17 @@ import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { changePassword } from "../api/authApi";
 import { usePasswordMinLength } from "../api/accountStore";
-import { LANGUAGES, getLang, setLang } from "../i18n";
 import ServerAddress from "../components/ServerAddress";
-import VersionBanners from "../components/VersionBanners";
-import AppIcon from "../components/Icon";
+import UpdateBell from "../components/VersionBanners";
+import LoginSettings from "../components/LoginSettings";
+import AppIcon, { Logo } from "../components/Icon";
+import { translate } from "../i18n";
+import loginPhoto from "../assets/login-clinic.jpg";
+import roomPhoto from "../assets/login-room.jpg";
+import teamPhoto from "../assets/login-team.jpg";
+import recordsPhoto from "../assets/login-records.jpg";
 import Button from "../components/Button";
-import { Icon, ICONS } from "./LoginIcons";
+import { version as appVersion } from "../../../../package.json";
 
 const ROLE_CARDS = [
   { key: "doctor", label: "Doctor" },
@@ -76,180 +81,170 @@ export default function Login() {
     setError("");
   }
 
+  const roleIcon = { doctor: 'stethoscope', reception: 'clipboard-list', admin: 'shield' }
+  const errBox = (msg) => (
+    <div className="err d-flex" role="alert">
+      <AppIcon name="circle-alert" />
+      <span>{msg}</span>
+    </div>
+  )
+  const shownError = error || (!pending && notice)
+
   return (
-    <div className="login-screen">
-      <div className="login-wrap">
-        <div className="login-head">
-          <div className="login-logo">
-            <Icon>{ICONS.logo}</Icon>
-          </div>
-          <h2 className="login-title">
-            {pending ? "Set a New Password" : "Welcome Back"}
-          </h2>
-          <p className="sub">
-            {pending
-              ? pending.expired
-                ? "Your password has expired — please set a new one."
-                : "Please set a password of your own before continuing."
-              : "Sign in to the MedAssist clinic management system"}
-          </p>
+    <div className="login view">
+      <LoginHero />
+      <section className="login-right">
+        {/* Góc phải trên: chuông cập nhật (bản mới / lệch version với máy chủ) và cài đặt (ngôn ngữ, giao diện, máy chủ). */}
+        <div className="login-tools">
+          <UpdateBell />
+          <LoginSettings onServer={() => setServerOpen((v) => !v)} />
         </div>
-
-        {/* Bản mới trên GitHub / lệch version với máy chủ: hiện ngay khi kết nối, trước khi đăng nhập. */}
-        <div className="login-banners">
-          <VersionBanners margin="0 0 12px" />
-        </div>
-
-        <div className="login-card">
-          {error ? (
-            <div className="login-err show">{error}</div>
-          ) : (
-            notice && !pending && <div className="login-err show">{notice}</div>
-          )}
-
-          {!pending ? (
-            <form onSubmit={handleSubmit}>
-              <div className="login-field">
-                <label>Role</label>
-                <div className="role-cards">
-                  {ROLE_CARDS.map((r) => (
-                    <button
-                      type="button"
-                      key={r.key}
-                      className={
-                        "role-card" + (roleKey === r.key ? " active" : "")
-                      }
-                      onClick={() => setRoleKey(r.key)}
-                    >
-                      <span className="ic">
-                        <Icon>{ICONS[r.key]}</Icon>
-                      </span>
-                      <b>{r.label}</b>
-                    </button>
-                  ))}
-                </div>
-              </div>
-              <div className="login-field">
-                <label>Username</label>
-                <div className="input-ic">
-                  <span>
-                    <Icon>{ICONS.user}</Icon>
-                  </span>
-                  <input
-                    type="text"
-                    autoComplete="username"
-                    placeholder="e.g. mai.nguyen"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                  />
-                </div>
-              </div>
-              <div className="login-field">
-                <label>Password</label>
-                <div className="input-ic">
-                  <span>
-                    <Icon>{ICONS.lock}</Icon>
-                  </span>
-                  <input
-                    type={show ? "text" : "password"}
-                    autoComplete="current-password"
-                    placeholder="••••••••"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                  />
-                  <button
-                    type="button"
-                    className="eye"
-                    onClick={() => setShow(!show)}
-                    title="Show/hide password"
-                  >
-                    <Icon>{show ? ICONS.eyeOff : ICONS.eye}</Icon>
+        {!pending ? (
+          <form className="login-form" noValidate onSubmit={handleSubmit}>
+            <div>
+              <h2>Sign in</h2>
+              <p className="sub mt-4">
+                Choose your role and sign in with the account you were given
+              </p>
+            </div>
+            {shownError && errBox(shownError)}
+            <div className="field">
+              <span className="lab">Role</span>
+              <div className="roles">
+                {ROLE_CARDS.map((r) => (
+                  <button type="button" key={r.key} className={'role' + (roleKey === r.key ? ' on' : '')} onClick={() => setRoleKey(r.key)}>
+                    <AppIcon name={roleIcon[r.key]} />
+                    {r.label}
                   </button>
-                </div>
+                ))}
               </div>
-              <Button
-                className="btn btn-primary login-submit"
-                type="submit"
-                loading={busy}
-              >
-                {busy ? "Signing in…" : "Sign In"}
-              </Button>
-              <p className="login-note">
-                Don't have an account? Contact your administrator.
-              </p>
-            </form>
-          ) : (
-            <form onSubmit={handleChange}>
-              <div className="login-field">
-                <label>{`New password (at least ${minLength} characters)`}</label>
-                <div className="input-ic">
-                  <span>
-                    <Icon>{ICONS.lock}</Icon>
-                  </span>
-                  <input
-                    type="password"
-                    value={np}
-                    onChange={(e) => setNp(e.target.value)}
-                    autoFocus
-                  />
-                </div>
-              </div>
-              <div className="login-field">
-                <label>Confirm new password</label>
-                <div className="input-ic">
-                  <span>
-                    <Icon>{ICONS.lock}</Icon>
-                  </span>
-                  <input
-                    type="password"
-                    value={np2}
-                    onChange={(e) => setNp2(e.target.value)}
-                  />
-                </div>
-              </div>
-              <Button
-                className="btn btn-primary login-submit"
-                type="submit"
-                loading={busy}
-              >
-                {busy ? "Saving…" : "Save & Continue"}
-              </Button>
-              <p className="login-note">
-                <button type="button" className="btn btn-ghost btn-sm" onClick={cancelChange} disabled={busy}>
-                  Back to sign in
+            </div>
+            <div className="field">
+              <label htmlFor="u">Username</label>
+              <input className="input" id="u" type="text" autoComplete="username" value={username} onChange={(e) => setUsername(e.target.value)} />
+            </div>
+            <div className="field">
+              <label htmlFor="p">Password</label>
+              <div className="pw">
+                <input className="input" id="p" type={show ? 'text' : 'password'} autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} />
+                <button type="button" onClick={() => setShow(!show)} title="Show/hide password" aria-label={translate('Show/hide password')}>
+                  <AppIcon name={show ? 'eye-off' : 'eye'} />
                 </button>
-              </p>
-            </form>
-          )}
-        </div>
-
-        <div className="login-footer">
-          <Icon>{ICONS.lock}</Icon>
-          Secure access to your clinic workspace
-        </div>
-        {serverOpen && (
-          <div className="login-server">
-            <ServerAddress onClose={() => setServerOpen(false)} />
-          </div>
-        )}
-        <div className="login-lang">
-          <button type="button" className={"login-server-btn" + (serverOpen ? " active" : "")} onClick={() => setServerOpen(!serverOpen)} title="Clinic server address">
-            <AppIcon name="wifi" /> Server
-          </button>
-          <span className="login-lang-sep" />
-          {LANGUAGES.map((l) => (
-            <button
-              type="button"
-              key={l.code}
-              className={getLang() === l.code ? "active" : ""}
-              onClick={() => setLang(l.code)}
-              title={l.name}
-            >
-              {l.code.toUpperCase()}
+              </div>
+            </div>
+            <Button className="btn btn-primary" type="submit" loading={busy}>
+              {busy ? 'Signing in…' : 'Sign In'}
+            </Button>
+            <p className="muted small text-center">
+              Don't have an account? Contact your administrator.
+            </p>
+            <div className="secure">
+              <AppIcon name="lock" />
+              Secure access to your clinic workspace
+            </div>
+            <div className={'srv-panel' + (serverOpen ? ' open' : '')}>
+              <div>{serverOpen && <ServerAddress variant="login" />}</div>
+            </div>
+          </form>
+        ) : (
+          <form className="login-form" noValidate onSubmit={handleChange}>
+            <h2>Set a New Password</h2>
+            <p className="sub">{pending.expired ? 'Your password has expired — please set a new one.' : 'Please set a password of your own before continuing.'}</p>
+            {shownError && errBox(shownError)}
+            <div className="field">
+              <label htmlFor="np">{`New password (at least ${minLength} characters)`}</label>
+              <div className="pw">
+                <input className="input" id="np" type={show ? 'text' : 'password'} value={np} onChange={(e) => setNp(e.target.value)} autoFocus />
+                <button type="button" onClick={() => setShow(!show)} title="Show/hide password" aria-label={translate('Show/hide password')}>
+                  <AppIcon name={show ? 'eye-off' : 'eye'} />
+                </button>
+              </div>
+            </div>
+            <div className="field">
+              <label htmlFor="rp">Confirm new password</label>
+              <div className="pw">
+                <input className="input" id="rp" type={show ? 'text' : 'password'} value={np2} onChange={(e) => setNp2(e.target.value)} />
+              </div>
+            </div>
+            <Button className="btn btn-primary" type="submit" loading={busy}>
+              {busy ? 'Saving…' : 'Save & Continue'}
+            </Button>
+            <button type="button" className="btn btn-ghost" onClick={cancelChange} disabled={busy}>
+              <AppIcon name="arrow-left" />
+              Back to sign in
             </button>
-          ))}
+          </form>
+        )}
+      </section>
+    </div>
+  )
+}
+
+// Nửa trái màn đăng nhập (kiểu trang đăng nhập Facebook): logo, tiêu đề lớn, ảnh ghép giới thiệu hệ thống.
+// Ảnh do nhóm cung cấp (Tài liệu sửa đổi), xếp chồng kiểu trang đăng nhập Facebook: phòng khám (sau trái), bác sĩ khám (giữa),
+// thẻ đội ngũ (đè góc dưới trái), bác sĩ cầm hồ sơ (vòng tròn). Các thẻ là minh hoạ tĩnh.
+function LoginHero() {
+  return (
+    <section className="login-left" aria-hidden="true">
+      <div className="brand">
+        <Logo />
+        <span className="t">
+          Med<b>Assist</b>
+        </span>
+      </div>
+      <div className="fbx">
+        <div className="fbx-t">
+          <h1>
+            {translate("The right patient,")} <span>{translate("at the right time.")}</span>
+          </h1>
+          <p>{translate("Bright ethics, solid expertise, complete trust.")}</p>
+        </div>
+        <div className="fbx-c">
+          <div className="cx-room">
+            <img src={roomPhoto} alt="" />
+            <span className="cx-tag">
+              <AppIcon name="plus" />
+            </span>
+          </div>
+          <div className="cx-photo">
+            <div className="cx-bar">
+              <i />
+            </div>
+            <img src={loginPhoto} alt="" />
+            <span className="cx-time">
+              <AppIcon name="clock" />
+              08:30 · {translate("No.")} 012
+            </span>
+          </div>
+          <div className="cx-dot cx-ai">
+            <AppIcon name="sparkles" />
+          </div>
+          <div className="cx-dot cx-heart">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M9 3.5h6a1 1 0 0 1 1 1V8h3.5a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1H16v3.5a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1V16H4.5a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1H8V4.5a1 1 0 0 1 1-1z" fill="#fff" />
+            </svg>
+          </div>
+          <div className="cx-post">
+            <div className="cx-post-h">
+              <span>
+                <AppIcon name="check" />
+              </span>
+              {translate("Clinic team")}
+            </div>
+            <div className="cx-post-ph">
+              <img src={teamPhoto} alt="" />
+            </div>
+            <i className="cx-ln" />
+            <i className="cx-ln s" />
+          </div>
+          <div className="cx-circle">
+            <img src={recordsPhoto} alt="" />
+          </div>
         </div>
       </div>
-    </div>
+      <div className="cx-by">
+        <span>MedAssist {appVersion}</span>
+      </div>
+    </section>
   );
 }

@@ -2,7 +2,10 @@ import { useEffect, useState } from 'react'
 import Icon from '../../../components/Icon'
 import { translate } from '../../../i18n'
 import { AI_MODES, AI_RUN_TYPES, AI_STATUSES, listAiLogs } from '../../../api/reportsApi'
-import { shortDateTime } from '../../../utils/format'
+import { fmtDateTime, fmtNum } from '../../../utils/format'
+import Skeleton from '../../../components/Skeleton'
+import { ErrorNote } from '../../../components/DataState'
+import DateField from '../../../components/DateField'
 
 // Mỗi lượt chạy AI kèm phiên bản tri thức / model / prompt, độ trễ và quyết định của bác sĩ — truy vết được mà không lộ
 // bệnh nhân (server không trả họ tên, triệu chứng hay đầu ra thô của LLM).
@@ -12,11 +15,11 @@ const EMPTY = { from: '', to: '', run_type: '', status: '', mode: '' }
 const RUN_LABEL = { Assessment: 'Assessment', Extraction: 'Symptom extraction' }
 const STATUS_META = {
   Queued: { label: 'Queued', tone: '' },
-  Running: { label: 'Running', tone: 'info' },
-  Completed: { label: 'Completed', tone: 'ok' },
-  Degraded: { label: 'Rule-only', tone: 'warn' },
-  Failed: { label: 'Failed', tone: 'low' },
-  Skipped: { label: 'Skipped (red flag)', tone: 'muted' }
+  Running: { label: 'Running', tone: 'b-info' },
+  Completed: { label: 'Completed', tone: 'b-success' },
+  Degraded: { label: 'Rule-only', tone: 'b-warning' },
+  Failed: { label: 'Failed', tone: 'b-danger' },
+  Skipped: { label: 'Skipped (red flag)', tone: 'b-neutral' }
 }
 const MODE_LABEL = { Full: 'Rules + model', RuleOnly: 'Rules only' }
 const DECISION_LABEL = { AcceptedTop: 'Accepted top suggestion', ChoseOther: 'Chose another diagnosis', NoSuggestion: 'No suggestion shown' }
@@ -37,7 +40,7 @@ export default function AiLogsTab() {
 
   const pages = data ? Math.max(1, Math.ceil(data.total / PAGE)) : 1
   const select = (key, values, labels) => (
-    <select value={draft[key]} onChange={(e) => setDraft({ ...draft, [key]: e.target.value })}>
+    <select className="input" value={draft[key]} onChange={(e) => setDraft({ ...draft, [key]: e.target.value })}>
       <option value="">All</option>
       {values.map((v) => (
         <option key={v} value={v}>
@@ -49,17 +52,17 @@ export default function AiLogsTab() {
 
   return (
     <div>
-      <p className="ai-soft ai-small" style={{ marginTop: 0 }}>
+      <p className="muted small mt-0">
         Every AI run with the knowledge release, model and prompt versions, timing and the doctor’s decision. No patient data is shown.
       </p>
-      <div className="form-grid cols-4">
+      <div className="fg3">
         <div className="field">
           <label>From</label>
-          <input type="date" value={draft.from} onChange={(e) => setDraft({ ...draft, from: e.target.value })} />
+          <DateField value={draft.from} onChange={(v) => setDraft({ ...draft, from: v })} />
         </div>
         <div className="field">
           <label>To</label>
-          <input type="date" value={draft.to} onChange={(e) => setDraft({ ...draft, to: e.target.value })} />
+          <DateField value={draft.to} onChange={(v) => setDraft({ ...draft, to: v })} />
         </div>
         <div className="field">
           <label>Run type</label>
@@ -74,17 +77,17 @@ export default function AiLogsTab() {
           {select('mode', AI_MODES, MODE_LABEL)}
         </div>
       </div>
-      <div className="ai-toolbar" style={{ marginTop: 12 }}>
-        <span className="ai-soft ai-small">
+      <div className="toolbar mt-12">
+        <span className="muted small">
           {data ? (
             <>
-              <b className="mono">{data.total.toLocaleString('vi-VN')}</b> <span>runs</span>
+              <b className="num">{fmtNum(data.total)}</b> <span>runs</span>
             </>
           ) : (
             '…'
           )}
         </span>
-        <div className="ai-toolbar-right">
+        <div className="toolbar-r">
           <button className="btn btn-ghost btn-sm" onClick={() => (setDraft(EMPTY), setPage(0), setFilters(EMPTY))}>
             Clear filters
           </button>
@@ -94,88 +97,90 @@ export default function AiLogsTab() {
         </div>
       </div>
 
-      {err && <div className="kb-error">{err}</div>}
-      {!data && !err && <p className="ai-soft">Loading…</p>}
+      <ErrorNote>{err}</ErrorNote>
+      {!data && !err && <Skeleton rows={6} cols={4} />}
       {data && (
-        <div className="ai-table-wrap" style={{ marginTop: 10 }}>
-          <table className="dt">
-            <thead>
-              <tr>
-                <th>Queued</th>
-                <th>Run</th>
-                <th>Status</th>
-                <th>Priority (rule → final)</th>
-                <th>Suggested codes</th>
-                <th className="num">Time</th>
-                <th>Doctor’s decision</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data.items.map((x) => {
-                const st = STATUS_META[x.status] ?? { label: x.status, tone: '' }
-                return (
-                  <tr key={x.assessment_id + x.run_type} onClick={() => setOpen(open === x.assessment_id ? null : x.assessment_id)} style={{ cursor: 'pointer' }}>
-                    <td className="mono ai-small">{shortDateTime(x.queued_at)}</td>
-                    <td className="ai-small">
-                      {translate(RUN_LABEL[x.run_type] ?? x.run_type)}
-                      {x.mode && <div className="ai-soft">{translate(MODE_LABEL[x.mode] ?? x.mode)}</div>}
-                    </td>
-                    <td>
-                      <span className={'badge ' + st.tone}>{translate(st.label)}</span>
-                      {x.attempt_count > 1 && (
-                        <div className="ai-soft ai-small">
-                          {x.attempt_count} {translate('attempts')}
-                        </div>
-                      )}
-                    </td>
-                    <td className="mono ai-small">{x.priority_rule || x.priority_final ? `${x.priority_rule ?? '—'} → ${x.priority_final ?? '—'}` : '—'}</td>
-                    <td className="mono ai-small">{x.suggested_codes.length ? x.suggested_codes.join(', ') : '—'}</td>
-                    <td className="num mono ai-small">{sec(x.latency_total_ms)}</td>
-                    <td className="ai-small">{x.physician_decision ? translate(DECISION_LABEL[x.physician_decision] ?? x.physician_decision) : <span className="ai-soft">—</span>}</td>
-                  </tr>
-                )
-              })}
-            </tbody>
-          </table>
+        <div className="tbl-wrap mt-10">
+          <div className="tbl-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Queued</th>
+                  <th>Run</th>
+                  <th>Status</th>
+                  <th>Priority (rule → final)</th>
+                  <th>Suggested codes</th>
+                  <th className="r num">Time</th>
+                  <th>Doctor’s decision</th>
+                </tr>
+              </thead>
+              <tbody>
+                {data.items.map((x) => {
+                  const st = STATUS_META[x.status] ?? { label: x.status, tone: '' }
+                  return (
+                    <tr className="pointer" key={x.assessment_id + x.run_type} onClick={() => setOpen(open === x.assessment_id ? null : x.assessment_id)}>
+                      <td className="num small">{fmtDateTime(x.queued_at)}</td>
+                      <td className="small">
+                        {translate(RUN_LABEL[x.run_type] ?? x.run_type)}
+                        {x.mode && <div className="muted">{translate(MODE_LABEL[x.mode] ?? x.mode)}</div>}
+                      </td>
+                      <td>
+                        <span className={'badge ' + st.tone}>{translate(st.label)}</span>
+                        {x.attempt_count > 1 && (
+                          <div className="muted small">
+                            {x.attempt_count} {translate('attempts')}
+                          </div>
+                        )}
+                      </td>
+                      <td className="num small">{x.priority_rule || x.priority_final ? `${x.priority_rule ?? '—'} → ${x.priority_final ?? '—'}` : '—'}</td>
+                      <td className="num small">{x.suggested_codes.length ? x.suggested_codes.join(', ') : '—'}</td>
+                      <td className="num num small">{sec(x.latency_total_ms)}</td>
+                      <td className="small">{x.physician_decision ? translate(DECISION_LABEL[x.physician_decision] ?? x.physician_decision) : <span className="muted">—</span>}</td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+          </div>
           {open && (() => {
             const x = data.items.find((i) => i.assessment_id === open)
             if (!x) return null
             return (
-              <div className="pl-detail" style={{ marginTop: 10 }}>
+              <div className="card mt-10">
                 <div className="pref-row inline">
                   <span>Knowledge release</span>
-                  <b className="mono">{x.knowledge_release_label ?? '—'}</b>
+                  <b className="num">{x.knowledge_release_label ?? '—'}</b>
                 </div>
                 <div className="pref-row inline">
                   <span>Model / prompt</span>
-                  <b className="mono">
+                  <b className="num">
                     {x.model_name ?? '—'} · {x.prompt_version ?? '—'}
                   </b>
                 </div>
                 <div className="pref-row inline">
                   <span>Time: rules / model / total</span>
-                  <b className="mono">
+                  <b className="num">
                     {sec(x.latency_phase1_ms)} · {sec(x.latency_llm_ms)} · {sec(x.latency_total_ms)}
                   </b>
                 </div>
                 <div className="pref-row inline">
                   <span>Started → finished</span>
-                  <b className="mono">
-                    {shortDateTime(x.started_at)} → {shortDateTime(x.completed_at)}
+                  <b className="num">
+                    {fmtDateTime(x.started_at)} → {fmtDateTime(x.completed_at)}
                   </b>
                 </div>
-                {x.error_detail && <div className="kb-error">{x.error_detail}</div>}
+                <ErrorNote>{x.error_detail}</ErrorNote>
               </div>
             )
           })()}
-          {!data.items.length && <p className="ai-soft">No runs match.</p>}
+          {!data.items.length && <p className="muted">No runs match.</p>}
         </div>
       )}
-      <div className="ai-toolbar" style={{ marginTop: 10 }}>
-        <span className="ai-small ai-soft">
-          <span>Page</span> <span className="mono">{page + 1}</span> / <span className="mono">{pages}</span>
+      <div className="toolbar mt-10">
+        <span className="small muted">
+          <span>Page</span> <span className="num">{page + 1}</span> / <span className="num">{pages}</span>
         </span>
-        <div className="ai-toolbar-right">
+        <div className="toolbar-r">
           <button className="btn btn-ghost btn-sm" disabled={page === 0} onClick={() => setPage(page - 1)}>
             ← Previous
           </button>

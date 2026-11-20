@@ -30,17 +30,17 @@ export function ClinicalInfoEditor({ visit }) {
     )
   return (
     <div className="clin-edit">
-      <div className="form-grid cols-2">
+      <div className="fg">
         <div className="field">
           <label>Drug allergies</label>
-          <input type="text" autoFocus value={f.allergies} onChange={(e) => setF({ ...f, allergies: e.target.value })} placeholder="Penicillin…" />
+          <input className="input" type="text" autoFocus value={f.allergies} onChange={(e) => setF({ ...f, allergies: e.target.value })} placeholder="Penicillin…" />
         </div>
         <div className="field">
           <label>Medical history (chronic conditions)</label>
-          <input type="text" value={f.history} onChange={(e) => setF({ ...f, history: e.target.value })} placeholder="Hypertension, diabetes…" />
+          <input className="input" type="text" value={f.history} onChange={(e) => setF({ ...f, history: e.target.value })} placeholder="Hypertension, diabetes…" />
         </div>
       </div>
-      <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+      <div className="d-flex gap-8 justify-end">
         <button className="btn btn-ghost btn-sm" onClick={() => setOpen(false)}>
           Cancel
         </button>

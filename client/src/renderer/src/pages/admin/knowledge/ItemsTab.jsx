@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import Modal, { ModalHeader } from '../../../components/Modal'
+import Modal, { ModalHeader, ModalCloseFooter } from '../../../components/Modal'
 import Icon from '../../../components/Icon'
 import { useToast } from '../../../context/ToastContext'
 import { translate } from '../../../i18n'
@@ -7,7 +7,9 @@ import { KINDS, itemVersions, previewDeactivate, deactivate } from '../../../api
 import { Empty } from '../ui'
 import ItemFormModal from './ItemFormModal'
 import { KIND_META, StatusBadge, Summary, groupByKey, errorText } from './shared'
-import { shortDateTime } from '../../../utils/format'
+import { fmtDateTime } from '../../../utils/format'
+import Skeleton from '../../../components/Skeleton'
+import { ErrorNote } from '../../../components/DataState'
 
 const FILTERS = [
   { key: 'current', label: 'In use + drafts' },
@@ -46,13 +48,13 @@ export default function ItemsTab({ data, names, canEdit, openRelease, onChanged,
   return (
     <>
       {canEdit && !editable && (
-        <div className="kb-banner">
+        <div className="banner i mb-14">
           <Icon name="lock" />
-          <span>
+          <div className="txt">
             {openRelease?.status === 'PendingApproval'
               ? translate('The open release is waiting for a doctor — changes are locked until it is approved or rejected.')
               : translate('To change the knowledge base, open a release first.')}
-          </span>
+          </div>
           {!openRelease && (
             <button className="btn btn-primary btn-sm" onClick={onOpenRelease}>
               Open a release
@@ -61,20 +63,20 @@ export default function ItemsTab({ data, names, canEdit, openRelease, onChanged,
         </div>
       )}
 
-      <div className="ai-toolbar">
-        <div className="ai-seg">
+      <div className="toolbar">
+        <div className="seg">
           {KINDS.map((k) => (
-            <button key={k} className={kind === k ? 'active' : ''} onClick={() => setKind(k)}>
-              <span>{KIND_META[k].label}</span> <span className="ai-count">{counts[k]}</span>
+            <button key={k} className={kind === k ? 'on' : ''} onClick={() => setKind(k)}>
+              <span>{KIND_META[k].label}</span> <span className="badge b-neutral">{counts[k]}</span>
             </button>
           ))}
         </div>
-        <div className="ai-toolbar-right">
-          <div className="ai-search">
+        <div className="toolbar-r">
+          <div className="search">
             <Icon name="search" />
-            <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search by code or name…" />
+            <input className="input" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search by code or name…" />
           </div>
-          <select className="ai-select" value={filter} onChange={(e) => setFilter(e.target.value)}>
+          <select className="input" value={filter} onChange={(e) => setFilter(e.target.value)}>
             {FILTERS.map((x) => (
               <option key={x.key} value={x.key}>
                 {x.label}
@@ -92,8 +94,8 @@ export default function ItemsTab({ data, names, canEdit, openRelease, onChanged,
       {list.length === 0 ? (
         <Empty title="Nothing matches" text="Try another type, filter or search keyword." />
       ) : (
-        <div className="ai-table-wrap">
-          <table className="dt kb-table">
+        <div className="tbl-wrap">
+          <table className="kb-table">
             <thead>
               <tr>
                 <th>Code</th>
@@ -108,13 +110,13 @@ export default function ItemsTab({ data, names, canEdit, openRelease, onChanged,
                 const row = g.open ?? g.active ?? g.latest
                 return (
                   <tr key={g.key}>
-                    <td className="mono ai-small">{g.key}</td>
+                    <td className="num small">{g.key}</td>
                     <td>
                       <Summary kind={kind} values={row.values} names={names} />
                     </td>
-                    <td className="mono">
+                    <td className="num">
                       v{row.version}
-                      <div className="ai-small ai-soft">{row.release_label}</div>
+                      <div className="small muted">{row.release_label}</div>
                     </td>
                     <td>
                       <div className="ai-status">
@@ -144,8 +146,9 @@ export default function ItemsTab({ data, names, canEdit, openRelease, onChanged,
           </table>
         </div>
       )}
-      <p className="ai-foot-note">
-        <Icon name="lock" /> <span>Every change becomes a draft in the open release and only applies after a doctor approves the release. “Turn off now” is the safety switch: it applies immediately.</span>
+      <p className="muted small foot-note">
+        <Icon name="lock" />{' '}
+        <span>Every change becomes a draft in the open release and only applies after a doctor approves the release. “Turn off now” is the safety switch: it applies immediately.</span>
       </p>
 
       <ItemFormModal
@@ -190,39 +193,42 @@ function HistoryModal({ kind, group, names, onClose }) {
   return (
     <Modal open onClose={onClose} wide>
       <ModalHeader title={translate('Version history') + ' · ' + group.key} onClose={onClose} />
-      <div className="modal-body">
-        {err && <div className="kb-error">{err}</div>}
-        {!rows && !err && <p className="ai-soft">Loading…</p>}
+      <div className="modal-b">
+        <ErrorNote>{err}</ErrorNote>
+        {!rows && !err && <Skeleton rows={6} cols={4} />}
         {rows && (
-          <table className="dt">
-            <thead>
-              <tr>
-                <th>Version</th>
-                <th>Release</th>
-                <th>Status</th>
-                <th>Content</th>
-                <th>Created</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((r) => (
-                <tr key={r.version}>
-                  <td className="mono">v{r.version}</td>
-                  <td className="mono ai-small">{r.release_label}</td>
-                  <td>
-                    <StatusBadge status={r.status} />
-                    {r.retired_reason && <div className="ai-small ai-soft">{r.retired_reason}</div>}
-                  </td>
-                  <td>
-                    <Summary kind={kind} values={r.values} names={names} />
-                  </td>
-                  <td className="ai-small">{shortDateTime(r.created_at)}</td>
+          <div className="tbl-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Version</th>
+                  <th>Release</th>
+                  <th>Status</th>
+                  <th>Content</th>
+                  <th>Created</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {rows.map((r) => (
+                  <tr key={r.version}>
+                    <td className="num">v{r.version}</td>
+                    <td className="num small">{r.release_label}</td>
+                    <td>
+                      <StatusBadge status={r.status} />
+                      {r.retired_reason && <div className="small muted">{r.retired_reason}</div>}
+                    </td>
+                    <td>
+                      <Summary kind={kind} values={r.values} names={names} />
+                    </td>
+                    <td className="small">{fmtDateTime(r.created_at)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
+      <ModalCloseFooter onClose={onClose} />
     </Modal>
   )
 }
@@ -238,7 +244,10 @@ function DeactivateModal({ kind, group, names, onClose, onDone }) {
     setDeps(null)
     setReason('')
     setErr('')
-    previewDeactivate(kind, group.key).then((p) => setDeps(p.dependents), (e) => setErr(errorText(e)))
+    previewDeactivate(kind, group.key).then(
+      (p) => setDeps(p.dependents),
+      (e) => setErr(errorText(e))
+    )
   }, [kind, group])
   if (!group) return null
   const isRedFlag = kind === 'rules' && group.active?.values?.rule_type === 'RED_FLAG'
@@ -259,37 +268,49 @@ function DeactivateModal({ kind, group, names, onClose, onDone }) {
   return (
     <Modal open onClose={onClose}>
       <ModalHeader title={translate('Turn off now') + ' · ' + group.key} onClose={onClose} />
-      <div className="modal-body">
-        <p className="ai-confirm-msg">
-          <Summary kind={kind} values={group.active?.values} names={names} />
-        </p>
-        {isRedFlag && <div className="kb-error">Warning: this is a red-flag rule. Turning it off means doctors will NOT be alerted for this emergency sign.</div>}
-        <p className="ai-soft ai-small">Takes effect immediately — no approval needed (safety switch). Turning it back on needs a new version in an approved release.</p>
-        {!deps && !err && <p className="ai-soft">Checking dependent items…</p>}
+      <div className="modal-b">
+        <div className="confirm">
+          <div className="ico d">
+            <Icon name="power" />
+          </div>
+          <p>
+            <Summary kind={kind} values={group.active?.values} names={names} />
+            <br />
+            <span className="muted small">{translate('Takes effect immediately — no approval needed (safety switch). Turning it back on needs a new version in an approved release.')}</span>
+          </p>
+        </div>
+        {isRedFlag && (
+          <div className="banner d mt-14">
+            <Icon name="siren" />
+            <div className="txt">{translate('Warning: this is a red-flag rule. Turning it off means doctors will NOT be alerted for this emergency sign.')}</div>
+          </div>
+        )}
+        {!deps && !err && <Skeleton rows={2} cols={2} compact />}
         {deps && deps.length > 0 && (
-          <div className="kb-banner warn">
-            <div>
+          <div className="banner w mt-14">
+            <Icon name="triangle-alert" />
+            <div className="txt">
               <b>These items will be turned off too:</b>
               <ul className="kb-dep-list">
                 {deps.map((d) => (
                   <li key={d.kind + d.key}>
-                    <span>{KIND_META[d.kind]?.one ?? d.kind}</span> · <span className="mono">{d.key}</span>
+                    <span>{KIND_META[d.kind]?.one ?? d.kind}</span> · <span className="num">{d.key}</span>
                   </li>
                 ))}
               </ul>
             </div>
           </div>
         )}
-        <div className="field" style={{ marginTop: 12 }}>
+        <div className="field mt-12">
           <label>
-            Reason <span className="ai-req">*</span>
+            Reason <span className="req">*</span>
           </label>
-          <textarea rows={3} value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Recorded in the activity log (at least 3 characters)" />
+          <textarea className="input" rows={3} value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Recorded in the activity log (at least 3 characters)" />
         </div>
-        {err && <div className="kb-error">{err}</div>}
+        <ErrorNote>{err}</ErrorNote>
       </div>
-      <div className="modal-foot">
-        <button className="btn btn-ghost" onClick={onClose}>
+      <div className="modal-f">
+        <button className="btn btn-outline" onClick={onClose}>
           Cancel
         </button>
         <button className="btn btn-danger" disabled={busy || !deps || reason.trim().length < 3} onClick={confirm}>

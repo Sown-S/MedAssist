@@ -1,9 +1,12 @@
 import { describe, it, expect, afterAll, afterEach, beforeAll, beforeEach, vi } from 'vitest'
-import { screen, cleanup, waitFor, fireEvent } from '@testing-library/react'
+import { screen, cleanup, waitFor, fireEvent, within } from '@testing-library/react'
 import { renderPage } from './render.jsx'
 import Reception from '../src/renderer/src/pages/Reception.jsx'
 import Doctor from '../src/renderer/src/pages/Doctor.jsx'
 import Admin from '../src/renderer/src/pages/Admin.jsx'
+import SideNav from '../src/renderer/src/components/SideNav.jsx'
+import { AdminNavProvider } from '../src/renderer/src/context/AdminNavContext.jsx'
+import { useAuth } from '../src/renderer/src/context/AuthContext.jsx'
 import PaymentModal from '../src/renderer/src/components/PaymentModal.jsx'
 import { syncQueue } from '../src/renderer/src/api/queueStore.js'
 import { DOC_A, DOC_B, DESK, ADMIN } from './helpers'
@@ -13,6 +16,17 @@ import { installFakeServer, resetCalls, calls } from './fakeServer'
 // và vài thao tác chính gọi đúng API. Lưới an toàn khi sửa / chia nhỏ các file lớn.
 const FAIL = 'Something went wrong on this screen'
 
+// Trang Quản trị kèm menu bên trái dùng chung (như trong App.jsx).
+function AdminWithMenu() {
+  const { user } = useAuth()
+  return (
+    <AdminNavProvider>
+      <SideNav user={user} />
+      <Admin />
+    </AdminNavProvider>
+  )
+}
+
 // Giữ fetch giả suốt cả file: bộ đếm giờ còn sót của test trước (polling hàng đợi, /health) không được gọi ra mạng thật
 // — nếu máy đang bật server, nó trả 401 và làm phiên của test sau bị đăng xuất.
 beforeAll(() => installFakeServer())
@@ -21,7 +35,7 @@ afterEach(() => cleanup())
 afterAll(() => vi.unstubAllGlobals())
 
 // Chờ trang dựng xong; bỏ qua ô thông báo (luôn có sẵn dấu ✓) để không coi là đã dựng khi chưa đăng nhập xong.
-const pageText = () => [...document.body.querySelectorAll('body > div > :not(.toast)')].map((el) => el.textContent).join('').trim()
+const pageText = () => [...document.body.querySelectorAll('body > div > :not(.toasts)')].map((el) => el.textContent).join('').trim()
 async function rendered() {
   await waitFor(() => expect(pageText()).not.toBe(''))
   expect(screen.queryByText(FAIL)).toBeNull()
@@ -39,23 +53,23 @@ describe('Các màn chính dựng được', () => {
   })
 
   it('Quản trị › mọi mục trên menu trái', async () => {
-    renderPage(<Admin onNavigate={() => {}} />, { user: ADMIN, path: '/admin' })
+    renderPage(<AdminWithMenu />, { user: ADMIN, path: '/admin' })
     await rendered()
     const items = ['AI configuration', 'Rooms', 'Stock & expiry', 'Catalog management', 'Activity history', 'Staff accounts', 'Settings', 'Roadmap', 'Home']
     for (const label of items) {
-      fireEvent.click(screen.getByText(label, { selector: '.side-item .lb, .side-subitem' }))
+      fireEvent.click(screen.getByText(label, { selector: '.side .nav .t' }))
       await rendered()
     }
   })
 
   // Mỗi tab là một file riêng — bấm qua hết để chắc tab nào cũng dựng được.
   it.each([
-    ['Settings', ['Printing & numbering', 'Security', 'Connection & AI', 'This computer', 'Operations', 'Clinic']],
+    ['Settings', ['Printing & numbering', 'Security', 'Connection & AI', 'Patient call board', 'Operations', 'Clinic']],
     ['Stock & expiry', ['Stock movements', 'Stock by batch']]
   ])('Quản trị › %s › từng tab', async (page, tabs) => {
-    renderPage(<Admin onNavigate={() => {}} />, { user: ADMIN, path: '/admin' })
+    renderPage(<AdminWithMenu />, { user: ADMIN, path: '/admin' })
     await rendered()
-    fireEvent.click(screen.getByText(page, { selector: '.side-item .lb' }))
+    fireEvent.click(screen.getByText(page, { selector: '.side .nav .t' }))
     await rendered()
     for (const tab of tabs) {
       fireEvent.click(screen.getByText(tab, { selector: 'button, button *' }))
@@ -113,12 +127,12 @@ describe('Luồng chính trên giao diện', () => {
     expect(screen.queryByText('Hoàng Thị Em')).toBeNull()
   })
 
-  it('lễ tân thấy lượt chờ thanh toán ở Hàng chờ và ca chuyển viện tại quầy ở thẻ Ca cờ đỏ', async () => {
+  it('lễ tân thấy lượt chờ thanh toán ở Hàng chờ và ca chuyển viện tại quầy ở ô Ca cấp cứu', async () => {
     await syncQueue()
     expect(calls).toContainEqual(expect.objectContaining({ method: 'GET', path: '/api/v1/queue?include_closed=true' }))
     renderPage(<Reception />, { user: DESK, path: '/reception' })
     await rendered()
-    expect(await screen.findByText(/1 referred · 0 seen at the clinic · 0 waiting for a doctor/)).toBeTruthy()
+    await waitFor(() => expect(document.querySelector('.tile.rt.r .val').textContent).toBe('1'))
     // Ca đã chuyển viện không hiện thông báo nổi đầu trang.
     expect(document.querySelector('.redflag-alert')).toBeNull()
     cleanup()
@@ -133,8 +147,9 @@ describe('Luồng chính trên giao diện', () => {
     await syncQueue()
     renderPage(<Reception />, { user: DESK, path: '/reception?view=queue' })
     await rendered()
-    fireEvent.click(await screen.findByText('Trần Thị Bình'))
-    fireEvent.click(await screen.findByText('Mark present — check in'))
+    // Hàng chờ dạng bảng: nút check-in nằm ngay trên dòng của bệnh nhân.
+    const row = (await screen.findAllByText('Trần Thị Bình')).map((el) => el.closest('tr')).find(Boolean)
+    fireEvent.click(within(row).getByText('Mark present — check in'))
     await waitFor(() => expect(calls).toContainEqual(expect.objectContaining({ method: 'PATCH', path: '/api/v1/visits/v-wait/check-in' })))
   })
 
@@ -142,26 +157,27 @@ describe('Luồng chính trên giao diện', () => {
     await syncQueue()
     renderPage(<Reception />, { user: DESK, path: '/reception?view=queue' })
     await rendered()
-    const card = (await screen.findByText('Phạm Văn Dũng')).closest('.p-card')
-    expect(card.classList.contains('dimmed')).toBe(true)
+    const card = (await screen.findByText('Phạm Văn Dũng')).closest('tr')
+    expect(card.classList.contains('dim')).toBe(true)
     expect(card.textContent).toContain('Intake in progress…')
     expect(card.textContent).not.toContain('Mark present')
-    expect(screen.getByText('Waiting', { selector: '.itab span' }).nextElementSibling.textContent).toBe('1')
+    const waitingTab = [...document.querySelectorAll('.seg button')].find((b) => b.firstChild.textContent === 'Waiting')
+    expect(waitingTab.querySelector('.c').textContent).toBe('1')
     // Không lên khung gọi bệnh nhân.
-    expect(document.querySelector('.call-panel').textContent).not.toContain('003')
+    expect(document.querySelector('.calling').textContent).not.toContain('003')
   })
 })
 
 describe('Cấp phát & thu tiền (PaymentModal)', () => {
   it('hai tab dựng được; đổi tab không mất phần đang nhập dở', async () => {
     renderPage(<PaymentModal open onClose={() => {}} patient={{ id: 'v-pay', name: 'Lê Văn Cường', ticket: 7 }} />, { user: DESK, path: '/reception' })
-    expect(await screen.findByText('Paracetamol 500mg', { selector: '.disp-table b' })).toBeTruthy()
+    expect(await screen.findByText('Paracetamol 500mg', { selector: '.panel.on b' })).toBeTruthy()
     expect(screen.getByText('Dispensed', { selector: 'button, button *' })).toBeTruthy()
     fireEvent.click(screen.getByText('Invoice & payment'))
     expect(screen.getByText('Collect payment')).toBeTruthy()
     expect(screen.getByText('HD-PAY', { exact: false })).toBeTruthy()
     // Phí khám lấy từ hoá đơn; gõ dở một dịch vụ ngoài danh mục rồi đổi tab qua lại.
-    expect(document.querySelector('.svc-fee input').value).toBe('30000')
+    expect(screen.getByLabelText('Consultation fee').value).toBe('30000')
     const name = screen.getByPlaceholderText('Other service, e.g. ultrasound at partner clinic')
     fireEvent.change(name, { target: { value: 'Siêu âm' } })
     fireEvent.click(screen.getByText('Dispensing'))

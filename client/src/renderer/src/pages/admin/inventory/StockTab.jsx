@@ -5,9 +5,11 @@ import { Empty } from '../ui'
 import DrugFormModal from './DrugFormModal'
 import ReceiveModal from './ReceiveModal'
 import StockCardModal from './StockCardModal'
-import { STATUS, StatusBadges, ExpiryCell, SortTh, Pager, paginate, unitLabel, fmtMoney, fmtNum } from './shared'
+import { STATUS, StatusBadges, ExpiryCell, SortTh, Pager, paginate, unitLabel } from './shared'
 import { BatchTable } from './BatchTable'
 import { stockTotals, exportStock } from './stockSummary'
+import { MiniStat, MiniStats } from '../../../components/MiniStat'
+import { fmtMoney, fmtNum } from '../../../utils/format'
 
 export const PAGE_SIZE = 10
 
@@ -32,10 +34,7 @@ export function StockTab({ inv, user }) {
   const [receive, setReceive] = useState(null)
   const [card, setCard] = useState(null)
 
-  const rows = useMemo(
-    () => inv.drugs.map((d) => ({ d, s: stockOf(d, inv.batches) })).filter(({ d, s }) => d.active || s.usable + s.expired > 0),
-    [inv]
-  )
+  const rows = useMemo(() => inv.drugs.map((d) => ({ d, s: stockOf(d, inv.batches) })).filter(({ d, s }) => d.active || s.usable + s.expired > 0), [inv])
   const term = q.trim().toLowerCase()
   const filtered = rows.filter(({ d, s }) => {
     if (term && ![d.name, d.ingredient, d.atc].some((x) => (x ?? '').toLowerCase().includes(term))) return false
@@ -70,61 +69,55 @@ export function StockTab({ inv, user }) {
 
   return (
     <>
-      <div className="ai-summary">
-        <div className="stat-card">
-          <div className="dot" />
-          <div>
-            <div className="val">{fmtMoney(totals.value)}</div>
-            <div className="lbl">Usable stock value (at cost)</div>
-          </div>
-        </div>
-        <button className="stat-card ai-sum-card" onClick={() => reset(setStatus)('low')}>
-          <div className={'dot ' + (totals.low ? 'amber' : '')} />
-          <div>
-            <div className="val">{totals.low}</div>
-            <div className="lbl">Below threshold</div>
-            {totals.out > 0 && (
-              <div className="ai-small ai-soft">
-                <span className="mono">{totals.out}</span> <span>out of stock</span>
-              </div>
-            )}
-          </div>
-        </button>
+      <MiniStats>
+        <MiniStat icon="wallet" value={fmtMoney(totals.value)} label="Usable stock value (at cost)" mono />
+        <MiniStat icon="alert" tone={totals.low ? 'w' : 'n'} value={totals.low} label="Below threshold" onClick={() => reset(setStatus)('low')}>
+          {totals.out > 0 && (
+            <span className="is-sub">
+              <span className="num">{totals.out}</span> <span>out of stock</span>
+            </span>
+          )}
+        </MiniStat>
         {[30, 60, 90].map((w) => (
-          <button key={w} className="stat-card ai-sum-card" onClick={() => reset(setWin)(w)}>
-            <div className={'dot ' + (w === 30 && totals.w[30] ? 'red' : totals.w[w] ? 'amber' : '')} />
-            <div>
-              <div className="val">{totals.w[w]}</div>
-              <div className="lbl">
-                <span>Batches expiring within</span> <span className="mono">{w}</span> <span>days</span>
-              </div>
-            </div>
-          </button>
+          <MiniStat
+            key={w}
+            icon="clock"
+            tone={w === 30 && totals.w[30] ? 'd' : totals.w[w] ? 'w' : 'n'}
+            value={totals.w[w]}
+            label={
+              <>
+                <span>Batches expiring within</span> <span className="num">{w}</span> <span>days</span>
+              </>
+            }
+            onClick={() => reset(setWin)(w)}
+          />
         ))}
-        <button className="stat-card ai-sum-card" onClick={() => reset(setStatus)('expired')}>
-          <div className={'dot ' + (totals.expiredQty ? 'red' : '')} />
-          <div>
-            <div className="val">{totals.expiredQty}</div>
-            <div className="lbl">Expired batches to write off</div>
-            {totals.expiredQty > 0 && <div className="ai-small ai-soft mono">{fmtMoney(totals.expiredValue)}</div>}
-          </div>
-        </button>
-      </div>
+        <MiniStat
+          icon="trash"
+          tone={totals.expiredQty ? 'd' : 'n'}
+          value={totals.expiredQty}
+          label="Expired batches to write off"
+          alert={totals.expiredQty > 0}
+          onClick={() => reset(setStatus)('expired')}
+        >
+          {totals.expiredQty > 0 && <span className="is-sub num">{fmtMoney(totals.expiredValue)}</span>}
+        </MiniStat>
+      </MiniStats>
 
-      <div className="ai-toolbar">
-        <div className="ai-search">
+      <div className="toolbar">
+        <div className="search">
           <Icon name="search" />
-          <input value={q} onChange={(e) => reset(setQ)(e.target.value)} placeholder="Search by name, active ingredient, ATC code…" />
+          <input className="input" value={q} onChange={(e) => reset(setQ)(e.target.value)} placeholder="Search by name, active ingredient, ATC code…" />
         </div>
-        <div className="ai-toolbar-right">
-          <select className="ai-select" value={group} onChange={(e) => reset(setGroup)(e.target.value)}>
+        <div className="toolbar-r">
+          <select className="input" value={group} onChange={(e) => reset(setGroup)(e.target.value)}>
             {GROUPS.map((g) => (
               <option key={g.key} value={g.key}>
                 {g.label}
               </option>
             ))}
           </select>
-          <select className="ai-select" value={status} onChange={(e) => reset(setStatus)(e.target.value)}>
+          <select className="input" value={status} onChange={(e) => reset(setStatus)(e.target.value)}>
             <option value="all">All statuses</option>
             {['ok', 'low', 'out', 'near', 'expired'].map((k) => (
               <option key={k} value={k}>
@@ -132,10 +125,10 @@ export function StockTab({ inv, user }) {
               </option>
             ))}
           </select>
-          <div className="ai-seg" title="Expiring within">
+          <div className="seg" title="Expiring within">
             {WINDOWS.map((w) => (
-              <button key={w} className={win === w ? 'active' : ''} onClick={() => reset(setWin)(w)}>
-                {w === 0 ? <span>Any expiry</span> : <span className="mono">≤{w}d</span>}
+              <button key={w} className={win === w ? 'on' : ''} onClick={() => reset(setWin)(w)}>
+                {w === 0 ? <span>Any expiry</span> : <span className="num">≤{w}d</span>}
               </button>
             ))}
           </div>
@@ -151,8 +144,8 @@ export function StockTab({ inv, user }) {
       {pg.total === 0 ? (
         <Empty title="No drugs match" text="Try another keyword or filter." />
       ) : (
-        <div className="ai-table-wrap">
-          <table className="dt inv-table">
+        <div className="tbl-wrap">
+          <table className="inv-table">
             <thead>
               <tr>
                 <SortTh k="name" sort={sort} onSort={setSort}>
@@ -162,7 +155,7 @@ export function StockTab({ inv, user }) {
                 <SortTh k="usable" sort={sort} onSort={setSort} className="num">
                   On hand
                 </SortTh>
-                <th className="num">Threshold</th>
+                <th className="r num">Threshold</th>
                 <SortTh k="cover" sort={sort} onSort={setSort} className="num">
                   Days of cover
                 </SortTh>
@@ -190,12 +183,12 @@ export function StockTab({ inv, user }) {
                           <b>{d.name}</b>
                           {d.group === 'controlled' && <span className="essential-chip inv-ctrl">Controlled</span>}
                           {d.essential && <span className="essential-chip">Essential</span>}
-                          <div className="ai-soft ai-small">
+                          <div className="muted small">
                             {d.ingredient}
                             {d.atc && (
                               <>
                                 {' · '}
-                                <span className="mono">{d.atc}</span>
+                                <span className="num">{d.atc}</span>
                               </>
                             )}
                           </div>
@@ -203,33 +196,33 @@ export function StockTab({ inv, user }) {
                       </div>
                     </td>
                     <td>{unitLabel(d.unit)}</td>
-                    <td className="num">
-                      <b className="mono">{fmtNum(s.usable)}</b>
+                    <td className="r num">
+                      <b className="num">{fmtNum(s.usable)}</b>
                       {s.expired > 0 && (
-                        <div className="ai-small inv-minus">
-                          + <span className="mono">{s.expired}</span> <span>expired</span>
+                        <div className="small inv-minus">
+                          + <span className="num">{s.expired}</span> <span>expired</span>
                         </div>
                       )}
                     </td>
-                    <td className="num mono">{d.threshold}</td>
-                    <td className="num">
+                    <td className="r num">{d.threshold}</td>
+                    <td className="r num">
                       {s.daysCover == null ? (
-                        <span className="ai-soft">—</span>
+                        <span className="muted">—</span>
                       ) : (
                         <span className={s.daysCover < 14 ? 'inv-minus' : ''}>
-                          <span className="mono">{s.daysCover}</span> <span className="ai-small">days</span>
+                          <span className="num">{s.daysCover}</span> <span className="small">days</span>
                         </span>
                       )}
                     </td>
-                    <td className="num">{s.reorder ? <b className="mono">{fmtNum(s.reorder)}</b> : <span className="ai-soft">—</span>}</td>
+                    <td className="r num">{s.reorder ? <b className="num">{fmtNum(s.reorder)}</b> : <span className="muted">—</span>}</td>
                     <td>
                       <ExpiryCell batch={s.nextExpiry} />
                     </td>
-                    <td className="num mono">{fmtMoney(s.value)}</td>
+                    <td className="r num">{fmtMoney(s.value)}</td>
                     <td>
                       <StatusBadges statuses={s.statuses} />
                     </td>
-                    <td className="ai-actions" onClick={(e) => e.stopPropagation()}>
+                    <td className="acts-td" onClick={(e) => e.stopPropagation()}>
                       <button className="btn btn-ghost btn-sm" title="Receive stock" disabled={!d.active} onClick={() => setReceive(d)}>
                         <Icon name="download" />
                       </button>
@@ -256,11 +249,11 @@ export function StockTab({ inv, user }) {
         </div>
       )}
 
-      <p className="ai-foot-note">
+      <p className="muted small foot-note">
         <Icon name="repeat" />{' '}
         <span>
-          Stock is issued on a FEFO basis (first expired, first out). Expired batches are excluded from “On hand” and can no longer be prescribed or sold.
-          Suggested reorder = threshold + 30 days of consumption − usable stock.
+          Stock is issued on a FEFO basis (first expired, first out). Expired batches are excluded from “On hand” and can no longer be prescribed or sold. Suggested reorder = threshold + 30 days of
+          consumption − usable stock.
         </span>
       </p>
 
