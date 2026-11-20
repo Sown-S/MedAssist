@@ -55,7 +55,8 @@ function ExamSignsBody({ visitId, symptoms, onSaved, onRerun, signs }) {
       setSaved(next)
       setDraft(next)
       onSaved?.(list)
-      // Chạy lại AI để gợi ý tính cả dấu hiệu vừa ghi. Server chưa cho bác sĩ chạy lại (403) → báo rõ, không coi là lỗi lưu.
+      // Chạy lại AI để gợi ý tính cả dấu hiệu vừa ghi. Không chạy lại được (409 NOT_YOUR_VISIT: bác sĩ không phải người đang
+      // khám lượt này; 403: server cũ chưa cho bác sĩ chạy lại) → dấu hiệu vẫn đã lưu, báo gợi ý AI chưa tính chúng.
       try {
         await triggerAssessment(visitId)
         onRerun?.()

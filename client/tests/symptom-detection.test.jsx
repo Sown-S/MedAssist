@@ -9,7 +9,7 @@ import AssessmentCard from '../src/renderer/src/pages/doctor/AssessmentCard.jsx'
 import { ToastProvider } from '../src/renderer/src/context/ToastContext.jsx'
 import { initial, bodyOf, problem } from '../src/renderer/src/pages/admin/knowledge/itemForm.js'
 
-// 0.2.6: tên ngắn, từ đồng nghĩa, nguồn phát hiện (reported / exam / both), phạm vi trọng tâm.
+// 0.2.5: tên ngắn, từ đồng nghĩa, nguồn phát hiện (reported / exam / both), phạm vi trọng tâm.
 const CATALOG = [
   { symptom_code: 'fever_high', symptom_name: 'Sốt cao (>= 38.5°C hoặc sốt cao đột ngột)', short_name: 'Sốt cao', category: 'constitutional', detection: 'reported' },
   { symptom_code: 'cough_dry', symptom_name: 'Ho khan', short_name: null, category: 'respiratory', detection: 'both' },
