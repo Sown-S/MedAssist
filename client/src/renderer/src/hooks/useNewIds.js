@@ -17,7 +17,7 @@ export default function useNewIds(ids, ms = 2400) {
     setFresh((s) => new Set([...s, ...added]))
     const t = setTimeout(() => setFresh((s) => new Set([...s].filter((id) => !added.includes(id)))), ms)
     return () => clearTimeout(t)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- key thay cho mảng ids (mảng mới mỗi lần render); ms coi như cố định
   }, [key])
   return fresh
 }

@@ -41,7 +41,7 @@ export default function ServerHistory({ patientId, excludeVisitId, onLoaded }) {
   useEffect(() => {
     setOpen(null)
     load(0, false)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- load là hàm mới mỗi lần render; chỉ nạp lại khi đổi bệnh nhân hoặc bộ lọc
   }, [patientId, withCancelled])
 
   const list = items.filter((v) => v.visit_id !== excludeVisitId)

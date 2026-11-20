@@ -31,10 +31,10 @@ export default function ReleaseTab({ data, names, onChanged, autoCreate }) {
   useEffect(() => {
     setDetail(null)
     if (open) getRelease(open.release_id).then(setDetail, (e) => setErr(errorText(e)))
-  }, [open?.release_id, open?.status, data]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [open?.release_id, open?.status, data]) // eslint-disable-line react-hooks/exhaustive-deps -- open suy ra từ data, theo dõi id/trạng thái là đủ
   useEffect(() => {
     if (autoCreate && !open) setCreating(true)
-  }, [autoCreate]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [autoCreate]) // eslint-disable-line react-hooks/exhaustive-deps -- chỉ tự mở form tạo khi vừa được yêu cầu, không mở lại khi bản phát hành đóng
 
   async function run(fn, ok) {
     setErr('')

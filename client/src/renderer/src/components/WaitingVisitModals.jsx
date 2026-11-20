@@ -47,7 +47,7 @@ export function EditWaitingModal({ visit, onClose }) {
         setLoaded(true)
       })
       .catch((e) => showToast(translate(e.message), 'error'))
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- chỉ nạp lại khi đổi lượt khám, không nạp lại mỗi lần render
   }, [visit.id])
   const vit = vitalCheck(f)
 

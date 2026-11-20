@@ -6,8 +6,7 @@ import { translate } from '../i18n'
 // Chỉ đóng bằng nút X (ModalHeader) hoặc nút Hủy của từng modal: bấm nhầm ra vùng mờ không được làm mất dữ liệu đang nhập.
 // onClose giữ lại trong props để các nơi gọi không phải đổi; Modal tự nó không gọi.
 // wide: true → lg, 'xl' → xl; size: 'sm' cho hộp xác nhận ngắn.
-// eslint-disable-next-line no-unused-vars
-export default function Modal({ open, onClose, wide, size, children }) {
+export default function Modal({ open, wide, size, children }) {
   if (!open) return null
   const w = size ?? (wide === 'xl' ? 'xl' : wide ? 'lg' : '')
   // Portal ra <body>: phần tử cha có backdrop-filter sẽ “nhốt” position: fixed bên trong nó.

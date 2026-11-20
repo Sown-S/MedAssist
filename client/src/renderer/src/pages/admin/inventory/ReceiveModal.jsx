@@ -17,7 +17,7 @@ export default function ReceiveModal({ drug, drugs, onClose }) {
       setF({ drugId: drug.id ?? drugs.find((d) => d.active)?.id, lot: '', expiry: '', qty: '', cost: '' })
       setTried(false)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- chỉ đặt lại form khi mở cho thuốc khác; danh sách thuốc làm mới không được xoá dữ liệu đang nhập
   }, [drug])
   if (!drug || !f) return null
   const d = drugs.find((x) => x.id === f.drugId)

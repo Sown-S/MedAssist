@@ -39,12 +39,10 @@ export default function SettingsPage({ params, onNavigate, setLeaveGuard }) {
       () => setDraft(getSettings()),
       (e) => showToast(e.message, 'error')
     )
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- nạp một lần khi mở trang
   }, [])
 
-  // Tính lại cả khi vừa lưu xong (saved đổi) dù không dùng trong hàm.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const changed = useMemo(() => new Set(changedPaths(draft)), [draft, saved])
+  const changed = useMemo(() => new Set(changedPaths(draft, saved.values)), [draft, saved.values])
   const errors = useMemo(() => validate(draft), [draft])
   const dirty = changed.size > 0
   const errCount = Object.keys(errors).length

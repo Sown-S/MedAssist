@@ -25,7 +25,7 @@ export function ReviewPanel({ data, names, onChanged }) {
   useEffect(() => {
     setDetail(null)
     if (pending) getRelease(pending.release_id).then(setDetail, (e) => setErr(errorText(e)))
-  }, [pending?.release_id]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [pending?.release_id]) // eslint-disable-line react-hooks/exhaustive-deps -- chỉ nạp lại khi đổi bản phát hành
 
   async function run(fn, ok) {
     setErr('')
