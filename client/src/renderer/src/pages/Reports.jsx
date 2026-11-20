@@ -124,13 +124,13 @@ export default function Reports() {
                   </div>
                 </div>
               </div>
-              <div style={{ marginTop: 18 }}>
+              <div className="mt-18">
                 <MiniStats>
                   <MiniStat icon="clock" tone="n" value={a.avg_latency_ms == null ? '—' : (a.avg_latency_ms / 1000).toFixed(1).replace('.', ',') + ' s'} label="Average AI assessment time" />
                   <MiniStat icon="fileText" tone="n" value={ai.extractions.completed + ' / ' + ai.extractions.total} label="Free-text extractions completed" />
                 </MiniStats>
               </div>
-              <p className="muted small" style={{ marginTop: 12 }}>
+              <p className="muted small mt-12">
                 <Icon name="info" /> <span>Precision, recall and F1 are measured on the frozen test set, not on clinic data.</span>
               </p>
             </div>

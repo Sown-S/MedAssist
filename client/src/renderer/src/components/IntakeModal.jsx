@@ -236,7 +236,7 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
         <div className="intake">
           <section>
             {existing && (
-              <div className="sec-t" style={{ marginTop: 0 }}>
+              <div className="sec-t mt-0">
                 Patient details
               </div>
             )}
@@ -296,7 +296,7 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
             </div>
             <div className="qno">
               <span className="n num">{visit ? ticketNo(visit.queue_number) : '—'}</span>
-              <div style={{ flex: 1 }}>
+              <div className="grow">
                 <b>{visit ? translate('Queue number') + ' ' + ticketNo(visit.queue_number) : translate('Issued when saved')}</b>
                 <div className="muted small">{translate('Issued by the server when the visit is saved')}</div>
               </div>
@@ -308,7 +308,7 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
           </section>
 
           <section>
-            <div className="sec-t" style={{ marginTop: 0 }}>
+            <div className="sec-t mt-0">
               <Icon name="message-square-text" />
               <span>Symptoms</span>
             </div>
@@ -384,7 +384,7 @@ function OpenVisitBanner({ v, onOpen, onClose }) {
   return (
     <div className="banner w" role="alert">
       <Icon name="alert" />
-      <div className="txt" style={{ flex: 1 }}>
+      <div className="txt grow">
         <b>{translate('This patient already has a visit that is not finished')}</b>
         <span>
           {v.ticket ? translate('No.') + ' ' + v.ticket + ' · ' : ''}
@@ -395,7 +395,7 @@ function OpenVisitBanner({ v, onOpen, onClose }) {
               ? translate('A new visit cannot be created until this one is finished.')
               : translate('Close it under “open visits from previous days” in the notifications, then check the patient in again.')}
         </span>
-        <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+        <div className="d-flex gap-8 mt-8">
           {canOpen && (
             <button type="button" className="btn btn-primary btn-sm" onClick={onOpen}>
               <Icon name="door-open" /> {translate('Open that visit')}

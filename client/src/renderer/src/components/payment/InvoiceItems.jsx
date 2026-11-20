@@ -50,7 +50,7 @@ export default function InvoiceItems({ visitId, inv, editable, cat, orders, act,
 
   return (
     <div>
-      <div className="sec-t" style={{ marginTop: 0 }}>
+      <div className="sec-t mt-0">
         Services
       </div>
       <div className="tbl-wrap">
@@ -67,7 +67,7 @@ export default function InvoiceItems({ visitId, inv, editable, cat, orders, act,
               <td>
                 {consultLine?.item_name ?? translate('Consultation fee')} <span className="badge b-info">{translate('Consultation')}</span>
                 {editable && consultServices.length > 1 && (
-                  <select className="input" value="" onChange={(e) => changeConsult(e.target.value)} style={{ marginTop: 6, height: 36 }}>
+                  <select className="input mt-6 h-36" value="" onChange={(e) => changeConsult(e.target.value)}>
                     <option value="">{translate('Change consultation service…')}</option>
                     {consultServices.map((s) => (
                       <option key={s.service_id} value={s.service_id}>
@@ -78,7 +78,7 @@ export default function InvoiceItems({ visitId, inv, editable, cat, orders, act,
                 )}
               </td>
               <td className="r num">
-                {editable ? <input className="input num" style={{ width: 120, height: 34, textAlign: 'right' }} type="number" min="0" step="1000" value={fee} onChange={(e) => setFee(e.target.value)} aria-label={translate('Consultation fee')} /> : fmt(inv.consultation_fee)}
+                {editable ? <input className="input num w-120 h-34 text-right" type="number" min="0" step="1000" value={fee} onChange={(e) => setFee(e.target.value)} aria-label={translate('Consultation fee')} /> : fmt(inv.consultation_fee)}
               </td>
               <td>
                 <div className="acts">
@@ -133,7 +133,7 @@ export default function InvoiceItems({ visitId, inv, editable, cat, orders, act,
         </table>
       </div>
       {unbilled.length > 0 && (
-        <div className="banner w" style={{ marginTop: 10 }}>
+        <div className="banner w mt-10">
           <Icon name="triangle-alert" />
           <div className="txt">
             <b>{translate('Ordered outside the catalog — no price yet')}</b>
@@ -146,7 +146,7 @@ export default function InvoiceItems({ visitId, inv, editable, cat, orders, act,
         </div>
       )}
       {editable && (
-        <div className="toolbar" style={{ marginTop: 10 }}>
+        <div className="toolbar mt-10">
           <select className="input" style={{ flex: '1 1 260px', height: 40 }} value={adding} onChange={(e) => addFromCatalog(e.target.value)}>
             <option value="">{translate('+ Add a service from the catalog…')}</option>
             <optgroup label={translate('Services')}>
@@ -169,7 +169,7 @@ export default function InvoiceItems({ visitId, inv, editable, cat, orders, act,
             </optgroup>
           </select>
           <input className="input" style={{ flex: '1 1 220px', height: 40 }} type="text" placeholder={translate('Other service, e.g. ultrasound at partner clinic')} value={custom.name} onChange={(e) => setCustom({ ...custom, name: e.target.value })} />
-          <input className="input num" style={{ width: 120, height: 40 }} type="number" min="0" step="1000" placeholder={translate('Amount')} value={custom.amount} onChange={(e) => setCustom({ ...custom, amount: e.target.value })} />
+          <input className="input num w-120 h-40" type="number" min="0" step="1000" placeholder={translate('Amount')} value={custom.amount} onChange={(e) => setCustom({ ...custom, amount: e.target.value })} />
           <button className="btn btn-outline btn-sm" onClick={addCustom}>
             <Icon name="plus" />
             {translate('Add')}

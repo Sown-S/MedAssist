@@ -113,7 +113,7 @@ export default function CallPanel({ readOnly, variant }) {
           toCall.map((v) => (
             <div key={v.id} className="call-now">
               <span className="num">{ticketNo(v.ticket)}</span>
-              <span style={{ flex: 1, minWidth: 160, display: 'flex', flexDirection: 'column' }}>
+              <span className="grow minw-160 d-flex flex-col">
                 <span className="nm">
                   {dev.showNames ? v.name + ' → ' : '→ '}
                   {v.room || '—'}

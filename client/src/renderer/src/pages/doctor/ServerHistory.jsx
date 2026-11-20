@@ -48,8 +48,8 @@ export default function ServerHistory({ patientId, excludeVisitId, onLoaded }) {
   const shown = Math.max(0, total - (items.some((v) => v.visit_id === excludeVisitId) ? 1 : 0))
   return (
     <div>
-      <div className="toolbar" style={{ marginBottom: 12 }}>
-        <h3 style={{ fontSize: 'var(--fs-md)' }}>
+      <div className="toolbar mb-12">
+        <h3 className="fs-md">
           {translate('Visits')} <span className="plain">· {shown}</span>
         </h3>
         <div className="sp" />
@@ -170,13 +170,13 @@ function VisitDetail({ visitId }) {
   }, [visitId])
   if (err)
     return (
-      <div className="hint-w" style={{ gridColumn: '1 / -1' }}>
+      <div className="hint-w span-all">
         {err}
       </div>
     )
   if (!r)
     return (
-      <p className="muted small" style={{ gridColumn: '1 / -1' }}>
+      <p className="muted small span-all">
         {translate('Loading…')}
       </p>
     )
@@ -195,7 +195,7 @@ function VisitDetail({ visitId }) {
       {v.is_red_flag && v.red_flag_reason && (
         <>
           <span className="k">{translate('Red flag')}</span>
-          <span style={{ color: 'var(--danger)' }}>{v.red_flag_reason}</span>
+          <span className="text-danger">{v.red_flag_reason}</span>
         </>
       )}
       <span className="k">{translate('Diagnoses')}</span>
@@ -242,7 +242,7 @@ function VisitDetail({ visitId }) {
         {translate('Reception')}: {r.nurse_name ?? '—'} · {translate('Doctor')}: {r.physician_name ?? '—'}
       </span>
       {v.outcome === 'Referred' && v.referral && (
-        <div style={{ gridColumn: '1 / -1' }}>
+        <div className="span-all">
           <ReferralBox record={r} onSaved={() => getVisitRecord(visitId).then(setR, () => {})} />
         </div>
       )}

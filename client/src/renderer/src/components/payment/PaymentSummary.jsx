@@ -37,7 +37,7 @@ export default function PaymentSummary({ visitId, inv, paid, editable, items, pa
   ]
   return (
     <div>
-      <div className="grid-2e" style={{ marginTop: 14 }}>
+      <div className="grid-2e mt-14">
         <div className="field">
           {paid ? (
             <>
@@ -45,7 +45,7 @@ export default function PaymentSummary({ visitId, inv, paid, editable, items, pa
               <div>
                 <span className="badge b-success">{translate('Paid')}</span>
               </div>
-              <button className="btn btn-outline" style={{ alignSelf: 'flex-start', marginTop: 8 }} onClick={() => printReceipt(receiptOf(inv, { name: patient.name, ticket: patient.ticket, byName: user.name }))}>
+              <button className="btn btn-outline self-start mt-8" onClick={() => printReceipt(receiptOf(inv, { name: patient.name, ticket: patient.ticket, byName: user.name }))}>
                 <Icon name="printer" />
                 {translate('Reprint receipt')}
               </button>
@@ -53,7 +53,7 @@ export default function PaymentSummary({ visitId, inv, paid, editable, items, pa
           ) : (
             <>
               <span className="lab">{translate('Payment method')}</span>
-              <div className="seg" style={{ alignSelf: 'flex-start' }}>
+              <div className="seg self-start">
                 {methods.map((m) => (
                   <button key={m.key} className={method === m.key ? 'on' : ''} onClick={() => setMethod(m.key)}>
                     <Icon name={m.key === 'transfer' ? 'qr-code' : 'banknote'} />
@@ -95,8 +95,7 @@ export default function PaymentSummary({ visitId, inv, paid, editable, items, pa
       {!paid &&
         (!cancelling ? (
           <button
-            className="btn btn-ghost btn-sm"
-            style={{ color: 'var(--danger)', marginTop: 12 }}
+            className="btn btn-ghost btn-sm text-danger mt-12"
             disabled={!editable || items.some((l) => l.dispense_status === 'Dispensed')}
             onClick={() => setCancelling(true)}
             title={translate('The patient left without paying or taking the medication')}
@@ -104,10 +103,10 @@ export default function PaymentSummary({ visitId, inv, paid, editable, items, pa
             {translate('Cancel this visit')}
           </button>
         ) : (
-          <div className="field" style={{ marginTop: 12 }}>
+          <div className="field mt-12">
             <label>Reason for cancelling</label>
             <input className="input" type="text" autoFocus value={cancelReason} onChange={(e) => setCancelReason(e.target.value)} placeholder={translate('e.g. patient left without paying')} />
-            <div style={{ display: 'flex', gap: 8, marginTop: 6 }}>
+            <div className="d-flex gap-8 mt-6">
               <button className="btn btn-outline btn-sm" onClick={() => setCancelling(false)}>
                 Back
               </button>

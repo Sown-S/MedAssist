@@ -152,7 +152,7 @@ export default function DashboardPage({ onNavigate }) {
   const ALERT_ICON = { inventory: 'package-x', staff: 'key-round', history: 'shield-alert' }
   return (
     <>
-      <div className="rhome" style={{ flex: 'none' }}>
+      <div className="rhome flex-none">
         <HomeGreeting crumb="Admin" name={user?.name ?? ''}>
           <button className="btn btn-outline" onClick={() => navigate('/reports')}>
             <Icon name="chart-line" />
@@ -273,19 +273,19 @@ export default function DashboardPage({ onNavigate }) {
                     <div className="r">
                       <div className="t">
                         <span>{translate('AI assessments today')}</span>
-                        <b style={{ fontSize: 'var(--fs-lg)' }}>{ai.assessments.total}</b>
+                        <b className="fs-lg">{ai.assessments.total}</b>
                       </div>
                     </div>
                     <div className="r">
                       <div className="t">
                         <span>{translate('Rule-only results (model unavailable)')}</span>
-                        <b style={{ fontSize: 'var(--fs-lg)' }}>{ai.assessments.rule_only}</b>
+                        <b className="fs-lg">{ai.assessments.rule_only}</b>
                       </div>
                     </div>
                     <div className="r">
                       <div className="t">
                         <span>{translate("of AI suggestions matched the doctor's confirmed diagnosis")}</span>
-                        <b style={{ fontSize: 'var(--fs-lg)' }}>{percent(ai.decisions.acceptance_rate)}</b>
+                        <b className="fs-lg">{percent(ai.decisions.acceptance_rate)}</b>
                       </div>
                     </div>
                   </div>

@@ -36,7 +36,7 @@ export default function ReauthModal({ open, title, confirmLabel = 'Confirm', dan
         <div className="modal-b">
           {children}
           <ErrorNote style={{ marginBottom: 12 }}>{err}</ErrorNote>
-          <div className="field" style={{ marginTop: 12 }}>
+          <div className="field mt-12">
             <label>Your password (to confirm)</label>
             <input className="input" type="password" value={pw} autoFocus autoComplete="current-password" onChange={(e) => setPw(e.target.value)} />
           </div>

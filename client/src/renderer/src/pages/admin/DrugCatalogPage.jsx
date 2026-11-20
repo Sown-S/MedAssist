@@ -60,7 +60,7 @@ export default function DrugCatalogPage({ params, onNavigate }) {
       </div>
 
       {missingAtc > 0 && (
-        <div className="banner w" style={{ marginTop: 0, marginBottom: 12 }}>
+        <div className="banner w mt-0 mb-12">
           <Icon name="alert" />
           <div className="txt">
             <b>

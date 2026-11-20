@@ -7,7 +7,7 @@ export function OpsTab({ form }) {
   const { fp, num, val, set } = form
   return (
     <div className="card">
-      <div className="sec-t" style={{ marginTop: 0 }}>
+      <div className="sec-t mt-0">
         Inventory
       </div>
       <div className="set-grid">

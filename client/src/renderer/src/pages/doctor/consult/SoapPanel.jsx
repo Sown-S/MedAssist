@@ -19,7 +19,7 @@ export default function SoapPanel({ visit, symptoms, onSymptoms, onRerunAi, d, s
   }
   return (
     <>
-      <div className="field" style={{ marginBottom: 12 }}>
+      <div className="field mb-12">
         <span className="lab">{translate('Symptoms confirmed at reception')}</span>
         <p className="story">
           {translate('At check-in')}: “{translate(visit.reason)}”
@@ -29,7 +29,7 @@ export default function SoapPanel({ visit, symptoms, onSymptoms, onRerunAi, d, s
 
       <AssessmentCard a={ai} decisions={aiDecision} onAccept={(c) => decideAi(c, 'accepted')} onDismiss={(c) => decideAi(c, 'dismissed')} />
 
-      <div className="soap" style={{ marginTop: 14 }}>
+      <div className="soap mt-14">
         <div className="field">
           <label>
             <b>{'S'}</b>

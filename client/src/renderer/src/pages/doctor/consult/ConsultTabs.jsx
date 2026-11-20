@@ -9,7 +9,7 @@ export function VitalsTab({ visit, vitals, onChange, tried, needWeight, vitalErr
   return (
     <div className="ipanel active">
       <div className="sec-t">Vitals for this visit</div>
-      <p className="muted small" style={{ marginTop: 0 }}>
+      <p className="muted small mt-0">
         <span>Recorded at check-in:</span> <span className="num">{vitalsText(visit.vitals)}</span>
       </p>
       <VitalsFields
@@ -18,7 +18,7 @@ export function VitalsTab({ visit, vitals, onChange, tried, needWeight, vitalErr
         errorKeys={tried ? new Set([...vitalErr.map((e) => e.key), ...(needWeight ? ['weight_kg'] : [])]) : new Set()}
         requireWeight={isChild(visit)}
       />
-      {vitalErr.length > 0 && <p className="small" style={{ color: 'var(--danger)' }}>{vitalErr.map((e) => translate(e.msg)).join(' · ')}</p>}
+      {vitalErr.length > 0 && <p className="small text-danger">{vitalErr.map((e) => translate(e.msg)).join(' · ')}</p>}
       {isChild(visit) && <p className="muted small">Children under 12: weight is required to finalize a prescription — doses are calculated per kg.</p>}
     </div>
   )

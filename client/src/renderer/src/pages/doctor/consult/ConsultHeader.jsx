@@ -31,7 +31,7 @@ export default function ConsultHeader({ visit, vit, prev, alerts }) {
         <div className="ava" aria-hidden="true">
           {initials(visit.name)}
         </div>
-        <div style={{ minWidth: 0 }}>
+        <div className="minw-0">
           <h2>
             {visit.name}
             {visit.triage === 'emergency' ? <span className="badge b-danger">{translate('Emergency')}</span> : visit.priority ? <span className="badge b-warning">{translate('Priority')}</span> : null}
@@ -51,7 +51,7 @@ export default function ConsultHeader({ visit, vit, prev, alerts }) {
         <div className="last">
           {translate('Last visit')}
           <br />
-          <b style={{ color: 'var(--ink)' }}>{prev ? dmy(prev.rxAt ?? prev.statusAt) + ' · ' + (prev.diagnosis || '—') : translate('First visit')}</b>
+          <b className="text-ink">{prev ? dmy(prev.rxAt ?? prev.statusAt) + ' · ' + (prev.diagnosis || '—') : translate('First visit')}</b>
         </div>
       </div>
 

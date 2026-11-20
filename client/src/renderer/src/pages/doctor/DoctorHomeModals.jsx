@@ -42,7 +42,7 @@ export function WaitingModal({ list, initial, now, past, onTake, onClose }) {
                           <b>{no(v.ticket)}</b>
                         </td>
                         <td>
-                          <b style={{ fontWeight: 500 }}>{v.name}</b> {pr === 'emergency' && <span className="badge b-danger">{translate('Emergency')}</span>}
+                          <b className="fw-500">{v.name}</b> {pr === 'emergency' && <span className="badge b-danger">{translate('Emergency')}</span>}
                           {pr === 'priority' && <span className="badge b-warning">{translate('Priority')}</span>} {v.absent && <span className="badge b-neutral">{translate('Absent')}</span>}
                           <div className="muted small">
                             {translate(v.gender)}
@@ -55,7 +55,7 @@ export function WaitingModal({ list, initial, now, past, onTake, onClose }) {
                             )}
                           </div>
                         </td>
-                        <td className="muted" style={{ maxWidth: 240 }}>
+                        <td className="muted maxw-240">
                           <Clip title={translate('Reason for visit') + ' — ' + v.name}>{translate(v.reason)}</Clip>
                         </td>
                         <td className="r">
@@ -143,7 +143,7 @@ export function LabListModal({ onResume, onClose }) {
     <Modal open onClose={onClose} wide>
       <ModalHeader title={translate('Lab tests & results')} onClose={onClose} />
       <div className="modal-b">
-        <div className="toolbar" style={{ marginBottom: 12 }}>
+        <div className="toolbar mb-12">
           <div className="seg">
             {LAB_FILTERS.map((f) => (
               <button key={f.key} className={filter === f.key ? 'on' : ''} onClick={() => setFilter(f.key)}>
@@ -175,13 +175,13 @@ export function LabListModal({ onResume, onClose }) {
                     <Fragment key={k}>
                       <tr>
                         <td>
-                          <b style={{ fontWeight: 500 }}>{v.name}</b>
+                          <b className="fw-500">{v.name}</b>
                           <div className="muted small">
                             <span className="num">{no(v.ticket)}</span> · <span className="num">{v.patientId}</span>
                             {v.day ? ' · ' + dmy(v.labOrders[0].at) : ' · ' + translate('Today')}
                           </div>
                         </td>
-                        <td style={{ maxWidth: 260 }}>
+                        <td className="maxw-260">
                           <Clip title={translate('Tests') + ' — ' + v.name}>{rows.map((r) => r.name).join(', ')}</Clip>
                         </td>
                         <td>

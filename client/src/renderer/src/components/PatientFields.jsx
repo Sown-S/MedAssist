@@ -67,7 +67,7 @@ export function EditPatient({ p, onSaved }) {
           <input className="input" type="text" inputMode="numeric" {...bind('idNumber')} />
         </div>
       </div>
-      <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+      <div className="d-flex justify-end">
         <button data-shortcut="save" className="btn btn-primary btn-sm" disabled={bad} onClick={save}>
           <Icon name="check" /> Save changes
         </button>
@@ -146,7 +146,7 @@ export function DuplicateBanner({ dupes, allowNew, onPick, onCreateNew }) {
   return (
     <div className="banner w">
       <Icon name="alert" />
-      <div className="txt" style={{ flex: 1 }}>
+      <div className="txt grow">
         <b>This patient may already have a record</b>
         <span>Same phone number, or same name and date of birth. Use the existing record if it is the same person.</span>
         <div className="dupe-list">
@@ -163,7 +163,7 @@ export function DuplicateBanner({ dupes, allowNew, onPick, onCreateNew }) {
           ))}
         </div>
         {allowNew && (
-          <button className="btn btn-ghost btn-sm" style={{ marginTop: 8 }} onClick={onCreateNew}>
+          <button className="btn btn-ghost btn-sm mt-8" onClick={onCreateNew}>
             Not the same person — create a new record
           </button>
         )}

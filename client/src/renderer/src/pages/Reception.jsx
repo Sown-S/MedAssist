@@ -179,7 +179,7 @@ export default function Reception() {
           <span>{translate('You can still look up patients and view the queue as last loaded. Registering, check-in and payments are locked until the connection returns, so nothing is saved twice or lost.')}</span>
         </OfflineBanner>
         {simulateOffline && online && (
-          <div className="banner w" style={{ marginTop: 0, marginBottom: 14 }}>
+          <div className="banner w mt-0 mb-14">
             <Icon name="alert" />
             <div className="txt">
               <b>{translate('No connection to the clinic server — read-only mode')}</b>

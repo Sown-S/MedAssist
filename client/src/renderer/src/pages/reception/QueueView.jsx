@@ -144,14 +144,14 @@ export default function QueueView({ readOnly, onPay }) {
                     return (
                       <tr key={v.id} className={rowTone(v) + (isIntakeOpen(v) || [ST.FINISHED, ST.CANCELLED].includes(v.status) ? ' dim' : '') + (fresh.has(v.id) ? ' row-new' : '')}>
                         <td className="r num">
-                          <b style={{ fontSize: 'var(--fs-md)' }} title={translate('Arrival time') + ' ' + hhmm(v.arrivedAt)}>
+                          <b className="fs-md" title={translate('Arrival time') + ' ' + hhmm(v.arrivedAt)}>
                             {String(v.ticket).padStart(3, '0')}
                           </b>
                           <div className="muted small">{hhmm(v.arrivedAt)}</div>
                         </td>
                         <td>
                           <div className="who-cell">
-                            <div style={{ minWidth: 0, maxWidth: 180 }}>
+                            <div className="minw-0 maxw-180">
                               <b className="clip" title={translate('Patient ID') + ': ' + v.patientId}>
                                 {v.name}
                               </b>
@@ -166,10 +166,10 @@ export default function QueueView({ readOnly, onPay }) {
                           </div>
                         </td>
                         <td>{prioOf(v)}</td>
-                        <td style={{ maxWidth: 130 }}>
+                        <td className="maxw-130">
                           <div className="vit">{v.status !== ST.FINISHED && v.status !== ST.PRESCRIBED ? vitalsText(v.vitals) : '—'}</div>
                         </td>
-                        <td style={{ maxWidth: 120 }}>
+                        <td className="maxw-120">
                           <Clip className="muted" title={translate('Reason for visit') + ' — ' + v.name}>
                             {translate(v.reason) || '—'}
                           </Clip>
@@ -223,10 +223,10 @@ export default function QueueView({ readOnly, onPay }) {
                   {redFlags.map((r) => (
                     <tr key={r.id} className="pr-danger">
                       <td>
-                        <b style={{ fontWeight: 500 }}>{r.name}</b>
+                        <b className="fw-500">{r.name}</b>
                         {r.by && <div className="muted small">{r.by}</div>}
                       </td>
-                      <td className="muted" style={{ maxWidth: 560 }}>
+                      <td className="muted maxw-560">
                         <Clip lines={2} title={translate('Emergency signs') + ' — ' + r.name}>
                           {translate(r.signs) || '—'}
                         </Clip>

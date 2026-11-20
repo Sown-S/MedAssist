@@ -182,16 +182,16 @@ export default function DocumentModal({ subject, onClose, mode = 'print', target
             </select>
           </div>
           {desk && (
-            <div className="field" style={{ gridColumn: '1 / -1' }}>
+            <div className="field span-all">
               <label>Warning signs</label>
               <input className="input" type="text" value={ref.signs} onChange={(e) => setR({ signs: e.target.value })} placeholder="e.g. Crushing chest pain, sweating" />
             </div>
           )}
-          <div className="field" style={{ gridColumn: '1 / -1' }}>
+          <div className="field span-all">
             <label>Diagnosis {!desk && <span className="req">*</span>}</label>
             <input className="input" type="text" value={ref.diagnosis} onChange={(e) => setR({ diagnosis: e.target.value })} />
           </div>
-          <div className="field" style={{ gridColumn: '1 / -1' }}>
+          <div className="field span-all">
             <label>Clinical summary</label>
             <textarea className="input doc-ta" rows="3" value={ref.summary} onChange={(e) => setR({ summary: e.target.value })} />
           </div>

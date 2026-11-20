@@ -71,7 +71,7 @@ export default function PaymentModal({ open, onClose, patient, initialTab = 'dis
       <ModalHeader title={translate('Dispensing & payment') + ' · ' + (ticket ? ticket + ' ' : '') + patient.name} onClose={onClose} />
       <div className="modal-b">
         {err && (
-          <div className="banner d" style={{ marginBottom: 12 }}>
+          <div className="banner d mb-12">
             <Icon name="triangle-alert" />
             <div className="txt">{err}</div>
           </div>
@@ -84,7 +84,7 @@ export default function PaymentModal({ open, onClose, patient, initialTab = 'dis
               <button className={tab === 'dispense' ? 'on' : ''} onClick={() => setTab('dispense')}>
                 {translate('Dispensing')}
                 {waiting.length > 0 && (
-                  <span className="badge b-warning" style={{ marginLeft: 8 }}>
+                  <span className="badge b-warning ml-8">
                     {waiting.length}
                   </span>
                 )}
@@ -92,14 +92,14 @@ export default function PaymentModal({ open, onClose, patient, initialTab = 'dis
               <button className={tab === 'pay' ? 'on' : ''} onClick={() => setTab('pay')}>
                 {translate('Invoice & payment')}
                 {!paid && inv && (
-                  <span className="badge b-warning" style={{ marginLeft: 8 }}>
+                  <span className="badge b-warning ml-8">
                     {translate('Awaiting payment')}
                   </span>
                 )}
               </button>
             </div>
 
-            <div style={{ paddingTop: 14 }}>
+            <div className="pt-14">
               {/* Hai tab luôn được dựng, chỉ ẩn tab không chọn: đổi tab không mất phần đang nhập dở (phí khám, dịch vụ, lý do bỏ qua…). */}
               <DispenseTab active={tab === 'dispense'} visitId={visitId} items={items} waiting={waiting} paid={paid} rx={rx} patient={patient} ticket={ticket} user={user} act={act} />
 

@@ -223,7 +223,7 @@ export default function TopActions({ user, onSignOut }) {
                   <div className={'ico ' + (n.urgent ? 'd' : n.icon ? 'n' : 'w')} style={{ width: 30, height: 30 }}>
                     <Icon name={n.icon ?? 'package-x'} />
                   </div>
-                  <div style={{ minWidth: 0, flex: 1 }}>
+                  <div className="minw-0 grow">
                     <Clip as="b" title={n.title}>
                       {n.title}
                     </Clip>
@@ -281,8 +281,7 @@ export default function TopActions({ user, onSignOut }) {
             <hr />
             <button
               role="menuitem"
-              className="logout-btn"
-              style={{ color: 'var(--danger)' }}
+              className="logout-btn text-danger"
               onClick={() => {
                 setOpen(null)
                 onSignOut?.()

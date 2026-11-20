@@ -83,7 +83,7 @@ export default function Login() {
 
   const roleIcon = { doctor: 'stethoscope', reception: 'clipboard-list', admin: 'shield' }
   const errBox = (msg) => (
-    <div className="err" role="alert" style={{ display: 'flex' }}>
+    <div className="err d-flex" role="alert">
       <AppIcon name="circle-alert" />
       <span>{msg}</span>
     </div>
@@ -103,7 +103,7 @@ export default function Login() {
           <form className="login-form" noValidate onSubmit={handleSubmit}>
             <div>
               <h2>Sign in</h2>
-              <p className="sub" style={{ marginTop: 4 }}>
+              <p className="sub mt-4">
                 Choose your role and sign in with the account you were given
               </p>
             </div>
@@ -135,7 +135,7 @@ export default function Login() {
             <Button className="btn btn-primary" type="submit" loading={busy}>
               {busy ? 'Signing in…' : 'Sign In'}
             </Button>
-            <p className="muted small" style={{ textAlign: 'center' }}>
+            <p className="muted small text-center">
               Don't have an account? Contact your administrator.
             </p>
             <div className="secure">

@@ -85,12 +85,12 @@ export default function CatalogPage({ onNavigate }) {
 
       <div className="card">
         <div className="card-b">
-          <div className="search" style={{ width: '100%', marginBottom: 14 }}>
+          <div className="search w-full mb-14">
             <Icon name="search" />
             <input className="input" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search a code or name in every catalog (e.g. J03, Amoxicillin, Đà Nẵng)…" />
           </div>
           {q.trim().length >= 2 && (
-            <div className="rows" style={{ marginBottom: 14 }}>
+            <div className="rows mb-14">
               {results.length === 0 ? (
                 <p className="muted small">{translate('No results.')}</p>
               ) : (
@@ -138,9 +138,9 @@ export default function CatalogPage({ onNavigate }) {
                               <div className="ico n">
                                 <Icon name={CAT_ICON[key] ?? 'list'} />
                               </div>
-                              <div style={{ minWidth: 0 }}>
+                              <div className="minw-0">
                                 <b>{x.title}</b>
-                                <span className="clip" style={{ display: 'block', maxWidth: 420 }}>
+                                <span className="clip d-block maxw-420">
                                   {x.desc}
                                 </span>
                               </div>
@@ -160,7 +160,7 @@ export default function CatalogPage({ onNavigate }) {
                               <>
                                 <span className="badge b-warning">Needs review</span>
                                 {issues.map((t) => (
-                                  <div key={t} className="small" style={{ color: 'var(--warning)' }}>
+                                  <div key={t} className="small text-warning">
                                     {t}
                                   </div>
                                 ))}

@@ -67,10 +67,9 @@ export default function HistoryPage() {
 
       <div className="card">
         <div className="card-b">
-          <div className="toolbar" style={{ marginBottom: 14 }}>
+          <div className="toolbar mb-14">
             <input
-              className="input"
-              style={{ width: 170, height: 40 }}
+              className="input w-170 h-40"
               value={draft.username}
               onChange={(e) => setDraft({ ...draft, username: e.target.value })}
               placeholder={translate('Account') + ': vd bs01'}
@@ -87,8 +86,7 @@ export default function HistoryPage() {
             <DateField style={{ width: 160 }} title={translate('From')} aria-label={translate('From')} placeholder={translate('From')} value={draft.from} onChange={(v) => setDraft({ ...draft, from: v })} />
             <DateField style={{ width: 160 }} title={translate('To')} aria-label={translate('To')} placeholder={translate('To')} value={draft.to} onChange={(v) => setDraft({ ...draft, to: v })} />
             <input
-              className="input"
-              style={{ width: 210, height: 40 }}
+              className="input w-210 h-40"
               value={draft.target_entity}
               onChange={(e) => setDraft({ ...draft, target_entity: e.target.value })}
               placeholder={translate('Object (table)') + ': visit, patient…'}
@@ -130,7 +128,7 @@ export default function HistoryPage() {
                 </thead>
                 <tbody>
                   {data.items.map((x) => (
-                    <tr key={x.log_id} onClick={() => setOpen(open === x.log_id ? null : x.log_id)} style={{ cursor: 'pointer' }}>
+                    <tr className="pointer" key={x.log_id} onClick={() => setOpen(open === x.log_id ? null : x.log_id)}>
                       <td className="num">{when(x.created_at)}</td>
                       <td>{x.username ?? (x.attempted_username ? <span className="sp-warn">{x.attempted_username}</span> : <span className="muted">—</span>)}</td>
                       <td>

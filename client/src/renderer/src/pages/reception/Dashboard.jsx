@@ -107,7 +107,7 @@ export default function Dashboard({ go, readOnly, onPay }) {
                 <div className="rows">
                   {unpaid.map((v) => (
                     <div className="r" key={v.id}>
-                      <span className="stt num" style={{ width: 40, fontWeight: 700 }}>
+                      <span className="stt num w-40 fw-700">
                         {ticketNo(v.ticket)}
                       </span>
                       <div className="t">

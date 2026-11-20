@@ -61,12 +61,12 @@ export function ReviewPanel({ data, names, onChanged }) {
           </div>
           <div className="card-b">
             {pending.description && (
-              <p className="small muted" style={{ marginBottom: 10 }}>
+              <p className="small muted mb-10">
                 {pending.description}
               </p>
             )}
             <ChangeList detail={detail} ctx={ctx} />
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 16 }}>
+            <div className="d-flex justify-end gap-8 mt-16">
               <button className="btn btn-danger-outline" onClick={() => setRejecting(true)}>
                 <Icon name="x" />
                 {translate('Reject')}

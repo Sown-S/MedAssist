@@ -86,7 +86,7 @@ function ExamSignsBody({ visitId, symptoms, onSaved, onRerun, signs }) {
       ) : (
         <>
           {signs.length > SEARCH_FROM && (
-            <div className="search" style={{ width: '100%', marginBottom: 8 }}>
+            <div className="search w-full mb-8">
               <Icon name="search" />
               <input className="input" type="search" value={query} placeholder={translate('Search examination signs — accents not needed')} aria-label={translate('Search examination signs')} onChange={(e) => setQuery(e.target.value)} />
             </div>

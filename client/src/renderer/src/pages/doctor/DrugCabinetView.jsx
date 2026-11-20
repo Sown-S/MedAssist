@@ -106,7 +106,7 @@ export default function DrugCabinetView({ go }) {
         <div className="banner n">
           <Icon name="stethoscope" />
           <div className="txt">
-            <span>Prescribing for</span> <b style={{ display: 'inline' }}>{current.name}</b>
+            <span>Prescribing for</span> <b className="d-inline">{current.name}</b>
             {current.allergies ? ' · ' + translate('Drug allergy') + ': ' + translate(current.allergies) : ''}
           </div>
           <button className="btn btn-ghost btn-sm" onClick={() => go('consult', current.id)}>
@@ -117,7 +117,7 @@ export default function DrugCabinetView({ go }) {
       )}
       <div className="card">
         <div className="card-b">
-          <div className="toolbar" style={{ marginBottom: 14 }}>
+          <div className="toolbar mb-14">
             <div className="search">
               <Icon name="search" />
               <input className="input" type="search" placeholder="Search by drug name, active ingredient or ATC…" value={q} onChange={filter(setQ)} />
@@ -183,14 +183,14 @@ export default function DrugCabinetView({ go }) {
                     return (
                       <tr key={d.id} className={s.usable === 0 ? 'dim' : ''}>
                         <td>
-                          <b style={{ fontWeight: 500 }}>{d.name}</b>
+                          <b className="fw-500">{d.name}</b>
                           <div className="muted small">
                             {d.ingredient || '—'}
                             {d.atc ? ' · ' + d.atc : ''}
                           </div>
                         </td>
                         <td>
-                          <span className="acts" style={{ justifyContent: 'flex-start' }}>
+                          <span className="acts justify-start">
                             {d.essential && <span className="tag">Essential</span>}
                             {d.group === 'controlled' && <span className="tag w">Controlled</span>}
                             {d.kind === 'supply' && <span className="tag">Supply</span>}

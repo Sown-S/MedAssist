@@ -53,7 +53,7 @@ export function useTakePatient(open) {
           </p>
         </div>
         {busy.target.priority && (
-          <div className="banner w" style={{ marginTop: 14 }}>
+          <div className="banner w mt-14">
             <Icon name="zap" />
             <div className="txt">
               <b>
