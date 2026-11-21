@@ -14,6 +14,11 @@ import { translate } from '../i18n'
 import { printTicket, ticketNo } from './queuePrint'
 import PatientAlerts from './PatientAlerts'
 import { PHONE_RE, DOB_RE, ID_RE, EditPatient, NewPatientFields, DuplicateBanner } from './PatientFields'
+import { todayVN } from '../utils/format'
+import OpenVisitBanner from './OpenVisitBanner'
+import PregnancyField from './PregnancyField'
+
+const SAVED_FLASH_MS = 650
 
 // Sinh hiệu đề xuất + lời kể của lần trích xuất ra chúng (xem extractionStale).
 const NO_VITALS = { list: [], from: null }
@@ -41,9 +46,14 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
   const [editing, setEditing] = useState(false)
   // Lượt khám được tạo sớm (khi trích xuất hoặc khi lưu) — server cấp số ngay.
   const [busy, setBusy] = useState(false)
+  // Lưu xong: nút hiện ✓ “Đã lưu” một nhịp ngắn rồi mới đóng, để lễ tân thấy ngay là đã lưu.
+  const [done, setDone] = useState(false)
   const [visit, setVisit] = useState(null)
   const [idTaken, setIdTaken] = useState(false)
   const visitRef = useRef(null)
+  // Lượt đang mở của bệnh nhân (POST /visits trả 409 PATIENT_HAS_OPEN_VISIT); adopted: đã mở lại lượt đó trong form này.
+  const [openVisit, setOpenVisit] = useState(null)
+  const adopted = useRef(false)
   // Chờ y tá xác nhận, không tự điền.
   const [vitalProps, setVitalProps] = useState(NO_VITALS)
   const saved = useRef(false)
@@ -60,6 +70,8 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
     setIdTaken(false)
     setVitalProps(NO_VITALS)
     visitRef.current = null
+    adopted.current = false
+    setOpenVisit(null)
     saved.current = false
   }, [open, patient])
 
@@ -80,8 +92,7 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
   const pregnancyAsked = askPregnancy(existing ? existing.gender : form.gender, age)
   // Luật cờ đỏ / ưu tiên chạy ở server khi lưu (POST /visits/{id}/assessment).
   const vitals = vitalsFromForm(form)
-  const draft = () =>
-    existing ?? { name: form.name.trim(), gender: form.gender, age: ageOf(form.dob), allergies: form.allergies.trim(), history: form.history.trim() }
+  const draft = () => existing ?? { name: form.name.trim(), gender: form.gender, age: ageOf(form.dob), allergies: form.allergies.trim(), history: form.history.trim() }
 
   // Tạo hồ sơ + lượt Waiting nếu chưa có; lần sau chỉ cập nhật lời kể và sinh hiệu (chỉ khi còn Waiting).
   async function ensureVisit(force = false) {
@@ -101,11 +112,30 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
       setExisting(p)
       setDupes(null)
     } else if (pregnancyAsked) await clinic.setPregnancy(p, form.pregnancy)
-    const v = await clinic.createVisit(p.id, { text: form.reason, vitals })
+    let v
+    try {
+      v = await clinic.createVisit(p.id, { text: form.reason, vitals })
+    } catch (e) {
+      if (e?.code !== 'PATIENT_HAS_OPEN_VISIT') throw e
+      const id = e.details?.[0]?.visit_id
+      const ov = id ? await clinic.getVisit(id).catch(() => null) : null
+      setOpenVisit({ id, status: ov?.status, ticket: ov?.queue_number, date: ov?.queue_date, today: ov?.queue_date === todayVN() })
+      return null
+    }
     visitRef.current = v
     setVisit(v)
     syncQueue()
     return v
+  }
+  // Mở lại lượt đang chờ hôm nay ngay trong form: lời kể, sinh hiệu, triệu chứng lưu vào lượt đó (PATCH khi còn Waiting).
+  async function adoptOpenVisit() {
+    const ov = await clinic.getVisit(openVisit.id)
+    visitRef.current = ov
+    adopted.current = true
+    setVisit(ov)
+    setOpenVisit(null)
+    if (!form.reason.trim() && (ov.free_text_description || ov.chief_complaint)) setForm((f) => ({ ...f, reason: ov.free_text_description || ov.chief_complaint }))
+    showToast(translate('Opened the existing visit') + ' — ' + translate('No.') + ' ' + (ov.queue_number ?? ''))
   }
   // Chuyển tuyến cấp cứu cần hồ sơ bệnh nhân — bệnh nhân mới thì tạo hồ sơ trước.
   async function ensurePatientId() {
@@ -168,6 +198,9 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
       const level = clinic.triageOf(a.priority?.final)
       const name = existing?.name ?? form.name.trim()
       if (print) printTicket({ ticket: v.queue_number, name, priority: level !== 'routine', arrivedAt: v.visit_date })
+      setDone(true)
+      await new Promise((r) => setTimeout(r, SAVED_FLASH_MS))
+      setDone(false)
       onClose()
       const no = ticketNo(v.queue_number)
       if (level === 'emergency') showToast(translate('Emergency — placed at the top of the queue; doctors have been alerted') + ' · ' + no)
@@ -180,8 +213,12 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
   }
   // Đóng khi lượt đã tạo mà chưa lưu xong → huỷ lượt đó để không còn lượt “ma” trong hàng chờ.
   function close() {
-    if (visitRef.current && !saved.current)
-      clinic.cancelVisit(visitRef.current.visit_id, 'Huỷ khi đang tiếp đón (chưa lưu)').then(() => syncQueue(), () => {})
+    // Lượt mở lại (đã có từ trước) thì không huỷ.
+    if (visitRef.current && !saved.current && !adopted.current)
+      clinic.cancelVisit(visitRef.current.visit_id, 'Huỷ khi đang tiếp đón (chưa lưu)').then(
+        () => syncQueue(),
+        () => {}
+      )
     onClose()
   }
   async function pickRecord(d) {
@@ -191,97 +228,117 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
   const err = (k) => touched && errors[k]
 
   return (
-    <Modal open={open} onClose={close} wide>
+    <Modal open={open} onClose={close} wide="xl">
       <ModalHeader title={existing ? translate('New visit') + ' — ' + existing.name : 'Register new patient & create visit'} onClose={close} />
 
-      {existing ? (
-        <>
-          <div className="pl-summary">
-            <span className="mono">{existing.id}</span>
-            <span>{translate(existing.gender)}</span>
-            <span>
-              {existing.dob} ({ageOf(existing.dob)} {translate('yrs')})
-            </span>
-            <span className="mono">{existing.phone}</span>
-            <button className="btn btn-ghost btn-sm" onClick={() => setEditing(!editing)}>
-              <Icon name="pencil" /> {editing ? translate('Close') : translate('Edit details')}
-            </button>
-          </div>
-          {editing && <EditPatient p={existing} onSaved={(p) => (setExisting(p), setEditing(false))} />}
-          <PatientAlerts p={existing} />
-        </>
-      ) : (
-        <>
-          <NewPatientFields form={form} field={field} err={err} onDob={(dob) => setForm((f) => ({ ...f, dob }))} />
-        </>
-      )}
+      {/* Hai cột như mẫu: trái thông tin bệnh nhân, phải triệu chứng và sinh hiệu. */}
+      <div className="modal-b flush">
+        <div className="intake">
+          <section>
+            {existing && <div className="sec-t mt-0">Patient details</div>}
+            {existing ? (
+              <>
+                <div className="pl-summary">
+                  <span className="num">{existing.id}</span>
+                  <span>{translate(existing.gender)}</span>
+                  <span>
+                    {existing.dob} ({ageOf(existing.dob)} {translate('yrs')})
+                  </span>
+                  <span className="num">{existing.phone}</span>
+                  <button className="btn btn-ghost btn-sm" onClick={() => setEditing(!editing)}>
+                    <Icon name="pencil" /> {editing ? translate('Close') : translate('Edit details')}
+                  </button>
+                </div>
+                {editing && <EditPatient p={existing} onSaved={(p) => (setExisting(p), setEditing(false))} />}
+                <PatientAlerts p={existing} />
+              </>
+            ) : (
+              <NewPatientFields form={form} field={field} err={err} onDob={(dob) => setForm((f) => ({ ...f, dob }))} />
+            )}
 
-      {dupes && !existing && <DuplicateBanner dupes={dupes} allowNew={!idTaken} onPick={pickRecord} onCreateNew={() => handleSave(true)} />}
+            {openVisit && <OpenVisitBanner v={openVisit} onOpen={adoptOpenVisit} onClose={() => setOpenVisit(null)} />}
+            {dupes && !existing && <DuplicateBanner dupes={dupes} allowNew={!idTaken} onPick={pickRecord} onCreateNew={() => handleSave(true)} />}
+            {pregnancyAsked && <PregnancyField value={form.pregnancy} onChange={(v) => setForm((f) => ({ ...f, pregnancy: v }))} />}
+            <div className="sec-t">
+              <Icon name="ticket" />
+              <span>Queue number</span>
+            </div>
+            <div className="qno">
+              <span className="n num">{visit ? ticketNo(visit.queue_number) : '—'}</span>
+              <div className="grow">
+                <b>{visit ? translate('Queue number') + ' ' + ticketNo(visit.queue_number) : translate('Issued when saved')}</b>
+                <div className="muted small">{translate('Issued by the server when the visit is saved')}</div>
+              </div>
+              <label className="check">
+                <input type="checkbox" checked={print} onChange={(e) => setPrint(e.target.checked)} />
+                <span>Print queue ticket</span>
+              </label>
+            </div>
+          </section>
 
-      <div className="section-label">Symptoms</div>
-      <SymptomPanel
-        value={syms}
-        onChange={setSyms}
-        text={form.reason}
-        onText={(t) => setForm((f) => ({ ...f, reason: t }))}
-        onExtract={extract}
-        onVitals={(list, from) => setVitalProps({ list, from })}
-      />
+          <section>
+            <div className="sec-t mt-0">
+              <Icon name="message-square-text" />
+              <span>Symptoms</span>
+            </div>
+            <SymptomPanel
+              value={syms}
+              onChange={setSyms}
+              text={form.reason}
+              onText={(t) => setForm((f) => ({ ...f, reason: t }))}
+              onExtract={extract}
+              onVitals={(list, from) => setVitalProps({ list, from })}
+            />
 
-      <div className="section-label">Vital signs</div>
-      <VitalProposals
-        list={vitalProps.list}
-        form={form}
-        onApply={(fill) => setForm((f) => ({ ...f, ...fill }))}
-        onDrop={(keys) => setVitalProps((v) => ({ ...v, list: v.list.filter((p) => !keys.includes(p.key)) }))}
-        stale={extractionStale(vitalProps.from, form.reason)}
-      />
-      <VitalsFields value={form} onChange={(k, v) => setForm((f) => ({ ...f, [k]: v }))} errorKeys={touched ? vit.errorKeys : new Set()} requireWeight={child} />
-      <div className="form-grid intake-extra" style={{ marginTop: 10 }}>
-        {pregnancyAsked && (
-          <div className="field">
-            <label>Pregnancy</label>
-            <select {...field('pregnancy')}>
-              <option value="">Not asked</option>
-              <option value="no">Not pregnant</option>
-              <option value="yes">Pregnant</option>
-            </select>
-          </div>
-        )}
-        <div className="field">
-          <label>Queue number</label>
-          <input
-            type="text"
-            readOnly
-            value={visit ? ticketNo(visit.queue_number) : '—'}
-            title={translate('Issued by the server when the visit is saved')}
-          />
+            <div className="sec-t">
+              <Icon name="activity" />
+              <span>Vital signs</span>
+            </div>
+            <VitalProposals
+              list={vitalProps.list}
+              form={form}
+              onApply={(fill) => setForm((f) => ({ ...f, ...fill }))}
+              onDrop={(keys) => setVitalProps((v) => ({ ...v, list: v.list.filter((p) => !keys.includes(p.key)) }))}
+              stale={extractionStale(vitalProps.from, form.reason)}
+            />
+            <VitalsFields value={form} onChange={(k, v) => setForm((f) => ({ ...f, [k]: v }))} errorKeys={touched ? vit.errorKeys : new Set()} requireWeight={child} />
+            {touched && vit.errors.length > 0 && (
+              <p className="small text-danger vit-note">
+                <Icon name="ban" /> {vit.errors.map((w) => translate(w)).join(' · ')}
+              </p>
+            )}
+            {vWarn.length > 0 && (
+              <p className="small text-warning vit-note">
+                <Icon name="alert" /> {translate('Unusual value — please double-check')}: {vWarn.map((w) => translate(w)).join(' · ')}
+              </p>
+            )}
+          </section>
         </div>
-        <label className="intake-print">
-          <input type="checkbox" checked={print} onChange={(e) => setPrint(e.target.checked)} />
-          <span>Print queue ticket</span>
-        </label>
       </div>
-      {touched && vit.errors.length > 0 && (
-        <p className="ai-soft" style={{ color: '#FCA5A5', fontSize: 12.5, margin: '4px 0 8px' }}>
-          <Icon name="ban" /> {vit.errors.map((w) => translate(w)).join(' · ')}
-        </p>
-      )}
-      {vWarn.length > 0 && (
-        <p className="ai-soft" style={{ color: '#FCD34D', fontSize: 12.5, margin: '4px 0 8px' }}>
-          <Icon name="alert" /> {translate('Unusual value — please double-check')}: {vWarn.map((w) => translate(w)).join(' · ')}
-        </p>
-      )}
 
-      <div className="form-actions">
-        <button className="btn btn-ghost" style={{ color: 'var(--warn)', borderColor: '#F3C9C9' }} onClick={() => onRedFlag(redFlagInfo())}>
-          <Icon name="ban" /> Emergency warning signs
+      <div className="modal-f">
+        {!existing && (
+          <span className="muted small">
+            <Icon name="info" /> {translate('Fill in the name, date of birth and phone number first.')}
+          </span>
+        )}
+        <span className="sp" />
+        <button className="btn btn-danger-outline" onClick={() => onRedFlag(redFlagInfo())}>
+          <Icon name="siren" />
+          {translate('Emergency warning signs')}
         </button>
-        <button className="btn btn-ghost" onClick={close}>
+        <button className="btn btn-outline" onClick={close}>
           Cancel
         </button>
-        <button className="btn btn-primary" onClick={() => handleSave(false)} disabled={busy || (touched && invalid && !existing)}>
-          {existing ? 'Create visit & issue number' : 'Save & issue number'}
+        <button
+          data-shortcut="save"
+          className={'btn btn-primary' + (done ? ' is-done' : '')}
+          onClick={() => handleSave(false)}
+          disabled={busy || (touched && invalid && !existing)}
+          aria-busy={busy || undefined}
+        >
+          {done ? <Icon name="check" /> : busy ? <span className="spinner btn-spinner" aria-hidden="true" /> : <Icon name="ticket" />}
+          {done ? translate('Saved') : busy ? translate('Saving…') : translate(existing ? 'Create visit & issue number' : 'Save & issue number')}
         </button>
       </div>
     </Modal>

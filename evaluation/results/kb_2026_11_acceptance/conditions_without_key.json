@@ -1,0 +1,66 @@
+[
+  {
+    "condition_code": "benh_hat_com",
+    "reason": "Không có mã hiện có đủ đặc trưng/phân biệt để chọn chắc chắn theo trích dẫn; không dùng dấu hiệu chung hay dấu hiệu bệnh khác làm then chốt. CẦN BÁC SĨ QUYẾT."
+  },
+  {
+    "condition_code": "sam_da",
+    "reason": "Không có mã hiện có đủ đặc trưng/phân biệt để chọn chắc chắn theo trích dẫn; không dùng dấu hiệu chung hay dấu hiệu bệnh khác làm then chốt. CẦN BÁC SĨ QUYẾT."
+  },
+  {
+    "condition_code": "hoi_chung_dau_nhuc_so_mat",
+    "reason": "Không có mã hiện có đủ đặc trưng/phân biệt để chọn chắc chắn theo trích dẫn; không dùng dấu hiệu chung hay dấu hiệu bệnh khác làm then chốt. CẦN BÁC SĨ QUYẾT."
+  },
+  {
+    "condition_code": "hong_thanh_quan_viem_mui_hong_cap_tinh",
+    "reason": "Không có mã hiện có đủ đặc trưng/phân biệt để chọn chắc chắn theo trích dẫn; không dùng dấu hiệu chung hay dấu hiệu bệnh khác làm then chốt. CẦN BÁC SĨ QUYẾT."
+  },
+  {
+    "condition_code": "mui_xoang_viem_mui_xoang_tre_em",
+    "reason": "Không có mã hiện có đủ đặc trưng/phân biệt để chọn chắc chắn theo trích dẫn; không dùng dấu hiệu chung hay dấu hiệu bệnh khác làm then chốt. CẦN BÁC SĨ QUYẾT."
+  },
+  {
+    "condition_code": "nam_thanh_quan",
+    "reason": "Không có mã hiện có đủ đặc trưng/phân biệt để chọn chắc chắn theo trích dẫn; không dùng dấu hiệu chung hay dấu hiệu bệnh khác làm then chốt. CẦN BÁC SĨ QUYẾT."
+  },
+  {
+    "condition_code": "papilloma_thanh_quan",
+    "reason": "Không có mã hiện có đủ đặc trưng/phân biệt để chọn chắc chắn theo trích dẫn; không dùng dấu hiệu chung hay dấu hiệu bệnh khác làm then chốt. CẦN BÁC SĨ QUYẾT."
+  },
+  {
+    "condition_code": "viem_hong_cap_tinh",
+    "reason": "Không có mã hiện có đủ đặc trưng/phân biệt để chọn chắc chắn theo trích dẫn; không dùng dấu hiệu chung hay dấu hiệu bệnh khác làm then chốt. CẦN BÁC SĨ QUYẾT."
+  },
+  {
+    "condition_code": "viem_mui_xoang_cap_tinh",
+    "reason": "Không có mã hiện có đủ đặc trưng/phân biệt để chọn chắc chắn theo trích dẫn; không dùng dấu hiệu chung hay dấu hiệu bệnh khác làm then chốt. CẦN BÁC SĨ QUYẾT."
+  },
+  {
+    "condition_code": "viem_tai_giua_cap_tinh_tre_em",
+    "reason": "Không có mã hiện có đủ đặc trưng/phân biệt để chọn chắc chắn theo trích dẫn; không dùng dấu hiệu chung hay dấu hiệu bệnh khác làm then chốt. CẦN BÁC SĨ QUYẾT."
+  },
+  {
+    "condition_code": "viem_thanh_quan_cap_tinh",
+    "reason": "Không có mã hiện có đủ đặc trưng/phân biệt để chọn chắc chắn theo trích dẫn; không dùng dấu hiệu chung hay dấu hiệu bệnh khác làm then chốt. CẦN BÁC SĨ QUYẾT."
+  },
+  {
+    "condition_code": "benh_sot_ret_khang_thuoc",
+    "reason": "Không có mã hiện có đủ đặc trưng/phân biệt để chọn chắc chắn theo trích dẫn; không dùng dấu hiệu chung hay dấu hiệu bệnh khác làm then chốt. CẦN BÁC SĨ QUYẾT."
+  },
+  {
+    "condition_code": "benh_tieu_chay_do_vi_khuan",
+    "reason": "Không có mã hiện có đủ đặc trưng/phân biệt để chọn chắc chắn theo trích dẫn; không dùng dấu hiệu chung hay dấu hiệu bệnh khác làm then chốt. CẦN BÁC SĨ QUYẾT."
+  },
+  {
+    "condition_code": "cum_mua",
+    "reason": "Không có mã hiện có đủ đặc trưng/phân biệt để chọn chắc chắn theo trích dẫn; không dùng dấu hiệu chung hay dấu hiệu bệnh khác làm then chốt. CẦN BÁC SĨ QUYẾT."
+  },
+  {
+    "condition_code": "sot_ret",
+    "reason": "Không có mã hiện có đủ đặc trưng/phân biệt để chọn chắc chắn theo trích dẫn; không dùng dấu hiệu chung hay dấu hiệu bệnh khác làm then chốt. CẦN BÁC SĨ QUYẾT."
+  },
+  {
+    "condition_code": "loi_mat",
+    "reason": "Không có mã hiện có đủ đặc trưng/phân biệt để chọn chắc chắn theo trích dẫn; không dùng dấu hiệu chung hay dấu hiệu bệnh khác làm then chốt. CẦN BÁC SĨ QUYẾT."
+  }
+]

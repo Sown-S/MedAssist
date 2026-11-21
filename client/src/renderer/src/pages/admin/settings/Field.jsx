@@ -1,10 +1,8 @@
-
-
 const EFFECTS = {
-  now: { label: 'Applies immediately', cls: 'ok' },
-  signin: { label: 'From next sign-in', cls: 'info' },
-  server: { label: 'Applied by the server', cls: 'muted' },
-  restart: { label: 'Requires restart', cls: 'warn' }
+  now: { label: 'Applies immediately', cls: 'b-success' },
+  signin: { label: 'From next sign-in', cls: 'b-info' },
+  server: { label: 'Applied by the server', cls: 'b-neutral' },
+  restart: { label: 'Requires restart', cls: 'b-warning' }
 }
 
 // Nhãn tiếng Anh (dịch khi hiển thị, dùng cả cho nhật ký) + thời điểm có hiệu lực của từng cài đặt.
@@ -43,10 +41,10 @@ export function Field({ path, hint, error, changed, wide, children }) {
     <div className={'field set-field' + (wide ? ' wide' : '') + (changed ? ' changed' : '') + (error ? ' has-err' : '')}>
       <label>
         <span>{label}</span>
-        <span className={'badge ' + ef.cls + ' set-effect'}>{ef.label}</span>
+        {effect !== 'now' && <span className={'badge ' + ef.cls + ' set-effect'}>{ef.label}</span>}
       </label>
       {children}
-      {error ? <small className="set-err">{error}</small> : hint && <small className="ai-soft">{hint}</small>}
+      {error ? <small className="set-err">{error}</small> : hint && <small className="muted">{hint}</small>}
     </div>
   )
 }

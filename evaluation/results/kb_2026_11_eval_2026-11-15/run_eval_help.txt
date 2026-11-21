@@ -1,0 +1,25 @@
+usage: run_eval.py [-h] [--testset TESTSET] [--mode {RuleOnly,Full,both}]
+                   [--skip-extraction] [--extraction-only]
+                   [--extraction-cases EXTRACTION_CASES]
+                   [--extraction-strategy {legacy,phrases}]
+                   [--candidates-per-phrase CANDIDATES_PER_PHRASE]
+                   [--limit LIMIT] [--out OUT]
+
+Đánh giá pipeline AI trên bộ test đóng băng
+
+options:
+  -h, --help            show this help message and exit
+  --testset TESTSET
+  --mode {RuleOnly,Full,both}
+  --skip-extraction     Bỏ qua bộ test trích xuất (cần LLM)
+  --extraction-only     Chỉ chạy bộ test trích xuất
+  --extraction-cases EXTRACTION_CASES
+                        File JSONL ca trích xuất thay cho bộ đóng băng (bộ ca
+                        phát triển, cùng định dạng)
+  --extraction-strategy {legacy,phrases}
+                        Cách trích xuất; mặc định theo AI_EXTRACTION_STRATEGY
+  --candidates-per-phrase CANDIDATES_PER_PHRASE
+                        Số ứng viên mỗi cụm (chỉ dùng với phrases)
+  --limit LIMIT         Chỉ chạy N ca đầu mỗi bộ (thử nhanh)
+  --out OUT             Thư mục kết quả (mặc định evaluation/results/<thời
+                        điểm>)

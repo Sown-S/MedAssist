@@ -1,6 +1,8 @@
+import Icon from './Icon'
 import { useState } from 'react'
 import { useInventory, stockOf } from '../api/inventoryStore'
 import { unitLabel } from '../pages/admin/inventory/shared'
+import { vnd } from '../utils/format'
 
 // Ô tìm thuốc (tên, hoạt chất, ATC) kèm tồn dùng được. drugs: danh mục từ server; bỏ trống thì dùng kho đã nạp (inventoryStore).
 // inputId / title: để trang cha gắn phím tắt (VD Alt+T ở màn khám).
@@ -20,8 +22,10 @@ export default function DrugPicker({ onPick, disabled, drugs, inputId, title }) 
   }
 
   return (
-    <div className="rx-search" style={{ position: 'relative' }}>
+    <div className="search rx-search" style={{ position: 'relative', width: '100%' }}>
+      <Icon name="search" />
       <input
+        className="input"
         type="text"
         id={inputId}
         title={title}
@@ -47,20 +51,20 @@ export default function DrugPicker({ onPick, disabled, drugs, inputId, title }) 
             const st = d.stock ?? stockOf(d, inv.batches)
             return (
               <div className="icd-opt" key={d.id} onMouseDown={() => pick(d)}>
-                <b>{d.name}</b> <span className="mono">{d.price.toLocaleString('vi-VN')}đ</span>{' '}
+                <b>{d.name}</b> <span className="num">{vnd(d.price)}</span>{' '}
                 {st.usable > 0 ? (
-                  <span className="badge ok">
-                    <span className="mono">{st.usable}</span> <span>{unitLabel(d.unit)}</span>
+                  <span className="badge b-success">
+                    <span className="num">{st.usable}</span> <span>{unitLabel(d.unit)}</span>
                   </span>
                 ) : st.expired > 0 ? (
-                  <span className="badge low">Only expired batches</span>
+                  <span className="badge b-danger">Only expired batches</span>
                 ) : (
-                  <span className="badge low">Out of stock</span>
+                  <span className="badge b-danger">Out of stock</span>
                 )}
               </div>
             )
           })}
-          {!matches.length && <div className="icd-opt ai-soft">No drug in the catalog matches.</div>}
+          {!matches.length && <div className="icd-opt muted">No drug in the catalog matches.</div>}
         </div>
       )}
     </div>

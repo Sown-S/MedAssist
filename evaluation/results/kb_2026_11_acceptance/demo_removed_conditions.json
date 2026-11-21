@@ -1,0 +1,24 @@
+{
+  "database": "medassist_kb202611_stage_demo_20261111",
+  "rolled_back_after_check": true,
+  "cases": [
+    {
+      "case_id": "DEMO2-100",
+      "condition_code": "viem_co_ap_xe_co_nhiem_khuan",
+      "intake_and_examine": "passed",
+      "diagnosis_fallback": "free-text chief complaint; no Active condition link"
+    },
+    {
+      "case_id": "DEMO2-119",
+      "condition_code": "viem_mu_noi_nhan_ngoai_sinh",
+      "intake_and_examine": "passed",
+      "diagnosis_fallback": "free-text chief complaint; no Active condition link"
+    },
+    {
+      "case_id": "DEMO2-120",
+      "condition_code": "viem_mu_noi_nhan_noi_sinh",
+      "intake_and_examine": "passed",
+      "diagnosis_fallback": "free-text chief complaint; no Active condition link"
+    }
+  ]
+}

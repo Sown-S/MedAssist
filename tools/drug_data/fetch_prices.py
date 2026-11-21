@@ -1,6 +1,6 @@
-"""Tham khảo giá bán lẻ công khai (Long Châu, Pharmacity) cho server/data/drugs.csv, bán tự động.
+"""Giá bán lẻ công khai từ trang sản phẩm dán tay (refresh) cho server/data/drugs.csv, duyệt rồi ghi (apply).
 Tôn trọng robots.txt, User-Agent rõ ràng, giãn cách 3 giây, lưu mọi trang đã tải làm minh chứng.
-Cách chạy, trạng thái, tiêu chí --auto: tools/drug_data/README.md mục "Giá tham khảo".
+Cách chạy: tools/drug_data/README.md mục "Giá tham khảo".
 """
 
 import argparse
@@ -14,7 +14,7 @@ import time
 from datetime import datetime, timezone
 from decimal import ROUND_HALF_UP, Decimal
 from pathlib import Path
-from urllib.parse import quote_plus, urljoin, urlparse
+from urllib.parse import urlparse
 from urllib.robotparser import RobotFileParser
 
 from drug_data.tt19_catalog import DRUGS_CSV, OUTPUT_DIR, TOOL_DIR, _numbers, read_csv, strip_accents, write_csv
@@ -24,21 +24,10 @@ PRICE_DIR = TOOL_DIR / "sources" / "prices"
 CACHE_DIR = PRICE_DIR / "cache"
 APPROVED_DIR = PRICE_DIR / "approved"
 REVIEW_CSV = OUTPUT_DIR / "price_review.csv"
-AUTO_MAX_SPREAD = Decimal("1.30")  # hai trang lệch nhau quá 30% -> phải duyệt tay
 
 SITES = {
-    "longchau": {
-        "name": "Nhà thuốc Long Châu",
-        "base": "https://nhathuoclongchau.com.vn",
-        "search": "/tim-kiem?s={q}",
-        "product_re": r'href="((?:https://nhathuoclongchau\.com\.vn)?/thuoc/[^"#?]+\.html)"',
-    },
-    "pharmacity": {
-        "name": "Pharmacity",
-        "base": "https://www.pharmacity.vn",
-        "search": "/search?keyword={q}",
-        "product_re": r'href="((?:https://www\.pharmacity\.vn)?/[a-z0-9-]+\.html)"',
-    },
+    "longchau": {"name": "Nhà thuốc Long Châu", "base": "https://nhathuoclongchau.com.vn"},
+    "pharmacity": {"name": "Pharmacity", "base": "https://www.pharmacity.vn"},
 }
 REVIEW_FIELDS = [
     "duyet",
@@ -62,7 +51,6 @@ REVIEW_FIELDS = [
     "note",
     "cache_file",
 ]
-PRODUCTS_PER_QUERY = 3
 
 
 # --- HTTP lịch sự ---------------------------------------------------------------------------------
@@ -235,13 +223,7 @@ def match_score(drug: dict, product_name: str) -> tuple[int, list[str]]:
     return score, notes
 
 
-# --- search / refresh / apply ---------------------------------------------------------------------
-def _query(drug: dict) -> str:
-    trade = drug["trade_name"]
-    generic_like = strip_accents(trade).startswith(strip_accents(drug["generic_name"].split()[0]))
-    return trade if not generic_like else f"{drug['generic_name']} {drug['strength']}"
-
-
+# --- refresh / apply ------------------------------------------------------------------------------
 def _row_from_product(drug, site, query, url, page, cache_file) -> dict:
     p = parse_product(page)
     row = {
@@ -277,88 +259,6 @@ def _row_from_product(drug, site, query, url, page, cache_file) -> dict:
     }
 
 
-def high_confidence(row: dict) -> bool:
-    return (
-        str(row.get("match_score")) == "4"
-        and str(row.get("price_per_unit", "")) not in ("", "None")
-        and "next-data" not in (row.get("note") or "")
-    )
-
-
-def mark_auto(rows: list[dict]) -> Decimal | None:
-    """Các dòng của MỘT thuốc (mỗi trang một dòng). Đủ tin cậy -> ghi duyet = auto, gia_ban_duyet = giá
-    trung bình các trang (làm tròn 100 đ) và trả giá; không thì để trống cho người duyệt."""
-    good = [r for r in rows if high_confidence(r)]
-    if not good:
-        return None
-    prices = [Decimal(str(r["price_per_unit"])) for r in good]
-    if max(prices) > min(prices) * AUTO_MAX_SPREAD:
-        for r in good:
-            r["note"] = (r.get("note") or "") + "; các trang lệch nhau > 30% — duyệt tay"
-        return None
-    avg = sum(prices) / len(prices)
-    price = (
-        (avg / 100).quantize(Decimal("1"), rounding=ROUND_HALF_UP) * 100 if avg >= 1000 else avg.quantize(Decimal("1"))
-    )
-    best = max(good, key=lambda r: r["site"] == "longchau")  # giữ 1 dòng làm minh chứng chính
-    best.update(duyet="auto", gia_ban_duyet=str(price))
-    if len(good) > 1:
-        best["note"] = (best.get("note") or "") + f"; trung bình {len(good)} trang"
-    return price
-
-
-def search(client: PoliteClient, drugs: list[dict], sites: list[str], log=print, auto: bool = False) -> list[dict]:
-    rows = []
-    for drug in drugs:
-        drug_rows_start = len(rows)
-        query = _query(drug)
-        for key in sites:
-            cfg = SITES[key]
-            url = cfg["base"] + cfg["search"].format(q=quote_plus(query))
-            base = {
-                "generic_name": drug["generic_name"],
-                "trade_name": drug["trade_name"],
-                "strength": drug["strength"],
-                "dosage_form": drug["dosage_form"],
-                "unit": drug["unit"],
-                "gia_hien_tai": drug.get("sale_price", ""),
-                "site": key,
-                "query": query,
-                "match_score": 0,
-            }
-            try:
-                page, _ = client.fetch(url, key)
-            except (PermissionError, RuntimeError) as exc:
-                log(f"  {key}: {exc}")
-                rows.append({**base, "note": str(exc), "retrieved_at": _now()})
-                continue
-            links = list(dict.fromkeys(urljoin(cfg["base"], h) for h in re.findall(cfg["product_re"], page)))
-            found = []
-            for link in links[:PRODUCTS_PER_QUERY]:
-                try:
-                    ppage, cache = client.fetch(link, key)
-                except (PermissionError, RuntimeError) as exc:
-                    log(f"  {key}: {exc}")
-                    continue
-                found.append(_row_from_product(drug, key, query, link, ppage, cache))
-            if not found:
-                rows.append(
-                    {
-                        **base,
-                        "note": "không tìm thấy sản phẩm — dán product_url bằng tay rồi chạy refresh",
-                        "retrieved_at": _now(),
-                    }
-                )
-                continue
-            best = max(found, key=lambda r: int(r["match_score"]))
-            rows.append(best)
-            log(f"  {key}: {best.get('product_name', '?')} -> {best.get('price_per_unit') or best.get('listed_price')}")
-        if auto:
-            price = mark_auto(rows[drug_rows_start:])
-            log(f"  => {'TỰ GHI ' + str(price) if price else 'cần duyệt tay'}: {drug['trade_name']}")
-    return rows
-
-
 def refresh(client: PoliteClient, review: list[dict], drugs: list[dict], refetch_all: bool, log=print) -> list[dict]:
     by_key = {(d["generic_name"], d["trade_name"], d["strength"]): d for d in drugs}
     out = []
@@ -386,7 +286,7 @@ def apply(review: list[dict], fields: list[str], drugs: list[dict]) -> tuple[lis
             fields = fields + [extra]
     problems, chosen = [], {}
     for n, r in enumerate(review, start=2):
-        if (r.get("duyet") or "").strip().lower() not in {"x", "1", "có", "co", "auto"}:
+        if (r.get("duyet") or "").strip().lower() not in {"x", "1", "có", "co"}:
             continue
         price = (r.get("gia_ban_duyet") or r.get("price_per_unit") or "").strip()
         if not re.fullmatch(r"\d+(\.\d+)?", price or "x"):
@@ -438,49 +338,21 @@ def _client(args):
 
 
 def main(argv=None) -> int:
-    p = argparse.ArgumentParser(description="Tham khảo giá bán lẻ (bán tự động, cần duyệt)")
+    p = argparse.ArgumentParser(description="Giá bán lẻ từ trang sản phẩm dán tay (cần duyệt)")
     sub = p.add_subparsers(dest="cmd", required=True)
-    for name in ("search", "refresh"):
-        s = sub.add_parser(name)
-        s.add_argument("--contact", default="", help="Email khai báo trong User-Agent (mặc định: config.toml)")
-        s.add_argument("--delay", type=float, default=3.0, help="Giây giữa hai lần tải (tối thiểu 2)")
-    s = sub.choices["search"]
-    s.add_argument("--sites", default="longchau,pharmacity")
-    s.add_argument("--only-missing", action="store_true", help="Chỉ thuốc chưa có giá")
-    s.add_argument("--limit", type=int, default=0, help="Giới hạn số thuốc (thử nghiệm)")
-    s.add_argument("--auto", action="store_true", help="Ghi thẳng giá có độ tin cậy cao vào drugs.csv")
-    sub.choices["refresh"].add_argument("--all", action="store_true", help="Tải lại cả dòng đã có giá")
+    s = sub.add_parser("refresh")
+    s.add_argument("--contact", default="", help="Email khai báo trong User-Agent (mặc định: config.toml)")
+    s.add_argument("--delay", type=float, default=3.0, help="Giây giữa hai lần tải (tối thiểu 2)")
+    s.add_argument("--all", action="store_true", help="Tải lại cả dòng đã có giá")
     sub.add_parser("apply")
     args = p.parse_args(argv)
     fields, drugs = read_csv(DRUGS_CSV)
-    if args.cmd in ("search", "refresh") and args.delay < 2:
+    if args.cmd == "refresh" and args.delay < 2:
         raise SystemExit("--delay tối thiểu 2 giây")
-    if args.cmd == "search":
-        sites = [s.strip() for s in args.sites.split(",") if s.strip() in SITES]
-        targets = [d for d in drugs if not args.only_missing or not d.get("sale_price", "").strip()]
-        if args.limit:
-            targets = targets[: args.limit]
-        print(
-            "LƯU Ý: 'search' hiện không tìm được sản phẩm (Long Châu chặn bằng robots.txt, Pharmacity hiển thị "
-            "kết quả bằng JavaScript). Dùng estimate_prices, hoặc dán product_url rồi 'refresh'. Vẫn chạy thử..."
-        )
-        print(f"Tra giá {len(targets)} thuốc trên {', '.join(SITES[s]['name'] for s in sites)}...")
-        rows = search(_client(args), targets, sites, auto=args.auto)
-        if args.auto:
-            auto_rows = [r for r in rows if r.get("duyet") == "auto"]
-            fields, updated, problems = apply(auto_rows, fields, drugs)
-            for pr in problems:
-                print("  BỎ QUA", pr)
-            write_csv(DRUGS_CSV, fields, updated)
-            print(f"Tự ghi giá {len(auto_rows)} thuốc vào {DRUGS_CSV.name}.")
-            rows = [{**r, "duyet": "da-ghi-auto"} if r.get("duyet") == "auto" else r for r in rows]
-        old = read_csv(REVIEW_CSV)[1] if REVIEW_CSV.exists() else []
-        write_csv(REVIEW_CSV, REVIEW_FIELDS, old + rows, excel=True)
-        pending = sum(1 for r in rows if not r.get("duyet"))
-        print(f"Đã ghi {len(rows)} dòng vào {REVIEW_CSV.name} ({pending} dòng cần duyệt: cột duyet = x rồi 'apply').")
-    elif args.cmd == "refresh":
+    if args.cmd == "refresh":
+        client = _client(args)
         _, review = read_csv(REVIEW_CSV)
-        write_csv(REVIEW_CSV, REVIEW_FIELDS, refresh(_client(args), review, drugs, args.all), excel=True)
+        write_csv(REVIEW_CSV, REVIEW_FIELDS, refresh(client, review, drugs, args.all), excel=True)
         print(f"Đã cập nhật {REVIEW_CSV.name}.")
     else:
         _, review = read_csv(REVIEW_CSV)

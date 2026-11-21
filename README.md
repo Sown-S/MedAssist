@@ -1,6 +1,6 @@
 # MedAssist: hệ thống hỗ trợ quyết định lâm sàng cho phòng khám ngoại trú
 
-Đồ án tốt nghiệp nhóm **C1SE.28**, International School, Đại học Duy Tân (16/08 – 05/12/2026).
+Capstone Project 1 — Team **C1SE.28**, International School, Duy Tan University (16/08 – 05/12/2026).
 
 MedAssist là phần mềm quản lý phòng khám ngoại trú có gắn module AI hỗ trợ phân loại ưu tiên và gợi ý chẩn đoán phân biệt.
 Toàn bộ hệ thống chạy trong mạng LAN của phòng khám: một máy admin làm máy chủ (API, CSDL, LLM cục bộ), các máy
@@ -17,7 +17,7 @@ còn lại cài ứng dụng desktop. Không gửi dữ liệu bệnh nhân ra n
 **Module AI** (chỉ hỗ trợ, bác sĩ quyết định):
 
 1. **Node 1 – Cổng cờ đỏ**: luật tất định trên triệu chứng đã xác nhận và sinh hiệu. Cờ đỏ thì xếp Cấp cứu ngay và không chạy LLM.
-2. **Node 2 – Truy xuất**: chấm điểm bệnh trong kho tri thức (199 bệnh, 97 triệu chứng, 12 luật, nguồn Bộ Y tế).
+2. **Node 2 – Truy xuất**: chấm điểm bệnh trong kho tri thức (154 bệnh, 299 triệu chứng, 12 luật, nguồn Bộ Y tế).
 3. **Node 3 – Suy luận**: LLM cục bộ (Gemma-SEA-LION 9B qua Ollama) xếp hạng lại và giải thích bằng tiếng Việt.
 4. **Node 4 – Kiểm tra đầu ra**: chỉ giữ bệnh có trong danh sách Node 2, đúng schema; lỗi thì quay về kết quả theo luật.
 
@@ -49,21 +49,21 @@ Máy client (Windows)              Máy admin (Docker Compose)
 | `knowledge/` | Kho tri thức lâm sàng OKF (Markdown) | Tuấn | [knowledge/_spec/okf_format.md](knowledge/_spec/okf_format.md) |
 | `evaluation/` | Bộ test đóng băng cho đánh giá NCKH | Tuấn | [evaluation/testset/README.md](evaluation/testset/README.md) |
 | `tools/` | Công cụ máy dev: thu thập danh mục thuốc | Sơn | [tools/drug_data/README.md](tools/drug_data/README.md) |
-| `docs/` | Hướng dẫn sử dụng, kiểm thử, demo | Cả nhóm | [docs/](docs/) |
+| `docs/` | Hướng dẫn sử dụng, kiểm thử | Cả nhóm | [docs/](docs/) |
 
 ## Bắt đầu nhanh
 
-> **Giảng viên / người kiểm thử:** chạy cả hệ thống trên một máy (Windows, macOS, Linux) với dữ liệu mẫu theo
+> **Kiểm thử nhanh:** chạy cả hệ thống trên một máy (Windows, macOS, Linux) với dữ liệu mẫu theo
 > [docs/huong-dan-kiem-thu.md](docs/huong-dan-kiem-thu.md). Bản cài sẵn ở trang Releases.
 
 | Bạn muốn | Đọc |
 |---|---|
 | Kiểm thử trên một máy, có sẵn tài khoản và dữ liệu mẫu | [docs/huong-dan-kiem-thu.md](docs/huong-dan-kiem-thu.md) |
-| Cài máy admin cho phòng khám hoặc buổi demo | [deploy/README.md](deploy/README.md) |
+| Cài máy chủ cho phòng khám | [deploy/README.md](deploy/README.md) |
 | Chạy backend trên máy dev | [server/README.md](server/README.md) mục 2 |
 | Chạy ứng dụng desktop | [client/README.md](client/README.md) mục 1 |
 | Dùng phần mềm theo vai trò | [docs/huong-dan-su-dung.md](docs/huong-dan-su-dung.md) |
-| Chuẩn bị demo, kiểm thử AI | [docs/huong-dan-demo-kiem-thu-ai.md](docs/huong-dan-demo-kiem-thu-ai.md) |
+| Kiểm thử module AI | [docs/huong-dan-kiem-thu-ai.md](docs/huong-dan-kiem-thu-ai.md) |
 | Đóng góp code | [CONTRIBUTING.md](CONTRIBUTING.md) |
 
 Chạy backend trên máy dev (đã cài theo server/README.md):
@@ -82,7 +82,7 @@ uvicorn app.main:app --reload      # http://127.0.0.1:8000/docs
 |---|---|
 | Backend | Python 3.14, FastAPI, SQLAlchemy 2, Alembic, PostgreSQL 16, JWT + Argon2id |
 | AI | Pipeline 4 node, Ollama, Gemma-SEA-LION-v3-9B-IT (GGUF Q4_K_M) |
-| Client | Electron 31, React 18, electron-vite, Vitest |
+| Client | Electron 45, React 18, React Router 7, electron-vite 6 (Vite 8), Vitest 5 |
 | Triển khai | Docker Compose, Caddy (HTTPS bằng CA riêng của dự án), sao lưu `pg_dump` hằng ngày |
 | Kiểm thử | pytest (hơn 1.000 test, CI yêu cầu độ phủ ≥ 90%), Vitest + ESLint cho client, GitHub Actions; bản cài Windows / macOS build tự động khi đẩy tag |
 
@@ -98,5 +98,5 @@ uvicorn app.main:app --reload      # http://127.0.0.1:8000/docs
 ## Lưu ý
 
 - Gợi ý AI chỉ để tham khảo; MedAssist không thay thế quyết định của bác sĩ và không đánh giá đơn thuốc (tương tác, liều).
-- Danh mục thuốc, bộ tri thức và dữ liệu mẫu phục vụ đồ án; cần bác sĩ cố vấn rà soát trước khi dùng thật.
+- Danh mục thuốc, bộ tri thức và dữ liệu mẫu chưa được bác sĩ thẩm định; cần rà soát trước khi dùng thật.
 - Không commit `.env`, mật khẩu, khóa riêng của CA hay dữ liệu bệnh nhân thật.

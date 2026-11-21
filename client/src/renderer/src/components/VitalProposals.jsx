@@ -24,49 +24,39 @@ export default function VitalProposals({ list, form, onApply, onDrop, disabled =
     onDrop(items.flatMap((i) => i.keys))
   }
   return (
-    <div className="sym-proposals vital-proposals">
-      <div className="sym-proposals-head">
-        <b>{translate('Vital signs from the description — confirm before use')}</b>
-        {open.length > 0 && (
-          <button type="button" className="btn btn-primary btn-sm" disabled={disabled || stale} onClick={applyAll}>
-            <Icon name="check" /> {translate('Fill empty fields')}
-          </button>
-        )}
+    <div className="proposals vital-proposals">
+      <div className="h">
+        <Icon name="activity" />
+        {translate('Vital signs from the description — confirm before use')}
       </div>
       {stale && (
-        <p className="sym-warn">
-          <Icon name="alert" /> {translate('The description changed — run the suggestion again before using these.')}
-        </p>
+        <div className="hint-w" style={{ margin: '0 0 8px' }}>
+          <Icon name="triangle-alert" /> {translate('The description changed — run the suggestion again before using these.')}
+        </div>
       )}
-      <div className="sym-chips">
-        {items.map((i) => {
-          const fill = applicable(i, form)
-          const kept = !Object.keys(fill).length
-          return (
-            <span key={i.id} className={'sym-chip pending' + (kept ? ' kept' : '')} title={i.evidence ? '“' + i.evidence + '”' : ''}>
-              <span>
-                {text(i)}
-                {i.evidence && <small className="vp-ev"> · “{i.evidence}”</small>}
-                {kept && <small className="vp-ev"> · {translate('already entered — kept')}</small>}
-              </span>
-              {!kept && (
-                <button
-                  type="button"
-                  className="sym-chip-ok"
-                  disabled={disabled || stale}
-                  onClick={() => apply(fill, i.keys)}
-                  title={translate('Confirm')}
-                >
-                  <Icon name="check" />
-                </button>
-              )}
-              <button type="button" className="sym-chip-x" disabled={disabled} onClick={() => onDrop(i.keys)} title={translate('Discard')}>
-                <Icon name="x" />
+      {items.map((i) => {
+        const fill = applicable(i, form)
+        const kept = !Object.keys(fill).length
+        return (
+          <span key={i.id} className={'pchip' + (kept ? ' kept' : '')} title={i.evidence ? '“' + i.evidence + '”' : ''}>
+            {text(i)}
+            {kept && <span className="muted small">· {translate('already entered — kept')}</span>}
+            {!kept && (
+              <button type="button" className="ok" disabled={disabled || stale} onClick={() => apply(fill, i.keys)} title={translate('Confirm')} aria-label={translate('Confirm')}>
+                <Icon name="check" />
               </button>
-            </span>
-          )
-        })}
-      </div>
+            )}
+            <button type="button" disabled={disabled} onClick={() => onDrop(i.keys)} title={translate('Discard')} aria-label={translate('Discard')}>
+              <Icon name="x" />
+            </button>
+          </span>
+        )
+      })}
+      {open.length > 0 && (
+        <button type="button" className="btn btn-ghost btn-sm" disabled={disabled || stale} onClick={applyAll}>
+          {translate('Fill empty fields')}
+        </button>
+      )}
     </div>
   )
 }

@@ -1,6 +1,6 @@
 ---
 schema: okf_spec_v1
-label: KB-2026.08
+label: KB-2026.12.1
 description: Đặc tả định dạng OKF, quy ước mã slug bất biến, 8 khóa sinh hiệu chuẩn,
   cấu trúc condition_logic và thứ tự nạp của MedAssist.
 ---
@@ -60,3 +60,15 @@ Trường `condition_logic` trong các file luật `rf_*.md` và `pf_*.md` biể
    - Nạp quan hệ bệnh - triệu chứng (`relations` -> `condition_symptom`) sau khi cả triệu chứng và bệnh đã tồn tại.
    - Nạp đoạn trích hướng dẫn chẩn đoán (`excerpts` -> `guideline_excerpt`).
    - Nạp các luật phân loại (`rules/red_flags/rf_*.md` và `rules/priority_floors/pf_*.md` -> `triage_rule`).
+
+## 4. Trường tùy chọn trong danh mục triệu chứng
+
+Mỗi mục trong `symptoms` của `symptoms/symptom_catalog.md` có thể bổ sung các trường sau.
+
+| Trường | Kiểu và mặc định | Quy ước |
+| --- | --- | --- |
+| `short_name` | Chuỗi, mặc định `null` | Tên hiển thị tại tiếp đón. Từ 1 đến 30 ký tự Unicode sau khi bỏ khoảng trắng ở hai đầu. Dùng tiếng Việt dễ hiểu, chuẩn NFC. |
+| `aliases` | Danh sách chuỗi YAML, mặc định `[]` | Tối đa 15 cụm. Mỗi cụm từ 1 đến 60 ký tự sau khi gộp khoảng trắng. Dùng cách nói của người bệnh đúng nghĩa mã. Với mã gộp, chỉ dùng phần người bệnh có thể kể. |
+| `detection` | `reported`, `exam` hoặc `both`, mặc định `both` | `reported` cho triệu chứng người bệnh tự kể, `exam` cho dấu hiệu chỉ xác định qua khám hoặc xét nghiệm, `both` cho mã có thể ghi nhận theo cả hai cách hoặc gộp hai loại thông tin. |
+
+Importer chuẩn hóa khóa so trùng alias bằng cách hạ chữ thường và gộp khoảng trắng. Mỗi alias phải duy nhất trong một mã và không được dùng chung giữa hai mã. Các mã dùng trong `condition_logic` của luật `rf_*` hoặc `pf_*` không được có `detection: exam`. Trong đợt bổ sung cho nhóm trọng tâm, các mã cờ đỏ, mã gộp và mã có nhãn trong 29 ca trích xuất v1.4 được giữ `both`.

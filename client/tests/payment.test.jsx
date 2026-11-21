@@ -14,7 +14,7 @@ afterAll(() => vi.unstubAllGlobals())
 
 const open = async () => {
   renderPage(<PaymentModal open onClose={() => {}} patient={{ id: 'v-pay', name: 'Lê Văn Cường', ticket: 7 }} />, { user: DESK, path: '/reception' })
-  await screen.findByText('Paracetamol 500mg', { selector: '.disp-table b' })
+  await screen.findByText('Paracetamol 500mg', { selector: '.panel.on b' })
 }
 const sent = (method, path) => calls.filter((c) => c.method === method && c.path === path)
 

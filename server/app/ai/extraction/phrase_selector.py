@@ -36,6 +36,7 @@ class SelectionResult:
     failure_code: str | None = None
     suggestions: tuple[SymptomSuggestion, ...] = field(default=(), repr=False)
     prompt_version: str = PHRASE_EXTRACTION_PROMPT_VERSION
+    unmapped_phrases: tuple[str, ...] = field(default=(), repr=False)
 
 
 def selection_request(plan: RetrievalPlan) -> tuple[str, dict]:
@@ -86,12 +87,12 @@ def validate_selection(output: object, plan: RetrievalPlan) -> SelectionResult:
             merged.extend(row.model_dump() for row in parsed.symptoms)
     except ValidationError:
         return SelectionResult(False, "INVALID_SELECTION")
-    if unmapped:
-        return SelectionResult(False, "UNMAPPED_PHRASE")
     suggestions = _validated_suggestions({"symptoms": merged}, set().union(*allowed.values()))
     if merged and not suggestions:
         return SelectionResult(False, "CONFLICTING_SELECTION")
-    return SelectionResult(True, suggestions=tuple(suggestions))
+    phrases = {group.phrase.phrase_id: group.phrase.text for group in plan.groups}
+    unmapped_phrases = tuple(dict.fromkeys(phrases[key] for key in unmapped))
+    return SelectionResult(True, suggestions=tuple(suggestions), unmapped_phrases=unmapped_phrases)
 
 
 async def select_phrase_symptoms(

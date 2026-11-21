@@ -1,170 +1,158 @@
 import { useEffect, useRef, useState } from 'react'
 import Icon from './Icon'
-import Modal, { ModalHeader } from './Modal'
 import ChangePasswordModal from './ChangePasswordModal'
-import { useToast } from '../context/ToastContext'
+import HelpModal from './HelpModal'
+import SettingsModal from './SettingsModal'
+import Clip from './Clip'
+import useNotifications from './useNotifications'
+import { OPEN_EVENT } from './useGlobalKeys'
 import { LANGUAGES, getLang, setLang, translate } from '../i18n'
 import { useNavigate } from 'react-router-dom'
-import { useQueue, isMine, inRoom, atLabs, isPendingFlag } from '../api/queueStore'
-import { useInventory, stockOf } from '../api/inventoryStore'
 
-// Thông báo tính tại máy từ hàng chờ và kho.
-const hm = (iso) => new Date(iso).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit', hour12: false })
-
-const HELP = {
-  doctor: [
-    ['Consultation', 'Pick a patient from the queue, record SOAP notes, confirm the ICD-10 diagnosis and prescribe.'],
-    ['Lab tests', 'Order lab tests from the consultation room and print the order sheet. The patient brings back paper results; note the key results before finalizing.'],
-    ['Red-flag cases', 'Cases recorded by reception appear in red on top of your pages — decide whether to refer or see the patient at the clinic.'],
-    ['Prescribing', 'Enter Morning / Noon / Afternoon / Evening doses and the number of days — quantity and directions fill in automatically. Children under 12 need a weight.'],
-    ['Your room', 'Each doctor works in a fixed room set by the administrator in Staff accounts — no shifts to start or end. Leaving the room: “Return to queue”. Patient gone: “Patient left”.'],
-    ['Keyboard shortcuts', 'Alt+N — call the next patient · Alt+L — order lab tests · Ctrl+Enter — finalize the visit']
-  ],
-  reception: [
-    ['Reception', 'Register or find patients, check them in, follow the queue and collect payments.'],
-    ['Keyboard shortcuts', 'F2 — register a new patient · F3 or Ctrl+K — find a patient']
-  ],
-  admin: [
-    ['Reports', 'Revenue, visit counts and AI module performance.'],
-    ['Admin', 'Manage inventory, catalogs, staff accounts, AI rules and the activity log.']
-  ]
-}
-
-export default function TopActions({ user }) {
+// Cụm nút góc phải thanh trên: chuông thông báo, ngôn ngữ, trợ giúp, cài đặt, tài khoản.
+export default function TopActions({ user, onSignOut }) {
   const [open, setOpen] = useState(null)
   const [unread, setUnread] = useState(true)
   const bellRef = useRef(null)
-  const { redFlags, visits } = useQueue()
-  const inv = useInventory()
+  const langRef = useRef(null)
+  const acctRef = useRef(null)
+  const { live, all: notifications } = useNotifications(user)
   const navigate = useNavigate()
-  const doctor = user.roleKey === 'doctor'
-  const consult = (id) => '/doctor?view=consult' + (id ? '&visit=' + id : '')
-  // Bác sĩ: chấm đỏ luôn bật tới khi xử lý xong việc cần làm ngay.
-  const live = doctor
-    ? [
-        ...redFlags.filter((r) => isPendingFlag(r) && !r.doctorReview).map((r) => ({ id: r.id, title: translate('Red-flag case') + ' — ' + r.name, note: translate(r.signs) || '—', time: hm(r.at), urgent: true, to: '/doctor' })),
-        ...visits
-          .filter((v) => inRoom(v) && v.returnNote && isMine(v, user))
-          .map((v) => ({ id: 'rt' + v.id, title: translate('Prescription sent back') + ' — ' + v.name, note: v.returnNote.text || translate('not enough stock, please change these drugs'), time: hm(v.returnNote.at), urgent: true, to: consult(v.id) })),
-        ...visits
-          .filter((v) => atLabs(v) && v.labReturnedAt && isMine(v, user))
-          .map((v) => ({ id: 'lb' + v.id, title: translate('Back from lab') + ' — ' + v.name, note: translate('Results are ready — resume the visit'), time: hm(v.labReturnedAt), to: consult() }))
-      ]
-    : []
-  const low = inv.drugs.filter((d) => d.active && d.kind === 'drug' && stockOf(d, inv.batches).statuses.some((x) => x === 'out' || x === 'low'))
-  const stock = low.length
-    ? [{ id: 'stock', title: low.length + ' ' + translate('drugs low or out of stock'), note: low.slice(0, 4).map((d) => d.name).join(', ') + (low.length > 4 ? '…' : ''), time: '', to: doctor ? '/doctor?view=drugs' : null }]
-    : []
-  const notifications = [...live, ...stock]
-  const { showToast } = useToast()
-
+  // Đổi ngôn ngữ: giao diện đổi ngay, không hiện thông báo.
   function chooseLanguage(code) {
-    if (code === getLang()) return
-    setLang(code)
-    showToast('Language updated')
+    if (code !== getLang()) setLang(code)
   }
 
+  // Phím tắt chung (F1 / ? → Trợ giúp, Ctrl+, → Cài đặt).
   useEffect(() => {
-    if (open !== 'bell') return
-    const close = (e) => !bellRef.current?.contains(e.target) && setOpen(null)
+    const on = (e) => setOpen(e.detail)
+    window.addEventListener(OPEN_EVENT, on)
+    return () => window.removeEventListener(OPEN_EVENT, on)
+  }, [])
+
+  // Các menu thả xuống (chuông, ngôn ngữ, tài khoản) đóng khi bấm ra ngoài.
+  useEffect(() => {
+    const ref = { bell: bellRef, lang: langRef, acct: acctRef }[open]
+    if (!ref) return
+    const close = (e) => !ref.current?.contains(e.target) && setOpen(null)
     document.addEventListener('mousedown', close)
     return () => document.removeEventListener('mousedown', close)
   }, [open])
 
+  const ib = (icon, tip, onClick) => (
+    <button className="btn btn-ghost btn-icon" title={translate(tip)} aria-label={translate(tip)} onClick={onClick}>
+      <Icon name={icon} />
+    </button>
+  )
+
   return (
     <>
-      <div className="notif-wrap" ref={bellRef}>
+      <div className="tb bell" ref={bellRef}>
         <button
-          className="icon-btn"
-          title="Notifications"
+          className="btn btn-ghost btn-icon"
+          title={translate('Notifications')}
+          aria-label={translate('Notifications')}
+          aria-haspopup="dialog"
+          aria-expanded={open === 'bell'}
           onClick={() => {
             setOpen(open === 'bell' ? null : 'bell')
             setUnread(false)
           }}
         >
           <Icon name="bell" />
-          {(unread || live.length > 0) && <span className="dot" />}
         </button>
+        {(unread || live.length > 0) && notifications.length > 0 && <span className="badge-dot" />}
         {open === 'bell' && (
-          <div className="notif-panel">
-            <div className="notif-head">Notifications</div>
-            {notifications.map((n) => (
-              <div
-                className={'notif-item' + (n.urgent ? ' urgent' : '') + (n.to ? ' clickable' : '')}
-                key={n.id}
-                onClick={() => {
-                  if (!n.to) return
-                  setOpen(null)
-                  navigate(n.to)
-                }}
-              >
-                <div>
-                  <b>{n.title}</b>
-                  <span>{n.note}</span>
+          <div className="menu open bell-menu">
+            <div className="bell-scroll">
+              <div className="mh">Notifications</div>
+              {notifications.map((n) => (
+                <div
+                  className={'ni' + (n.to ? ' pointer' : '')}
+                  key={n.id}
+                  onClick={() => {
+                    if (!n.to) return
+                    setOpen(null)
+                    navigate(n.to)
+                  }}
+                >
+                  <div className={'ico w-30 h-30 ' + (n.urgent ? 'd' : n.icon ? 'n' : 'w')}>
+                    <Icon name={n.icon ?? 'package-x'} />
+                  </div>
+                  <div className="minw-0 grow">
+                    <Clip as="b" title={n.title}>
+                      {n.title}
+                    </Clip>
+                    <Clip lines={2} className="muted" title={n.title} full={n.note + (n.time ? ' · ' + n.time : '')}>
+                      {n.note}
+                      {n.time ? ' · ' + n.time : ''}
+                    </Clip>
+                  </div>
                 </div>
-                <span className="time">{n.time}</span>
-              </div>
-            ))}
-            {!notifications.length && <p className="ai-soft" style={{ fontSize: 13, padding: '8px 12px' }}>No notifications.</p>}
+              ))}
+              {!notifications.length && <div className="ni muted">No notifications.</div>}
+            </div>
           </div>
         )}
       </div>
-      <button className="icon-btn" title="Help" onClick={() => setOpen('help')}>
-        <Icon name="help" />
-      </button>
-      <button className="icon-btn" title="Settings" onClick={() => setOpen('settings')}>
-        <Icon name="settings" />
-      </button>
-
-      <Modal open={open === 'help'} onClose={() => setOpen(null)}>
-        <ModalHeader title="Help" onClose={() => setOpen(null)} />
-        <p className="help-intro">What you can do as {user.role}:</p>
-        {HELP[user.roleKey].map(([name, text]) => (
-          <div className="pref-row" key={name}>
-            <b>{name}</b>
-            <span>{text}</span>
+      <div className="tb" ref={langRef}>
+        {ib('languages', 'Language', () => setOpen(open === 'lang' ? null : 'lang'))}
+        {open === 'lang' && (
+          <div className="menu open">
+            <div className="mh">Language</div>
+            {LANGUAGES.map((l) => (
+              <button
+                key={l.code}
+                className={getLang() === l.code ? 'on' : ''}
+                onClick={() => {
+                  setOpen(null)
+                  chooseLanguage(l.code)
+                }}
+              >
+                <Icon name={getLang() === l.code ? 'check' : 'globe'} />
+                <span>{l.name}</span>
+              </button>
+            ))}
           </div>
-        ))}
-        <p className="help-intro" style={{ marginTop: 14 }}>
-          Forgot your password or need another account? Ask an administrator to reset or create it under Admin →
-          Staff accounts.
-        </p>
-      </Modal>
-
-      <Modal open={open === 'settings'} onClose={() => setOpen(null)}>
-        <ModalHeader title="Settings" onClose={() => setOpen(null)} />
-        <div className="section-label" style={{ marginTop: 0 }}>
-          Account
-        </div>
-        {[
-          ['Name', user.name],
-          ['Username', user.username],
-          ['Role', user.role]
-        ].map(([k, v]) => (
-          <div className="pref-row inline" key={k}>
-            <span>{k}</span>
-            <b>{v}</b>
+        )}
+      </div>
+      <div className="tb">{ib('circle-help', 'Help', () => setOpen('help'))}</div>
+      <div className="tb">{ib('settings', 'Settings', () => setOpen('settings'))}</div>
+      <div className="tb" ref={acctRef}>
+        <button className="acct" onClick={() => setOpen(open === 'acct' ? null : 'acct')} aria-haspopup="menu" aria-expanded={open === 'acct'}>
+          <div className="ava">{user.av}</div>
+          <div className="who">
+            <b>{user.name}</b>
+            <span>{user.role}</span>
           </div>
-        ))}
-        <button className="btn btn-ghost btn-sm" style={{ marginTop: 8 }} onClick={() => setOpen('password')}>
-          <Icon name="lock" /> Change password
+          <Icon name="chevron-down" />
         </button>
-        <div className="section-label">Language</div>
-        <div className="itabs" style={{ marginBottom: 0 }}>
-          {LANGUAGES.map((l) => (
-            <button
-              key={l.code}
-              className={'itab' + (getLang() === l.code ? ' active' : '')}
-              onClick={() => chooseLanguage(l.code)}
-            >
-              {l.name}
+        {open === 'acct' && (
+          <div className="menu open" role="menu">
+            <div className="mh">Account</div>
+            <button role="menuitem" onClick={() => setOpen('password')}>
+              <Icon name="key-round" />
+              <span>Change password</span>
             </button>
-          ))}
-        </div>
-        <p className="help-intro" style={{ marginTop: 10 }}>
-          The display language is saved on this computer only. Times are shown in Vietnam time (GMT+7).
-        </p>
-      </Modal>
+            <hr />
+            <button
+              role="menuitem"
+              className="logout-btn text-danger"
+              onClick={() => {
+                setOpen(null)
+                onSignOut?.()
+              }}
+            >
+              <Icon name="log-out" />
+              Sign out
+            </button>
+          </div>
+        )}
+      </div>
+
+      <HelpModal open={open === 'help'} onClose={() => setOpen(null)} user={user} />
+
+      <SettingsModal open={open === 'settings'} onClose={() => setOpen(null)} user={user} onChangePassword={() => setOpen('password')} />
 
       <ChangePasswordModal open={open === 'password'} onClose={() => setOpen(null)} />
     </>

@@ -1,28 +1,35 @@
 import { createContext, useCallback, useContext, useRef, useState } from 'react'
+import Icon from '../components/Icon'
 
 const ToastContext = createContext(null)
+const ICON = { success: 'circle-check', error: 'circle-x', warning: 'triangle-alert' }
 
+// Thông báo nhanh góc trên phải, xếp chồng như bản mẫu (.toasts > .toast): hiện 2,8 giây rồi trượt ra.
 export function ToastProvider({ children }) {
-  const [message, setMessage] = useState('')
-  const [kind, setKind] = useState('ok')
-  const [visible, setVisible] = useState(false)
-  const timerRef = useRef(null)
+  const [items, setItems] = useState([])
+  const seq = useRef(0)
 
-  // kind: 'ok' (mặc định) | 'error' — báo lỗi hiện dấu "!" đỏ thay cho dấu ✓.
+  // kind: 'ok' (mặc định) | 'error' | 'warning'
   const showToast = useCallback((msg, k = 'ok') => {
-    setMessage(msg)
-    setKind(k)
-    setVisible(true)
-    clearTimeout(timerRef.current)
-    timerRef.current = setTimeout(() => setVisible(false), 2600)
+    const id = ++seq.current
+    const type = k === 'error' ? 'error' : k === 'warning' ? 'warning' : 'success'
+    setItems((list) => [...list, { id, msg, type }])
+    setTimeout(() => {
+      setItems((list) => list.map((t) => (t.id === id ? { ...t, out: true } : t)))
+      setTimeout(() => setItems((list) => list.filter((t) => t.id !== id)), 220)
+    }, 2800)
   }, [])
 
   return (
     <ToastContext.Provider value={{ showToast }}>
       {children}
-      <div className={'toast' + (kind === 'error' ? ' error' : '') + (visible ? ' show' : '')} role={kind === 'error' ? 'alert' : 'status'}>
-        <span className="ic">{kind === 'error' ? '!' : '✓'}</span>
-        <span className="msg">{message}</span>
+      <div className="toasts">
+        {items.map((t) => (
+          <div key={t.id} className={'toast ' + t.type + (t.out ? ' out' : '')} role={t.type === 'error' ? 'alert' : 'status'}>
+            <Icon name={ICON[t.type]} />
+            <span>{t.msg}</span>
+          </div>
+        ))}
       </div>
     </ToastContext.Provider>
   )

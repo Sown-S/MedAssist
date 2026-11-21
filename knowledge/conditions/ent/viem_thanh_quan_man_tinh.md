@@ -16,8 +16,8 @@ relations:
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: vocal_cord_nodule_polyp_reinke
   polarity: SUPPORTS
-  weight: 0.6
-  is_key: false
+  weight: 0.9
+  is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: voice_pitch_timbre_alteration

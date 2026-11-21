@@ -57,12 +57,6 @@ relations:
   is_key: false
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
-- symptom_code: temporal_bone_fracture_hemotympanum
-  polarity: SUPPORTS
-  weight: 0.6
-  is_key: false
-  source_key: moh_qd_5643_2015
-  source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: subglottic_croup_barking_cough
   polarity: SUPPORTS
   weight: 0.3

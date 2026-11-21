@@ -9,7 +9,7 @@ export const ACTION_LABEL = {
   LOGIN_FAILED: 'Failed sign-in',
   LOGOUT: 'Sign-out',
   VIEW: 'Viewed',
-  CREATE: 'Created',
+  CREATE: 'Added',
   UPDATE: 'Updated',
   DELETE: 'Deleted',
   EXPORT: 'Exported',
@@ -18,7 +18,7 @@ export const ACTION_LABEL = {
   RETIRE: 'Turned off',
   AI_ASSESSMENT: 'AI assessment'
 }
-export const ACTION_TONE = { LOGIN_FAILED: 'low', DELETE: 'low', RETIRE: 'warn', REJECT: 'warn', APPROVE: 'ok', EXPORT: 'info', AI_ASSESSMENT: 'info' }
+export const ACTION_TONE = { LOGIN_FAILED: 'b-danger', DELETE: 'b-danger', RETIRE: 'b-warning', REJECT: 'b-warning', APPROVE: 'b-success', EXPORT: 'b-info', AI_ASSESSMENT: 'b-info' }
 
 // from / to là ngày yyyy-mm-dd theo giờ Việt Nam.
 function query(filters, extra = {}) {

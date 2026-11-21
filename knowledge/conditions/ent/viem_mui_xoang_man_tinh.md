@@ -11,8 +11,8 @@ description: 'Viêm mũi xoang mạn tính là viêm niêm mạc mũi xoang vớ
 relations:
 - symptom_code: middle_meatus_mucopurulent_discharge
   polarity: SUPPORTS
-  weight: 0.6
-  is_key: false
+  weight: 0.9
+  is_key: true
   source_key: moh_qd_5643_2015
   source_edition: Quyết định số 5643/QĐ-BYT
 - symptom_code: nasal_obstruction_stuffiness

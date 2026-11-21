@@ -12,7 +12,11 @@ const commit = (s) => {
 }
 
 // Tên thương mại + hàm lượng; không có tên thương mại riêng thì dùng tên hoạt chất.
-const nameOf = (d) => [d.trade_name && d.trade_name !== d.generic_name ? d.trade_name : d.generic_name, d.strength].filter(Boolean).join(' ')
+// Tên đã có sẵn hàm lượng (vd "Acetylcystein 100 mg") thì không ghép thêm lần nữa.
+const nameOf = (d) => {
+  const base = d.trade_name && d.trade_name !== d.generic_name ? d.trade_name : d.generic_name
+  return base && d.strength && base.includes(d.strength) ? base : [base, d.strength].filter(Boolean).join(' ')
+}
 
 export function toDrug(d, stock) {
   return {

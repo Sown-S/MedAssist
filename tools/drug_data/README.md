@@ -41,7 +41,7 @@ python -m drug_data.tt19_catalog run            # = fetch, extract, check (dừn
 # 3. Giá: thuốc chưa có giá -> ước tính (tra giá web tự động KHÔNG dùng được, xem "Giá tham khảo" bên dưới)
 #    quy tắc: cùng hoạt chất -> trung vị nhóm -> trung vị đơn vị; làm tròn 100 đ
 python -m drug_data.estimate_prices --dry-run      # xem trước
-python -m drug_data.estimate_prices --with-batch   # ghi giá + giá nhập + lô ban đầu (để demo cấp phát được)
+python -m drug_data.estimate_prices --with-batch   # ghi giá + giá nhập + lô ban đầu (để cấp phát được ngay)
 #    cột price_source = 'uoc-tinh:...'; giá tra được sau (fetch_prices apply) sẽ ghi đè
 
 # 4. Nạp vào DB (trong server/) — thuốc chưa có giá bị bỏ qua và in ra danh sách
@@ -59,10 +59,9 @@ mặc định = hoạt chất + hàm lượng; giá để trống; không tạo 
 
 ### Giá tham khảo từ nhà thuốc bán lẻ
 
-**Trạng thái (18/10/2026, đã thử trên trang thật): tìm kiếm tự động không dùng được.**
-Long Châu: `robots.txt` không cho công cụ tự động vào trang tìm kiếm — script dừng đúng quy định.
-Pharmacity: trang tìm kiếm chỉ là khung Next.js, kết quả do JavaScript tải sau khi mở trang nên HTML không có
-sản phẩm. Nhóm quyết định không gọi API nội bộ và không dùng trình duyệt tự động.
+Không có tìm kiếm tự động trên trang nhà thuốc: Long Châu chặn công cụ tự động ở trang tìm kiếm (`robots.txt`),
+Pharmacity tải kết quả bằng JavaScript. Dự án không gọi API nội bộ và không dùng trình duyệt tự động; chỉ đọc trang
+sản phẩm do người dùng dán link.
 
 Cách làm hiện tại:
 - Thuốc chưa có giá: `python -m drug_data.estimate_prices --with-batch` (cột `price_source` = `uoc-tinh:...`).
@@ -74,11 +73,7 @@ Cách làm hiện tại:
 Nguyên tắc thu thập của `fetch_prices`: chỉ đọc giá hiển thị công khai; đọc `robots.txt` và dừng với trang không cho
 phép; User-Agent khai báo rõ (không giả trình duyệt); giãn cách mặc định 3 giây/lần; lưu mọi trang đã tải
 (`sources/prices/cache`) làm minh chứng. Đọc điều khoản sử dụng của từng trang trước khi chạy. Giao diện các trang có
-thể thay đổi: `SITES` trong script là cấu hình mặc định, sửa được qua tham số dòng lệnh.
-
-`search --auto`: giá có độ tin cậy cao được ghi thẳng vào `server/data/drugs.csv` (`duyet = auto`), còn lại vào
-`output/price_review.csv` để duyệt tay. Độ tin cậy cao = tên thuốc + hàm lượng khớp tên sản phẩm, quy được ra
-giá/đơn vị, giá đọc từ JSON-LD hoặc thẻ meta, và nếu cả hai trang có giá thì chênh lệch không quá 30%.
+thể thay đổi.
 
 ## Thư mục
 

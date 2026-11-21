@@ -1,11 +1,11 @@
-import { useState } from 'react'
+import { Fragment, useState } from 'react'
 import Modal, { ModalHeader } from './Modal'
 import Icon from './Icon'
 import { useToast } from '../context/ToastContext'
 import { translate } from '../i18n'
 import { useQueue, closeStaleVisit, STALE_REASONS, ST, statusLabel } from '../api/queueStore'
 import { ticketNo } from './queuePrint'
-import { dmy } from '../pages/reception/shared'
+import { dmy } from '../utils/format'
 
 // Lượt chưa đóng từ những ngày trước — Lễ tân xử lý đầu ngày: bệnh nhân quay lại trả tiền → Thu tiền;
 // còn lại → Đóng lượt kèm lý do. Còn lượt chưa đóng thì bệnh nhân chưa tiếp đón lại được.
@@ -32,51 +32,96 @@ export default function StaleVisitsModal({ readOnly, onClose, onPay }) {
   return (
     <Modal open onClose={onClose} wide>
       <ModalHeader title={translate('Open visits from previous days') + ' · ' + stale.length} onClose={onClose} />
-      <div className="modal-body">
-        <p className="ai-soft" style={{ fontSize: 13, marginTop: 0 }}>
-          These visits were not finished or not paid. Close each one with a reason, or collect payment if the patient came back. A patient with an open visit cannot be checked in again.
-        </p>
-        {stale.map((v) => (
-          <div key={v.id} className="stale-row">
-            <div className="stale-head">
-              <span className="p-ticket">{ticketNo(v.ticket)}</span>
-              <span className="wait-main">
-                <b>{v.name}</b>
-                <small>
-                  {dmy(v.carriedFrom + 'T00:00:00')} · {translate(statusLabel(v.status))}
-                  {v.doctor ? ' · ' + v.doctor : ''}
-                </small>
-              </span>
-              {v.status === ST.PRESCRIBED && (
-                <button className="btn btn-primary btn-sm" disabled={readOnly} onClick={() => collect(v)}>
-                  Collect payment
-                </button>
-              )}
-              <button className="btn btn-ghost btn-sm" disabled={readOnly} onClick={() => (setClosing(closing === v.id ? null : v.id), setReason(v.status === ST.PRESCRIBED ? 'unpaid_left' : 'left_waiting'), setNote(''))}>
-                <Icon name="x" /> Close visit
-              </button>
-            </div>
-            {closing === v.id && (
-              <div className="stale-close">
-                <div className="leave-reasons">
-                  {STALE_REASONS.map((r) => (
-                    <label key={r.key} className={'leave-reason' + (reason === r.key ? ' on' : '')}>
-                      <input type="radio" name={'stale-' + v.id} checked={reason === r.key} onChange={() => setReason(r.key)} /> <span>{r.label}</span>
-                    </label>
-                  ))}
-                </div>
-                <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
-                  <input type="text" style={{ flex: 1 }} value={note} onChange={(e) => setNote(e.target.value)} placeholder={translate('Note') + (reason === 'other' ? ' *' : '')} />
-                  <button className="btn btn-primary btn-sm" style={{ background: 'var(--warn)' }} disabled={reason === 'other' && !note.trim()} onClick={() => close(v)}>
-                    <Icon name="check" /> Confirm close
-                  </button>
-                </div>
-              </div>
-            )}
+      <div className="modal-b">
+        <div className="banner i mb-14">
+          <Icon name="info" />
+          <div className="txt">{translate('These visits were not finished or not paid. Close each one with a reason, or collect payment if the patient came back. A patient with an open visit cannot be checked in again.')}</div>
+        </div>
+        {stale.length ? (
+          <div className="tbl-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>{translate('No.')}</th>
+                  <th>{translate('Patient')}</th>
+                  <th>{translate('Step')}</th>
+                  <th>{translate('Since')}</th>
+                  <th className="r" />
+                </tr>
+              </thead>
+              <tbody>
+                {stale.map(row)}
+              </tbody>
+            </table>
           </div>
-        ))}
-        {!stale.length && <p className="ai-soft">{translate('No open visits from previous days.')}</p>}
+        ) : (
+          <div className="empty">
+            <div className="ill">
+              <Icon name="circle-check" />
+            </div>
+            <p className="muted">{translate('No open visits from previous days.')}</p>
+          </div>
+        )}
+      </div>
+      <div className="modal-f">
+        <span className="sp" />
+        <button className="btn btn-outline" onClick={onClose}>
+          {translate('Close')}
+        </button>
       </div>
     </Modal>
   )
+
+  // Hàm dựng hàng (không phải component con) để ô ghi chú không bị dựng lại mỗi lần gõ.
+  function row(v) {
+    const paying = v.status === ST.PRESCRIBED
+    return (
+      <Fragment key={v.id}>
+        <tr>
+          <td className="num">
+            <b>{ticketNo(v.ticket)}</b>
+          </td>
+          <td>
+            <b>{v.name}</b>
+            {v.doctor && <div className="muted small">{v.doctor}</div>}
+          </td>
+          <td>
+            <span className={'badge ' + (paying ? 'b-warning' : 'b-neutral')}>{translate(statusLabel(v.status))}</span>
+          </td>
+          <td className="num muted">{dmy(v.carriedFrom + 'T00:00:00')}</td>
+          <td>
+            <div className="acts">
+              {paying && (
+                <button className="btn btn-outline btn-sm" disabled={readOnly} onClick={() => collect(v)}>
+                  {translate('Collect payment')}
+                </button>
+              )}
+              <button className="btn btn-ghost btn-sm" disabled={readOnly} onClick={() => (setClosing(closing === v.id ? null : v.id), setReason(paying ? 'unpaid_left' : 'left_waiting'), setNote(''))}>
+                {translate('Close visit')}
+              </button>
+            </div>
+          </td>
+        </tr>
+        {closing === v.id && (
+          <tr className="sub-row">
+            <td colSpan={5}>
+              <div className="leave-reasons">
+                {STALE_REASONS.map((r) => (
+                  <label key={r.key} className={'leave-reason' + (reason === r.key ? ' on' : '')}>
+                    <input type="radio" name={'stale-' + v.id} checked={reason === r.key} onChange={() => setReason(r.key)} /> <span>{r.label}</span>
+                  </label>
+                ))}
+              </div>
+              <div className="d-flex gap-8 mt-10">
+                <input className="input grow" type="text" value={note} onChange={(e) => setNote(e.target.value)} placeholder={translate('Note') + (reason === 'other' ? ' *' : '')} />
+                <button className="btn btn-danger" disabled={reason === 'other' && !note.trim()} onClick={() => close(v)}>
+                  {translate('Confirm close')}
+                </button>
+              </div>
+            </td>
+          </tr>
+        )}
+      </Fragment>
+    )
+  }
 }

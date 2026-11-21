@@ -21,26 +21,26 @@ export default function SecretPanel({ secret, onClose }) {
   return (
     <>
       <ModalHeader title={secret.reset ? 'New temporary password' : 'Account created'} onClose={onClose} />
-      <div className="modal-body">
-        <p className="ai-soft">
+      <div className="modal-b">
+        <p className="muted">
           <span>Send these sign-in details to</span> <b>{a.fullName}</b> <span>through a private channel. They must change the password at first sign-in.</span>
         </p>
         <div className="staff-secret">
           <div>
-            <div className="ai-small ai-soft">Username</div>
-            <div className="mono">{a.username}</div>
+            <div className="small muted">Username</div>
+            <div className="num">{a.username}</div>
           </div>
           <div>
-            <div className="ai-small ai-soft">Temporary password</div>
-            <div className="mono staff-secret-pw">{password}</div>
+            <div className="small muted">Temporary password</div>
+            <div className="num staff-secret-pw">{password}</div>
           </div>
           <button type="button" className="btn btn-ghost btn-sm" onClick={copy}>
             <Icon name={copied ? 'check' : 'clipboard'} /> <span>{copied ? 'Copied' : 'Copy'}</span>
           </button>
         </div>
-        <p className="login-note sp-warn">This password is shown only once. After you close this window it cannot be displayed again — only reset.</p>
+        <p className="muted small sp-warn">This password is shown only once. After you close this window it cannot be displayed again — only reset.</p>
       </div>
-      <div className="modal-foot">
+      <div className="modal-f">
         <button className="btn btn-primary" onClick={onClose}>
           Done
         </button>

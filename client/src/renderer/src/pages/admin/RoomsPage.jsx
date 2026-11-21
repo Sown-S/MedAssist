@@ -3,6 +3,8 @@ import Icon from '../../components/Icon'
 import { useToast } from '../../context/ToastContext'
 import { translate } from '../../i18n'
 import { listRooms, createRoom, updateRoom, ROOM_TYPES } from '../../api/roomStore'
+import { MiniStat, MiniStats } from '../../components/MiniStat'
+import { ErrorNote } from '../../components/DataState'
 
 const EMPTY = { code: '', name: '', type: 'Exam' }
 
@@ -46,14 +48,15 @@ export default function RoomsPage({ onNavigate }) {
 
   return (
     <div>
-      <div className="page-head">
+      <div className="pg-h">
         <div>
-          <h1>Rooms</h1>
+          <h2>Rooms</h2>
           <p>Consultation rooms and the lab room. Each consultation room has one doctor, assigned in Staff accounts.</p>
         </div>
-        <div style={{ display: 'flex', gap: 8 }}>
-          <button className="btn btn-ghost" onClick={() => onNavigate?.('staff')}>
-            <Icon name="lock" /> Staff accounts
+        <div className="act">
+          <button className="btn btn-outline" onClick={() => onNavigate?.('staff')}>
+            <Icon name="users" />
+            {translate('Staff accounts')}
           </button>
           <button
             className="btn btn-primary"
@@ -62,120 +65,113 @@ export default function RoomsPage({ onNavigate }) {
               setForm({ ...EMPTY })
             }}
           >
-            + Add room
+            <Icon name="plus" />
+            {translate('Add room')}
           </button>
         </div>
       </div>
 
-      {error && <div className="warn-banner show">{error}</div>}
+      <ErrorNote tone="w">{error}</ErrorNote>
 
       {form && (
-        <form className="card" style={{ marginBottom: 16 }} onSubmit={submit}>
-          <div className="card-title">{form.id ? translate('Rename room') + ' ' + form.code : translate('Add room')}</div>
-          <div className="form-grid">
-            <div className="field">
-              <label>Code *</label>
-              <input value={form.code} disabled={!!form.id} autoFocus={!form.id} placeholder="05" onChange={(e) => setForm({ ...form, code: e.target.value })} />
-            </div>
-            <div className="field">
-              <label>Name *</label>
-              <input value={form.name} autoFocus={!!form.id} placeholder="Phòng khám 05" onChange={(e) => setForm({ ...form, name: e.target.value })} />
-            </div>
-            <div className="field">
-              <label>Type</label>
-              <select value={form.type} disabled={!!form.id} onChange={(e) => setForm({ ...form, type: e.target.value })}>
-                {Object.entries(ROOM_TYPES).map(([k, l]) => (
-                  <option key={k} value={k}>
-                    {l}
-                  </option>
-                ))}
-              </select>
-            </div>
+        <form className="card mb-16" onSubmit={submit}>
+          <div className="card-h">
+            <h3>{form.id ? translate('Rename room') + ' ' + form.code : translate('Add room')}</h3>
           </div>
-          {form.id && <p className="login-note">The code and type of a room cannot be changed.</p>}
-          {formErr && <div className="login-err show">{translate(formErr)}</div>}
-          <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
-            <button type="button" className="btn btn-ghost" onClick={() => setForm(null)}>
-              Cancel
-            </button>
-            <button type="submit" className="btn btn-primary">
-              <Icon name="check" /> Save
-            </button>
+          <div className="card-b">
+            <div className="fg">
+              <div className="field">
+                <label>Code *</label>
+                <input className="input" value={form.code} disabled={!!form.id} autoFocus={!form.id} placeholder="05" onChange={(e) => setForm({ ...form, code: e.target.value })} />
+              </div>
+              <div className="field">
+                <label>Name *</label>
+                <input className="input" value={form.name} autoFocus={!!form.id} placeholder="Phòng khám 05" onChange={(e) => setForm({ ...form, name: e.target.value })} />
+              </div>
+              <div className="field">
+                <label>Type</label>
+                <select className="input" value={form.type} disabled={!!form.id} onChange={(e) => setForm({ ...form, type: e.target.value })}>
+                  {Object.entries(ROOM_TYPES).map(([k, l]) => (
+                    <option key={k} value={k}>
+                      {l}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            {form.id && <p className="muted small">The code and type of a room cannot be changed.</p>}
+            {formErr && (
+              <div className="banner d mb-12">
+                {translate(formErr)}
+              </div>
+            )}
+            <div className="d-flex gap-8 justify-end">
+              <button type="button" className="btn btn-ghost" onClick={() => setForm(null)}>
+                Cancel
+              </button>
+              <button data-shortcut="save" type="submit" className="btn btn-primary">
+                <Icon name="check" /> Save
+              </button>
+            </div>
           </div>
         </form>
       )}
 
       {rooms && (
-        <div className="stat-bar">
-          <div className="stat-card">
-            <div className="dot" />
-            <div className="txt">
-              <span className="val">{exam.length}</span>
-              <span className="lbl">Consultation rooms in use</span>
-            </div>
-          </div>
-          <div className="stat-card">
-            <div className={'dot' + (free ? ' amber' : '')} />
-            <div className="txt">
-              <span className="val">{free}</span>
-              <span className="lbl">Rooms without a doctor</span>
-            </div>
-          </div>
-        </div>
+        <MiniStats>
+          <MiniStat icon="door" value={exam.length} label="Consultation rooms in use" />
+          <MiniStat icon="stethoscope" tone={free ? 'w' : 'n'} value={free} label="Rooms without a doctor" alert={free > 0} />
+        </MiniStats>
       )}
 
       <div className="card">
-        <div className="card-title">
-          <Icon name="stethoscope" /> Rooms <span className="cnt">{rooms?.length ?? 0}</span>
+        <div className="card-b">
+          <div className="tbl-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Code</th>
+                  <th>Name</th>
+                  <th>Type</th>
+                  <th>Doctor</th>
+                  <th>Status</th>
+                  <th />
+                </tr>
+              </thead>
+              <tbody>
+                {(rooms ?? []).map((r) => (
+                  <tr key={r.id} className={r.active ? '' : 'ai-dim'}>
+                    <td className="num">{r.code}</td>
+                    <td>
+                      <b>{r.name}</b>
+                    </td>
+                    <td>{translate(ROOM_TYPES[r.type] ?? r.type)}</td>
+                    <td>{r.type !== 'Exam' ? <span className="muted">—</span> : r.physician ? r.physician.name : <span className="sp-warn">No doctor</span>}</td>
+                    <td>{r.active ? <span className="plain">{translate('In use')}</span> : <span className="badge b-neutral">{translate('Not in use')}</span>}</td>
+                    <td>
+                      <div className="acts">
+                        <button
+                          className="btn btn-ghost btn-sm"
+                          onClick={() => {
+                            setFormErr('')
+                            setForm({ id: r.id, code: r.code, name: r.name, type: r.type })
+                          }}
+                        >
+                          <Icon name="pencil" />
+                          {translate('Rename')}
+                        </button>
+                        <button className="btn btn-ghost btn-sm" onClick={() => toggle(r)}>
+                          {translate(r.active ? 'Stop using' : 'Use again')}
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          {rooms && !rooms.length && <p className="muted small">No rooms yet.</p>}
         </div>
-        <table className="dt">
-          <thead>
-            <tr>
-              <th>Code</th>
-              <th>Name</th>
-              <th>Type</th>
-              <th>Doctor</th>
-              <th>Status</th>
-              <th />
-            </tr>
-          </thead>
-          <tbody>
-            {(rooms ?? []).map((r) => (
-              <tr key={r.id} className={r.active ? '' : 'ai-dim'}>
-                <td className="mono">{r.code}</td>
-                <td>
-                  <b>{r.name}</b>
-                </td>
-                <td>{translate(ROOM_TYPES[r.type] ?? r.type)}</td>
-                <td>
-                  {r.type !== 'Exam' ? (
-                    <span className="ai-soft">—</span>
-                  ) : r.physician ? (
-                    r.physician.name
-                  ) : (
-                    <span className="sp-warn">No doctor</span>
-                  )}
-                </td>
-                <td>{r.active ? <span className="badge ok">In use</span> : <span className="badge muted">Not in use</span>}</td>
-                <td className="ai-actions">
-                  <button
-                    className="btn btn-ghost btn-sm"
-                    onClick={() => {
-                      setFormErr('')
-                      setForm({ id: r.id, code: r.code, name: r.name, type: r.type })
-                    }}
-                  >
-                    Rename
-                  </button>
-                  <button className="btn btn-ghost btn-sm" onClick={() => toggle(r)}>
-                    {r.active ? 'Stop using' : 'Use again'}
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        {rooms && !rooms.length && <p className="ai-soft">No rooms yet.</p>}
       </div>
     </div>
   )

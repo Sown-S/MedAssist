@@ -32,7 +32,11 @@ def test_one_branch_receives_same_gate_reader_identifiers_and_remaining_budget(m
         if strategy == "phrases":
             assert kwargs["cache"] is cache and kwargs["per_phrase_limit"] == 8
         calls.append(kwargs)
-        return SelectionResult(True, suggestions=(suggestion,)) if strategy == "phrases" else [suggestion]
+        return (
+            SelectionResult(True, suggestions=(suggestion,), unmapped_phrases=("PRIVATE_UNMAPPED",))
+            if strategy == "phrases"
+            else [suggestion]
+        )
 
     async def forbidden(*args, **kwargs):
         pytest.fail("Unselected extractor must never run")
@@ -46,6 +50,7 @@ def test_one_branch_receives_same_gate_reader_identifiers_and_remaining_budget(m
     assert len(calls) == 1 and result.strategy == strategy and result.completed is True
     assert result.prompt_version == (PHRASE_EXTRACTION_PROMPT_VERSION if strategy == "phrases" else EXTRACTION_PROMPT_VERSION)
     assert result.suggestions == (suggestion,)
+    assert result.unmapped_phrases == (("PRIVATE_UNMAPPED",) if strategy == "phrases" else ())
     assert "PRIVATE_" not in repr(result) and "cough_dry" not in repr(result)
 
 
@@ -61,7 +66,7 @@ def test_explicit_legacy_empty_has_unknown_completion(monkeypatch):
     assert result.failure_code == "LEGACY_EMPTY_UNCLASSIFIED" and not result.suggestions
 
 
-@pytest.mark.parametrize("completed,reason", [(True, None), (False, "UNMAPPED_PHRASE"),
+@pytest.mark.parametrize("completed,reason", [(True, None), (False, "CONFLICTING_SELECTION"),
                                              (False, "EXTRACTION_TIMEOUT"), (False, "RED_FLAG_SKIPPED")])
 def test_default_phrases_retains_actual_outcome_without_legacy_fallback(monkeypatch, completed, reason):
     async def phrase(*args, **kwargs):

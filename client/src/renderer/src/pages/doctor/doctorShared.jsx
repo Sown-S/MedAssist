@@ -7,8 +7,8 @@ import { useToast } from '../../context/ToastContext'
 import { translate } from '../../i18n'
 import { takePatient, takeNext, minutesSince, labRows, releaseVisit, leaveVisit, LEFT_REASONS, ST, useQueue, myInvite, inviteAgain, dropInvite } from '../../api/queueStore'
 import { deleteDraft } from '../../api/draftStore'
-import { dmy, hhmm } from '../reception/shared'
 import { vitalsText } from '../../api/vitals'
+import { dmy, hhmm } from '../../utils/format'
 
 
 const no = (t) => String(t).padStart(3, '0')
@@ -36,39 +36,40 @@ export function useTakePatient(open) {
   }
 
   const dialog = busy && (
-    <Modal open onClose={() => setBusy(null)}>
+    <Modal open onClose={() => setBusy(null)} size="sm">
       <ModalHeader title={translate('A patient is still in your room')} onClose={() => setBusy(null)} />
-      <div className="modal-body">
-        <div className="busy-current">
-          <span className="p-ticket">{no(busy.busy.ticket)}</span>
-          <div>
-            <b>{busy.busy.name}</b>
-            <small>{translate('In consultation ' + minutesSince(busy.busy.statusAt) + ' min')}</small>
+      <div className="modal-b">
+        <div className="confirm">
+          <div className="ico w">
+            <Icon name="stethoscope" />
           </div>
+          <p>
+            <b>
+              {no(busy.busy.ticket)} — {busy.busy.name}
+            </b>{' '}
+            <span className="muted small">· {translate('In consultation ' + minutesSince(busy.busy.statusAt) + ' min')}</span>
+            <br />
+            {translate('Finalize this visit or send the patient for lab tests before calling the next one, so no one is left half-examined.')}
+          </p>
         </div>
-        <p className="ai-soft" style={{ fontSize: 13.5 }}>
-          Finalize this visit or send the patient for lab tests before calling the next one, so no one is left half-examined.
-        </p>
         {busy.target.priority && (
-          <div className="warn-banner show caution">
-            <div className="icon">
-              <Icon name="zap" />
-            </div>
+          <div className="banner w mt-14">
+            <Icon name="zap" />
             <div className="txt">
               <b>
                 {no(busy.target.ticket)} — {busy.target.name} · {translate('Priority')}
               </b>
-              <span>A priority patient can be called in now; the current visit stays open and this is recorded in the activity log.</span>
+              <span>{translate('A priority patient can be called in now; the current visit stays open and this is recorded in the activity log.')}</span>
             </div>
           </div>
         )}
       </div>
-      <div className="modal-foot">
-        <button className="btn btn-ghost" onClick={() => setBusy(null)}>
+      <div className="modal-f">
+        <button className="btn btn-outline" onClick={() => setBusy(null)}>
           Cancel
         </button>
         {busy.target.priority && (
-          <button className="btn btn-ghost" onClick={() => run(busy.target, true)}>
+          <button className="btn btn-outline" onClick={() => run(busy.target, true)}>
             <Icon name="zap" /> Call in anyway
           </button>
         )}
@@ -156,7 +157,7 @@ export function PatientBrief({ v, past }) {
         </div>
         <div>
           <span className="brief-k">Vitals at check-in</span>
-          <span className="mono">{vitalsText(v.vitals)}</span>
+          <span className="num">{vitalsText(v.vitals)}</span>
         </div>
         <div>
           <span className="brief-k">Previous visits</span>
@@ -167,12 +168,12 @@ export function PatientBrief({ v, past }) {
         <div className="brief-last">
           <span className="brief-k">Last visit</span>
           <span>
-            <b className="mono">{dmy(last.rxAt ?? last.statusAt)}</b> · {last.doctor || '—'} · {last.diagnosis || translate(last.reason ?? '') || '—'}
+            <b className="num">{dmy(last.rxAt ?? last.statusAt)}</b> · {last.doctor || '—'} · {last.diagnosis || translate(last.reason ?? '') || '—'}
           </span>
           {last.rx?.length > 0 && <small>{last.rx.map((x) => `${x.name} × ${x.qty}`).join(', ')}</small>}
         </div>
       ) : (
-        <p className="ai-soft" style={{ fontSize: 12.5, margin: '8px 0 0' }}>
+        <p className="muted small" style={{ margin: '8px 0 0' }}>
           First visit — no earlier records in the system.
         </p>
       )}
@@ -187,22 +188,24 @@ export function LabOrderResults({ order, summary }) {
   return (
     <div className="lab-res">
       <div className="lab-res-head">
-        <span className="mono">
+        <span className="num">
           {hhmm(order.at)} {dmy(order.at)}
         </span>
         <span>· {order.by}</span>
-        {order.diagnosis && <span className="ai-soft">· {order.diagnosis}</span>}
+        {order.diagnosis && <span className="muted">· {order.diagnosis}</span>}
       </div>
-      <table className="dt lab-res-table">
-        <tbody>
-          {rows.map((r) => (
-            <tr key={r.key} className={r.cancelled ? 'ai-dim' : ''}>
-              <td>{r.cancelled ? <s>{r.name}</s> : r.name}</td>
-              <td className={r.result ? '' : 'ai-soft'}>{r.cancelled ? translate('Cancelled — not done') : r.result || translate('No result yet')}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <div className="tbl-wrap">
+        <table className="lab-res-table">
+          <tbody>
+            {rows.map((r) => (
+              <tr key={r.key} className={r.cancelled ? 'ai-dim' : ''}>
+                <td>{r.cancelled ? <s>{r.name}</s> : r.name}</td>
+                <td className={r.result ? '' : 'muted'}>{r.cancelled ? translate('Cancelled — not done') : r.result || translate('No result yet')}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
       {conclusion && (
         <p className="lab-res-sum">
           <b>{translate('Conclusion')}:</b> {conclusion}
@@ -224,15 +227,18 @@ export function ReleaseModal({ visit, onClose, onDone }) {
     onDone?.()
   }
   return (
-    <Modal open onClose={onClose}>
+    <Modal open onClose={onClose} size="sm">
       <ModalHeader title={translate('Return to queue') + ' — ' + visit.name} onClose={onClose} />
-      <div className="modal-body">
-        <p className="ai-soft" style={{ fontSize: 13, marginTop: 0 }}>
-          The patient goes back to the waiting queue; any doctor can call them in again. Your unfinished notes stay with the visit.
-        </p>
+      <div className="modal-b">
+        <div className="confirm">
+          <div className="ico w">
+            <Icon name="repeat" />
+          </div>
+          <p>{translate('The patient goes back to the waiting queue; any doctor can call them in again. Your unfinished notes stay with the visit.')}</p>
+        </div>
       </div>
-      <div className="modal-foot">
-        <button className="btn btn-ghost" onClick={onClose}>
+      <div className="modal-f">
+        <button className="btn btn-outline" onClick={onClose}>
           Cancel
         </button>
         <button className="btn btn-primary" onClick={submit}>
@@ -257,12 +263,15 @@ export function LeaveVisitModal({ visit, onClose, onDone }) {
     onDone?.()
   }
   return (
-    <Modal open onClose={onClose}>
+    <Modal open onClose={onClose} wide>
       <ModalHeader title={translate('Patient left') + ' — ' + visit.name} onClose={onClose} />
-      <div className="modal-body">
-        <p className="ai-soft" style={{ fontSize: 13, marginTop: 0 }}>
-          The visit is closed without an invoice. To charge the consultation fee, finalize the visit without drugs instead.
-        </p>
+      <div className="modal-b">
+        <div className="confirm">
+          <div className="ico d">
+            <Icon name="triangle-alert" />
+          </div>
+          <p>{translate('The visit is closed without an invoice. To charge the consultation fee, finalize the visit without drugs instead.')}</p>
+        </div>
         <div className="field">
           <label>Reason</label>
           <div className="leave-reasons">
@@ -277,15 +286,15 @@ export function LeaveVisitModal({ visit, onClose, onDone }) {
           <label>
             Note {reason === 'other' && <span className="req">*</span>}
           </label>
-          <input type="text" value={note} onChange={(e) => setNote(e.target.value)} placeholder="e.g. Called twice, no answer; advised to come back if the fever persists" />
+          <input className="input" type="text" value={note} onChange={(e) => setNote(e.target.value)} placeholder="e.g. Called twice, no answer; advised to come back if the fever persists" />
         </div>
       </div>
-      <div className="modal-foot">
-        <button className="btn btn-ghost" onClick={onClose}>
+      <div className="modal-f">
+        <button className="btn btn-outline" onClick={onClose}>
           Cancel
         </button>
-        <button className="btn btn-primary" onClick={submit} disabled={reason === 'other' && !note.trim()}>
-          <Icon name="check" /> Close visit
+        <button className="btn btn-danger" onClick={submit} disabled={reason === 'other' && !note.trim()}>
+          {translate('Close visit')}
         </button>
       </div>
     </Modal>

@@ -8,6 +8,7 @@ from typing import Any
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
 from app.exceptions import AppError
+from app.validation.knowledge_validators import ConditionCode
 
 
 class ClinicProfile(BaseModel):
@@ -61,6 +62,16 @@ class _ClusterAlerts(BaseModel):
     value: ClusterAlerts
 
 
+class FocusScope(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    groups: list[str] = Field(max_length=20)
+    conditions: list[ConditionCode] = Field(max_length=300)
+
+
+class _FocusScope(BaseModel):
+    value: FocusScope
+
+
 class _ConsultationServiceCode(BaseModel):
     value: str = Field(max_length=20, pattern=r"^[A-Za-z0-9_-]*$")  # rỗng = dùng phí khám mặc định
 
@@ -97,6 +108,27 @@ SETTINGS: dict[str, tuple[type[BaseModel], Any, str]] = {
         {"window_days": 7, "min_cases": 5, "ratio": 2.0},
         "Cảnh báo cụm ca: trong N ngày có ít nhất M bệnh nhân cùng chẩn đoán/triệu chứng và gấp R lần "
         "trung bình các kỳ N ngày trước",
+    ),
+    "ai.focus_scope": (
+        _FocusScope,
+        {
+            "groups": ["musculoskeletal"],
+            "conditions": [
+                "cam_lanh_thong_thuong",
+                "cum_mua",
+                "hong_thanh_quan_viem_mui_hong_cap_tinh",
+                "viem_hong_cap_tinh",
+                "viem_amidan_cap_va_man_tinh",
+                "viem_thanh_quan_cap_tinh",
+                "viem_mui_xoang_cap_tinh",
+                "viem_mui_xoang_di_ung",
+                "viem_tai_giua_cap_tinh_tre_em",
+                "hen_phe_quan",
+                "phoi_tac_nghen_man_tinh",
+            ],
+        },
+        "Phạm vi trọng tâm của gợi ý chẩn đoán (nhóm bệnh disease_group và mã bệnh lẻ); bệnh ngoài phạm vi "
+        "được client gắn nhãn chưa thẩm định chuyên môn",
     ),
 }
 

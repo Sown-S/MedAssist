@@ -60,42 +60,42 @@ export function ClinicTab({ form, readOnly }) {
 
   return (
     <div className="card">
-      <p className="ai-soft ai-small set-intro">Printed on prescriptions, invoices and reports. Shared by every computer in the clinic.</p>
+      <p className="muted small set-intro">Printed on prescriptions, invoices and reports. Shared by every computer in the clinic.</p>
       <fieldset className="set-fieldset" disabled={readOnly}>
         <div className="set-grid">
           <Field {...fp('clinic.name')} wide>
-            <input {...text('clinic.name', { maxLength: 200 })} placeholder="e.g. Phòng khám Đa khoa An Bình" />
+            <input className="input" {...text('clinic.name', { maxLength: 200 })} placeholder="e.g. Phòng khám Đa khoa An Bình" />
           </Field>
           <Field {...fp('clinic.address')} wide>
-            <input {...text('clinic.address', { maxLength: 255 })} />
+            <input className="input" {...text('clinic.address', { maxLength: 255 })} />
           </Field>
           <Field {...fp('clinic.phone')}>
-            <input {...text('clinic.phone', { inputMode: 'tel', maxLength: 20 })} />
+            <input className="input" {...text('clinic.phone', { inputMode: 'tel', maxLength: 20 })} />
           </Field>
           <Field {...fp('clinic.email')}>
-            <input {...text('clinic.email', { type: 'email', maxLength: 100 })} />
+            <input className="input" {...text('clinic.email', { type: 'email', maxLength: 100 })} />
           </Field>
           <Field {...fp('clinic.taxCode')}>
-            <input {...text('clinic.taxCode', { inputMode: 'numeric', maxLength: 20 })} />
+            <input className="input" {...text('clinic.taxCode', { inputMode: 'numeric', maxLength: 20 })} />
           </Field>
           <Field {...fp('clinic.licenseNo')}>
-            <input {...text('clinic.licenseNo', { maxLength: 50 })} />
+            <input className="input" {...text('clinic.licenseNo', { maxLength: 50 })} />
           </Field>
           <Field {...fp('clinic.licenseDate')}>
             <DobInput value={val('clinic.licenseDate') ?? ''} onChange={(v) => set('clinic.licenseDate', v)} />
           </Field>
           <Field {...fp('clinic.licenseIssuer')}>
-            <input {...text('clinic.licenseIssuer', { maxLength: 200 })} placeholder="e.g. Sở Y tế Đà Nẵng" />
+            <input className="input" {...text('clinic.licenseIssuer', { maxLength: 200 })} placeholder="e.g. Sở Y tế Đà Nẵng" />
           </Field>
           <Field {...fp('clinic.director')}>
-            <input {...text('clinic.director', { maxLength: 100 })} />
+            <input className="input" {...text('clinic.director', { maxLength: 100 })} />
           </Field>
           <Field {...fp('clinic.directorLicense')}>
-            <input {...text('clinic.directorLicense', { maxLength: 50 })} />
+            <input className="input" {...text('clinic.directorLicense', { maxLength: 50 })} />
           </Field>
           <Field {...fp('clinic.logo')} wide hint="PNG, JPG, SVG or WebP — resized to 300 px on the longest side.">
             <div className="set-logo">
-              {val('clinic.logo') ? <img src={val('clinic.logo')} alt="" /> : <span className="ai-soft ai-small">No logo</span>}
+              {val('clinic.logo') ? <img src={val('clinic.logo')} alt="" /> : <span className="muted small">No logo</span>}
               <label className="btn btn-ghost btn-sm">
                 <Icon name="paperclip" /> <span>Choose image</span>
                 <input type="file" accept="image/png,image/jpeg,image/svg+xml,image/webp" hidden onChange={onLogo} />

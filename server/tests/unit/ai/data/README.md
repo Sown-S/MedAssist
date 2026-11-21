@@ -1,6 +1,6 @@
 # Bộ phát triển extraction AI-23
 
-`extraction_retrieval_dev_v1.jsonl` gồm 26 ca tổng hợp do Huy/agent chuẩn bị ngày
+`extraction_retrieval_dev_v1.jsonl` gồm 26 ca tổng hợp, chuẩn bị ngày
 09/11/2026 để phát triển truy xuất v0.2.4. Không lấy ca từ bộ 29 ca đóng băng.
 Tên/mã tham chiếu catalog KB-2026.10; nhãn là giả định phát triển, chưa được rà lâm sàng.
 
@@ -39,3 +39,13 @@ ghép nhóm phạm vi phủ định với không ghép; nhãn tổng hợp chưa
 phải frozen/holdout. Chạy `manual_phrase_selection_probe --cases-file <path>`;
 launcher local nhận `-CasesFile server/tests/unit/ai/data/extraction_coordination_dev_v1.jsonl`.
 Giữ nguyên nhãn dù kết quả không đạt.
+
+`focus_patient_voice_dev_v1.jsonl` gồm 30 ca giả lập giọng bệnh nhân cho nhóm
+trọng tâm (`fdev-01`..`fdev-15` hô hấp / tai mũi họng / cúm–cảm lạnh thường gặp,
+`fdev-16`..`fdev-30` cơ xương khớp), lập ngày 16/11/2026 theo yêu cầu sau PR `#154`.
+Chỉ dùng mã `Active` của `KB-2026.11` (chưa thêm mã bệnh mới của `KB-2026.12`),
+không gắn mã thuần khám/cận lâm sàng vào `expected_symptoms`, tách biệt hoàn toàn
+với bộ 29 ca đóng băng (`evaluation/testset/symptom_extraction_testset.jsonl`). Dùng
+để đo trước/sau khi bổ sung `aliases` và lọc `detection = exam` trong `candidate_index`
+(`v0.2.6`, mốc 22–25/11); không dùng làm bộ holdout.
+

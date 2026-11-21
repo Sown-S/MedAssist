@@ -11,28 +11,28 @@ export function SecondaryDx({ list, onChange }) {
     setText('')
   }
   return (
-    <div className="dx2">
-      <div className="section-label">Secondary diagnoses / comorbidities</div>
+    <>
       {list.length > 0 && (
-        <div className="dx2-list">
+        <div className="dx-tags mb-6">
           {list.map((x) => (
-            <span key={x} className="dx2-chip">
+            <span key={x} className="dx-tag sec">
               {x}
-              <button title={translate('Remove')} onClick={() => onChange(list.filter((y) => y !== x))}>
+              <button title={translate('Remove')} aria-label={translate('Remove')} onClick={() => onChange(list.filter((y) => y !== x))}>
                 <Icon name="x" />
               </button>
             </span>
           ))}
         </div>
       )}
-      <div className="dx2-add">
-        <div style={{ flex: 1 }}>
+      <div className="d-flex gap-8 items-start">
+        <div className="grow">
           <ICDPicker value={text} onChange={setText} onPick={add} />
         </div>
-        <button className="btn btn-ghost btn-sm" disabled={!text.trim()} onClick={() => add(text)}>
-          + Add
+        <button className="btn btn-ghost btn-sm mt-4" disabled={!text.trim()} onClick={() => add(text)}>
+          <Icon name="plus" />
+          {translate('Add')}
         </button>
       </div>
-    </div>
+    </>
   )
 }

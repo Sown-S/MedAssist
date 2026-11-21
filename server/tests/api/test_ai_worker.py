@@ -434,6 +434,25 @@ def test_make_llm_client(monkeypatch):
     assert isinstance(client, LLMClient) and model == settings.OLLAMA_MODEL
     monkeypatch.setattr(settings, "OLLAMA_KEEP_ALIVE", "24h")
     assert runner.make_llm_client()[0]._ollama.keep_alive == "24h"
+    assert runner.make_llm_client()[0]._ollama.num_ctx is None
+    monkeypatch.setattr(settings, "OLLAMA_NUM_CTX", 4096)
+    assert runner.make_llm_client()[0]._ollama.num_ctx == 4096
+
+
+def test_make_extraction_llm_client(monkeypatch):
+    from app.core.config import settings
+
+    monkeypatch.setattr(settings, "LLM_PROVIDER", "ollama")
+    reasoning = runner.make_llm_client()
+    for model in ("", "  ", settings.OLLAMA_MODEL):
+        monkeypatch.setattr(settings, "OLLAMA_EXTRACTION_MODEL", model)
+        assert runner.make_extraction_llm_client(reasoning) is reasoning
+    monkeypatch.setattr(settings, "OLLAMA_EXTRACTION_MODEL", "medassist-extract:q4")
+    client, model = runner.make_extraction_llm_client(reasoning)
+    assert model == "medassist-extract:q4" and client.model == "medassist-extract:q4"
+    monkeypatch.setattr(settings, "LLM_PROVIDER", "fake")
+    fake = runner.make_llm_client()
+    assert runner.make_extraction_llm_client(fake) is fake
 
 
 def test_run_forever_processes_then_stops(make_visit, nurse_user, monkeypatch):
@@ -627,3 +646,23 @@ def test_extraction_vital_proposals_follow_the_run_text(client, nurse, text_visi
         db.commit()
     body = client.get(f"/api/v1/visits/{vid}/symptom-extraction", headers=nurse).json()
     assert body["text_changed"] is True and body["vital_proposals"] == []
+
+
+def test_extraction_keeps_unmapped_phrases_for_alias_export(client, nurse, login, text_visit, monkeypatch):
+    from app.ai.extraction.dispatch import ExtractionResult
+
+    async def _fake(*args, **kwargs):
+        return ExtractionResult("phrases", "p-test", True, None, (), ("đau lưng lan xuống chân",))
+
+    monkeypatch.setattr(runner, "run_extraction", _fake)
+    vid = text_visit()
+    client.post(f"/api/v1/visits/{vid}/symptom-extraction", headers=nurse)
+    assert _process(FakeLLMClient(), "fake") is True
+    run = _extractions(vid)[-1]
+    assert run.status == "Completed"
+    assert run.validation_result["unmapped_phrases"] == ["đau lưng lan xuống chân"]
+    logs = client.get(
+        "/api/v1/admin/ai-logs", headers=login("admin"), params={"run_type": "Extraction", "limit": 200}
+    ).json()["items"]
+    item = next(i for i in logs if i["assessment_id"] == str(run.assessment_id))
+    assert item["unmapped_count"] == 1 and "đau lưng" not in str(item)

@@ -52,3 +52,6 @@ class SymptomCatalogItem(BaseModel):
     symptom_code: str
     symptom_name: str
     category: str | None
+    short_name: str | None
+    aliases: list[str]
+    detection: str

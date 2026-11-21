@@ -6,6 +6,7 @@ import shutil
 from pathlib import Path
 
 import pytest
+import yaml
 from sqlalchemy import func, select, text
 
 from app.core.database import SessionLocal
@@ -132,6 +133,28 @@ def test_errors_are_reported(vault_copy):
     assert "exports" not in errors
 
 
+def _set_symptom(vault: Path, code: str, **fields) -> None:
+    """Sửa trên YAML đã parse: catalog có sẵn aliases/short_name thì chèn chuỗi sẽ thành khóa trùng."""
+    path = vault / "symptoms/symptom_catalog.md"
+    text_ = path.read_text(encoding="utf-8-sig").replace("\r\n", "\n")
+    m = okf._FRONT.match(text_)
+    data = yaml.safe_load(m.group(1))
+    entry = next((s for s in data["symptoms"] if s["symptom_code"] == code), None)
+    assert entry is not None, code
+    entry.update(fields)
+    front = yaml.safe_dump(data, allow_unicode=True, sort_keys=False)
+    path.write_text(f"---\n{front}---\n{m.group(2)}", encoding="utf-8")
+
+
+def test_symptom_alias_and_detection_errors(vault_copy):
+    _set_symptom(vault_copy, "fever_high", aliases=["nóng sốt", "Sốt"])
+    _set_symptom(vault_copy, "fever_low_grade", aliases=["sốt "], short_name="Sốt nhẹ")
+    _set_symptom(vault_copy, "sym_respiratory_failure", detection="exam")
+    errors = "\n".join(okf.load_vault(vault_copy).errors)
+    assert "fever_low_grade: từ đồng nghĩa 'sốt' trùng với fever_high" in errors
+    assert "rf_respiratory_failure: luật dùng sym_respiratory_failure nên detection phải là" in errors
+
+
 def test_document_schemas_are_ignored(vault_copy):
     (vault_copy / "_spec/bien_ban.md").write_text(
         "---\nschema: okf_review_log_v1\nlabel: X\n---\n# Biên bản\n", encoding="utf-8"
@@ -210,6 +233,23 @@ def test_changed_item_gets_new_version(db, vault_copy):
         (rows[-2].version, "Retired", "Superseded"),
         (rows[-2].version + 1, "Active", None),
     ]
+
+
+def test_symptom_aliases_imported_and_versioned(db, vault_copy):
+    first = okf.load_vault(vault_copy)
+    okf.apply_plan(db, first, okf.make_plan(db, first), drafter=_u(db, "admin"), approver=_u(db, "bs"))
+    _edit(vault_copy / "_release.md", f"label: {first.release.label}", "label: KB-TEST-4")
+    _set_symptom(vault_copy, "fever_high", short_name="Sốt cao", aliases=["nóng sốt", "sốt hầm hập"])
+
+    second = okf.load_vault(vault_copy)
+    assert second.errors == []
+    plan = okf.make_plan(db, second)
+    assert [(c.kind, c.key, c.action) for c in plan.changes] == [("symptom", "fever_high", "changed")]
+    okf.apply_plan(db, second, plan, drafter=_u(db, "admin"), approver=_u(db, "bs"))
+    _check_integrity(db)
+    row = db.scalar(select(Symptom).where(Symptom.symptom_code == "fever_high", Symptom.status == "Active"))
+    assert (row.short_name, row.aliases, row.detection) == ("Sốt cao", ["nóng sốt", "sốt hầm hập"], "both")
+    assert okf.make_plan(db, second).changes == []
 
 
 def test_retire_missing(db, vault_copy):

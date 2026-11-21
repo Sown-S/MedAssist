@@ -3,19 +3,19 @@
   "frozen_at": "2026-11-07T22:45:30+07:00",
   "git_tag_recommended": "testset-v1.3-frozen",
   "knowledge_snapshot": {
-    "total_conditions": 169,
+    "total_conditions": 153,
     "groups": {
-      "dermatology": 58,
-      "ent": 43,
+      "dermatology": 56,
+      "ent": 36,
       "infectious": 11,
-      "musculoskeletal": 31,
-      "ophthalmology": 24,
+      "musculoskeletal": 28,
+      "ophthalmology": 20,
       "respiratory": 2
     },
     "total_symptoms": 299,
     "total_triage_rules": 12,
     "total_sources": 11,
-    "kb_release": "KB-2026.10"
+    "kb_release": "KB-2026.11"
   },
   "combined_sha256": "4e7b58cffc3cd950e1411a131919e36976ea94f209c426821886b03708cd368d",
   "files": [
@@ -38,7 +38,7 @@
   "policy_note": "Đóng băng bộ test theo Nguyên tắc vàng #6 (Quy định v5): Không chỉnh rule hay prompt dựa trên bộ test này.",
   "git_tag_created": false,
   "review_status": "APPROVED",
-  "review_basis": "Ngày 08/11/2026, người phụ trách xác nhận chưa hoàn tất rà soát chéo thực tế giữa Tuấn và Huy. APPROVED là trạng thái đóng băng kỹ thuật theo ủy quyền trước đây, không phải phê duyệt lâm sàng. Rà soát chéo thực tế còn chờ hoàn tất. Giữ nguyên mã băm testset v1.3 đã đóng băng.",
+  "review_basis": "Ngày 08/11/2026 chưa hoàn tất rà chéo thực tế; APPROVED khi đó là đóng băng kỹ thuật. Cập nhật 11/11/2026: đã nhận phiếu Huy và xác nhận Tuấn bằng văn bản, đồng bộ 82 ca lâm sàng và 29 ca trích xuất tại evaluation/review/: 106 ĐỒNG Ý, 5 CẦN SỬA, giữ các lưu ý chuyên môn. Hoàn tất ghi nhận rà với vấn đề tồn đọng không phải phê duyệt bác sĩ hoặc kết luận mọi ca đạt. Mọi sửa nhãn thuộc v1.4 riêng; hash v1.3 giữ nguyên.",
   "sha256_normalization": "CRLF to LF before hashing",
   "combined_sha256_formula": "sha256((sha_ext + \":\" + sha_clin).encode(\"utf-8\"))",
   "clinical_statistics": {

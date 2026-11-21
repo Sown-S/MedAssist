@@ -119,12 +119,24 @@ def test_post_supersedes_queued_and_rejects_closed_visit(client, login, knowledg
     assert closed.status_code == 409 and closed.json()["error"]["code"] == "VISIT_CLOSED"
 
 
-def test_post_requires_nurse(client, login, knowledge_reader):
+def test_post_roles(client, login, knowledge_reader):
     nurse = login("yta")
     visit_id = _visit(client, nurse)
-    assert client.post(f"/api/v1/visits/{visit_id}/assessment", headers=login("bs")).status_code == 403
     assert client.post(f"/api/v1/visits/{visit_id}/assessment", headers=login("admin")).status_code == 403
     assert client.post(f"/api/v1/visits/{visit_id}/assessment").status_code == 401
+
+
+def test_physician_reruns_only_own_examining_visit(client, login, doctor, doctor2, examining, knowledge_reader):
+    waiting = _visit(client, login("yta"))
+    r = client.post(f"/api/v1/visits/{waiting}/assessment", headers=doctor)
+    assert r.status_code == 409 and r.json()["error"]["code"] == "NOT_YOUR_VISIT"
+
+    visit_id = examining()
+    other = client.post(f"/api/v1/visits/{visit_id}/assessment", headers=doctor2)
+    assert other.status_code == 409 and other.json()["error"]["code"] == "NOT_YOUR_VISIT"
+    own = client.post(f"/api/v1/visits/{visit_id}/assessment", headers=doctor)
+    assert own.status_code == 202, own.text
+    assert own.json()["ai_status"] == "Pending"
 
 
 def test_get_without_assessment_returns_business_404(client, login, knowledge_reader):
@@ -325,9 +337,17 @@ def test_get_returns_exact_completed_candidate_shape(client, login, users, knowl
                 "missing": [{"symptom_code": "fever", "symptom_name": "Sốt"}],
                 "explanation": "Bằng chứng hỗ trợ từ cough.",
                 "label": "Reference Suggestion",
+                "in_focus_scope": False,
             }
         ],
     }
+
+    with SessionLocal() as db:
+        log = db.get(AiAssessmentLog, assessment_id)
+        log.candidates = [{**log.candidates[0], "condition_code": "hen_phe_quan"}]
+        db.commit()
+    got = client.get(f"/api/v1/visits/{visit_id}/assessment", headers=doctor).json()
+    assert got["candidates"][0]["in_focus_scope"] is True
 
 
 def test_missing_knowledge_reader_reports_service_unavailable(monkeypatch):

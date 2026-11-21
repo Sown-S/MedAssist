@@ -9,12 +9,6 @@ description: Viêm da đầu chi ruột hay còn được gọi là bệnh viêm
   các dát đỏ quanh các hốc tự nhiên và các đầu chi kết hợp với rụng tóc, tiêu chảy mạn tính và các rối
   loạn về tâm thần, do tình trạng giảm kẽm trong huyết thanh.
 relations:
-- symptom_code: sjs_ten_epidermal_necrolysis_mucosal
-  polarity: SUPPORTS
-  weight: 0.6
-  is_key: false
-  source_key: moh_qd_75_2015
-  source_edition: Quyết định số 75/QĐ-BYT
 - symptom_code: acrodermatitis_enteropathica_periorificial_zinc
   polarity: SUPPORTS
   weight: 0.9

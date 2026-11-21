@@ -9,7 +9,7 @@ import { useDevice } from '../../api/deviceSettings'
 
 // Bảng gọi bệnh nhân ở quầy. Bác sĩ chỉ mời (call-next); bệnh nhân chưa check-in thì check-in rồi mời vào;
 // không có mặt → bỏ lời mời (DELETE /visits/{id}/call), bệnh nhân giữ chỗ.
-export default function CallPanel({ readOnly }) {
+export default function CallPanel({ readOnly, variant }) {
   const { showToast } = useToast()
   const { visits } = useQueue()
   const dev = useDevice().queue
@@ -30,63 +30,133 @@ export default function CallPanel({ readOnly }) {
     showToast(r.ok ? translate('Invitation cancelled — the patient keeps their place in the queue') + ' — ' + ticketNo(v.ticket) : translate(r.error), r.ok ? 'ok' : 'error')
   }
 
+  // Trang Hàng chờ: dải xanh lớn (người cần gọi) + hàng "Tiếp theo trong hàng chờ" như mẫu.
+  if (variant === 'banner')
+    return (
+      <>
+        {toCall.length ? (
+          toCall.map((v) => (
+            <div key={v.id} className="calling">
+              <div>
+                <div className="lb">{translate('Patients to call in')}</div>
+                <div className="no num">{ticketNo(v.ticket)}</div>
+              </div>
+              <div className="sep" />
+              <div>
+                <div className="nm">{dev.showNames ? v.name : ticketNo(v.ticket)}</div>
+                <div className="rm">
+                  {translate('Invited to')} {v.room || '—'} · {v.doctor} · {translate('doctor called')} {minutesSince(v.calledAt ?? v.statusAt)} {translate('min ago')}
+                </div>
+              </div>
+              <div className="acts">
+                <button className="btn btn-ghost-blue" disabled={readOnly} onClick={() => notHere(v)} title={translate('Cancels the invitation — the patient keeps their place in the queue')}>
+                  <Icon name="user-x" />
+                  {translate('Not here')}
+                </button>
+                {v.status === ST.WAITING && (
+                  <button className="btn btn-on-blue" disabled={readOnly} onClick={() => checkIn(v)} title={translate('The patient is at the desk and it is nearly their turn')}>
+                    <Icon name="check" />
+                    {translate('Mark present')}
+                  </button>
+                )}
+              </div>
+            </div>
+          ))
+        ) : (
+          <div className="calling idle">
+            <div>
+              <div className="lb">{translate('Patients to call in')}</div>
+              <div className="no num">—</div>
+            </div>
+            <div className="sep" />
+            <div className="rm">No one to call right now — when a doctor is ready for the next patient, they appear here with the room.</div>
+          </div>
+        )}
+        {next.length > 0 && (
+          <div className="card">
+            <div className="card-h">
+              <h3>Next in the queue</h3>
+              <span className="plain">{translate('Priority first, then by number')}</span>
+            </div>
+            <div className="card-b upnext">
+              {next.slice(0, 3).map((v) => (
+                <div key={v.id} className="u">
+                  <span className="no num">{ticketNo(v.ticket)}</span>
+                  <div className="t">
+                    <b className="clip">{dev.showNames ? v.name : ticketNo(v.ticket)}</b>
+                    <span>{translate(v.status === ST.CHECKED_IN ? 'Checked in — can be called' : 'Not checked in — click when the patient is at the desk')}</span>
+                  </div>
+                  {v.status === ST.WAITING ? (
+                    <button className="btn btn-outline btn-sm" disabled={readOnly} onClick={() => checkIn(v)}>
+                      {translate('Mark present')}
+                    </button>
+                  ) : (
+                    <span className="plain">{translate('Ready')}</span>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </>
+    )
+
   return (
     <div className="card call-panel">
-      <div className="card-title">
-        <Icon name="megaphone" /> Patients to call in
+      <div className="card-h">
+        <h3>
+          <Icon name="megaphone" /> Patients to call in
+        </h3>
       </div>
-      {toCall.length ? (
-        toCall.map((v) => (
-          <div key={v.id} className="call-now">
-            <span className="num">{ticketNo(v.ticket)}</span>
-            <span style={{ flex: 1, minWidth: 160, display: 'flex', flexDirection: 'column' }}>
-              <span className="nm">
-                {dev.showNames ? v.name + ' → ' : '→ '}
-                {v.room || '—'}
+      <div className="card-b">
+        {toCall.length ? (
+          toCall.map((v) => (
+            <div key={v.id} className="call-now">
+              <span className="num">{ticketNo(v.ticket)}</span>
+              <span className="grow minw-160 d-flex flex-col">
+                <span className="nm">
+                  {dev.showNames ? v.name + ' → ' : '→ '}
+                  {v.room || '—'}
+                </span>
+                <span className="lbl">
+                  {v.doctor} · {translate('ready')} {minutesSince(v.calledAt ?? v.statusAt)} {translate('min ago')} · <i>“{callText(v)}”</i>
+                </span>
               </span>
-              <span className="lbl">
-                {v.doctor} · {translate('ready')} {minutesSince(v.calledAt ?? v.statusAt)} {translate('min ago')} · <i>“{callText(v)}”</i>
-              </span>
-            </span>
-            {v.status === ST.WAITING && (
-              <button className="btn btn-primary btn-sm" disabled={readOnly} onClick={() => checkIn(v)} title={translate('The patient is at the desk and it is nearly their turn')}>
-                <Icon name="check" /> {translate('Mark present')}
+              {v.status === ST.WAITING && (
+                <button className="btn btn-primary btn-sm" disabled={readOnly} onClick={() => checkIn(v)} title={translate('The patient is at the desk and it is nearly their turn')}>
+                  <Icon name="check" /> {translate('Mark present')}
+                </button>
+              )}
+              <button className="btn btn-ghost btn-sm" disabled={readOnly} onClick={() => notHere(v)} title={translate('Cancels the invitation — the patient keeps their place in the queue')}>
+                <Icon name="x" /> Not here
               </button>
-            )}
-            <button
-              className="btn btn-ghost btn-sm"
-              disabled={readOnly}
-              onClick={() => notHere(v)}
-              title={translate('Cancels the invitation — the patient keeps their place in the queue')}
-            >
-              <Icon name="x" /> Not here
-            </button>
+            </div>
+          ))
+        ) : (
+          <div className="call-now">
+            <span className="lbl">No one to call right now — when a doctor is ready for the next patient, they appear here with the room.</span>
           </div>
-        ))
-      ) : (
-        <div className="call-now">
-          <span className="lbl">No one to call right now — when a doctor is ready for the next patient, they appear here with the room.</span>
-        </div>
-      )}
-      {next.length > 0 && (
-        <div className="call-next">
-          <span className="lbl">Next in the queue</span>
-          {next.slice(0, dev.nextCount).map((v) => {
-            const cls = 'call-chip' + (v.absent ? ' absent' : '') + (v.priority ? ' prio' : '') + (v.triage === 'emergency' ? ' emerg' : '') + (v.status === ST.CHECKED_IN ? ' ready' : ' pending')
-            const tip = (dev.showNames ? v.name + ' · ' : '') + translate(v.status === ST.CHECKED_IN ? 'Checked in — can be called' : 'Not checked in — click when the patient is at the desk')
-            return v.status === ST.WAITING ? (
-              <button key={v.id} type="button" className={cls} title={tip} disabled={readOnly} onClick={() => checkIn(v)}>
-                {ticketNo(v.ticket)}
-              </button>
-            ) : (
-              <span key={v.id} className={cls} title={tip}>
-                <Icon name="check" /> {ticketNo(v.ticket)}
-              </span>
-            )
-          })}
-          {next.length > dev.nextCount && <span className="ai-soft">+{next.length - dev.nextCount}</span>}
-        </div>
-      )}
+        )}
+        {next.length > 0 && (
+          <div className="call-next">
+            <span className="lbl">Next in the queue</span>
+            {next.slice(0, dev.nextCount).map((v) => {
+              const cls = 'call-chip' + (v.absent ? ' absent' : '') + (v.priority ? ' prio' : '') + (v.triage === 'emergency' ? ' emerg' : '') + (v.status === ST.CHECKED_IN ? ' ready' : ' pending')
+              const tip = (dev.showNames ? v.name + ' · ' : '') + translate(v.status === ST.CHECKED_IN ? 'Checked in — can be called' : 'Not checked in — click when the patient is at the desk')
+              return v.status === ST.WAITING ? (
+                <button key={v.id} type="button" className={cls} title={tip} disabled={readOnly} onClick={() => checkIn(v)}>
+                  {ticketNo(v.ticket)}
+                </button>
+              ) : (
+                <span key={v.id} className={cls} title={tip}>
+                  <Icon name="check" /> {ticketNo(v.ticket)}
+                </span>
+              )
+            })}
+            {next.length > dev.nextCount && <span className="muted">+{next.length - dev.nextCount}</span>}
+          </div>
+        )}
+      </div>
     </div>
   )
 }

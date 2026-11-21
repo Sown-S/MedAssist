@@ -1,6 +1,6 @@
 # MedAssist — Backend (FastAPI + PostgreSQL)
 
-Hướng dẫn chạy backend **trên máy dev** (Windows, PowerShell). Cập nhật: 30/10/2026, cuối Sprint 3.
+Hướng dẫn chạy backend **trên máy dev** (Windows, PowerShell).
 Cài máy admin (toàn bộ hệ thống trong Docker): xem [`deploy/README.md`](../deploy/README.md).
 
 - **Stack:** Python 3.14, FastAPI, SQLAlchemy 2, Alembic, PostgreSQL 16 (Docker), JWT, Argon2id.
@@ -36,7 +36,7 @@ Cài máy admin (toàn bộ hệ thống trong Docker): xem [`deploy/README.md`]
 | Phần mềm | Ghi chú |
 |---|---|
 | **Docker Desktop** | Chạy PostgreSQL. Mở Docker Desktop trước khi chạy lệnh `docker`. |
-| **Python 3.14** | Cùng phiên bản với máy Sơn (`python --version`). Bản khác có thể không cài được một số gói trong `requirements.txt`. |
+| **Python 3.14** | Phiên bản dự án dùng (`python --version`). Bản khác có thể không cài được một số gói trong `requirements.txt`. |
 | **Git** | |
 | PyCharm *(không bắt buộc)* | Settings → Editor → Code Style → Line separator = **Unix (\n)**. |
 
@@ -139,7 +139,7 @@ Danh mục dịch vụ, xét nghiệm, gói khám (giá mẫu, Admin sửa giá 
 python -m scripts.seed_services
 ```
 
-### 2.7b. Nạp tri thức lâm sàng (OKF của Tuấn, thư mục `knowledge/`)
+### 2.7b. Nạp tri thức lâm sàng (OKF, thư mục `knowledge/`)
 
 ```powershell
 python -m scripts.import_okf --dry-run          # kiểm tra + xem thay đổi, không ghi
@@ -151,10 +151,14 @@ python -m scripts.import_okf --approve-as bs01  # máy dev: tạo bản phát h�
 - Chỉ mục mới hoặc có nội dung khác mới tạo phiên bản mới; chạy lại khi không có gì đổi thì báo "Không có thay đổi".
 - Bản sửa sau: đổi `label` trong `knowledge/_release.md` (vd `KB-2026.02`) rồi chạy lại. Nên đổi nhãn mỗi lần nạp nội dung mới,
   nếu không sẽ khó biết máy đang chạy bản nào.
-- Kho hiện tại: 199 bệnh, 97 triệu chứng, 12 luật (9 cờ đỏ, 3 sàn ưu tiên), 11 nguồn Bộ Y tế.
+- Kho hiện tại: 154 bệnh, 299 triệu chứng, 12 luật (9 cờ đỏ, 3 sàn ưu tiên), 11 nguồn Bộ Y tế.
 - Không có `--approve-as`: tạo bản **Draft** (thêm `--submit` để gửi duyệt) chờ bác sĩ duyệt qua API quản trị tri thức.
 - Người duyệt phải là Physician khác người soạn (mặc định người soạn là tài khoản `system`, đổi bằng `--as <admin>`).
 - `--retire-missing`: mục đang Active mà đã bị xóa khỏi thư mục sẽ bị tắt khi kích hoạt.
+- `symptoms/symptom_catalog.md` nhận thêm 3 trường tùy chọn cho mỗi triệu chứng: `short_name` (≤ 30 ký tự, tên hiện cho
+  lễ tân), `aliases` (cách nói thường ngày, tối đa 15 mục, dùng ở bước tìm ứng viên khi trích xuất) và `detection`
+  (`reported` bệnh nhân kể / `exam` dấu hiệu khi khám / `both`, mặc định `both`). Script báo lỗi khi hai triệu chứng
+  trùng từ đồng nghĩa, hoặc khi luật cờ đỏ / sàn ưu tiên dùng triệu chứng `exam` (lễ tân không nhập được lúc tiếp đón).
 
 ### 2.8. Chạy test (nên làm lần đầu để chắc môi trường đúng)
 
@@ -185,7 +189,7 @@ python -m app.worker
 
 - Máy **không có Ollama**: đặt trong `server/.env`
   - `LLM_PROVIDER=fake`: LLM giả lập tất định, chạy đủ luồng `Ready`/`Full` (lý do, chip triệu chứng gợi ý).
-    Chỉ dùng cho dev, CI, demo; `ENVIRONMENT=prod` sẽ từ chối khởi động. Nhật ký AI ghi `model_name = "fake"`.
+    Chỉ dùng cho dev, CI, kiểm thử; `ENVIRONMENT=prod` sẽ từ chối khởi động. Nhật ký AI ghi `model_name = "fake"`.
   - `LLM_PROVIDER=none`: không gọi LLM, kết quả chỉ còn xếp hạng tất định (`Degraded`, `RuleOnly`).
 - Có Ollama: `OLLAMA_BASE_URL`, `OLLAMA_MODEL` trong `server/.env` (chỉ nhận địa chỉ trong máy / mạng LAN).
 - Cờ đỏ KHÔNG phụ thuộc worker: được kiểm ngay lúc xếp hàng, worker tắt vẫn hiện cảnh báo.
@@ -302,6 +306,16 @@ chỉ để kiểm tra luồng chạy, không dùng số liệu của nó cho b�
 trích xuất trả rỗng và số ca vượt 30 s để so các cách trích xuất. Chỉnh thuật toán bằng bộ ca phát triển
 (`--extraction-cases`); bộ đóng băng chỉ dùng để chấm cuối.
 
+### Cụm lời kể không khớp triệu chứng (`scripts.export_unmapped`)
+
+Mỗi lượt trích xuất theo cụm lưu các cụm không khớp mã nào (đã che định danh) trong `validation_result`. Script gộp
+theo khoảng ngày, xuất CSV chỉ gồm `phrase, count` (không kèm lượt khám hay bệnh nhân) để soạn `aliases` cho
+`symptom_catalog.md`; mỗi lần xuất ghi một dòng audit `EXPORT`.
+
+```powershell
+python -m scripts.export_unmapped --since 2026-11-20 --until 2026-11-30 --min-count 2 --out ..\unmapped.csv
+```
+
 ### Dữ liệu cho môi trường kiểm thử (`scripts.seed_eval`)
 
 Nạp một lượt: tài khoản `admin`, `bs01`, `bs02`, `letan01` (mật khẩu chung lấy từ biến `EVAL_PASSWORD`, mặc định
@@ -354,9 +368,11 @@ python -m scripts.seed_services
 | `REFRESH_TOKEN_EXPIRE_HOURS` | | `8` | Hạn refresh token (một ca làm việc) |
 | `LOGIN_MAX_FAILURES_PER_USER` / `_PER_IP` | | `5` / `20` | Số lần sai trong 15 phút trước khi khóa 5 phút |
 | `TRUSTED_PROXIES` | | `[]` | IP proxy được tin `X-Forwarded-For` (Caddy trên máy admin) |
-| `LLM_PROVIDER` | | `ollama` | `fake` = LLM giả lập (dev, CI, demo; cấm ở prod), `none` = không gọi LLM |
+| `LLM_PROVIDER` | | `ollama` | `fake` = LLM giả lập (dev, CI, kiểm thử; cấm ở prod), `none` = không gọi LLM |
 | `OLLAMA_BASE_URL` / `OLLAMA_MODEL` | | `http://127.0.0.1:11434` / `hf.co/aisingapore/Gemma-SEA-LION-v3-9B-IT-GGUF:Q4_K_M` | LLM cục bộ cho worker (một model cho trích xuất và reasoning) |
 | `OLLAMA_KEEP_ALIVE` | | `5m` | Thời gian Ollama giữ model trong VRAM sau mỗi request; máy admin dùng `24h` |
+| `OLLAMA_EXTRACTION_MODEL` | | (trống) | Model riêng cho trích xuất triệu chứng (bản fine-tune); trống thì dùng `OLLAMA_MODEL`. Node 3 luôn dùng `OLLAMA_MODEL`. GPU 6 GB không giữ được hai model 9B: đổi qua lại giữa hai bước sẽ nạp lại model |
+| `OLLAMA_NUM_CTX` | | `0` | `num_ctx` gửi kèm mỗi request; `0` = không gửi, Ollama dùng `OLLAMA_CONTEXT_LENGTH` của máy chủ. `legacy` vẫn ép 8192 |
 | `AI_EXTRACTION_STRATEGY` | | `phrases` | Cách trích xuất triệu chứng: `phrases` (ứng viên theo từng cụm) hoặc `legacy` (gửi toàn catalog, vượt context với kho hiện tại) |
 | `AI_EXTRACTION_CANDIDATES_PER_PHRASE` | | `4` | Số ứng viên mỗi cụm khi dùng `phrases` (1–50) |
 | `AI_ASSESSMENT_TIMEOUT_SECONDS` | | `90` | Ngân sách một lần đánh giá, tính từ lúc xếp hàng |
@@ -364,7 +380,7 @@ python -m scripts.seed_services
 | `TEST_DATABASE_URL` / `TEST_MIGRATION_DATABASE_URL` | | tự suy ra | Ghi đè DB cho pytest (thường không cần) |
 
 `deploy/.env`: mật khẩu `postgres` và 3 vai trò; `MEDASSIST_CREATE_TEST_DB=1` (tạo `medassist_test`),
-`MEDASSIST_CREATE_EVAL_DB` (tạo `medassist_eval` cho đánh giá NCKH, Sprint 3). Chỉ có tác dụng **khi tạo volume lần đầu**.
+`MEDASSIST_CREATE_EVAL_DB` (tạo `medassist_eval` cho đánh giá NCKH). Chỉ có tác dụng **khi tạo volume lần đầu**.
 
 ---
 
@@ -378,15 +394,15 @@ Tiền tố `/api/v1`. Chi tiết tham số và schema: **Swagger `/docs`** (lu�
 | Tài khoản | `GET/POST admin/users`; `GET/PATCH admin/users/{id}`; `POST admin/users/{id}/reset-password`, `…/unlock` | Admin |
 | Phòng | `GET rooms` (`include_inactive`); `POST admin/rooms`; `PATCH admin/rooms/{id}` | Mọi vai trò xem; Admin sửa. Gán bác sĩ vào phòng bằng `room_id` của tài khoản |
 | Nhật ký | `GET admin/audit-logs`; `GET admin/audit-logs/export` (xlsx mặc định, csv) | Admin |
-| Báo cáo, nhật ký AI | `GET reports/summary` (`date_from`, `date_to`, mặc định hôm nay); `GET admin/ai-logs` (lọc ngày, `run_type`, `status`, `mode`; chỉ metadata) | Admin |
+| Báo cáo, nhật ký AI | `GET reports/summary` (`date_from`, `date_to`, mặc định hôm nay); `GET admin/ai-logs` (lọc ngày, `run_type`, `status`, `mode`; chỉ metadata, lượt trích xuất có `unmapped_count`) | Admin |
 | Cảnh báo cụm ca | `GET reports/clusters` (`date_to`, mặc định hôm nay): chẩn đoán đã xác nhận hoặc triệu chứng PRESENT có ≥ M bệnh nhân trong N ngày và gấp R lần trung bình 4 kỳ trước; ngưỡng ở khóa `alerts.cluster`; chỉ số đếm | Admin, Physician |
 | Tham số | `GET admin/settings`; `PUT admin/settings/{key}` | Admin |
 | Bệnh nhân | `GET/POST patients`; `GET patients/lookup` (mã, SĐT, CCCD, năm sinh); `GET/PATCH patients/{id}`; `GET patients/{id}/visits` | Nurse tạo/sửa; Physician, Nurse xem |
 | Hồ sơ khám (EMR) | `GET patients/{id}/history`; `GET visits/{id}/record` | Physician, Nurse |
 | Lượt khám | `POST visits`; `GET/PATCH visits/{id}`; `PATCH visits/{id}/check-in`, `/start-exam`, `/release`, `/cancel`; `GET queue`; `GET visits/stale`; `POST visits/stale/cancel` | Nurse; Physician (nhận khám, trả lại, hủy lượt của mình) |
 | Thuốc, kho | `GET/POST drugs`; `GET/PATCH drugs/{id}`; `GET inventory/stock`, `/alerts`, `/reconciliation`; `GET/POST inventory/batches`; `GET inventory/batches/{id}`; `POST …/top-up`, `…/adjustments`; `GET …/movements` | Admin, Nurse; Physician xem |
-| Triệu chứng (HITL) | `GET symptoms` (danh mục Active); `GET/PUT visits/{id}/symptoms` | Nurse, Physician (lượt khám còn mở) |
-| Đánh giá AI | `POST visits/{id}/assessment` (chạy luật ngay, xếp việc cho worker); `GET visits/{id}/assessment` (polling) | Nurse chạy; Physician, Nurse xem |
+| Triệu chứng (HITL) | `GET symptoms` (danh mục Active, kèm `short_name`, `aliases` (từ đồng nghĩa) và `detection`: `reported` bệnh nhân kể, `exam` khi khám, `both`); `GET/PUT visits/{id}/symptoms` | Nurse, Physician (lượt khám còn mở) |
+| Đánh giá AI | `POST visits/{id}/assessment` (chạy luật ngay, xếp việc cho worker); `GET visits/{id}/assessment` (polling; mỗi bệnh gợi ý có `in_focus_scope` theo khóa `ai.focus_scope`) | Nurse chạy; Physician chạy lại lượt mình đang khám; Physician, Nurse xem |
 | Trích xuất triệu chứng | `POST visits/{id}/symptom-extraction`; `GET …/symptom-extraction` (gợi ý, phải xác nhận qua `PUT …/symptoms`) | Nurse chạy; Physician, Nurse xem |
 | Chẩn đoán | `GET/POST visits/{id}/diagnoses`; `PATCH diagnoses/{id}`; `POST diagnoses/{id}/retract` | Physician đang khám; Nurse xem |
 | Đơn thuốc | `GET/PUT/DELETE visits/{id}/prescription`; `POST …/prescription/confirm`, `…/prescription/reopen`; `POST visits/{id}/complete-exam` | Physician đang khám; Nurse xem |
@@ -414,9 +430,9 @@ Quy ước chung: tiền trả về **dạng số** (VNĐ); mọi GET dữ liệ
 | `ModuleNotFoundError: No module named 'app'` / `'fastapi'` | Chưa `activate` venv hoặc không đứng trong `server/` | `.\venv\Scripts\activate` (ở gốc repo), `cd server` |
 | `ValidationError ... DATABASE_URL Field required` (khi chạy uvicorn/alembic) hoặc `Thiếu DATABASE_URL trong server/.env` (khi chạy pytest) | Chưa tạo `server/.env`, hoặc đang đứng sai thư mục | [Mục 2.2](#22-tạo-2-file-env-mật-khẩu-ngẫu-nhiên); chạy lệnh trong `server/` |
 | `API phải kết nối bằng medassist_app...` / `Migration phải chạy bằng medassist_owner` | Đổi nhầm vai trò trong `server/.env` | `DATABASE_URL` dùng `medassist_app`, `MIGRATION_DATABASE_URL` dùng `medassist_owner` |
-| `pip install` báo `No matching distribution` | Khác phiên bản Python | Dùng Python 3.14 như máy Sơn |
+| `pip install` báo `No matching distribution` | Khác phiên bản Python | Dùng Python 3.14 |
 | `pip install` lỗi đọc `requirements.txt` (ký tự lạ) | File bị ghi UTF-16 (PowerShell `>`) | Ghi lại: `python -m pip freeze \| Out-File -Encoding ascii requirements.txt`, rồi bỏ các gói đã có trong `requirements-dev.txt` (pytest, ruff...) |
-| `alembic check` báo có thay đổi | Sửa model mà chưa có revision | Báo Sơn — mọi thay đổi bảng đi qua migration |
+| `alembic check` báo có thay đổi | Sửa model mà chưa có revision | Báo người phụ trách backend — mọi thay đổi bảng đi qua migration |
 | Đăng nhập trả `429` `RATE_LIMITED` | Sai mật khẩu 5 lần trong 15 phút | Đợi 5 phút, hoặc Admin `unlock` / `reset-password` |
 | API trả `403` `PASSWORD_CHANGE_REQUIRED` | Tài khoản do Admin tạo hoặc vừa đặt lại mật khẩu | Đổi mật khẩu (`auth/change-password`) rồi đăng nhập lại |
 | API trả `401` sau một lúc | Access token hết hạn (15 phút) | Đăng nhập lại / `auth/refresh` |
@@ -449,7 +465,7 @@ server/
 ├── alembic/           # migration 0001–0006 (alembic.ini ở server/)
 ├── db/                # initdb (vai trò, múi giờ, medassist_test), lược đồ v1.8, tài khoản system
 ├── data/              # drugs.csv, services.csv, hospitals.csv, eval_cases.jsonl + README
-├── scripts/           # create_user, seed_drugs, seed_services, seed_referral_facilities, import_okf, seed_eval
+├── scripts/           # create_user, seed_drugs, seed_services, seed_referral_facilities, import_okf, seed_eval, run_eval, export_unmapped
 ├── tests/             # api/, unit/ (kể cả unit/ai/) — chạy trên medassist_test
 ├── Dockerfile         # image dùng chung cho api, worker, migrate trên máy admin
 ├── .env.example

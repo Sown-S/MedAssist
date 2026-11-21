@@ -1,0 +1,1520 @@
+{
+  "meta": {
+    "run_at": "2026-11-11 21:52",
+    "testset": "testset-v1.3-frozen",
+    "testset_sha256": "4e7b58cffc3cd950e1411a131919e36976ea94f209c426821886b03708cd368d",
+    "knowledge_release": "KB-2026.11",
+    "llm_provider": "none",
+    "model": null,
+    "reasoning_prompt": "reasoning-v3",
+    "server_version": "0.2.4"
+  },
+  "warnings": [],
+  "clinical": {
+    "RuleOnly": {
+      "cases": 82,
+      "red_flag": {
+        "cases": 48,
+        "enough_cases": true,
+        "recall": 1.0,
+        "meets_target": true,
+        "missed": [],
+        "false_alarms": 0
+      },
+      "priority": {
+        "accuracy": 1.0,
+        "under_triage": [],
+        "confusion": {
+          "Emergency->Emergency": 48,
+          "HighPriority->HighPriority": 3,
+          "Routine->Routine": 31
+        }
+      },
+      "rules": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tp": 73,
+        "fp": 0,
+        "fn": 0
+      },
+      "differential": {
+        "cases": 18,
+        "top1_accuracy": 0.8333333333333334,
+        "top3_accuracy": 0.9444444444444444,
+        "macro_precision": 0.5,
+        "macro_recall": 0.8981481481481481,
+        "macro_f1": 0.6203703703703703
+      },
+      "latency": {
+        "mean_ms": 7.36219512195122,
+        "p50_ms": 0.4,
+        "p95_ms": 17.2,
+        "max_ms": 56.7
+      }
+    }
+  },
+  "extraction": null,
+  "clinical_cases": {
+    "RuleOnly": [
+      {
+        "case_id": "CLIN-001",
+        "disease_group": "infectious",
+        "expected_priority": "HighPriority",
+        "predicted_priority": "HighPriority",
+        "expected_rules": [
+          "pf_severe_dehydration_high_fever",
+          "pf_sot_cao"
+        ],
+        "predicted_rules": [
+          "pf_severe_dehydration_high_fever",
+          "pf_sot_cao"
+        ],
+        "expected_top": [
+          "cum_mua",
+          "soi"
+        ],
+        "predicted_top": [
+          "cum_mua",
+          "viem_hong_cap_tinh",
+          "soi"
+        ],
+        "ai_status": "Degraded",
+        "mode": "RuleOnly",
+        "latency_ms": 17.8
+      },
+      {
+        "case_id": "CLIN-002",
+        "disease_group": "infectious",
+        "expected_priority": "HighPriority",
+        "predicted_priority": "HighPriority",
+        "expected_rules": [
+          "pf_severe_dehydration_high_fever",
+          "pf_sot_cao"
+        ],
+        "predicted_rules": [
+          "pf_severe_dehydration_high_fever",
+          "pf_sot_cao"
+        ],
+        "expected_top": [
+          "soi",
+          "cum_mua"
+        ],
+        "predicted_top": [
+          "soi",
+          "cum_mua",
+          "viem_mui_xoang_di_ung"
+        ],
+        "ai_status": "Degraded",
+        "mode": "RuleOnly",
+        "latency_ms": 17.6
+      },
+      {
+        "case_id": "CLIN-003",
+        "disease_group": "infectious",
+        "expected_priority": "Routine",
+        "predicted_priority": "Routine",
+        "expected_rules": [],
+        "predicted_rules": [],
+        "expected_top": [
+          "tay_chan_mieng"
+        ],
+        "predicted_top": [
+          "benh_viem_da_dang_herpes_cua_duhring_brocq",
+          "tay_chan_mieng",
+          "hong_thanh_quan_viem_mui_hong_cap_tinh"
+        ],
+        "ai_status": "Degraded",
+        "mode": "RuleOnly",
+        "latency_ms": 16.4
+      },
+      {
+        "case_id": "CLIN-004",
+        "disease_group": "infectious",
+        "expected_priority": "HighPriority",
+        "predicted_priority": "HighPriority",
+        "expected_rules": [
+          "pf_severe_dehydration_high_fever",
+          "pf_sot_cao"
+        ],
+        "predicted_rules": [
+          "pf_severe_dehydration_high_fever",
+          "pf_sot_cao"
+        ],
+        "expected_top": [
+          "sot_ret"
+        ],
+        "predicted_top": [
+          "benh_sot_ret_khang_thuoc",
+          "sot_ret",
+          "viem_hong_cap_tinh"
+        ],
+        "ai_status": "Degraded",
+        "mode": "RuleOnly",
+        "latency_ms": 16.7
+      },
+      {
+        "case_id": "CLIN-005",
+        "disease_group": "respiratory",
+        "expected_priority": "Routine",
+        "predicted_priority": "Routine",
+        "expected_rules": [],
+        "predicted_rules": [],
+        "expected_top": [
+          "phoi_tac_nghen_man_tinh",
+          "hen_phe_quan"
+        ],
+        "predicted_top": [
+          "phoi_tac_nghen_man_tinh",
+          "hen_phe_quan",
+          "viem_thanh_quan_cap_tinh"
+        ],
+        "ai_status": "Degraded",
+        "mode": "RuleOnly",
+        "latency_ms": 15.3
+      },
+      {
+        "case_id": "CLIN-006",
+        "disease_group": "respiratory",
+        "expected_priority": "Routine",
+        "predicted_priority": "Routine",
+        "expected_rules": [],
+        "predicted_rules": [],
+        "expected_top": [
+          "hen_phe_quan",
+          "phoi_tac_nghen_man_tinh"
+        ],
+        "predicted_top": [
+          "hen_phe_quan",
+          "cum_mua",
+          "phoi_tac_nghen_man_tinh"
+        ],
+        "ai_status": "Degraded",
+        "mode": "RuleOnly",
+        "latency_ms": 15.9
+      },
+      {
+        "case_id": "CLIN-007",
+        "disease_group": "respiratory",
+        "expected_priority": "Emergency",
+        "predicted_priority": "Emergency",
+        "expected_rules": [
+          "pf_sot_cao",
+          "rf_respiratory_failure"
+        ],
+        "predicted_rules": [
+          "pf_sot_cao",
+          "rf_respiratory_failure"
+        ],
+        "expected_top": [],
+        "predicted_top": [],
+        "ai_status": "Skipped",
+        "mode": "RuleOnly",
+        "latency_ms": 0.4
+      },
+      {
+        "case_id": "CLIN-008",
+        "disease_group": "musculoskeletal",
+        "expected_priority": "Routine",
+        "predicted_priority": "Routine",
+        "expected_rules": [],
+        "predicted_rules": [],
+        "expected_top": [
+          "benh_viem_khop_dang_thap"
+        ],
+        "predicted_top": [
+          "benh_viem_khop_dang_thap",
+          "benh_viem_khop_thieu_nien_tu_phat_the_viem_cot_song_dinh",
+          "benh_apthose"
+        ],
+        "ai_status": "Degraded",
+        "mode": "RuleOnly",
+        "latency_ms": 16.4
+      },
+      {
+        "case_id": "CLIN-009",
+        "disease_group": "musculoskeletal",
+        "expected_priority": "Routine",
+        "predicted_priority": "Routine",
+        "expected_rules": [],
+        "predicted_rules": [],
+        "expected_top": [
+          "benh_lupus_ban_do_he_thong"
+        ],
+        "predicted_top": [
+          "benh_lupus_ban_do_he_thong",
+          "benh_apthose",
+          "benh_sot_mo"
+        ],
+        "ai_status": "Degraded",
+        "mode": "RuleOnly",
+        "latency_ms": 16.2
+      },
+      {
+        "case_id": "CLIN-010",
+        "disease_group": "musculoskeletal",
+        "expected_priority": "Routine",
+        "predicted_priority": "Routine",
+        "expected_rules": [],
+        "predicted_rules": [],
+        "expected_top": [
+          "benh_gut"
+        ],
+        "predicted_top": [
+          "benh_gut",
+          "benh_viem_mang_hoat_dich_khop_goi_man_tinh_khong_dac_hieu",
+          "benh_loang_xuong"
+        ],
+        "ai_status": "Degraded",
+        "mode": "RuleOnly",
+        "latency_ms": 16.0
+      },
+      {
+        "case_id": "CLIN-011",
+        "disease_group": "musculoskeletal",
+        "expected_priority": "Routine",
+        "predicted_priority": "Routine",
+        "expected_rules": [],
+        "predicted_rules": [],
+        "expected_top": [
+          "viem_cot_song_dinh_khop",
+          "benh_viem_khop_phan_ung"
+        ],
+        "predicted_top": [
+          "viem_cot_song_dinh_khop",
+          "benh_viem_khop_thieu_nien_tu_phat_the_viem_cot_song_dinh",
+          "benh_viem_khop_vay_nen"
+        ],
+        "ai_status": "Degraded",
+        "mode": "RuleOnly",
+        "latency_ms": 16.3
+      },
+      {
+        "case_id": "CLIN-013",
+        "disease_group": "musculoskeletal",
+        "expected_priority": "Routine",
+        "predicted_priority": "Routine",
+        "expected_rules": [],
+        "predicted_rules": [],
+        "expected_top": [
+          "dau_than_kinh_toa",
+          "hoi_chung_dau_that_lung",
+          "benh_thoai_hoa_cot_song_that_lung"
+        ],
+        "predicted_top": [
+          "dau_than_kinh_toa",
+          "benh_thoai_hoa_cot_song_that_lung",
+          "hoi_chung_dau_that_lung"
+        ],
+        "ai_status": "Degraded",
+        "mode": "RuleOnly",
+        "latency_ms": 15.0
+      },
+      {
+        "case_id": "CLIN-014",
+        "disease_group": "musculoskeletal",
+        "expected_priority": "Routine",
+        "predicted_priority": "Routine",
+        "expected_rules": [],
+        "predicted_rules": [],
+        "expected_top": [
+          "hoi_chung_co_vai_canh_tay",
+          "benh_thoai_hoa_cot_song_co"
+        ],
+        "predicted_top": [
+          "benh_thoai_hoa_cot_song_co",
+          "hoi_chung_co_vai_canh_tay",
+          "hoi_chung_dau_nhuc_so_mat"
+        ],
+        "ai_status": "Degraded",
+        "mode": "RuleOnly",
+        "latency_ms": 16.0
+      },
+      {
+        "case_id": "CLIN-015",
+        "disease_group": "musculoskeletal",
+        "expected_priority": "Emergency",
+        "predicted_priority": "Emergency",
+        "expected_rules": [
+          "pf_severe_dehydration_high_fever",
+          "pf_sot_cao",
+          "rf_septic_arthritis_suspected"
+        ],
+        "predicted_rules": [
+          "pf_severe_dehydration_high_fever",
+          "pf_sot_cao",
+          "rf_septic_arthritis_suspected"
+        ],
+        "expected_top": [],
+        "predicted_top": [],
+        "ai_status": "Skipped",
+        "mode": "RuleOnly",
+        "latency_ms": 0.5
+      },
+      {
+        "case_id": "CLIN-017",
+        "disease_group": "ent",
+        "expected_priority": "Routine",
+        "predicted_priority": "Routine",
+        "expected_rules": [],
+        "predicted_rules": [],
+        "expected_top": [
+          "viem_tai_giua_man_tinh_co_cholesteatoma",
+          "viem_tai_giua_man_tinh"
+        ],
+        "predicted_top": [
+          "viem_tai_giua_man_tinh",
+          "viem_tai_giua_man_tre_em",
+          "viem_tai_giua_man_tinh_co_cholesteatoma"
+        ],
+        "ai_status": "Degraded",
+        "mode": "RuleOnly",
+        "latency_ms": 15.1
+      },
+      {
+        "case_id": "CLIN-018",
+        "disease_group": "ent",
+        "expected_priority": "Routine",
+        "predicted_priority": "Routine",
+        "expected_rules": [],
+        "predicted_rules": [],
+        "expected_top": [
+          "viem_mui_xoang_di_ung"
+        ],
+        "predicted_top": [
+          "viem_mui_xoang_di_ung",
+          "papilloma_u_nhu_mui_xoang",
+          "viem_mui_xoang_do_nam"
+        ],
+        "ai_status": "Degraded",
+        "mode": "RuleOnly",
+        "latency_ms": 14.9
+      },
+      {
+        "case_id": "CLIN-019",
+        "disease_group": "dermatology",
+        "expected_priority": "Routine",
+        "predicted_priority": "Routine",
+        "expected_rules": [],
+        "predicted_rules": [],
+        "expected_top": [
+          "benh_ghe",
+          "viem_da_co_dia"
+        ],
+        "predicted_top": [
+          "viem_am_ho_am_dao_do_nam_candida",
+          "benh_lichen_phang",
+          "benh_choc"
+        ],
+        "ai_status": "Degraded",
+        "mode": "RuleOnly",
+        "latency_ms": 16.0
+      },
+      {
+        "case_id": "CLIN-020",
+        "disease_group": "dermatology",
+        "expected_priority": "Routine",
+        "predicted_priority": "Routine",
+        "expected_rules": [],
+        "predicted_rules": [],
+        "expected_top": [
+          "benh_zona"
+        ],
+        "predicted_top": [
+          "benh_zona",
+          "benh_lichen_phang",
+          "benh_thuy_dau"
+        ],
+        "ai_status": "Degraded",
+        "mode": "RuleOnly",
+        "latency_ms": 16.6
+      },
+      {
+        "case_id": "CLIN-021",
+        "disease_group": "ophthalmology",
+        "expected_priority": "Routine",
+        "predicted_priority": "Routine",
+        "expected_rules": [],
+        "predicted_rules": [],
+        "expected_top": [
+          "glocom_goc_dong_nguyen_phat",
+          "glocom_goc_mo_nguyen_phat"
+        ],
+        "predicted_top": [
+          "glocom_goc_dong_nguyen_phat",
+          "glocom_goc_mo_nguyen_phat",
+          "kho_mat_do_thieu_vitamin_a"
+        ],
+        "ai_status": "Degraded",
+        "mode": "RuleOnly",
+        "latency_ms": 16.7
+      },
+      {
+        "case_id": "CLIN-022",
+        "disease_group": "ophthalmology",
+        "expected_priority": "Routine",
+        "predicted_priority": "Routine",
+        "expected_rules": [],
+        "predicted_rules": [],
+        "expected_top": [
+          "viem_loet_giac_mac_do_vi_khuan",
+          "viem_loet_giac_mac_do_nam",
+          "viem_giac_mac_do_herpes"
+        ],
+        "predicted_top": [
+          "viem_loet_giac_mac_do_nam",
+          "viem_loet_giac_mac_do_vi_khuan",
+          "viem_ket_giac_mac_mua_xuan"
+        ],
+        "ai_status": "Degraded",
+        "mode": "RuleOnly",
+        "latency_ms": 15.6
+      },
+      {
+        "case_id": "CLIN-023",
+        "disease_group": "respiratory",
+        "expected_priority": "Emergency",
+        "predicted_priority": "Emergency",
+        "expected_rules": [
+          "rf_acute_chest_pain"
+        ],
+        "predicted_rules": [
+          "rf_acute_chest_pain"
+        ],
+        "expected_top": [],
+        "predicted_top": [],
+        "ai_status": "Skipped",
+        "mode": "RuleOnly",
+        "latency_ms": 0.4
+      },
+      {
+        "case_id": "CLIN-024",
+        "disease_group": "respiratory",
+        "expected_priority": "Emergency",
+        "predicted_priority": "Emergency",
+        "expected_rules": [
+          "rf_acute_chest_pain"
+        ],
+        "predicted_rules": [
+          "rf_acute_chest_pain"
+        ],
+        "expected_top": [],
+        "predicted_top": [],
+        "ai_status": "Skipped",
+        "mode": "RuleOnly",
+        "latency_ms": 0.4
+      },
+      {
+        "case_id": "CLIN-025",
+        "disease_group": "respiratory",
+        "expected_priority": "Emergency",
+        "predicted_priority": "Emergency",
+        "expected_rules": [
+          "rf_acute_chest_pain"
+        ],
+        "predicted_rules": [
+          "rf_acute_chest_pain"
+        ],
+        "expected_top": [],
+        "predicted_top": [],
+        "ai_status": "Skipped",
+        "mode": "RuleOnly",
+        "latency_ms": 0.4
+      },
+      {
+        "case_id": "CLIN-026",
+        "disease_group": "respiratory",
+        "expected_priority": "Emergency",
+        "predicted_priority": "Emergency",
+        "expected_rules": [
+          "rf_acute_chest_pain"
+        ],
+        "predicted_rules": [
+          "rf_acute_chest_pain"
+        ],
+        "expected_top": [],
+        "predicted_top": [],
+        "ai_status": "Skipped",
+        "mode": "RuleOnly",
+        "latency_ms": 0.5
+      },
+      {
+        "case_id": "CLIN-027",
+        "disease_group": "infectious",
+        "expected_priority": "Emergency",
+        "predicted_priority": "Emergency",
+        "expected_rules": [
+          "rf_altered_consciousness"
+        ],
+        "predicted_rules": [
+          "rf_altered_consciousness"
+        ],
+        "expected_top": [],
+        "predicted_top": [],
+        "ai_status": "Skipped",
+        "mode": "RuleOnly",
+        "latency_ms": 0.4
+      },
+      {
+        "case_id": "CLIN-028",
+        "disease_group": "infectious",
+        "expected_priority": "Emergency",
+        "predicted_priority": "Emergency",
+        "expected_rules": [
+          "rf_altered_consciousness"
+        ],
+        "predicted_rules": [
+          "rf_altered_consciousness"
+        ],
+        "expected_top": [],
+        "predicted_top": [],
+        "ai_status": "Skipped",
+        "mode": "RuleOnly",
+        "latency_ms": 0.4
+      },
+      {
+        "case_id": "CLIN-029",
+        "disease_group": "infectious",
+        "expected_priority": "Emergency",
+        "predicted_priority": "Emergency",
+        "expected_rules": [
+          "rf_altered_consciousness"
+        ],
+        "predicted_rules": [
+          "rf_altered_consciousness"
+        ],
+        "expected_top": [],
+        "predicted_top": [],
+        "ai_status": "Skipped",
+        "mode": "RuleOnly",
+        "latency_ms": 0.4
+      },
+      {
+        "case_id": "CLIN-030",
+        "disease_group": "infectious",
+        "expected_priority": "Emergency",
+        "predicted_priority": "Emergency",
+        "expected_rules": [
+          "rf_altered_consciousness"
+        ],
+        "predicted_rules": [
+          "rf_altered_consciousness"
+        ],
+        "expected_top": [],
+        "predicted_top": [],
+        "ai_status": "Skipped",
+        "mode": "RuleOnly",
+        "latency_ms": 0.4
+      },
+      {
+        "case_id": "CLIN-031",
+        "disease_group": "musculoskeletal",
+        "expected_priority": "Emergency",
+        "predicted_priority": "Emergency",
+        "expected_rules": [
+          "rf_cauda_equina_cord_compression"
+        ],
+        "predicted_rules": [
+          "rf_cauda_equina_cord_compression"
+        ],
+        "expected_top": [],
+        "predicted_top": [],
+        "ai_status": "Skipped",
+        "mode": "RuleOnly",
+        "latency_ms": 0.4
+      },
+      {
+        "case_id": "CLIN-032",
+        "disease_group": "musculoskeletal",
+        "expected_priority": "Emergency",
+        "predicted_priority": "Emergency",
+        "expected_rules": [
+          "rf_cauda_equina_cord_compression"
+        ],
+        "predicted_rules": [
+          "rf_cauda_equina_cord_compression"
+        ],
+        "expected_top": [],
+        "predicted_top": [],
+        "ai_status": "Skipped",
+        "mode": "RuleOnly",
+        "latency_ms": 0.4
+      },
+      {
+        "case_id": "CLIN-033",
+        "disease_group": "musculoskeletal",
+        "expected_priority": "Emergency",
+        "predicted_priority": "Emergency",
+        "expected_rules": [
+          "rf_cauda_equina_cord_compression"
+        ],
+        "predicted_rules": [
+          "rf_cauda_equina_cord_compression"
+        ],
+        "expected_top": [],
+        "predicted_top": [],
+        "ai_status": "Skipped",
+        "mode": "RuleOnly",
+        "latency_ms": 0.4
+      },
+      {
+        "case_id": "CLIN-034",
+        "disease_group": "musculoskeletal",
+        "expected_priority": "Emergency",
+        "predicted_priority": "Emergency",
+        "expected_rules": [
+          "rf_cauda_equina_cord_compression"
+        ],
+        "predicted_rules": [
+          "rf_cauda_equina_cord_compression"
+        ],
+        "expected_top": [],
+        "predicted_top": [],
+        "ai_status": "Skipped",
+        "mode": "RuleOnly",
+        "latency_ms": 0.4
+      },
+      {
+        "case_id": "CLIN-035",
+        "disease_group": "musculoskeletal",
+        "expected_priority": "Emergency",
+        "predicted_priority": "Emergency",
+        "expected_rules": [
+          "rf_progressive_paralysis"
+        ],
+        "predicted_rules": [
+          "rf_progressive_paralysis"
+        ],
+        "expected_top": [],
+        "predicted_top": [],
+        "ai_status": "Skipped",
+        "mode": "RuleOnly",
+        "latency_ms": 0.5
+      },
+      {
+        "case_id": "CLIN-036",
+        "disease_group": "musculoskeletal",
+        "expected_priority": "Emergency",
+        "predicted_priority": "Emergency",
+        "expected_rules": [
+          "rf_progressive_paralysis"
+        ],
+        "predicted_rules": [
+          "rf_progressive_paralysis"
+        ],
+        "expected_top": [],
+        "predicted_top": [],
+        "ai_status": "Skipped",
+        "mode": "RuleOnly",
+        "latency_ms": 0.4
+      },
+      {
+        "case_id": "CLIN-037",
+        "disease_group": "musculoskeletal",
+        "expected_priority": "Emergency",
+        "predicted_priority": "Emergency",
+        "expected_rules": [
+          "rf_progressive_paralysis"
+        ],
+        "predicted_rules": [
+          "rf_progressive_paralysis"
+        ],
+        "expected_top": [],
+        "predicted_top": [],
+        "ai_status": "Skipped",
+        "mode": "RuleOnly",
+        "latency_ms": 0.4
+      },
+      {
+        "case_id": "CLIN-038",
+        "disease_group": "musculoskeletal",
+        "expected_priority": "Emergency",
+        "predicted_priority": "Emergency",
+        "expected_rules": [
+          "rf_progressive_paralysis"
+        ],
+        "predicted_rules": [
+          "rf_progressive_paralysis"
+        ],
+        "expected_top": [],
+        "predicted_top": [],
+        "ai_status": "Skipped",
+        "mode": "RuleOnly",
+        "latency_ms": 0.5
+      },
+      {
+        "case_id": "CLIN-039",
+        "disease_group": "infectious",
+        "expected_priority": "Emergency",
+        "predicted_priority": "Emergency",
+        "expected_rules": [
+          "pf_severe_dehydration_high_fever",
+          "pf_sot_cao",
+          "rf_seizures"
+        ],
+        "predicted_rules": [
+          "pf_severe_dehydration_high_fever",
+          "pf_sot_cao",
+          "rf_seizures"
+        ],
+        "expected_top": [],
+        "predicted_top": [],
+        "ai_status": "Skipped",
+        "mode": "RuleOnly",
+        "latency_ms": 0.4
+      },
+      {
+        "case_id": "CLIN-040",
+        "disease_group": "infectious",
+        "expected_priority": "Emergency",
+        "predicted_priority": "Emergency",
+        "expected_rules": [
+          "pf_severe_dehydration_high_fever",
+          "pf_sot_cao",
+          "rf_seizures"
+        ],
+        "predicted_rules": [
+          "pf_severe_dehydration_high_fever",
+          "pf_sot_cao",
+          "rf_seizures"
+        ],
+        "expected_top": [],
+        "predicted_top": [],
+        "ai_status": "Skipped",
+        "mode": "RuleOnly",
+        "latency_ms": 0.4
+      },
+      {
+        "case_id": "CLIN-041",
+        "disease_group": "infectious",
+        "expected_priority": "Emergency",
+        "predicted_priority": "Emergency",
+        "expected_rules": [
+          "pf_severe_dehydration_high_fever",
+          "pf_sot_cao",
+          "rf_seizures"
+        ],
+        "predicted_rules": [
+          "pf_severe_dehydration_high_fever",
+          "pf_sot_cao",
+          "rf_seizures"
+        ],
+        "expected_top": [],
+        "predicted_top": [],
+        "ai_status": "Skipped",
+        "mode": "RuleOnly",
+        "latency_ms": 0.4
+      },
+      {
+        "case_id": "CLIN-042",
+        "disease_group": "infectious",
+        "expected_priority": "Emergency",
+        "predicted_priority": "Emergency",
+        "expected_rules": [
+          "pf_severe_dehydration_high_fever",
+          "pf_sot_cao",
+          "rf_seizures"
+        ],
+        "predicted_rules": [
+          "pf_severe_dehydration_high_fever",
+          "pf_sot_cao",
+          "rf_seizures"
+        ],
+        "expected_top": [],
+        "predicted_top": [],
+        "ai_status": "Skipped",
+        "mode": "RuleOnly",
+        "latency_ms": 0.4
+      },
+      {
+        "case_id": "CLIN-043",
+        "disease_group": "musculoskeletal",
+        "expected_priority": "Emergency",
+        "predicted_priority": "Emergency",
+        "expected_rules": [
+          "pf_severe_dehydration_high_fever",
+          "pf_sot_cao",
+          "rf_septic_arthritis_suspected"
+        ],
+        "predicted_rules": [
+          "pf_severe_dehydration_high_fever",
+          "pf_sot_cao",
+          "rf_septic_arthritis_suspected"
+        ],
+        "expected_top": [],
+        "predicted_top": [],
+        "ai_status": "Skipped",
+        "mode": "RuleOnly",
+        "latency_ms": 0.4
+      },
+      {
+        "case_id": "CLIN-044",
+        "disease_group": "musculoskeletal",
+        "expected_priority": "Emergency",
+        "predicted_priority": "Emergency",
+        "expected_rules": [
+          "pf_severe_dehydration_high_fever",
+          "pf_sot_cao",
+          "rf_septic_arthritis_suspected"
+        ],
+        "predicted_rules": [
+          "pf_severe_dehydration_high_fever",
+          "pf_sot_cao",
+          "rf_septic_arthritis_suspected"
+        ],
+        "expected_top": [],
+        "predicted_top": [],
+        "ai_status": "Skipped",
+        "mode": "RuleOnly",
+        "latency_ms": 0.4
+      },
+      {
+        "case_id": "CLIN-045",
+        "disease_group": "musculoskeletal",
+        "expected_priority": "Emergency",
+        "predicted_priority": "Emergency",
+        "expected_rules": [
+          "pf_severe_dehydration_high_fever",
+          "pf_sot_cao",
+          "rf_septic_arthritis_suspected"
+        ],
+        "predicted_rules": [
+          "pf_severe_dehydration_high_fever",
+          "pf_sot_cao",
+          "rf_septic_arthritis_suspected"
+        ],
+        "expected_top": [],
+        "predicted_top": [],
+        "ai_status": "Skipped",
+        "mode": "RuleOnly",
+        "latency_ms": 0.4
+      },
+      {
+        "case_id": "CLIN-046",
+        "disease_group": "musculoskeletal",
+        "expected_priority": "Emergency",
+        "predicted_priority": "Emergency",
+        "expected_rules": [
+          "pf_severe_dehydration_high_fever",
+          "pf_sot_cao",
+          "rf_septic_arthritis_suspected"
+        ],
+        "predicted_rules": [
+          "pf_severe_dehydration_high_fever",
+          "pf_sot_cao",
+          "rf_septic_arthritis_suspected"
+        ],
+        "expected_top": [],
+        "predicted_top": [],
+        "ai_status": "Skipped",
+        "mode": "RuleOnly",
+        "latency_ms": 0.4
+      },
+      {
+        "case_id": "CLIN-047",
+        "disease_group": "ent",
+        "expected_priority": "Emergency",
+        "predicted_priority": "Emergency",
+        "expected_rules": [
+          "rf_out_of_scope"
+        ],
+        "predicted_rules": [
+          "rf_out_of_scope"
+        ],
+        "expected_top": [],
+        "predicted_top": [],
+        "ai_status": "Skipped",
+        "mode": "RuleOnly",
+        "latency_ms": 0.4
+      },
+      {
+        "case_id": "CLIN-048",
+        "disease_group": "ophthalmology",
+        "expected_priority": "Emergency",
+        "predicted_priority": "Emergency",
+        "expected_rules": [
+          "rf_out_of_scope"
+        ],
+        "predicted_rules": [
+          "rf_out_of_scope"
+        ],
+        "expected_top": [],
+        "predicted_top": [],
+        "ai_status": "Skipped",
+        "mode": "RuleOnly",
+        "latency_ms": 0.4
+      },
+      {
+        "case_id": "CLIN-049",
+        "disease_group": "ophthalmology",
+        "expected_priority": "Emergency",
+        "predicted_priority": "Emergency",
+        "expected_rules": [
+          "rf_out_of_scope"
+        ],
+        "predicted_rules": [
+          "rf_out_of_scope"
+        ],
+        "expected_top": [],
+        "predicted_top": [],
+        "ai_status": "Skipped",
+        "mode": "RuleOnly",
+        "latency_ms": 0.4
+      },
+      {
+        "case_id": "CLIN-050",
+        "disease_group": "ophthalmology",
+        "expected_priority": "Emergency",
+        "predicted_priority": "Emergency",
+        "expected_rules": [
+          "rf_out_of_scope"
+        ],
+        "predicted_rules": [
+          "rf_out_of_scope"
+        ],
+        "expected_top": [],
+        "predicted_top": [],
+        "ai_status": "Skipped",
+        "mode": "RuleOnly",
+        "latency_ms": 0.4
+      },
+      {
+        "case_id": "CLIN-051",
+        "disease_group": "respiratory",
+        "expected_priority": "Emergency",
+        "predicted_priority": "Emergency",
+        "expected_rules": [
+          "rf_respiratory_failure"
+        ],
+        "predicted_rules": [
+          "rf_respiratory_failure"
+        ],
+        "expected_top": [],
+        "predicted_top": [],
+        "ai_status": "Skipped",
+        "mode": "RuleOnly",
+        "latency_ms": 0.4
+      },
+      {
+        "case_id": "CLIN-052",
+        "disease_group": "respiratory",
+        "expected_priority": "Emergency",
+        "predicted_priority": "Emergency",
+        "expected_rules": [
+          "rf_respiratory_failure"
+        ],
+        "predicted_rules": [
+          "rf_respiratory_failure"
+        ],
+        "expected_top": [],
+        "predicted_top": [],
+        "ai_status": "Skipped",
+        "mode": "RuleOnly",
+        "latency_ms": 0.4
+      },
+      {
+        "case_id": "CLIN-053",
+        "disease_group": "respiratory",
+        "expected_priority": "Emergency",
+        "predicted_priority": "Emergency",
+        "expected_rules": [
+          "rf_respiratory_failure"
+        ],
+        "predicted_rules": [
+          "rf_respiratory_failure"
+        ],
+        "expected_top": [],
+        "predicted_top": [],
+        "ai_status": "Skipped",
+        "mode": "RuleOnly",
+        "latency_ms": 0.4
+      },
+      {
+        "case_id": "CLIN-054",
+        "disease_group": "respiratory",
+        "expected_priority": "Emergency",
+        "predicted_priority": "Emergency",
+        "expected_rules": [
+          "rf_respiratory_failure"
+        ],
+        "predicted_rules": [
+          "rf_respiratory_failure"
+        ],
+        "expected_top": [],
+        "predicted_top": [],
+        "ai_status": "Skipped",
+        "mode": "RuleOnly",
+        "latency_ms": 0.4
+      },
+      {
+        "case_id": "CLIN-055",
+        "disease_group": "infectious",
+        "expected_priority": "Emergency",
+        "predicted_priority": "Emergency",
+        "expected_rules": [
+          "rf_shock_circulatory_failure"
+        ],
+        "predicted_rules": [
+          "rf_shock_circulatory_failure"
+        ],
+        "expected_top": [],
+        "predicted_top": [],
+        "ai_status": "Skipped",
+        "mode": "RuleOnly",
+        "latency_ms": 0.4
+      },
+      {
+        "case_id": "CLIN-056",
+        "disease_group": "infectious",
+        "expected_priority": "Emergency",
+        "predicted_priority": "Emergency",
+        "expected_rules": [
+          "rf_shock_circulatory_failure"
+        ],
+        "predicted_rules": [
+          "rf_shock_circulatory_failure"
+        ],
+        "expected_top": [],
+        "predicted_top": [],
+        "ai_status": "Skipped",
+        "mode": "RuleOnly",
+        "latency_ms": 0.4
+      },
+      {
+        "case_id": "CLIN-057",
+        "disease_group": "infectious",
+        "expected_priority": "Emergency",
+        "predicted_priority": "Emergency",
+        "expected_rules": [
+          "rf_shock_circulatory_failure"
+        ],
+        "predicted_rules": [
+          "rf_shock_circulatory_failure"
+        ],
+        "expected_top": [],
+        "predicted_top": [],
+        "ai_status": "Skipped",
+        "mode": "RuleOnly",
+        "latency_ms": 0.4
+      },
+      {
+        "case_id": "CLIN-058",
+        "disease_group": "infectious",
+        "expected_priority": "Emergency",
+        "predicted_priority": "Emergency",
+        "expected_rules": [
+          "rf_shock_circulatory_failure"
+        ],
+        "predicted_rules": [
+          "rf_shock_circulatory_failure"
+        ],
+        "expected_top": [],
+        "predicted_top": [],
+        "ai_status": "Skipped",
+        "mode": "RuleOnly",
+        "latency_ms": 0.4
+      },
+      {
+        "case_id": "CLIN-059",
+        "disease_group": "respiratory",
+        "expected_priority": "Emergency",
+        "predicted_priority": "Emergency",
+        "expected_rules": [
+          "rf_respiratory_failure"
+        ],
+        "predicted_rules": [
+          "rf_respiratory_failure"
+        ],
+        "expected_top": [],
+        "predicted_top": [],
+        "ai_status": "Skipped",
+        "mode": "RuleOnly",
+        "latency_ms": 0.4
+      },
+      {
+        "case_id": "CLIN-060",
+        "disease_group": "respiratory",
+        "expected_priority": "Emergency",
+        "predicted_priority": "Emergency",
+        "expected_rules": [
+          "rf_respiratory_failure"
+        ],
+        "predicted_rules": [
+          "rf_respiratory_failure"
+        ],
+        "expected_top": [],
+        "predicted_top": [],
+        "ai_status": "Skipped",
+        "mode": "RuleOnly",
+        "latency_ms": 0.4
+      },
+      {
+        "case_id": "CLIN-061",
+        "disease_group": "infectious",
+        "expected_priority": "Emergency",
+        "predicted_priority": "Emergency",
+        "expected_rules": [
+          "rf_shock_circulatory_failure"
+        ],
+        "predicted_rules": [
+          "rf_shock_circulatory_failure"
+        ],
+        "expected_top": [],
+        "predicted_top": [],
+        "ai_status": "Skipped",
+        "mode": "RuleOnly",
+        "latency_ms": 0.4
+      },
+      {
+        "case_id": "CLIN-062",
+        "disease_group": "infectious",
+        "expected_priority": "Emergency",
+        "predicted_priority": "Emergency",
+        "expected_rules": [
+          "rf_shock_circulatory_failure"
+        ],
+        "predicted_rules": [
+          "rf_shock_circulatory_failure"
+        ],
+        "expected_top": [],
+        "predicted_top": [],
+        "ai_status": "Skipped",
+        "mode": "RuleOnly",
+        "latency_ms": 0.4
+      },
+      {
+        "case_id": "CLIN-063",
+        "disease_group": "infectious",
+        "expected_priority": "Emergency",
+        "predicted_priority": "Emergency",
+        "expected_rules": [
+          "rf_shock_circulatory_failure"
+        ],
+        "predicted_rules": [
+          "rf_shock_circulatory_failure"
+        ],
+        "expected_top": [],
+        "predicted_top": [],
+        "ai_status": "Skipped",
+        "mode": "RuleOnly",
+        "latency_ms": 0.4
+      },
+      {
+        "case_id": "CLIN-064",
+        "disease_group": "ent",
+        "expected_priority": "Emergency",
+        "predicted_priority": "Emergency",
+        "expected_rules": [
+          "rf_out_of_scope"
+        ],
+        "predicted_rules": [
+          "rf_out_of_scope"
+        ],
+        "expected_top": [],
+        "predicted_top": [],
+        "ai_status": "Skipped",
+        "mode": "RuleOnly",
+        "latency_ms": 0.4
+      },
+      {
+        "case_id": "CLIN-065",
+        "disease_group": "dermatology",
+        "expected_priority": "Emergency",
+        "predicted_priority": "Emergency",
+        "expected_rules": [
+          "rf_out_of_scope"
+        ],
+        "predicted_rules": [
+          "rf_out_of_scope"
+        ],
+        "expected_top": [],
+        "predicted_top": [],
+        "ai_status": "Skipped",
+        "mode": "RuleOnly",
+        "latency_ms": 0.4
+      },
+      {
+        "case_id": "CLIN-066",
+        "disease_group": "ent",
+        "expected_priority": "Emergency",
+        "predicted_priority": "Emergency",
+        "expected_rules": [
+          "rf_out_of_scope"
+        ],
+        "predicted_rules": [
+          "rf_out_of_scope"
+        ],
+        "expected_top": [],
+        "predicted_top": [],
+        "ai_status": "Skipped",
+        "mode": "RuleOnly",
+        "latency_ms": 0.4
+      },
+      {
+        "case_id": "CLIN-067",
+        "disease_group": "ent",
+        "expected_priority": "Emergency",
+        "predicted_priority": "Emergency",
+        "expected_rules": [
+          "rf_out_of_scope"
+        ],
+        "predicted_rules": [
+          "rf_out_of_scope"
+        ],
+        "expected_top": [],
+        "predicted_top": [],
+        "ai_status": "Skipped",
+        "mode": "RuleOnly",
+        "latency_ms": 0.4
+      },
+      {
+        "case_id": "CLIN-068",
+        "disease_group": "respiratory",
+        "expected_priority": "Routine",
+        "predicted_priority": "Routine",
+        "expected_rules": [],
+        "predicted_rules": [],
+        "expected_top": [],
+        "predicted_top": [],
+        "ai_status": "Degraded",
+        "mode": "RuleOnly",
+        "latency_ms": 14.7
+      },
+      {
+        "case_id": "CLIN-069",
+        "disease_group": "respiratory",
+        "expected_priority": "Routine",
+        "predicted_priority": "Routine",
+        "expected_rules": [],
+        "predicted_rules": [],
+        "expected_top": [],
+        "predicted_top": [],
+        "ai_status": "Degraded",
+        "mode": "RuleOnly",
+        "latency_ms": 14.6
+      },
+      {
+        "case_id": "CLIN-070",
+        "disease_group": "respiratory",
+        "expected_priority": "Routine",
+        "predicted_priority": "Routine",
+        "expected_rules": [],
+        "predicted_rules": [],
+        "expected_top": [],
+        "predicted_top": [],
+        "ai_status": "Degraded",
+        "mode": "RuleOnly",
+        "latency_ms": 15.4
+      },
+      {
+        "case_id": "CLIN-071",
+        "disease_group": "respiratory",
+        "expected_priority": "Routine",
+        "predicted_priority": "Routine",
+        "expected_rules": [],
+        "predicted_rules": [],
+        "expected_top": [],
+        "predicted_top": [],
+        "ai_status": "Degraded",
+        "mode": "RuleOnly",
+        "latency_ms": 15.1
+      },
+      {
+        "case_id": "CLIN-072",
+        "disease_group": "respiratory",
+        "expected_priority": "Routine",
+        "predicted_priority": "Routine",
+        "expected_rules": [],
+        "predicted_rules": [],
+        "expected_top": [],
+        "predicted_top": [],
+        "ai_status": "Degraded",
+        "mode": "RuleOnly",
+        "latency_ms": 15.1
+      },
+      {
+        "case_id": "CLIN-073",
+        "disease_group": "respiratory",
+        "expected_priority": "Routine",
+        "predicted_priority": "Routine",
+        "expected_rules": [],
+        "predicted_rules": [],
+        "expected_top": [],
+        "predicted_top": [],
+        "ai_status": "Degraded",
+        "mode": "RuleOnly",
+        "latency_ms": 56.7
+      },
+      {
+        "case_id": "CLIN-074",
+        "disease_group": "infectious",
+        "expected_priority": "Routine",
+        "predicted_priority": "Routine",
+        "expected_rules": [],
+        "predicted_rules": [],
+        "expected_top": [],
+        "predicted_top": [],
+        "ai_status": "Degraded",
+        "mode": "RuleOnly",
+        "latency_ms": 14.7
+      },
+      {
+        "case_id": "CLIN-075",
+        "disease_group": "infectious",
+        "expected_priority": "Routine",
+        "predicted_priority": "Routine",
+        "expected_rules": [],
+        "predicted_rules": [],
+        "expected_top": [],
+        "predicted_top": [],
+        "ai_status": "Degraded",
+        "mode": "RuleOnly",
+        "latency_ms": 14.8
+      },
+      {
+        "case_id": "CLIN-076",
+        "disease_group": "infectious",
+        "expected_priority": "Routine",
+        "predicted_priority": "Routine",
+        "expected_rules": [],
+        "predicted_rules": [],
+        "expected_top": [],
+        "predicted_top": [],
+        "ai_status": "Degraded",
+        "mode": "RuleOnly",
+        "latency_ms": 14.5
+      },
+      {
+        "case_id": "CLIN-077",
+        "disease_group": "infectious",
+        "expected_priority": "Routine",
+        "predicted_priority": "Routine",
+        "expected_rules": [],
+        "predicted_rules": [],
+        "expected_top": [],
+        "predicted_top": [],
+        "ai_status": "Degraded",
+        "mode": "RuleOnly",
+        "latency_ms": 14.8
+      },
+      {
+        "case_id": "CLIN-078",
+        "disease_group": "ent",
+        "expected_priority": "Routine",
+        "predicted_priority": "Routine",
+        "expected_rules": [],
+        "predicted_rules": [],
+        "expected_top": [],
+        "predicted_top": [
+          "nang_va_ro_khe_mang_ii",
+          "viem_hong_cap_tinh",
+          "hong_thanh_quan_viem_mui_hong_cap_tinh"
+        ],
+        "ai_status": "Degraded",
+        "mode": "RuleOnly",
+        "latency_ms": 17.0
+      },
+      {
+        "case_id": "CLIN-079",
+        "disease_group": "ent",
+        "expected_priority": "Routine",
+        "predicted_priority": "Routine",
+        "expected_rules": [],
+        "predicted_rules": [],
+        "expected_top": [],
+        "predicted_top": [
+          "u_tuyen_nuoc_bot",
+          "liet_day_than_kinh_vii_ngoai_bien",
+          "nang_va_ro_khe_mang_i"
+        ],
+        "ai_status": "Degraded",
+        "mode": "RuleOnly",
+        "latency_ms": 17.2
+      },
+      {
+        "case_id": "CLIN-080",
+        "disease_group": "ent",
+        "expected_priority": "Routine",
+        "predicted_priority": "Routine",
+        "expected_rules": [],
+        "predicted_rules": [],
+        "expected_top": [],
+        "predicted_top": [
+          "nang_ro_giap_luoi",
+          "hoi_chung_dau_nhuc_so_mat",
+          "nang_va_ro_khe_mang_i"
+        ],
+        "ai_status": "Degraded",
+        "mode": "RuleOnly",
+        "latency_ms": 17.2
+      },
+      {
+        "case_id": "CLIN-081",
+        "disease_group": "ophthalmology",
+        "expected_priority": "Routine",
+        "predicted_priority": "Routine",
+        "expected_rules": [],
+        "predicted_rules": [],
+        "expected_top": [],
+        "predicted_top": [
+          "glocom_goc_mo_nguyen_phat",
+          "glocom_goc_dong_nguyen_phat",
+          "loi_mat"
+        ],
+        "ai_status": "Degraded",
+        "mode": "RuleOnly",
+        "latency_ms": 17.0
+      },
+      {
+        "case_id": "CLIN-082",
+        "disease_group": "ophthalmology",
+        "expected_priority": "Routine",
+        "predicted_priority": "Routine",
+        "expected_rules": [],
+        "predicted_rules": [],
+        "expected_top": [],
+        "predicted_top": [
+          "nhuoc_thi",
+          "glocom_goc_mo_nguyen_phat",
+          "benh_hac_vong_mac_trung_tam_thanh_dich"
+        ],
+        "ai_status": "Degraded",
+        "mode": "RuleOnly",
+        "latency_ms": 17.8
+      },
+      {
+        "case_id": "CLIN-083",
+        "disease_group": "ent",
+        "expected_priority": "Routine",
+        "predicted_priority": "Routine",
+        "expected_rules": [],
+        "predicted_rules": [],
+        "expected_top": [],
+        "predicted_top": [
+          "seo_hep_thanh_khi_quan"
+        ],
+        "ai_status": "Degraded",
+        "mode": "RuleOnly",
+        "latency_ms": 17.0
+      },
+      {
+        "case_id": "CLIN-084",
+        "disease_group": "ent",
+        "expected_priority": "Emergency",
+        "predicted_priority": "Emergency",
+        "expected_rules": [
+          "rf_out_of_scope"
+        ],
+        "predicted_rules": [
+          "rf_out_of_scope"
+        ],
+        "expected_top": [],
+        "predicted_top": [],
+        "ai_status": "Skipped",
+        "mode": "RuleOnly",
+        "latency_ms": 0.4
+      }
+    ]
+  },
+  "extraction_cases": null
+}

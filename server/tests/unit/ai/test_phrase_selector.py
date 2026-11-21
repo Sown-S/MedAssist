@@ -113,10 +113,12 @@ def test_invalid_output_rejects_entire_result(context, output):
     assert result.suggestions == () and context[2] == []
 
 
-def test_unmapped_is_technical_failure_not_unknown_or_partial(context):
-    result = run(context, Client({**VALID, "unmapped": ["p2"]}))
-    assert result.failure_code == "UNMAPPED_PHRASE"
-    assert not result.completed and not result.suggestions
+def test_unmapped_keeps_matched_suggestions_and_returns_unmapped_phrases(context):
+    result = run(context, Client({"p1": VALID["p1"], "p2": [], "unmapped": ["p2"]}))
+    assert result.completed and result.failure_code is None
+    assert len(result.suggestions) == 1 and result.suggestions[0]["symptom_code"] == "cough_dry"
+    assert result.unmapped_phrases == ("không chóng mặt xoay tròn",)
+    assert "chóng mặt" not in repr(result)
 
 
 def test_all_empty_valid_output_is_successful(context):
@@ -245,3 +247,59 @@ def test_phrase_schema_requests_strict_context_and_rejects_length_output(context
     client = LLMClient(model="synthetic-local", transport=httpx.MockTransport(handler))
     with pytest.raises(LLMResponseError):
         asyncio.run(client.generate_json(prompt=prompt, schema=schema, timeout_seconds=5))
+
+
+def test_selector_retrieves_via_alias_and_excludes_exam_codes_from_enum(monkeypatch):
+    rows = [
+        {
+            "symptom_code": "dyspnea_on_exertion",
+            "symptom_name": "Khó thở khi gắng sức",
+            "aliases": ["hụt hơi khi leo cầu thang"],
+            "detection": "reported",
+        },
+        {
+            "symptom_code": "exam_stair_sign",
+            "symptom_name": "hụt hơi khi leo cầu thang",
+            "aliases": ["hụt hơi khi leo cầu thang"],
+            "detection": "exam",
+        },
+    ]
+    reader = FakeKnowledgeReader(symptoms=rows)
+    db, validated = object(), []
+
+    def active(session, codes):
+        assert session is db
+        validated.append(codes)
+
+    monkeypatch.setattr(selector.knowledge_validators, "active_symptoms", active)
+    client = Client({"p1": [{"symptom_code": "dyspnea_on_exertion", "status": "PRESENT"}], "unmapped": []})
+
+    result = asyncio.run(selector.select_phrase_symptoms(
+        "Có hụt hơi khi leo cầu thang.",
+        reader,
+        client,
+        db,
+        cache=CandidateIndexCache(),
+        per_phrase_limit=4,
+        gate_state=run_node1({"input_features": {"symptoms": {}}}, reader),
+        identifiers=(),
+        timeout_seconds=30,
+    ))
+
+    assert result.completed and result.failure_code is None
+    assert len(client.calls) == 1
+    request = client.calls[0]
+    assert request["schema"]["properties"]["p1"]["items"]["properties"]["symptom_code"]["enum"] == [
+        "dyspnea_on_exertion",
+    ]
+    payload = json.loads(request["prompt"].rsplit("\n", 1)[-1])
+    assert payload["catalogue"] == {"dyspnea_on_exertion": "Khó thở khi gắng sức"}
+    assert result.suggestions == (
+        {
+            "symptom_code": "dyspnea_on_exertion",
+            "status": "PRESENT",
+            "label": "Reference Suggestion",
+            "requires_confirmation": True,
+        },
+    )
+    assert validated == [["dyspnea_on_exertion"]]

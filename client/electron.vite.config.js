@@ -1,5 +1,5 @@
 import { resolve } from 'path'
-import { defineConfig, externalizeDepsPlugin } from 'electron-vite'
+import { defineConfig } from 'electron-vite'
 import react from '@vitejs/plugin-react'
 
 // CSP trong index.html chặn script inline; riêng lúc dev, plugin React chèn một đoạn script inline (React Refresh)
@@ -12,13 +12,10 @@ const devInlineScripts = {
 
 // electron-vite build 3 phần độc lập: main (tiến trình chính Electron),
 // preload (cầu nối an toàn giữa main <-> renderer), renderer (chính là app React của mình).
+// main / preload: thư viện trong dependencies để ngoài bundle (electron-vite tự làm, build.externalizeDeps mặc định bật).
 export default defineConfig({
-  main: {
-    plugins: [externalizeDepsPlugin()]
-  },
-  preload: {
-    plugins: [externalizeDepsPlugin()]
-  },
+  main: {},
+  preload: {},
   renderer: {
     resolve: {
       alias: {

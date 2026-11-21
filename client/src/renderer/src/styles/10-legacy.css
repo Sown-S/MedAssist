@@ -1,0 +1,595 @@
+/* CSS còn dùng từ giao diện trước (trước đây là 21 file 01–28, gộp nguyên văn theo đúng thứ tự cũ nên cascade không đổi).
+   Không thêm CSS mới vào đây: phần mới viết ở 90-mock.css / 91-app-extras.css. Khi sửa một màn, chuyển dần
+   rule tương ứng từ file này sang đó rồi xoá ở đây. */
+
+/* ======== 01-tokens-base ======== */
+/* Biến màu, reset, font, thanh cuộn */
+
+:root{
+  /* Nền sáng, xanh chủ đạo #1877F2; chỉ ngoại lệ mới có màu. Tên biến cũ giữ nguyên để component không phải sửa. */
+  --solid:#FFFFFF;
+  --accent:#1877F2;
+  --violet:#7C3AED;
+  --field-bg:#FFFFFF;
+  --blur:none;
+  /* Thanh menu bên trái — đổi theo theme (Cài đặt › Giao diện thanh menu) */
+  --sidebar-dots:rgba(24,119,242,.28);
+}
+:root[data-sidebar="dark"]{--sidebar-dots:rgba(125,179,255,.28);}
+:root[data-sidebar="indigo"]{--sidebar-dots:rgba(125,179,255,.28);}
+h1,h2,h3,.display{font-family:var(--font);}
+button,input,select,textarea{font-family:inherit;}
+html{background:var(--bg-solid);color-scheme:light;}
+::-webkit-scrollbar{width:8px;height:8px;}
+::-webkit-scrollbar-track,::-webkit-scrollbar-corner{background:transparent;}
+::-webkit-scrollbar-thumb{background:rgba(16,24,40,.18);border-radius:10px;}
+::-webkit-scrollbar-thumb:hover{background:rgba(16,24,40,.32);}
+
+/* ======== 02-topbar-layout ======== */
+/* Thanh trên cùng, điều hướng, tiêu đề trang, thẻ số liệu, nút, card */
+
+.avatar{width:32px;height:32px;border-radius:50%;background:var(--primary-soft);color:var(--primary-ink);display:flex;align-items:center;justify-content:center;font-family:var(--font);font-weight:700;font-size:14px;flex-shrink:0;}
+
+.icon-btn{background:none;border:none;font-size:19px;color:var(--ink-soft);cursor:pointer;padding:5px;border-radius:8px;position:relative;display:flex;transition:background .15s,color .15s;}
+.icon-btn:hover{background:var(--surface-hover);color:var(--ink);}
+.icon-btn .dot{position:absolute;top:2px;right:2px;width:7px;height:7px;border-radius:50%;background:var(--warn);}
+
+.page{padding:22px 28px 60px;max-width:1560px;margin:0 auto;}
+
+/* Cửa sổ hẹp thì khối nút xuống hàng dưới thay vì bẻ chữ. */
+
+.btn{font-size:14.5px;font-family:var(--font);}
+.btn-ghost{border:1px solid var(--border);}
+.btn-ghost:hover{color:var(--ink);}
+
+/* ======== 03-components ======== */
+/* Tab trong trang, thẻ bệnh nhân, modal, form, bảng, badge, khung khám, cảnh báo, hoá đơn */
+
+.time{font-variant-numeric:tabular-nums;font-size:12px;color:var(--ink-soft);}
+.field.full{grid-column:1/-1;}
+.field input,.field textarea,.field select{padding:9px 11px;border:1px solid var(--border);border-radius:9px;font-family:var(--font);font-size:14.5px;background:var(--field-bg);color:var(--ink);}
+.field input::placeholder,.field textarea::placeholder{color:#8A97A3;}
+.field input:focus,.field textarea:focus,.field select:focus{outline:none;border-color:var(--accent);}
+
+.symptom-box{background:var(--surface-alt);border-radius:10px;padding:11px 13px;font-size:14px;line-height:1.5;color:var(--ink);}
+
+.rx-search{display:flex;gap:8px;margin-bottom:10px;}
+.rx-search input{flex:1;padding:9px 11px;border:1px solid var(--border);border-radius:9px;font-size:14px;background:var(--field-bg);color:var(--ink);}
+
+/* Cảnh báo cụm ca: mỗi chẩn đoán / triệu chứng một dòng */
+.cluster-alerts{margin:0 0 14px;}
+.cluster-alerts .txt span{display:block;line-height:1.5;}
+
+/* ======== 04-admin-shell ======== */
+/* Khu quản trị: breadcrumb (menu bên trái nằm ở 21-app-shell.css) */
+
+.breadcrumb{font-size:13px;color:var(--ink-soft);margin-bottom:12px;}
+.breadcrumb b{color:var(--ink);}
+
+/* ======== 06-shared-screens ======== */
+/* Màn dùng chung: hộp xác nhận, tìm kiếm, cờ đỏ, mất mạng, báo cáo, cận lâm sàng, ICD, toast, phân trang */
+
+/* App shell */
+#appShell{display:none;}
+#appShell.show{display:block;}
+
+/* Hộp xác nhận / tìm kiếm */
+
+/* Cờ đỏ */
+
+/* Thuốc thiết yếu */
+.essential-chip{font-size:10.5px;font-weight:700;background:var(--warn-soft);color:var(--warn-ink);padding:2px 6px;border-radius:20px;margin-left:6px;}
+
+/* Báo cáo */
+
+/* Chọn ICD-10 / đơn mẫu */
+.icd-picker{position:relative;}
+.icd-picker>input{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:9px;font-size:14.5px;font-family:var(--font);background:var(--field-bg);color:var(--ink);}
+.icd-list{display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--solid);border:1px solid var(--border);border-radius:12px;box-shadow:0 20px 50px -14px rgba(16,24,40,.16);z-index:10;overflow:hidden;}
+.icd-list.show{display:block;}
+.icd-opt{padding:9px 12px;font-size:13.5px;cursor:pointer;border-bottom:1px solid var(--border);color:var(--ink);}
+.icd-opt:last-child{border-bottom:none;}
+.icd-opt:hover{background:var(--surface-hover);}
+.icd-opt b{font-variant-numeric:tabular-nums;color:var(--accent);margin-right:6px;font-size:12.5px;}
+
+/* Toast, spinner, ô trống */
+.spinner{width:16px;height:16px;border-radius:50%;border:2px solid rgba(16,24,40,0.12);border-top-color:currentColor;animation:spin .7s linear infinite;display:inline-block;}
+@keyframes spin{to{transform:rotate(360deg);}}
+/* Spinner trong nút theo màu chữ của nút (dùng được cho nút đậm lẫn nút ghost); nút đang chạy không bị mờ như disabled. */
+.btn-spinner{width:13px;height:13px;border-color:currentColor;border-right-color:transparent;opacity:.85;vertical-align:-2px;margin-right:7px;}
+.btn[aria-busy="true"]:disabled{opacity:.8;cursor:progress;}
+@media (prefers-reduced-motion: reduce){.spinner{animation-duration:1.6s;}}
+
+/* Nhãn “ngoài phạm vi” */
+
+/* Dòng bấm được */
+.row-click{cursor:pointer;}
+.row-click:hover td{background:var(--surface-hover);}
+
+/* Phân trang */
+
+/* ======== 08-icons-select-notify ======== */
+/* Icon, ô select, thông báo / trợ giúp trên topbar */
+
+/* Icon đơn sắc (components/Icon.jsx) */
+.icn{width:1.15em;height:1.15em;vertical-align:-.2em;flex-shrink:0;}
+
+/* Ô select: thay mũi tên gốc của trình duyệt */
+select{-webkit-appearance:none;appearance:none;cursor:pointer;font-family:inherit;padding-right:32px !important;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394A3B8' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") !important;
+  background-repeat:no-repeat !important;background-position:right 9px center !important;background-size:16px !important;}
+select option{background:var(--solid);color:var(--ink);}
+
+/* Topbar: thông báo / trợ giúp / cài đặt */
+
+.help-intro{font-size:14px;color:var(--ink-soft);margin:0 0 10px;line-height:1.5;}
+.pref-row{display:flex;flex-direction:column;gap:2px;padding:10px 0;border-bottom:1px solid var(--border);font-size:14px;}
+.pref-row:last-of-type{border-bottom:none;}
+.pref-row span{color:var(--ink-soft);line-height:1.5;}
+.pref-row.inline{flex-direction:row;justify-content:space-between;align-items:center;}
+
+/* ======== 09-admin-home ======== */
+/* Trang chủ quản trị, chọn ngôn ngữ ở đăng nhập */
+
+/* Vùng nội dung Admin đã trừ sidebar 232px: dưới ~1200px cột phải quá hẹp → xếp một cột. */
+
+/* Hộp thoại đăng xuất của bác sĩ: mỗi ca còn dở một dòng, kèm nút xử lý */
+.signout-row{display:flex;align-items:center;gap:12px;padding:10px 8px;border-bottom:1px solid var(--border);color:var(--ink-soft);font-size:16px;}
+.signout-row:last-child{border-bottom:none;}
+.signout-row .btn{flex-shrink:0;}
+
+/* Chọn ngôn ngữ ở trang đăng nhập */
+
+/* ======== 11-ai-config ======== */
+/* Cấu hình AI */
+
+.btn:disabled{opacity:.45;cursor:not-allowed;}
+.btn-danger:hover:not(:disabled){background:#DC2626;}
+
+.ai-inline-input{padding:7px 10px;border:1px solid var(--border);border-radius:9px;background:var(--field-bg);color:var(--ink);font:13.5px var(--font);}
+.field select option{background:var(--solid);}
+.ai-inline-input{width:100%;}
+.ai-inline-input:focus{outline:none;border-color:var(--accent);}
+.ai-chip{display:inline-flex;align-items:center;gap:3px;font-size:12px;font-weight:600;padding:2px 8px;border-radius:20px;background:var(--primary-soft);color:var(--primary-ink);white-space:nowrap;}
+.ai-chip.neg{background:rgba(148,163,184,.14);color:var(--ink-2);}
+.ai-chip.neg span:first-child{color:var(--warn-ink);}
+.ai-chip.meta{background:rgba(16,24,40,0.044);color:var(--ink);}
+.ai-chip.vital{background:rgba(24,119,242,.12);color:var(--primary-ink);}
+.ai-chip.ok{background:rgba(34,197,94,.14);color:var(--success-ink);}
+.ai-status{display:flex;flex-direction:column;gap:4px;align-items:flex-start;}
+.ai-switch{width:36px;height:20px;border-radius:20px;border:none;background:rgba(16,24,40,0.088);position:relative;cursor:pointer;padding:0;transition:background .15s;flex-shrink:0;}
+.ai-switch span{position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:left .15s;}
+.ai-switch.on{background:var(--success);}
+.ai-switch.on span{left:18px;}
+.ai-switch:disabled{opacity:.45;cursor:not-allowed;}
+.ai-sym-picker{display:flex;flex-wrap:wrap;gap:6px;}
+.ai-sym{display:inline-flex;align-items:center;gap:4px;padding:5px 11px;border-radius:20px;border:1px solid var(--border);background:var(--surface);color:var(--ink-soft);font:600 12.5px var(--font);cursor:pointer;}
+.ai-sym:hover{color:var(--ink);border-color:rgba(16,24,40,0.12);}
+.ai-sym.on{background:var(--primary-soft);border-color:rgba(24,119,242,.6);color:var(--primary-ink);}
+.ai-sym.neg{background:rgba(239,68,68,.12);border-color:rgba(239,68,68,.45);color:var(--warn-ink);}
+
+.ai-dim td{opacity:.55;}
+
+/* ======== 12-inventory-catalog ======== */
+/* Kho theo lô, danh mục */
+
+/* Kho */
+.inv-sort{cursor:pointer;user-select:none;}
+.inv-sort:hover{color:var(--ink);}
+.inv-sort.on{color:var(--primary-ink);}
+.inv-sort-ic{font-size:10px;opacity:.7;}
+.inv-table td{vertical-align:top;}
+.inv-drug{display:flex;gap:6px;align-items:flex-start;}
+.inv-drug > .icn{margin-top:3px;color:var(--ink-soft);}
+.inv-status{display:flex;flex-direction:column;gap:4px;align-items:flex-start;}
+.inv-exp{white-space:nowrap;}
+.inv-exp.warn{color:var(--priority-ink);}
+.inv-exp.bad{color:var(--warn-ink);font-weight:600;}
+.inv-plus{color:var(--success-ink);}
+.inv-minus{color:var(--warn-ink);}
+.essential-chip.inv-ctrl{background:rgba(168,85,247,.18);color:var(--violet);}
+.inv-open td{background:rgba(24,119,242,.06);border-bottom-color:transparent;}
+.inv-batches > td{background:rgba(16,24,40,0.017);padding:10px 14px 14px 32px;}
+.inv-batch-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px;font-size:13.5px;}
+.inv-expired td{background:rgba(239,68,68,.07);}
+.inv-fefo{margin-left:6px;font-size:10.5px;}
+.rx-drop{position:absolute;top:100%;left:0;right:0;z-index:20;margin-top:4px;}
+.rx-drop .icd-opt{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+
+/* Nhà cung cấp */
+.sp-warn{color:var(--priority-ink);font-weight:600;}
+.rc-facts{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:12px;font-size:13px;color:var(--ink-soft);}
+.rc-facts b{color:var(--ink);}
+
+/* Quản lý danh mục */
+
+.cat-crumb{cursor:pointer;text-decoration:underline dotted;}
+.cat-crumb:hover{color:var(--ink);}
+.cat-lines{display:flex;flex-direction:column;gap:6px;}
+.cat-line{display:flex;align-items:center;gap:8px;}
+.cat-line .ai-inline-input[type=number]{width:70px;}
+.cat-line-name{flex:1;min-width:0;}
+
+/* ======== 13-admin-history-staff-settings ======== */
+/* Lịch sử hoạt động, tài khoản, phân quyền, cài đặt */
+
+/* Lịch sử hoạt động */
+
+/* Tài khoản nhân viên */
+.staff-callout{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px;padding:14px 16px;border-color:rgba(251,191,36,.35);}
+.staff-callout > svg{width:20px;height:20px;color:var(--priority-ink);flex-shrink:0;}
+.staff-callout > div{flex:1 1 260px;color:var(--ink);}
+.staff-badges{display:flex;flex-direction:column;align-items:flex-start;gap:4px;}
+.staff-actions{min-width:180px;}
+.staff-secret{display:flex;align-items:center;gap:22px;flex-wrap:wrap;margin:14px 0 6px;padding:14px 16px;border:1px dashed var(--border);border-radius:12px;background:var(--field-bg);}
+.staff-secret .mono{font-size:15px;color:var(--ink);}
+.staff-secret-pw{font-size:17px !important;font-weight:700;letter-spacing:.04em;}
+.staff-secret .btn{margin-left:auto;display:inline-flex;align-items:center;gap:6px;}
+
+/* Phân quyền */
+.perm-diff{margin:10px 0 0;padding:0;list-style:none;max-height:220px;overflow:auto;font-size:13px;}
+.perm-diff li{padding:3px 0;}
+.perm-diff li.add{color:var(--success-ink);}
+
+/* Cài đặt hệ thống */
+.settings-page{padding-bottom:70px;}
+.set-dot{width:7px;height:7px;border-radius:50%;background:var(--priority);display:inline-block;}
+.set-intro{margin:0 0 12px;}
+.set-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px 16px;}
+.set-field.wide{grid-column:1/-1;}
+.set-field label{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;}
+.set-effect{font-size:10.5px;font-weight:600;padding:2px 7px;}
+.set-field.changed input,.set-field.changed select{border-color:var(--priority);}
+.set-field.changed > label > span:first-child::after{content:' •';color:var(--priority-ink);}
+.set-field.has-err input,.set-field.has-err select{border-color:var(--warn);}
+.set-err{color:var(--warn-ink);font-size:12px;}
+.set-field .ai-switch{margin-top:4px;}
+.set-logo{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+/* Nhóm ô khoá khi mất kết nối (fieldset disabled), không viền / lề mặc định của trình duyệt. */
+.set-fieldset{border:0;padding:0;margin:0;min-width:0;}
+.set-logo img{max-height:56px;max-width:140px;background:#fff;border-radius:6px;padding:4px;}
+.set-logo .btn{display:inline-flex;align-items:center;gap:6px;cursor:pointer;}
+.set-split{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:18px;align-items:start;}
+@media (max-width:900px){.set-split{grid-template-columns:1fr;}}
+.set-print-preview{background:#fff;color:#000;border-radius:8px;padding:12px 14px;font:11px Arial,sans-serif;}
+.set-print-preview .ph{display:flex;gap:10px;align-items:center;border-bottom:1px solid #000;padding-bottom:6px;}
+.set-print-preview .ph img{max-height:48px;max-width:90px;}
+.set-print-preview .ph b{font-size:13px;text-transform:uppercase;}
+.set-print-preview.foot{margin-top:6px;text-align:center;font-style:italic;}
+.set-checks{display:flex;flex-wrap:wrap;gap:8px 18px;padding-top:4px;color:var(--ink);font-size:14px;}
+.set-checks label{display:inline-flex;align-items:center;gap:6px;cursor:pointer;}
+.set-checks input{accent-color:var(--primary);}
+
+.set-backup-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:8px;}
+.set-backup-head .btn{display:inline-flex;align-items:center;gap:6px;}
+.set-backup-head .card-title{margin-bottom:2px;}
+.set-savebar{position:sticky;bottom:12px;display:flex;align-items:center;justify-content:flex-end;gap:10px;flex-wrap:wrap;margin-top:16px;padding:10px 14px;border-radius:12px;background:var(--solid);border:1px solid var(--priority);box-shadow:0 10px 30px -10px rgba(16,24,40,.16);}
+.set-savebar > span:first-child{margin-right:auto;font-size:13.5px;color:var(--priority-ink);}
+.set-savebar .btn{display:inline-flex;align-items:center;gap:6px;}
+
+/* ======== 14-reception-queue ======== */
+/* Tiếp đón: hàng chờ, cờ đỏ, sinh hiệu, triệu chứng, gọi số */
+
+/* Hàng chờ, ca cờ đỏ */
+
+.p-ticket{font-variant-numeric:tabular-nums;font-size:22px;font-weight:700;line-height:1;color:var(--accent);min-width:50px;text-align:center;}
+.dev-tools{display:flex;align-items:center;gap:10px;margin-bottom:14px;padding:6px 10px;border:1px dashed var(--border);border-radius:10px;font-size:12px;color:var(--ink-soft);width:fit-content;}
+.dev-tools label{display:flex;align-items:center;gap:6px;cursor:pointer;}
+/* Sinh hiệu + triệu chứng ba trạng thái */
+
+/* Khung “Đọc lời kể & đề xuất”: nút chính, các bước theo status server, thanh thời gian đầy ở 30 giây */
+/* Đề xuất: hai cột Có / Không, chip lớn */
+
+/* Danh sách triệu chứng: tìm không dấu, “Đã xác nhận”, các nhóm */
+/* Dải “Tiếp theo” ở bảng gọi: đã check-in (✓) / chưa check-in (bấm để check-in) */
+button.call-chip{font:inherit;cursor:pointer;border:1px dashed var(--border);}
+button.call-chip:hover{border-color:var(--accent);}
+.call-chip.ready{display:inline-flex;align-items:center;gap:4px;box-shadow:0 0 0 1px rgba(34,197,94,.55) inset;}
+.call-chip.ready svg{width:12px;height:12px;color:var(--success-ink);}
+
+.sym-warn{color:var(--priority-ink);display:inline-flex;align-items:center;gap:5px;}
+
+/* Nhóm triệu chứng thu gọn / mở rộng */
+/* Danh mục có nhóm (chạy thật): một cột để tên dài không bị ép nhiều dòng */
+@media (max-width:900px){.sym-grid{grid-template-columns:1fr;}}
+/* Cụm Có / Không / Chưa rõ cố định bên phải để các hàng luôn thẳng cột */
+
+/* ======== 16-reception-dashboard-invoices ======== */
+/* Lễ tân: thẻ bệnh nhân, bảng điều khiển, gọi số, hoá đơn, doanh thu theo kỳ */
+
+/* Thông báo cờ đỏ, tra cứu, cảnh báo dị ứng */
+
+.btn kbd{font-variant-numeric:tabular-nums;font-size:10.5px;padding:1px 5px;border-radius:5px;border:1px solid currentColor;opacity:.6;margin-left:4px;}
+.redflag-alert{display:flex;align-items:center;gap:12px;padding:12px 14px;margin-bottom:12px;border-radius:12px;background:rgba(239,68,68,.18);border:1px solid rgba(239,68,68,.55);color:var(--warn-ink);font-size:13.5px;}
+.redflag-alert > svg{width:22px;height:22px;flex-shrink:0;color:var(--warn-ink);}
+.redflag-alert .txt{flex:1;display:flex;flex-direction:column;gap:2px;}
+.redflag-alert .txt b{color:var(--ink);font-size:14px;}
+.redflag-alert .hint{font-size:12.5px;color:var(--warn-ink);}
+.redflag-alert .btn{background:var(--warn);color:#fff;border:none;}
+.dupe-list{display:flex;flex-direction:column;gap:6px;margin-top:8px;}
+.dupe-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;color:var(--ink);font-size:13px;}
+.dupe-row .btn{margin-left:auto;}
+
+/* Bảng điều khiển Lễ tân */
+
+/* Gọi số */
+.call-now{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:14px 16px;border-radius:12px;background:rgba(24,119,242,.08);border:1px solid rgba(24,119,242,.35);margin-bottom:12px;min-height:72px;}
+.call-now .lbl{font-size:12.5px;color:var(--ink-soft);}
+.call-now .num{font-variant-numeric:tabular-nums;font-size:38px;font-weight:700;color:var(--accent);line-height:1;}
+.call-now .nm{font-size:18px;font-weight:700;color:var(--ink);}
+.call-next{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:12px;font-size:12.5px;}
+.call-next .lbl{color:var(--ink-soft);margin-right:4px;}
+.call-chip{font-variant-numeric:tabular-nums;font-weight:700;font-size:12.5px;padding:3px 8px;border-radius:8px;background:var(--surface-alt);color:var(--ink);}
+.call-chip.prio{background:var(--priority-soft);color:var(--priority-ink);}
+.call-chip.absent{text-decoration:line-through;color:var(--ink-soft);}
+/* Hoá đơn */
+.icon-btn.sm{width:30px;height:30px;}
+.icon-btn.sm svg{width:15px;height:15px;}
+.icon-btn.danger{color:var(--warn-ink);}
+.icon-btn:disabled{opacity:.4;cursor:not-allowed;}
+.icon-btn.sm{align-items:center;justify-content:center;}
+
+/* Lọc theo kỳ, doanh thu */
+
+/* Nút trong ô trống giữ icon cỡ chữ, cùng hàng với nhãn. */
+
+/* Thu hồi đơn để sửa (màn Đơn thuốc của bác sĩ) */
+.rx-recall{display:flex;align-items:center;justify-content:flex-end;flex-wrap:wrap;gap:8px;margin-top:8px;font-size:13px;color:var(--ink-soft);}
+.rx-recall span{flex:1;min-width:220px;}
+
+/* ======== 17-doctor-consult ======== */
+/* Bác sĩ: hàng đợi, khám, kê đơn, tủ thuốc */
+
+/* Luôn từ cột 2 tới hết: màn hẹp chỉ còn 2 cột, “span 2” sẽ đẩy ô xuống dưới hàng đợi. */
+.doc-ta{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:9px;font-size:14px;font-family:inherit;background:var(--field-bg);color:var(--ink);resize:vertical;}
+.doc-ta:focus{outline:none;border-color:var(--accent);}
+.req{color:var(--warn-ink);}
+
+/* Thu gọn / mở rộng, danh sách chờ, cận lâm sàng, tủ thuốc */
+/* Hiệu ứng thu gọn bằng grid-template-rows 0fr ↔ 1fr — không cần biết trước chiều cao. */
+.collapse{display:grid;grid-template-rows:0fr;transition:grid-template-rows .2s ease;}
+.collapse>div{overflow:hidden;min-height:0;}
+.open>.collapse{grid-template-rows:1fr;}
+@media (prefers-reduced-motion:reduce){.collapse{transition:none;}}
+
+.brief-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;font-size:13px;color:var(--ink);}
+.brief-grid>div,.brief-last{display:flex;flex-direction:column;gap:3px;}
+.brief-k{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-soft);}
+.brief-last{margin-top:10px;padding:10px 12px;border-radius:10px;background:var(--surface-alt);font-size:13px;color:var(--ink);}
+.brief-last small{font-size:12px;color:var(--ink-soft);}
+@media (max-width:640px){.brief-grid{grid-template-columns:1fr;}}
+
+.lab-res{margin-top:6px;}
+.lab-res-head{display:flex;flex-wrap:wrap;gap:5px;font-size:12px;color:var(--ink-soft);margin-bottom:4px;}
+.lab-res-sum{font-size:13px;color:var(--ink);margin:6px 0 0;}
+/* Cột cuối: nút huỷ dòng chỉ định — để trống khi không có nút. */
+
+/* ======== 18-doctor-workflow ======== */
+/* Bác sĩ: tóm tắt, liều, tái khám, dòng thời gian, tra cứu, gọi số */
+
+/* Dòng tóm tắt, liều có cấu trúc, tái khám, dòng thời gian */
+
+.icon-btn.primary{background:var(--primary);color:#fff;}
+
+/* Bỏ về, chẩn đoán phụ, đã về từ xét nghiệm */
+
+/* Tra cứu hồ sơ */
+.lookup{display:grid;grid-template-columns:300px minmax(0,1fr);gap:16px;align-items:start;}
+@media (max-width:900px){.lookup{grid-template-columns:1fr;}}
+
+/* Phòng khám cố định, liều theo cân nặng */
+
+/* Chân phiếu khám: nút xuống dòng, không bẻ chữ; hai nút chốt đơn luôn cùng hàng bên phải. */
+
+/* ======== 19-connection-intake ======== */
+/* Địa chỉ máy chủ, lượt chưa đóng, phân loại lúc tiếp đón */
+
+/* Ô địa chỉ máy chủ (đăng nhập, Cài đặt › Kết nối) */
+.srv-top{display:flex;align-items:center;justify-content:space-between;}
+.srv-label{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--ink-soft);}
+.srv-label svg{width:14px;height:14px;}
+.srv-close{width:24px;height:24px;border-radius:7px;border:none;background:none;color:var(--ink-soft);cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.srv-close:hover{background:var(--surface-alt);color:var(--ink);}
+.srv-close svg{width:14px;height:14px;}
+.srv-row{display:flex;gap:6px;}
+.srv-field{flex:1;min-width:0;position:relative;display:flex;align-items:center;}
+.srv-field>svg{position:absolute;left:11px;width:16px;height:16px;color:var(--ink-soft);pointer-events:none;}
+.srv-field input{width:100%;box-sizing:border-box;padding:10px 12px 10px 35px;border:1px solid var(--border);border-radius:10px;background:var(--field-bg);color:var(--ink);font-family:var(--font);font-size:14px;transition:border-color .15s;}
+.srv-field input::placeholder{color:var(--ink-soft);}
+.srv-field input:focus{outline:none;border-color:var(--accent);}
+.srv-field.good input{border-color:rgba(21,128,61,.5);}
+.srv-field.bad input{border-color:rgba(239,68,68,.55);}
+.srv-row .btn{white-space:nowrap;font-family:var(--font);}
+.srv-msg{font-size:11.5px;color:var(--ink-soft);line-height:1.4;}
+.srv-msg.checking{color:var(--priority-ink);}
+.srv-msg.ok{color:var(--success-ink);}
+.srv-msg.fail{color:var(--warn-ink);}
+
+/* Lượt chưa đóng từ những ngày trước */
+
+/* Phân loại lúc tiếp đón (cổng cờ đỏ) */
+.call-chip.emerg{background:rgba(239,68,68,.25);color:var(--warn-ink);}
+
+/* Ô ngày sinh dd/mm/yyyy + nút lịch */
+/* Ô date gốc chỉ để mở bảng lịch: ẩn nhưng nằm dưới nút để bảng lịch bật ra đúng chỗ. */
+
+/* ======== 20-ai-knowledge-emr ======== */
+/* Thẻ gợi ý AI, duyệt tri thức, kho tri thức, lịch sử khám, thu tiền, chuyển tuyến */
+
+/* Thẻ gợi ý AI */
+
+/* Kho tri thức (pages/admin/knowledge) */
+.kb-table td{vertical-align:top;}
+.kb-actions{white-space:nowrap;text-align:right;}
+.kb-danger{color:var(--warn-ink);}
+.kb-rule-sum{display:flex;flex-direction:column;gap:5px;align-items:flex-start;}
+.kb-rule-logic{display:block;}
+.kb-logic-group{display:inline-flex;flex-wrap:wrap;align-items:center;gap:4px;padding:3px 6px;border:1px dashed var(--border);border-radius:9px;}
+.kb-logic-op{font-size:11.5px;font-weight:700;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.03em;}
+.kb-logic-args{display:inline-flex;flex-wrap:wrap;gap:4px;}
+.kb-logic-edit-group{border:1px solid var(--border);border-radius:10px;padding:8px 10px;margin:6px 0;display:flex;flex-direction:column;gap:6px;background:rgba(16,24,40,0.011);}
+.kb-logic-edit-head{display:flex;gap:8px;align-items:center;justify-content:space-between;}
+.kb-logic-edit-leaf{display:flex;gap:6px;align-items:center;flex-wrap:wrap;}
+.kb-logic-add{display:flex;gap:6px;flex-wrap:wrap;}
+.kb-logic-preview{margin-top:8px;display:flex;gap:6px;align-items:center;flex-wrap:wrap;}
+.kb-grow{flex:1;min-width:180px;}
+.kb-num{width:90px;padding:7px 9px;border:1px solid var(--border);border-radius:8px;background:var(--field-bg);color:var(--ink);font-variant-numeric:tabular-nums;}
+.kb-check{flex-direction:row !important;align-items:center;gap:8px;}
+.kb-changes{display:flex;flex-direction:column;gap:8px;}
+.kb-change{border:1px solid var(--border);border-radius:10px;padding:9px 12px;background:var(--surface);}
+.kb-change-head{display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap;}
+.kb-diff{width:100%;border-collapse:collapse;font-size:13px;}
+.kb-diff th{text-align:left;font-weight:600;color:var(--ink-soft);padding:4px 8px 4px 0;width:170px;vertical-align:top;}
+.kb-diff td{padding:4px 6px;vertical-align:top;}
+.kb-old{color:var(--warn-ink);text-decoration:line-through;text-decoration-color:rgba(220,38,38,.5);}
+.kb-new{color:var(--success-ink);}
+.kb-arrow{color:var(--ink-soft);width:18px;}
+.kb-dep-list{margin:6px 0 0;padding-left:18px;font-size:13px;}
+.kb-url{max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.kb-release-empty{padding:10px 0 4px;}
+/* Cấp phát & thu tiền (PaymentModalLive): nhãn, tên, giá, nút thẳng cột. */
+/* Cột cuối 36px dành cho nút xoá ở mọi dòng → cột giá luôn thẳng hàng dù dòng có nút hay không. */
+.kb-json{margin:6px 0 0;padding:8px 10px;max-width:520px;white-space:pre-wrap;word-break:break-word;font:12px 'IBM Plex Mono';background:var(--field-bg);border:1px solid var(--border);border-radius:8px;color:var(--ink-soft);}
+
+/* Lịch sử khám từ server */
+
+/* Chuyển tuyến, lời mời vào phòng, đề xuất sinh hiệu */
+.fac-input{position:relative;}
+.fac-list{position:absolute;z-index:30;left:0;right:0;top:calc(100% + 4px);max-height:260px;overflow:auto;background:var(--solid);border:1px solid var(--border);border-radius:11px;box-shadow:0 12px 30px rgba(0,0,0,.35);padding:4px;}
+.fac-list button{display:flex;flex-direction:column;align-items:flex-start;gap:1px;width:100%;text-align:left;border:none;background:transparent;color:var(--ink);padding:7px 9px;border-radius:8px;cursor:pointer;font:inherit;}
+.fac-list button:hover{background:var(--surface-hover);}
+.fac-list small{color:var(--ink-soft);font-size:12px;}
+fieldset.doc-fields{border:none;padding:0;margin:0;min-width:0;}
+.invite-bar{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin:10px 0 4px;padding:9px 11px;border-radius:11px;border:1px solid rgba(245,158,11,.45);background:var(--priority-soft);}
+.invite-who{display:flex;align-items:center;gap:9px;flex:1;min-width:180px;}
+.invite-who svg{width:18px;height:18px;color:var(--priority);flex-shrink:0;}
+.invite-who span{display:flex;flex-direction:column;min-width:0;}
+.invite-who small{color:var(--ink-soft);font-size:12px;}
+.invite-acts{display:flex;flex-wrap:wrap;gap:6px;}
+.invite-bar.compact{flex-direction:column;align-items:stretch;}
+.invite-bar.compact .invite-acts .btn{flex:1;justify-content:center;white-space:nowrap;}
+.invite-bar.compact .invite-acts .btn-primary{flex-basis:100%;}
+.emr-referral{margin:10px 0;padding:9px 12px;border-radius:11px;border:1px solid rgba(239,68,68,.4);background:var(--warn-soft);display:flex;flex-direction:column;gap:4px;}
+.emr-referral-head{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;}
+.emr-referral-head .btn{margin-left:auto;}
+.emr-referral-head .badge svg{width:12px;height:12px;vertical-align:-1px;}
+.vital-proposals{margin-bottom:10px;}
+
+/* ======== 22-home ======== */
+/* Trang chủ ba vai trò: lời chào, ô số liệu, bảng điều khiển, hàng chờ theo bước, popup ở chuông */
+
+/* ---- Lời chào ---- */
+
+/* ---- Ô số liệu ---- */
+
+/* ---- Bảng điều khiển (thao tác nhanh) ---- */
+
+/* ---- Hàng dưới ---- */
+
+/* ---- Cảnh báo ca cấp cứu: nền trắng, viền đỏ mảnh ---- */
+
+/* ---- Popup đỏ cạnh chuông thông báo (lượt tồn từ ngày trước) ---- */
+
+/* Màn vừa (cửa sổ 1360): 2 cột */
+
+/* Trang chủ bác sĩ: 6 ô xếp 3 cột, bảng điều khiển dạng hàng ngang */
+
+/* ---- Màn khám: cột hàng chờ theo mẫu (nhóm xổ xuống, chữ hoa mảnh, mũi tên ›) ---- */
+
+/* ---- Trang chủ quản trị: 5 ô, biểu đồ doanh thu dạng đường ---- */
+.lc-d .icn{width:16px;height:16px;}
+.lc{height:190px;}
+.lc-p:hover,.lc-p.on{transform:scale(1.25);}
+.lc-p em{border-radius:6px;background:var(--surface);box-shadow:var(--shadow);}
+.lc-x{margin-top:10px;}
+
+/* ---- Trang chủ lấp đầy màn hình: hai thẻ dưới kéo dài tới đáy, ô và chữ to hơn ---- */
+
+/* ======== 24-modals ======== */
+/* Hộp thoại theo mẫu: form tiếp đón 2 cột, trợ giúp có bảng phím tắt, popup cạnh chuông */
+
+/* ---- Khung hộp thoại chung ---- */
+
+/* ---- Trợ giúp ---- */
+.help-sec{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);}
+.help-sec:last-of-type{border-bottom:0;}
+.help-sec .ico{width:36px;height:36px;border-radius:8px;display:grid;place-items:center;flex:none;background:var(--primary-soft);color:var(--primary);}
+.help-sec b{display:block;font-size:15.5px;color:var(--ink);}
+.help-sec span{font-size:14px;color:var(--ink-soft);}
+.keys{margin-top:6px;}
+.keys kbd{justify-self:start;font-family:inherit;font-size:13px;font-weight:600;border:1px solid var(--border-strong);border-bottom-width:2px;background:var(--surface);color:var(--ink-2);border-radius:6px;padding:2px 8px;white-space:nowrap;}
+.keys span{font-size:14.5px;color:var(--ink-2);}
+
+/* ---- Popup cạnh chuông: xếp chồng nhiều thông báo ---- */
+
+/* ---- Lưới chấm góc trên phải vùng nội dung ---- */
+/* Tiếp đón: tiêu đề phần có icon, nút chọn liền, thẻ số thứ tự, dòng nhắc ở chân */
+/* Cài đặt: tiêu đề phần chữ hoa đậm, các dòng thông tin tài khoản gọn */
+/* Chuông: nội dung mỗi thông báo tối đa 2 dòng */
+
+.cluster-pop .cluster-alerts{display:flex;flex-direction:column;gap:4px;margin:6px 0 10px;font-size:13.5px;color:var(--ink-2);}
+.cluster-pop .cluster-alerts span{margin:0;}
+.cluster-pop .cl-more{border:0;background:none;padding:0;color:var(--primary-ink);font:inherit;font-size:13px;cursor:pointer;text-align:left;}
+
+/* ======== 25-pages ======== */
+/* Các trang danh sách theo mẫu: bảng, ô tóm tắt có icon, tab dạng nút liền, Hàng chờ của lễ tân */
+
+/* ---- Tiêu đề trang ---- */
+
+/* ---- Tab dạng nút liền (Hôm nay / Tuần này…) ---- */
+
+/* ---- Ô tóm tắt có icon (Hoá đơn, Đơn thuốc) ---- */
+
+/* ---- Hàng chờ (lễ tân) ---- */
+
+/* Danh sách thông báo ở chuông: icon tròn bên trái */
+
+/* ---- Bệnh nhân (lễ tân) ---- */
+
+/* ======== 26-reports-charts ======== */
+/* Báo cáo theo mẫu: thanh ngang mảnh, biểu đồ đường doanh thu, lưới hai cột */
+.grid-2e{margin-bottom:20px;align-items:stretch;}
+.grid-2e>.card{display:flex;flex-direction:column;margin:0;}
+.lc-h b{font-variant-numeric:tabular-nums;}
+.lc-empty{display:grid;place-items:center;min-height:180px;color:var(--ink-soft);font-size:14px;}
+.lc-d.down .icn{transform:scaleY(-1);}
+
+/* ======== 28-doctor-pages ======== */
+/* Tủ thuốc, Hồ sơ bệnh nhân, Duyệt tri thức theo mẫu */
+.tag{border:1px solid var(--border);}
+.tag.w{border-color:transparent;}
+.tag.p{border-color:transparent;}
+.tag.d{border-color:transparent;}
+/* Hồ sơ bệnh nhân */
+.lookup2{display:flex;flex-direction:column;gap:16px;}
+.lookup2>.card{margin:0;}
+.avatar.sm{width:32px;height:32px;font-size:12.5px;}
+.avatar.lg{width:56px;height:56px;font-size:18px;font-weight:700;}
+.lookup-grid{display:grid;grid-template-columns:320px minmax(0,1fr);gap:16px;align-items:start;}
+.lookup-grid>.card{margin:0;}
+.pt-card{display:flex;flex-direction:column;gap:12px;position:sticky;top:12px;}
+.pt-id{display:flex;align-items:center;gap:12px;}
+.pt-id b{display:block;font-size:19px;font-weight:600;}
+.pt-rows{display:flex;flex-direction:column;gap:10px;}
+.pt-row{display:flex;align-items:center;gap:10px;}
+.pt-row small{display:block;font-size:12.5px;color:var(--ink-soft);}
+.pt-row b{font-weight:500;}
+.pt-card .btn{justify-content:center;}
+@media (max-width:1100px){.lookup-grid{grid-template-columns:1fr;}.pt-card{position:static;}}
+/* Cấu hình AI: thẻ luật */
+
+.kb-table{width:100%;}
+.kb-table td:first-child{max-width:190px;word-break:break-all;}
+/* Cài đặt: menu dọc bên trái như mẫu */
+.set-main{min-width:0;display:flex;flex-direction:column;gap:16px;}
+.set-main>.card{margin:0;}
+/* Tài khoản */
+.st-who{display:inline-flex;align-items:center;gap:10px;}
+.st-who b{font-weight:600;}
+.st-code{display:block;}
+.staff-table td{vertical-align:middle;}
+.staff-actions{display:flex;gap:4px;justify-content:flex-end;align-items:center;flex-wrap:nowrap;}
+.staff-actions .icon-btn{width:34px;height:34px;display:grid;place-items:center;padding:0;color:var(--ink-2);}
+.staff-actions .icon-btn .icn{width:17px;height:17px;}
+.staff-actions .icon-btn.danger:hover{color:var(--warn);}
+.staff-table .st-who{min-width:200px;}

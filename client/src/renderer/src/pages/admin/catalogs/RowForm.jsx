@@ -3,10 +3,10 @@ import Icon from '../../../components/Icon'
 import Modal, { ModalHeader } from '../../../components/Modal'
 import { translate } from '../../../i18n'
 import { useToast } from '../../../context/ToastContext'
-import { todayISO } from '../../../api/inventoryStore'
-import { fmtMoney, fmtDateTime } from '../inventory/shared'
 import { SCHEMAS, resolveRef, packageTotal } from './schemas'
 import { saveLiveRow, livePriceHistory } from '../../../api/serviceCatalogLive'
+import DateField from '../../../components/DateField'
+import { fmtMoney, fmtDateTime, ymd } from '../../../utils/format'
 
 export function RowForm({ catalogKey, row, all, cats, inv, onClose }) {
   const s = SCHEMAS[catalogKey]
@@ -24,7 +24,7 @@ export function RowForm({ catalogKey, row, all, cats, inv, onClose }) {
       if (init[fd.key] === undefined) init[fd.key] = fd.type === 'select' ? (fd.options[0]?.key ?? '') : ['pkgItems', 'rxItems', 'advicePick'].includes(fd.type) ? [] : ''
     }
     if (catalogKey === 'address' && isNew) init.level = 'commune'
-    if (catalogKey === 'services') init.priceFrom = todayISO()
+    if (catalogKey === 'services') init.priceFrom = ymd()
     return init
   })
   const [tried, setTried] = useState(false)
@@ -62,23 +62,23 @@ export function RowForm({ catalogKey, row, all, cats, inv, onClose }) {
   return (
     <Modal open onClose={onClose} wide>
       <ModalHeader title={isNew ? translate('Add') + ' · ' + translate(s.title) : row.code + ' · ' + row.name} onClose={onClose} />
-      <div className="modal-body">
+      <div className="modal-b">
         {catalogKey === 'icd' && isNew && (
-          <p className="ai-hint">
+          <p className="hint">
             <Icon name="help" /> <span>A code added here is marked “Custom” so it can be checked against the official list later.</span>
           </p>
         )}
-        <div className="ai-grid3">
+        <div className="fg fg-3">
           {s.fields
             // Server ghi giá mới ngay khi lưu (không có ngày hiệu lực riêng).
             .filter((fd) => !fd.onlyWhenPriceChanges)
             .map((fd) => (
-              <div className="field" key={fd.key} style={fd.wide ? { gridColumn: '1 / -1' } : undefined}>
+              <div className={'field' + (fd.wide ? ' full' : '')} key={fd.key}>
                 <label>
-                  {fd.label} {fd.required && <span className="ai-req">*</span>}
+                  {fd.label} {fd.required && <span className="req">*</span>}
                 </label>
                 {!isNew && fd.key === 'code' ? (
-                  <input value={f.code} disabled title={translate('The code cannot be changed after it is created.')} />
+                  <input className="input" value={f.code} disabled title={translate('The code cannot be changed after it is created.')} />
                 ) : (
                   <FieldInput fd={fd} value={f[fd.key]} onChange={(v) => set(fd.key, v)} cats={cats} inv={inv} />
                 )}
@@ -87,53 +87,53 @@ export function RowForm({ catalogKey, row, all, cats, inv, onClose }) {
         </div>
 
         {catalogKey === 'packages' && (
-          <p className="ai-hint">
-            <span>Separate price</span> <b className="mono">{fmtMoney(packageTotal(f, cats))}</b> · <span>Package price</span>{' '}
-            <b className="mono">{fmtMoney(Number(f.price) || 0)}</b>
+          <p className="hint">
+            <span>Separate price</span> <b className="num">{fmtMoney(packageTotal(f, cats))}</b> · <span>Package price</span>{' '}
+            <b className="num">{fmtMoney(Number(f.price) || 0)}</b>
             {packageTotal(f, cats) > (Number(f.price) || 0) && (
               <>
                 {' · '}
-                <span>Patient saves</span> <b className="mono inv-plus">{fmtMoney(packageTotal(f, cats) - (Number(f.price) || 0))}</b>
+                <span>Patient saves</span> <b className="num inv-plus">{fmtMoney(packageTotal(f, cats) - (Number(f.price) || 0))}</b>
               </>
             )}
           </p>
         )}
         {!isNew && prices && (
           <>
-            <div className="section-label">Price history</div>
-            <table className="dt">
-              <thead>
-                <tr>
-                  <th>Changed at</th>
-                  <th className="num">Old price</th>
-                  <th className="num">New price</th>
-                  <th>Changed by</th>
-                </tr>
-              </thead>
-              <tbody>
-                {prices.map((h, i) => (
-                  <tr key={i}>
-                    <td className="mono">{fmtDateTime(h.changed_at)}</td>
-                    <td className="num mono">{h.old_price == null ? '—' : fmtMoney(Number(h.old_price))}</td>
-                    <td className="num mono">{h.price == null ? '—' : fmtMoney(Number(h.price))}</td>
-                    <td>{h.changed_by_name ?? '—'}</td>
+            <div className="sec-t">Price history</div>
+            <div className="tbl-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Changed at</th>
+                    <th className="r num">Old price</th>
+                    <th className="r num">New price</th>
+                    <th>Changed by</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-            <p className="ai-hint">Invoices and lab orders store the price at the time they are made, so changing the price here does not change old documents.</p>
+                </thead>
+                <tbody>
+                  {prices.map((h, i) => (
+                    <tr key={i}>
+                      <td className="num">{fmtDateTime(h.changed_at)}</td>
+                      <td className="r num">{h.old_price == null ? '—' : fmtMoney(Number(h.old_price))}</td>
+                      <td className="r num">{h.price == null ? '—' : fmtMoney(Number(h.price))}</td>
+                      <td>{h.changed_by_name ?? '—'}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <p className="hint">Invoices and lab orders store the price at the time they are made, so changing the price here does not change old documents.</p>
           </>
         )}
         {!isNew && (
-          <p className="ai-soft ai-small">
-            <span>Last updated</span> <span className="mono">{fmtDateTime(row.updatedAt)}</span> · {row.updatedBy}
+          <p className="muted small">
+            <span>Last updated</span> <span className="num">{fmtDateTime(row.updatedAt)}</span> · {row.updatedBy}
           </p>
         )}
         {tried && errors.length > 0 && (
-          <div className="warn-banner show danger">
-            <div className="icon">
-              <Icon name="ban" />
-            </div>
+          <div className="banner d">
+            <Icon name="ban" />
             <div className="txt">
               {errors.map((e) => (
                 <div key={e}>{e}</div>
@@ -142,11 +142,11 @@ export function RowForm({ catalogKey, row, all, cats, inv, onClose }) {
           </div>
         )}
       </div>
-      <div className="modal-foot">
-        <button className="btn btn-ghost" onClick={onClose}>
+      <div className="modal-f">
+        <button className="btn btn-outline" onClick={onClose}>
           Cancel
         </button>
-        <button className="btn btn-primary" onClick={save} disabled={saving}>
+        <button data-shortcut="save" className="btn btn-primary" onClick={save} disabled={saving}>
           <Icon name="save" /> <span>Save</span>
         </button>
       </div>
@@ -157,7 +157,7 @@ export function RowForm({ catalogKey, row, all, cats, inv, onClose }) {
 function FieldInput({ fd, value, onChange, cats, inv }) {
   if (fd.type === 'select')
     return (
-      <select value={value ?? ''} onChange={(e) => onChange(e.target.value)}>
+      <select className="input" value={value ?? ''} onChange={(e) => onChange(e.target.value)}>
         {fd.options.map((o) => (
           <option key={o.key} value={o.key}>
             {o.label}
@@ -165,16 +165,16 @@ function FieldInput({ fd, value, onChange, cats, inv }) {
         ))}
       </select>
     )
-  if (fd.type === 'textarea') return <textarea rows={2} value={value ?? ''} onChange={(e) => onChange(e.target.value)} />
-  if (fd.type === 'date') return <input type="date" value={value ?? ''} onChange={(e) => onChange(e.target.value)} />
+  if (fd.type === 'textarea') return <textarea className="input" rows={2} value={value ?? ''} onChange={(e) => onChange(e.target.value)} />
+  if (fd.type === 'date') return <DateField value={value ?? ''} onChange={onChange} />
   if (fd.type === 'money' || fd.type === 'number')
-    return <input type="number" min="0" step={fd.type === 'money' ? 1000 : 'any'} value={value ?? ''} onChange={(e) => onChange(e.target.value)} />
+    return <input className="input" type="number" min="0" step={fd.type === 'money' ? 1000 : 'any'} value={value ?? ''} onChange={(e) => onChange(e.target.value)} />
   if (fd.type === 'pkgItems') return <PackageItems value={value ?? []} onChange={onChange} cats={cats} />
   if (fd.type === 'rxItems') return <RxItems value={value ?? []} onChange={onChange} cats={cats} inv={inv} />
   if (fd.type === 'advicePick') return <AdvicePick value={value ?? []} onChange={onChange} cats={cats} />
   if (fd.type === 'icd')
     return (
-      <select value={value ?? ''} onChange={(e) => onChange(e.target.value)}>
+      <select className="input" value={value ?? ''} onChange={(e) => onChange(e.target.value)}>
         <option value="">—</option>
         {cats.icd
           .filter((r) => r.active)
@@ -185,7 +185,7 @@ function FieldInput({ fd, value, onChange, cats, inv }) {
           ))}
       </select>
     )
-  return <input value={value ?? ''} onChange={(e) => onChange(e.target.value)} />
+  return <input className="input" value={value ?? ''} onChange={(e) => onChange(e.target.value)} />
 }
 
 function PackageItems({ value, onChange, cats }) {
@@ -200,7 +200,7 @@ function PackageItems({ value, onChange, cats }) {
         const r = resolveRef(it.ref, cats)
         return (
           <div className="cat-line" key={it.ref}>
-            <span className="mono">{it.ref.split(':')[1]}</span>
+            <span className="num">{it.ref.split(':')[1]}</span>
             <span className="cat-line-name">{r?.name ?? it.ref}</span>
             <input
               type="number"
@@ -209,7 +209,7 @@ function PackageItems({ value, onChange, cats }) {
               value={it.qty}
               onChange={(e) => onChange(value.map((v, j) => (j === i ? { ...v, qty: Math.max(1, +e.target.value || 1) } : v)))}
             />
-            <span className="mono ai-soft">{fmtMoney((r?.price ?? 0) * it.qty)}</span>
+            <span className="num muted">{fmtMoney((r?.price ?? 0) * it.qty)}</span>
             <button type="button" className="btn btn-ghost btn-sm" onClick={() => onChange(value.filter((_, j) => j !== i))}>
               <Icon name="trash" />
             </button>
@@ -217,7 +217,7 @@ function PackageItems({ value, onChange, cats }) {
         )
       })}
       <div className="cat-line">
-        <select className="ai-select" value={pick} onChange={(e) => setPick(e.target.value)}>
+        <select className="input" value={pick} onChange={(e) => setPick(e.target.value)}>
           <option value="">— Add a service or lab test —</option>
           {options.map((o) => (
             <option key={o.ref} value={o.ref}>
@@ -241,7 +241,7 @@ function RxItems({ value, onChange, cats, inv }) {
     <div className="cat-lines">
       {value.map((it, i) => (
         <div className="cat-line rx" key={i}>
-          <select className="ai-select" value={it.drugId} onChange={(e) => upd(i, { drugId: e.target.value })}>
+          <select className="input" value={it.drugId} onChange={(e) => upd(i, { drugId: e.target.value })}>
             <option value="">—</option>
             {drugs.map((d) => (
               <option key={d.id} value={d.id}>
@@ -250,7 +250,7 @@ function RxItems({ value, onChange, cats, inv }) {
             ))}
           </select>
           <input type="number" min="1" className="ai-inline-input" value={it.qty} onChange={(e) => upd(i, { qty: +e.target.value })} />
-          <select className="ai-select" value={it.route ?? 'PO'} onChange={(e) => upd(i, { route: e.target.value })}>
+          <select className="input" value={it.route ?? 'PO'} onChange={(e) => upd(i, { route: e.target.value })}>
             {routes.map((r) => (
               <option key={r.code} value={r.code}>
                 {r.name}

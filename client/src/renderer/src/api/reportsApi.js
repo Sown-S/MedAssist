@@ -36,7 +36,6 @@ export function listAiLogs(filters, limit, offset) {
   return apiGet(`/api/v1/admin/ai-logs?${p}`)
 }
 
-export const vnd = (n) => Math.round(Number(n) || 0).toLocaleString('vi-VN') + 'đ'
 export const percent = (rate) => (rate == null ? '—' : Math.round(rate * 100) + '%')
 
 // Server chỉ trả ngày có tiền → điền 0 cho ngày trống.
