@@ -9,7 +9,7 @@ export const ACTION_LABEL = {
   LOGIN_FAILED: 'Failed sign-in',
   LOGOUT: 'Sign-out',
   VIEW: 'Viewed',
-  CREATE: 'Created',
+  CREATE: 'Added',
   UPDATE: 'Updated',
   DELETE: 'Deleted',
   EXPORT: 'Exported',
