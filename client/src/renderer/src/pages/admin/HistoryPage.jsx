@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { Fragment, useEffect, useMemo, useState } from 'react'
 import Icon from '../../components/Icon'
 import { useToast } from '../../context/ToastContext'
 import { translate } from '../../i18n'
@@ -8,6 +8,7 @@ import { ErrorNote } from '../../components/DataState'
 import Clip from '../../components/Clip'
 import DateField from '../../components/DateField'
 import { fmtNum, fmtDateTime } from '../../utils/format'
+import { useServerDrugs } from '../../api/serverDrugs'
 
 // Nhật ký hoạt động trên server (US09). Với bệnh nhân / lượt khám chỉ ghi tên trường thay đổi, không ghi giá trị (Quy định v5 §7).
 const PAGE = 50
@@ -18,6 +19,50 @@ const changes = (x) => {
   return keys.length ? keys.join(', ') : ''
 }
 
+// Giá trị trong phần chi tiết: drug_id hiện thành tên thuốc (kèm hàm lượng) thay cho chuỗi mã; số/chuỗi giữ nguyên.
+const show = (key, v, drugName) => {
+  if (v === null || v === undefined || v === '') return '—'
+  if (key === 'drug_id' && drugName(v)) return drugName(v)
+  if (typeof v === 'object') return JSON.stringify(v)
+  return String(v)
+}
+const FIELD_LABEL = { drug_id: 'Drug' }
+
+// Phần chi tiết của một dòng: bảng Trường | Trước | Sau, trải hết chiều ngang bảng.
+function AuditDetail({ x, drugName }) {
+  const keys = [...new Set([...Object.keys(x.old_values ?? {}), ...Object.keys(x.new_values ?? {})])]
+  const target = x.target_entity === 'drug' && drugName(x.entity_id)
+  return (
+    <div className="audit-detail">
+      {(target || x.entity_id) && (
+        <p className="muted small">
+          <span>{translate('Record')}:</span> <b className={target ? '' : 'num'}>{target || x.entity_id}</b>
+        </p>
+      )}
+      {keys.length > 0 && (
+        <table className="audit-kv">
+          <thead>
+            <tr>
+              <th>{translate('Field')}</th>
+              <th>{translate('Before')}</th>
+              <th>{translate('After')}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {keys.map((k) => (
+              <tr key={k}>
+                <td>{FIELD_LABEL[k] ? `${translate(FIELD_LABEL[k])} (${k})` : k}</td>
+                <td>{x.old_values ? show(k, x.old_values[k], drugName) : '—'}</td>
+                <td>{x.new_values ? show(k, x.new_values[k], drugName) : '—'}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+    </div>
+  )
+}
+
 export default function HistoryPage() {
   const { showToast } = useToast()
   const [draft, setDraft] = useState(EMPTY)
@@ -26,6 +71,9 @@ export default function HistoryPage() {
   const [data, setData] = useState(null)
   const [err, setErr] = useState('')
   const [open, setOpen] = useState(null)
+  const { drugs } = useServerDrugs()
+  const drugById = useMemo(() => new Map(drugs.map((d) => [d.id, d.name])), [drugs])
+  const drugName = (id) => drugById.get(id)
 
   useEffect(() => {
     setErr('')
@@ -128,32 +176,37 @@ export default function HistoryPage() {
                 </thead>
                 <tbody>
                   {data.items.map((x) => (
-                    <tr className="pointer" key={x.log_id} onClick={() => setOpen(open === x.log_id ? null : x.log_id)}>
-                      <td className="num">{when(x.created_at)}</td>
-                      <td>{x.username ?? (x.attempted_username ? <span className="sp-warn">{x.attempted_username}</span> : <span className="muted">—</span>)}</td>
-                      <td>
-                        {['low', 'warn'].includes(TONE[x.action_type]) ? (
-                          <span className={'badge ' + TONE[x.action_type]}>{translate(ACTION_LABEL[x.action_type] ?? x.action_type)}</span>
-                        ) : (
-                          translate(ACTION_LABEL[x.action_type] ?? x.action_type)
-                        )}
-                      </td>
-                      <td className="num">
-                        {x.target_entity}
-                        {open === x.log_id && x.entity_id && <div className="muted">{x.entity_id}</div>}
-                      </td>
-                      <td className="muted">
-                        {changes(x) ? (
-                          <Clip lines={2} title={translate('Changed fields')}>
-                            {changes(x)}
-                          </Clip>
-                        ) : (
-                          <span className="muted">—</span>
-                        )}
-                        {open === x.log_id && (x.old_values || x.new_values) && <pre className="kb-json">{JSON.stringify({ old: x.old_values, new: x.new_values }, null, 2)}</pre>}
-                      </td>
-                      <td className="num">{x.ip_address ?? '—'}</td>
-                    </tr>
+                    <Fragment key={x.log_id}>
+                      <tr className={'pointer' + (open === x.log_id ? ' on' : '')} onClick={() => setOpen(open === x.log_id ? null : x.log_id)} aria-expanded={open === x.log_id}>
+                        <td className="num">{when(x.created_at)}</td>
+                        <td>{x.username ?? (x.attempted_username ? <span className="sp-warn">{x.attempted_username}</span> : <span className="muted">—</span>)}</td>
+                        <td>
+                          {['low', 'warn'].includes(TONE[x.action_type]) ? (
+                            <span className={'badge ' + TONE[x.action_type]}>{translate(ACTION_LABEL[x.action_type] ?? x.action_type)}</span>
+                          ) : (
+                            translate(ACTION_LABEL[x.action_type] ?? x.action_type)
+                          )}
+                        </td>
+                        <td className="num">{x.target_entity}</td>
+                        <td className="muted">
+                          {changes(x) ? (
+                            <Clip lines={2} title={translate('Changed fields')}>
+                              {changes(x)}
+                            </Clip>
+                          ) : (
+                            <span className="muted">—</span>
+                          )}
+                        </td>
+                        <td className="num">{x.ip_address ?? '—'}</td>
+                      </tr>
+                      {open === x.log_id && (x.entity_id || x.old_values || x.new_values) && (
+                        <tr className="audit-open">
+                          <td colSpan={6}>
+                            <AuditDetail x={x} drugName={drugName} />
+                          </td>
+                        </tr>
+                      )}
+                    </Fragment>
                   ))}
                 </tbody>
               </table>

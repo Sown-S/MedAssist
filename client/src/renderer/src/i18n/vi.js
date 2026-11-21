@@ -343,6 +343,9 @@ export const VI = {
   'Staff code': 'Mã nhân viên',
   'Last sign-in': 'Đăng nhập gần nhất',
   Created: 'Ngày tạo',
+  // Lịch sử hoạt động: hành động tạo bản ghi (khác cột ngày 'Created').
+  Added: 'Tạo mới',
+  Record: 'Bản ghi',
   'Default name — change to a real person': 'Tên mặc định — nên đổi sang tên người thật',
   Licence: 'CCHN',
   'No licence no.': 'Chưa có số CCHN',
