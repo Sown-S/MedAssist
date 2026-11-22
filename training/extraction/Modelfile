@@ -1,0 +1,20 @@
+# Modelfile cho model fine-tune bước chọn trích xuất triệu chứng (MedAssist)
+# Khớp nguyên văn TEMPLATE và PARAMETER stop của model gốc:
+# hf.co/aisingapore/Gemma-SEA-LION-v3-9B-IT-GGUF:Q4_K_M
+
+FROM ./medassist-extraction-q4_k_m.gguf
+
+TEMPLATE """{{- range $i, $_ := .Messages }}
+{{- $last := eq (len (slice $.Messages $i)) 1 }}
+{{- if or (eq .Role "user") (eq .Role "system") }}<start_of_turn>user
+{{ .Content }}<end_of_turn>
+{{ if $last }}<start_of_turn>model
+{{ end }}
+{{- else if eq .Role "assistant" }}<start_of_turn>model
+{{ .Content }}{{ if not $last }}<end_of_turn>
+{{ end }}
+{{- end }}
+{{- end }}"""
+
+PARAMETER stop <start_of_turn>
+PARAMETER stop <end_of_turn>
