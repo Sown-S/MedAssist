@@ -90,7 +90,15 @@ async function fetchPasswordPolicy() {
 export function usePasswordPolicy() {
   const [policy, setPolicy] = useState(null);
   useEffect(() => {
-    fetchPasswordPolicy().then(setPolicy);
+    // Ô đã đóng (hoặc test đã dọn môi trường) trước khi server trả lời thì bỏ qua kết quả,
+    // tránh gọi setPolicy sau khi unmount (từng làm CI lỗi ngẫu nhiên "window is not defined").
+    let active = true;
+    fetchPasswordPolicy().then((p) => {
+      if (active && typeof window !== "undefined") setPolicy(p);
+    });
+    return () => {
+      active = false;
+    };
   }, []);
   return policy;
 }
