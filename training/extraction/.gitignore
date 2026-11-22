@@ -1,0 +1,12 @@
+data/
+outputs/
+checkpoints/
+*.jsonl
+*.gguf
+*.bin
+*.safetensors
+*.pt
+*.parquet
+*.zip
+__pycache__/
+.ipynb_checkpoints/
