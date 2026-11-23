@@ -1,0 +1,21 @@
+{
+  "gguf_file": "medassist-extraction-q4_k_m.gguf",
+  "size_bytes": 5761057504,
+  "size_gib": 5.365,
+  "gguf_sha256": "0f84301ddeff50c17efdff7b84bd5fe5fe360f031b7513f41a7e6caaddde8f7a",
+  "base_model": "aisingapore/Gemma-SEA-LION-v3-9B-IT",
+  "quantization_method": "q4_k_m",
+  "lora_adapter_sha256": "8ed5d52f533cd7ccfec77509c9bc473c45abc1ff84f89972197ef67987edaf67",
+  "source_lora_dir": "/kaggle/input/notebooks/huyvdng/notebook5953e6d6b3/lora_adapter",
+  "data_sha256": {
+    "train.jsonl": "c702e5735c2333abbbdb1cfd9620b6d2282c48746633467c7fab790617af5926",
+    "val.jsonl": "20ec22aace4b024d4cb6c52dbe665ba03d780c02d874620798876b7341a9fe88",
+    "dev.jsonl": "c89f1aaaba0bcfa0dc205dce1f4f207c20d58c89fc01c47cd22fde0bb307eae3"
+  },
+  "eval_loss": 0.002332985168322921,
+  "dev_sample_check": {
+    "dev_sample_n": 40,
+    "valid_json": 40,
+    "exact_json": 39
+  }
+}
