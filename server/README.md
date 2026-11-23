@@ -308,6 +308,8 @@ trích xuất trả rỗng và số ca vượt 30 s để so các cách trích x
 
 Nhánh B của thí nghiệm fine-tune trích xuất (model gốc + few-shot): thêm `--extraction-few-shot training/extraction/few_shot_dev_examples.json`. Ví dụ chỉ chèn vào prompt khi đo, theo đúng phiên bản prompt của từng yêu cầu; prompt chạy thật không đổi. `results.json` ghi tên file, SHA-256, ID ví dụ và số yêu cầu có/không có ví dụ. Prompt dài hơn nhiều nên khi đo nhánh này đặt `OLLAMA_NUM_CTX=8192`.
 
+`--interleave`: trước mỗi ca trích xuất chạy một ca lâm sàng chế độ Full (bỏ ca cờ đỏ vì không gọi model suy luận), để đo độ trễ khi model trích xuất và model suy luận chạy xen kẽ như trên máy admin; thời gian ca lâm sàng không tính vào độ trễ trích xuất. `results.json` ghi `interleave`.
+
 ### Cụm lời kể không khớp triệu chứng (`scripts.export_unmapped`)
 
 Mỗi lượt trích xuất theo cụm lưu các cụm không khớp mã nào (đã che định danh) trong `validation_result`. Script gộp

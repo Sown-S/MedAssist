@@ -1,9 +1,12 @@
 """Chỉ số của scripts/run_eval.py: cờ đỏ, mức ưu tiên, luật, chẩn đoán phân biệt, trích xuất."""
 
 import asyncio
+from contextlib import nullcontext
+from types import SimpleNamespace
 
 import pytest
 
+from scripts import run_eval
 from scripts.run_eval import FewShotClient, clinical_metrics, extraction_metrics, input_features, unknown_codes
 
 
@@ -121,3 +124,24 @@ def test_few_shot_client_only_adds_matching_examples():
     assert first.endswith('NOW THE REAL INPUT:\n{"text":"thật"}')
     assert second == 'RULES LEGACY\n{"text":"thật"}'
     assert client.applied == {"with_examples": 1, "without_examples": 1}
+
+
+def test_run_extraction_calls_before_each_outside_latency(monkeypatch):
+    calls = []
+
+    async def fake_dispatch(text, *args, **kwargs):
+        calls.append(("extract", text))
+        return SimpleNamespace(
+            suggestions=[], strategy="phrases", prompt_version="v", completed=True, failure_code=None
+        )
+
+    monkeypatch.setattr(run_eval, "dispatch_extraction", fake_dispatch)
+    monkeypatch.setattr(run_eval, "run_node1", lambda state, reader: {})
+    monkeypatch.setattr(run_eval, "SessionLocal", nullcontext)
+    cases = [
+        {"id": "E1", "clinical_note": "a", "expected_symptoms": {}},
+        {"id": "E2", "clinical_note": "b", "expected_symptoms": {}},
+    ]
+    rows = run_eval.run_extraction(cases, None, None, None, before_each=lambda: calls.append(("warm", None)))
+    assert calls == [("warm", None), ("extract", "a"), ("warm", None), ("extract", "b")]
+    assert [r["case_id"] for r in rows] == ["E1", "E2"]
