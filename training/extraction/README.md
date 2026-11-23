@@ -45,10 +45,33 @@ docker exec medassist-ollama-1 sh -c "cd /tmp && ollama create medassist-extract
 
 ## 5. Bản khóa thí nghiệm & nhật ký artifact (trước khi nhận bộ test kín)
 
+- **Commit code dùng để đo:** `a3823c9` (tích hợp `#179`–`#181`; sẽ đồng bộ thêm PR tùy chọn đo xen kẽ cho `run_eval` của Sơn trước khi chạy chính thức 3 nhánh trên bộ kín)
 - **SHA-256 bộ test kín Tuấn đã đóng băng:** `d3cbdcfd22e2fe1846d6337abcd34d4f1b1a5d687c126da3cfea351281a200f4`
 - **SHA-256 `few_shot_dev_examples.json`:** `b2ab3624d6485af330e33a23eee270f91584fb9b2bcc65d44547b43a0b74746c`
+- **SHA-256 `Modelfile`:** `c5b792f9a3831286c98068cce9822a762e677ccc2b1b150a48c6b1134d494da3`
 - **Phiên bản prompt chọn:** `extraction-phrases-v2`, `extraction-phrases-compact-v3`
-- **Commit code dùng để đo:** *(sẽ điền commit khóa trước khi Tuấn đẩy bộ kín)*
-- **Link/vị trí lưu file GGUF (`medassist-extraction-q4_k_m.gguf`):** *(điền sau khi chạy Kaggle)*
-- **SHA-256 file GGUF:** *(điền sau khi chạy Kaggle từ `gguf_manifest.json`)*
-- **Kaggle run log (`train_metrics.json`):** *(điền sau khi chạy Kaggle)*
+- **File GGUF (`medassist-extraction-q4_k_m.gguf`):**
+  - Dung lượng & SHA-256: `5.761.057.504` bytes (`5,365 GiB`), `0f84301ddeff50c17efdff7b84bd5fe5fe360f031b7513f41a7e6caaddde8f7a` (khớp 100% [gguf_manifest.json](gguf_manifest.json), `SHA-256 = dbc2ac2f9965c8e38c71a9b145f4dd90acb74d5eaa502ed42ddd370e7fb0415c`)
+  - Link lưu file GGUF (Kaggle Output / Drive): `https://www.kaggle.com/code/huyvdng/notebook28af65fda5/output` (bản cục bộ trên máy admin tại `training/extraction/medassist-extraction-q4_k_m.gguf`, gitignored)
+  - LoRA adapter nguồn (`adapter_model.safetensors`, `SHA-256 = 8ed5d52f533cd7ccfec77509c9bc473c45abc1ff84f89972197ef67987edaf67`): `https://www.kaggle.com/code/huyvdng/notebook5953e6d6b3/output` (`r=16`, `lora_alpha=16`, `epoch=2`)
+- **Digest trong Ollama (`ollama list` & `/api/tags` trên container `medassist-ollama-1`):**
+  - Model fine-tune `medassist-extraction:ft-v1`: ID `b1b184e0b10a`, digest đầy đủ `b1b184e0b10aaac149cce0dccaae49ea0848a296252d23c715de736d2536997e` (`5.761.058.044` bytes / `5.8 GB`)
+  - Model gốc `hf.co/aisingapore/Gemma-SEA-LION-v3-9B-IT-GGUF:Q4_K_M`: ID `6a9ca7d6bead`, digest đầy đủ `6a9ca7d6bead2f65f13cd3b098b7c15230bcdd25c8b8a60be1b86dbd63da88c3` (`5.761.060.089` bytes / `5.8 GB`)
+- **Kaggle run log ([train_metrics.json](train_metrics.json), `SHA-256 = d86b875a05131fb1f6a0eb5e9b25af726bc2817a03306c3bd75e0a40ef1c0b7b`):** `epoch = 2.0`, `train_runtime = 24209,8968 s`, `train_loss = 0,011246`, `eval_loss = 0,002333`; `dev_sample_check` (`n=40`): `valid_json = 40/40`, `exact_json = 39/40` (`97,5%`). *(Ghi chú: `eval_loss` rất thấp do dữ liệu tổng hợp theo mẫu; chỉ kết luận hiệu năng trên bộ test kín ~30 ca.)*
+- **Cấu hình đo cho cả 3 nhánh A / B / C:**
+  - Kho tri thức Active: `KB-2026.12.1` (`knowledge/symptoms/symptom_catalog.md` `SHA-256 = a5187d3c07c33a51315a22b3883c0eaad40f6e2079ba881e0b64a7e89d9a3970`; `CandidateIndex` `lexical-phrases-v2` `catalogue_sha256 = aab3a2d992a58c003f713c90bf8175f530a8d6c147f7251d08a6b404377576a0`)
+  - Chiến lược: `phrases`, `K = 4` (`AI_EXTRACTION_CANDIDATES_PER_PHRASE=4`), ngân sách `30 s` (`EXTRACTION_TIMEOUT_SECONDS=30`)
+  - Context: Nhánh A & C dùng `OLLAMA_NUM_CTX=0` (mặc định máy chủ `4096`); Nhánh B dùng `OLLAMA_NUM_CTX=8192`
+  - Kiểm tra nạp Ollama (smoke test `6` ca từ `dev.jsonl` — `3` `v2` + `3` `compact-v3` qua `scripts.run_eval --extraction-only`, queue wait = 0): `6/6` hoàn tất, `6/6` khớp hoàn toàn (`p50 / p95 / max = 6685 / 9600 / 9600 ms`).
+- **Ba lệnh `scripts.run_eval` cho 3 nhánh (chạy từ `server/`, hoặc chạy tương đương trong container `medassist-api-1` với cùng biến môi trường; nhánh C sẽ gắn thêm tùy chọn đo xen kẽ sau khi PR của Sơn merge):**
+
+```powershell
+# Nhánh A — model gốc
+$env:OLLAMA_EXTRACTION_MODEL=""; $env:OLLAMA_NUM_CTX="0"; python -m scripts.run_eval --extraction-only --testset ..\evaluation\testset_extraction_ft --extraction-strategy phrases --candidates-per-phrase 4 --out ..\evaluation\results\extraction_ft_branch_a
+
+# Nhánh B — model gốc + few-shot từ dev
+$env:OLLAMA_EXTRACTION_MODEL=""; $env:OLLAMA_NUM_CTX="8192"; python -m scripts.run_eval --extraction-only --testset ..\evaluation\testset_extraction_ft --extraction-strategy phrases --candidates-per-phrase 4 --extraction-few-shot ..\training\extraction\few_shot_dev_examples.json --out ..\evaluation\results\extraction_ft_branch_b
+
+# Nhánh C — model fine-tune (chờ gắn thêm tùy chọn đo xen kẽ từ PR của Sơn trước khi chạy chính thức)
+$env:OLLAMA_EXTRACTION_MODEL="medassist-extraction:ft-v1"; $env:OLLAMA_NUM_CTX="0"; python -m scripts.run_eval --extraction-only --testset ..\evaluation\testset_extraction_ft --extraction-strategy phrases --candidates-per-phrase 4 --out ..\evaluation\results\extraction_ft_branch_c
+```
