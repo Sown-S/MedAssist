@@ -12,6 +12,7 @@ import json
 import sys
 import time
 from collections import Counter
+from itertools import cycle
 from pathlib import Path
 from statistics import mean, median
 
@@ -223,11 +224,16 @@ class FewShotClient:
         return await self._inner.generate_json(prompt=prompt, schema=schema, timeout_seconds=timeout_seconds)
 
 
-def run_extraction(cases: list[dict], reader: SnapshotReader, llm_client, options: ExtractionOptions) -> list[dict]:
-    """Mỗi ca nhận đủ 30 s vì đo trực tiếp, không qua hàng đợi (queue wait = 0)."""
+def run_extraction(
+    cases: list[dict], reader: SnapshotReader, llm_client, options: ExtractionOptions, before_each=None
+) -> list[dict]:
+    """Mỗi ca nhận đủ 30 s vì đo trực tiếp, không qua hàng đợi (queue wait = 0).
+    before_each (--interleave) chạy trước mỗi ca, ngoài phần đo độ trễ của ca đó."""
     cache = CandidateIndexCache()
     rows = []
     for case in cases:
+        if before_each:
+            before_each()
         gate = run_node1({"input_features": input_features({"age_years": case.get("age_years")})}, reader)
         started = time.monotonic()
         with SessionLocal() as db:
@@ -350,11 +356,18 @@ def main(argv: list[str] | None = None) -> int:
         type=Path,
         help="File ví dụ few-shot (training/extraction/few_shot_dev_examples.json) cho nhánh B; chỉ dùng khi đo",
     )
+    p.add_argument(
+        "--interleave",
+        action="store_true",
+        help="Trước mỗi ca trích xuất chạy một ca lâm sàng Full (Node 3) để đo độ trễ khi hai model chạy xen kẽ",
+    )
     p.add_argument("--limit", type=int, help="Chỉ chạy N ca đầu mỗi bộ (thử nhanh)")
     p.add_argument("--out", type=Path, help="Thư mục kết quả (mặc định evaluation/results/<thời điểm>)")
     args = p.parse_args(argv)
     if args.extraction_only and args.skip_extraction:
         p.error("--extraction-only và --skip-extraction loại trừ nhau")
+    if args.interleave and args.skip_extraction:
+        p.error("--interleave cần phần trích xuất")
     if args.candidates_per_phrase < 1:
         p.error("--candidates-per-phrase phải là số nguyên dương")
     options = ExtractionOptions(strategy=args.extraction_strategy, per_phrase_limit=args.candidates_per_phrase)
@@ -406,8 +419,20 @@ def main(argv: list[str] | None = None) -> int:
         print("CẢNH BÁO:", w, file=sys.stderr)
 
     clinical_rows = {m: run_clinical(clinical_cases, reader, m, llm_client) for m in modes}
+    before_each = None
+    if args.interleave:
+        if not with_llm:
+            print("LLM_PROVIDER=none: --interleave cần LLM.", file=sys.stderr)
+            return 1
+        # Ca cờ đỏ dừng ở Node 1, không gọi model suy luận nên không gây đổi model.
+        warm_cases = read_jsonl(args.testset / "clinical_cases_labeled.jsonl")
+        warm = cycle([c for c in warm_cases if c["expected_priority"] != "Emergency"])
+
+        def before_each():
+            run_clinical([next(warm)], reader, "Full", llm_client)
+
     extraction_rows = (
-        run_extraction(extraction_cases, SnapshotReader(snapshot), extraction_client, options)
+        run_extraction(extraction_cases, SnapshotReader(snapshot), extraction_client, options, before_each)
         if with_llm and not args.skip_extraction and extraction_cases
         else None
     )
@@ -429,6 +454,7 @@ def main(argv: list[str] | None = None) -> int:
         if options.strategy == "phrases":
             meta["candidates_per_phrase"] = options.per_phrase_limit
         meta["extraction_prompt"] = ", ".join(sorted({r["prompt_version"] for r in extraction_rows}))
+        meta["interleave"] = args.interleave
         if few_shot is not None:
             meta["extraction_few_shot"] = {
                 "file": args.extraction_few_shot.name,
