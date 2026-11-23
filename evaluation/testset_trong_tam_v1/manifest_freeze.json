@@ -1,0 +1,61 @@
+{
+  "kb_release": "KB-2026.12.1",
+  "is_frozen": false,
+  "phase": "B",
+  "review_status": "PENDING_PHYSICIAN_REVIEW",
+  "benchmark_status": "NOT_RUN",
+  "combined_order": [
+    "clinical_cases_labeled.jsonl"
+  ],
+  "sha256_normalization": "CRLF to LF before hashing",
+  "combined_sha256_formula": "sha256(\":\".join(file_hashes_in_combined_order).encode(\"utf-8\"))",
+  "files": [
+    {
+      "path": "evaluation/testset_trong_tam_v1/clinical_cases_labeled.jsonl",
+      "num_cases": 50,
+      "sha256": "559c7f5016a9cb6d27cedfb0d2e5d7a711f17927e19ca391863d504a7f84af3c",
+      "raw_sha256": "559c7f5016a9cb6d27cedfb0d2e5d7a711f17927e19ca391863d504a7f84af3c"
+    }
+  ],
+  "combined_sha256": "dd8e8cd0add9b3470d21305dc919a707b51210988f8a4b78e2abcd88f217ec78",
+  "review_csv_sha256": {
+    "author_proposed_labels.csv": "15a5f87e8bead3544fd8156769add413b997c8e024d8912797af070ad7777ab2",
+    "phieu_gan_nhan_huy.csv": "7c459dcf636fff17e23b8c8915bb83d5e54170c2658ecc8568a0cabd73ab1414",
+    "huy_labels.csv": "f7aeaee529ef3f17dbd76bd344132591e5cc3a2c8598fe0527ae14d176cf07c3"
+  },
+  "reference_file_sha256": {
+    "evaluation/testset/README.md": "08775eab5279bdd3b3ef1858cbd357ccfbc5dbfd918d8046fe868351e6496bbd",
+    "evaluation/testset/clinical_cases_labeled.jsonl": "10fc9b2b5c21cd5d28ec79717780e60979a9d409c87b4664e46246936b968412",
+    "evaluation/testset/cross_review_log.md": "3b6fc471099ca0a84594a3a649decf283558b3f66b083e96b228a4600e12aeb2",
+    "evaluation/testset/manifest_freeze.json": "bc771d08ca1ff08f84fe2d2e3ce3b3ac3bdd630aa2f1096ce5597e2b43bce2b1",
+    "evaluation/testset/symptom_extraction_testset.jsonl": "92e62bf63fa63a78f9595c41b8a4fdb26ca8c4517006e828031a19b390949b34",
+    "evaluation/testset_v1.4/CHANGES.md": "333d8d80c27a70deebb96710ba395ba66dfd7ebd990cf4e1c83c93975bbca5f0",
+    "evaluation/testset_v1.4/README.md": "ac7382cea1aaa77c37adf8abad80e2ae5fd7e6bec37475d4305daf36c271a909",
+    "evaluation/testset_v1.4/clinical_cases_labeled.jsonl": "2019c6f01d57081513e52c7d29e49b2c568a4842a0fad265184be2f267f21177",
+    "evaluation/testset_v1.4/freeze_v1_4.py": "00b05bfeacbd4684a777200703bc049181e6c8a5c408a1ffee6a268be3c81dcf",
+    "evaluation/testset_v1.4/manifest_freeze.json": "a806cfac9aa9205632813143627ba2fbf2386b92b12a68c544417374f3141b52",
+    "evaluation/testset_v1.4/symptom_extraction_testset.jsonl": "b1cdf74efa2ba69c9d5443ddafef80be9e5bd779ea0dfee230a138644c31e373",
+    "evaluation/testset_v1.4/verify_v1_4.py": "4b3183a741f39c7ac2c29736703712c97b50ad1f6ab3970297abe90c1bb802a5"
+  },
+  "phase_a_combined_sha256": "3233ee8fa6a7249370298db45dc1f5cd0fb570b1f1121e0b9f33af78e3159faf",
+  "agreement": {
+    "expected_priority": 50,
+    "expected_triggered_rules": 50,
+    "expected_top_conditions": 40,
+    "all_fields": 40,
+    "denominator": 50,
+    "pending_case_ids": [
+      "CLIN-T06",
+      "CLIN-T12",
+      "CLIN-T18",
+      "CLIN-T22",
+      "CLIN-T23",
+      "CLIN-T24",
+      "CLIN-T31",
+      "CLIN-T46",
+      "CLIN-T49",
+      "CLIN-T50"
+    ],
+    "reviewer_notes": 26
+  }
+}
