@@ -45,7 +45,7 @@ docker exec medassist-ollama-1 sh -c "cd /tmp && ollama create medassist-extract
 
 ## 5. Bản khóa thí nghiệm & nhật ký artifact (trước khi nhận bộ test kín)
 
-- **Commit code dùng để đo:** `a3823c9` (tích hợp `#179`–`#181`; sẽ đồng bộ thêm PR tùy chọn đo xen kẽ cho `run_eval` của Sơn trước khi chạy chính thức 3 nhánh trên bộ kín)
+- **Commit code dùng để đo:** `c7da1ef` (đã tích hợp `#179`–`#184`, gồm `--extraction-few-shot`, bằng chứng niêm phong `#182` và `--interleave` `#183`; `server/app` giống hệt `a3823c9` nên không phải khóa lại model)
 - **SHA-256 bộ test kín Tuấn đã đóng băng:** `d3cbdcfd22e2fe1846d6337abcd34d4f1b1a5d687c126da3cfea351281a200f4`
 - **SHA-256 `few_shot_dev_examples.json`:** `b2ab3624d6485af330e33a23eee270f91584fb9b2bcc65d44547b43a0b74746c`
 - **SHA-256 `Modelfile`:** `c5b792f9a3831286c98068cce9822a762e677ccc2b1b150a48c6b1134d494da3`
@@ -61,17 +61,25 @@ docker exec medassist-ollama-1 sh -c "cd /tmp && ollama create medassist-extract
 - **Cấu hình đo cho cả 3 nhánh A / B / C:**
   - Kho tri thức Active: `KB-2026.12.1` (`knowledge/symptoms/symptom_catalog.md` `SHA-256 = a5187d3c07c33a51315a22b3883c0eaad40f6e2079ba881e0b64a7e89d9a3970`; `CandidateIndex` `lexical-phrases-v2` `catalogue_sha256 = aab3a2d992a58c003f713c90bf8175f530a8d6c147f7251d08a6b404377576a0`)
   - Chiến lược: `phrases`, `K = 4` (`AI_EXTRACTION_CANDIDATES_PER_PHRASE=4`), ngân sách `30 s` (`EXTRACTION_TIMEOUT_SECONDS=30`)
-  - Context: Nhánh A & C dùng `OLLAMA_NUM_CTX=0` (mặc định máy chủ `4096`); Nhánh B dùng `OLLAMA_NUM_CTX=8192`
+  - Context: Nhánh A & C dùng `OLLAMA_NUM_CTX=0` (mặc định máy chủ `4096`); Nhánh B dùng `OLLAMA_NUM_CTX=8192` (lưu ý `OLLAMA_NUM_CTX=8192` áp dụng cho cả Node 3 khi chạy `--interleave`, cần ghi rõ khi báo cáo độ trễ)
   - Kiểm tra nạp Ollama (smoke test `6` ca từ `dev.jsonl` — `3` `v2` + `3` `compact-v3` qua `scripts.run_eval --extraction-only`, queue wait = 0): `6/6` hoàn tất, `6/6` khớp hoàn toàn (`p50 / p95 / max = 6685 / 9600 / 9600 ms`).
-- **Ba lệnh `scripts.run_eval` cho 3 nhánh (chạy từ `server/`, hoặc chạy tương đương trong container `medassist-api-1` với cùng biến môi trường; nhánh C sẽ gắn thêm tùy chọn đo xen kẽ sau khi PR của Sơn merge):**
+- **Quy trình & 6 lệnh `scripts.run_eval` cho 3 nhánh (liên tiếp `_seq` + xen kẽ `--interleave` `_inter`, chạy từ `server/` sau khi kéo bộ test kín và chạy `evaluation/testset_extraction_ft/verify_extraction_ft.py` đạt `PASS` khớp `d3cbdcfd22e2fe1846d6337abcd34d4f1b1a5d687c126da3cfea351281a200f4`; hoặc chạy tương đương trong container `medassist-api-1` cùng biến môi trường):**
 
 ```powershell
-# Nhánh A — model gốc
-$env:OLLAMA_EXTRACTION_MODEL=""; $env:OLLAMA_NUM_CTX="0"; python -m scripts.run_eval --extraction-only --testset ..\evaluation\testset_extraction_ft --extraction-strategy phrases --candidates-per-phrase 4 --out ..\evaluation\results\extraction_ft_branch_a
-
-# Nhánh B — model gốc + few-shot từ dev
-$env:OLLAMA_EXTRACTION_MODEL=""; $env:OLLAMA_NUM_CTX="8192"; python -m scripts.run_eval --extraction-only --testset ..\evaluation\testset_extraction_ft --extraction-strategy phrases --candidates-per-phrase 4 --extraction-few-shot ..\training\extraction\few_shot_dev_examples.json --out ..\evaluation\results\extraction_ft_branch_b
-
-# Nhánh C — model fine-tune (chờ gắn thêm tùy chọn đo xen kẽ từ PR của Sơn trước khi chạy chính thức)
-$env:OLLAMA_EXTRACTION_MODEL="medassist-extraction:ft-v1"; $env:OLLAMA_NUM_CTX="0"; python -m scripts.run_eval --extraction-only --testset ..\evaluation\testset_extraction_ft --extraction-strategy phrases --candidates-per-phrase 4 --out ..\evaluation\results\extraction_ft_branch_c
+$c = @('--extraction-only','--testset','..\evaluation\testset_v1.4','--extraction-cases','..\evaluation\testset_extraction_ft\symptom_extraction_testset_ft.jsonl','--extraction-strategy','phrases','--candidates-per-phrase','4')
+$fs = @('--extraction-few-shot','..\training\extraction\few_shot_dev_examples.json')
+# A
+$env:OLLAMA_EXTRACTION_MODEL=""; $env:OLLAMA_NUM_CTX="0"
+python -m scripts.run_eval @c --out ..\evaluation\results\extraction_ft_a_seq
+python -m scripts.run_eval @c --interleave --out ..\evaluation\results\extraction_ft_a_inter
+# B
+$env:OLLAMA_EXTRACTION_MODEL=""; $env:OLLAMA_NUM_CTX="8192"
+python -m scripts.run_eval @c @fs --out ..\evaluation\results\extraction_ft_b_seq
+python -m scripts.run_eval @c @fs --interleave --out ..\evaluation\results\extraction_ft_b_inter
+# C
+$env:OLLAMA_EXTRACTION_MODEL="medassist-extraction:ft-v1"; $env:OLLAMA_NUM_CTX="0"
+python -m scripts.run_eval @c --out ..\evaluation\results\extraction_ft_c_seq
+python -m scripts.run_eval @c --interleave --out ..\evaluation\results\extraction_ft_c_inter
 ```
+
+> **Ghi chú báo cáo kết quả:** `--testset ..\evaluation\testset_v1.4` chỉ dùng làm nguồn ca lâm sàng Node 3 khi bật `--interleave` (nên `meta.testset` trong `results.json` ghi `v1.4`). README tổng hợp kết quả phải ghi rõ ca trích xuất là bộ test kín `symptom_extraction_testset_ft.jsonl` (`SHA-256 = d3cbdcfd22e2fe1846d6337abcd34d4f1b1a5d687c126da3cfea351281a200f4`) kèm kết quả `PASS` của verifier; tiêu chí `p95` mục 6 so nhánh C với nhánh A ở mức xen kẽ (`--interleave`); và nhánh B dùng `OLLAMA_NUM_CTX=8192` cho cả Node 3 khi xen kẽ.
