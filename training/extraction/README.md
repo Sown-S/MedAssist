@@ -47,8 +47,11 @@ docker exec medassist-ollama-1 sh -c "cd /tmp && ollama create medassist-extract
 
 - **SHA-256 bộ test kín Tuấn đã đóng băng:** `d3cbdcfd22e2fe1846d6337abcd34d4f1b1a5d687c126da3cfea351281a200f4`
 - **SHA-256 `few_shot_dev_examples.json`:** `b2ab3624d6485af330e33a23eee270f91584fb9b2bcc65d44547b43a0b74746c`
+- **SHA-256 `Modelfile`:** `c5b792f9a3831286c98068cce9822a762e677ccc2b1b150a48c6b1134d494da3`
 - **Phiên bản prompt chọn:** `extraction-phrases-v2`, `extraction-phrases-compact-v3`
-- **Commit code dùng để đo:** *(sẽ điền commit khóa trước khi Tuấn đẩy bộ kín)*
-- **Link/vị trí lưu file GGUF (`medassist-extraction-q4_k_m.gguf`):** *(điền sau khi chạy Kaggle)*
-- **SHA-256 file GGUF:** *(điền sau khi chạy Kaggle từ `gguf_manifest.json`)*
-- **Kaggle run log (`train_metrics.json`):** *(điền sau khi chạy Kaggle)*
+- **Commit code dùng để đo:** bản khóa là chính commit cập nhật `training/extraction/` này (dựa trên commit cơ sở `cea2eeb`, trước khi nhận `evaluation/testset_extraction_ft/`)
+- **Vị trí lưu file GGUF (`medassist-extraction-q4_k_m.gguf`):** máy admin `training/extraction/medassist-extraction-q4_k_m.gguf` (được loại khỏi Git qua `.gitignore`; đã nạp vào container `medassist-ollama-1` với tên `medassist-extraction:ft-v1`, ID `b1b184e0b10a`)
+- **Dung lượng & SHA-256 file GGUF:** `5.761.057.504` bytes (`5,365 GiB`), `0f84301ddeff50c17efdff7b84bd5fe5fe360f031b7513f41a7e6caaddde8f7a` (khớp 100% [gguf_manifest.json](gguf_manifest.json), `SHA-256 = dbc2ac2f9965c8e38c71a9b145f4dd90acb74d5eaa502ed42ddd370e7fb0415c`)
+- **SHA-256 LoRA adapter (`adapter_model.safetensors`):** `8ed5d52f533cd7ccfec77509c9bc473c45abc1ff84f89972197ef67987edaf67` (từ Kaggle `notebook5953e6d6b3`, `r=16`, `lora_alpha=16`, `epoch=2`)
+- **Kaggle run log ([train_metrics.json](train_metrics.json), `SHA-256 = d86b875a05131fb1f6a0eb5e9b25af726bc2817a03306c3bd75e0a40ef1c0b7b`):** `epoch = 2.0`, `train_runtime = 24209,8968 s`, `train_loss = 0,011246`, `eval_loss = 0,002333`; `dev_sample_check` (`n=40`): `valid_json = 40/40`, `exact_json = 39/40` (`97,5%`).
+- **Kiểm tra nạp Ollama (`medassist-extraction:ft-v1`, `KB-2026.12.1`, smoke test `6` ca từ `dev.jsonl` — `3` ca `v2` + `3` ca `compact-v3` qua `scripts.run_eval --extraction-only`, queue wait = 0):** `6/6` hoàn tất kỹ thuật, `6/6` khớp hoàn toàn (`P / R / F1 = 100,0% / 100,0% / 100,0%`), `0` thất bại, `0` ca vượt `30 s`, `p50 / p95 / max = 6685 / 9600 / 9600 ms`.
