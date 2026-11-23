@@ -1,8 +1,10 @@
 """Chỉ số của scripts/run_eval.py: cờ đỏ, mức ưu tiên, luật, chẩn đoán phân biệt, trích xuất."""
 
+import asyncio
+
 import pytest
 
-from scripts.run_eval import clinical_metrics, extraction_metrics, input_features, unknown_codes
+from scripts.run_eval import FewShotClient, clinical_metrics, extraction_metrics, input_features, unknown_codes
 
 
 def _row(case_id, exp_p, got_p, exp_rules=(), got_rules=(), exp_top=(), got_top=(), ms=10.0):
@@ -91,3 +93,31 @@ def test_inputs_and_unknown_codes():
     assert f == {"symptoms": {"a": "PRESENT"}, "vital_signs": {"spo2_pct": 95}, "age_years": 3, "age_months": 36}
     cases = [{"case_id": "C1", "symptoms": {"a": "PRESENT", "q": "ABSENT"}}, {"id": "E1", "symptoms": {"a": "x"}}]
     assert unknown_codes(cases, "symptoms", {"a"}) == {"C1": ["q"]}
+
+
+class _Capture:
+    model = "m"
+
+    def __init__(self):
+        self.prompts = []
+
+    async def generate_json(self, *, prompt, schema, timeout_seconds):
+        self.prompts.append(prompt)
+        return {}
+
+
+def test_few_shot_client_only_adds_matching_examples():
+    inner = _Capture()
+    shots = [
+        {"user_prompt": 'RULES V2\n{"text":"ví dụ"}', "assistant_json": '{"p1":[]}'},
+        {"user_prompt": 'RULES COMPACT\n{"text":"khác"}', "assistant_json": '{"p1":["c1:P"]}'},
+    ]
+    client = FewShotClient(inner, shots)
+    asyncio.run(client.generate_json(prompt='RULES V2\n{"text":"thật"}', schema={}, timeout_seconds=1))
+    asyncio.run(client.generate_json(prompt='RULES LEGACY\n{"text":"thật"}', schema={}, timeout_seconds=1))
+    first, second = inner.prompts
+    assert first.startswith("RULES V2\nEXAMPLES")
+    assert '{"text":"ví dụ"}' in first and '{"p1":[]}' in first and "khác" not in first
+    assert first.endswith('NOW THE REAL INPUT:\n{"text":"thật"}')
+    assert second == 'RULES LEGACY\n{"text":"thật"}'
+    assert client.applied == {"with_examples": 1, "without_examples": 1}
