@@ -1,0 +1,936 @@
+{
+  "dataset_label": "Bộ test kín 30 ca (symptom_extraction_testset_ft.jsonl, SHA-256 d3cbdcfd22e2fe1846d6337abcd34d4f1b1a5d687c126da3cfea351281a200f4, verifier PASS)",
+  "cases_file": {
+    "path": "evaluation\\testset_extraction_ft\\symptom_extraction_testset_ft.jsonl",
+    "sha256": "dbdb38555a8373eea1d30d38795955cad8d17b38fd9f9bf39c8075dea7f69d95",
+    "count": 30
+  },
+  "knowledge_release": "KB-2026.12.1",
+  "active_symptom_count": 299,
+  "inputs": {
+    "A": {
+      "path": "evaluation\\results\\extraction_ft_a_seq\\results.json",
+      "sha256": "acb2f25c59f8c39049c12fcf69200c43bef609e3ed1c39af24de0c506e976ea0",
+      "extraction_model": "hf.co/aisingapore/Gemma-SEA-LION-v3-9B-IT-GGUF:Q4_K_M",
+      "extraction_prompt": "extraction-phrases-compact-v3, extraction-phrases-v2"
+    },
+    "B": {
+      "path": "evaluation\\results\\extraction_ft_b_seq\\results.json",
+      "sha256": "388253a2564a64dbe10be841d2968ad153eef50386c401a5c26097b4e40df179",
+      "extraction_model": "hf.co/aisingapore/Gemma-SEA-LION-v3-9B-IT-GGUF:Q4_K_M",
+      "extraction_prompt": "extraction-phrases-compact-v3, extraction-phrases-v2"
+    },
+    "C": {
+      "path": "evaluation\\results\\extraction_ft_c_seq\\results.json",
+      "sha256": "e0f0c2fe48b113847250edc3af9e67d5f0145fd03614b2bec1b32039807557b2",
+      "extraction_model": "medassist-extraction:ft-v1",
+      "extraction_prompt": "extraction-phrases-compact-v3, extraction-phrases-v2"
+    },
+    "interleaved": null,
+    "interleave_runs": {
+      "A": {
+        "path": "evaluation\\results\\extraction_ft_a_inter\\results.json",
+        "sha256": "e0b5070c45d8d9b9ef50d61e2aeedf7ffb6a1c91751387e259358d19958e7132",
+        "extraction_model": "hf.co/aisingapore/Gemma-SEA-LION-v3-9B-IT-GGUF:Q4_K_M",
+        "extraction_prompt": "extraction-phrases-compact-v3, extraction-phrases-v2"
+      },
+      "B": {
+        "path": "evaluation\\results\\extraction_ft_b_inter\\results.json",
+        "sha256": "2d411e70f2010b8b35ac5e9f613b937e7e47de524fcce8b898cc7931eea351d8",
+        "extraction_model": "hf.co/aisingapore/Gemma-SEA-LION-v3-9B-IT-GGUF:Q4_K_M",
+        "extraction_prompt": "extraction-phrases-compact-v3, extraction-phrases-v2"
+      },
+      "C": {
+        "path": "evaluation\\results\\extraction_ft_c_inter\\results.json",
+        "sha256": "c6296c32034b90ef6d7dcc639bf701f4d7e34ad54a0e61ec3cf0b9d061aceb4c",
+        "extraction_model": "medassist-extraction:ft-v1",
+        "extraction_prompt": "extraction-phrases-compact-v3, extraction-phrases-v2"
+      }
+    }
+  },
+  "branches": {
+    "A": {
+      "cases": 30,
+      "code_and_state": {
+        "precision": 0.6451612903225806,
+        "recall": 0.6896551724137931,
+        "f1": 0.6666666666666667,
+        "tp": 40,
+        "fp": 22,
+        "fn": 18
+      },
+      "code_only": {
+        "precision": 0.6935483870967742,
+        "recall": 0.7413793103448276,
+        "f1": 0.7166666666666668,
+        "tp": 43,
+        "fp": 19,
+        "fn": 15
+      },
+      "exact_cases": 12,
+      "exact_rate": 0.4,
+      "completed_cases": 29,
+      "failed_cases": {
+        "EXT-FT-014": "CONFLICTING_SELECTION"
+      },
+      "over_30s_cases": [],
+      "empty_with_expected_cases": [
+        "EXT-FT-014"
+      ],
+      "negation_absent": {
+        "expected_absent": 28,
+        "tp_absent": 18,
+        "fp_absent": 9,
+        "recall_absent": 0.6428571428571429,
+        "precision_absent": 0.6666666666666666,
+        "f1_absent": 0.6545454545454545,
+        "absent_to_present_flips": 2,
+        "present_to_absent_flips": 0
+      },
+      "hallucination": {
+        "total_predicted": 62,
+        "not_in_active_catalog": 0,
+        "not_in_top4_candidates": 0,
+        "hallucinated_rate_catalog": 0.0,
+        "hallucinated_rate_top4": 0.0
+      },
+      "retrieval_vs_selection": {
+        "total_expected": 58,
+        "expected_in_top4": 52,
+        "retrieval_coverage_top4": 0.896551724137931,
+        "fn_total": 18,
+        "fn_retrieval_miss": 6,
+        "fn_selection_miss": 12,
+        "fn_selection_omitted": 9,
+        "fn_selection_wrong_state": 3,
+        "selection_recall_given_in_top4": 0.7692307692307693
+      },
+      "latency": {
+        "mean_ms": 7947.2300000000005,
+        "p50_ms": 7239.4,
+        "p95_ms": 12387.2,
+        "max_ms": 18061.0
+      },
+      "unmapped": {
+        "available": false,
+        "note": "chưa có trường unmapped_phrases trong results.json của run_eval"
+      }
+    },
+    "B": {
+      "cases": 30,
+      "code_and_state": {
+        "precision": 0.6428571428571429,
+        "recall": 0.7758620689655172,
+        "f1": 0.703125,
+        "tp": 45,
+        "fp": 25,
+        "fn": 13
+      },
+      "code_only": {
+        "precision": 0.6428571428571429,
+        "recall": 0.7758620689655172,
+        "f1": 0.703125,
+        "tp": 45,
+        "fp": 25,
+        "fn": 13
+      },
+      "exact_cases": 14,
+      "exact_rate": 0.4666666666666667,
+      "completed_cases": 29,
+      "failed_cases": {
+        "EXT-FT-005": "CONFLICTING_SELECTION"
+      },
+      "over_30s_cases": [],
+      "empty_with_expected_cases": [
+        "EXT-FT-005"
+      ],
+      "negation_absent": {
+        "expected_absent": 28,
+        "tp_absent": 23,
+        "fp_absent": 9,
+        "recall_absent": 0.8214285714285714,
+        "precision_absent": 0.71875,
+        "f1_absent": 0.7666666666666666,
+        "absent_to_present_flips": 0,
+        "present_to_absent_flips": 0
+      },
+      "hallucination": {
+        "total_predicted": 70,
+        "not_in_active_catalog": 0,
+        "not_in_top4_candidates": 0,
+        "hallucinated_rate_catalog": 0.0,
+        "hallucinated_rate_top4": 0.0
+      },
+      "retrieval_vs_selection": {
+        "total_expected": 58,
+        "expected_in_top4": 52,
+        "retrieval_coverage_top4": 0.896551724137931,
+        "fn_total": 13,
+        "fn_retrieval_miss": 6,
+        "fn_selection_miss": 7,
+        "fn_selection_omitted": 7,
+        "fn_selection_wrong_state": 0,
+        "selection_recall_given_in_top4": 0.8653846153846154
+      },
+      "latency": {
+        "mean_ms": 11984.333333333334,
+        "p50_ms": 11623.2,
+        "p95_ms": 19545.1,
+        "max_ms": 20379.7
+      },
+      "unmapped": {
+        "available": false,
+        "note": "chưa có trường unmapped_phrases trong results.json của run_eval"
+      }
+    },
+    "C": {
+      "cases": 30,
+      "code_and_state": {
+        "precision": 0.6865671641791045,
+        "recall": 0.7931034482758621,
+        "f1": 0.736,
+        "tp": 46,
+        "fp": 21,
+        "fn": 12
+      },
+      "code_only": {
+        "precision": 0.7014925373134329,
+        "recall": 0.8103448275862069,
+        "f1": 0.752,
+        "tp": 47,
+        "fp": 20,
+        "fn": 11
+      },
+      "exact_cases": 16,
+      "exact_rate": 0.5333333333333333,
+      "completed_cases": 29,
+      "failed_cases": {
+        "EXT-FT-027": "CONFLICTING_SELECTION"
+      },
+      "over_30s_cases": [],
+      "empty_with_expected_cases": [
+        "EXT-FT-027"
+      ],
+      "negation_absent": {
+        "expected_absent": 28,
+        "tp_absent": 26,
+        "fp_absent": 3,
+        "recall_absent": 0.9285714285714286,
+        "precision_absent": 0.896551724137931,
+        "f1_absent": 0.912280701754386,
+        "absent_to_present_flips": 1,
+        "present_to_absent_flips": 0
+      },
+      "hallucination": {
+        "total_predicted": 67,
+        "not_in_active_catalog": 0,
+        "not_in_top4_candidates": 0,
+        "hallucinated_rate_catalog": 0.0,
+        "hallucinated_rate_top4": 0.0
+      },
+      "retrieval_vs_selection": {
+        "total_expected": 58,
+        "expected_in_top4": 52,
+        "retrieval_coverage_top4": 0.896551724137931,
+        "fn_total": 12,
+        "fn_retrieval_miss": 6,
+        "fn_selection_miss": 6,
+        "fn_selection_omitted": 5,
+        "fn_selection_wrong_state": 1,
+        "selection_recall_given_in_top4": 0.8846153846153846
+      },
+      "latency": {
+        "mean_ms": 7489.413333333333,
+        "p50_ms": 7165.6,
+        "p95_ms": 10794.4,
+        "max_ms": 11222.8
+      },
+      "unmapped": {
+        "available": false,
+        "note": "chưa có trường unmapped_phrases trong results.json của run_eval"
+      }
+    }
+  },
+  "bootstrap_95ci": {
+    "C_minus_B": {
+      "f1_x": 0.736,
+      "f1_y": 0.703125,
+      "delta": 0.03287499999999999,
+      "ci_low": -0.036954951979431785,
+      "ci_high": 0.10039708578094404,
+      "n_cases": 30,
+      "n_boot": 10000,
+      "seed": 20261123,
+      "interpretation": "chưa thấy khác biệt có ý nghĩa thống kê với 30 ca (CI chứa 0)"
+    },
+    "C_minus_A": {
+      "f1_x": 0.736,
+      "f1_y": 0.6666666666666667,
+      "delta": 0.06933333333333325,
+      "ci_low": -0.016227537665294722,
+      "ci_high": 0.15589017965365953,
+      "n_cases": 30,
+      "n_boot": 10000,
+      "seed": 20261123,
+      "interpretation": "chưa thấy khác biệt có ý nghĩa thống kê với 30 ca (CI chứa 0)"
+    },
+    "B_minus_A": {
+      "f1_x": 0.703125,
+      "f1_y": 0.6666666666666667,
+      "delta": 0.03645833333333326,
+      "ci_low": -0.05342682360730811,
+      "ci_high": 0.1385284767316017,
+      "n_cases": 30,
+      "n_boot": 10000,
+      "seed": 20261123,
+      "interpretation": "chưa thấy khác biệt có ý nghĩa thống kê với 30 ca (CI chứa 0)"
+    }
+  },
+  "interleaved": null,
+  "interleave_runs": {
+    "A": {
+      "cases": 30,
+      "code_and_state": {
+        "precision": 0.640625,
+        "recall": 0.7068965517241379,
+        "f1": 0.6721311475409836,
+        "tp": 41,
+        "fp": 23,
+        "fn": 17
+      },
+      "code_only": {
+        "precision": 0.6875,
+        "recall": 0.7586206896551724,
+        "f1": 0.7213114754098361,
+        "tp": 44,
+        "fp": 20,
+        "fn": 14
+      },
+      "exact_cases": 11,
+      "exact_rate": 0.36666666666666664,
+      "completed_cases": 30,
+      "failed_cases": {},
+      "over_30s_cases": [],
+      "empty_with_expected_cases": [],
+      "negation_absent": {
+        "expected_absent": 28,
+        "tp_absent": 18,
+        "fp_absent": 9,
+        "recall_absent": 0.6428571428571429,
+        "precision_absent": 0.6666666666666666,
+        "f1_absent": 0.6545454545454545,
+        "absent_to_present_flips": 2,
+        "present_to_absent_flips": 0
+      },
+      "hallucination": {
+        "total_predicted": 64,
+        "not_in_active_catalog": 0,
+        "not_in_top4_candidates": 0,
+        "hallucinated_rate_catalog": 0.0,
+        "hallucinated_rate_top4": 0.0
+      },
+      "retrieval_vs_selection": {
+        "total_expected": 58,
+        "expected_in_top4": 52,
+        "retrieval_coverage_top4": 0.896551724137931,
+        "fn_total": 17,
+        "fn_retrieval_miss": 6,
+        "fn_selection_miss": 11,
+        "fn_selection_omitted": 8,
+        "fn_selection_wrong_state": 3,
+        "selection_recall_given_in_top4": 0.7884615384615384
+      },
+      "latency": {
+        "mean_ms": 7656.4,
+        "p50_ms": 7273.7,
+        "p95_ms": 11988.8,
+        "max_ms": 12572.1
+      },
+      "unmapped": {
+        "available": false,
+        "note": "chưa có trường unmapped_phrases trong results.json của run_eval"
+      }
+    },
+    "B": {
+      "cases": 30,
+      "code_and_state": {
+        "precision": 0.6428571428571429,
+        "recall": 0.7758620689655172,
+        "f1": 0.703125,
+        "tp": 45,
+        "fp": 25,
+        "fn": 13
+      },
+      "code_only": {
+        "precision": 0.6428571428571429,
+        "recall": 0.7758620689655172,
+        "f1": 0.703125,
+        "tp": 45,
+        "fp": 25,
+        "fn": 13
+      },
+      "exact_cases": 14,
+      "exact_rate": 0.4666666666666667,
+      "completed_cases": 29,
+      "failed_cases": {
+        "EXT-FT-005": "CONFLICTING_SELECTION"
+      },
+      "over_30s_cases": [],
+      "empty_with_expected_cases": [
+        "EXT-FT-005"
+      ],
+      "negation_absent": {
+        "expected_absent": 28,
+        "tp_absent": 23,
+        "fp_absent": 9,
+        "recall_absent": 0.8214285714285714,
+        "precision_absent": 0.71875,
+        "f1_absent": 0.7666666666666666,
+        "absent_to_present_flips": 0,
+        "present_to_absent_flips": 0
+      },
+      "hallucination": {
+        "total_predicted": 70,
+        "not_in_active_catalog": 0,
+        "not_in_top4_candidates": 0,
+        "hallucinated_rate_catalog": 0.0,
+        "hallucinated_rate_top4": 0.0
+      },
+      "retrieval_vs_selection": {
+        "total_expected": 58,
+        "expected_in_top4": 52,
+        "retrieval_coverage_top4": 0.896551724137931,
+        "fn_total": 13,
+        "fn_retrieval_miss": 6,
+        "fn_selection_miss": 7,
+        "fn_selection_omitted": 7,
+        "fn_selection_wrong_state": 0,
+        "selection_recall_given_in_top4": 0.8653846153846154
+      },
+      "latency": {
+        "mean_ms": 11819.67,
+        "p50_ms": 11373.45,
+        "p95_ms": 19083.5,
+        "max_ms": 21005.9
+      },
+      "unmapped": {
+        "available": false,
+        "note": "chưa có trường unmapped_phrases trong results.json của run_eval"
+      }
+    },
+    "C": {
+      "cases": 30,
+      "code_and_state": {
+        "precision": 0.696969696969697,
+        "recall": 0.7931034482758621,
+        "f1": 0.7419354838709677,
+        "tp": 46,
+        "fp": 20,
+        "fn": 12
+      },
+      "code_only": {
+        "precision": 0.7121212121212122,
+        "recall": 0.8103448275862069,
+        "f1": 0.7580645161290323,
+        "tp": 47,
+        "fp": 19,
+        "fn": 11
+      },
+      "exact_cases": 16,
+      "exact_rate": 0.5333333333333333,
+      "completed_cases": 29,
+      "failed_cases": {
+        "EXT-FT-027": "CONFLICTING_SELECTION"
+      },
+      "over_30s_cases": [],
+      "empty_with_expected_cases": [
+        "EXT-FT-027"
+      ],
+      "negation_absent": {
+        "expected_absent": 28,
+        "tp_absent": 26,
+        "fp_absent": 2,
+        "recall_absent": 0.9285714285714286,
+        "precision_absent": 0.9285714285714286,
+        "f1_absent": 0.9285714285714286,
+        "absent_to_present_flips": 1,
+        "present_to_absent_flips": 0
+      },
+      "hallucination": {
+        "total_predicted": 66,
+        "not_in_active_catalog": 0,
+        "not_in_top4_candidates": 0,
+        "hallucinated_rate_catalog": 0.0,
+        "hallucinated_rate_top4": 0.0
+      },
+      "retrieval_vs_selection": {
+        "total_expected": 58,
+        "expected_in_top4": 52,
+        "retrieval_coverage_top4": 0.896551724137931,
+        "fn_total": 12,
+        "fn_retrieval_miss": 6,
+        "fn_selection_miss": 6,
+        "fn_selection_omitted": 5,
+        "fn_selection_wrong_state": 1,
+        "selection_recall_given_in_top4": 0.8846153846153846
+      },
+      "latency": {
+        "mean_ms": 11402.91,
+        "p50_ms": 11538.3,
+        "p95_ms": 15535.5,
+        "max_ms": 16987.2
+      },
+      "unmapped": {
+        "available": false,
+        "note": "chưa có trường unmapped_phrases trong results.json của run_eval"
+      }
+    }
+  },
+  "interleave_bootstrap_95ci": {
+    "C_minus_B": {
+      "f1_x": 0.7419354838709677,
+      "f1_y": 0.703125,
+      "delta": 0.03881048387096775,
+      "ci_low": -0.027634952285999187,
+      "ci_high": 0.10329022341412807,
+      "n_cases": 30,
+      "n_boot": 10000,
+      "seed": 20261123,
+      "interpretation": "chưa thấy khác biệt có ý nghĩa thống kê với 30 ca (CI chứa 0)"
+    },
+    "C_minus_A": {
+      "f1_x": 0.7419354838709677,
+      "f1_y": 0.6721311475409836,
+      "delta": 0.06980433632998417,
+      "ci_low": -0.010835597458582657,
+      "ci_high": 0.14857231313578062,
+      "n_cases": 30,
+      "n_boot": 10000,
+      "seed": 20261123,
+      "interpretation": "chưa thấy khác biệt có ý nghĩa thống kê với 30 ca (CI chứa 0)"
+    },
+    "B_minus_A": {
+      "f1_x": 0.703125,
+      "f1_y": 0.6721311475409836,
+      "delta": 0.030993852459016424,
+      "ci_low": -0.052494127572288704,
+      "ci_high": 0.12567870058099456,
+      "n_cases": 30,
+      "n_boot": 10000,
+      "seed": 20261123,
+      "interpretation": "chưa thấy khác biệt có ý nghĩa thống kê với 30 ca (CI chứa 0)"
+    }
+  },
+  "halves": {
+    "test-1": {
+      "A": {
+        "cases": 15,
+        "code_and_state": {
+          "precision": 0.5882352941176471,
+          "recall": 0.6896551724137931,
+          "f1": 0.6349206349206349,
+          "tp": 20,
+          "fp": 14,
+          "fn": 9
+        },
+        "code_only": {
+          "precision": 0.6470588235294118,
+          "recall": 0.7586206896551724,
+          "f1": 0.6984126984126984,
+          "tp": 22,
+          "fp": 12,
+          "fn": 7
+        },
+        "exact_cases": 5,
+        "exact_rate": 0.3333333333333333,
+        "completed_cases": 15,
+        "failed_cases": {},
+        "over_30s_cases": [],
+        "empty_with_expected_cases": [],
+        "negation_absent": {
+          "expected_absent": 14,
+          "tp_absent": 9,
+          "fp_absent": 6,
+          "recall_absent": 0.6428571428571429,
+          "precision_absent": 0.6,
+          "f1_absent": 0.6206896551724138,
+          "absent_to_present_flips": 2,
+          "present_to_absent_flips": 0
+        },
+        "hallucination": {
+          "total_predicted": 34,
+          "not_in_active_catalog": 0,
+          "not_in_top4_candidates": 0,
+          "hallucinated_rate_catalog": 0.0,
+          "hallucinated_rate_top4": 0.0
+        },
+        "retrieval_vs_selection": {
+          "total_expected": 29,
+          "expected_in_top4": 25,
+          "retrieval_coverage_top4": 0.8620689655172413,
+          "fn_total": 9,
+          "fn_retrieval_miss": 4,
+          "fn_selection_miss": 5,
+          "fn_selection_omitted": 3,
+          "fn_selection_wrong_state": 2,
+          "selection_recall_given_in_top4": 0.8
+        },
+        "latency": {
+          "mean_ms": 7692.3133333333335,
+          "p50_ms": 7228.2,
+          "p95_ms": 11298.5,
+          "max_ms": 12387.2
+        },
+        "unmapped": {
+          "available": false,
+          "note": "chưa có trường unmapped_phrases trong results.json của run_eval"
+        }
+      },
+      "B": {
+        "cases": 15,
+        "code_and_state": {
+          "precision": 0.6363636363636364,
+          "recall": 0.7241379310344828,
+          "f1": 0.6774193548387097,
+          "tp": 21,
+          "fp": 12,
+          "fn": 8
+        },
+        "code_only": {
+          "precision": 0.6363636363636364,
+          "recall": 0.7241379310344828,
+          "f1": 0.6774193548387097,
+          "tp": 21,
+          "fp": 12,
+          "fn": 8
+        },
+        "exact_cases": 7,
+        "exact_rate": 0.4666666666666667,
+        "completed_cases": 14,
+        "failed_cases": {
+          "EXT-FT-005": "CONFLICTING_SELECTION"
+        },
+        "over_30s_cases": [],
+        "empty_with_expected_cases": [
+          "EXT-FT-005"
+        ],
+        "negation_absent": {
+          "expected_absent": 14,
+          "tp_absent": 11,
+          "fp_absent": 3,
+          "recall_absent": 0.7857142857142857,
+          "precision_absent": 0.7857142857142857,
+          "f1_absent": 0.7857142857142857,
+          "absent_to_present_flips": 0,
+          "present_to_absent_flips": 0
+        },
+        "hallucination": {
+          "total_predicted": 33,
+          "not_in_active_catalog": 0,
+          "not_in_top4_candidates": 0,
+          "hallucinated_rate_catalog": 0.0,
+          "hallucinated_rate_top4": 0.0
+        },
+        "retrieval_vs_selection": {
+          "total_expected": 29,
+          "expected_in_top4": 25,
+          "retrieval_coverage_top4": 0.8620689655172413,
+          "fn_total": 8,
+          "fn_retrieval_miss": 4,
+          "fn_selection_miss": 4,
+          "fn_selection_omitted": 4,
+          "fn_selection_wrong_state": 0,
+          "selection_recall_given_in_top4": 0.84
+        },
+        "latency": {
+          "mean_ms": 12494.126666666667,
+          "p50_ms": 13650.8,
+          "p95_ms": 16251.3,
+          "max_ms": 19545.1
+        },
+        "unmapped": {
+          "available": false,
+          "note": "chưa có trường unmapped_phrases trong results.json của run_eval"
+        }
+      },
+      "C": {
+        "cases": 15,
+        "code_and_state": {
+          "precision": 0.6363636363636364,
+          "recall": 0.7241379310344828,
+          "f1": 0.6774193548387097,
+          "tp": 21,
+          "fp": 12,
+          "fn": 8
+        },
+        "code_only": {
+          "precision": 0.6363636363636364,
+          "recall": 0.7241379310344828,
+          "f1": 0.6774193548387097,
+          "tp": 21,
+          "fp": 12,
+          "fn": 8
+        },
+        "exact_cases": 7,
+        "exact_rate": 0.4666666666666667,
+        "completed_cases": 14,
+        "failed_cases": {
+          "EXT-FT-027": "CONFLICTING_SELECTION"
+        },
+        "over_30s_cases": [],
+        "empty_with_expected_cases": [
+          "EXT-FT-027"
+        ],
+        "negation_absent": {
+          "expected_absent": 14,
+          "tp_absent": 13,
+          "fp_absent": 1,
+          "recall_absent": 0.9285714285714286,
+          "precision_absent": 0.9285714285714286,
+          "f1_absent": 0.9285714285714286,
+          "absent_to_present_flips": 0,
+          "present_to_absent_flips": 0
+        },
+        "hallucination": {
+          "total_predicted": 33,
+          "not_in_active_catalog": 0,
+          "not_in_top4_candidates": 0,
+          "hallucinated_rate_catalog": 0.0,
+          "hallucinated_rate_top4": 0.0
+        },
+        "retrieval_vs_selection": {
+          "total_expected": 29,
+          "expected_in_top4": 25,
+          "retrieval_coverage_top4": 0.8620689655172413,
+          "fn_total": 8,
+          "fn_retrieval_miss": 4,
+          "fn_selection_miss": 4,
+          "fn_selection_omitted": 4,
+          "fn_selection_wrong_state": 0,
+          "selection_recall_given_in_top4": 0.84
+        },
+        "latency": {
+          "mean_ms": 7493.746666666666,
+          "p50_ms": 6610.8,
+          "p95_ms": 10741.8,
+          "max_ms": 10794.4
+        },
+        "unmapped": {
+          "available": false,
+          "note": "chưa có trường unmapped_phrases trong results.json của run_eval"
+        }
+      }
+    },
+    "test-2": {
+      "A": {
+        "cases": 15,
+        "code_and_state": {
+          "precision": 0.7142857142857143,
+          "recall": 0.6896551724137931,
+          "f1": 0.7017543859649122,
+          "tp": 20,
+          "fp": 8,
+          "fn": 9
+        },
+        "code_only": {
+          "precision": 0.75,
+          "recall": 0.7241379310344828,
+          "f1": 0.736842105263158,
+          "tp": 21,
+          "fp": 7,
+          "fn": 8
+        },
+        "exact_cases": 7,
+        "exact_rate": 0.4666666666666667,
+        "completed_cases": 14,
+        "failed_cases": {
+          "EXT-FT-014": "CONFLICTING_SELECTION"
+        },
+        "over_30s_cases": [],
+        "empty_with_expected_cases": [
+          "EXT-FT-014"
+        ],
+        "negation_absent": {
+          "expected_absent": 14,
+          "tp_absent": 9,
+          "fp_absent": 3,
+          "recall_absent": 0.6428571428571429,
+          "precision_absent": 0.75,
+          "f1_absent": 0.6923076923076924,
+          "absent_to_present_flips": 0,
+          "present_to_absent_flips": 0
+        },
+        "hallucination": {
+          "total_predicted": 28,
+          "not_in_active_catalog": 0,
+          "not_in_top4_candidates": 0,
+          "hallucinated_rate_catalog": 0.0,
+          "hallucinated_rate_top4": 0.0
+        },
+        "retrieval_vs_selection": {
+          "total_expected": 29,
+          "expected_in_top4": 27,
+          "retrieval_coverage_top4": 0.9310344827586207,
+          "fn_total": 9,
+          "fn_retrieval_miss": 2,
+          "fn_selection_miss": 7,
+          "fn_selection_omitted": 6,
+          "fn_selection_wrong_state": 1,
+          "selection_recall_given_in_top4": 0.7407407407407407
+        },
+        "latency": {
+          "mean_ms": 8202.146666666667,
+          "p50_ms": 7900.7,
+          "p95_ms": 10460.1,
+          "max_ms": 18061.0
+        },
+        "unmapped": {
+          "available": false,
+          "note": "chưa có trường unmapped_phrases trong results.json của run_eval"
+        }
+      },
+      "B": {
+        "cases": 15,
+        "code_and_state": {
+          "precision": 0.6486486486486487,
+          "recall": 0.8275862068965517,
+          "f1": 0.7272727272727273,
+          "tp": 24,
+          "fp": 13,
+          "fn": 5
+        },
+        "code_only": {
+          "precision": 0.6486486486486487,
+          "recall": 0.8275862068965517,
+          "f1": 0.7272727272727273,
+          "tp": 24,
+          "fp": 13,
+          "fn": 5
+        },
+        "exact_cases": 7,
+        "exact_rate": 0.4666666666666667,
+        "completed_cases": 15,
+        "failed_cases": {},
+        "over_30s_cases": [],
+        "empty_with_expected_cases": [],
+        "negation_absent": {
+          "expected_absent": 14,
+          "tp_absent": 12,
+          "fp_absent": 6,
+          "recall_absent": 0.8571428571428571,
+          "precision_absent": 0.6666666666666666,
+          "f1_absent": 0.75,
+          "absent_to_present_flips": 0,
+          "present_to_absent_flips": 0
+        },
+        "hallucination": {
+          "total_predicted": 37,
+          "not_in_active_catalog": 0,
+          "not_in_top4_candidates": 0,
+          "hallucinated_rate_catalog": 0.0,
+          "hallucinated_rate_top4": 0.0
+        },
+        "retrieval_vs_selection": {
+          "total_expected": 29,
+          "expected_in_top4": 27,
+          "retrieval_coverage_top4": 0.9310344827586207,
+          "fn_total": 5,
+          "fn_retrieval_miss": 2,
+          "fn_selection_miss": 3,
+          "fn_selection_omitted": 3,
+          "fn_selection_wrong_state": 0,
+          "selection_recall_given_in_top4": 0.8888888888888888
+        },
+        "latency": {
+          "mean_ms": 11474.54,
+          "p50_ms": 10632.7,
+          "p95_ms": 17737.4,
+          "max_ms": 20379.7
+        },
+        "unmapped": {
+          "available": false,
+          "note": "chưa có trường unmapped_phrases trong results.json của run_eval"
+        }
+      },
+      "C": {
+        "cases": 15,
+        "code_and_state": {
+          "precision": 0.7352941176470589,
+          "recall": 0.8620689655172413,
+          "f1": 0.7936507936507937,
+          "tp": 25,
+          "fp": 9,
+          "fn": 4
+        },
+        "code_only": {
+          "precision": 0.7647058823529411,
+          "recall": 0.896551724137931,
+          "f1": 0.8253968253968255,
+          "tp": 26,
+          "fp": 8,
+          "fn": 3
+        },
+        "exact_cases": 9,
+        "exact_rate": 0.6,
+        "completed_cases": 15,
+        "failed_cases": {},
+        "over_30s_cases": [],
+        "empty_with_expected_cases": [],
+        "negation_absent": {
+          "expected_absent": 14,
+          "tp_absent": 13,
+          "fp_absent": 2,
+          "recall_absent": 0.9285714285714286,
+          "precision_absent": 0.8666666666666667,
+          "f1_absent": 0.896551724137931,
+          "absent_to_present_flips": 1,
+          "present_to_absent_flips": 0
+        },
+        "hallucination": {
+          "total_predicted": 34,
+          "not_in_active_catalog": 0,
+          "not_in_top4_candidates": 0,
+          "hallucinated_rate_catalog": 0.0,
+          "hallucinated_rate_top4": 0.0
+        },
+        "retrieval_vs_selection": {
+          "total_expected": 29,
+          "expected_in_top4": 27,
+          "retrieval_coverage_top4": 0.9310344827586207,
+          "fn_total": 4,
+          "fn_retrieval_miss": 2,
+          "fn_selection_miss": 2,
+          "fn_selection_omitted": 1,
+          "fn_selection_wrong_state": 1,
+          "selection_recall_given_in_top4": 0.9259259259259259
+        },
+        "latency": {
+          "mean_ms": 7485.08,
+          "p50_ms": 7372.1,
+          "p95_ms": 10251.5,
+          "max_ms": 11222.8
+        },
+        "unmapped": {
+          "available": false,
+          "note": "chưa có trường unmapped_phrases trong results.json của run_eval"
+        }
+      }
+    }
+  },
+  "decision": {
+    "c_ge_b": true,
+    "f1_c": 0.736,
+    "f1_b": 0.703125,
+    "hallucination_not_worse": true,
+    "interleaved_p95_ok": false,
+    "interleaved_detail": {
+      "source": "run_eval --interleave",
+      "extraction_p95_a_ms": 11988.8,
+      "extraction_p95_b_ms": 19083.5,
+      "extraction_p95_c_ms": 15535.5,
+      "extraction_p95_ratio_c_over_a": 1.2958344454824504,
+      "extraction_p95_delta_pct": 29.58344454824504
+    },
+    "recommendation": "GIỮ NHÁNH A HOẶC B"
+  }
+}
