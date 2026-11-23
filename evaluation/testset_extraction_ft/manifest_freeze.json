@@ -1,0 +1,15 @@
+{
+  "count": 30,
+  "sha256": "d3cbdcfd22e2fe1846d6337abcd34d4f1b1a5d687c126da3cfea351281a200f4",
+  "half_sha256": {
+    "test-1": "c3e522e2d056f2d014bdd193783225c2d2b396ed546c04e9ee1dd9a0ad05f79e",
+    "test-2": "1a21d46d3ed279a87a04a15554b97157323bc0d69ed508e925820a72b501338d"
+  },
+  "catalog_sha256": "a5187d3c07c33a51315a22b3883c0eaad40f6e2079ba881e0b64a7e89d9a3970",
+  "created_at": "2026-11-21T21:24:08.596127+07:00",
+  "is_frozen": true,
+  "review_status": "SELF_REVIEWED",
+  "review_note": "Tuấn xác nhận đã tự rà đủ 30 ca ngày 22/11/2026; chưa rà độc lập; nhãn do tác giả soạn",
+  "decided_by": "Tuấn",
+  "frozen_at": "2026-11-22T12:17:10.562004+07:00"
+}
