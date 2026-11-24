@@ -110,9 +110,7 @@ export default function Login() {
             {shownError && errBox(shownError)}
             <div className="field">
               <span className="lab">Role</span>
-              {/* Ô nền xanh trượt sang vai trò được chọn (CSS .role-ind, vị trí theo --ri). */}
-              <div className="roles has-ind" style={{ '--ri': Math.max(0, ROLE_CARDS.findIndex((r) => r.key === roleKey)) }}>
-                <span className="role-ind" aria-hidden="true" />
+              <div className="roles">
                 {ROLE_CARDS.map((r) => (
                   <button type="button" key={r.key} className={'role' + (roleKey === r.key ? ' on' : '')} onClick={() => setRoleKey(r.key)}>
                     <AppIcon name={roleIcon[r.key]} />

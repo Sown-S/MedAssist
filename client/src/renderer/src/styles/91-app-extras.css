@@ -771,15 +771,6 @@ kbd{display:inline-grid;place-items:center;min-width:24px;height:24px;padding:0 
 .audit-detail .audit-kv tr:last-child td{border-bottom:0}
 .audit-detail .audit-kv td:first-child{color:var(--ink-3);white-space:nowrap}
 
-/* Đăng nhập — chọn vai trò: một ô nền xanh (viền + nền nhạt) trượt sang vai trò được chọn trong 0,25 s.
-   Các nút trong suốt nằm trên ô nền; nút đang chọn bỏ viền / nền riêng để chỉ còn ô trượt. */
-.roles.has-ind{position:relative;isolation:isolate}
-.roles.has-ind .role{position:relative;z-index:1;background:transparent;transition:color .2s ease,border-color .2s ease}
-.roles.has-ind .role.on{border-color:transparent;background:transparent;box-shadow:none}
-.roles.has-ind .role-ind{position:absolute;z-index:0;top:0;bottom:0;left:0;width:calc((100% - 16px) / 3);border:1px solid var(--primary);border-radius:var(--radius);background:var(--primary-soft);box-shadow:0 0 0 3px var(--primary-soft);transform:translateX(calc(var(--ri,0) * (100% + 8px)));transition:transform .25s cubic-bezier(.3,.7,.3,1)}
-:root[data-motion="reduce"] .roles.has-ind .role-ind{transition:none}
-@media (prefers-reduced-motion:reduce){.roles.has-ind .role-ind{transition:none}}
-
 /* Trang chủ (Lễ tân, Bác sĩ, Quản trị): lời chào → hàng ô số liệu → các thẻ hiện lần lượt từ trên xuống,
    mỗi khối trồi lên 8px và mờ dần hiện ra, trễ hơn khối trước 50 ms; các ô số liệu cũng lần lượt từ trái sang. */
 @keyframes homein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
