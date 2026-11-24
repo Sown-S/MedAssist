@@ -7,6 +7,11 @@ from app.ai.rules.deterministic_scoring import rank_conditions
 MAX_CANDIDATES = 4
 
 
+def _applies(condition: dict, sex: object) -> bool:
+    """Giới tính Other hoặc chưa biết thì không lọc (có người mang đặc điểm sinh học của cả hai giới)."""
+    return sex not in ("Female", "Male") or condition.get("applicable_sex", "Any") in ("Any", sex)
+
+
 def run_node2(state: PipelineState, knowledge_reader: KnowledgeReader) -> PipelineState:
     """Trả tối đa 4 ứng viên bệnh từ đặc trưng đã xác nhận và tri thức Active."""
     result = state.copy()
@@ -26,9 +31,10 @@ def run_node2(state: PipelineState, knowledge_reader: KnowledgeReader) -> Pipeli
     ):
         raise ValueError("Phải chạy Node 1 trước Node 2")
 
+    sex = state["input_features"].get("sex")
     result["candidates"] = rank_conditions(
         state["input_features"],
-        knowledge_reader.active_conditions(),
+        [c for c in knowledge_reader.active_conditions() if _applies(c, sex)],
         knowledge_reader.active_symptoms(),
     )[:MAX_CANDIDATES]
     return result

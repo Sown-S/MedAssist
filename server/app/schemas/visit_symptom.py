@@ -55,3 +55,4 @@ class SymptomCatalogItem(BaseModel):
     short_name: str | None
     aliases: list[str]
     detection: str
+    applicable_sex: str

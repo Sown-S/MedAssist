@@ -13,7 +13,7 @@ from app.exceptions import AppError, NotFoundError
 from app.models import Diagnosis, Drug, Invoice, Patient, Prescription, PrescriptionItem, User, Visit
 from app.schemas.patient import PatientCreate, PatientSummary, PatientUpdate
 from app.services import audit_service as audit
-from app.services import service_order_service
+from app.services import queue_service, service_order_service
 
 MAX_DUPLICATE_CANDIDATES = 10
 
@@ -82,6 +82,19 @@ def create_patient(db: Session, data: PatientCreate, actor: User) -> Patient:
     return patient
 
 
+def _clear_invalid_pregnancy(db: Session, patient: Patient) -> None:
+    """Sửa giới tính / ngày sinh thì bỏ "đang mang thai" không còn hợp lệ ở lượt khám đang mở."""
+    for visit in db.scalars(
+        select(Visit).where(
+            Visit.patient_id == patient.patient_id,
+            Visit.status.in_(queue_service.OPEN_STATUSES),
+            Visit.is_pregnant.is_(True),
+        )
+    ):
+        if not queue_service.pregnancy_allowed(patient.gender, patient.date_of_birth, visit.visit_date.date()):
+            visit.is_pregnant = None
+
+
 def update_patient(db: Session, patient_id: uuid.UUID, data: PatientUpdate, actor: User) -> Patient:
     patient = db.scalar(select(Patient).where(Patient.patient_id == patient_id).with_for_update())
     if patient is None:
@@ -103,6 +116,8 @@ def update_patient(db: Session, patient_id: uuid.UUID, data: PatientUpdate, acto
     changed = [k for k, v in changes.items() if getattr(patient, k) != v]
     for k in changed:
         setattr(patient, k, changes[k])
+    if {"gender", "date_of_birth"} & set(changed):
+        _clear_invalid_pregnancy(db, patient)
     if changed:
         patient.updated_at = func.now()
         audit.record(

@@ -16,15 +16,17 @@ class VisitCreate(BaseModel):
     chief_complaint: CleanStr = Field(min_length=1, max_length=2000, description="Lý do khám")
     vital_signs: VitalSigns | None = None
     free_text_description: str | None = Field(default=None, max_length=4000)
+    is_pregnant: bool | None = Field(default=None, description="None = chưa hỏi")
 
 
 class VisitUpdate(BaseModel):
-    """Waiting: sửa mọi trường. CheckedIn: chỉ sửa vital_signs."""
+    """Waiting: sửa mọi trường. CheckedIn: chỉ sửa vital_signs. Bác sĩ đang khám: chỉ sửa vital_signs."""
 
     model_config = ConfigDict(extra="forbid")
     chief_complaint: CleanStr | None = Field(default=None, min_length=1, max_length=2000)
     vital_signs: VitalSigns | None = None
     free_text_description: str | None = Field(default=None, max_length=4000)
+    is_pregnant: bool | None = None
 
 
 class CancelRequest(BaseModel):
@@ -105,6 +107,7 @@ class VisitOut(BaseModel):
     chief_complaint: str
     vital_signs: dict[str, Any] | None
     free_text_description: str | None
+    is_pregnant: bool | None = None
     triage_priority: str | None
     triage_priority_rule: str | None
     priority_raised_by_ai: bool
