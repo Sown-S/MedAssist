@@ -41,7 +41,6 @@ export function Shell() {
       <ShellLayout user={user} onSignOut={() => (openVisits.length ? setLeaving(true) : logout())}>
       {/* Lễ tân có banner mất kết nối riêng trong trang (kèm danh sách thao tác bị khoá); các vai trò khác dùng banner chung này. */}
       {user.roleKey !== 'reception' && <OfflineBanner style={{ margin: '12px 24px 0' }} />}
-      <TopProgress />
       <SlowNotice />
 
       {/* Lỗi trong một trang chỉ thay trang đó; thanh trên vẫn dùng được, đổi trang là dựng lại. */}
@@ -178,6 +177,7 @@ function ShellLayout({ user, onSignOut, children }) {
           <div className="top-r">
             <TopActions user={user} onSignOut={onSignOut} />
           </div>
+          <TopProgress navKey={location.pathname + location.search + adminNav.page} />
         </header>
         {children}
       </div>
