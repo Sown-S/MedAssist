@@ -10,6 +10,9 @@ import { version as appVersion } from '../../../../package.json'
 const TIMEOUT_MS = 4000
 // Màn khởi động hiện ít nhất ngần này (tính từ lúc mở cửa sổ) để không bị nháy qua quá nhanh.
 const MIN_SHOW_MS = 1400
+// Bấm Thử lại / lưu địa chỉ mới: màn đang kết nối hiện ít nhất ngần này. Máy chủ tắt thì lỗi về gần như tức thì,
+// không có mức tối thiểu thì màn tải chỉ chớp qua và người dùng tưởng nút không làm gì.
+const MIN_RETRY_MS = 900
 
 async function reach() {
   try {
@@ -27,7 +30,8 @@ export default function BootGate({ children }) {
 
   async function check(first) {
     setState('checking')
-    const [r] = await Promise.all([reach(), first ? new Promise((ok) => setTimeout(ok, Math.max(0, MIN_SHOW_MS - performance.now()))) : null])
+    const wait = first ? Math.max(0, MIN_SHOW_MS - performance.now()) : MIN_RETRY_MS
+    const [r] = await Promise.all([reach(), new Promise((ok) => setTimeout(ok, wait))])
     setState(r)
   }
   useEffect(() => {
