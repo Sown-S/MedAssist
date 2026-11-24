@@ -3,10 +3,12 @@
 const KEYS = { mode: 'medassist_color_mode', font: 'medassist_font_size', scale: 'medassist_ui_scale', motion: 'medassist_motion', accent: 'medassist_accent' }
 // Màu phòng khám: màu chủ đạo của nút, liên kết, mục đang chọn, logo và thanh bên tối. Màu trạng thái không đổi.
 export const ACCENTS = [
-  { key: 'blue', label: 'Medical blue', color: '#1877F2' },
-  { key: 'teal', label: 'Teal', color: '#0E9384', soft: '#E0F4F1', side: '#0B2826' },
+  // Mặc định: giao diện gốc (màu phẳng), là lựa chọn chính; các màu còn lại có chất màu dải, tuỳ sở thích từng người.
+  { key: 'default', label: 'Default', color: '#1877F2' },
+  { key: 'blue', label: 'Medical blue', color: '#1877F2', grad: 'linear-gradient(135deg,#1877F2,#0EA5E9)' },
+  { key: 'teal', label: 'Teal', color: '#0A8F80', soft: '#DDF3EF', side: '#072624', grad: 'linear-gradient(135deg,#0A8F80,#0891B2)' },
   // Theo trend GTA VI (hoàng hôn Vice City): tím mận, logo dải tím → cam đào.
-  { key: 'sunset', label: 'Sunset', color: '#9333EA', soft: '#F3E8FF', side: '#2A1033' }
+  { key: 'sunset', label: 'Sunset', color: '#9333EA', soft: '#F3E8FF', side: '#2A1033', grad: 'linear-gradient(135deg,#9333EA,#EC4899,#FB923C)' }
 ]
 export const COLOR_MODES = [
   { key: 'light', label: 'Light', icon: 'sun' },
@@ -43,7 +45,7 @@ export function getUiScale() {
     return 1
   }
 }
-export const getAccent = () => read('accent', ACCENTS.map((a) => a.key), 'blue')
+export const getAccent = () => read('accent', ACCENTS.map((a) => a.key), 'default')
 export const getReduceMotion = () => read('motion', ['reduce', 'auto'], 'auto') === 'reduce'
 
 const media = typeof window !== 'undefined' && window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null

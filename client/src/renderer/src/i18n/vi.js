@@ -1051,6 +1051,7 @@ export const VI = {
   'Main color of buttons, links, the selected menu item and the dark menu bar. Status colors stay the same.':
     'Màu chính của nút, liên kết, mục đang chọn và thanh menu tối. Màu báo trạng thái giữ nguyên.',
   'Medical blue': 'Xanh dương y tế',
+  Default: 'Mặc định',
   Teal: 'Xanh ngọc',
   Sunset: 'Hoàng hôn',
   'In dark mode the menu bar follows the dark palette.': 'Ở chế độ tối, thanh menu dùng theo bảng màu tối.',

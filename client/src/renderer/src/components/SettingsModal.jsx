@@ -172,9 +172,9 @@ export default function SettingsModal({ open, onClose, user, onChangePassword })
                   <div className="pick-grid" role="radiogroup" aria-label={translate('Clinic color')}>
                     {ACCENTS.map((a) => (
                       <button key={a.key} type="button" role="radio" aria-checked={accent === a.key} className={'pick' + (accent === a.key ? ' on' : '')} onClick={() => pickAccent(a.key)}>
-                        <MiniApp mode="light" accent={a.color} sidebar={{ ...SIDEBAR_THEMES[0], active: a.soft ?? SIDEBAR_THEMES[0].active }} />
+                        <MiniApp mode="light" accent={a.grad ?? a.color} sidebar={{ ...SIDEBAR_THEMES[0], active: a.soft ?? SIDEBAR_THEMES[0].active }} />
                         <span className="pick-l">
-                          <span className="sw-dot" style={{ background: a.color }} />
+                          <span className="sw-dot" style={{ background: a.grad ?? a.color }} />
                           {translate(a.label)}
                           {accent === a.key && <Icon name="circle-check" className="pick-ok" />}
                         </span>

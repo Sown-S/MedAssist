@@ -137,6 +137,11 @@ td.num,td .num{white-space:nowrap}
 
 /* ===== Trạng thái kết nối (components/NetStatus.jsx) ===== */
 /* Thanh mảnh trên cùng: chạy qua lại (không có %), hiện sau 300 ms chờ, mờ dần khi xong. */
+.net-bar{position:absolute;left:0;right:0;bottom:-1px;height:2px;z-index:30;pointer-events:none;overflow:hidden}
+.net-bar i{position:absolute;left:0;top:0;bottom:0;width:0;border-radius:0 2px 2px 0;background:linear-gradient(90deg,#5AA8FF,#2EE0C4);box-shadow:0 0 5px rgba(46,224,196,.45);opacity:0}
+.net-bar.run i{opacity:1;width:85%;transition:width 2.4s cubic-bezier(.1,.6,.2,1),opacity .1s}
+.net-bar.done i{opacity:0;width:100%;transition:width .25s ease,opacity .3s ease .2s}
+.net-bar.idle i{transition:none}
 @keyframes netbar{0%{left:-35%}100%{left:100%}}
 /* Thông báo nổi khi một yêu cầu chờ quá 5 giây. */
 .net-toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:90;display:flex;gap:12px;align-items:flex-start;max-width:min(520px,calc(100vw - 32px));padding:12px 16px;border-radius:var(--radius-lg);color:#fff;box-shadow:var(--shadow-lg);animation:nettoast .2s var(--ease)}
@@ -164,6 +169,7 @@ tr.row-new>td{animation:rownew 2.4s ease-out}
 .qi.row-new{animation:rownew 2.4s ease-out}
 @keyframes rownew{0%,30%{background:var(--primary-soft)}100%{background:transparent}}
 @media (prefers-reduced-motion:reduce){
+  .net-bar.run i{transition:none;width:100%;opacity:.6}
   .net-toast,.net-banner,.ov.show,.ov.show .modal,.content.view>*,tr.row-new>td,.qi.row-new,.btn .done-ic{animation:none}
 }
 
@@ -880,6 +886,10 @@ select.input,select.select{field-sizing:fixed}
 .rows-more{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;margin-top:8px;padding:9px 12px;border:1px dashed var(--border);border-radius:var(--radius);background:none;color:var(--primary-ink);font:inherit;font-size:var(--fs-sm);font-weight:600;cursor:pointer;transition:background .15s,border-color .15s}
 .rows-more:hover{background:var(--primary-soft);border-color:color-mix(in srgb,var(--primary) 35%,var(--border))}
 .rows-more svg.lucide{width:16px;height:16px}
+/* Thanh tải mảnh 2px (dòng 140): sáng = dải xanh dương → xanh ngọc; thanh bên tối = xanh chính; giao diện tối = dải dịu, phát sáng nhẹ */
+:root[data-sidebar="dark"]:not([data-theme="dark"]) .net-bar i{background:var(--primary);box-shadow:0 0 5px color-mix(in srgb,var(--primary) 45%,transparent)}
+:root[data-theme="dark"] .net-bar{overflow:visible}
+:root[data-theme="dark"] .net-bar i{background:linear-gradient(90deg,#3A7FD6,#1FA996);box-shadow:0 0 7px rgba(31,169,150,.45),0 0 14px rgba(58,127,214,.2)}
 .qtop .qwarn,.qwarn{margin:2px 4px 8px;padding:8px 10px;border-radius:var(--radius);background:var(--surface-2);color:var(--ink-3);font-size:13px;line-height:1.45;font-weight:400}
 
 /* Màu phòng khám (Cài đặt › Màu phòng khám): mặc định xanh dương y tế; "teal" = xanh ngọc; "sunset" = hoàng hôn (theo trend GTA VI).
@@ -896,20 +906,24 @@ select.input,select.select{field-sizing:fixed}
 :root[data-accent="sunset"][data-theme="dark"]{--primary:#B07CF7;--primary-hover:#C29BFA;--primary-soft:rgba(176,124,247,.16);--primary-ink:#DCC4FF;--accent:#B07CF7;--sidebar-active:rgba(176,124,247,.18);--sidebar-active-ink:#DCC4FF}
 :root[data-accent="sunset"]:not([data-theme="dark"]):not([data-sidebar="dark"]) .side .nav:hover:not(.on){background:#F7F0FF}
 :root[data-accent="sunset"]:is([data-theme="dark"],[data-sidebar="dark"]) .side .brand .logo{filter:drop-shadow(0 0 4px rgb(var(--p3-rgb) / .7)) drop-shadow(0 0 12px rgba(251,146,60,.4))}
-/* Chất màu dải cho cả 3 màu phòng khám: nút chính, banner gọi bệnh nhân, lời chào, thanh bên tối, hoa văn chấm.
-   Mỗi theme chỉ khai báo bộ biến bên dưới; màu trạng thái giữ nguyên. */
-:root{--g-btn:linear-gradient(90deg,#1877F2,#0EA5E9);--g-btn-hi:linear-gradient(90deg,#2B86F5,#22B4EE);--g-glow:rgba(14,165,233,.5);--g-sky:linear-gradient(120deg,#1E3A8A 0%,#1877F2 40%,#0EA5E9 72%,#2DD4BF 100%);--g-text:linear-gradient(90deg,#1877F2,#0EA5E9 50%,#0FA89A);--g-side:linear-gradient(180deg,#0F1B2D 0%,#0F2240 55%,#0B3354 100%);--g-neon:linear-gradient(180deg,#5AA8FF,#2EE0C4);--g-neon-glow:rgba(90,168,255,.85);--g-nav:linear-gradient(90deg,rgba(59,130,246,.30),rgba(59,130,246,.08) 85%);--g-dots:rgb(var(--p-rgb) / .28);--g-bg:#EAF0F8}
-:root[data-theme="dark"]{--g-btn:linear-gradient(90deg,#2563EB,#0284C7);--g-btn-hi:linear-gradient(90deg,#3B82F6,#0EA5E9);--g-sky:linear-gradient(120deg,#172554 0%,#1E40AF 45%,#0369A1 75%,#0F766E 100%)}
-:root[data-accent="teal"]{--g-btn:linear-gradient(90deg,#0E9384,#0EA5E9);--g-btn-hi:linear-gradient(90deg,#14A898,#22B4EE);--g-glow:rgba(20,184,166,.5);--g-sky:linear-gradient(120deg,#134E4A 0%,#0E9384 40%,#14B8A6 70%,#38BDF8 100%);--g-text:linear-gradient(90deg,#0E9384,#14B8A6 50%,#0EA5E9);--g-side:linear-gradient(180deg,#0B2826 0%,#0B302F 55%,#0A3D42 100%);--g-neon:linear-gradient(180deg,#2ED3BC,#5CC8FF);--g-neon-glow:rgba(46,211,188,.85);--g-nav:linear-gradient(90deg,rgba(20,184,166,.28),rgba(20,184,166,.07) 85%);--g-dots:rgba(20,184,166,.32);--g-bg:#EAF4F3}
-:root[data-accent="teal"][data-theme="dark"]{--g-btn:linear-gradient(90deg,#0F766E,#0369A1);--g-btn-hi:linear-gradient(90deg,#0D9488,#0284C7);--g-sky:linear-gradient(120deg,#042F2E 0%,#115E59 45%,#0F766E 72%,#075985 100%)}
-:root[data-accent="sunset"]{--g-btn:linear-gradient(90deg,#9333EA,#DB2777);--g-btn-hi:linear-gradient(90deg,#A855F7,#EC4899);--g-glow:rgba(219,39,119,.55);--g-sky:linear-gradient(120deg,#6D28D9 0%,#C026D3 42%,#EC4899 72%,#FB923C 100%);--g-text:linear-gradient(90deg,#C026D3,#EC4899 45%,#FB923C);--g-side:linear-gradient(180deg,#22103A 0%,#2C1038 55%,#4A1442 100%);--g-neon:linear-gradient(180deg,#F472B6,#FB923C);--g-neon-glow:rgba(244,114,182,.9);--g-nav:linear-gradient(90deg,rgba(236,72,153,.26),rgba(147,51,234,.08) 85%);--g-dots:rgba(236,72,153,.32);--g-bg:#F6F1FA}
-:root[data-accent="sunset"][data-theme="dark"]{--g-btn:linear-gradient(90deg,#7C3AED,#BE185D);--g-btn-hi:linear-gradient(90deg,#8B5CF6,#DB2777);--g-sky:linear-gradient(120deg,#4C1D95 0%,#86198F 45%,#9D174D 75%,#9A3412 100%)}
-.greet h2 .hi{background:var(--g-text);-webkit-background-clip:text;background-clip:text;color:transparent}
-.btn-primary{background:var(--g-btn);border-color:transparent}
-.btn-primary:not(:disabled):hover{background:var(--g-btn-hi);box-shadow:0 6px 18px -6px var(--g-glow)}
-:is(.calling,.calling.idle){background:var(--g-sky)}
-:root:not([data-theme="dark"]){--bg:var(--g-bg)}
-.app .main::before,.side .nav-scroll::after{background-image:radial-gradient(var(--g-dots) 1.4px,transparent 1.6px)!important}
-:root[data-sidebar="dark"]:not([data-theme="dark"]) .side{background:var(--g-side)}
-:is(:root[data-theme="dark"],:root[data-sidebar="dark"]) .side .nav.on{background:var(--g-nav)}
-:is(:root[data-theme="dark"],:root[data-sidebar="dark"]) .side .nav.on::before{background:var(--g-neon);box-shadow:0 0 10px var(--g-neon-glow)}
+/* Màu phòng khám có chất màu dải (Xanh dương y tế / Xanh ngọc / Hoàng hôn): nút chính, banner gọi bệnh nhân, lời chào,
+   thanh bên tối, hoa văn chấm, thanh tải. Theme Mặc định (data-accent="default") giữ nguyên giao diện gốc, không áp các luật này.
+   Màu trạng thái giữ nguyên ở mọi theme. */
+:root[data-accent="blue"]{--g-btn:linear-gradient(90deg,#1877F2,#0EA5E9);--g-btn-hi:linear-gradient(90deg,#2B86F5,#22B4EE);--g-glow:rgba(14,165,233,.5);--g-sky:linear-gradient(120deg,#1E3A8A 0%,#1877F2 40%,#0EA5E9 72%,#2DD4BF 100%);--g-text:linear-gradient(90deg,#1877F2,#0EA5E9 50%,#0FA89A);--g-side:linear-gradient(180deg,#0F1B2D 0%,#0F2240 55%,#0B3354 100%);--g-neon:linear-gradient(180deg,#5AA8FF,#2EE0C4);--g-neon-glow:rgba(90,168,255,.85);--g-nav:linear-gradient(90deg,rgba(59,130,246,.30),rgba(59,130,246,.08) 85%);--g-dots:rgb(var(--p-rgb) / .28);--g-bg:#EAF0F8;--g-bar:linear-gradient(90deg,#1877F2,#0EA5E9 60%,#2DD4BF)}
+:root[data-accent="blue"][data-theme="dark"]{--g-btn:linear-gradient(90deg,#2563EB,#0284C7);--g-btn-hi:linear-gradient(90deg,#3B82F6,#0EA5E9);--g-sky:linear-gradient(120deg,#172554 0%,#1E40AF 45%,#0369A1 75%,#0F766E 100%);--g-bar:linear-gradient(90deg,#3A7FD6,#0E8FC7 60%,#1FA996)}
+:root[data-accent="teal"]{--p-rgb:10 143 128;--primary:#0A8F80;--primary-hover:#087568;--primary-soft:#DDF3EF;--primary-ink:#065D53;--accent:#0A8F80;--sidebar-active:#DDF3EF;--sidebar-active-ink:#065D53;--logo-a:#0A8F80;--logo-b:#0891B2;--g-btn:linear-gradient(90deg,#0A8F80,#0891B2);--g-btn-hi:linear-gradient(90deg,#0BA392,#06A3C8);--g-glow:rgba(8,145,178,.5);--g-sky:linear-gradient(120deg,#0B3F3C 0%,#0A8F80 38%,#0EA997 64%,#0891B2 100%);--g-text:linear-gradient(90deg,#0A8F80,#0EA997 50%,#0891B2);--g-side:linear-gradient(180deg,#072624 0%,#06322F 55%,#044642 100%);--g-neon:linear-gradient(180deg,#2EE6C8,#38C6F4);--g-neon-glow:rgba(46,230,200,.85);--g-nav:linear-gradient(90deg,rgba(14,169,151,.32),rgba(14,169,151,.08) 85%);--g-dots:rgba(10,143,128,.36);--g-bg:#E5F2F0;--g-bar:linear-gradient(90deg,#0A8F80,#0EA997 55%,#0891B2)}
+:root[data-accent="teal"][data-sidebar="dark"]:not([data-theme="dark"]){--sidebar:#072624;--sidebar-active:#0A8F80}
+:root[data-accent="teal"][data-theme="dark"]{--g-btn:linear-gradient(90deg,#0D8A7C,#0679A0);--g-btn-hi:linear-gradient(90deg,#0FA090,#0891B2);--g-sky:linear-gradient(120deg,#042F2C 0%,#0B6B62 45%,#0A8A7C 70%,#0A6E90 100%);--g-bar:linear-gradient(90deg,#16A394,#0E8FB5)}
+:root[data-accent="sunset"]{--g-btn:linear-gradient(90deg,#9333EA,#DB2777);--g-btn-hi:linear-gradient(90deg,#A855F7,#EC4899);--g-glow:rgba(219,39,119,.55);--g-sky:linear-gradient(120deg,#6D28D9 0%,#C026D3 42%,#EC4899 72%,#FB923C 100%);--g-text:linear-gradient(90deg,#C026D3,#EC4899 45%,#FB923C);--g-side:linear-gradient(180deg,#22103A 0%,#2C1038 55%,#4A1442 100%);--g-neon:linear-gradient(180deg,#F472B6,#FB923C);--g-neon-glow:rgba(244,114,182,.9);--g-nav:linear-gradient(90deg,rgba(236,72,153,.26),rgba(147,51,234,.08) 85%);--g-dots:rgba(236,72,153,.32);--g-bg:#F6F1FA;--g-bar:linear-gradient(90deg,#9333EA,#EC4899 55%,#FB923C)}
+:root[data-accent="sunset"][data-theme="dark"]{--g-btn:linear-gradient(90deg,#7C3AED,#BE185D);--g-btn-hi:linear-gradient(90deg,#8B5CF6,#DB2777);--g-sky:linear-gradient(120deg,#4C1D95 0%,#86198F 45%,#9D174D 75%,#9A3412 100%);--g-bar:linear-gradient(90deg,#8B5CF6,#DB2777 55%,#EA7C3C)}
+:root:not([data-accent="default"]) .greet h2 .hi{background:var(--g-text);-webkit-background-clip:text;background-clip:text;color:transparent}
+:root:not([data-accent="default"]) .btn-primary{background:var(--g-btn);border-color:transparent}
+:root:not([data-accent="default"]) .btn-primary:not(:disabled):hover{background:var(--g-btn-hi);box-shadow:0 6px 18px -6px var(--g-glow)}
+:root:not([data-accent="default"]) :is(.calling,.calling.idle){background:var(--g-sky)}
+:root:not([data-accent="default"]):not([data-theme="dark"]){--bg:var(--g-bg)}
+:root:not([data-accent="default"]) :is(.app .main::before,.side .nav-scroll::after){background-image:radial-gradient(var(--g-dots) 1.4px,transparent 1.6px)}
+:root:not([data-accent="default"])[data-sidebar="dark"]:not([data-theme="dark"]) .side{background:var(--g-side)}
+:root:not([data-accent="default"]):is([data-theme="dark"],[data-sidebar="dark"]) .side .nav.on{background:var(--g-nav)}
+:root:not([data-accent="default"]):is([data-theme="dark"],[data-sidebar="dark"]) .side .nav.on::before{background:var(--g-neon);box-shadow:0 0 10px var(--g-neon-glow)}
+:root:not([data-accent="default"]) .net-bar i{background:var(--g-bar);box-shadow:0 0 6px var(--g-glow)}
+:root:not([data-accent="default"])[data-theme="dark"] .net-bar i{box-shadow:0 0 8px var(--g-glow),0 0 14px color-mix(in srgb,var(--g-glow) 40%,transparent)}

@@ -17,7 +17,7 @@ import Modal, { ModalHeader } from './components/Modal'
 import ErrorBoundary from './components/ErrorBoundary'
 import { useQueue, isMine, inRoom, atLabs } from './api/queueStore'
 import { translate } from './i18n'
-import { OfflineBanner, SlowNotice } from './components/NetStatus'
+import { OfflineBanner, TopProgress, SlowNotice } from './components/NetStatus'
 import { LeaveVisitModal } from './pages/doctor/doctorShared'
 import useGlobalKeys from './components/useGlobalKeys'
 import usePageEnter from './components/usePageEnter'
@@ -177,6 +177,7 @@ function ShellLayout({ user, onSignOut, children }) {
           <div className="top-r">
             <TopActions user={user} onSignOut={onSignOut} />
           </div>
+          <TopProgress navKey={location.pathname + location.search + adminNav.page} />
         </header>
         {children}
       </div>
