@@ -195,7 +195,7 @@ function HistoryModal({ kind, group, names, onClose }) {
       <ModalHeader title={translate('Version history') + ' · ' + group.key} onClose={onClose} />
       <div className="modal-b">
         <ErrorNote>{err}</ErrorNote>
-        {!rows && !err && <Skeleton rows={6} cols={4} />}
+        {!rows && !err && <Skeleton rows={6} cols={4} label="Loading knowledge items" />}
         {rows && (
           <div className="tbl-wrap">
             <table>

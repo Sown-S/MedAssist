@@ -360,6 +360,12 @@ export const VI = {
   // Lịch sử hoạt động: hành động tạo bản ghi (khác cột ngày 'Created').
   Added: 'Tạo mới',
   Record: 'Bản ghi',
+  // Đang tải (kèm ba chấm nhảy)
+  'Loading the knowledge base': 'Đang tải kho tri thức',
+  'Loading releases to review': 'Đang tải bản phát hành chờ duyệt',
+  'Loading knowledge items': 'Đang tải danh sách tri thức',
+  'Loading the AI run log': 'Đang tải nhật ký AI',
+  'Loading release content': 'Đang tải nội dung bản phát hành',
   // Logo nhịp tim ở thanh bên
   'System running normally': 'Hệ thống hoạt động bình thường',
   'Loading data…': 'Đang tải dữ liệu…',

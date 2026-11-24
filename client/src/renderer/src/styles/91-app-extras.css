@@ -819,11 +819,49 @@ kbd{display:inline-grid;place-items:center;min-width:24px;height:24px;padding:0 
 @media (prefers-reduced-motion:reduce){.brand-pulse .logo path,.brand-pulse .logo circle{animation:none;stroke-dashoffset:0}}
 
 /* Thanh bên: logo canh theo cột biểu tượng menu, chữ MedAssist thẳng hàng với chữ các mục menu. */
-.app:not(.collapsed) .side .brand{padding-left:0;gap:6px}
-.app:not(.collapsed) .side .brand .logo{width:40px;height:25px}
+/* Logo + chữ MedAssist nằm giữa đầu thanh bên. Thu / mở thanh bên: logo giữ nguyên cỡ, chữ co dần (max-width) và mờ đi
+   nên logo trượt mượt về giữa cùng lúc thanh bên co lại (0,25 s), không nhảy to nhỏ. */
+.side .brand,.app.collapsed .side .brand{justify-content:center;padding:0;transition:gap .25s var(--ease)}
+.app:not(.collapsed) .side .brand{gap:8px}
+.side .brand .logo,.app.collapsed .side .brand .logo{width:46px;height:28px}
+.side .brand .t{max-width:170px;transition:max-width .25s var(--ease),opacity .18s ease}
+.app.collapsed .side .brand .t{width:auto;max-width:0;opacity:0}
 
 /* Rê chuột lên biểu tượng: phóng to nhẹ (1,12 lần) — menu thanh bên, nút trên thanh trên, ô số liệu, thẻ bảng điều khiển. */
 .side .nav svg.lucide,.top .tb .btn-icon svg.lucide,.htile-ic svg.lucide,.quick .qa .ico svg.lucide,.top .tb .btn-icon{transition:transform .18s cubic-bezier(.3,.7,.3,1.4)}
 .side .nav:hover svg.lucide,.top .tb .btn-icon:hover svg.lucide,.htile.click:hover .htile-ic svg.lucide,.quick .qa:hover .ico svg.lucide{transform:scale(1.12)}
 @media (prefers-reduced-motion:reduce){.side .nav:hover svg.lucide,.top .tb .btn-icon:hover svg.lucide,.htile.click:hover .htile-ic svg.lucide,.quick .qa:hover .ico svg.lucide{transform:none}}
 :root[data-motion="reduce"] :is(.side .nav,.top .tb .btn-icon,.htile.click,.quick .qa):hover svg.lucide{transform:none}
+
+/* Thanh trên: rê chuột lên nút biểu tượng chỉ hiện nền nhạt, giữ nguyên màu biểu tượng (không đổi sang đen). */
+.top .tb .btn-icon:hover{color:var(--ink-2)}
+:root[data-theme="dark"] .top .tb .btn-icon:hover{color:inherit}
+
+/* Khung chờ: bỏ kiểu .skel cũ của 90-mock.css (một vạch 14px làm các hàng tràn ra ngoài thẻ, đè lên nội dung bên dưới). */
+.skel{height:auto;background:none;animation:none;border-radius:0}
+/* Dòng chữ đang tải + ba chấm nhảy lên xuống (components/Skeleton.jsx, prop label). */
+.skel-label{display:flex;align-items:baseline;gap:2px;font-size:var(--fs-sm);color:var(--ink-3);padding:2px 0 4px}
+.dots{display:inline-flex;gap:3px;margin-left:3px}
+.dots i{width:4px;height:4px;border-radius:50%;background:currentColor;animation:dotjump 1s ease-in-out infinite}
+.dots i:nth-child(2){animation-delay:.15s}.dots i:nth-child(3){animation-delay:.3s}
+@keyframes dotjump{0%,60%,100%{transform:translateY(0);opacity:.45}30%{transform:translateY(-5px);opacity:1}}
+:root[data-motion="reduce"] .dots i{animation:none;opacity:.7}
+@media (prefers-reduced-motion:reduce){.dots i{animation:none;opacity:.7}}
+
+/* Tri thức (Cấu hình AI và Duyệt tri thức): đổi tab thì nội dung tab trồi lên nhẹ; khi dữ liệu về, các dòng hiện lần lượt
+   (mỗi dòng trễ 25 ms, tối đa 12 dòng đầu) thay vì bật ra một lượt. */
+@keyframes rowin{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.kb-live .utabs~*{animation:rowin .24s var(--ease) backwards}
+.kb-live .utabs~* tbody>tr,.kb-live .utabs~* .rows>.r,.kb-live .kb-rules .r{animation:rowin .3s var(--ease) backwards}
+.kb-live tbody>tr:nth-child(2),.kb-live .rows>.r:nth-child(2){animation-delay:25ms}
+.kb-live tbody>tr:nth-child(3),.kb-live .rows>.r:nth-child(3){animation-delay:50ms}
+.kb-live tbody>tr:nth-child(4),.kb-live .rows>.r:nth-child(4){animation-delay:75ms}
+.kb-live tbody>tr:nth-child(5),.kb-live .rows>.r:nth-child(5){animation-delay:100ms}
+.kb-live tbody>tr:nth-child(6),.kb-live .rows>.r:nth-child(6){animation-delay:125ms}
+.kb-live tbody>tr:nth-child(7),.kb-live .rows>.r:nth-child(7){animation-delay:150ms}
+.kb-live tbody>tr:nth-child(8),.kb-live .rows>.r:nth-child(8){animation-delay:175ms}
+.kb-live tbody>tr:nth-child(9),.kb-live .rows>.r:nth-child(9){animation-delay:200ms}
+.kb-live tbody>tr:nth-child(10),.kb-live .rows>.r:nth-child(10){animation-delay:225ms}
+.kb-live tbody>tr:nth-child(11),.kb-live .rows>.r:nth-child(11){animation-delay:250ms}
+.kb-live tbody>tr:nth-child(n+12),.kb-live .rows>.r:nth-child(n+12){animation-delay:275ms}
+@media (prefers-reduced-motion:reduce){.kb-live .utabs~*,.kb-live tbody>tr,.kb-live .rows>.r{animation:none}}
