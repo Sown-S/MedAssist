@@ -896,3 +896,15 @@ select.input,select.select{field-sizing:fixed}
 :root[data-accent="sunset"][data-theme="dark"]{--primary:#B07CF7;--primary-hover:#C29BFA;--primary-soft:rgba(176,124,247,.16);--primary-ink:#DCC4FF;--accent:#B07CF7;--sidebar-active:rgba(176,124,247,.18);--sidebar-active-ink:#DCC4FF}
 :root[data-accent="sunset"]:not([data-theme="dark"]):not([data-sidebar="dark"]) .side .nav:hover:not(.on){background:#F7F0FF}
 :root[data-accent="sunset"]:is([data-theme="dark"],[data-sidebar="dark"]) .side .brand .logo{filter:drop-shadow(0 0 4px rgb(var(--p3-rgb) / .7)) drop-shadow(0 0 12px rgba(251,146,60,.4))}
+/* Hoàng hôn (theo trend GTA VI — hoàng hôn Vice City): dải tím → hồng → cam đào ở chỗ trang trí; màu trạng thái giữ nguyên. */
+:root[data-accent="sunset"]{--sun:linear-gradient(90deg,#9333EA,#DB2777);--sun-hi:linear-gradient(90deg,#A855F7,#EC4899);--sun-sky:linear-gradient(120deg,#6D28D9 0%,#C026D3 42%,#EC4899 72%,#FB923C 100%)}
+:root[data-accent="sunset"][data-theme="dark"]{--sun:linear-gradient(90deg,#7C3AED,#BE185D);--sun-hi:linear-gradient(90deg,#8B5CF6,#DB2777);--sun-sky:linear-gradient(120deg,#4C1D95 0%,#86198F 45%,#9D174D 75%,#9A3412 100%)}
+:root[data-accent="sunset"] .greet h2 .hi{background:linear-gradient(90deg,#C026D3,#EC4899 45%,#FB923C);-webkit-background-clip:text;background-clip:text;color:transparent}
+:root[data-accent="sunset"] .btn-primary{background:var(--sun);border-color:transparent}
+:root[data-accent="sunset"] .btn-primary:not(:disabled):hover{background:var(--sun-hi);box-shadow:0 6px 18px -6px rgba(219,39,119,.55)}
+:root[data-accent="sunset"] :is(.calling,.calling.idle){background:var(--sun-sky)}
+:root[data-accent="sunset"]:not([data-theme="dark"]){--bg:#F6F1FA}
+:root[data-accent="sunset"] .app .main::before,:root[data-accent="sunset"] .side .nav-scroll::after{background-image:radial-gradient(rgba(236,72,153,.32) 1.4px,transparent 1.6px)}
+:root[data-accent="sunset"][data-sidebar="dark"]:not([data-theme="dark"]) .side{background:linear-gradient(180deg,#22103A 0%,#2C1038 55%,#4A1442 100%)}
+:root[data-accent="sunset"]:is([data-theme="dark"],[data-sidebar="dark"]) .side .nav.on{background:linear-gradient(90deg,rgba(236,72,153,.26),rgba(147,51,234,.08) 85%)}
+:root[data-accent="sunset"]:is([data-theme="dark"],[data-sidebar="dark"]) .side .nav.on::before{background:linear-gradient(180deg,#F472B6,#FB923C);box-shadow:0 0 10px rgba(244,114,182,.9)}
