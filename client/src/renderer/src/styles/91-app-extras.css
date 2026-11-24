@@ -927,3 +927,17 @@ select.input,select.select{field-sizing:fixed}
 :root:not([data-accent="default"]):is([data-theme="dark"],[data-sidebar="dark"]) .side .nav.on::before{background:var(--g-neon);box-shadow:0 0 10px var(--g-neon-glow)}
 :root:not([data-accent="default"]) .net-bar i{background:var(--g-bar);box-shadow:0 0 6px var(--g-glow)}
 :root:not([data-accent="default"])[data-theme="dark"] .net-bar i{box-shadow:0 0 8px var(--g-glow),0 0 14px color-mix(in srgb,var(--g-glow) 40%,transparent)}
+/* Cài đặt: hàng Màu phòng khám dạng băng chuyền (3 ô một lần, nút ‹ › hai bên) */
+.pick-car{position:relative;display:flex;align-items:center;gap:8px}
+.pick-grid.car{flex:1;min-width:0;display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;padding:3px;margin:-3px}
+.pick-grid.car::-webkit-scrollbar{display:none}
+.pick-grid.car>.pick{flex:0 0 calc((100% - 24px) / 3);scroll-snap-align:start}
+.pick-arr{flex:none;width:32px;height:32px;border-radius:50%;display:grid;place-items:center;border:1px solid var(--border);background:var(--surface);color:var(--ink-2);cursor:pointer;box-shadow:0 1px 3px rgba(16,24,40,.08);transition:background .15s,color .15s,opacity .15s}
+.pick-arr:hover:not(:disabled){background:var(--primary-soft);color:var(--primary-ink);border-color:color-mix(in srgb,var(--primary) 35%,var(--border))}
+.pick-arr:disabled{opacity:.35;cursor:default}
+.pick-arr svg{width:18px;height:18px}
+/* Màn đăng nhập: chọn màu phòng khám */
+.lset-sw{display:grid;grid-template-columns:1fr 1fr}
+.lset-sw button{justify-content:flex-start;padding:0 10px}
+.lset-sw .sw-dot{width:12px;height:12px;border-radius:50%;flex:none}
+:root:not([data-accent="default"]) .fbx-t h1 span{background:var(--g-text);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:none;-webkit-box-decoration-break:clone;box-decoration-break:clone;filter:drop-shadow(0 6px 14px color-mix(in srgb,var(--g-glow) 55%,transparent))}

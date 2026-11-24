@@ -1,16 +1,17 @@
 import { useEffect, useRef, useState } from 'react'
 import Icon from './Icon'
 import { LANGUAGES, getLang, setLang, translate } from '../i18n'
-import { COLOR_MODES, getColorMode, setColorMode } from '../api/appTheme'
+import { COLOR_MODES, ACCENTS, getColorMode, setColorMode, getAccent, setAccent } from '../api/appTheme'
 import { getBaseUrl } from '../api/serverConfig'
 import { useServerOnline } from '../api/connectivity'
 
-// Nút cài đặt ở góc phải trên màn đăng nhập (cạnh chuông cập nhật): ngôn ngữ, giao diện sáng/tối, máy chủ.
+// Nút cài đặt ở góc phải trên màn đăng nhập (cạnh chuông cập nhật): ngôn ngữ, giao diện sáng/tối, màu phòng khám, máy chủ.
 // Lựa chọn áp dụng ngay và lưu trên máy này — cùng chỗ lưu với Cài đặt trong app.
 // onServer: mở / đóng khung đổi địa chỉ máy chủ ngay dưới form đăng nhập.
 export default function LoginSettings({ onServer }) {
   const [open, setOpen] = useState(false)
   const [mode, setMode] = useState(getColorMode)
+  const [accent, setAccentState] = useState(getAccent)
   const online = useServerOnline()
   const ref = useRef(null)
 
@@ -27,6 +28,7 @@ export default function LoginSettings({ onServer }) {
   }, [open])
 
   const pickMode = (v) => (setMode(v), setColorMode(v))
+  const pickAccent = (v) => (setAccentState(v), setAccent(v))
   const label = translate('Settings')
   return (
     <div className="lset" ref={ref}>
@@ -55,6 +57,17 @@ export default function LoginSettings({ onServer }) {
                 <button key={m.key} type="button" role="radio" aria-checked={mode === m.key} className={mode === m.key ? 'on' : ''} onClick={() => pickMode(m.key)}>
                   <Icon name={m.icon} />
                   {translate(m.label)}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="lset-sec">
+            <div className="lset-l">{translate('Clinic color')}</div>
+            <div className="lset-seg lset-sw" role="radiogroup" aria-label={translate('Clinic color')}>
+              {ACCENTS.map((a) => (
+                <button key={a.key} type="button" role="radio" aria-checked={accent === a.key} className={accent === a.key ? 'on' : ''} onClick={() => pickAccent(a.key)}>
+                  <span className="sw-dot" style={{ background: a.grad ?? a.color }} />
+                  {translate(a.label)}
                 </button>
               ))}
             </div>

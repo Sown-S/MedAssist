@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Icon from './Icon'
 import Modal, { ModalHeader } from './Modal'
 import { LANGUAGES, getLang, setLang, translate } from '../i18n'
@@ -106,6 +106,44 @@ const TABS = [
   { key: 'acct', label: 'Account', icon: 'user-round' }
 ]
 
+// Hàng lựa chọn dạng băng chuyền: hiện 3 ô, nút ‹ › để chuyển qua lại thay vì xuống dòng.
+function PickCarousel({ label, children }) {
+  const ref = useRef(null)
+  const [edge, setEdge] = useState({ start: true, end: false })
+  const sync = () => {
+    const el = ref.current
+    if (!el) return
+    setEdge({ start: el.scrollLeft <= 2, end: el.scrollLeft + el.clientWidth >= el.scrollWidth - 2 })
+  }
+  useEffect(() => {
+    sync()
+    // Đưa ô đang chọn vào tầm nhìn khi mở.
+    const on = ref.current?.querySelector('.pick.on')
+    if (on) ref.current.scrollLeft = on.offsetLeft - ref.current.firstElementChild.offsetLeft
+    sync()
+  }, [])
+  const go = (dir) => {
+    const el = ref.current
+    const item = el?.querySelector('.pick')
+    if (!item) return
+    const calm = document.documentElement.dataset.motion === 'reduce'
+    el.scrollBy({ left: dir * (item.offsetWidth + 12), behavior: calm ? 'auto' : 'smooth' })
+  }
+  return (
+    <div className="pick-car">
+      <button type="button" className="pick-arr prev" onClick={() => go(-1)} disabled={edge.start} aria-label={translate('Previous')}>
+        <Icon name="chevron-left" />
+      </button>
+      <div className="pick-grid car" role="radiogroup" aria-label={label} ref={ref} onScroll={sync}>
+        {children}
+      </div>
+      <button type="button" className="pick-arr next" onClick={() => go(1)} disabled={edge.end} aria-label={translate('Next')}>
+        <Icon name="chevron-right" />
+      </button>
+    </div>
+  )
+}
+
 export default function SettingsModal({ open, onClose, user, onChangePassword }) {
   const [tab, setTab] = useState('look')
   const [mode, setMode] = useState(getColorMode)
@@ -169,7 +207,7 @@ export default function SettingsModal({ open, onClose, user, onChangePassword })
                 <section className="pset-sec">
                   <h4>{translate('Clinic color')}</h4>
                   <p className="hint">{translate('Main color of buttons, links, the selected menu item and the dark menu bar. Status colors stay the same.')}</p>
-                  <div className="pick-grid" role="radiogroup" aria-label={translate('Clinic color')}>
+                  <PickCarousel label={translate('Clinic color')}>
                     {ACCENTS.map((a) => (
                       <button key={a.key} type="button" role="radio" aria-checked={accent === a.key} className={'pick' + (accent === a.key ? ' on' : '')} onClick={() => pickAccent(a.key)}>
                         <MiniApp mode="light" accent={a.grad ?? a.color} sidebar={{ ...SIDEBAR_THEMES[0], active: a.soft ?? SIDEBAR_THEMES[0].active }} />
@@ -180,7 +218,7 @@ export default function SettingsModal({ open, onClose, user, onChangePassword })
                         </span>
                       </button>
                     ))}
-                  </div>
+                  </PickCarousel>
                 </section>
 
                 <section className="pset-sec">
