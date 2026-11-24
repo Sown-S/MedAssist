@@ -1258,7 +1258,7 @@ export const VI = {
   'Done today': 'Đã khám xong hôm nay',
   'No one here.': 'Không có ai.',
   'Finish or send the current patient for lab tests before calling the next one.':
-    'Chỉ được mời tiếp theo khi hoàn tất khám hoặc chỉ định xét nghiệm!',
+    'Khám xong hoặc chuyển xét nghiệm người đang khám để mời người tiếp theo.',
   'Lab tests ordered · results from the paper report': 'Xét nghiệm đã chỉ định · kết quả theo phiếu giấy',
   'Result, e.g. 13.2 G/L (high)': 'Kết quả, ví dụ: 13,2 G/L (tăng)',
   // Thu hồi đơn để sửa (màn Đơn thuốc của bác sĩ)
@@ -1981,6 +1981,7 @@ export const VI = {
   'Invitation cancelled — the patient keeps their place in the queue': 'Đã bỏ lời mời — bệnh nhân giữ chỗ trong hàng chờ',
   'Cancels the invitation — the patient keeps their place in the queue': 'Bỏ lời mời — bệnh nhân giữ chỗ trong hàng chờ',
   'See the patient now': 'Mời khám ngay',
+  'See {n} more patients': 'Xem thêm {n} bệnh nhân',
   'Amend / reprint': 'Bổ sung / in lại',
   'amended by': 'bổ sung bởi',
   'Vital signs from the description — confirm before use': 'Sinh hiệu đọc từ lời kể — xác nhận trước khi dùng',

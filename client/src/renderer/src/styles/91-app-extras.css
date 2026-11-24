@@ -877,3 +877,18 @@ select.input,select.select{field-sizing:fixed}
 .summary .sum span span{display:inline;margin:0;font-size:inherit;color:inherit}
 .summary .sum>div{min-width:0;flex:1;container-type:inline-size}
 .summary .sum b{display:block;font-size:min(24px,13cqi);white-space:nowrap}
+/* Hàng chờ bác sĩ: tiêu đề nhóm cùng tông chữ với giao diện chung, không tô xanh */
+.qa-g.open .qa-h{color:var(--ink);font-weight:600}
+.qa-g.open .qa-h .qa-ic{color:var(--ink-2)}
+.qa-g.open .qa-h .cnt{background:var(--surface-2);color:var(--ink-2)}
+.qtop .qinv{font-size:var(--fs-base);font-weight:600;letter-spacing:0}
+/* Trang chủ lễ tân: nút xem thêm bệnh nhân chờ thu tiền */
+.rows-more{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;margin-top:8px;padding:9px 12px;border:1px dashed var(--border);border-radius:var(--radius);background:none;color:var(--primary-ink);font:inherit;font-size:var(--fs-sm);font-weight:600;cursor:pointer;transition:background .15s,border-color .15s}
+.rows-more:hover{background:var(--primary-soft);border-color:color-mix(in srgb,var(--primary) 35%,var(--border))}
+.rows-more svg.lucide{width:16px;height:16px}
+/* Thanh tải: thanh bên tối / giao diện tối dùng dải màu của logo; giao diện tối có phát sáng */
+:is(:root[data-theme="dark"],:root[data-sidebar="dark"]) .net-bar i{background:linear-gradient(90deg,#5AA8FF,#2EE0C4);box-shadow:0 0 6px rgba(46,224,196,.45)}
+:root[data-theme="dark"] .net-bar{overflow:visible}
+:root[data-theme="dark"] .net-bar i{box-shadow:0 0 10px 1px rgba(46,224,196,.65),0 0 18px 2px rgba(90,168,255,.35)}
+:root[data-theme="dark"] .net-bar i::after{content:'';position:absolute;right:-2px;top:50%;width:14px;height:7px;transform:translateY(-50%);border-radius:50%;background:#B9FFF3;filter:blur(2px);opacity:.9}
+.qtop .qwarn,.qwarn{margin:2px 4px 8px;padding:8px 10px;border-radius:var(--radius);background:var(--surface-2);color:var(--ink-3);font-size:13px;line-height:1.45;font-weight:400}

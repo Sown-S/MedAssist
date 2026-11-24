@@ -9,6 +9,9 @@ import { money, ymd, dmy } from '../../utils/format'
 
 // Chờ thu tiền lấy từ GET /billing/awaiting (có hoá đơn và số tiền).
 
+// Trang chủ chỉ hiện vài người đầu; danh sách đầy đủ ở trang Cấp phát & thu tiền.
+const HOME_ROWS = 5
+
 export default function Dashboard({ go, readOnly, onPay }) {
   const { visits, redFlags, loaded: queueLoaded, loadFailed } = useQueue()
   const awaiting = useAwaiting()
@@ -108,7 +111,7 @@ export default function Dashboard({ go, readOnly, onPay }) {
             {unpaid.length ? (
               <>
                 <div className="rows">
-                  {unpaid.map((v) => (
+                  {unpaid.slice(0, HOME_ROWS).map((v) => (
                     <div className="r" key={v.id}>
                       <span className="stt num w-40 fw-700">
                         {ticketNo(v.ticket)}
@@ -128,6 +131,12 @@ export default function Dashboard({ go, readOnly, onPay }) {
                     </div>
                   ))}
                 </div>
+                {unpaid.length > HOME_ROWS && (
+                  <button type="button" className="rows-more" onClick={() => go('payments')}>
+                    <span>{translate('See {n} more patients').replace('{n}', unpaid.length - HOME_ROWS)}</span>
+                    <Icon name="chevron-right" />
+                  </button>
+                )}
                 <div className="pay-foot">
                   <span>
                     {unpaid.length} {translate('patients')}
