@@ -44,6 +44,7 @@ export default function DispenseTab({ active, visitId, items, waiting, paid, rx,
       <p class="meta">${esc(t('Patient'))}: <b>${esc(patient.name)}</b>${ticket ? ' · ' + esc(t('no.')) + ' ' + esc(ticket) : ''}</p>
       <p class="meta">${fmtDateTime(new Date())} · ${esc(user.name)}</p>
       ${rx?.patient_context?.allergy_notes ? `<p class="meta">${esc(t('Drug allergy'))}: <b>${esc(rx.patient_context.allergy_notes)}</b></p>` : ''}
+      ${rx?.patient_context?.is_pregnant === true ? `<p class="meta"><b>${esc(t('Pregnant'))}</b></p>` : ''}
       <table><thead><tr><th>#</th><th>${esc(t('Drug'))}</th><th class="num">${esc(t('Quantity'))}</th></tr></thead><tbody>${rows}</tbody></table>
       <div class="sign"><div>${esc(t('Dispensed by'))}<i>(${esc(t('Signature, full name'))})</i></div><div></div><div>${esc(t('Patient received'))}<i>(${esc(t('Signature, full name'))})</i></div></div>`,
       'other'
@@ -54,6 +55,12 @@ export default function DispenseTab({ active, visitId, items, waiting, paid, rx,
     <div className={'panel' + (active ? ' on' : '')}>
       {rx?.patient_context?.allergy_notes !== undefined && (
         <div className="alerts mb-10">
+          {rx.patient_context.is_pregnant === true && (
+            <span className="badge b-warning">
+              <Icon name="baby" />
+              {translate('Pregnant')}
+            </span>
+          )}
           {rx.patient_context.allergy_notes ? (
             <span className="allergy">
               <Icon name="triangle-alert" />

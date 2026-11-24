@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
-import { isoDob, dmyDob, maskDob, toPatient, chiefComplaintOf, toQueueVisit } from '../src/renderer/src/api/clinicApi.js'
+import { isoDob, dmyDob, maskDob, toPatient, chiefComplaintOf, toQueueVisit, pregnancyOf, isPregnantOf } from '../src/renderer/src/api/clinicApi.js'
+import { askPregnancy } from '../src/renderer/src/api/patient.js'
 import { fromAwaiting, receiptOf, toServerMethod, fromServerMethod } from '../src/renderer/src/api/billingApi.js'
 import { toLabOrder } from '../src/renderer/src/api/serviceStore.js'
 
@@ -43,10 +44,20 @@ describe('Hồ sơ bệnh nhân từ server (toPatient)', () => {
     expect(p.history).toBe('Hen phế quản, Hay viêm họng')
     expect(p.medicalHistory).toBe(server.medical_history)
   })
-  it('mang thai: true → "yes", false → "no", chưa hỏi → ""', () => {
-    expect(toPatient(server).pregnancy).toBe('no')
-    expect(toPatient({ ...server, medical_history: { is_pregnant: true } }).pregnancy).toBe('yes')
-    expect(toPatient({ ...server, medical_history: null }).pregnancy).toBe('')
+  it('mang thai ghi theo lượt khám: visit.is_pregnant true → "yes", false → "no", null → ""; hồ sơ không còn trường này', () => {
+    expect(toPatient(server).pregnancy).toBeUndefined()
+    expect(pregnancyOf({ is_pregnant: true })).toBe('yes')
+    expect(pregnancyOf({ is_pregnant: false })).toBe('no')
+    expect(pregnancyOf({ is_pregnant: null })).toBe('')
+    expect([isPregnantOf('yes'), isPregnantOf('no'), isPregnantOf('')]).toEqual([true, false, null])
+  })
+  it('hỏi mang thai: nữ hoặc giới tính khác, 12–55 tuổi', () => {
+    expect(askPregnancy('Female', 30)).toBe(true)
+    expect(askPregnancy('Other', 30)).toBe(true)
+    expect(askPregnancy('Male', 30)).toBe(false)
+    expect(askPregnancy('Female', 11)).toBe(false)
+    expect(askPregnancy('Female', 56)).toBe(false)
+    expect(askPregnancy('Female', '')).toBe(false)
   })
 })
 

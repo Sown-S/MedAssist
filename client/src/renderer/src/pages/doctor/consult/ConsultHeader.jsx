@@ -4,6 +4,7 @@ import { translate } from '../../../i18n'
 import { ClinicalInfoEditor } from './ClinicalInfoEditor'
 import { num, isChild } from './rxDraft'
 import { dmy, hhmm } from '../../../utils/format'
+import { askPregnancy, PREGNANCY_LABEL } from '../../../api/patient'
 
 const initials = (name = '') =>
   name
@@ -45,6 +46,8 @@ export default function ConsultHeader({ visit, vit, prev, alerts }) {
               {visit.age !== '' ? visit.age + ' ' + translate('yrs') + ' · ' : ''}
               {translate(visit.gender)}
             </span>
+            {askPregnancy(visit.gender, visit.age) &&
+              (visit.pregnancy === 'yes' ? <span className="badge b-warning">{translate(PREGNANCY_LABEL.yes)}</span> : <span className="muted">{translate(PREGNANCY_LABEL[visit.pregnancy ?? ''])}</span>)}
             {visit.phone && <span className="num">{visit.phone}</span>}
           </div>
         </div>

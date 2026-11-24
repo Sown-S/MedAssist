@@ -1447,6 +1447,7 @@ export const VI = {
   'none recorded': 'chưa ghi nhận',
   'Chronic conditions': 'Bệnh nền',
   Pregnant: 'Đang mang thai',
+  'Pregnancy not asked': 'Chưa hỏi mang thai',
   'The system does not check drug interactions, doses or duplicate prescriptions — the doctor is responsible for reviewing the prescription.':
     'Hệ thống không kiểm tra tương tác thuốc, liều dùng hay trùng đơn — bác sĩ chịu trách nhiệm đánh giá đơn thuốc.',
   'SOAP-based diagnosis, prescribing with a read-only allergy reminder, and stock checks':

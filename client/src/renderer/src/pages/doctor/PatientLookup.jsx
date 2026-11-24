@@ -2,12 +2,13 @@ import { useEffect, useState } from 'react'
 import PatientAlerts from '../../components/PatientAlerts'
 import Icon from '../../components/Icon'
 import { translate } from '../../i18n'
-import { lookupPatients, getPatient } from '../../api/clinicApi'
+import { lookupPatients, getPatient, patientVisits, getVisit } from '../../api/clinicApi'
 import { ageOf } from '../../api/patient'
 import ServerHistory from './ServerHistory'
 import DocumentModal from './DocumentModal'
 import { ErrorNote } from '../../components/DataState'
 import Skeleton from '../../components/Skeleton'
+import { todayVN } from '../../utils/format'
 
 // Một ô tìm cho mọi khoá (mã BN, SĐT, CCCD, năm sinh, họ tên). Server tự ghi nhật ký VIEW mỗi lần xem.
 export default function PatientLookup() {
@@ -17,6 +18,8 @@ export default function PatientLookup() {
   const [err, setErr] = useState('')
   const [sel, setSel] = useState(null)
   const [last, setLast] = useState(null) // lượt gần nhất có chẩn đoán — cho giấy chuyển tuyến
+  // Mang thai ghi theo lượt khám: chỉ hiện khi lượt hôm nay (chưa huỷ) ghi “đang mang thai”.
+  const [pregnantNow, setPregnantNow] = useState(false)
   const [docs, setDocs] = useState(false)
   const [listOpen, setListOpen] = useState(true) // gõ lại thì mở danh sách kết quả, chọn xong thì thu lại
 
@@ -38,11 +41,19 @@ export default function PatientLookup() {
 
   async function open(id) {
     setLast(null)
+    setPregnantNow(false)
     setListOpen(false)
     try {
       setSel(await getPatient(id))
     } catch (e) {
       setErr(e.message)
+      return
+    }
+    try {
+      const v = (await patientVisits(id, { limit: 1 })).items[0]
+      if (v && v.status !== 'Cancelled' && new Date(v.at).toLocaleDateString('sv-SE', { timeZone: 'Asia/Ho_Chi_Minh' }) === todayVN()) setPregnantNow((await getVisit(v.id)).is_pregnant === true)
+    } catch {
+      /* không tải được lượt khám thì không hiện nhãn */
     }
   }
   const p = sel
@@ -181,7 +192,7 @@ export default function PatientLookup() {
                 </span>
               </div>
             </div>
-            {p.pregnancy === 'yes' && <span className="badge b-warning">{translate('Pregnant')}</span>}
+            {pregnantNow && <span className="badge b-warning">{translate('Pregnant')}</span>}
             <div className="pt-rows">
               <div className="pt-row">
                 <span className="ico n">
