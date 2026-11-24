@@ -839,8 +839,8 @@ kbd{display:inline-grid;place-items:center;min-width:24px;height:24px;padding:0 
 
 /* Khung chờ: bỏ kiểu .skel cũ của 90-mock.css (một vạch 14px làm các hàng tràn ra ngoài thẻ, đè lên nội dung bên dưới). */
 .skel{height:auto;background:none;animation:none;border-radius:0}
-/* Dòng chữ đang tải + ba chấm nhảy lên xuống (components/Skeleton.jsx, prop label). */
-.skel-label{display:flex;align-items:baseline;gap:2px;font-size:var(--fs-sm);color:var(--ink-3);padding:2px 0 4px}
+/* Dòng chữ đang tải + ba chấm nhảy lên xuống (components/Skeleton.jsx, prop label), thay cho các vạch mờ. */
+.skel-wait{display:flex;align-items:baseline;justify-content:center;gap:2px;padding:22px 12px;font-size:var(--fs-sm);color:var(--ink-3);animation:rowin .2s var(--ease)}
 .dots{display:inline-flex;gap:3px;margin-left:3px}
 .dots i{width:4px;height:4px;border-radius:50%;background:currentColor;animation:dotjump 1s ease-in-out infinite}
 .dots i:nth-child(2){animation-delay:.15s}.dots i:nth-child(3){animation-delay:.3s}
@@ -852,7 +852,7 @@ kbd{display:inline-grid;place-items:center;min-width:24px;height:24px;padding:0 
    (mỗi dòng trễ 25 ms, tối đa 12 dòng đầu) thay vì bật ra một lượt. */
 @keyframes rowin{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 .kb-live .utabs~*{animation:rowin .24s var(--ease) backwards}
-.kb-live .utabs~* tbody>tr,.kb-live .utabs~* .rows>.r,.kb-live .kb-rules .r{animation:rowin .3s var(--ease) backwards}
+.kb-live tbody>tr,.kb-live .rows>.r{animation:rowin .3s var(--ease) backwards}
 .kb-live tbody>tr:nth-child(2),.kb-live .rows>.r:nth-child(2){animation-delay:25ms}
 .kb-live tbody>tr:nth-child(3),.kb-live .rows>.r:nth-child(3){animation-delay:50ms}
 .kb-live tbody>tr:nth-child(4),.kb-live .rows>.r:nth-child(4){animation-delay:75ms}
