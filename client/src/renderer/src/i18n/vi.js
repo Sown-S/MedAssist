@@ -6,8 +6,7 @@ export const VI = {
   'Slow response': 'Phản hồi chậm',
   Light: 'Sáng',
   Dark: 'Tối',
-  Green: 'Xanh lá',
-  Blue: 'Xanh dương',
+
   'Good morning': 'Chào buổi sáng',
   'Good midday': 'Chào buổi trưa',
   'Good afternoon': 'Chào buổi chiều',
@@ -361,9 +360,6 @@ export const VI = {
   // Lịch sử hoạt động: hành động tạo bản ghi (khác cột ngày 'Created').
   Added: 'Tạo mới',
   Record: 'Bản ghi',
-  // Màu chủ đạo
-  'Accent color': 'Màu chủ đạo',
-  'Color of buttons, links and the selected menu item.': 'Màu của nút, liên kết và mục menu đang chọn.',
   // Đang tải (kèm ba chấm nhảy)
   'Loading the knowledge base': 'Đang tải kho tri thức',
   'Loading releases to review': 'Đang tải bản phát hành chờ duyệt',

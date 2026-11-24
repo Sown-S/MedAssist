@@ -6,7 +6,7 @@ import { SIDEBAR_THEMES, getSidebarTheme, setSidebarTheme } from '../api/sidebar
 import { getBaseUrl } from '../api/serverConfig'
 import { useServerOnline } from '../api/connectivity'
 import { version as appVersion } from '../../../../package.json'
-import { COLOR_MODES, UI_SCALES, ACCENTS, getColorMode, setColorMode, getUiScale, setUiScale, getReduceMotion, setReduceMotion, getAccent, setAccent } from '../api/appTheme'
+import { COLOR_MODES, UI_SCALES, getColorMode, setColorMode, getUiScale, setUiScale, getReduceMotion, setReduceMotion } from '../api/appTheme'
 import { hhmm } from '../utils/format'
 
 // Cài đặt cá nhân của máy này (nút bánh răng trên thanh trên): Giao diện, Ngôn ngữ, Tài khoản.
@@ -17,13 +17,13 @@ const MODE_COLORS = {
   light: { bg: '#F0F2F5', surface: '#FFFFFF', line: '#E1E4E8', ink: '#C5CCD3' },
   dark: { bg: '#0B1118', surface: '#18222D', line: '#243140', ink: '#3A4A5C' }
 }
-function MiniApp({ mode, sidebar, accent = '#1877F2' }) {
+function MiniApp({ mode, sidebar }) {
   const m = MODE_COLORS[mode === 'system' ? 'light' : mode]
   const side = sidebar ?? (mode === 'dark' ? { bg: '#0F161E', ink: '#5D6E80', active: 'rgba(59,139,246,.35)' } : SIDEBAR_THEMES[0])
   return (
     <span className={'mini' + (mode === 'system' ? ' split' : '')} style={{ background: m.bg }} aria-hidden="true">
       <span className="mini-side" style={{ background: side.bg, color: side.ink, borderColor: m.line }}>
-        <i className="lg" style={{ background: accent }} />
+        <i className="lg" style={{ background: '#1877F2' }} />
         <i className="act" style={{ background: side.active }} />
         <i />
         <i />
@@ -112,14 +112,11 @@ export default function SettingsModal({ open, onClose, user, onChangePassword })
   const [sidebar, setSidebar] = useState(getSidebarTheme)
   const [scale, setScale] = useState(getUiScale)
   const [calm, setCalm] = useState(getReduceMotion)
-  const [accent, setAccentState] = useState(getAccent)
-  const accentColor = ACCENTS.find((a) => a.key === accent)?.color
 
   const pickMode = (v) => (setMode(v), setColorMode(v))
   const pickSidebar = (v) => (setSidebar(v), setSidebarTheme(v))
   const pickScale = (v) => (setScale(v), setUiScale(v))
   const pickCalm = (v) => (setCalm(v), setReduceMotion(v))
-  const pickAccent = (v) => (setAccentState(v), setAccent(v))
   // Đổi ngôn ngữ: giao diện đổi ngay là đủ, không hiện thêm thông báo.
   function chooseLanguage(code) {
     if (code !== getLang()) setLang(code)
@@ -152,28 +149,11 @@ export default function SettingsModal({ open, onClose, user, onChangePassword })
                   <div className="pick-grid" role="radiogroup" aria-label={translate('Color mode')}>
                     {COLOR_MODES.map((m) => (
                       <button key={m.key} type="button" role="radio" aria-checked={mode === m.key} className={'pick' + (mode === m.key ? ' on' : '')} onClick={() => pickMode(m.key)}>
-                        <MiniApp mode={m.key} accent={accentColor} sidebar={m.key === 'light' ? SIDEBAR_THEMES.find((t) => t.key === sidebar) : null} />
+                        <MiniApp mode={m.key} sidebar={m.key === 'light' ? SIDEBAR_THEMES.find((t) => t.key === sidebar) : null} />
                         <span className="pick-l">
                           <Icon name={m.icon} />
                           {translate(m.label)}
                           {mode === m.key && <Icon name="circle-check" className="pick-ok" />}
-                        </span>
-                      </button>
-                    ))}
-                  </div>
-                </section>
-
-                <section className="pset-sec">
-                  <h4>{translate('Accent color')}</h4>
-                  <p className="hint">{translate('Color of buttons, links and the selected menu item.')}</p>
-                  <div className="pick-grid" role="radiogroup" aria-label={translate('Accent color')}>
-                    {ACCENTS.map((a) => (
-                      <button key={a.key} type="button" role="radio" aria-checked={accent === a.key} className={'pick' + (accent === a.key ? ' on' : '')} onClick={() => pickAccent(a.key)}>
-                        <MiniApp mode="light" accent={a.color} sidebar={{ ...SIDEBAR_THEMES[0], active: a.key === 'green' ? '#E3F6EC' : SIDEBAR_THEMES[0].active }} />
-                        <span className="pick-l">
-                          <span className="sw-dot" style={{ background: a.color }} />
-                          {translate(a.label)}
-                          {accent === a.key && <Icon name="circle-check" className="pick-ok" />}
                         </span>
                       </button>
                     ))}
@@ -186,7 +166,7 @@ export default function SettingsModal({ open, onClose, user, onChangePassword })
                   <div className="pick-grid" role="radiogroup" aria-label={translate('Menu bar color')}>
                     {SIDEBAR_THEMES.map((t) => (
                       <button key={t.key} type="button" role="radio" aria-checked={sidebar === t.key} disabled={mode === 'dark'} className={'pick' + (sidebar === t.key ? ' on' : '')} onClick={() => pickSidebar(t.key)}>
-                        <MiniApp mode="light" accent={accentColor} sidebar={t} />
+                        <MiniApp mode="light" sidebar={t} />
                         <span className="pick-l">
                           <span className="sw-dot" style={{ background: t.bg }} />
                           {translate(t.label)}

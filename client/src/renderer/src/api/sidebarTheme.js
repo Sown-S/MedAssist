@@ -1,10 +1,9 @@
-// Màu thanh menu bên trái (Sáng / Tối / Xanh lá) — cài đặt riêng của máy này, không gửi lên server.
+// Màu thanh menu bên trái (Sáng / Tối) — cài đặt riêng của máy này, không gửi lên server.
 const KEY = 'medassist_sidebar_theme'
 
 export const SIDEBAR_THEMES = [
   { key: 'light', label: 'Light', bg: '#FFFFFF', ink: '#3E4C57', active: '#E7F0FD' },
-  { key: 'dark', label: 'Dark', bg: '#0F1B2D', ink: '#C3CED8', active: '#1877F2' },
-  { key: 'green', label: 'Green', bg: '#0B5D3B', ink: '#D5EEDF', active: '#18A35E' }
+  { key: 'dark', label: 'Dark', bg: '#0F1B2D', ink: '#C3CED8', active: '#1877F2' }
 ]
 
 export function getSidebarTheme() {
