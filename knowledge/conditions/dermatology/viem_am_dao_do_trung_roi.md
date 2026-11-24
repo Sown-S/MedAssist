@@ -5,6 +5,7 @@ name_vi: Viêm âm đạo do trùng roi
 name_en: Trichomoniasis
 icd10_code: A59.0
 disease_group: dermatology
+applicable_sex: Female
 description: Bệnh lây truyền chủ yếu qua đường tình dục, gây viêm âm đạo ở nữ và viêm niệu đạo ở nam.
   Tuy nhiên, nhiều trường hợp không biểu hiện triệu chứng. Phụ nữ thường biểu hiện triệu chứng nhiều hơn
   và có liên quan đến vỡ màng ối sớm. Trùng roi sinh dục có nguy cơ làm tăng khả năng lây truyền HIV lên

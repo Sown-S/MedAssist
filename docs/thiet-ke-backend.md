@@ -36,7 +36,7 @@ Depends(audit_view("visit", roles=CLINICAL_ROLES, dedupe_seconds=300))
 Hàng đợi là bảng `ai_assessment_log` (ERD §4.1), không dùng Redis hay Celery.
 
 1. `enqueue_assessment()`: `POST /visits/{id}/assessment` gọi trong transaction của request.
-   - Chụp đặc trưng đầu vào **đã xác nhận** (`visit_symptom` + sinh hiệu + tuổi) vào `input_features`.
+   - Chụp đặc trưng đầu vào **đã xác nhận** (`visit_symptom` + sinh hiệu + tuổi + giới tính) vào `input_features`. Node 2 bỏ bệnh có `applicable_sex` khác giới tính bệnh nhân; giới tính `Other` không lọc.
    - Chạy Node 1 (cổng cờ đỏ) **đồng bộ**: cờ đỏ phải hiện ngay cả khi worker hay LLM đang dừng. Cờ đỏ thì lần chạy kết thúc luôn (`Skipped`/`RuleOnly`), không xếp hàng.
    - Không cờ đỏ: trạng thái `Queued`; các lần `Queued` cũ của cùng lượt khám bị thay thế.
 2. Worker (`python -m app.worker`): `claim_next()` lấy việc bằng `FOR UPDATE SKIP LOCKED` + lease; `sweep_expired()` thu hồi lease quá hạn (worker chết giữa chừng).
@@ -62,7 +62,7 @@ Ngân sách thời gian:
 
 Dữ liệu nhật ký AI:
 
-- Không chứa thông tin định danh: `input_features` chỉ có mã triệu chứng, sinh hiệu, tuổi.
+- Không chứa thông tin định danh: `input_features` chỉ có mã triệu chứng, sinh hiệu, tuổi, giới tính.
 - `rule_hits` luôn có dạng `{"hits": [...], "complete_now": [{symptom_code, symptom_name}]}` ở cả lúc xếp hàng và lúc worker ghi kết quả, để polling không mất danh sách "cần bổ sung ngay".
 
 ## 3. Quyết định của bác sĩ với gợi ý AI (`ai_decision_service`)

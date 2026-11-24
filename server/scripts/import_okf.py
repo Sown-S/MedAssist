@@ -76,6 +76,7 @@ class SymptomItem(_Strict):
     short_name: str | None = Field(default=None, min_length=1, max_length=SHORT_NAME_MAX)
     aliases: Aliases = Field(default_factory=list)
     detection: Literal["reported", "exam", "both"] = "both"
+    applicable_sex: Literal["Any", "Female", "Male"] = "Any"
 
 
 class SymptomCatalogFile(_Strict):
@@ -108,6 +109,7 @@ class ConditionFile(_Strict):
     name_en: str | None = None  # chỉ để đọc, không có cột trong CSDL
     icd10_code: str | None = Field(default=None, max_length=10)
     disease_group: str | None = Field(default=None, max_length=100)
+    applicable_sex: Literal["Any", "Female", "Male"] = "Any"
     description: str | None = None
     relations: list[RelationItem] = Field(default_factory=list)
     excerpts: list[ExcerptItem] = Field(default_factory=list)
@@ -373,6 +375,7 @@ def desired_items(v: Vault, sids: dict[str, Any]) -> dict[str, dict[str, dict[st
             "short_name": s.short_name,
             "aliases": s.aliases,
             "detection": s.detection,
+            "applicable_sex": s.applicable_sex,
         }
     for c in v.conditions.values():
         items["condition"][c.condition_code] = {
@@ -381,6 +384,7 @@ def desired_items(v: Vault, sids: dict[str, Any]) -> dict[str, dict[str, dict[st
             "icd10_code": c.icd10_code,
             "disease_group": c.disease_group,
             "description": c.description,
+            "applicable_sex": c.applicable_sex,
         }
         for r in c.relations:
             items["relation"][f"{c.condition_code}/{r.symptom_code}"] = {

@@ -495,3 +495,25 @@ def test_node2_runs_with_llm_database_and_http_dependencies_blocked():
     )
 
     assert completed.returncode == 0, completed.stderr
+
+
+@pytest.mark.parametrize(
+    "sex,expected",
+    [
+        ("Male", ["condition_any", "condition_male"]),
+        ("Female", ["condition_any", "condition_female"]),
+        ("Other", ["condition_any", "condition_female", "condition_male"]),
+        (None, ["condition_any", "condition_female", "condition_male"]),
+    ],
+)
+def test_conditions_for_the_other_sex_are_not_suggested(sex, expected):
+    items = [
+        condition("condition_any"),
+        condition("condition_female", applicable_sex="Female"),
+        condition("condition_male", applicable_sex="Male"),
+    ]
+    features = {} if sex is None else {"sex": sex}
+
+    codes = sorted(c["condition_code"] for c in retrieve(items, **features)["candidates"])
+
+    assert codes == expected

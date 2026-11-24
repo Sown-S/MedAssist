@@ -55,6 +55,9 @@ class ReleaseDetail(ReleaseOut):
 
 
 # --- Nội dung từng loại ---------------------------------------------------------------------------
+ApplicableSex = Literal["Any", "Female", "Male"]
+
+
 class SymptomDraft(BaseModel):
     model_config = ConfigDict(extra="forbid")
     symptom_name: CleanStr = Field(min_length=1, max_length=150)
@@ -62,6 +65,7 @@ class SymptomDraft(BaseModel):
     short_name: CleanStr | None = Field(default=None, min_length=1, max_length=SHORT_NAME_MAX)
     aliases: Aliases = Field(default_factory=list)
     detection: Literal["reported", "exam", "both"] = "both"
+    applicable_sex: ApplicableSex = "Any"
 
 
 class ConditionDraft(BaseModel):
@@ -70,6 +74,7 @@ class ConditionDraft(BaseModel):
     icd10_code: CleanStr | None = Field(default=None, max_length=10)
     disease_group: CleanStr | None = Field(default=None, max_length=100)
     description: str | None = Field(default=None, max_length=4000)
+    applicable_sex: ApplicableSex = "Any"
 
 
 class RelationDraft(BaseModel):

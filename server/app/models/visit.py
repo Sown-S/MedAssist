@@ -115,6 +115,7 @@ class Visit(Base):
     vital_signs: Mapped[Any | None] = mapped_column(JSONB(none_as_null=True))
     chief_complaint: Mapped[str] = mapped_column(Text, nullable=False)
     free_text_description: Mapped[str | None] = mapped_column(Text)
+    is_pregnant: Mapped[bool | None] = mapped_column(Boolean)
     triage_priority_rule: Mapped[str | None] = mapped_column(String(20))
     triage_priority: Mapped[str | None] = mapped_column(String(20))
     priority_raised_by_ai: Mapped[bool] = mapped_column(Boolean, nullable=False, server_default=text("false"))

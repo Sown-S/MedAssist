@@ -63,6 +63,7 @@ def load_snapshot(bind: Engine) -> KnowledgeSnapshot:
                     "short_name": r.short_name,
                     "aliases": list(r.aliases),
                     "detection": r.detection,
+                    "applicable_sex": r.applicable_sex,
                 }
                 for r in conn.execute(
                     select(
@@ -72,6 +73,7 @@ def load_snapshot(bind: Engine) -> KnowledgeSnapshot:
                         Symptom.short_name,
                         Symptom.aliases,
                         Symptom.detection,
+                        Symptom.applicable_sex,
                     )
                     .where(Symptom.status == "Active")
                     .order_by(Symptom.symptom_code)
@@ -154,11 +156,18 @@ def load_snapshot(bind: Engine) -> KnowledgeSnapshot:
                     "name_vi": r.name_vi,
                     "icd10_code": r.icd10_code,
                     "disease_group": r.disease_group,
+                    "applicable_sex": r.applicable_sex,
                     "symptoms": relations.get(r.condition_code, []),
                     "guidelines": guidelines.get(r.condition_code, []),
                 }
                 for r in conn.execute(
-                    select(Condition.condition_code, Condition.name_vi, Condition.icd10_code, Condition.disease_group)
+                    select(
+                        Condition.condition_code,
+                        Condition.name_vi,
+                        Condition.icd10_code,
+                        Condition.disease_group,
+                        Condition.applicable_sex,
+                    )
                     .where(Condition.status == "Active")
                     .order_by(Condition.condition_code)
                 )

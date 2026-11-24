@@ -102,6 +102,7 @@ def test_symptom_catalog_for_clinical_roles(client, nurse, login, wk_knowledge):
         "short_name": None,
         "aliases": [],
         "detection": "both",
+        "applicable_sex": "Any",
     }
     assert client.get("/api/v1/symptoms", headers=login("bs")).status_code == 200
     assert client.get("/api/v1/symptoms", headers=login("admin")).status_code == 403
