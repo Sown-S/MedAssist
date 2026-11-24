@@ -137,8 +137,8 @@ td.num,td .num{white-space:nowrap}
 
 /* ===== Trạng thái kết nối (components/NetStatus.jsx) ===== */
 /* Thanh mảnh trên cùng: chạy qua lại (không có %), hiện sau 300 ms chờ, mờ dần khi xong. */
-.net-bar{position:absolute;left:0;right:0;bottom:-1px;height:3px;z-index:30;pointer-events:none;overflow:hidden}
-.net-bar i{position:absolute;left:0;top:0;bottom:0;width:0;border-radius:0 3px 3px 0;background:var(--primary);box-shadow:0 0 8px color-mix(in srgb,var(--primary) 60%,transparent),0 0 3px var(--primary);opacity:0}
+.net-bar{position:absolute;left:0;right:0;bottom:-1px;height:2px;z-index:30;pointer-events:none;overflow:hidden}
+.net-bar i{position:absolute;left:0;top:0;bottom:0;width:0;border-radius:0 2px 2px 0;background:linear-gradient(90deg,#1877F2,#0FA89A);box-shadow:0 0 5px rgba(15,168,154,.35);opacity:0}
 .net-bar.run i{opacity:1;width:85%;transition:width 2.4s cubic-bezier(.1,.6,.2,1),opacity .1s}
 .net-bar.done i{opacity:0;width:100%;transition:width .25s ease,opacity .3s ease .2s}
 .net-bar.idle i{transition:none}
@@ -886,9 +886,9 @@ select.input,select.select{field-sizing:fixed}
 .rows-more{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;margin-top:8px;padding:9px 12px;border:1px dashed var(--border);border-radius:var(--radius);background:none;color:var(--primary-ink);font:inherit;font-size:var(--fs-sm);font-weight:600;cursor:pointer;transition:background .15s,border-color .15s}
 .rows-more:hover{background:var(--primary-soft);border-color:color-mix(in srgb,var(--primary) 35%,var(--border))}
 .rows-more svg.lucide{width:16px;height:16px}
-/* Thanh tải: thanh bên tối / giao diện tối dùng dải màu của logo; giao diện tối có phát sáng */
-:is(:root[data-theme="dark"],:root[data-sidebar="dark"]) .net-bar i{background:linear-gradient(90deg,#5AA8FF,#2EE0C4);box-shadow:0 0 6px rgba(46,224,196,.45)}
+/* Thanh tải: dải màu của logo ở mọi giao diện, mảnh 2px (dòng 140); giao diện tối dịu màu hơn và phát sáng nhẹ */
+:root[data-sidebar="dark"]:not([data-theme="dark"]) .net-bar i{background:linear-gradient(90deg,#3D8FF5,#22C7AE);box-shadow:0 0 5px rgba(34,199,174,.4)}
 :root[data-theme="dark"] .net-bar{overflow:visible}
-:root[data-theme="dark"] .net-bar i{box-shadow:0 0 10px 1px rgba(46,224,196,.65),0 0 18px 2px rgba(90,168,255,.35)}
-:root[data-theme="dark"] .net-bar i::after{content:'';position:absolute;right:-2px;top:50%;width:14px;height:7px;transform:translateY(-50%);border-radius:50%;background:#B9FFF3;filter:blur(2px);opacity:.9}
+:root[data-theme="dark"] .net-bar i{background:linear-gradient(90deg,#3A7FD6,#1FA996);box-shadow:0 0 7px rgba(31,169,150,.45),0 0 14px rgba(58,127,214,.2)}
+:root[data-theme="dark"] .net-bar i::after{content:'';position:absolute;right:-2px;top:50%;width:10px;height:5px;transform:translateY(-50%);border-radius:50%;background:#8FE8DA;filter:blur(2px);opacity:.7}
 .qtop .qwarn,.qwarn{margin:2px 4px 8px;padding:8px 10px;border-radius:var(--radius);background:var(--surface-2);color:var(--ink-3);font-size:13px;line-height:1.45;font-weight:400}
