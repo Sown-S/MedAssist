@@ -360,6 +360,12 @@ export const VI = {
   // Lịch sử hoạt động: hành động tạo bản ghi (khác cột ngày 'Created').
   Added: 'Tạo mới',
   Record: 'Bản ghi',
+  // Logo nhịp tim ở thanh bên
+  'System running normally': 'Hệ thống hoạt động bình thường',
+  'Loading data…': 'Đang tải dữ liệu…',
+  'The server is responding slowly': 'Máy chủ phản hồi chậm',
+  'The AI service is not responding': 'Dịch vụ AI không phản hồi',
+  'The clinic server is not responding': 'Máy chủ phòng khám không phản hồi',
   'Default name — change to a real person': 'Tên mặc định — nên đổi sang tên người thật',
   Licence: 'CCHN',
   'No licence no.': 'Chưa có số CCHN',

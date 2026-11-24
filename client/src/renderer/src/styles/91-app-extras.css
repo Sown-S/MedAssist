@@ -789,3 +789,29 @@ kbd{display:inline-grid;place-items:center;min-width:24px;height:24px;padding:0 
 .skel-n{display:inline-block;width:56px;height:.8em;vertical-align:middle;border-radius:6px;background:linear-gradient(90deg,var(--surface-2) 0%,var(--border) 50%,var(--surface-2) 100%);background-size:200% 100%;animation:skel 1.3s ease-in-out infinite}
 :root[data-theme="dark"] .skel-n{background:linear-gradient(90deg,#1e293b 0%,#334155 50%,#1e293b 100%);background-size:200% 100%}
 @media (prefers-reduced-motion:reduce){.rhome>*,.rhome .kpis>*,.rhome .grid-3.dk>*,.content.view>*,.content.view .kpis.ak>*{animation:none}.skel-n{animation:none}}
+
+/* Vừa đăng nhập: thanh bên trượt vào từ trái, thanh trên trượt xuống (0,3 s), cùng lúc nội dung trang chủ hiện ra.
+   Chỉ chạy khi khung làm việc được dựng (sau đăng nhập); đổi mục trên thanh bên thì hai thanh đứng yên. */
+@keyframes sidein{from{opacity:0;transform:translateX(-14px)}to{opacity:1;transform:none}}
+@keyframes topin{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:none}}
+.app>.side{animation:sidein .32s var(--ease) backwards}
+.app .main>.top{animation:topin .3s var(--ease) 40ms backwards}
+@media (prefers-reduced-motion:reduce){.app>.side,.app .main>.top{animation:none}}
+
+/* Logo nhịp tim ở thanh bên (components/BrandPulse.jsx): nét điện tim vẽ lại theo nhịp, chấm cuối nảy lên.
+   Nhịp: bình thường 3 s · đang tải 1,4 s · chậm / AI hỏng 1,2 s (cam) · mất máy chủ 0,9 s (đỏ). Màu chuyển dần 0,6 s. */
+@property --logo-a{syntax:'<color>';inherits:true;initial-value:#1877F2}
+@property --logo-b{syntax:'<color>';inherits:true;initial-value:#0FA89A}
+.brand-pulse{display:inline-flex;line-height:0;--beat:3s;transition:--logo-a .6s ease,--logo-b .6s ease}
+.brand-pulse .logo{overflow:visible;transition:filter .6s ease}
+.brand-pulse .logo path{stroke-dasharray:100;animation:beatdraw var(--beat) cubic-bezier(.6,0,.3,1) infinite}
+.brand-pulse .logo circle{transform-origin:33px 22px;animation:beatdot var(--beat) ease-in-out infinite}
+@keyframes beatdraw{0%{stroke-dashoffset:100}40%{stroke-dashoffset:0}100%{stroke-dashoffset:0}}
+@keyframes beatdot{0%,32%{transform:scale(.6)}44%{transform:scale(1.45)}56%,100%{transform:scale(1)}}
+.brand-pulse.busy{--beat:1.4s}
+.brand-pulse.warn{--beat:1.2s;--logo-a:#F59E0B;--logo-b:#F97316}
+.brand-pulse.warn .logo{filter:drop-shadow(0 3px 6px rgba(245,158,11,.45))!important}
+.brand-pulse.down{--beat:.9s;--logo-a:#F97316;--logo-b:#DC2626}
+.brand-pulse.down .logo{filter:drop-shadow(0 3px 7px rgba(220,38,38,.5))!important}
+:root[data-motion="reduce"] .brand-pulse .logo path,:root[data-motion="reduce"] .brand-pulse .logo circle{animation:none;stroke-dashoffset:0}
+@media (prefers-reduced-motion:reduce){.brand-pulse .logo path,.brand-pulse .logo circle{animation:none;stroke-dashoffset:0}}

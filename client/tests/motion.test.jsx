@@ -55,3 +55,16 @@ describe('Ô số liệu trang chủ', () => {
     expect(container.querySelector('.htile-n').textContent).toBe('0')
   })
 })
+
+describe('Logo nhịp tim — trạng thái', () => {
+  it('mất máy chủ → đỏ; chậm hoặc AI hỏng → cam; AI tắt theo cấu hình không báo; đang tải → đập nhanh', async () => {
+    const { pulseState } = await import('../src/renderer/src/components/BrandPulse')
+    const ok = { ok: true }
+    expect(pulseState({ online: false, slow: false, ai: ok, busy: false })).toBe('down')
+    expect(pulseState({ online: true, slow: true, ai: ok, busy: false })).toBe('warn')
+    expect(pulseState({ online: true, slow: false, ai: { ok: false, reason: 'unreachable' }, busy: false })).toBe('warn')
+    expect(pulseState({ online: true, slow: false, ai: { ok: false, reason: 'disabled' }, busy: false })).toBe('idle')
+    expect(pulseState({ online: true, slow: false, ai: ok, busy: true })).toBe('busy')
+    expect(pulseState({ online: true, slow: false, ai: ok, busy: false })).toBe('idle')
+  })
+})
