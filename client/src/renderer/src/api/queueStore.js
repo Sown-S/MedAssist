@@ -43,7 +43,9 @@ export const leftReasonLabel = (k) => ALL_LEFT_REASONS.find((r) => r.key === k)?
 const CLOSED = [ST.FINISHED, ST.CANCELLED]
 export const isClosed = (v) => CLOSED.includes(v.status)
 
-let state = { visits: [], redFlags: [], stale: [] }
+// loaded: đã nhận hàng chờ từ server ít nhất một lần (trước đó các ô số liệu hiện khung xương).
+// loadFailed: lần tải đầu lỗi (chưa từng có dữ liệu) → các ô hiện “—” thay vì khung xương nhấp nháy mãi.
+let state = { visits: [], redFlags: [], stale: [], loaded: false, loadFailed: false }
 
 const listeners = new Set()
 function commit(next) {
@@ -71,10 +73,13 @@ export function syncQueue({ poll = false } = {}) {
     .then((list) => {
       const prev = new Map(state.visits.map((v) => [v.id, v]))
       const visits = list.map((v) => ({ ...prev.get(v.id), ...v }))
-      commit({ ...state, visits, redFlags: liveRedFlags(visits, state.redFlags) })
+      commit({ ...state, visits, redFlags: liveRedFlags(visits, state.redFlags), loaded: true, loadFailed: false })
       return true
     })
-    .catch(() => false)
+    .catch(() => {
+      if (!state.loaded && !state.loadFailed) commit({ ...state, loadFailed: true })
+      return false
+    })
     .finally(() => (syncing = null))
   return syncing
 }

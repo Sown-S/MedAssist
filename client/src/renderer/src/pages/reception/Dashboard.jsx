@@ -10,13 +10,13 @@ import { money, ymd, dmy } from '../../utils/format'
 // Chờ thu tiền lấy từ GET /billing/awaiting (có hoá đơn và số tiền).
 
 export default function Dashboard({ go, readOnly, onPay }) {
-  const { visits, redFlags } = useQueue()
+  const { visits, redFlags, loaded: queueLoaded, loadFailed } = useQueue()
   const awaiting = useAwaiting()
   const serverInvoices = useTodayInvoices()
   const serverRx = usePrescriptions({})
   const today = ymd(new Date())
   // GET /billing/invoices đã lọc theo hôm nay (hoá đơn đã thu tính theo giờ thu).
-  const invoices = serverInvoices.map((x) => ({ status: x.payment_status.toLowerCase(), method: x.payment_method === 'BankingTransfer' ? 'transfer' : 'cash', createdAt: x.created_at, paidAt: x.paid_at, total: Number(x.total_amount) }))
+  const invoices = (serverInvoices ?? []).map((x) => ({ status: x.payment_status.toLowerCase(), method: x.payment_method === 'BankingTransfer' ? 'transfer' : 'cash', createdAt: x.created_at, paidAt: x.paid_at, total: Number(x.total_amount) }))
   const todayInv = invoices.filter((x) => x.status !== 'cancelled')
   const unpaid = awaiting.list.map(fromAwaiting)
   const processing = todayInv.filter((x) => x.status === 'pending' && x.method === 'transfer').length
@@ -25,21 +25,24 @@ export default function Dashboard({ go, readOnly, onPay }) {
   const revenue = invoices.filter((x) => x.status === 'paid' && ymd(new Date(x.paidAt ?? x.createdAt)) === today).reduce((s, x) => s + x.total, 0)
   const rxCount = serverRx.list.length
   const waiting = visits.filter(isQueued).length
+  // Chưa có dữ liệu → undefined để ô hiện khung xương thay vì số 0; tải lỗi → “—”.
+  const when = (ok, v, failed) => (ok ? v : failed ? '—' : undefined)
+  const moneyLoaded = serverInvoices !== null && awaiting.loaded
 
   // Ô số liệu: nhãn trên, số dưới trái, icon góc dưới phải. Ca cấp cứu chưa bác sĩ xem → ô đỏ nổi bật.
   const tiles = [
-    { go: 'queue', icon: 'users', tone: 'g', title: 'Waiting queue', value: waiting, sub: translate(waiting ? 'patients waiting for a doctor' : 'No one is waiting.') },
+    { go: 'queue', icon: 'users', tone: 'g', title: 'Waiting queue', value: when(queueLoaded, waiting, loadFailed), sub: translate(waiting ? 'patients waiting for a doctor' : 'No one is waiting.') },
     (() => {
       const pending = redFlags.filter((r) => isPendingFlag(r) && !r.doctorReview).length
-      return { go: 'queue', icon: 'siren', tone: 'r', title: 'Emergency cases', value: redFlags.length, alert: pending > 0, sub: pending ? `${pending} ${translate('waiting for a doctor to review')}` : translate('No case needs action') }
+      return { go: 'queue', icon: 'siren', tone: 'r', title: 'Emergency cases', value: when(queueLoaded, redFlags.length, loadFailed), alert: pending > 0, sub: pending ? `${pending} ${translate('waiting for a doctor to review')}` : translate('No case needs action') }
     })(),
-    { go: 'prescriptions', icon: 'file-text', tone: 'b', title: 'Prescriptions today', value: rxCount, sub: translate('written by doctors today') },
+    { go: 'prescriptions', icon: 'file-text', tone: 'b', title: 'Prescriptions today', value: when(serverRx.loaded, rxCount, !!serverRx.error), sub: translate('written by doctors today') },
     {
       go: 'invoices',
       icon: 'wallet',
       tone: 'v',
       title: 'Collected today',
-      value: money(revenue),
+      value: when(moneyLoaded, money(revenue)),
       sub: `${unpaid.length} ${translate('not paid')} · ${processing} ${translate('waiting for transfer')}`,
       hint: `${unpaid.length} ${translate('not paid')} · ${processing} ${translate('waiting for transfer')} · ${paid} ${translate('paid')}`
     }

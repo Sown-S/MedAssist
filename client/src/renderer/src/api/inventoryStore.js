@@ -17,7 +17,8 @@ function recomputeBalances(moves) {
   return sorted.reverse()
 }
 
-let state = { drugs: [], batches: [], moves: [] }
+// loaded: đã nạp danh mục thuốc và lô từ server (trước đó ô Tủ thuốc hiện khung xương).
+let state = { drugs: [], batches: [], moves: [], loaded: false }
 const listeners = new Set()
 function commit(next) {
   state = next
@@ -88,7 +89,7 @@ function reloadInventory() {
   liveLoading ??= fetchLive()
     .then((x) => {
       liveLoaded = true
-      commit({ ...state, ...x })
+      commit({ ...state, ...x, loaded: true })
     })
     .catch(() => {})
     .finally(() => (liveLoading = null))
