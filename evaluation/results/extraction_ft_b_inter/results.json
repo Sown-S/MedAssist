@@ -1,0 +1,588 @@
+{
+  "meta": {
+    "run_at": "2026-11-23 17:09",
+    "testset": "testset-v1.4-frozen",
+    "testset_sha256": "a136d072e8c5149f25409591b245b61865e3320a5233ad73ef9d4d54aec86161",
+    "knowledge_release": "KB-2026.12.1",
+    "llm_provider": "ollama",
+    "model": "hf.co/aisingapore/Gemma-SEA-LION-v3-9B-IT-GGUF:Q4_K_M",
+    "reasoning_prompt": "reasoning-v3",
+    "server_version": "0.2.5",
+    "extraction_model": "hf.co/aisingapore/Gemma-SEA-LION-v3-9B-IT-GGUF:Q4_K_M",
+    "extraction_strategy": "phrases",
+    "candidates_per_phrase": 4,
+    "extraction_prompt": "extraction-phrases-compact-v3, extraction-phrases-v2",
+    "interleave": true,
+    "extraction_few_shot": {
+      "file": "few_shot_dev_examples.json",
+      "sha256": "b2ab3624d6485af330e33a23eee270f91584fb9b2bcc65d44547b43a0b74746c",
+      "ids": [
+        "dev-0002",
+        "dev-0037",
+        "dev-0008",
+        "dev-0004"
+      ],
+      "requests": {
+        "with_examples": 30
+      }
+    },
+    "extraction_cases": "symptom_extraction_testset_ft.jsonl"
+  },
+  "warnings": [],
+  "clinical": {},
+  "extraction": {
+    "cases": 30,
+    "code_and_state": {
+      "precision": 0.6428571428571429,
+      "recall": 0.7758620689655172,
+      "f1": 0.703125,
+      "tp": 45,
+      "fp": 25,
+      "fn": 13
+    },
+    "code_only": {
+      "precision": 0.6428571428571429,
+      "recall": 0.7758620689655172,
+      "f1": 0.703125,
+      "tp": 45,
+      "fp": 25,
+      "fn": 13
+    },
+    "exact_cases": 14,
+    "completed_cases": 29,
+    "failed_cases": {
+      "EXT-FT-005": "CONFLICTING_SELECTION"
+    },
+    "unclassified_cases": [],
+    "empty_cases": [
+      "EXT-FT-005"
+    ],
+    "over_budget_cases": [],
+    "latency": {
+      "mean_ms": 11819.67,
+      "p50_ms": 11373.45,
+      "p95_ms": 19083.5,
+      "max_ms": 21005.9
+    }
+  },
+  "clinical_cases": {},
+  "extraction_cases": [
+    {
+      "case_id": "EXT-FT-001",
+      "disease_group": "musculoskeletal",
+      "expected": {
+        "morning_stiffness_over_1h": "PRESENT",
+        "limb_numbness_paresthesia_tingling": "ABSENT"
+      },
+      "predicted": {
+        "limb_numbness_paresthesia_tingling": "ABSENT",
+        "morning_stiffness_under_30m": "PRESENT"
+      },
+      "strategy": "phrases",
+      "prompt_version": "extraction-phrases-compact-v3",
+      "completed": true,
+      "failure_code": null,
+      "latency_ms": 14974.8
+    },
+    {
+      "case_id": "EXT-FT-002",
+      "disease_group": "musculoskeletal",
+      "expected": {
+        "morning_stiffness_under_30m": "PRESENT",
+        "joint_swelling_warmth_redness_effusion": "ABSENT"
+      },
+      "predicted": {
+        "joint_swelling_warmth_redness_effusion": "ABSENT",
+        "morning_stiffness_over_1h": "PRESENT",
+        "morning_stiffness_under_30m": "PRESENT"
+      },
+      "strategy": "phrases",
+      "prompt_version": "extraction-phrases-v2",
+      "completed": true,
+      "failure_code": null,
+      "latency_ms": 14689.7
+    },
+    {
+      "case_id": "EXT-FT-003",
+      "disease_group": "musculoskeletal",
+      "expected": {
+        "psoriatic_plaque_nail_pitting": "PRESENT",
+        "oral_mucosal_ulcers": "ABSENT"
+      },
+      "predicted": {
+        "cutaneous_sarcoidosis_lupus_pernio": "PRESENT",
+        "oral_mucosal_ulcers": "ABSENT",
+        "psoriatic_dactylitis_distal_interphalangeal": "PRESENT"
+      },
+      "strategy": "phrases",
+      "prompt_version": "extraction-phrases-v2",
+      "completed": true,
+      "failure_code": null,
+      "latency_ms": 13848.6
+    },
+    {
+      "case_id": "EXT-FT-004",
+      "disease_group": "musculoskeletal",
+      "expected": {
+        "limb_numbness_paresthesia_tingling": "PRESENT",
+        "fatigue_malaise": "ABSENT"
+      },
+      "predicted": {
+        "limb_numbness_paresthesia_tingling": "PRESENT"
+      },
+      "strategy": "phrases",
+      "prompt_version": "extraction-phrases-v2",
+      "completed": true,
+      "failure_code": null,
+      "latency_ms": 9592.6
+    },
+    {
+      "case_id": "EXT-FT-005",
+      "disease_group": "musculoskeletal",
+      "expected": {
+        "mechanical_spinal_pain_stiffness": "PRESENT",
+        "cervical_radiculopathy_spurling": "ABSENT"
+      },
+      "predicted": {},
+      "strategy": "phrases",
+      "prompt_version": "extraction-phrases-compact-v3",
+      "completed": false,
+      "failure_code": "CONFLICTING_SELECTION",
+      "latency_ms": 16425.1
+    },
+    {
+      "case_id": "EXT-FT-006",
+      "disease_group": "musculoskeletal",
+      "expected": {
+        "mechanical_spinal_pain_stiffness": "PRESENT",
+        "sciatica_lasegue_positive": "ABSENT"
+      },
+      "predicted": {
+        "inflammatory_sacroiliac_back_pain": "PRESENT",
+        "mechanical_spinal_pain_stiffness": "PRESENT",
+        "sciatica_lasegue_positive": "ABSENT"
+      },
+      "strategy": "phrases",
+      "prompt_version": "extraction-phrases-compact-v3",
+      "completed": true,
+      "failure_code": null,
+      "latency_ms": 14352.4
+    },
+    {
+      "case_id": "EXT-FT-007",
+      "disease_group": "musculoskeletal",
+      "expected": {
+        "knee_effusion_crepitus_locking": "PRESENT"
+      },
+      "predicted": {
+        "knee_effusion_crepitus_locking": "PRESENT"
+      },
+      "strategy": "phrases",
+      "prompt_version": "extraction-phrases-v2",
+      "completed": true,
+      "failure_code": null,
+      "latency_ms": 5409.6
+    },
+    {
+      "case_id": "EXT-FT-008",
+      "disease_group": "musculoskeletal",
+      "expected": {
+        "morning_stiffness_over_1h": "PRESENT"
+      },
+      "predicted": {
+        "symmetric_polyarthritis_hands": "PRESENT"
+      },
+      "strategy": "phrases",
+      "prompt_version": "extraction-phrases-v2",
+      "completed": true,
+      "failure_code": null,
+      "latency_ms": 4869.5
+    },
+    {
+      "case_id": "EXT-FT-009",
+      "disease_group": "musculoskeletal",
+      "expected": {
+        "erythema_nodosum_shins": "PRESENT",
+        "nausea_vomiting_diarrhea": "ABSENT"
+      },
+      "predicted": {
+        "duchene_becker_gowers_calf_hypertrophy": "ABSENT",
+        "erythema_nodosum_shins": "PRESENT",
+        "joint_range_of_motion_limitation": "ABSENT",
+        "nausea_vomiting_diarrhea": "ABSENT",
+        "neurofibromatosis_cafe_au_lait_lisch": "PRESENT",
+        "otalgia_ear_pain": "PRESENT",
+        "weight_loss_anorexia": "ABSENT"
+      },
+      "strategy": "phrases",
+      "prompt_version": "extraction-phrases-compact-v3",
+      "completed": true,
+      "failure_code": null,
+      "latency_ms": 21005.9
+    },
+    {
+      "case_id": "EXT-FT-010",
+      "disease_group": "musculoskeletal",
+      "expected": {
+        "oral_mucosal_ulcers": "PRESENT",
+        "maculopapular_rash": "ABSENT"
+      },
+      "predicted": {
+        "erythema_nodosum_shins": "PRESENT"
+      },
+      "strategy": "phrases",
+      "prompt_version": "extraction-phrases-compact-v3",
+      "completed": true,
+      "failure_code": null,
+      "latency_ms": 14737.8
+    },
+    {
+      "case_id": "EXT-FT-011",
+      "disease_group": "musculoskeletal",
+      "expected": {
+        "limb_numbness_paresthesia_tingling": "PRESENT",
+        "joint_deformity_ankylosis_subluxation": "ABSENT"
+      },
+      "predicted": {
+        "joint_deformity_ankylosis_subluxation": "ABSENT",
+        "limb_numbness_paresthesia_tingling": "PRESENT"
+      },
+      "strategy": "phrases",
+      "prompt_version": "extraction-phrases-v2",
+      "completed": true,
+      "failure_code": null,
+      "latency_ms": 9121.5
+    },
+    {
+      "case_id": "EXT-FT-012",
+      "disease_group": "musculoskeletal",
+      "expected": {
+        "sweating_profuse": "PRESENT",
+        "chills_rigors": "ABSENT"
+      },
+      "predicted": {
+        "chills_rigors": "ABSENT",
+        "sweating_profuse": "PRESENT"
+      },
+      "strategy": "phrases",
+      "prompt_version": "extraction-phrases-compact-v3",
+      "completed": true,
+      "failure_code": null,
+      "latency_ms": 14124.1
+    },
+    {
+      "case_id": "EXT-FT-013",
+      "disease_group": "musculoskeletal",
+      "expected": {
+        "oral_mucosal_ulcers": "PRESENT",
+        "limb_numbness_paresthesia_tingling": "ABSENT",
+        "headache_dull": "ABSENT"
+      },
+      "predicted": {
+        "headache_dull": "ABSENT",
+        "limb_numbness_paresthesia_tingling": "ABSENT",
+        "oral_mucosal_ulcers": "PRESENT"
+      },
+      "strategy": "phrases",
+      "prompt_version": "extraction-phrases-v2",
+      "completed": true,
+      "failure_code": null,
+      "latency_ms": 11854.7
+    },
+    {
+      "case_id": "EXT-FT-014",
+      "disease_group": "musculoskeletal",
+      "expected": {
+        "sweating_profuse": "PRESENT",
+        "fatigue_malaise": "ABSENT"
+      },
+      "predicted": {
+        "fatigue_malaise": "ABSENT",
+        "sweating_profuse": "PRESENT"
+      },
+      "strategy": "phrases",
+      "prompt_version": "extraction-phrases-v2",
+      "completed": true,
+      "failure_code": null,
+      "latency_ms": 8697.3
+    },
+    {
+      "case_id": "EXT-FT-015",
+      "disease_group": "musculoskeletal",
+      "expected": {
+        "enthesitis_achilles_heel": "PRESENT",
+        "limb_numbness_paresthesia_tingling": "ABSENT"
+      },
+      "predicted": {
+        "enthesitis_achilles_heel": "PRESENT",
+        "limb_numbness_paresthesia_tingling": "ABSENT"
+      },
+      "strategy": "phrases",
+      "prompt_version": "extraction-phrases-v2",
+      "completed": true,
+      "failure_code": null,
+      "latency_ms": 9000.0
+    },
+    {
+      "case_id": "EXT-FT-016",
+      "disease_group": "musculoskeletal",
+      "expected": {
+        "bone_pain_fracture_lesion": "PRESENT",
+        "weight_loss_anorexia": "ABSENT"
+      },
+      "predicted": {
+        "bone_pain_fracture_lesion": "PRESENT",
+        "sweating_profuse": "PRESENT",
+        "weight_loss_anorexia": "ABSENT"
+      },
+      "strategy": "phrases",
+      "prompt_version": "extraction-phrases-compact-v3",
+      "completed": true,
+      "failure_code": null,
+      "latency_ms": 15439.4
+    },
+    {
+      "case_id": "EXT-FT-017",
+      "disease_group": "musculoskeletal",
+      "expected": {
+        "heliotrope_gottron_sign": "PRESENT",
+        "oral_mucosal_ulcers": "ABSENT"
+      },
+      "predicted": {
+        "heliotrope_gottron_sign": "PRESENT",
+        "oral_mucosal_ulcers": "ABSENT"
+      },
+      "strategy": "phrases",
+      "prompt_version": "extraction-phrases-v2",
+      "completed": true,
+      "failure_code": null,
+      "latency_ms": 9679.8
+    },
+    {
+      "case_id": "EXT-FT-018",
+      "disease_group": "musculoskeletal",
+      "expected": {
+        "mechanical_spinal_pain_stiffness": "PRESENT"
+      },
+      "predicted": {
+        "mechanical_spinal_pain_stiffness": "PRESENT"
+      },
+      "strategy": "phrases",
+      "prompt_version": "extraction-phrases-v2",
+      "completed": true,
+      "failure_code": null,
+      "latency_ms": 5902.8
+    },
+    {
+      "case_id": "EXT-FT-019",
+      "disease_group": "ent",
+      "expected": {
+        "otalgia_ear_pain": "PRESENT",
+        "hearing_loss_deafness": "ABSENT"
+      },
+      "predicted": {
+        "hearing_loss_deafness": "ABSENT",
+        "otalgia_ear_pain": "PRESENT"
+      },
+      "strategy": "phrases",
+      "prompt_version": "extraction-phrases-v2",
+      "completed": true,
+      "failure_code": null,
+      "latency_ms": 8274.3
+    },
+    {
+      "case_id": "EXT-FT-020",
+      "disease_group": "ent",
+      "expected": {
+        "tinnitus_ear_fullness": "PRESENT",
+        "otalgia_ear_pain": "ABSENT"
+      },
+      "predicted": {
+        "otalgia_ear_pain": "ABSENT",
+        "tinnitus_ear_fullness": "PRESENT"
+      },
+      "strategy": "phrases",
+      "prompt_version": "extraction-phrases-v2",
+      "completed": true,
+      "failure_code": null,
+      "latency_ms": 7646.6
+    },
+    {
+      "case_id": "EXT-FT-021",
+      "disease_group": "ent",
+      "expected": {
+        "sore_throat_dysphagia": "PRESENT",
+        "hoarseness_dysphonia_stridor": "ABSENT"
+      },
+      "predicted": {
+        "hoarseness_dysphonia_stridor": "ABSENT",
+        "sore_throat_dysphagia": "PRESENT",
+        "tonsillitis_adenoid_pharyngitis": "PRESENT",
+        "vocal_fatigue_phonasthenia": "PRESENT",
+        "voice_pitch_timbre_alteration": "ABSENT"
+      },
+      "strategy": "phrases",
+      "prompt_version": "extraction-phrases-compact-v3",
+      "completed": true,
+      "failure_code": null,
+      "latency_ms": 16576.6
+    },
+    {
+      "case_id": "EXT-FT-022",
+      "disease_group": "ent",
+      "expected": {
+        "rhinorrhea_nasal_congestion": "PRESENT",
+        "nasal_obstruction_stuffiness": "ABSENT"
+      },
+      "predicted": {
+        "rhinorrhea_nasal_congestion": "PRESENT"
+      },
+      "strategy": "phrases",
+      "prompt_version": "extraction-phrases-v2",
+      "completed": true,
+      "failure_code": null,
+      "latency_ms": 10232.9
+    },
+    {
+      "case_id": "EXT-FT-023",
+      "disease_group": "ent",
+      "expected": {
+        "facial_sinus_pain_anosmia": "PRESENT",
+        "otalgia_ear_pain": "ABSENT"
+      },
+      "predicted": {
+        "facial_sinus_pain_anosmia": "PRESENT",
+        "otalgia_ear_pain": "ABSENT"
+      },
+      "strategy": "phrases",
+      "prompt_version": "extraction-phrases-v2",
+      "completed": true,
+      "failure_code": null,
+      "latency_ms": 10892.2
+    },
+    {
+      "case_id": "EXT-FT-024",
+      "disease_group": "ent",
+      "expected": {
+        "hoarseness_dysphonia_stridor": "PRESENT",
+        "sore_throat_dysphagia": "ABSENT"
+      },
+      "predicted": {
+        "laryngeal_paresthesia_throat_clearing": "PRESENT",
+        "muscle_tenderness_cramps_myotonia": "ABSENT",
+        "sore_throat_dysphagia": "ABSENT",
+        "tonsillitis_adenoid_pharyngitis": "ABSENT",
+        "vocal_fatigue_phonasthenia": "PRESENT",
+        "voice_pitch_timbre_alteration": "PRESENT"
+      },
+      "strategy": "phrases",
+      "prompt_version": "extraction-phrases-compact-v3",
+      "completed": true,
+      "failure_code": null,
+      "latency_ms": 19083.5
+    },
+    {
+      "case_id": "EXT-FT-025",
+      "disease_group": "respiratory",
+      "expected": {
+        "dyspnea_chronic_exertional": "PRESENT",
+        "chest_tightness_pleuritic_pain": "ABSENT"
+      },
+      "predicted": {
+        "difficulty_speaking_phrases_orthopnea": "PRESENT"
+      },
+      "strategy": "phrases",
+      "prompt_version": "extraction-phrases-v2",
+      "completed": true,
+      "failure_code": null,
+      "latency_ms": 8309.1
+    },
+    {
+      "case_id": "EXT-FT-026",
+      "disease_group": "respiratory",
+      "expected": {
+        "nasal_obstruction_stuffiness": "PRESENT",
+        "rhinorrhea_nasal_congestion": "ABSENT"
+      },
+      "predicted": {
+        "nasal_obstruction_stuffiness": "PRESENT",
+        "rhinorrhea_nasal_congestion": "ABSENT"
+      },
+      "strategy": "phrases",
+      "prompt_version": "extraction-phrases-v2",
+      "completed": true,
+      "failure_code": null,
+      "latency_ms": 7322.2
+    },
+    {
+      "case_id": "EXT-FT-027",
+      "disease_group": "respiratory",
+      "expected": {
+        "cough_dry": "PRESENT",
+        "chest_tightness_pleuritic_pain": "ABSENT"
+      },
+      "predicted": {
+        "chest_tightness_pleuritic_pain": "ABSENT"
+      },
+      "strategy": "phrases",
+      "prompt_version": "extraction-phrases-compact-v3",
+      "completed": true,
+      "failure_code": null,
+      "latency_ms": 13290.5
+    },
+    {
+      "case_id": "EXT-FT-028",
+      "disease_group": "respiratory",
+      "expected": {
+        "wheezing_bronchospasm": "PRESENT"
+      },
+      "predicted": {
+        "wheezing_bronchospasm": "PRESENT"
+      },
+      "strategy": "phrases",
+      "prompt_version": "extraction-phrases-v2",
+      "completed": true,
+      "failure_code": null,
+      "latency_ms": 5938.5
+    },
+    {
+      "case_id": "EXT-FT-029",
+      "disease_group": "infectious",
+      "expected": {
+        "fever_high": "PRESENT",
+        "cough_dry": "ABSENT"
+      },
+      "predicted": {
+        "cough_dry": "ABSENT",
+        "fever_high": "PRESENT"
+      },
+      "strategy": "phrases",
+      "prompt_version": "extraction-phrases-compact-v3",
+      "completed": true,
+      "failure_code": null,
+      "latency_ms": 14803.6
+    },
+    {
+      "case_id": "EXT-FT-030",
+      "disease_group": "infectious",
+      "expected": {
+        "chills_rigors": "PRESENT",
+        "fever_high": "ABSENT",
+        "cough_dry": "ABSENT"
+      },
+      "predicted": {
+        "adenoid_facies_mouth_breathing": "ABSENT",
+        "anemia_pallor_jaundice": "ABSENT",
+        "chills_rigors": "PRESENT",
+        "cough_dry": "ABSENT",
+        "epidemiological_exposure_vector_travel": "ABSENT",
+        "fever_high": "ABSENT"
+      },
+      "strategy": "phrases",
+      "prompt_version": "extraction-phrases-compact-v3",
+      "completed": true,
+      "failure_code": null,
+      "latency_ms": 18494.5
+    }
+  ]
+}
