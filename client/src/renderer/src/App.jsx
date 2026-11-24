@@ -3,7 +3,7 @@ import { Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-
 import { getRenderKey, subscribe } from './i18n'
 import { ToastProvider } from './context/ToastContext'
 import { AuthProvider, useAuth } from './context/AuthContext'
-import { AdminNavProvider } from './context/AdminNavContext'
+import { AdminNavProvider, useAdminNav } from './context/AdminNavContext'
 import RequireRole from './components/RequireRole'
 import Icon from './components/Icon'
 import TopActions from './components/TopActions'
@@ -20,6 +20,7 @@ import { translate } from './i18n'
 import { OfflineBanner, TopProgress, SlowNotice } from './components/NetStatus'
 import { LeaveVisitModal } from './pages/doctor/doctorShared'
 import useGlobalKeys from './components/useGlobalKeys'
+import usePageEnter from './components/usePageEnter'
 
 // Menu theo vai trò nằm ở components/SideNav.jsx. Lịch hẹn, sổ quỹ, chốt ca nằm ngoài phạm vi.
 
@@ -162,6 +163,10 @@ function ShellLayout({ user, onSignOut, children }) {
   const title = useCurrentLabel(user)
   const [collapsed, setCollapsed] = useSideCollapsed()
   useGlobalKeys({ onToggleSidebar: () => setCollapsed((v) => !v) })
+  // Đổi mục trên thanh bên (đổi đường dẫn, ?view= hoặc trang Quản trị) → nội dung trang hiện lần lượt lại.
+  const location = useLocation()
+  const adminNav = useAdminNav()
+  usePageEnter([location.pathname, location.search, adminNav.page])
   return (
     <div className={'app' + (collapsed ? ' collapsed' : '')}>
       <SideNav user={user} collapsed={collapsed} onToggle={() => setCollapsed((v) => !v)} />
