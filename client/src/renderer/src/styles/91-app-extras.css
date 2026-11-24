@@ -505,7 +505,7 @@ kbd{display:inline-grid;place-items:center;min-width:24px;height:24px;padding:0 
 .pset-info svg{width:16px;height:16px;color:var(--ink-3);flex:none}
 .clock-card{margin-top:12px;border:1px solid var(--border);border-radius:14px;overflow:hidden;background:var(--surface)}
 .clock-main{display:flex;align-items:center;gap:14px;padding:16px 18px;background:linear-gradient(120deg,var(--primary-soft),var(--surface) 70%)}
-.clock-ic{width:46px;height:46px;border-radius:12px;display:grid;place-items:center;background:var(--surface);color:var(--primary);box-shadow:0 4px 12px -6px rgba(24,119,242,.4)}
+.clock-ic{width:46px;height:46px;border-radius:12px;display:grid;place-items:center;background:var(--surface);color:var(--primary);box-shadow:0 4px 12px -6px rgb(var(--p-rgb) / .4)}
 .clock-ic svg{width:22px;height:22px}
 .clock-t{display:block;font-size:30px;font-weight:700;line-height:1.05;color:var(--ink);letter-spacing:-.01em}
 .clock-d{font-size:13.5px;color:var(--ink-3);text-transform:capitalize}
@@ -707,7 +707,7 @@ kbd{display:inline-grid;place-items:center;min-width:24px;height:24px;padding:0 
 .cx-post-ph{height:150px;border-radius:14px;overflow:hidden}
 .cx-ln{display:block;height:9px;border-radius:5px;background:var(--surface-2);margin-top:10px}
 .cx-ln.s{width:60%}
-.cx-circle{left:340px;bottom:-6px;width:150px;height:150px;border-radius:50%;overflow:hidden;border:5px solid var(--primary);background:#fff;box-shadow:0 16px 36px -10px rgba(24,119,242,.5);z-index:3}
+.cx-circle{left:340px;bottom:-6px;width:150px;height:150px;border-radius:50%;overflow:hidden;border:5px solid var(--primary);background:#fff;box-shadow:0 16px 36px -10px rgb(var(--p-rgb) / .5);z-index:3}
 /* Cụm ảnh chiếm phần lớn nửa trái (như Facebook) và to dần theo bề rộng; thay các bậc .6 / .92 cũ (màn Windows 125% bị .6, ảnh nhỏ) */
 .fbx{grid-template-columns:minmax(0,.72fr) minmax(0,1.28fr)}
 .fbx-c{zoom:1}
@@ -723,28 +723,28 @@ kbd{display:inline-grid;place-items:center;min-width:24px;height:24px;padding:0 
 .fbx-t h1{font-size:clamp(36px,4.6cqw,58px)!important;line-height:1.08}
 /* Tiêu đề màn đăng nhập: bóng nhiều lớp mềm cho chữ có chiều sâu (phần xanh có bóng ngả xanh) */
 .fbx-t h1{text-shadow:0 1px 0 rgba(255,255,255,.9),0 2px 2px rgba(16,24,40,.10),0 8px 18px rgba(16,24,40,.14),0 18px 36px rgba(16,24,40,.10)}
-.fbx-t h1 span{text-shadow:0 1px 0 rgba(255,255,255,.9),0 2px 2px rgba(24,119,242,.16),0 8px 18px rgba(24,119,242,.26),0 18px 38px rgba(24,119,242,.18)}
+.fbx-t h1 span{text-shadow:0 1px 0 rgba(255,255,255,.9),0 2px 2px rgb(var(--p-rgb) / .16),0 8px 18px rgb(var(--p-rgb) / .26),0 18px 38px rgb(var(--p-rgb) / .18)}
 :root[data-theme="dark"] .fbx-t h1{text-shadow:0 2px 2px rgba(0,0,0,.45),0 10px 24px rgba(0,0,0,.55)}
-:root[data-theme="dark"] .fbx-t h1 span{text-shadow:0 2px 2px rgba(0,0,0,.4),0 8px 22px rgba(59,130,246,.45),0 0 36px rgba(59,130,246,.22)}
+:root[data-theme="dark"] .fbx-t h1 span{text-shadow:0 2px 2px rgba(0,0,0,.4),0 8px 22px rgb(var(--p2-rgb) / .45),0 0 36px rgb(var(--p2-rgb) / .22)}
 
 /* ===== Logo: nét chuyển xanh dương → xanh ngọc. Sáng: nét dày hơn, bóng xanh mềm để nổi. Tối: màu sáng hơn, phát sáng nhẹ ===== */
 :root{--logo-a:#1877F2;--logo-b:#0FA89A}
 .brand .t b,.boot .boot-logo b{background:linear-gradient(90deg,var(--logo-a),var(--logo-b));-webkit-background-clip:text;background-clip:text;color:transparent!important;font-weight:700;text-shadow:none}
-.brand .logo{filter:drop-shadow(0 3px 5px rgba(24,119,242,.28))}
+.brand .logo{filter:drop-shadow(0 3px 5px rgb(var(--p-rgb) / .28))}
 :root[data-theme="dark"],:root[data-sidebar="dark"] .side{--logo-a:#5AA8FF;--logo-b:#2EE0C4}
-:root[data-theme="dark"] .brand .logo,:root[data-sidebar="dark"] .side .brand .logo{filter:drop-shadow(0 0 4px rgba(90,168,255,.7)) drop-shadow(0 0 12px rgba(46,224,196,.45))}
+:root[data-theme="dark"] .brand .logo,:root[data-sidebar="dark"] .side .brand .logo{filter:drop-shadow(0 0 4px rgb(var(--p3-rgb) / .7)) drop-shadow(0 0 12px rgba(46,224,196,.45))}
 
 /* Mục menu đang chọn ở menu tối (giao diện tối, hoặc màu menu Tối / Chàm xám): nền xanh trong mờ chuyển dần,
    viền mảnh, vạch sáng bên trái theo màu logo, biểu tượng phát sáng nhẹ — thay khối xanh đặc */
-:is(:root[data-theme="dark"],:root[data-sidebar="dark"]) .side .nav.on{position:relative;background:linear-gradient(90deg,rgba(59,130,246,.30),rgba(59,130,246,.08) 85%);color:#fff;box-shadow:inset 0 0 0 1px rgba(90,168,255,.22),0 6px 18px -10px rgba(59,130,246,.6)}
-:is(:root[data-theme="dark"],:root[data-sidebar="dark"]) .side .nav.on::before{content:'';position:absolute;left:0;top:9px;bottom:9px;width:3px;border-radius:0 3px 3px 0;background:linear-gradient(180deg,var(--logo-a),var(--logo-b));box-shadow:0 0 8px rgba(90,168,255,.8)}
-:is(:root[data-theme="dark"],:root[data-sidebar="dark"]) .side .nav.on svg{color:#7CC0FF;filter:drop-shadow(0 0 5px rgba(90,168,255,.6))}
+:is(:root[data-theme="dark"],:root[data-sidebar="dark"]) .side .nav.on{position:relative;background:linear-gradient(90deg,rgb(var(--p2-rgb) / .30),rgb(var(--p2-rgb) / .08) 85%);color:#fff;box-shadow:inset 0 0 0 1px rgb(var(--p3-rgb) / .22),0 6px 18px -10px rgb(var(--p2-rgb) / .6)}
+:is(:root[data-theme="dark"],:root[data-sidebar="dark"]) .side .nav.on::before{content:'';position:absolute;left:0;top:9px;bottom:9px;width:3px;border-radius:0 3px 3px 0;background:linear-gradient(180deg,var(--logo-a),var(--logo-b));box-shadow:0 0 8px rgb(var(--p3-rgb) / .8)}
+:is(:root[data-theme="dark"],:root[data-sidebar="dark"]) .side .nav.on svg{color:#7CC0FF;filter:drop-shadow(0 0 5px rgb(var(--p3-rgb) / .6))}
 :is(:root[data-theme="dark"],:root[data-sidebar="dark"]) .side .nav.on .t{font-weight:600}
 /* Ảnh chính màn đăng nhập: viền xanh + quầng nhạt + lớp phủ xanh mờ ở chân ảnh; tối thì viền sáng, phát sáng nhẹ */
-.fbx-c .cx-photo{border:3px solid #1877F2;box-shadow:0 0 0 6px rgba(24,119,242,.14),0 24px 50px -18px rgba(24,119,242,.55)}
-.fbx-c .cx-photo::after{content:"";position:absolute;left:0;right:0;bottom:0;height:38%;background:linear-gradient(0deg,rgba(24,119,242,.35),transparent);pointer-events:none}
-:root[data-theme="dark"] .fbx-c .cx-photo{border-color:#5AA8FF;box-shadow:0 0 0 6px rgba(90,168,255,.16),0 0 28px rgba(90,168,255,.35),0 24px 50px -18px rgba(0,0,0,.6)}
-:root[data-theme="dark"] .fbx-c .cx-photo::after{background:linear-gradient(0deg,rgba(59,130,246,.38),transparent)}
+.fbx-c .cx-photo{border:3px solid var(--primary);box-shadow:0 0 0 6px rgb(var(--p-rgb) / .14),0 24px 50px -18px rgb(var(--p-rgb) / .55)}
+.fbx-c .cx-photo::after{content:"";position:absolute;left:0;right:0;bottom:0;height:38%;background:linear-gradient(0deg,rgb(var(--p-rgb) / .35),transparent);pointer-events:none}
+:root[data-theme="dark"] .fbx-c .cx-photo{border-color:rgb(var(--p3-rgb));box-shadow:0 0 0 6px rgb(var(--p3-rgb) / .16),0 0 28px rgb(var(--p3-rgb) / .35),0 24px 50px -18px rgba(0,0,0,.6)}
+:root[data-theme="dark"] .fbx-c .cx-photo::after{background:linear-gradient(0deg,rgb(var(--p2-rgb) / .38),transparent)}
 
 /* Ghi chú lỗi / cảnh báo sinh hiệu dưới ô nhập (form tiếp đón) */
 .vit-note{margin:4px 0 8px}
@@ -881,3 +881,12 @@ select.input,select.select{field-sizing:fixed}
 .rows-more:hover{background:var(--primary-soft);border-color:color-mix(in srgb,var(--primary) 35%,var(--border))}
 .rows-more svg.lucide{width:16px;height:16px}
 .qtop .qwarn,.qwarn{margin:2px 4px 8px;padding:8px 10px;border-radius:var(--radius);background:var(--surface-2);color:var(--ink-3);font-size:13px;line-height:1.45;font-weight:400}
+
+/* Màu phòng khám (Cài đặt › Màu phòng khám): mặc định xanh dương y tế; data-accent="teal" = xanh ngọc.
+   Mọi màu nhấn, thanh bên tối, logo đều lấy từ bộ biến này nên đổi theme vẫn cùng một tông. Màu trạng thái giữ nguyên. */
+:root{--p-rgb:24 119 242;--p2-rgb:59 130 246;--p3-rgb:90 168 255}
+:root[data-accent="teal"]{--p-rgb:14 147 132;--p2-rgb:20 184 166;--p3-rgb:46 211 188;--primary:#0E9384;--primary-hover:#0B7A6E;--primary-soft:#E0F4F1;--primary-ink:#0A6158;--primary-dark:#0B7A6E;--accent:#0E9384;--sidebar-active:#E0F4F1;--sidebar-active-ink:#0A6158;--logo-a:#0E9384;--logo-b:#0EA5E9}
+:root[data-accent="teal"][data-sidebar="dark"]:not([data-theme="dark"]){--sidebar:#0B2826;--sidebar-active:#0E9384;--sidebar-muted:#7E9E9A;--sidebar-dots:rgba(46,211,188,.24)}
+:root[data-accent="teal"]:is([data-theme="dark"],[data-sidebar="dark"]) .side,:root[data-accent="teal"][data-theme="dark"]{--logo-a:#2ED3BC;--logo-b:#5CC8FF}
+:root[data-accent="teal"][data-theme="dark"]{--primary:#2BB8A6;--primary-hover:#45C9B8;--primary-soft:rgba(43,184,166,.16);--primary-ink:#8EE6D9;--accent:#2BB8A6;--sidebar-active:rgba(43,184,166,.18);--sidebar-active-ink:#8EE6D9}
+:root[data-accent="teal"]:not([data-theme="dark"]):not([data-sidebar="dark"]) .side .nav:hover:not(.on){background:#EEF8F6}

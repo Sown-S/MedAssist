@@ -1,6 +1,11 @@
 // Tuỳ chọn giao diện riêng của máy này (không gửi lên server): chế độ màu, màu thanh menu (sidebarTheme.js),
 // cỡ chữ và giảm chuyển động. Ghi lên <html> dưới dạng data-* để CSS đổi bộ biến màu / cỡ chữ.
-const KEYS = { mode: 'medassist_color_mode', font: 'medassist_font_size', scale: 'medassist_ui_scale', motion: 'medassist_motion' }
+const KEYS = { mode: 'medassist_color_mode', font: 'medassist_font_size', scale: 'medassist_ui_scale', motion: 'medassist_motion', accent: 'medassist_accent' }
+// Màu phòng khám: màu chủ đạo của nút, liên kết, mục đang chọn, logo và thanh bên tối. Màu trạng thái không đổi.
+export const ACCENTS = [
+  { key: 'blue', label: 'Medical blue', color: '#1877F2' },
+  { key: 'teal', label: 'Teal', color: '#0E9384' }
+]
 export const COLOR_MODES = [
   { key: 'light', label: 'Light', icon: 'sun' },
   { key: 'dark', label: 'Dark', icon: 'moon' },
@@ -36,6 +41,7 @@ export function getUiScale() {
     return 1
   }
 }
+export const getAccent = () => read('accent', ['blue', 'teal'], 'blue')
 export const getReduceMotion = () => read('motion', ['reduce', 'auto'], 'auto') === 'reduce'
 
 const media = typeof window !== 'undefined' && window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null
@@ -45,6 +51,7 @@ export function applyAppearance() {
   if (typeof document === 'undefined') return
   const el = document.documentElement
   el.dataset.theme = resolve(getColorMode())
+  el.dataset.accent = getAccent()
   const scale = getUiScale()
   if (window.api?.view) window.api.view.setZoom(scale)
   else el.style.zoom = scale === 1 ? '' : String(scale)
@@ -63,5 +70,9 @@ export function setUiScale(v) {
 }
 export function setReduceMotion(on) {
   write('motion', on ? 'reduce' : 'auto')
+  applyAppearance()
+}
+export function setAccent(v) {
+  write('accent', v)
   applyAppearance()
 }

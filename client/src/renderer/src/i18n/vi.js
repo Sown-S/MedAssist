@@ -1047,6 +1047,11 @@ export const VI = {
   'Dark mode is easier on the eyes in dim rooms and at night.': 'Chế độ tối dịu mắt hơn khi phòng thiếu sáng hoặc làm ca tối.',
   'Match Windows': 'Theo Windows',
   'Menu bar color': 'Màu thanh menu',
+  'Clinic color': 'Màu phòng khám',
+  'Main color of buttons, links, the selected menu item and the dark menu bar. Status colors stay the same.':
+    'Màu chính của nút, liên kết, mục đang chọn và thanh menu tối. Màu báo trạng thái giữ nguyên.',
+  'Medical blue': 'Xanh dương y tế',
+  Teal: 'Xanh ngọc',
   'In dark mode the menu bar follows the dark palette.': 'Ở chế độ tối, thanh menu dùng theo bảng màu tối.',
   'Only the left menu bar changes; pages stay light.': 'Chỉ đổi màu thanh menu bên trái, nội dung trang vẫn sáng.',
   'Text size': 'Cỡ chữ',
