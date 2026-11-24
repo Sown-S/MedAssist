@@ -896,15 +896,20 @@ select.input,select.select{field-sizing:fixed}
 :root[data-accent="sunset"][data-theme="dark"]{--primary:#B07CF7;--primary-hover:#C29BFA;--primary-soft:rgba(176,124,247,.16);--primary-ink:#DCC4FF;--accent:#B07CF7;--sidebar-active:rgba(176,124,247,.18);--sidebar-active-ink:#DCC4FF}
 :root[data-accent="sunset"]:not([data-theme="dark"]):not([data-sidebar="dark"]) .side .nav:hover:not(.on){background:#F7F0FF}
 :root[data-accent="sunset"]:is([data-theme="dark"],[data-sidebar="dark"]) .side .brand .logo{filter:drop-shadow(0 0 4px rgb(var(--p3-rgb) / .7)) drop-shadow(0 0 12px rgba(251,146,60,.4))}
-/* Hoàng hôn (theo trend GTA VI — hoàng hôn Vice City): dải tím → hồng → cam đào ở chỗ trang trí; màu trạng thái giữ nguyên. */
-:root[data-accent="sunset"]{--sun:linear-gradient(90deg,#9333EA,#DB2777);--sun-hi:linear-gradient(90deg,#A855F7,#EC4899);--sun-sky:linear-gradient(120deg,#6D28D9 0%,#C026D3 42%,#EC4899 72%,#FB923C 100%)}
-:root[data-accent="sunset"][data-theme="dark"]{--sun:linear-gradient(90deg,#7C3AED,#BE185D);--sun-hi:linear-gradient(90deg,#8B5CF6,#DB2777);--sun-sky:linear-gradient(120deg,#4C1D95 0%,#86198F 45%,#9D174D 75%,#9A3412 100%)}
-:root[data-accent="sunset"] .greet h2 .hi{background:linear-gradient(90deg,#C026D3,#EC4899 45%,#FB923C);-webkit-background-clip:text;background-clip:text;color:transparent}
-:root[data-accent="sunset"] .btn-primary{background:var(--sun);border-color:transparent}
-:root[data-accent="sunset"] .btn-primary:not(:disabled):hover{background:var(--sun-hi);box-shadow:0 6px 18px -6px rgba(219,39,119,.55)}
-:root[data-accent="sunset"] :is(.calling,.calling.idle){background:var(--sun-sky)}
-:root[data-accent="sunset"]:not([data-theme="dark"]){--bg:#F6F1FA}
-:root[data-accent="sunset"] .app .main::before,:root[data-accent="sunset"] .side .nav-scroll::after{background-image:radial-gradient(rgba(236,72,153,.32) 1.4px,transparent 1.6px)}
-:root[data-accent="sunset"][data-sidebar="dark"]:not([data-theme="dark"]) .side{background:linear-gradient(180deg,#22103A 0%,#2C1038 55%,#4A1442 100%)}
-:root[data-accent="sunset"]:is([data-theme="dark"],[data-sidebar="dark"]) .side .nav.on{background:linear-gradient(90deg,rgba(236,72,153,.26),rgba(147,51,234,.08) 85%)}
-:root[data-accent="sunset"]:is([data-theme="dark"],[data-sidebar="dark"]) .side .nav.on::before{background:linear-gradient(180deg,#F472B6,#FB923C);box-shadow:0 0 10px rgba(244,114,182,.9)}
+/* Chất màu dải cho cả 3 màu phòng khám: nút chính, banner gọi bệnh nhân, lời chào, thanh bên tối, hoa văn chấm.
+   Mỗi theme chỉ khai báo bộ biến bên dưới; màu trạng thái giữ nguyên. */
+:root{--g-btn:linear-gradient(90deg,#1877F2,#0EA5E9);--g-btn-hi:linear-gradient(90deg,#2B86F5,#22B4EE);--g-glow:rgba(14,165,233,.5);--g-sky:linear-gradient(120deg,#1E3A8A 0%,#1877F2 40%,#0EA5E9 72%,#2DD4BF 100%);--g-text:linear-gradient(90deg,#1877F2,#0EA5E9 50%,#0FA89A);--g-side:linear-gradient(180deg,#0F1B2D 0%,#0F2240 55%,#0B3354 100%);--g-neon:linear-gradient(180deg,#5AA8FF,#2EE0C4);--g-neon-glow:rgba(90,168,255,.85);--g-nav:linear-gradient(90deg,rgba(59,130,246,.30),rgba(59,130,246,.08) 85%);--g-dots:rgb(var(--p-rgb) / .28);--g-bg:#EAF0F8}
+:root[data-theme="dark"]{--g-btn:linear-gradient(90deg,#2563EB,#0284C7);--g-btn-hi:linear-gradient(90deg,#3B82F6,#0EA5E9);--g-sky:linear-gradient(120deg,#172554 0%,#1E40AF 45%,#0369A1 75%,#0F766E 100%)}
+:root[data-accent="teal"]{--g-btn:linear-gradient(90deg,#0E9384,#0EA5E9);--g-btn-hi:linear-gradient(90deg,#14A898,#22B4EE);--g-glow:rgba(20,184,166,.5);--g-sky:linear-gradient(120deg,#134E4A 0%,#0E9384 40%,#14B8A6 70%,#38BDF8 100%);--g-text:linear-gradient(90deg,#0E9384,#14B8A6 50%,#0EA5E9);--g-side:linear-gradient(180deg,#0B2826 0%,#0B302F 55%,#0A3D42 100%);--g-neon:linear-gradient(180deg,#2ED3BC,#5CC8FF);--g-neon-glow:rgba(46,211,188,.85);--g-nav:linear-gradient(90deg,rgba(20,184,166,.28),rgba(20,184,166,.07) 85%);--g-dots:rgba(20,184,166,.32);--g-bg:#EAF4F3}
+:root[data-accent="teal"][data-theme="dark"]{--g-btn:linear-gradient(90deg,#0F766E,#0369A1);--g-btn-hi:linear-gradient(90deg,#0D9488,#0284C7);--g-sky:linear-gradient(120deg,#042F2E 0%,#115E59 45%,#0F766E 72%,#075985 100%)}
+:root[data-accent="sunset"]{--g-btn:linear-gradient(90deg,#9333EA,#DB2777);--g-btn-hi:linear-gradient(90deg,#A855F7,#EC4899);--g-glow:rgba(219,39,119,.55);--g-sky:linear-gradient(120deg,#6D28D9 0%,#C026D3 42%,#EC4899 72%,#FB923C 100%);--g-text:linear-gradient(90deg,#C026D3,#EC4899 45%,#FB923C);--g-side:linear-gradient(180deg,#22103A 0%,#2C1038 55%,#4A1442 100%);--g-neon:linear-gradient(180deg,#F472B6,#FB923C);--g-neon-glow:rgba(244,114,182,.9);--g-nav:linear-gradient(90deg,rgba(236,72,153,.26),rgba(147,51,234,.08) 85%);--g-dots:rgba(236,72,153,.32);--g-bg:#F6F1FA}
+:root[data-accent="sunset"][data-theme="dark"]{--g-btn:linear-gradient(90deg,#7C3AED,#BE185D);--g-btn-hi:linear-gradient(90deg,#8B5CF6,#DB2777);--g-sky:linear-gradient(120deg,#4C1D95 0%,#86198F 45%,#9D174D 75%,#9A3412 100%)}
+.greet h2 .hi{background:var(--g-text);-webkit-background-clip:text;background-clip:text;color:transparent}
+.btn-primary{background:var(--g-btn);border-color:transparent}
+.btn-primary:not(:disabled):hover{background:var(--g-btn-hi);box-shadow:0 6px 18px -6px var(--g-glow)}
+:is(.calling,.calling.idle){background:var(--g-sky)}
+:root:not([data-theme="dark"]){--bg:var(--g-bg)}
+.app .main::before,.side .nav-scroll::after{background-image:radial-gradient(var(--g-dots) 1.4px,transparent 1.6px)!important}
+:root[data-sidebar="dark"]:not([data-theme="dark"]) .side{background:var(--g-side)}
+:is(:root[data-theme="dark"],:root[data-sidebar="dark"]) .side .nav.on{background:var(--g-nav)}
+:is(:root[data-theme="dark"],:root[data-sidebar="dark"]) .side .nav.on::before{background:var(--g-neon);box-shadow:0 0 10px var(--g-neon-glow)}
