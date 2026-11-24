@@ -24,7 +24,7 @@ const SAVED_FLASH_MS = 650
 const NO_VITALS = { list: [], from: null }
 
 const VITALS_EMPTY = Object.fromEntries(VITAL_KEYS.map((d) => [d.key, '']))
-const EMPTY = { name: '', dob: '', gender: 'Female', phone: '', idNumber: '', history: '', allergies: '', ...VITALS_EMPTY, pregnancy: '', reason: '', ticket: '' }
+const EMPTY = { name: '', dob: '', gender: '', phone: '', idNumber: '', history: '', allergies: '', ...VITALS_EMPTY, pregnancy: '', reason: '', ticket: '' }
 
 // Dùng chung với màn sửa lượt chờ.
 export function vitalCheck(f) {
@@ -80,6 +80,7 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
     ? {}
     : {
         name: !form.name.trim(),
+        gender: !form.gender,
         phone: !PHONE_RE.test(form.phone.trim()),
         dob: !DOB_RE.test(form.dob.trim()) || ageOf(form.dob) === '',
         idNumber: !!form.idNumber.trim() && !ID_RE.test(form.idNumber.trim())
@@ -142,7 +143,7 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
     if (existing) return existing.id
     setTouched(true)
     if (invalid) {
-      showToast(translate('Fill in the patient’s name, date of birth and phone first.'), 'error')
+      showToast(translate('Fill in the patient’s name, date of birth, gender and phone first.'), 'error')
       return null
     }
     const r = await clinic.createPatient({ ...form, pregnancy: pregnancyAsked ? form.pregnancy : '' }, { confirmDuplicate: false })
@@ -239,7 +240,7 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
             {existing ? (
               <>
                 <div className="pl-summary">
-                  <span className="num">{existing.id}</span>
+                  {existing.code && <span className="num">{existing.code}</span>}
                   <span>{translate(existing.gender)}</span>
                   <span>
                     {existing.dob} ({ageOf(existing.dob)} {translate('yrs')})
@@ -319,7 +320,7 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
       <div className="modal-f">
         {!existing && (
           <span className="muted small">
-            <Icon name="info" /> {translate('Fill in the name, date of birth and phone number first.')}
+            <Icon name="info" /> {translate('Fill in the name, date of birth, gender and phone number first.')}
           </span>
         )}
         <span className="sp" />
