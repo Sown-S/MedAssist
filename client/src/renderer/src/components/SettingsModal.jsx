@@ -113,9 +113,10 @@ export default function SettingsModal({ open, onClose, user, onChangePassword })
   const [scale, setScale] = useState(getUiScale)
   const [calm, setCalm] = useState(getReduceMotion)
   const [accent, setAccentState] = useState(getAccent)
-  const accentColor = ACCENTS.find((a) => a.key === accent)?.color
   // Bản xem trước thanh menu theo màu phòng khám đang chọn.
-  const tint = (t) => (accent === 'teal' ? { ...t, ...(t.key === 'dark' ? { bg: '#0B2826', active: '#0E9384' } : { active: '#E0F4F1' }) } : t)
+  const accentDef = ACCENTS.find((a) => a.key === accent)
+  const accentColor = accentDef?.color
+  const tint = (t) => (accentDef?.side ? { ...t, ...(t.key === 'dark' ? { bg: accentDef.side, active: accentDef.color } : { active: accentDef.soft }) } : t)
 
   const pickMode = (v) => (setMode(v), setColorMode(v))
   const pickSidebar = (v) => (setSidebar(v), setSidebarTheme(v))
@@ -171,7 +172,7 @@ export default function SettingsModal({ open, onClose, user, onChangePassword })
                   <div className="pick-grid" role="radiogroup" aria-label={translate('Clinic color')}>
                     {ACCENTS.map((a) => (
                       <button key={a.key} type="button" role="radio" aria-checked={accent === a.key} className={'pick' + (accent === a.key ? ' on' : '')} onClick={() => pickAccent(a.key)}>
-                        <MiniApp mode="light" accent={a.color} sidebar={{ ...SIDEBAR_THEMES[0], active: a.key === 'teal' ? '#E0F4F1' : SIDEBAR_THEMES[0].active }} />
+                        <MiniApp mode="light" accent={a.color} sidebar={{ ...SIDEBAR_THEMES[0], active: a.soft ?? SIDEBAR_THEMES[0].active }} />
                         <span className="pick-l">
                           <span className="sw-dot" style={{ background: a.color }} />
                           {translate(a.label)}

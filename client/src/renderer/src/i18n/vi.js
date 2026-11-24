@@ -1052,6 +1052,7 @@ export const VI = {
     'Màu chính của nút, liên kết, mục đang chọn và thanh menu tối. Màu báo trạng thái giữ nguyên.',
   'Medical blue': 'Xanh dương y tế',
   Teal: 'Xanh ngọc',
+  Sunset: 'Hoàng hôn',
   'In dark mode the menu bar follows the dark palette.': 'Ở chế độ tối, thanh menu dùng theo bảng màu tối.',
   'Only the left menu bar changes; pages stay light.': 'Chỉ đổi màu thanh menu bên trái, nội dung trang vẫn sáng.',
   'Text size': 'Cỡ chữ',

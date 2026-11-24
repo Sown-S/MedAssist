@@ -4,7 +4,9 @@ const KEYS = { mode: 'medassist_color_mode', font: 'medassist_font_size', scale:
 // Màu phòng khám: màu chủ đạo của nút, liên kết, mục đang chọn, logo và thanh bên tối. Màu trạng thái không đổi.
 export const ACCENTS = [
   { key: 'blue', label: 'Medical blue', color: '#1877F2' },
-  { key: 'teal', label: 'Teal', color: '#0E9384' }
+  { key: 'teal', label: 'Teal', color: '#0E9384', soft: '#E0F4F1', side: '#0B2826' },
+  // Theo trend GTA VI (hoàng hôn Vice City): tím mận, logo dải tím → cam đào.
+  { key: 'sunset', label: 'Sunset', color: '#9333EA', soft: '#F3E8FF', side: '#2A1033' }
 ]
 export const COLOR_MODES = [
   { key: 'light', label: 'Light', icon: 'sun' },
@@ -41,7 +43,7 @@ export function getUiScale() {
     return 1
   }
 }
-export const getAccent = () => read('accent', ['blue', 'teal'], 'blue')
+export const getAccent = () => read('accent', ACCENTS.map((a) => a.key), 'blue')
 export const getReduceMotion = () => read('motion', ['reduce', 'auto'], 'auto') === 'reduce'
 
 const media = typeof window !== 'undefined' && window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null
