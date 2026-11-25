@@ -10,14 +10,15 @@ test('mời bệnh nhân, chẩn đoán và hoàn tất khám', async ({ page })
   const popup = page.locator('.bp-acts')
   if (await popup.isVisible().catch(() => false)) await popup.getByRole('button', { name: 'Bỏ qua' }).click()
 
+  // Thứ tự: đã có người được mời (thẻ "Đã mời — chờ bệnh nhân vào phòng") thì bắt đầu khám; phòng trống thì mời người kế tiếp.
   const mine = page.locator('.qa-g').first()
-  if ((await mine.locator('.qi').count()) === 0) {
-    await invite.click()
-    await expect(mine.locator('.qi').first()).toBeVisible({ timeout: 20_000 })
-  }
-  await mine.locator('.qi').first().click()
   const startExam = page.getByRole('button', { name: 'Bắt đầu khám' })
-  if (await startExam.isVisible().catch(() => false)) await startExam.click()
+  if ((await mine.locator('.qi').count()) === 0) {
+    if (!(await startExam.isVisible().catch(() => false))) await invite.click()
+    await startExam.click()
+  }
+  await expect(mine.locator('.qi').first()).toBeVisible({ timeout: 20_000 })
+  await mine.locator('.qi').first().click()
 
   await page.getByRole('button', { name: 'Khám bệnh (SOAP)' }).first().click()
   const icd = page.locator('.icd-picker input').first()
