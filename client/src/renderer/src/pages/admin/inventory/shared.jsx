@@ -205,31 +205,38 @@ function fontFaceCss() {
   return out.join('')
 }
 
-// In bằng iframe ẩn vì cửa sổ Electron chặn mở cửa sổ mới (setWindowOpenHandler → deny).
+// Dựng phiếu in (thuần, không đụng DOM): html = trang không kèm CSS; css = khổ giấy + phông + PRINT_CSS.
 // Khổ giấy theo loại giấy tờ (doc) là cài đặt riêng máy; set: cài đặt dùng để in — trang Cài đặt truyền bản nháp để in thử.
-export function printHtml(title, body, doc = 'other', set = getSettings()) {
-  const paper = PAPERS.find((x) => x.key === (getDevice().papers[doc] ?? 'A4')) ?? PAPERS[0]
+export function buildPrintDocument(title, body, doc = 'other', set = getSettings(), papers = getDevice().papers, fonts = '') {
+  const paper = PAPERS.find((x) => x.key === (papers[doc] ?? 'A4')) ?? PAPERS[0]
   const thermal = paper.key.endsWith('mm')
+  const html =
+    '<!doctype html><html' +
+    (thermal ? ' class="thermal"' : '') +
+    '><head><meta charset="utf-8"><title>' +
+    esc(title) +
+    '</title></head><body>' +
+    printHeaderHtml(set) +
+    body +
+    (set.print.footer ? '<div class="pf">' + esc(set.print.footer) + '</div>' : '') +
+    '</body></html>'
+  const css = '@page{size:' + paper.css + ';margin:' + (thermal ? '3mm' : '12mm') + '}' + fonts + PRINT_CSS
+  return { html, css, paper: paper.key }
+}
+
+// In bằng iframe ẩn vì cửa sổ Electron chặn mở cửa sổ mới (setWindowOpenHandler → deny).
+export function printHtml(title, body, doc = 'other', set = getSettings()) {
+  const { html, css } = buildPrintDocument(title, body, doc, set, getDevice().papers, fontFaceCss())
   const frame = document.createElement('iframe')
   frame.style.cssText = 'position:fixed;right:0;bottom:0;width:0;height:0;border:0'
   document.body.appendChild(frame)
   const doc_ = frame.contentDocument
   doc_.open()
-  doc_.write(
-    '<!doctype html><html' +
-      (thermal ? ' class="thermal"' : '') +
-      '><head><meta charset="utf-8"><title>' +
-      esc(title) +
-      '</title></head><body>' +
-      printHeaderHtml(set) +
-      body +
-      (set.print.footer ? '<div class="pf">' + esc(set.print.footer) + '</div>' : '') +
-      '</body></html>'
-  )
+  doc_.write(html)
   doc_.close()
   // CSP của app (style-src 'self') chặn thẻ <style> trong iframe in; nạp CSS bằng CSSStyleSheet dựng sẵn (không bị CSP chặn).
   const sheet = new frame.contentWindow.CSSStyleSheet()
-  sheet.replaceSync('@page{size:' + paper.css + ';margin:' + (thermal ? '3mm' : '12mm') + '}' + fontFaceCss() + PRINT_CSS)
+  sheet.replaceSync(css)
   doc_.adoptedStyleSheets = [sheet]
   // Chờ phông chữ nạp xong (tối đa 1,5 giây) rồi mới in để chữ không bị thay bằng Arial.
   const go = () => {

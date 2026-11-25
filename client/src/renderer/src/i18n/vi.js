@@ -224,6 +224,7 @@ export const VI = {
   'Drug allergies': 'Dị ứng thuốc',
   'No chronic conditions on record.': 'Không ghi nhận bệnh nền mãn tính.',
   Prescription: 'Kê đơn thuốc',
+  'Prescription form': 'Đơn thuốc',
   Templates: 'Phác đồ mẫu',
   '+ Add': '+ Thêm',
   Qty: 'SL',
