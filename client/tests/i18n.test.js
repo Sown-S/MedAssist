@@ -153,3 +153,12 @@ describe('Ngôn ngữ mặc định', () => {
     }
   })
 })
+
+describe('Dịch chữ trong component bọc children', () => {
+  it('chuỗi nằm trong mảng children lồng (Button + Icon) vẫn được dịch', async () => {
+    const { localizeProps, setLang } = await import('../src/renderer/src/i18n/index.js')
+    setLang?.('vi')
+    const out = localizeProps('button', { children: [false, ['icon', ' See the patient now']] })
+    expect(out.children[1][1].trim()).toBe('Mời khám ngay')
+  })
+})
