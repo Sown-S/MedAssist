@@ -64,6 +64,8 @@ export default function ConsultForm({ visit, user, onDone, onNext }) {
   }, [more])
   const [docs, setDocs] = useState(false)
   const [tried, setTried] = useState(false)
+  // Sinh hiệu đã gửi lên lượt khám này — mốc so sánh để chốt lại (vd sau lỗi thiếu thuốc) không gửi trùng.
+  const sentVitals = useRef(null)
   const [short, setShort] = useState(null)
   const [cancelRow, setCancelRow] = useState(null)
   // Phiếu chỉ định đọc từ GET /visits/{id}/service-orders.
@@ -103,7 +105,11 @@ export default function ConsultForm({ visit, user, onDone, onNext }) {
     try {
       // Sinh hiệu bác sĩ sửa ở tab Sinh hiệu (cân nặng trẻ em in lên đơn) → lưu vào lượt khám trước khi chốt.
       const vitalsNow = vitalsFromForm(d.vitals)
-      if (!sameVitals(vitalsNow, vitalsFromForm(vitalsToForm(normalizeVitals(visit.serverVitals ?? {}))))) await updateVisit(visit.id, { vitals: vitalsNow })
+      const base = sentVitals.current?.id === visit.id ? sentVitals.current.vitals : vitalsFromForm(vitalsToForm(normalizeVitals(visit.serverVitals ?? {})))
+      if (!sameVitals(vitalsNow, base)) {
+        await updateVisit(visit.id, { vitals: vitalsNow })
+        sentVitals.current = { id: visit.id, vitals: vitalsNow }
+      }
       await syncDiagnoses(visit.id, { primary: d.diagnosis, extra: d.diagnosesExtra ?? [], notes: notes || null, candidates: ai.candidates, assessmentId: ai.assessment_id })
       if (mapped.length) {
         await savePrescription(

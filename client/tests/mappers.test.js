@@ -159,3 +159,12 @@ describe('Lọc theo giới tính (applicable_sex)', () => {
     expect(fitsSex({ sex: 'Male' }, '')).toBe(true)
   })
 })
+
+describe('Chữ chẩn đoán → bệnh trong danh mục', () => {
+  it('tách mã ICD và tên; chữ tự do (gợi ý AI không có mã) giữ nguyên tên', async () => {
+    const { parseDiagnosis } = await import('../src/renderer/src/api/conditionCatalog.js')
+    expect(parseDiagnosis('J03.9 — Viêm amidan cấp')).toEqual({ icd: 'J03.9', name: 'Viêm amidan cấp' })
+    expect(parseDiagnosis('Viêm âm đạo do nấm')).toEqual({ icd: null, name: 'Viêm âm đạo do nấm' })
+    expect(parseDiagnosis('  ')).toEqual({ icd: null, name: '' })
+  })
+})

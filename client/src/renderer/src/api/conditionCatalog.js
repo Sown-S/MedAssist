@@ -22,6 +22,18 @@ function loadConditions() {
 
 export const conditionOf = (name, icd) => cache?.find((c) => c.label === name && (!icd || c.code === icd)) ?? null
 
+// “J03.9 — Viêm amidan cấp” → { icd: 'J03.9', name }; chữ tự do (vd gợi ý AI không có mã ICD) → { icd: null, name }.
+export function parseDiagnosis(text) {
+  const t = String(text ?? '').trim()
+  const m = t.match(/^([A-Z]\d{2}(?:\.[0-9A-Z]{1,4})?)\s*[—–-]\s*(.+)$/i)
+  return m ? { icd: m[1].toUpperCase(), name: m[2].trim() } : { icd: null, name: t }
+}
+// Bệnh trong danh mục ứng với chữ chẩn đoán (theo tên + mã ICD nếu có) — để biết condition_code / giới tính áp dụng.
+export const conditionOfText = (text) => {
+  const { icd, name } = parseDiagnosis(text)
+  return name ? conditionOf(name, icd) : null
+}
+
 export function useConditions(enabled) {
   const [list, setList] = useState(cache ?? [])
   useEffect(() => {

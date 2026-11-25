@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import Icon from './Icon'
 import { translate } from '../i18n'
-import { useConditions } from '../api/conditionCatalog'
+import { useConditions, conditionOfText } from '../api/conditionCatalog'
 import { fitsSex } from '../api/symptoms'
 import { fold } from '../utils/format'
 
@@ -21,9 +21,6 @@ export default function ICDPicker({ value, onChange, onPick = onChange, gender =
   const q = fold(value)
   const exact = source.some((o) => value.startsWith(o.code + ' — '))
   const options = (exact || !q ? source : source.filter((o) => fold(o.code + ' ' + o.label + ' ' + translate(o.label)).includes(q))).slice(0, 10)
-  // Bệnh đang chọn không hợp giới tính bệnh nhân → nhắc nhẹ.
-  const picked = all.find((o) => value === `${o.code} — ${o.label}`)
-  const mismatch = picked && !fitsSex(picked, gender) ? picked : null
 
   function pick(opt) {
     onPick(`${opt.code} — ${opt.label}`)
@@ -55,11 +52,19 @@ export default function ICDPicker({ value, onChange, onPick = onChange, gender =
           </button>
         )}
       </div>
-      {mismatch && (
-        <p className="small text-warning icd-warn">
-          <Icon name="triangle-alert" /> {translate(SEX_NOTE[mismatch.sex])} — {translate('check the patient’s sex or the diagnosis.')}
-        </p>
-      )}
+      <SexWarning text={value} gender={gender} />
     </div>
+  )
+}
+
+// Bệnh đã chọn (theo bệnh trong danh mục ứng với chữ chẩn đoán, kể cả gợi ý AI không có mã ICD) không hợp giới tính → nhắc nhẹ.
+// label: hiện tên bệnh trước lời nhắc (dùng cho danh sách chẩn đoán kèm theo).
+export function SexWarning({ text, gender, label = false }) {
+  const c = conditionOfText(text)
+  if (!c || fitsSex(c, gender)) return null
+  return (
+    <p className="small text-warning icd-warn">
+      <Icon name="triangle-alert" /> {label && <b>{c.label}:</b>} {translate(SEX_NOTE[c.sex])} — {translate('check the patient’s sex or the diagnosis.')}
+    </p>
   )
 }
