@@ -7,6 +7,8 @@ import { useQueue, minutesSince, isMine, labRows, atLabs, ST } from '../../api/q
 import { PatientBrief, LabOrderResults } from './doctorShared'
 import { fold, dmy } from '../../utils/format'
 import Clip from '../../components/Clip'
+import EmptyState from '../../components/ui/EmptyState'
+import Badge from '../../components/ui/Badge'
 
 // Hộp thoại của trang chủ bác sĩ: danh sách chờ khám, bệnh nhân đang đi xét nghiệm.
 export const no = (t) => String(t).padStart(3, '0')
@@ -42,8 +44,8 @@ export function WaitingModal({ list, initial, now, past, onTake, onClose }) {
                           <b>{no(v.ticket)}</b>
                         </td>
                         <td>
-                          <b className="fw-500">{v.name}</b> {pr === 'emergency' && <span className="badge b-danger">{translate('Emergency')}</span>}
-                          {pr === 'priority' && <span className="badge b-warning">{translate('Priority')}</span>} {v.absent && <span className="badge b-neutral">{translate('Absent')}</span>}
+                          <b className="fw-500">{v.name}</b> {pr === 'emergency' && <Badge tone="danger">{translate('Emergency')}</Badge>}
+                          {pr === 'priority' && <Badge tone="warning">{translate('Priority')}</Badge>} {v.absent && <Badge tone="neutral">{translate('Absent')}</Badge>}
                           <div className="muted small">
                             {translate(v.gender)}
                             {v.age !== '' && v.age != null ? ', ' + v.age + ' ' + translate('yrs') : ''}
@@ -91,13 +93,7 @@ export function WaitingModal({ list, initial, now, past, onTake, onClose }) {
             </table>
           </div>
         ) : (
-          <div className="empty">
-            <div className="ill">
-              <Icon name="coffee" />
-            </div>
-            <b>{translate('No one is waiting.')}</b>
-            <span>{translate('Patients appear here as soon as reception checks them in.')}</span>
-          </div>
+          <EmptyState icon="coffee" title={translate('No one is waiting.')} text={translate('Patients appear here as soon as reception checks them in.')} />
         )}
       </div>
       <div className="modal-f">
@@ -216,13 +212,7 @@ export function LabListModal({ onResume, onClose }) {
             </table>
           </div>
         ) : (
-          <div className="empty">
-            <div className="ill">
-              <Icon name="flask" />
-            </div>
-            <b>{all.length ? translate('No lab orders match the filters.') : translate('You have not ordered any lab tests yet.')}</b>
-            <span>{translate('Lab orders appear here after you use “Order lab tests” in the consultation room.')}</span>
-          </div>
+          <EmptyState icon="flask" title={all.length ? translate('No lab orders match the filters.') : translate('You have not ordered any lab tests yet.')} text={translate('Lab orders appear here after you use “Order lab tests” in the consultation room.')} />
         )}
       </div>
       <div className="modal-f">

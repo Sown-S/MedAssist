@@ -9,6 +9,8 @@ import { money, fold, ymd, hhmm } from '../../utils/format'
 import { MiniStat, MiniStats } from '../../components/MiniStat'
 import Skeleton from '../../components/Skeleton'
 import DateField from '../../components/DateField'
+import EmptyState from '../../components/ui/EmptyState'
+import Badge from '../../components/ui/Badge'
 
 // Hoá đơn / Đơn thuốc của Lễ tân khi chạy với server: các lượt còn việc ở quầy (GET /billing/awaiting).
 // Tab Hoá đơn có thêm lịch sử theo ngày; đơn cũ xem ở lịch sử của từng bệnh nhân.
@@ -78,16 +80,16 @@ export default function BillingLiveView({ mode, readOnly, onPay }) {
                     {mode === 'invoices' && <td className="num">{v.invoiceCode ?? '—'}</td>}
                     <td>
                       {!v.hasRx ? (
-                        <span className="badge b-neutral">{translate('No prescription')}</span>
+                        <Badge tone="neutral">{translate('No prescription')}</Badge>
                       ) : v.pending > 0 ? (
                         <span className="badge b-warning">
                           {v.pending} {translate(v.pending === 1 ? 'item waiting' : 'items waiting')}
                         </span>
                       ) : (
-                        <span className="badge b-success">{translate('Dispensed')}</span>
+                        <Badge tone="success">{translate('Dispensed')}</Badge>
                       )}
                     </td>
-                    <td>{v.payStatus === 'Paid' ? <span className="plain">{translate('Paid')}</span> : <span className="badge b-warning">{translate('Not paid')}</span>}</td>
+                    <td>{v.payStatus === 'Paid' ? <span className="plain">{translate('Paid')}</span> : <Badge tone="warning">{translate('Not paid')}</Badge>}</td>
                     <td className="r num">
                       <b>{money(v.total)}</b>
                     </td>
@@ -103,12 +105,7 @@ export default function BillingLiveView({ mode, readOnly, onPay }) {
                 {!list.length && (
                   <tr>
                     <td colSpan={mode === 'invoices' ? 7 : 6}>
-                      <div className="empty">
-                        <div className="ill">
-                          <Icon name="clipboard" />
-                        </div>
-                        <b>{translate(all.length ? 'No visits match the search.' : 'Nothing waiting at the desk.')}</b>
-                      </div>
+                      <EmptyState icon="clipboard" title={translate(all.length ? 'No visits match the search.' : 'Nothing waiting at the desk.')} />
                     </td>
                   </tr>
                 )}
@@ -214,12 +211,7 @@ function InvoiceHistory({ readOnly, onPay, reloadKey }) {
                   {!list.length && (
                     <tr>
                       <td colSpan="7">
-                        <div className="empty">
-                          <div className="ill">
-                            <Icon name="clipboard" />
-                          </div>
-                          <b>{translate('No invoices on this day.')}</b>
-                        </div>
+                        <EmptyState icon="clipboard" title={translate('No invoices on this day.')} />
                       </td>
                     </tr>
                   )}

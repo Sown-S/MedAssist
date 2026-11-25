@@ -8,6 +8,7 @@ import { useInventory, stockOf, nearDays } from '../../api/inventoryStore'
 import { unitLabel, STATUS, Pager, paginate } from '../admin/inventory/shared'
 import { addDrugToDraft } from './consult/rxDraft'
 import { fold, fmtMoney, fmtDate, fmtNum } from '../../utils/format'
+import EmptyState from '../../components/ui/EmptyState'
 
 const STOCK_FILTERS = [
   { key: '', label: 'All stock levels' },
@@ -227,13 +228,7 @@ export default function DrugCabinetView({ go }) {
               </table>
             </div>
           ) : (
-            <div className="empty">
-              <div className="ill">
-                <Icon name="pill" />
-              </div>
-              <b>No drugs match.</b>
-              <span>Try another name or clear the filters.</span>
-            </div>
+            <EmptyState icon="pill" title="No drugs match." text="Try another name or clear the filters." />
           )}
           {list.length > PAGE_SIZE && <Pager {...pg} onPage={setPage} />}
         </div>

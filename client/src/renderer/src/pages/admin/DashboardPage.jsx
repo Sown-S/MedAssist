@@ -17,6 +17,7 @@ import LineChart from '../../components/LineChart'
 import HomeGreeting from '../../components/HomeGreeting'
 import { useAuth } from '../../context/AuthContext'
 import { fmtDateTime, vnd, ymd } from '../../utils/format'
+import EmptyState from '../../components/ui/EmptyState'
 
 // by_status chỉ có trạng thái đang có lượt (hôm nay chưa ai check-in thì không có khoá CheckedIn) → thiếu là 0.
 export const countOf = (byStatus, ...keys) => keys.reduce((n, k) => n + (Number(byStatus?.[k]) || 0), 0)
@@ -191,12 +192,7 @@ export default function DashboardPage({ onNavigate }) {
               </div>
               <div className="card-b">
                 {alerts.length === 0 ? (
-                  <div className="empty">
-                    <div className="ill">
-                      <Icon name="circle-check-big" />
-                    </div>
-                    <b>Nothing needs your attention right now.</b>
-                  </div>
+                  <EmptyState icon="circle-check-big" title="Nothing needs your attention right now." />
                 ) : (
                   <div className="rows">
                     {alerts.map((a, i) => (

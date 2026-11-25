@@ -12,6 +12,7 @@ import { useLiveCatalog, setLiveActive } from '../../../api/serviceCatalogLive'
 import { RowForm } from './RowForm'
 import { exportCatalog } from './catalogCsv'
 import { fmtDate, fmtDateTime } from '../../../utils/format'
+import Badge from '../../../components/ui/Badge'
 
 export default function CatalogDetailPage({ catalogKey, params, onNavigate }) {
   const s = SCHEMAS[catalogKey]
@@ -135,7 +136,7 @@ export default function CatalogDetailPage({ catalogKey, params, onNavigate }) {
                         {c.render ? c.render(r, cats, inv, c.key) : r[c.key] || <span className="muted">—</span>}
                       </td>
                     ))}
-                    <td>{r.active ? <span className="badge b-success">In use</span> : <span className="badge b-neutral">Discontinued</span>}</td>
+                    <td>{r.active ? <Badge tone="success">In use</Badge> : <Badge tone="neutral">Discontinued</Badge>}</td>
                     <td className="small">
                       <span className="num">{fmtDate(r.updatedAt)}</span>
                       <div className="muted">{r.updatedBy}</div>

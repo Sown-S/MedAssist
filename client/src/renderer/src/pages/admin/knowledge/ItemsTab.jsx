@@ -10,6 +10,7 @@ import { KIND_META, StatusBadge, Summary, groupByKey, errorText } from './shared
 import { fmtDateTime } from '../../../utils/format'
 import Skeleton from '../../../components/Skeleton'
 import { ErrorNote } from '../../../components/DataState'
+import Badge from '../../../components/ui/Badge'
 
 const FILTERS = [
   { key: 'current', label: 'In use + drafts' },
@@ -67,7 +68,7 @@ export default function ItemsTab({ data, names, canEdit, openRelease, onChanged,
         <div className="seg">
           {KINDS.map((k) => (
             <button key={k} className={kind === k ? 'on' : ''} onClick={() => setKind(k)}>
-              <span>{KIND_META[k].label}</span> <span className="badge b-neutral">{counts[k]}</span>
+              <span>{KIND_META[k].label}</span> <Badge tone="neutral">{counts[k]}</Badge>
             </button>
           ))}
         </div>

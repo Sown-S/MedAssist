@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import Modal, { ModalHeader } from '../../components/Modal'
 import Icon from '../../components/Icon'
+import EmptyState from '../../components/ui/EmptyState'
 
 export function Switch({ checked, onChange, disabled, title }) {
   return (
@@ -68,14 +69,7 @@ export function ConfirmDialog({ open, title, message, children, confirmLabel = '
   )
 }
 
+// Giữ tên cũ cho các trang quản trị; dùng chung components/ui/EmptyState.
 export function Empty({ icon = 'search', title, text }) {
-  return (
-    <div className="empty">
-      <div className="ill">
-        <Icon name={icon} />
-      </div>
-      <b>{title}</b>
-      {text && <span>{text}</span>}
-    </div>
-  )
+  return <EmptyState icon={icon} title={title} text={text} />
 }

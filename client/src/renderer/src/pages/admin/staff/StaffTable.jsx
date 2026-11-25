@@ -3,6 +3,7 @@ import { ROLES, hasDefaultName, usePasswordPolicy } from '../../../api/accountSt
 import { translate } from '../../../i18n'
 import { STATUS_FILTERS, isIdle } from './staffShared'
 import { fmtDate, fmtDateTime } from '../../../utils/format'
+import Badge from '../../../components/ui/Badge'
 
 // Bảng tài khoản: tìm, lọc theo vai trò / trạng thái, và các thao tác trên từng dòng.
 const initials = (name = '') =>
@@ -68,7 +69,7 @@ export default function StaffTable({ rows, me, q, setQ, roleFilter, setRoleFilte
                       <span className="st-who">
                         <span className="avatar sm">{initials(a.fullName)}</span>
                         <span>
-                          <b>{a.fullName}</b> {self && <span className="badge b-success">You</span>}
+                          <b>{a.fullName}</b> {self && <Badge tone="success">You</Badge>}
                           {a.staffCode && <span className="small muted st-code num">{a.staffCode}</span>}
                         </span>
                       </span>
@@ -94,7 +95,7 @@ export default function StaffTable({ rows, me, q, setQ, roleFilter, setRoleFilte
                     <td>
                       <div className="staff-badges">
                         {!a.active ? (
-                          <span className="badge b-neutral">Disabled</span>
+                          <Badge tone="neutral">Disabled</Badge>
                         ) : a.locked ? (
                           <span className="badge b-danger" title={translate('Unlocks by itself at') + ' ' + fmtDateTime(a.lockedUntil)}>
                             Locked
@@ -102,7 +103,7 @@ export default function StaffTable({ rows, me, q, setQ, roleFilter, setRoleFilte
                         ) : (
                           <span className="plain">Active</span>
                         )}
-                        {a.mustChange && <span className="badge b-warning">Password change pending</span>}
+                        {a.mustChange && <Badge tone="warning">Password change pending</Badge>}
                         {a.active && !a.locked && a.failedAttempts > 0 && (
                           <span className="small sp-warn">
                             <span className="num">

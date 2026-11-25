@@ -9,6 +9,8 @@ import DocumentModal from './DocumentModal'
 import { ErrorNote } from '../../components/DataState'
 import Skeleton from '../../components/Skeleton'
 import { todayVN } from '../../utils/format'
+import EmptyState from '../../components/ui/EmptyState'
+import Badge from '../../components/ui/Badge'
 
 // Một ô tìm cho mọi khoá (mã BN, SĐT, CCCD, năm sinh, họ tên). Server tự ghi nhật ký VIEW mỗi lần xem.
 export default function PatientLookup() {
@@ -167,13 +169,7 @@ export default function PatientLookup() {
               </div>
             ) : (
               !err && (
-                <div className="empty">
-                  <div className="ill">
-                    <Icon name="user-search" />
-                  </div>
-                  <b>{translate('No patient matches.')}</b>
-                  <span>{translate('Check the spelling, or search by phone number or record ID instead.')}</span>
-                </div>
+                <EmptyState icon="user-search" title={translate('No patient matches.')} text={translate('Check the spelling, or search by phone number or record ID instead.')} />
               )
             )}
           </div>
@@ -192,7 +188,7 @@ export default function PatientLookup() {
                 </span>
               </div>
             </div>
-            {pregnantNow && <span className="badge b-warning">{translate('Pregnant')}</span>}
+            {pregnantNow && <Badge tone="warning">{translate('Pregnant')}</Badge>}
             <div className="pt-rows">
               <div className="pt-row">
                 <span className="ico n">
@@ -231,13 +227,7 @@ export default function PatientLookup() {
         </div>
       ) : (
         <div className="card">
-          <div className="empty">
-            <div className="ill">
-              <Icon name="search" />
-            </div>
-            <b>{translate('Find a patient')}</b>
-            <span>{translate('Search by name, phone number or record ID to see their full history or print a referral letter.')}</span>
-          </div>
+          <EmptyState icon="search" title={translate('Find a patient')} text={translate('Search by name, phone number or record ID to see their full history or print a referral letter.')} />
         </div>
       )}
       {docs && subject && <DocumentModal subject={subject} onClose={() => setDocs(false)} />}

@@ -66,7 +66,7 @@ function walk(node, fn) {
   }
 }
 
-const TEXT_PROPS = new Set(['title', 'placeholder', 'aria-label'])
+const TEXT_PROPS = new Set(['title', 'text', 'placeholder', 'aria-label'])
 const isString = (n) => n?.type === 'Literal' && typeof n.value === 'string'
 
 function displayStrings(file) {

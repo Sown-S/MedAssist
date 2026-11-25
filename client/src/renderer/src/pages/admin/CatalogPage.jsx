@@ -7,6 +7,7 @@ import { exportCsv, unitLabel } from './inventory/shared'
 import { SCHEMAS } from './catalogs/schemas'
 import { exportCatalog } from './catalogs/catalogCsv'
 import { fmtDateTime, ymd, fmtNum } from '../../utils/format'
+import Badge from '../../components/ui/Badge'
 
 // Trang trung tâm của Quản lý danh mục; Thuốc & vật tư có trang riêng (dùng chung dữ liệu với Kho).
 // Dịch vụ, Xét nghiệm, Gói khám lấy từ server.
@@ -105,7 +106,7 @@ export default function CatalogPage({ onNavigate }) {
                     <div className="t">
                       <b className="num">{r.code}</b> <span>{r.name}</span>
                     </div>
-                    {!r.active && <span className="badge b-neutral">{translate('Discontinued')}</span>}
+                    {!r.active && <Badge tone="neutral">{translate('Discontinued')}</Badge>}
                   </div>
                 ))
               )}
@@ -158,7 +159,7 @@ export default function CatalogPage({ onNavigate }) {
                           <td>
                             {issues.length ? (
                               <>
-                                <span className="badge b-warning">Needs review</span>
+                                <Badge tone="warning">Needs review</Badge>
                                 {issues.map((t) => (
                                   <div key={t} className="small text-warning">
                                     {t}

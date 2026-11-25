@@ -11,6 +11,7 @@ import PeriodPicker from './PeriodPicker'
 import { periodRange, periodLabel, PAY_STATUS } from './shared'
 import { money, fold, ymd, hhmm, dmy } from '../../utils/format'
 import { MiniStat, MiniStats } from '../../components/MiniStat'
+import EmptyState from '../../components/ui/EmptyState'
 
 const STATUS_FILTERS = [
   { key: '', label: 'All payment statuses' },
@@ -199,13 +200,7 @@ export default function PrescriptionsLive({ initialDoctorId = '', initialDoctorN
                 {!list.length && (
                   <tr>
                     <td colSpan="7">
-                      <div className="empty">
-                        <div className="ill">
-                          <Icon name="clipboard" />
-                        </div>
-                        <b>{error ? error.message : !loaded ? translate('Loading…') : all.length ? translate('No prescriptions match the filters.') : translate('No prescriptions in this period.')}</b>
-                        <span>Try another period or clear the filters.</span>
-                      </div>
+                      <EmptyState icon="clipboard" title={error ? error.message : !loaded ? translate('Loading…') : all.length ? translate('No prescriptions match the filters.') : translate('No prescriptions in this period.')} text="Try another period or clear the filters." />
                     </td>
                   </tr>
                 )}

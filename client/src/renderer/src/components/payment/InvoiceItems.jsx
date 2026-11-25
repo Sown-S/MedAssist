@@ -4,6 +4,7 @@ import { useToast } from '../../context/ToastContext'
 import { editInvoice } from '../../api/billingApi'
 import { translate } from '../../i18n'
 import { fmt } from './shared'
+import Badge from '../../components/ui/Badge'
 
 // Cột trái tab "Hoá đơn & thanh toán": phí khám (đổi dịch vụ khám / sửa phí), dòng từ phiếu chỉ định (huỷ chỉ định),
 // chỉ định ngoài danh mục chưa có giá, dịch vụ quầy thêm tay, thuốc theo đơn.
@@ -65,7 +66,7 @@ export default function InvoiceItems({ visitId, inv, editable, cat, orders, act,
           <tbody>
             <tr>
               <td>
-                {consultLine?.item_name ?? translate('Consultation fee')} <span className="badge b-info">{translate('Consultation')}</span>
+                {consultLine?.item_name ?? translate('Consultation fee')} <Badge tone="info">{translate('Consultation')}</Badge>
                 {editable && consultServices.length > 1 && (
                   <select className="input mt-6 h-36" value="" onChange={(e) => changeConsult(e.target.value)}>
                     <option value="">{translate('Change consultation service…')}</option>
@@ -96,7 +97,7 @@ export default function InvoiceItems({ visitId, inv, editable, cat, orders, act,
                 <tr key={x.invoice_item_id}>
                   <td>
                     {x.item_name}
-                    {x.quantity > 1 && <span className="muted small"> × {x.quantity}</span>} <span className="badge b-info">{translate('Ordered by the doctor')}</span>
+                    {x.quantity > 1 && <span className="muted small"> × {x.quantity}</span>} <Badge tone="info">{translate('Ordered by the doctor')}</Badge>
                   </td>
                   <td className="r num">{fmt(x.subtotal)}</td>
                   <td>
@@ -115,7 +116,7 @@ export default function InvoiceItems({ visitId, inv, editable, cat, orders, act,
               <tr key={x.invoice_item_id}>
                 <td>
                   {x.item_name}
-                  {x.quantity > 1 && <span className="muted small"> × {x.quantity}</span>} <span className="badge b-neutral">{translate('Paraclinical')}</span>
+                  {x.quantity > 1 && <span className="muted small"> × {x.quantity}</span>} <Badge tone="neutral">{translate('Paraclinical')}</Badge>
                 </td>
                 <td className="r num">{fmt(x.subtotal)}</td>
                 <td>

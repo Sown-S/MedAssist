@@ -8,6 +8,7 @@ import { listPatients, getPatient, patientVisits } from '../../api/clinicApi'
 import Skeleton from '../../components/Skeleton'
 import { dmy, fmtNum } from '../../utils/format'
 import { useToast } from '../../context/ToastContext'
+import EmptyState from '../../components/ui/EmptyState'
 
 const PAGE = 20
 const EMPTY = { q: '', phone: '', idNumber: '', code: '', birthYear: '' }
@@ -154,12 +155,7 @@ export default function PatientsView({ readOnly, onCheckIn }) {
               </tbody>
             </table>
           ) : (
-            <div className="empty">
-              <div className="ill">
-                <Icon name="contact-round" />
-              </div>
-              <b>{dirty ? translate('No matching patient.') : translate('No patient records yet.')}</b>
-            </div>
+            <EmptyState icon="contact-round" title={dirty ? translate('No matching patient.') : translate('No patient records yet.')} />
           )}
         </div>
         <div className="pager">
@@ -227,12 +223,9 @@ function VisitHistoryModal({ patient, onClose }) {
             </table>
           </div>
         ) : (
-          <div className="empty">
-            <div className="ill">
-              <Icon name="calendar" />
-            </div>
+          <EmptyState icon="calendar">
             <p className="muted">{translate('No visits yet.')}</p>
-          </div>
+          </EmptyState>
         )}
       </div>
       <div className="modal-f">
