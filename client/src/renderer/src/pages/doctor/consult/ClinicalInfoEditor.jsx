@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import Button from '../../../components/Button'
 import Icon from '../../../components/Icon'
 import { useToast } from '../../../context/ToastContext'
 import { translate } from '../../../i18n'
@@ -44,9 +45,9 @@ export function ClinicalInfoEditor({ visit }) {
         <button className="btn btn-ghost btn-sm" onClick={() => setOpen(false)}>
           Cancel
         </button>
-        <button className="btn btn-primary btn-sm" onClick={save}>
+        <Button className="btn btn-primary btn-sm" onClick={save}>
           <Icon name="check" /> Save to patient record
-        </button>
+        </Button>
       </div>
     </div>
   )

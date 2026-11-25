@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import Button from '../../../components/Button'
 import Modal, { ModalHeader } from '../../../components/Modal'
 import Icon from '../../../components/Icon'
 import { useToast } from '../../../context/ToastContext'
@@ -113,9 +114,9 @@ export default function ReceiveModal({ drug, drugs, onClose }) {
         <button className="btn btn-outline" onClick={onClose}>
           Cancel
         </button>
-        <button data-shortcut="save" className="btn btn-primary" onClick={save}>
+        <Button data-shortcut="save" className="btn btn-primary" onClick={save}>
           Receive stock
-        </button>
+        </Button>
       </div>
     </Modal>
   )
