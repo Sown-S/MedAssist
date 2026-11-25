@@ -22,6 +22,7 @@ from app.ai.extraction.dispatch import ExtractionOptions
 from app.ai.extraction.dispatch import run_extraction as dispatch_extraction
 from app.ai.llm.prompts import REASONING_PROMPT_VERSION
 from app.ai.pipeline.node1_red_flag_gate import run_node1
+from app.ai.pipeline.node2_graph_retrieval import run_node2
 from app.ai.snapshot_reader import SnapshotReader
 from app.core.config import settings
 from app.core.database import SessionLocal
@@ -49,6 +50,7 @@ def input_features(case: dict) -> dict:
         "vital_signs": dict(case.get("vital_signs", {})),
         "age_years": age,
         "age_months": case.get("age_months", age * 12 if isinstance(age, int) else None),
+        "sex": case.get("sex"),
     }
 
 
@@ -64,6 +66,14 @@ def _latency(values: list[float]) -> dict:
     ordered = sorted(values)
     p95 = ordered[min(len(ordered) - 1, round(0.95 * (len(ordered) - 1)))]
     return {"mean_ms": mean(values), "p50_ms": median(values), "p95_ms": p95, "max_ms": ordered[-1]}
+
+
+def node2_codes(case: dict, reader) -> list[str]:
+    """Mọi bệnh Node 2 trả về cho ca; kết quả cuối chỉ giữ top-3 nên không dùng để kiểm loại trừ."""
+    state = run_node1({"input_features": input_features(case)}, reader)
+    if state["is_red_flag"]:
+        return []
+    return [c["condition_code"] for c in run_node2(state, reader).get("candidates", [])]
 
 
 def clinical_metrics(rows: list[dict]) -> dict:
@@ -85,6 +95,7 @@ def clinical_metrics(rows: list[dict]) -> dict:
         exp, top = set(r["expected_top"]), r["predicted_top"][:TOP_K]
         hit = len(exp & set(top))
         per_case.append(_prf(hit, len(top) - hit, len(exp) - hit))
+    absent = [r for r in rows if r.get("expected_absent")]
     return {
         "cases": len(rows),
         "red_flag": {
@@ -120,6 +131,11 @@ def clinical_metrics(rows: list[dict]) -> dict:
             "macro_precision": mean(c["precision"] for c in per_case) if per_case else None,
             "macro_recall": mean(c["recall"] for c in per_case) if per_case else None,
             "macro_f1": mean(c["f1"] for c in per_case) if per_case else None,
+        },
+        "exclusion": {
+            "cases": len(absent),
+            "passed": sum(not r["leaked"] for r in absent),
+            "leaked": {r["case_id"]: r["leaked"] for r in absent if r["leaked"]},
         },
         "latency": _latency([r["latency_ms"] for r in rows]),
     }
@@ -194,6 +210,9 @@ def run_clinical(cases: list[dict], reader: DbKnowledgeReader, mode: str, llm_cl
                 "latency_ms": round((time.monotonic() - started) * 1000, 1),
             }
         )
+        if absent := case.get("expected_absent_conditions"):
+            rows[-1]["expected_absent"] = absent
+            rows[-1]["leaked"] = sorted(set(absent) & set(node2_codes(case, reader)))
     return rows
 
 
@@ -277,7 +296,7 @@ def render_summary(meta: dict, clinical: dict, extraction: dict | None, warnings
     if warnings:
         lines += ["", "## Cảnh báo", ""] + [f"- {w}" for w in warnings]
     for mode, m in clinical.items():
-        rf, pr, dx, lat = m["red_flag"], m["priority"], m["differential"], m["latency"]
+        rf, pr, dx, ex, lat = m["red_flag"], m["priority"], m["differential"], m["exclusion"], m["latency"]
         lines += [
             "",
             f"## Ca lâm sàng: {mode} ({m['cases']} ca)",
@@ -296,6 +315,9 @@ def render_summary(meta: dict, clinical: dict, extraction: dict | None, warnings
             f"{_pct(dx[f'top{TOP_K}_accuracy'])} |",
             f"| Chẩn đoán phân biệt: P / R / F1 (macro, top-{TOP_K}) | {_pct(dx['macro_precision'])} / "
             f"{_pct(dx['macro_recall'])} / {_pct(dx['macro_f1'])} |",
+            f"| Bệnh phải vắng trong ứng viên Node 2 ({ex['cases']} ca) | {ex['passed']}/{ex['cases']} đạt; lọt: "
+            + (", ".join(f"{k} ({', '.join(v)})" for k, v in ex["leaked"].items()) or "không")
+            + " |",
             f"| Độ trễ mean / p50 / p95 (ms) | {lat.get('mean_ms', 0):.0f} / {lat.get('p50_ms', 0):.0f} / "
             f"{lat.get('p95_ms', 0):.0f} |",
             "",

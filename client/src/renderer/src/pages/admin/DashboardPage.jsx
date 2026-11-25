@@ -130,6 +130,8 @@ export default function DashboardPage({ onNavigate }) {
   const { data: week } = useApiData(reportPath(days7))
   const inv = useInventory()
   const NA = '—'
+  // Chưa tải xong → undefined (khung xương); tải lỗi → “—”.
+  const fig = (v) => (summary ? (v ?? NA) : e1 ? NA : undefined)
   const byStatus = summary?.visits.by_status
   const ai = summary?.ai
   const [accounts, setAccounts] = useState(null)
@@ -168,19 +170,19 @@ export default function DashboardPage({ onNavigate }) {
       <BellPortal>
         <ClusterAlerts onOpenReport={() => navigate('/reports')} />
       </BellPortal>
-      {!ready && <LoadingBlock />}
       {e1 && <ErrorBlock message={translate('Could not load today’s figures') + ': ' + e1} />}
       {accountsError && <ErrorBlock message={translate('Could not load staff accounts') + ': ' + translate(accountsError)} />}
 
+      <div className="kpis tiles4 ak">
+        <StatCard value={fig(summary?.visits.total)} label="Visits today" icon="users" tone="b" sub={translate('all rooms, since opening')} onClick={() => navigate('/reports')} />
+        <StatCard value={fig(byStatus && countOf(byStatus, 'Waiting', 'CheckedIn'))} label="Waiting for consultation" icon="clock" tone="g" sub={translate('checked in or waiting at the desk')} />
+        <StatCard value={fig(byStatus && countOf(byStatus, 'Prescribed'))} label="Awaiting payment" icon="banknote" tone="a" sub={translate('prescribed, not paid yet')} />
+        <StatCard value={fig(summary?.visits.red_flags)} label="Red-flag referrals" icon="ambulance" tone="r" alert={summary?.visits.red_flags > 0} sub={translate(summary?.visits.red_flags > 0 ? 'referred today' : 'No referrals today')} />
+      </div>
+
+      {!ready && <LoadingBlock />}
       {ready && (
         <>
-          <div className="kpis tiles4 ak">
-            <StatCard value={summary?.visits.total ?? NA} label="Visits today" icon="users" tone="b" sub={translate('all rooms, since opening')} onClick={() => navigate('/reports')} />
-            <StatCard value={byStatus ? countOf(byStatus, 'Waiting', 'CheckedIn') : NA} label="Waiting for consultation" icon="clock" tone="g" sub={translate('checked in or waiting at the desk')} />
-            <StatCard value={byStatus ? countOf(byStatus, 'Prescribed') : NA} label="Awaiting payment" icon="banknote" tone="a" sub={translate('prescribed, not paid yet')} />
-            <StatCard value={summary?.visits.red_flags ?? NA} label="Red-flag referrals" icon="ambulance" tone="r" alert={summary?.visits.red_flags > 0} sub={translate(summary?.visits.red_flags > 0 ? 'referred today' : 'No referrals today')} />
-          </div>
-
           <div className="grid-2">
             <div className="card">
               <div className="card-h">

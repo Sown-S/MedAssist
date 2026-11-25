@@ -80,8 +80,9 @@ export function useAwaiting({ enabled = true, ms = 4000 } = {}) {
 }
 
 // Hoá đơn hôm nay (không gồm hoá đơn huỷ) cho thẻ tổng quan của Lễ tân.
+// null = chưa tải xong lần đầu.
 export function useTodayInvoices({ enabled = true, ms = 10000 } = {}) {
-  const [list, setList] = useState([])
+  const [list, setList] = useState(null)
   useEffect(() => {
     if (!enabled) return
     let alive = true

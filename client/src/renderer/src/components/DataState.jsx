@@ -3,10 +3,10 @@ import Skeleton from './Skeleton'
 import { translate } from '../i18n'
 
 // Trạng thái dữ liệu dùng chung: đang tải (khung skeleton) và lỗi tải (banner đỏ, có nút thử lại nếu truyền onRetry).
-export function LoadingBlock({ rows = 5, cols = 4 }) {
+export function LoadingBlock({ rows = 5, cols = 4, label }) {
   return (
     <div className="card">
-      <Skeleton rows={rows} cols={cols} />
+      <Skeleton rows={rows} cols={cols} label={label} />
     </div>
   )
 }

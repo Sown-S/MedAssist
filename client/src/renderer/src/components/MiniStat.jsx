@@ -1,5 +1,6 @@
 import Icon from './Icon'
 import { translate } from '../i18n'
+import CountUp from './CountUp'
 
 // Ô tóm tắt nhỏ theo bản mẫu (.summary > .sum): icon vuông bên trái, số và nhãn bên phải.
 // tone: 'p' xanh dương (mặc định) | 's' xanh lá | 'w' cam | 'd' đỏ | 'n' xám. onClick → ô bấm được để lọc.
@@ -15,7 +16,7 @@ export function MiniStat({ icon = 'chart', value, label, tone = 'p', alert, acti
         <Icon name={icon} />
       </div>
       <div>
-        <b className="num">{value}</b>
+        <b className="num">{value === undefined ? <i className="skel-n" /> : <CountUp value={value} />}</b>
         <span>{typeof label === 'string' ? translate(label) : label}</span>
         {children}
       </div>

@@ -6,7 +6,7 @@ export const VI = {
   'Slow response': 'Phản hồi chậm',
   Light: 'Sáng',
   Dark: 'Tối',
-  'Slate indigo': 'Chàm xám',
+
   'Good morning': 'Chào buổi sáng',
   'Good midday': 'Chào buổi trưa',
   'Good afternoon': 'Chào buổi chiều',
@@ -360,6 +360,18 @@ export const VI = {
   // Lịch sử hoạt động: hành động tạo bản ghi (khác cột ngày 'Created').
   Added: 'Tạo mới',
   Record: 'Bản ghi',
+  // Đang tải (kèm ba chấm nhảy)
+  'Loading the knowledge base': 'Đang tải kho tri thức',
+  'Loading releases to review': 'Đang tải bản phát hành chờ duyệt',
+  'Loading knowledge items': 'Đang tải danh sách tri thức',
+  'Loading the AI run log': 'Đang tải nhật ký AI',
+  'Loading release content': 'Đang tải nội dung bản phát hành',
+  // Logo nhịp tim ở thanh bên
+  'System running normally': 'Hệ thống hoạt động bình thường',
+  'Loading data…': 'Đang tải dữ liệu…',
+  'The server is responding slowly': 'Máy chủ phản hồi chậm',
+  'The AI service is not responding': 'Dịch vụ AI không phản hồi',
+  'The clinic server is not responding': 'Máy chủ phòng khám không phản hồi',
   'Default name — change to a real person': 'Tên mặc định — nên đổi sang tên người thật',
   Licence: 'CCHN',
   'No licence no.': 'Chưa có số CCHN',
@@ -1035,6 +1047,13 @@ export const VI = {
   'Dark mode is easier on the eyes in dim rooms and at night.': 'Chế độ tối dịu mắt hơn khi phòng thiếu sáng hoặc làm ca tối.',
   'Match Windows': 'Theo Windows',
   'Menu bar color': 'Màu thanh menu',
+  'Clinic color': 'Màu phòng khám',
+  'Main color of buttons, links, the selected menu item and the dark menu bar. Status colors stay the same.':
+    'Màu chính của nút, liên kết, mục đang chọn và thanh menu tối. Màu báo trạng thái giữ nguyên.',
+  'Medical blue': 'Xanh dương y tế',
+  Default: 'Mặc định',
+  Teal: 'Xanh ngọc',
+  Sunset: 'Hoàng hôn',
   'In dark mode the menu bar follows the dark palette.': 'Ở chế độ tối, thanh menu dùng theo bảng màu tối.',
   'Only the left menu bar changes; pages stay light.': 'Chỉ đổi màu thanh menu bên trái, nội dung trang vẫn sáng.',
   'Text size': 'Cỡ chữ',
@@ -1098,7 +1117,6 @@ export const VI = {
   'Invoice history': 'Lịch sử hoá đơn',
   'Review paid and cancelled invoices': 'Xem lại hoá đơn đã thu, đã huỷ',
   'Nobody is waiting to pay.': 'Không có ai chờ thu tiền.',
-  'All invoices →': 'Tất cả hoá đơn →',
   'Call patients': 'Gọi bệnh nhân',
   'Call next': 'Gọi số tiếp theo',
   'Call again': 'Gọi lại',
@@ -1246,7 +1264,7 @@ export const VI = {
   'Done today': 'Đã khám xong hôm nay',
   'No one here.': 'Không có ai.',
   'Finish or send the current patient for lab tests before calling the next one.':
-    'Chỉ được mời tiếp theo khi hoàn tất khám hoặc chỉ định xét nghiệm!',
+    'Khám xong hoặc chuyển xét nghiệm người đang khám để mời người tiếp theo.',
   'Lab tests ordered · results from the paper report': 'Xét nghiệm đã chỉ định · kết quả theo phiếu giấy',
   'Result, e.g. 13.2 G/L (high)': 'Kết quả, ví dụ: 13,2 G/L (tăng)',
   // Thu hồi đơn để sửa (màn Đơn thuốc của bác sĩ)
@@ -1969,6 +1987,7 @@ export const VI = {
   'Invitation cancelled — the patient keeps their place in the queue': 'Đã bỏ lời mời — bệnh nhân giữ chỗ trong hàng chờ',
   'Cancels the invitation — the patient keeps their place in the queue': 'Bỏ lời mời — bệnh nhân giữ chỗ trong hàng chờ',
   'See the patient now': 'Mời khám ngay',
+  'See {n} more patients': 'Xem thêm {n} bệnh nhân',
   'Amend / reprint': 'Bổ sung / in lại',
   'amended by': 'bổ sung bởi',
   'Vital signs from the description — confirm before use': 'Sinh hiệu đọc từ lời kể — xác nhận trước khi dùng',
