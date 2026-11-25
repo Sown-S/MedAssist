@@ -6,7 +6,7 @@ import { useServerVersion } from '../api/connectivity'
 
 const clean = (v) => String(v ?? '').trim().replace(/^v/i, '')
 // So sánh 0.2.10 > 0.2.9 theo từng số; phần không phải số coi như 0.
-export function compareVersions(a, b) {
+function compareVersions(a, b) {
   const pa = clean(a).split('.').map((x) => parseInt(x, 10) || 0)
   const pb = clean(b).split('.').map((x) => parseInt(x, 10) || 0)
   for (let i = 0; i < Math.max(pa.length, pb.length); i++) {

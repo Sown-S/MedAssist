@@ -9,7 +9,7 @@ import { useEffect, useRef } from 'react'
 //   ↑ ↓ trong bảng: từ một nút ở một dòng sang nút cùng vị trí ở dòng trên / dưới (Enter để bấm)
 // Phím tắt riêng từng màn (F2 tiếp đón, Alt+N mời bệnh nhân…) vẫn nằm ở màn đó.
 export const OPEN_EVENT = 'medassist:open'
-export const openPanel = (what) => window.dispatchEvent(new CustomEvent(OPEN_EVENT, { detail: what }))
+const openPanel = (what) => window.dispatchEvent(new CustomEvent(OPEN_EVENT, { detail: what }))
 
 const typing = (el) => el && (el.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName))
 const visible = (el) => !!el && el.offsetParent !== null && !el.closest('[aria-hidden="true"]')
@@ -37,7 +37,7 @@ function moveInTable(el, k) {
   return true
 }
 
-export function moveFocus(e) {
+function moveFocus(e) {
   const el = document.activeElement
   if (!el || (typing(el) && !el.matches('input[type=checkbox]'))) return false
   if (moveInTable(el, e.key)) return true

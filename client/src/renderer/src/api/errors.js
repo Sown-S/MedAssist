@@ -11,7 +11,7 @@ export function isStaleConflict(e) {
   return Array.isArray(e.details) && e.details.some((d) => d?.field === 'status' && 'current' in d)
 }
 
-export function isNetworkError(e) {
+function isNetworkError(e) {
   // fetch thất bại (server tắt / mất mạng) ném TypeError; quá giờ đã có ApiError TIMEOUT kèm câu riêng.
   return e?.name === 'TypeError'
 }

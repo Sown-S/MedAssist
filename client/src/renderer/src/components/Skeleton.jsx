@@ -3,7 +3,7 @@ import { translate } from '../i18n'
 // Khung chờ tải (skeleton) thay cho chữ “Đang tải…”: vài vạch xám nhấp nháy đúng chỗ nội dung sẽ hiện.
 // rows: số hàng; cols: số cột mỗi hàng (dạng bảng). Có aria-busy + chữ ẩn cho trình đọc màn hình.
 // Ba chấm nhảy lên xuống sau chữ “Đang tải …”.
-export const LoadingDots = () => (
+const LoadingDots = () => (
   <span className="dots" aria-hidden="true">
     <i />
     <i />

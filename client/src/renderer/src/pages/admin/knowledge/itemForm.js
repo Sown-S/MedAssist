@@ -5,7 +5,7 @@ import { fold } from '../../../utils/format'
 
 // Giới hạn giống server (knowledge_validators): tên ngắn ≤ 30 ký tự, tối đa 15 từ đồng nghĩa, mỗi từ ≤ 60 ký tự.
 export const SHORT_NAME_MAX = 30
-export const ALIAS_MAX = 60
+const ALIAS_MAX = 60
 export const ALIASES_MAX = 15
 export const DETECTIONS = [
   ['both', 'Both'],
