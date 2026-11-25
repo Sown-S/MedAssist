@@ -11,6 +11,7 @@ import { ageFrom } from '../../api/clinicApi'
 import { money, fmtDateTime } from '../../utils/format'
 import Skeleton from '../../components/Skeleton'
 import { ErrorNote } from '../../components/DataState'
+import Badge from '../../components/ui/Badge'
 
 // Lịch sử khám từ server (FR04); bấm một lượt để xem đầy đủ. excludeVisitId = lượt đang khám;
 // onLoaded(history) để trang cha lấy thông tin bệnh nhân.
@@ -93,8 +94,8 @@ export default function ServerHistory({ patientId, excludeVisitId, onLoaded }) {
                   {v.referral_facility ? ' → ' + v.referral_facility : ''}
                 </span>
               )}
-              {v.is_red_flag && <span className="badge b-danger">{translate('Red flag')}</span>}
-              {v.triage_priority && v.triage_priority !== 'Routine' && !v.is_red_flag && <span className="badge b-warning">{translate(PRIORITY_LABEL[v.triage_priority] ?? v.triage_priority)}</span>}
+              {v.is_red_flag && <Badge tone="danger">{translate('Red flag')}</Badge>}
+              {v.triage_priority && v.triage_priority !== 'Routine' && !v.is_red_flag && <Badge tone="warning">{translate(PRIORITY_LABEL[v.triage_priority] ?? v.triage_priority)}</Badge>}
               <Icon name="chevron-down" className="chev" />
             </div>
             <div className="visit-b">{isOpen && <VisitDetail visitId={v.visit_id} />}</div>

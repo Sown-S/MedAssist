@@ -1,0 +1,41 @@
+{
+ "method": "get",
+ "path": "/api/v1/rooms",
+ "status": 200,
+ "role": "nurse",
+ "body": [
+  {
+   "room_id": "dfbb3536-531c-4654-859a-73515e124524",
+   "code": "01",
+   "name": "Phòng khám 01",
+   "room_type": "Exam",
+   "is_active": true,
+   "physician": {
+    "user_id": "13dd92ba-c344-445a-8e49-6d17d133251e",
+    "full_name": "BS. Trần Minh Khoa"
+   },
+   "updated_at": "2026-11-25T21:55:06.571378+07:00"
+  },
+  {
+   "room_id": "6e1513f1-1950-44ac-924c-b91e04edb123",
+   "code": "02",
+   "name": "Phòng khám 02",
+   "room_type": "Exam",
+   "is_active": true,
+   "physician": {
+    "user_id": "0ac86ff5-1658-4aa8-b74b-55fa0b5bf1f4",
+    "full_name": "BS. Lê Thu Hà"
+   },
+   "updated_at": "2026-11-25T21:55:06.571378+07:00"
+  },
+  {
+   "room_id": "4359f8cd-66cf-4501-98f3-d61820c27e71",
+   "code": "03",
+   "name": "Phòng khám 03",
+   "room_type": "Exam",
+   "is_active": true,
+   "physician": null,
+   "updated_at": "2026-11-25T21:55:06.571378+07:00"
+  }
+ ]
+}

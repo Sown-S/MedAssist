@@ -17,6 +17,8 @@ import LineChart from '../../components/LineChart'
 import HomeGreeting from '../../components/HomeGreeting'
 import { useAuth } from '../../context/AuthContext'
 import { fmtDateTime, vnd, ymd } from '../../utils/format'
+import EmptyState from '../../components/ui/EmptyState'
+import ErrorBoundary from '../../components/ErrorBoundary'
 
 // by_status chỉ có trạng thái đang có lượt (hôm nay chưa ai check-in thì không có khoá CheckedIn) → thiếu là 0.
 export const countOf = (byStatus, ...keys) => keys.reduce((n, k) => n + (Number(byStatus?.[k]) || 0), 0)
@@ -87,7 +89,7 @@ function useServerLog() {
 
 function ServerActivity({ items, onOpen }) {
   return (
-    <div className="tbl-wrap">
+    <div className="tbl-wrap" tabIndex={0}>
       <table>
         <thead>
           <tr>
@@ -126,7 +128,7 @@ export default function DashboardPage({ onNavigate }) {
   const { user } = useAuth()
   // Số liệu tổng hợp, không có dữ liệu bệnh nhân nên Admin xem được. Lỗi tải → các ô hiện “—”, phần còn lại vẫn dùng được.
   const days7 = rangeOf('7d')
-  const { data: summary, error: e1 } = useApiData(reportPath(rangeOf('today')))
+  const { data: summary, error: e1, reload: reloadSummary } = useApiData(reportPath(rangeOf('today')))
   const { data: week } = useApiData(reportPath(days7))
   const inv = useInventory()
   const NA = '—'
@@ -168,9 +170,9 @@ export default function DashboardPage({ onNavigate }) {
       </div>
 
       <BellPortal>
-        <ClusterAlerts onOpenReport={() => navigate('/reports')} />
+        <ErrorBoundary inline><ClusterAlerts onOpenReport={() => navigate('/reports')} /></ErrorBoundary>
       </BellPortal>
-      {e1 && <ErrorBlock message={translate('Could not load today’s figures') + ': ' + e1} />}
+      {e1 && <ErrorBlock message={translate('Could not load today’s figures') + ': ' + e1} onRetry={reloadSummary} />}
       {accountsError && <ErrorBlock message={translate('Could not load staff accounts') + ': ' + translate(accountsError)} />}
 
       <div className="kpis tiles4 ak">
@@ -191,12 +193,7 @@ export default function DashboardPage({ onNavigate }) {
               </div>
               <div className="card-b">
                 {alerts.length === 0 ? (
-                  <div className="empty">
-                    <div className="ill">
-                      <Icon name="circle-check-big" />
-                    </div>
-                    <b>Nothing needs your attention right now.</b>
-                  </div>
+                  <EmptyState icon="circle-check-big" title="Nothing needs your attention right now." />
                 ) : (
                   <div className="rows">
                     {alerts.map((a, i) => (
@@ -255,7 +252,7 @@ export default function DashboardPage({ onNavigate }) {
               </div>
               <div className="card-b">
                 {week ? (
-                  <LineChart points={fillDays(week.revenue.by_day, days7).map((x) => ({ label: x.day, value: x.amt }))} fmt={vnd} height={190} />
+                  <ErrorBoundary inline label="The chart could not be shown."><LineChart points={fillDays(week.revenue.by_day, days7).map((x) => ({ label: x.day, value: x.amt }))} fmt={vnd} height={190} /></ErrorBoundary>
                 ) : (
                   <p className="muted small">{translate('Not available — could not load the report.')}</p>
                 )}

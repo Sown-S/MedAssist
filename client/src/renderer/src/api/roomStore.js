@@ -4,7 +4,7 @@ import { apiGet, apiPost, apiRequest, ApiError } from './client'
 
 export const ROOM_TYPES = { Exam: 'Consultation room', Lab: 'Lab room' }
 
-const fromServer = (r) => ({
+export const fromServer = (r) => ({
   id: r.room_id,
   code: r.code,
   name: r.name,

@@ -1,0 +1,29 @@
+{
+ "method": "get",
+ "path": "/api/v1/visits/{visit_id}/symptoms",
+ "status": 200,
+ "role": "physician",
+ "body": [
+  {
+   "symptom_code": "joint_swelling_warmth_redness_effusion",
+   "symptom_name": "Sưng nề, nóng đỏ tại khớp, tràn dịch ổ khớp hoặc dày màng hoạt dịch khi sờ nắn",
+   "state": "PRESENT",
+   "source": "Form",
+   "confirmed_at": "2026-11-25T21:55:32.220336+07:00"
+  },
+  {
+   "symptom_code": "morning_stiffness_over_1h",
+   "symptom_name": "Cứng khớp buổi sáng kéo dài trên 1 giờ",
+   "state": "PRESENT",
+   "source": "Form",
+   "confirmed_at": "2026-11-25T21:55:32.220336+07:00"
+  },
+  {
+   "symptom_code": "myalgia_arthralgia",
+   "symptom_name": "Đau mỏi cơ, đau nhức khớp",
+   "state": "PRESENT",
+   "source": "Form",
+   "confirmed_at": "2026-11-25T21:55:32.220336+07:00"
+  }
+ ]
+}

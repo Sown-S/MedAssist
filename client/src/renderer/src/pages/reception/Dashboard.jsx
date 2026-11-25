@@ -6,6 +6,7 @@ import { ticketNo } from '../../components/queuePrint'
 import { useAwaiting, fromAwaiting, useTodayInvoices } from '../../api/billingApi'
 import { usePrescriptions } from '../../api/prescriptionApi'
 import { money, ymd, dmy } from '../../utils/format'
+import EmptyState from '../../components/ui/EmptyState'
 
 // Chờ thu tiền lấy từ GET /billing/awaiting (có hoá đơn và số tiền).
 
@@ -144,12 +145,7 @@ export default function Dashboard({ go, readOnly, onPay }) {
                 </div>
               </>
             ) : (
-              <div className="empty">
-                <div className="ill">
-                  <Icon name="circle-check-big" />
-                </div>
-                <b>Nobody is waiting to pay.</b>
-              </div>
+              <EmptyState icon="circle-check-big" title="Nobody is waiting to pay." />
             )}
           </div>
         </div>

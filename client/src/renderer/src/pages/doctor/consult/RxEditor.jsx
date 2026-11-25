@@ -54,7 +54,7 @@ export default function RxEditor({ rx, tried, srvDrugs, issueOf, issues, short, 
         </div>
 
         {rx.length > 0 ? (
-          <div className="tbl-wrap" style={{ maxHeight: 'none' }}>
+          <div className="tbl-wrap" tabIndex={0} style={{ maxHeight: 'none' }}>
             <table className="rx-tbl">
               <thead>
                 <tr>

@@ -2,12 +2,16 @@ import { resolve } from 'path'
 import { defineConfig } from 'electron-vite'
 import react from '@vitejs/plugin-react'
 
-// CSP trong index.html chặn script inline; riêng lúc dev, plugin React chèn một đoạn script inline (React Refresh)
-// nên chỉ khi chạy dev mới nới script-src.
+// CSP trong index.html chặn script và style inline. Riêng lúc dev: plugin React chèn một đoạn script inline (React Refresh),
+// Vite nạp CSS bằng thẻ <style> và nối HMR qua websocket — nên chỉ khi chạy dev mới nới các mục này.
 const devInlineScripts = {
   name: 'dev-inline-scripts',
   apply: 'serve',
-  transformIndexHtml: (html) => html.replace("script-src 'self';", "script-src 'self' 'unsafe-inline';")
+  transformIndexHtml: (html) =>
+    html
+      .replace("script-src 'self';", "script-src 'self' 'unsafe-inline';")
+      .replace("style-src 'self';", "style-src 'self' 'unsafe-inline';")
+      .replace("connect-src 'self' http: https:;", "connect-src 'self' http: https: ws:;")
 }
 
 // electron-vite build 3 phần độc lập: main (tiến trình chính Electron),

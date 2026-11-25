@@ -11,6 +11,8 @@ import { useNow, periodRange, PAY_STATUS } from '../reception/shared'
 import { useTakePatient, pastVisitsOf, InviteBar } from './doctorShared'
 import { WaitingModal, LabListModal, no } from './DoctorHomeModals'
 import { ymd, dmy, hhmm } from '../../utils/format'
+import EmptyState from '../../components/ui/EmptyState'
+import Badge from '../../components/ui/Badge'
 
 export default function DoctorHome({ go }) {
   const { user } = useAuth()
@@ -151,8 +153,8 @@ export default function DoctorHome({ go }) {
               <span className="no num">{no(first.ticket)}</span>
               <div className="grow minw-0 pointer" onClick={() => setWaitOpen(first.id)} title={translate('View the patient summary')}>
                 <b className="fs-md">{first.name}</b>{' '}
-                {first.triage === 'emergency' ? <span className="badge b-danger">{translate('Emergency')}</span> : first.priority && <span className="badge b-warning">{translate('Priority')}</span>}
-                {first.status === ST.WAITING && <span className="badge b-neutral">{translate('Not checked in')}</span>}
+                {first.triage === 'emergency' ? <Badge tone="danger">{translate('Emergency')}</Badge> : first.priority && <Badge tone="warning">{translate('Priority')}</Badge>}
+                {first.status === ST.WAITING && <Badge tone="neutral">{translate('Not checked in')}</Badge>}
                 <div className="muted small">
                   {[first.age !== '' ? first.age + ' ' + translate('yrs') : null, translate(first.gender), translate(first.reason)].filter(Boolean).join(' · ')} · {translate('waited')}{' '}
                   {minutesSince(first.statusAt, now)} {translate('min')}
@@ -167,13 +169,7 @@ export default function DoctorHome({ go }) {
               {callNext}
             </div>
           ) : (
-            <div className="empty">
-              <div className="ill">
-                <Icon name="coffee" />
-              </div>
-              <b>No one is waiting.</b>
-              <span>Patients appear here as soon as reception checks them in.</span>
-            </div>
+            <EmptyState icon="coffee" title="No one is waiting." text="Patients appear here as soon as reception checks them in." />
           )}
           <div style={{ padding: '0 20px 16px' }}>
             <InviteBar onStart={take} />
@@ -188,7 +184,7 @@ export default function DoctorHome({ go }) {
             </button>
           </div>
           <div className="card-b">
-            <div className="tbl-wrap">
+            <div className="tbl-wrap" tabIndex={0}>
               {recent.length ? (
                 <table>
                   <thead>
@@ -220,12 +216,7 @@ export default function DoctorHome({ go }) {
                   </tbody>
                 </table>
               ) : (
-                <div className="empty">
-                  <div className="ill">
-                    <Icon name="file-text" />
-                  </div>
-                  <b>You have not finalized any prescriptions yet.</b>
-                </div>
+                <EmptyState icon="file-text" title="You have not finalized any prescriptions yet." />
               )}
             </div>
           </div>

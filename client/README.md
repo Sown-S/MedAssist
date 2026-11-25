@@ -27,6 +27,8 @@ bàn giao bệnh nhân, giấy nghỉ ốm, tóm tắt bệnh án, phân quyền
 12. [Kiểm thử](#12-kiểm-thử)
 13. [Lưu ý quan trọng và lỗi hay gặp](#13-lưu-ý-quan-trọng-và-lỗi-hay-gặp)
 14. [Tình trạng và giới hạn đã biết](#14-tình-trạng-và-giới-hạn-đã-biết)
+15. [Vận hành: nhật ký lỗi, cập nhật, quay lại bản trước](#15-vận-hành-nhật-ký-lỗi-cập-nhật-quay-lại-bản-trước)
+16. [Quyết định kiến trúc (ADR)](#16-quyết-định-kiến-trúc-adr)
 
 ---
 
@@ -43,7 +45,11 @@ npm run dev        # Vite dev server + cửa sổ Electron, sửa code thấy ng
 | Lệnh | Tác dụng |
 |---|---|
 | `npm run dev` | Chạy dev, có hot reload |
+| `npm run lint` | ESLint + Stylelint, cảnh báo cũng tính là lỗi (CI chặn PR) |
 | `npm test` | Bộ test trong `tests/` (Vitest, API giả lập bằng `vi.doMock` / `tests/fakeServer.js`, không cần server). `npm run test:watch` chạy lại khi sửa code |
+| `npm run e2e` | Build bản eval rồi chạy test đầu cuối Playwright trên Electron thật với **máy chủ thật** (đã seed `scripts/seed_eval.py`, cổng 8000), xem [§12](#12-kiểm-thử). Linux không màn hình: `xvfb-run -a npm run e2e` |
+| `npm run e2e:update` | Chụp lại ảnh so sánh (giao diện, mẫu in) khi **cố ý** đổi giao diện; xem kỹ ảnh mới trong diff trước khi commit |
+| `npm run ladle` | Danh mục component dùng chung (`components/ui`) ở http://localhost:61000, thử sáng / tối và 4 màu phòng khám (`?accent=`) |
 | `npm run build` | Build ra `out/` (main, preload, renderer); dùng để kiểm tra cú pháp trước khi commit |
 | `npm start` | Chạy thử bản đã build trong `out/` |
 | `npm run build:win` | Build + đóng gói bản cài Windows (NSIS) vào `dist/`, kèm `certs/*.crt`. `:mac`, `:linux` tương tự |
@@ -84,11 +90,13 @@ và chỉ nhận địa chỉ `https://` khi server không phải máy này.
 | Vỏ desktop | Electron 45 (`src/main`, `src/preload`) |
 | Build | electron-vite 6 + Vite 8 + `@vitejs/plugin-react`; đóng gói bằng electron-builder 26 |
 | Giao diện | React 18, react-router-dom 7 (**HashRouter**) |
-| Font | Plus Jakarta Sans (`@fontsource-variable`), IBM Plex Mono cho số |
-| CSS | `global.css` nạp các file trong `styles/` theo thứ tự cascade; không dùng framework CSS |
-| Trạng thái | Store module + `useSyncExternalStore` (không Redux), Context cho Auth và Toast |
+| Font | Be Vietnam Pro (`@fontsource`), IBM Plex Mono cho số — đóng gói cùng app, không tải từ Internet |
+| CSS | `global.css` nạp các file trong `styles/` theo thứ tự cascade; component mới dùng CSS Modules (`*.module.css`); không dùng framework CSS |
+| Dữ liệu đọc | TanStack Query v5 (`lib/queryClient.js`, gọi `useQuery(opts, queryClient)` — không cần Provider) cho dữ liệu hỏi định kỳ; store module + `useSyncExternalStore` cho hàng đợi, kho… |
+| Kiểm hình dạng | zod: schema sinh từ OpenAPI (`api/schemas.gen.js`), chỉ cảnh báo ở bản dev/eval |
+| Form | react-hook-form + zod (`lib/zodForm.js`, `components/ui/Field.jsx`) |
 | Đa ngôn ngữ | JSX runtime tự viết (`@i18n`) dịch chuỗi lúc render, xem [§7](#7-đa-ngôn-ngữ-i18n) |
-| Test | Vitest + jsdom |
+| Test | Vitest + jsdom (unit, hợp đồng API), Playwright `_electron` (e2e, ảnh so sánh, axe-core), Ladle (danh mục component) |
 
 ```
 ┌─────────────── Electron ────────────────┐
@@ -102,8 +110,11 @@ và chỉ nhận địa chỉ `https://` khi server không phải máy này.
   **`app://medassist`**; lưu token mã hóa bằng `safeStorage` (`userData/secure.json`; máy không có kho khóa của hệ điều hành thì chỉ giữ trong bộ nhớ) và cấu hình riêng máy (`userData/config.json`);
   ép locale `en-GB` để ô ngày hiện `dd/mm/yyyy`; **chỉ tin chứng chỉ CA của dự án** khi nói chuyện với máy chủ đã cấu hình
   (`setCertificateVerifyProc` + `src/main/certPin.js`, Architecture TC03).
-- `src/preload/index.js`: `window.api.secureStore` (get/set/remove token) và `window.api.config` (địa chỉ server).
-  Việc chỉ desktop làm được (máy in, file) cũng expose ở đây.
+- `src/preload/index.js`: `window.api.secureStore` (get/set/remove token), `window.api.config` (địa chỉ server),
+  `window.api.updates` (bản mới, trang phát hành), `window.api.log` (nhật ký lỗi, lưu thông tin lỗi — [§15](#15-vận-hành-nhật-ký-lỗi-cập-nhật-quay-lại-bản-trước)).
+- **CSP** (`index.html`): `default-src 'self'`, không `'unsafe-inline'` cho script lẫn style. Không thêm thẻ `<style>` / thuộc tính
+  `style="…"` trong HTML; phiếu in nạp CSS bằng `CSSStyleSheet` dựng sẵn. Chỉ `npm run dev` mới nới (plugin `dev-inline-scripts`).
+- Trang theo vai trò tải lười (`React.lazy` trong `App.jsx`): gói khởi động ~240 KB.
 - `src/renderer/`: app React; mọi nghiệp vụ nằm ở đây.
 
 ---
@@ -114,11 +125,18 @@ và chỉ nhận địa chỉ `https://` khi server không phải máy này.
 client/
 ├─ electron.vite.config.js   Build 3 phần; alias @renderer, @i18n; JSX runtime dịch; optimizeDeps (xem §13)
 ├─ package.json              Mục "build" cho electron-builder (appId, productName, extraResources: certs)
-├─ vitest.config.mjs, tests/ Test nghiệp vụ (§12)
+├─ vitest.config.mjs, tests/ Test unit, hợp đồng API (tests/contract), mẫu in (tests/__print__) — §12
+├─ playwright.config.mjs, e2e/  Test đầu cuối trên Electron + máy chủ thật, ảnh so sánh (e2e/__screenshots__)
+├─ stylelint.config.mjs, eslint.config.mjs
+├─ .ladle/                   Cấu hình danh mục component (npm run ladle)
+├─ scripts/contract/         Chụp fixture, xuất OpenAPI, sinh schema zod
+├─ scripts/css/              Kiểm CSS chết / bị ghi đè / biến, dấu vân tay computed style
+├─ docs/adr/                 Quyết định kiến trúc (§16)
 ├─ .env.example
 ├─ certs/                    Chứng chỉ gốc CÔNG KHAI của CA dự án (*.crt) — KHÔNG đặt *.key ở đây
 └─ src/
    ├─ main/index.js, main/certPin.js   Tiến trình chính, kiểm tra chuỗi chứng chỉ máy chủ
+   ├─ main/logger.js, main/updateCheck.js   Nhật ký lỗi trên máy, kiểm tra bản mới + ghi chú phát hành (§15)
    ├─ preload/index.js                 contextBridge → window.api
    └─ renderer/src/
       ├─ main.jsx            Khởi động: nạp i18n TRƯỚC, đọc cấu hình server, rồi HashRouter + App
@@ -126,6 +144,8 @@ client/
       ├─ global.css, styles/ 10-legacy (CSS cũ còn dùng), 90-mock (giao diện chính), 91-app-extras (bổ sung), 92-utilities (lớp tiện ích)
       ├─ api/                LỚP DỮ LIỆU (§6, §10)
       │  ├─ client.js          apiGet / apiPost / apiRequest, ApiError, refresh token, checkHealth
+      │  ├─ errors.js          errorMessage, failure, isStaleConflict (409 dữ liệu cũ)
+      │  ├─ schemas.gen.js, validate.js   Schema zod sinh từ OpenAPI, checkShape (chỉ cảnh báo)
       │  ├─ serverConfig.js    Địa chỉ server của máy, tokenStore (safeStorage)
       │  ├─ connectivity.js    Hỏi /health ~3 giây một lần; mất kết nối → chỉ đọc
       │  ├─ authApi.js, accountStore.js     Đăng nhập, đổi mật khẩu, tài khoản nhân viên
@@ -145,9 +165,11 @@ client/
       │  ├─ settingsStore.js   Tham số server (GET / PUT /admin/settings) + cài đặt của máy này
       │  └─ draftStore.js, deviceSettings.js   Phiếu khám dở trên máy, cài đặt thiết bị
       ├─ context/            AuthContext (phiên, tự đăng xuất), ToastContext
-      ├─ hooks/              useApiData, useAsyncAction, useDelayedFlag
+      ├─ hooks/              useApiData (TanStack Query), useAsyncAction, useDelayedFlag
+      ├─ lib/                queryClient.js, zodForm.js (react-hook-form + zod), errorReport.js (ghi nhật ký lỗi)
       ├─ utils/format.js     Định dạng dùng chung: tiền (money), ngày (ymd, shortDateTime), bỏ dấu để tìm (fold)
       ├─ i18n/               index.js, jsx-runtime.js, jsx-dev-runtime.js, vi.js
+      ├─ components/ui/      EmptyState, Badge, Field (+ Field.module.css), ui.stories.jsx (Ladle)
       ├─ components/         Dùng chung: Modal, ConfirmModal, ReauthModal, ChangePasswordModal, IntakeModal, SymptomPanel,
       │                      VitalsFields, WaitingVisitModals, StaleVisitsModal, SearchModal, RedFlagModal,
       │                      PaymentModal, DrugPicker, ICDPicker, ServerAddress, AdminSidebar,
@@ -302,6 +324,18 @@ Các file `*Api.js` gọi FastAPI và đổi dữ liệu server sang đúng hìn
   tô đỏ ô theo `details[].field`; lỗi 500 hiện `request_id`.
 - `connectivity.js` hỏi `/health` ~3 giây một lần; không trả lời → banner, khóa mọi thao tác ghi; có lại thì tự mở.
 
+**Đọc dữ liệu bằng TanStack Query** (`lib/queryClient.js`): hook đọc (`useAwaiting`, `usePrescriptions`, `useApiData`…) gọi
+`useQuery({ queryKey, queryFn, refetchInterval }, queryClient)` và trả lại đúng dạng cũ (`{ list, loaded, error, reload }`), nên
+hai màn cùng dữ liệu chỉ gọi server một lần. Test dọn cache sau mỗi test (`tests/setup.js`).
+
+**Lỗi** (`api/errors.js`): `errorMessage(e)` cho câu hiển thị; `failure(e, { resync })` cho kết quả `{ ok: false, error, stale }` của
+hàm ghi — `409` do người khác vừa đổi trạng thái (VISIT_TAKEN, chuyển trạng thái…) thì đồng bộ lại danh sách và báo
+"Người khác vừa cập nhật…". Khối lỗi tải dữ liệu dùng `<ErrorBlock message onRetry>`.
+
+**Hợp đồng API**: `tests/contract/openapi.json` là ảnh chụp OpenAPI của server (CI phía server kiểm khớp); fixture là response
+thật (`scripts/contract/capture_fixtures.py`). Server đổi schema → chạy lại `python client/scripts/contract/export_openapi.py`
+(trong `server/`) và `node scripts/contract/gen_zod.mjs` để sinh lại `api/schemas.gen.js`.
+
 **Khuôn mẫu một store**
 
 ```js
@@ -310,7 +344,7 @@ function commit(next) { state = next; listeners.forEach(fn => fn()) }
 export const getX = () => state              // đọc ngoài React
 export function useX() { return useSyncExternalStore(subscribe, getX) }   // đọc trong React
 export const syncX = () => apiGet('/api/v1/x').then((items) => commit({ ...state, items }))
-export const doSomething = (id) => apiRequest(`/api/v1/x/${id}`, 'PATCH', {…}).then(syncX, (e) => ({ ok: false, error: e.message }))
+export const doSomething = (id) => apiRequest(`/api/v1/x/${id}`, 'PATCH', {…}).then(syncX, (e) => failure(e, { resync: syncX }))
 ```
 
 - Hàm ghi trả `{ ok, error }` khi có thể thất bại; `error` là câu tiếng Việt của server hoặc chuỗi **tiếng Anh** của client (dịch khi hiển thị).
@@ -363,13 +397,24 @@ Cơ chế:
 
 - **Design tokens** (màu, bo góc, bóng, cỡ chữ) đặt ở `:root` trong `styles/90-mock.css`; giao diện tối ghi đè ở `[data-theme="dark"]`. Dùng biến (`var(--surface)`, `var(--ink)`, `var(--primary)`, `var(--danger)`…) thay vì mã màu viết cứng để cả hai giao diện sáng / tối đều đúng.
 - **Lớp CSS dùng lại**: `card`, `card-title` (+ `.cnt`), `btn btn-primary|btn-ghost|btn-sm`, `icon-btn sm|danger`, `badge ok|warn|low|muted|info`, `dt` (bảng), `field`, `form-grid cols-2|cols-4`, `itabs/itab`, `ai-seg` (nút phân đoạn), `cash-filters` (thanh lọc), `empty-state`, `warn-banner danger|caution`, `dash-cards/dash-card`, `dash-actions`, `rev-cards`, `inv-stats`, `status-row`, `meter`, `drug-grid`.
+- **Component dùng chung** (`components/ui`, xem bằng `npm run ladle`): `EmptyState` (ô không có dữ liệu), `Badge tone=` (nhãn trạng thái),
+  `Field` (nhãn + gợi ý + lỗi, tự nối `aria-invalid` / `aria-describedby`). Thêm component dùng chung thì thêm truyện ở `ui.stories.jsx`.
+- **Form mới**: `useZodForm(schema)` + `<Field error={errors.x}>` (mẫu: `ChangePasswordModal`); thông báo lỗi trong schema viết tiếng Anh, tự dịch.
 - **Icon**: `<Icon name="…" />` (SVG theo `currentColor`). **Không dùng emoji.**
 - **Modal**: dùng `Modal` + `ModalHeader`; xác nhận thì dùng `ConfirmModal`; thao tác nhạy cảm thì dùng `ReauthModal` (nhập lại mật khẩu). Không dùng `alert/confirm` của trình duyệt.
+  Modal tự lo focus (vào trong khi mở, Tab đi vòng trong hộp, trả focus khi đóng) và **Esc** = nút X của hộp trên cùng.
+- **Bàn phím**: nút Lưu của form có `data-shortcut="save"` (Ctrl+S), nút Thêm của trang có `data-shortcut="new"` (Ctrl+N);
+  trong bảng ↑ ↓ đi giữa các dòng. Phím tắt mới thì ghi vào Trợ giúp (`HelpModal.jsx`).
+- **Tiếp cận (WCAG AA)**: ô nhập / ô chọn không có `<label>` thì đặt `aria-label`; bảng cuộn (`.tbl-wrap`) có `tabIndex={0}`;
+  chữ trên nền màu đạt 4.5:1 (`e2e/a11y.spec.mjs` chạy axe-core trên các trang chính, sáng và tối).
 - **Thông báo**: `const { showToast } = useToast()`.
 - **Tiền**: `toLocaleString('vi-VN') + 'đ'` (`fmt` trong `reception/shared.js`, `fmtMoney` trong `admin/inventory/shared.jsx`). **Ngày** hiện `dd/mm/yyyy`, **giờ** 24h.
-- **In ấn**: `printHtml(title, bodyHtml, docKind)` trong `pages/admin/inventory/shared.jsx`. Hàm này in qua iframe ẩn, khổ giấy lấy theo **Cài đặt › In ấn** cho từng loại chứng từ (`prescription`, `labOrder`, `invoice`, `other`). Luôn `esc()` dữ liệu người dùng.
+- **In ấn**: `printHtml(title, bodyHtml, docKind)` trong `pages/admin/inventory/shared.jsx` (dựng trang bằng `buildPrintDocument`, in qua iframe ẩn), khổ giấy lấy theo **Cài đặt › In ấn** cho từng loại chứng từ (`prescription`, `labOrder`, `invoice`, `other`). Luôn `esc()` dữ liệu người dùng.
+  Đổi mẫu in thì cập nhật `tests/__print__/*.html` (`npx vitest run tests/print-templates.test.js -u`) và ảnh so sánh (`npm run e2e:update`).
 - **Dropdown tìm kiếm**: dùng `onMouseDown` cho lựa chọn (chạy trước `onBlur` của ô nhập).
 - **CSS mới** viết vào `styles/91-app-extras.css` (hoặc `90-mock.css` nếu thuộc khung giao diện chính); không thêm vào `10-legacy.css`, sửa màn nào thì chuyển dần rule cũ của màn đó sang. Thứ tự import trong `global.css` là thứ tự cascade, không đổi.
+  `tests/css.test.js` chặn biến CSS gõ nhầm / bỏ quên, luật có class không còn dùng và khai báo bị ghi đè hoàn toàn (sửa bằng `node scripts/css/unused.mjs --remove`, `shadowed.mjs --remove`).
+  Dọn / gộp CSS mà muốn chắc không đổi giao diện: chạy `scripts/css/fingerprint.spec.mjs` trước và sau rồi so bằng `fpdiff.mjs`.
 - **Style inline** (`style={{...}}`) chỉ dùng cho giá trị theo dữ liệu (độ rộng %, toạ độ, màu theo trạng thái); khoảng cách / cỡ cố định dùng lớp trong `styles/92-utilities.css` (`mt-14`, `w-160`, `text-danger`…).
 - **Định dạng** tiền, số, ngày giờ dùng hàm trong `utils/format.js` (`money`, `fmtNum`, `fmtDateTime`, `hhmm`…), không tự gọi `toLocaleString`.
 - Màn hình hẹp: các lưới có `@media (max-width:1100px)` để chuyển còn 1–2 cột.
@@ -426,7 +471,7 @@ Thẻ **Gợi ý tham khảo** theo `ai_status`: `Pending` (đang phân tích), 
 
 ## 12. Kiểm thử
 
-`npm test` chạy bộ test trong `tests/` (Vitest + jsdom, không cần server). API được giả lập: các test `*-live` thay
+**Unit** — `npm test` chạy bộ test trong `tests/` (Vitest + jsdom, không cần server). API được giả lập: các test `*-live` thay
 `clinicApi` / `examApi` bằng "server" nhỏ trong bộ nhớ làm đúng luật backend (`vi.doMock`); test giao diện thay `fetch` bằng `tests/fakeServer.js`.
 
 | File | Nội dung |
@@ -435,10 +480,30 @@ Thẻ **Gợi ý tham khảo** theo `ai_status`: `Pending` (đang phân tích), 
 | `invite-referral-live.test.js` | Mời bệnh nhân, chuyển tuyến, ca cờ đỏ |
 | `labs-live.test.js`, `service-orders.test.js` | Đi xét nghiệm, phiếu chỉ định, danh mục dịch vụ / xét nghiệm / gói khám |
 | `mappers.test.js`, `vitals.test.js` | Đổi dữ liệu server ↔ màn hình, sinh hiệu |
-| `ui-screens.test.jsx`, `ui-error-boundary.test.jsx` | Mọi màn chính của 3 vai trò dựng được; lưới bắt lỗi giao diện |
+| `contract/contract.test.js` | Response thật khớp OpenAPI; mapper chỉ đọc trường có trong schema; `schemas.gen.js` khớp OpenAPI |
+| `data-layer.test.jsx`, `validate.test.js` | Hook TanStack Query, xử lý lỗi / 409 dữ liệu cũ, cảnh báo lệch hợp đồng |
+| `forms.test.jsx` | `Field`, `useZodForm`, schema đổi mật khẩu |
+| `print-templates.test.js` | 4 mẫu in với dữ liệu cố định → `tests/__print__/*.html` |
+| `css.test.js` | CSS gọn (biến, luật chết, khai báo bị ghi đè) |
+| `logger.test.js`, `update-check.test.js` | Nhật ký lỗi (xoay vòng, che token), kiểm tra bản mới, ghi chú phát hành |
+| `ui-screens.test.jsx`, `ui-error-boundary.test.jsx` | Mọi màn chính của 3 vai trò dựng được; lưới bắt lỗi giao diện (cả trang và từng phần) |
 | `i18n.test.js`, `profile.test.js` | Mọi chuỗi giao diện có bản dịch; tham số `--profile` |
 
-CI (`.github/workflows/ci.yml`, job *Client*) chạy `npm run lint`, `npm test` và `npm run smoke` (Electron thật dưới xvfb; lỗi thì tải ảnh chụp ở mục Artifacts của lần chạy) cho mỗi PR; trước khi commit nên tự chạy thêm `npm run build`.
+**Đầu cuối** — `npm run e2e` (Playwright `_electron`, `e2e/`): mở bản eval thật, nói chuyện với server thật đã seed.
+
+| File | Nội dung |
+|---|---|
+| `roles`, `reception`, `physician`, `billing`, `admin` | Đăng nhập theo vai trò, tiếp đón cấp số, mời – khám – hoàn tất, cấp phát – thu tiền, quản trị |
+| `keyboard`, `forms` | Phím tắt, ↑↓ trong bảng, Esc / focus hộp thoại; kiểm dữ liệu form ngay tại ô |
+| `visual`, `print` | Ảnh so sánh 3 kiểu giao diện và 4 mẫu in (`e2e/__screenshots__/`) |
+| `a11y`, `perf`, `csp` | axe-core 0 vi phạm WCAG AA (sáng / tối); không long task > 300 ms, DOM < 3000; không vi phạm CSP |
+| `diagnostics` | Nhật ký lỗi, Lưu thông tin lỗi, thông báo vừa cập nhật |
+
+Bản eval còn cảnh báo khi response lệch hợp đồng (zod); e2e coi cảnh báo đó là lỗi.
+
+**CI** (`.github/workflows/ci.yml`): job *Client* chạy `npm run lint`, `npm test`, build Ladle, `npm audit` (phụ thuộc chạy thật, mức high)
+và `npm run smoke`; job *Client e2e* dựng PostgreSQL + server + worker, seed dữ liệu kiểm thử rồi chạy `npm run e2e` (lỗi thì tải ảnh /
+báo cáo ở mục Artifacts). Job server kiểm OpenAPI còn khớp `client/tests/contract/openapi.json`.
 
 ## 13. Lưu ý quan trọng và lỗi hay gặp
 
@@ -472,3 +537,22 @@ Giới hạn:
 - **Không đánh giá đơn thuốc** (tương tác, liều, trùng đơn), đúng Proposal FR03.
 - **Xét nghiệm làm ngoài hệ thống**: không nhận kết quả điện tử; bác sĩ nhập kết quả từ phiếu giấy.
 - **Hóa đơn đã thu không hủy được** trên server; lịch hẹn ngoài phạm vi v2.0.
+
+## 15. Vận hành: nhật ký lỗi, cập nhật, quay lại bản trước
+
+- **Nhật ký lỗi trên máy** (`src/main/logger.js`): `userData/logs/medassist.log` (Windows: `%APPDATA%/medassist-app/logs`), mỗi dòng
+  một JSON, xoay vòng 1 MB × 3 file. Ghi lỗi không bắt được ở main, renderer bị dừng, lỗi giao diện (ErrorBoundary, `window.onerror`,
+  promise không `catch`) và API trả 5xx (kèm `request_id` để đối chiếu log server). **Không ghi** token, mật khẩu (đã che), thân yêu cầu
+  hay dữ liệu bệnh nhân.
+- **Báo lỗi**: người dùng bấm **Lưu thông tin lỗi** (Cài đặt › Tài khoản, hoặc trên màn lỗi) → một file `.txt` gồm phiên bản app,
+  Electron / Chromium, hệ điều hành, địa chỉ máy chủ và nhật ký. Gửi file này cùng mô tả thao tác cho nhóm.
+- **Bản mới**: app hỏi GitHub Releases một lần mỗi lần mở (chỉ thông báo, không tự cài), kèm ghi chú phát hành rút gọn.
+  Sau khi cài bản mới, chuông cập nhật báo một lần "đã cập nhật lên X".
+- **Quay lại bản trước** khi bản mới có lỗi: nút **Các phiên bản** (thông báo vừa cập nhật) mở trang mọi bản phát hành → tải bản
+  cài của phiên bản trước → cài đè (dữ liệu nằm trên máy chủ; token và cấu hình máy ở `userData` được giữ). Nếu máy chủ đã lên bản
+  mới hơn, app cũ sẽ hiện thông báo lệch phiên bản — báo quản trị viên trước khi quay lại.
+
+## 16. Quyết định kiến trúc (ADR)
+
+Mỗi quyết định lớn của client ghi một trang ngắn ở [`docs/adr/`](docs/adr/) (bối cảnh, quyết định, hệ quả). Đổi một quyết định
+thì thêm ADR mới thay thế, không sửa ADR cũ.

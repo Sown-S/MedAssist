@@ -25,5 +25,6 @@ export function printPrescription(rx, drugs, doctorName) {
       ${rx.followUp ? `<p class="meta"><b>${esc(t('Follow-up visit'))}: ${esc(dmy(rx.followUp + 'T12:00:00'))}</b></p>` : ''}
       <div class="sig">${esc(dmy(rx.rxAt ?? new Date().toISOString()))}<br><b>${esc(t('Prescribing doctor'))}</b><small>${esc(t('(signature, full name)'))}</small><b>${esc(doctorName ?? '')}</b></div>`
   const lines = rx.rx ?? []
-  printHtml(t('Prescription'), lines.length ? page(t('Prescription'), lines) : '', 'prescription')
+  // Tiêu đề trên giấy theo mẫu đơn thuốc: “ĐƠN THUỐC” (khác nhãn “Kê đơn thuốc” của màn hình).
+  printHtml(t('Prescription form'), lines.length ? page(t('Prescription form'), lines) : '', 'prescription')
 }

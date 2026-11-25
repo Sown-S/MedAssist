@@ -10,6 +10,7 @@ import { KIND_META, StatusBadge, Summary, groupByKey, errorText } from './shared
 import { fmtDateTime } from '../../../utils/format'
 import Skeleton from '../../../components/Skeleton'
 import { ErrorNote } from '../../../components/DataState'
+import Badge from '../../../components/ui/Badge'
 
 const FILTERS = [
   { key: 'current', label: 'In use + drafts' },
@@ -67,7 +68,7 @@ export default function ItemsTab({ data, names, canEdit, openRelease, onChanged,
         <div className="seg">
           {KINDS.map((k) => (
             <button key={k} className={kind === k ? 'on' : ''} onClick={() => setKind(k)}>
-              <span>{KIND_META[k].label}</span> <span className="badge b-neutral">{counts[k]}</span>
+              <span>{KIND_META[k].label}</span> <Badge tone="neutral">{counts[k]}</Badge>
             </button>
           ))}
         </div>
@@ -76,7 +77,7 @@ export default function ItemsTab({ data, names, canEdit, openRelease, onChanged,
             <Icon name="search" />
             <input className="input" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search by code or name…" />
           </div>
-          <select className="input" value={filter} onChange={(e) => setFilter(e.target.value)}>
+          <select className="input" aria-label="Filter by status" value={filter} onChange={(e) => setFilter(e.target.value)}>
             {FILTERS.map((x) => (
               <option key={x.key} value={x.key}>
                 {x.label}
@@ -94,7 +95,7 @@ export default function ItemsTab({ data, names, canEdit, openRelease, onChanged,
       {list.length === 0 ? (
         <Empty title="Nothing matches" text="Try another type, filter or search keyword." />
       ) : (
-        <div className="tbl-wrap">
+        <div className="tbl-wrap" tabIndex={0}>
           <table className="kb-table">
             <thead>
               <tr>
@@ -197,7 +198,7 @@ function HistoryModal({ kind, group, names, onClose }) {
         <ErrorNote>{err}</ErrorNote>
         {!rows && !err && <Skeleton rows={6} cols={4} label="Loading knowledge items" />}
         {rows && (
-          <div className="tbl-wrap">
+          <div className="tbl-wrap" tabIndex={0}>
             <table>
               <thead>
                 <tr>

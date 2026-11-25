@@ -49,7 +49,7 @@ export function PrintTab({ form, draft, readOnly }) {
           <h3>This computer only</h3>
         </div>
         <div className="card-b">
-          <div className="tbl-wrap">
+          <div className="tbl-wrap" tabIndex={0}>
             <table>
               <thead>
                 <tr>

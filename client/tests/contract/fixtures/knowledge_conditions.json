@@ -1,0 +1,70 @@
+{
+ "method": "get",
+ "path": "/api/v1/admin/knowledge/{kind}",
+ "status": 200,
+ "role": "admin",
+ "body": {
+  "total": 154,
+  "limit": 3,
+  "offset": 0,
+  "items": [
+   {
+    "kind": "conditions",
+    "key": "a_vay_nen_va_vay_phan_dang_lichen",
+    "version": 1,
+    "status": "Active",
+    "release_id": "df8c5807-4170-46f7-b2f1-056527f8f8b6",
+    "release_label": "KB-2026.12.3",
+    "created_at": "2026-11-25T21:55:12.291144+07:00",
+    "retired_at": null,
+    "retired_reason": null,
+    "values": {
+     "condition_code": "a_vay_nen_va_vay_phan_dang_lichen",
+     "name_vi": "Á vảy nến và vảy phấn dạng lichen",
+     "icd10_code": "L41.9",
+     "disease_group": "dermatology",
+     "description": "Năm 1902, Brocq là người đầu tiên sử dụng thuật ngữ “á vảy nến” (parapsoriasis), để mô tả các bệnh: á vảy nến thể giọt, á vảy nến thể mảng và á vảy nến dạng lichen. Thương tổn cơ bản của các bệnh này khác hẳn thương tổn của bệnh vảy nến, nhưng có chung các đặc điểm là thường tiến triển dai dẳng, mạn tính, căn nguyên chưa rõ.",
+     "applicable_sex": "Any"
+    }
+   },
+   {
+    "kind": "conditions",
+    "key": "benh_apthose",
+    "version": 1,
+    "status": "Active",
+    "release_id": "df8c5807-4170-46f7-b2f1-056527f8f8b6",
+    "release_label": "KB-2026.12.3",
+    "created_at": "2026-11-25T21:55:12.291144+07:00",
+    "retired_at": null,
+    "retired_reason": null,
+    "values": {
+     "condition_code": "benh_apthose",
+     "name_vi": "Bệnh apthose",
+     "icd10_code": "K12.0",
+     "disease_group": "dermatology",
+     "description": "Bệnh aphtose được đặc trưng bởi các vết loét ở niêm mạc miệng, sinh dục giới hạn rõ ràng, đau nhức nhiều và dễ tái phát. Tiến triển của bệnh có thể khỏi tự nhiên và cho đến nay chưa có biện pháp điều trị đặc hiệu. Mục đích điều trị toàn thân và tại chỗ là làm giảm đau và nhanh lành sẹo.",
+     "applicable_sex": "Any"
+    }
+   },
+   {
+    "kind": "conditions",
+    "key": "benh_bach_bien",
+    "version": 1,
+    "status": "Active",
+    "release_id": "df8c5807-4170-46f7-b2f1-056527f8f8b6",
+    "release_label": "KB-2026.12.3",
+    "created_at": "2026-11-25T21:55:12.291144+07:00",
+    "retired_at": null,
+    "retired_reason": null,
+    "values": {
+     "condition_code": "benh_bach_bien",
+     "name_vi": "Bệnh bạch biến",
+     "icd10_code": "L80",
+     "disease_group": "dermatology",
+     "description": "Bạch biến là một bệnh da do rối loạn sắc tố với các đám da giảm hoặc mất sắc tố có thể gặp ở mọi vị trí trên cơ thể nhưng thường gặp ở vùng mặt, cẳng tay và bộ phận sinh dục. Bệnh bạch biến có thể khởi phát ở bất kỳ tuổi nào, nhưng thường gặp ở người trẻ. Nam chiếm 32,5% và nữ là 67,5%. Một số trường hợp bệnh có tính chất gia đình. Bệnh ảnh hưởng nhiều đến tâm sinh lý và thẩm mỹ của người bệnh.",
+     "applicable_sex": "Any"
+    }
+   }
+  ]
+ }
+}

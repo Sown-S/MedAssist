@@ -7,6 +7,7 @@ import { translate } from '../../i18n'
 import { listRooms, createRoom, updateRoom, ROOM_TYPES } from '../../api/roomStore'
 import { MiniStat, MiniStats } from '../../components/MiniStat'
 import { ErrorNote } from '../../components/DataState'
+import Badge from '../../components/ui/Badge'
 
 const EMPTY = { code: '', name: '', type: 'Exam' }
 
@@ -61,6 +62,8 @@ export default function RoomsPage({ onNavigate }) {
             {translate('Staff accounts')}
           </button>
           <button
+            data-shortcut="new"
+            title="Ctrl+N"
             className="btn btn-primary"
             onClick={() => {
               setFormErr('')
@@ -128,7 +131,7 @@ export default function RoomsPage({ onNavigate }) {
 
       <div className="card">
         <div className="card-b">
-          <div className="tbl-wrap">
+          <div className="tbl-wrap" tabIndex={0}>
             <table>
               <thead>
                 <tr>
@@ -149,7 +152,7 @@ export default function RoomsPage({ onNavigate }) {
                     </td>
                     <td>{translate(ROOM_TYPES[r.type] ?? r.type)}</td>
                     <td>{r.type !== 'Exam' ? <span className="muted">—</span> : r.physician ? r.physician.name : <span className="sp-warn">No doctor</span>}</td>
-                    <td>{r.active ? <span className="plain">{translate('In use')}</span> : <span className="badge b-neutral">{translate('Not in use')}</span>}</td>
+                    <td>{r.active ? <span className="plain">{translate('In use')}</span> : <Badge tone="neutral">{translate('Not in use')}</Badge>}</td>
                     <td>
                       <div className="acts">
                         <button

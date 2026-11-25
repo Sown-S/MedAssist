@@ -24,6 +24,7 @@ const KEEP = new Set([
   'https://',
   'F1',
   'F2',
+  'Ctrl+N',
   'F3',
   'F3 / Ctrl+K',
   'Alt+D',
@@ -48,7 +49,7 @@ function sourceFiles(dir, out = []) {
   for (const name of readdirSync(dir)) {
     const p = join(dir, name)
     if (statSync(p).isDirectory()) name !== 'i18n' && sourceFiles(p, out)
-    else if (/\.jsx?$/.test(name)) out.push(p)
+    else if (/\.jsx?$/.test(name) && !/\.stories\.jsx$/.test(name)) out.push(p) // truyện Ladle chỉ dùng lúc phát triển
   }
   return out
 }
@@ -66,7 +67,7 @@ function walk(node, fn) {
   }
 }
 
-const TEXT_PROPS = new Set(['title', 'placeholder', 'aria-label'])
+const TEXT_PROPS = new Set(['title', 'text', 'placeholder', 'aria-label'])
 const isString = (n) => n?.type === 'Literal' && typeof n.value === 'string'
 
 function displayStrings(file) {

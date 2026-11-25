@@ -1,5 +1,7 @@
 // API thật cho Tiếp đón và Hàng đợi; đổi dữ liệu server sang hình dạng các màn hình đang dùng.
 import { apiGet, apiPost, apiRequest, ApiError } from './client'
+import { checkShape, listOf } from './validate'
+import { PatientOut, QueueItem } from './schemas.gen'
 import { VITAL_KEYS } from './vitals'
 
 const V1 = '/api/v1'
@@ -37,13 +39,25 @@ export function toPatient(p) {
   }
 }
 
+// Dòng danh sách / tìm kiếm / ứng viên trùng (PatientSummary): không có dị ứng, tiền sử, CCCD — muốn sửa hay tiếp đón
+// thì tải hồ sơ đầy đủ bằng getPatient. summary: true để nơi dùng phân biệt với hồ sơ đầy đủ.
+export const toPatientSummary = (p) => ({
+  id: p.patient_id,
+  code: p.patient_code,
+  name: p.full_name,
+  dob: dmyDob(p.date_of_birth),
+  gender: p.gender,
+  phone: p.phone ?? '',
+  summary: true
+})
+
 // Một ô tìm cho mọi khoá: mã BN, SĐT, CCCD, năm sinh, họ tên (có dấu hay không đều được).
 export async function lookupPatients(term, limit = 20) {
   const r = await apiGet(`${V1}/patients/lookup?term=${encodeURIComponent(term)}&limit=${limit}`)
-  return r.items.map((x) => ({ ...toPatient(x), dob: dmyDob(x.date_of_birth) }))
+  return r.items.map(toPatientSummary)
 }
 
-export const getPatient = async (id) => toPatient(await apiGet(`${V1}/patients/${id}`))
+export const getPatient = async (id) => toPatient(checkShape(PatientOut, await apiGet(`${V1}/patients/${id}`), 'GET /patients/{id}'))
 
 // Danh sách hồ sơ (trang Bệnh nhân của Lễ tân): GET /patients không kèm điều kiện = tất cả, mới nhất trước.
 export async function listPatients({ q = '', phone = '', idNumber = '', code = '', birthYear = '', limit = 20, offset = 0 } = {}) {
@@ -54,7 +68,7 @@ export async function listPatients({ q = '', phone = '', idNumber = '', code = '
   if (code) qs.set('code', code)
   if (birthYear) qs.set('birth_year', birthYear)
   const r = await apiGet(`${V1}/patients?${qs}`)
-  return { total: r.total, items: r.items.map((x) => ({ ...toPatient(x), dob: dmyDob(x.date_of_birth) })) }
+  return { total: r.total, items: r.items.map(toPatientSummary) }
 }
 
 // Lịch sử khám của một bệnh nhân, mới nhất trước.
@@ -83,7 +97,7 @@ export async function createPatient(f, { confirmDuplicate = false } = {}) {
     return { ok: true, patient: toPatient(await apiPost(`${V1}/patients`, body)) }
   } catch (e) {
     if (e instanceof ApiError && e.code === 'POSSIBLE_DUPLICATE')
-      return { ok: false, duplicates: e.details.map((d) => ({ ...toPatient(d), dob: dmyDob(d.date_of_birth) })) }
+      return { ok: false, duplicates: e.details.map(toPatientSummary) }
     if (e instanceof ApiError && e.code === 'DUPLICATE_ID_NUMBER') {
       const owner = await getPatient(e.details[0].patient_id)
       return { ok: false, duplicates: [owner], idTaken: true }
@@ -150,6 +164,10 @@ export async function getVisitDetail(visitId, patientId) {
     getVisitSymptoms(visitId),
     getPatient(patientId)
   ])
+  return toVisitDetail(v, symptoms, p)
+}
+// Gộp lượt khám (GET /visits/{id}), triệu chứng đã chuẩn hoá và hồ sơ đã qua toPatient — tách riêng để test hợp đồng.
+export function toVisitDetail(v, symptoms, p) {
   return {
     reason: v.free_text_description || v.chief_complaint,
     vitals: v.vital_signs ?? {},
@@ -269,8 +287,8 @@ export function toQueueVisit(q) {
   }
 }
 // Kèm lượt hôm nay đã kết thúc (Prescribed / Finished / Cancelled) cho các tab của Hàng chờ và thẻ Ca cờ đỏ.
-export const fetchQueue = async () => (await apiGet(`${V1}/queue?include_closed=true`)).map(toQueueVisit)
-export const fetchStale = async () => (await apiGet(`${V1}/visits/stale`)).map((q) => ({ ...toQueueVisit(q), carriedFrom: q.queue_date }))
+export const fetchQueue = async () => checkShape(listOf(QueueItem), await apiGet(`${V1}/queue?include_closed=true`), 'GET /queue').map(toQueueVisit)
+export const fetchStale = async () => checkShape(listOf(QueueItem), await apiGet(`${V1}/visits/stale`), 'GET /visits/stale').map((q) => ({ ...toQueueVisit(q), carriedFrom: q.queue_date }))
 export const cancelStale = (ids, reason) => apiPost(`${V1}/visits/stale/cancel`, { visit_ids: ids, reason })
 
 // ---------- Xét nghiệm, mời vào phòng ----------

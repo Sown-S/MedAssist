@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest'
-import { parseVersion, isNewer, fetchLatestRelease, LATEST_RELEASE_API } from '../src/main/updateCheck.js'
+import { parseVersion, isNewer, fetchLatestRelease, releaseNotes, LATEST_RELEASE_API } from '../src/main/updateCheck.js'
 
 const reply = (status, body) => vi.fn(async () => new Response(JSON.stringify(body), { status }))
 
@@ -18,7 +18,7 @@ describe('updateCheck', () => {
 
   it('GitHub có bản mới hơn → trả version, gọi đúng API', async () => {
     const f = reply(200, { tag_name: 'v0.2.5' })
-    expect(await fetchLatestRelease(f, '0.2.4')).toEqual({ version: '0.2.5' })
+    expect(await fetchLatestRelease(f, '0.2.4')).toEqual({ version: '0.2.5', notes: '' })
     expect(f).toHaveBeenCalledTimes(1)
     expect(f.mock.calls[0][0]).toBe(LATEST_RELEASE_API)
   })
@@ -27,5 +27,11 @@ describe('updateCheck', () => {
     expect(await fetchLatestRelease(reply(200, { tag_name: 'v0.2.4' }), '0.2.4')).toBeNull()
     expect(await fetchLatestRelease(reply(403, { message: 'rate limit' }), '0.2.4')).toBeNull()
     expect(await fetchLatestRelease(vi.fn(async () => Promise.reject(new TypeError('offline'))), '0.2.4')).toBeNull()
+  })
+
+  it('ghi chú phát hành thành chữ thường ngắn, không giữ HTML / Markdown', () => {
+    expect(releaseNotes('## Sửa lỗi\r\n- **In đơn thuốc** đúng tiêu đề\n- Xem [chi tiết](https://x.y)<script>x</script>\n\n\n\nCảm ơn')).toBe('Sửa lỗi\n• In đơn thuốc đúng tiêu đề\n• Xem chi tiếtx\n\nCảm ơn')
+    expect(releaseNotes('a '.repeat(600)).length).toBeLessThanOrEqual(801)
+    expect(releaseNotes(null)).toBe('')
   })
 })

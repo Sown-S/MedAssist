@@ -4,7 +4,9 @@ import { useEffect, useRef } from 'react'
 //   Alt+1…9   mở mục menu thứ 1…9          Ctrl+B   thu gọn / mở rộng thanh menu
 //   F1 hoặc ? mở Trợ giúp & phím tắt       Ctrl+,   mở Cài đặt
 //   Ctrl+F    nhảy tới ô tìm kiếm của trang Ctrl+S   bấm nút Lưu (nút có data-shortcut="save")
+//   Ctrl+N    bấm nút Thêm của trang (nút có data-shortcut="new": thêm phòng, tài khoản, thuốc, nhập kho…)
 //   Mũi tên   di chuyển giữa các mục trong danh sách / nhóm nút (không áp dụng khi đang gõ trong ô nhập)
+//   ↑ ↓ trong bảng: từ một nút ở một dòng sang nút cùng vị trí ở dòng trên / dưới (Enter để bấm)
 // Phím tắt riêng từng màn (F2 tiếp đón, Alt+N mời bệnh nhân…) vẫn nằm ở màn đó.
 export const OPEN_EVENT = 'medassist:open'
 export const openPanel = (what) => window.dispatchEvent(new CustomEvent(OPEN_EVENT, { detail: what }))
@@ -18,9 +20,27 @@ const scope = () => [...document.querySelectorAll('.ov.show .modal')].pop() ?? d
 const GROUP = '[role="radiogroup"],[role="tablist"],.seg,.utabs,.tri,.vtabs,.pset-nav,.queue,.srch,.pick-grid,.scale-pick,.swatches,.lang-pick,.menu,.side nav,.leave-reasons,.lab-pick'
 const ITEM = 'button:not(:disabled),[role="button"],[role="tab"],a[href],.lab-pick-row input'
 
+// Bảng: đang đứng ở một nút trong dòng → ↑ ↓ sang dòng kề, cùng thứ tự nút (dòng kề ít nút hơn thì nút cuối);
+// Home / End: dòng đầu / cuối. ← → vẫn đi giữa các nút trong cùng dòng.
+const CELL_ITEM = 'button:not(:disabled),a[href],[role="button"],input[type=checkbox]'
+function moveInTable(el, k) {
+  const row = el.closest('tbody tr')
+  if (!row || !['ArrowUp', 'ArrowDown', 'Home', 'End'].includes(k)) return false
+  const rows = [...row.parentElement.children].filter((r) => r.querySelector(CELL_ITEM) && visible(r))
+  const items = (r) => [...r.querySelectorAll(CELL_ITEM)].filter(visible)
+  const i = rows.indexOf(row)
+  const col = items(row).indexOf(el.closest(CELL_ITEM))
+  if (i < 0 || col < 0) return false
+  const j = k === 'Home' ? 0 : k === 'End' ? rows.length - 1 : k === 'ArrowDown' ? Math.min(rows.length - 1, i + 1) : Math.max(0, i - 1)
+  const target = items(rows[j])
+  target[Math.min(col, target.length - 1)]?.focus()
+  return true
+}
+
 export function moveFocus(e) {
   const el = document.activeElement
   if (!el || (typing(el) && !el.matches('input[type=checkbox]'))) return false
+  if (moveInTable(el, e.key)) return true
   const group = el.closest(GROUP)
   if (!group) return false
   const items = [...group.querySelectorAll(ITEM)].filter(visible)
@@ -78,6 +98,14 @@ export default function useGlobalKeys({ onToggleSidebar }) {
           e.preventDefault()
           box.focus()
           box.select?.()
+        }
+        return
+      }
+      if (ctrl && !e.altKey && !e.shiftKey && k.toLowerCase() === 'n' && !typing(document.activeElement)) {
+        const btn = [...scope().querySelectorAll('[data-shortcut="new"]')].find((b) => visible(b) && !b.disabled)
+        if (btn) {
+          e.preventDefault()
+          btn.click()
         }
         return
       }

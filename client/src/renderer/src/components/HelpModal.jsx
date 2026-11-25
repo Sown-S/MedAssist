@@ -11,6 +11,7 @@ const SHORTCUTS_COMMON = [
   ['Ctrl+F', 'Jump to the search box on the page'],
   ['Ctrl+S', 'Save the form that is open'],
   ['↑ ↓ ← →', 'Move between items in a list, tabs or button group'],
+  ['↑ ↓', 'In a table: move to the same button on the row above / below'],
   ['Enter', 'Open / choose the highlighted item'],
   ['Esc', 'Close the dialog'],
   ['F1 / ?', 'Open help & shortcuts'],
@@ -30,7 +31,7 @@ const SHORTCUTS = {
     ['F3 / Ctrl+K', 'Find patient'],
     ['↓ then Enter', 'In Find patient: pick a result and check in']
   ],
-  admin: []
+  admin: [['Ctrl+N', 'Add a new item on the page (room, account, drug, stock…)']]
 }
 const HELP_ICON = {
   Consultation: 'stethoscope',

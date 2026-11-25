@@ -1,4 +1,4 @@
-import { useState, useSyncExternalStore } from 'react'
+import { lazy, Suspense, useState, useSyncExternalStore } from 'react'
 import { Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom'
 import { getRenderKey, subscribe } from './i18n'
 import { ToastProvider } from './context/ToastContext'
@@ -9,10 +9,7 @@ import Icon from './components/Icon'
 import TopActions from './components/TopActions'
 import SideNav, { useCurrentLabel, useSideCollapsed } from './components/SideNav'
 import Login from './pages/Login'
-import Reception from './pages/Reception'
-import Doctor from './pages/Doctor'
-import Admin from './pages/Admin'
-import Reports from './pages/Reports'
+import { LoadingBlock } from './components/DataState'
 import Modal, { ModalHeader } from './components/Modal'
 import ErrorBoundary from './components/ErrorBoundary'
 import { useQueue, isMine, inRoom, atLabs } from './api/queueStore'
@@ -21,6 +18,12 @@ import { OfflineBanner, TopProgress, SlowNotice } from './components/NetStatus'
 import { LeaveVisitModal } from './pages/doctor/doctorShared'
 import useGlobalKeys from './components/useGlobalKeys'
 import usePageEnter from './components/usePageEnter'
+
+// Trang theo vai trò tách gói riêng (React.lazy): lễ tân không phải tải mã của bác sĩ / quản trị lúc mở app.
+const Reception = lazy(() => import('./pages/Reception'))
+const Doctor = lazy(() => import('./pages/Doctor'))
+const Admin = lazy(() => import('./pages/Admin'))
+const Reports = lazy(() => import('./pages/Reports'))
 
 // Menu theo vai trò nằm ở components/SideNav.jsx. Lịch hẹn, sổ quỹ, chốt ca nằm ngoài phạm vi.
 
@@ -45,6 +48,7 @@ export function Shell() {
 
       {/* Lỗi trong một trang chỉ thay trang đó; thanh trên vẫn dùng được, đổi trang là dựng lại. */}
       <ErrorBoundary resetKey={location.pathname + location.search}>
+        <Suspense fallback={<div className="content"><LoadingBlock rows={6} cols={4} /></div>}>
         <Routes>
           <Route path="/" element={<Navigate to={user.home} replace />} />
           <Route path="/login" element={<Navigate to={user.home} replace />} />
@@ -81,6 +85,7 @@ export function Shell() {
             }
           />
         </Routes>
+        </Suspense>
       </ErrorBoundary>
       </ShellLayout>
       {/* Còn ca đã nhận thì không đăng xuất được: xong ca nào thì ca đó biến khỏi danh sách, hết ca mới mở nút. */}
