@@ -48,7 +48,7 @@ function sourceFiles(dir, out = []) {
   for (const name of readdirSync(dir)) {
     const p = join(dir, name)
     if (statSync(p).isDirectory()) name !== 'i18n' && sourceFiles(p, out)
-    else if (/\.jsx?$/.test(name)) out.push(p)
+    else if (/\.jsx?$/.test(name) && !/\.stories\.jsx$/.test(name)) out.push(p) // truyện Ladle chỉ dùng lúc phát triển
   }
   return out
 }
