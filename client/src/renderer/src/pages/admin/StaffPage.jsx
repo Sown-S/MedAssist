@@ -166,7 +166,7 @@ export default function StaffPage() {
           <p>Create and manage Doctor, Receptionist and Administrator accounts. Only administrators can create accounts.</p>
         </div>
         <div className="act">
-          <button className="btn btn-primary" onClick={() => openCreate()}>
+          <button data-shortcut="new" className="btn btn-primary" onClick={() => openCreate()} title="Ctrl+N">
             <Icon name="user-plus" />
             {translate('Create account')}
           </button>

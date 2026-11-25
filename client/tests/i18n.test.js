@@ -24,6 +24,7 @@ const KEEP = new Set([
   'https://',
   'F1',
   'F2',
+  'Ctrl+N',
   'F3',
   'F3 / Ctrl+K',
   'Alt+D',

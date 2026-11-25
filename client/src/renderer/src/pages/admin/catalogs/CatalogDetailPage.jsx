@@ -96,7 +96,7 @@ export default function CatalogDetailPage({ catalogKey, params, onNavigate }) {
             <button className="btn btn-ghost btn-sm" onClick={() => exportCatalog(catalogKey, list)}>
               <Icon name="download" /> <span>Export</span>
             </button>
-            <button className="btn btn-primary btn-sm" onClick={() => setEdit({})}>
+            <button data-shortcut="new" className="btn btn-primary btn-sm" onClick={() => setEdit({})} title="Ctrl+N">
               + Add
             </button>
           </div>

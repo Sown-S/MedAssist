@@ -1082,6 +1082,8 @@ export const VI = {
   'Move between items in a list, tabs or button group': 'Di chuyển giữa các mục trong danh sách, tab hoặc nhóm nút',
   'Open / choose the highlighted item': 'Mở / chọn mục đang được chọn',
   'Open help & shortcuts': 'Mở trợ giúp & phím tắt',
+  'In a table: move to the same button on the row above / below': 'Trong bảng: sang nút cùng vị trí ở dòng trên / dưới',
+  'Add a new item on the page (room, account, drug, stock…)': 'Thêm mục mới trên trang (phòng, tài khoản, thuốc, nhập kho…)',
   'Open settings': 'Mở cài đặt',
   'Jump to the drug search box': 'Nhảy tới ô tìm thuốc',
   'Accept the top AI suggestion': 'Nhận gợi ý AI đứng đầu',

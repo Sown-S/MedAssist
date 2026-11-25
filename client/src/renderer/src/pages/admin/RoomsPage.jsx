@@ -62,6 +62,8 @@ export default function RoomsPage({ onNavigate }) {
             {translate('Staff accounts')}
           </button>
           <button
+            data-shortcut="new"
+            title="Ctrl+N"
             className="btn btn-primary"
             onClick={() => {
               setFormErr('')

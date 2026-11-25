@@ -114,7 +114,7 @@ export default function DrugCatalogPage({ params, onNavigate }) {
             >
               <Icon name="download" /> <span>Export to Excel (CSV)</span>
             </button>
-            <button className="btn btn-primary btn-sm" onClick={() => setEdit({})}>
+            <button data-shortcut="new" className="btn btn-primary btn-sm" onClick={() => setEdit({})} title="Ctrl+N">
               + Add drug
             </button>
           </div>

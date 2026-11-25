@@ -135,7 +135,7 @@ export function StockTab({ inv, user }) {
           <button className="btn btn-ghost btn-sm" onClick={doExport}>
             <Icon name="download" /> <span>Export to Excel (CSV)</span>
           </button>
-          <button className="btn btn-primary btn-sm" onClick={() => setReceive({})}>
+          <button data-shortcut="new" className="btn btn-primary btn-sm" onClick={() => setReceive({})} title="Ctrl+N">
             + Receive stock
           </button>
         </div>
