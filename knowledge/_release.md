@@ -1,8 +1,13 @@
 ---
 schema: okf_release_v1
-label: KB-2026.12.2
-description: Bản phát hành tri thức 154 bệnh, 299 triệu chứng, 12 luật, 1530 quan hệ, 11 nguồn và 157 trích dẫn.
+label: KB-2026.12.3
+description: Bản phát hành tri thức 154 bệnh, 299 triệu chứng, 12 luật, 1527 quan hệ, 11 nguồn và 157 trích dẫn.
 ---
+
+## Changelog KB-2026.12.3
+
+- Gỡ 3 quan hệ SUPPORTS 0.3 từ triệu chứng khí hư `chlamydial_trichomonal_vaginitis_cervicitis` tới `benh_vay_ca`, `benh_giang_mai` và `benh_sui_mao_ga_sinh_duc`. Đoạn trích QĐ 75/QĐ-BYT của ba bệnh không có căn cứ cho khí hư. Tuấn rà đoạn trích. CHƯA RÀ LÂM SÀNG; chờ bác sĩ xác nhận.
+- Giữ `benh_lau` (0.3, đoạn trích có dịch nhầy mủ cổ tử cung). Giữ `nhiem_chlamydia_trachomatis_sinh_duc_tiet_nieu` (0.9, then chốt) nhưng CHƯA XÁC MINH: đoạn trích hiện có chỉ nói viêm niệu đạo ở nam. Cần đối chiếu mục ở nữ trong QĐ 75/QĐ-BYT.
 
 ## Changelog KB-2026.12.2
 
