@@ -24,3 +24,24 @@ test('lỗi giao diện vào nhật ký; Lưu thông tin lỗi ghi file kèm phi
   expect(text).toMatch(/Electron \d+/)
   await page.keyboard.press('Escape')
 })
+
+test('vừa cập nhật phiên bản: báo một lần, có nút tới các phiên bản cũ', async ({ page }) => {
+  await page.evaluate(() => {
+    sessionStorage.clear()
+    localStorage.setItem('medassist_last_version', '0.0.1')
+  })
+  await page.reload()
+  await page.locator('.login-form').waitFor()
+  // Chuông cập nhật rung (có thông báo chưa xem); mở ra thấy thẻ "đã cập nhật".
+  await expect(page.locator('.ubell-btn.ring').first()).toBeVisible()
+  await page.locator('.ubell-btn:visible').first().click()
+  const note = page.locator('.vnote', { hasText: 'MedAssist đã cập nhật lên' })
+  await expect(note).toBeVisible()
+  await expect(note.getByRole('button', { name: 'Các phiên bản' })).toBeVisible()
+  await expect(note).toContainText('0.0.1')
+  await page.reload()
+  await page.locator('.login-form').waitFor()
+  await page.locator('.ubell-btn:visible').first().click()
+  await expect(page.locator('.vnote', { hasText: 'MedAssist đã cập nhật lên' })).toHaveCount(0)
+  await page.keyboard.press('Escape')
+})

@@ -942,3 +942,7 @@ select.input,select.select{field-sizing:fixed}
 /* WCAG AA: chữ trắng trên nút chính phải đạt tương phản 4.5:1 — xanh #1877F2 chỉ đạt 4.23, đậm hơn một chút (#1670E6, 4.67) */
 :root[data-accent="default"]:not([data-theme="dark"]) .btn-primary:not(:hover):not(:disabled){background:#1670E6}
 :root[data-accent="default"][data-theme="dark"] .btn-primary:not(:hover):not(:disabled){background:#2A6FD8}
+/* Thông báo phiên bản: ghi chú phát hành gập/mở */
+.vnote-notes{margin:6px 0 0;font-size:var(--fs-sm);color:var(--ink-2)}
+.vnote-notes summary{cursor:pointer;font-weight:600;color:var(--primary-ink)}
+.vnote-notes p{margin:6px 0 0;white-space:pre-wrap;max-height:160px;overflow:auto}

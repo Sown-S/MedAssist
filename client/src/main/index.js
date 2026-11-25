@@ -5,7 +5,7 @@ import { readFileSync, writeFileSync, existsSync, readdirSync } from 'fs'
 import { X509Certificate } from 'crypto'
 import { verifyAgainstCAs } from './certPin'
 import { profileFromArgs } from './profile'
-import { fetchLatestRelease, RELEASES_URL } from './updateCheck'
+import { fetchLatestRelease, RELEASES_URL, ALL_RELEASES_URL } from './updateCheck'
 import { createLogger, diagnosticsText } from './logger'
 import { is } from '@electron-toolkit/utils'
 
@@ -104,7 +104,7 @@ function registerIpc() {
   let latestRelease = null
   ipcMain.handle('update:check', () => (latestRelease ??= fetchLatestRelease((url, init) => net.fetch(url, init), app.getVersion())))
   // Không nhận đường dẫn từ renderer: chỉ mở đúng trang Releases của dự án.
-  ipcMain.handle('update:open', () => shell.openExternal(RELEASES_URL))
+  ipcMain.handle('update:open', (_e, which) => shell.openExternal(which === 'all' ? ALL_RELEASES_URL : RELEASES_URL))
   // Renderer ghi lỗi: chỉ nhận chuỗi, logger tự cắt độ dài và che token.
   ipcMain.handle('log:write', (_e, level, message, extra) =>
     log.write(String(level), String(message ?? ''), { stack: extra?.stack, context: extra?.context, source: 'renderer' })

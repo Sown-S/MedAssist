@@ -16,7 +16,9 @@ const api = {
   },
   updates: {
     check: () => ipcRenderer.invoke('update:check'),
-    openReleases: () => ipcRenderer.invoke('update:open')
+    openReleases: () => ipcRenderer.invoke('update:open'),
+    // Mọi bản phát hành (cài lại bản trước).
+    openAllReleases: () => ipcRenderer.invoke('update:open', 'all')
   },
   // Nhật ký lỗi trên máy: ghi lỗi giao diện; xuất file thông tin lỗi để gửi nhóm phát triển.
   log: {
