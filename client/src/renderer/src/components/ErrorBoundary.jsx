@@ -1,6 +1,7 @@
 import { Component } from 'react'
 import Icon from './Icon'
 import EmptyState from './ui/EmptyState'
+import { reportError, canExportDiagnostics, exportDiagnostics } from '../lib/errorReport'
 
 // Một màn lỗi lúc dựng chỉ hiện thông báo ở màn đó, không làm trắng cả cửa sổ; resetKey đổi thì dựng lại.
 // Lỗi trong hàm xử lý sự kiện (onClick, gọi API) không đi qua đây.
@@ -13,6 +14,7 @@ export default class ErrorBoundary extends Component {
 
   componentDidCatch(error, info) {
     console.error('[MedAssist] Lỗi giao diện:', error, info?.componentStack)
+    reportError(error, { componentStack: info?.componentStack?.slice(0, 1500), page: location.hash })
   }
 
   componentDidUpdate(prev) {
@@ -33,6 +35,11 @@ export default class ErrorBoundary extends Component {
             <button className="btn btn-ghost btn-sm" onClick={() => window.location.reload()}>
               Reload the app
             </button>
+            {canExportDiagnostics() && (
+              <button className="btn btn-ghost btn-sm" onClick={() => exportDiagnostics()}>
+                <Icon name="download" /> Save error details
+              </button>
+            )}
           </div>
         </EmptyState>
       </div>
