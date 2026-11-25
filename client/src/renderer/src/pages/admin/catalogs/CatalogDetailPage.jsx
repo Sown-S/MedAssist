@@ -59,6 +59,11 @@ export default function CatalogDetailPage({ catalogKey, params, onNavigate }) {
         </div>
       </div>
 
+      {s.localNote && (
+        <div className="hint-w mb-12">
+          <Icon name="info" /> {translate(s.localNote)}
+        </div>
+      )}
       <div className="card">
         <div className="toolbar">
           <div className="search">

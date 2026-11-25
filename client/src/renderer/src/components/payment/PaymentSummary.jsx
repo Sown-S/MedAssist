@@ -15,7 +15,10 @@ export default function PaymentSummary({ visitId, inv, paid, editable, items, pa
   const { showToast } = useToast()
   const [cancelling, setCancelling] = useState(false)
   const [cancelReason, setCancelReason] = useState('')
-  const methods = PAYMENT_METHODS.filter((m) => ['cash', 'transfer'].includes(m.key) && getSettings().ops.methods.includes(m.key))
+  // Hình thức thu trên máy này; cấu hình tắt cả hai thì vẫn cho cả Tiền mặt và Chuyển khoản (không thu ngầm bằng tiền mặt).
+  const usable = PAYMENT_METHODS.filter((m) => ['cash', 'transfer'].includes(m.key))
+  const enabled = usable.filter((m) => getSettings().ops.methods.includes(m.key))
+  const methods = enabled.length ? enabled : usable
   const [method, setMethod] = useState(methods[0]?.key ?? 'cash')
   const [pay, paying] = useAsyncAction(doPay)
 

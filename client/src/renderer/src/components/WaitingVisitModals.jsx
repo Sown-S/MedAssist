@@ -100,6 +100,7 @@ export function EditWaitingModal({ visit, onClose }) {
         <PatientAlerts p={visit} compact />
         <div className="sec-t">Symptoms</div>
         <SymptomPanel
+          gender={visit.gender}
           value={syms}
           onChange={setSyms}
           text={f.reason}

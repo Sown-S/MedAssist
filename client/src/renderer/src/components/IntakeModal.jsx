@@ -286,6 +286,7 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
               <span>Symptoms</span>
             </div>
             <SymptomPanel
+              gender={existing ? existing.gender : form.gender}
               value={syms}
               onChange={setSyms}
               text={form.reason}

@@ -147,3 +147,15 @@ describe('Lượt trong hàng chờ (toQueueVisit)', () => {
     expect(toQueueVisit({ ...base, status: 'Waiting' }).intakeSaved).toBe(true)
   })
 })
+
+describe('Lọc theo giới tính (applicable_sex)', () => {
+  it('Any / thiếu luôn hợp; Female / Male chỉ hợp đúng giới; bệnh nhân Khác hoặc chưa chọn thì không lọc', async () => {
+    const { fitsSex } = await import('../src/renderer/src/api/symptoms.js')
+    expect(fitsSex({ sex: 'Any' }, 'Male')).toBe(true)
+    expect(fitsSex({}, 'Male')).toBe(true)
+    expect(fitsSex({ sex: 'Female' }, 'Male')).toBe(false)
+    expect(fitsSex({ sex: 'Female' }, 'Female')).toBe(true)
+    expect(fitsSex({ sex: 'Male' }, 'Other')).toBe(true)
+    expect(fitsSex({ sex: 'Male' }, '')).toBe(true)
+  })
+})
