@@ -1,5 +1,7 @@
 // API thật cho Tiếp đón và Hàng đợi; đổi dữ liệu server sang hình dạng các màn hình đang dùng.
 import { apiGet, apiPost, apiRequest, ApiError } from './client'
+import { checkShape, listOf } from './validate'
+import { PatientOut, QueueItem } from './schemas.gen'
 import { VITAL_KEYS } from './vitals'
 
 const V1 = '/api/v1'
@@ -55,7 +57,7 @@ export async function lookupPatients(term, limit = 20) {
   return r.items.map(toPatientSummary)
 }
 
-export const getPatient = async (id) => toPatient(await apiGet(`${V1}/patients/${id}`))
+export const getPatient = async (id) => toPatient(checkShape(PatientOut, await apiGet(`${V1}/patients/${id}`), 'GET /patients/{id}'))
 
 // Danh sách hồ sơ (trang Bệnh nhân của Lễ tân): GET /patients không kèm điều kiện = tất cả, mới nhất trước.
 export async function listPatients({ q = '', phone = '', idNumber = '', code = '', birthYear = '', limit = 20, offset = 0 } = {}) {
@@ -285,8 +287,8 @@ export function toQueueVisit(q) {
   }
 }
 // Kèm lượt hôm nay đã kết thúc (Prescribed / Finished / Cancelled) cho các tab của Hàng chờ và thẻ Ca cờ đỏ.
-export const fetchQueue = async () => (await apiGet(`${V1}/queue?include_closed=true`)).map(toQueueVisit)
-export const fetchStale = async () => (await apiGet(`${V1}/visits/stale`)).map((q) => ({ ...toQueueVisit(q), carriedFrom: q.queue_date }))
+export const fetchQueue = async () => checkShape(listOf(QueueItem), await apiGet(`${V1}/queue?include_closed=true`), 'GET /queue').map(toQueueVisit)
+export const fetchStale = async () => checkShape(listOf(QueueItem), await apiGet(`${V1}/visits/stale`), 'GET /visits/stale').map((q) => ({ ...toQueueVisit(q), carriedFrom: q.queue_date }))
 export const cancelStale = (ids, reason) => apiPost(`${V1}/visits/stale/cancel`, { visit_ids: ids, reason })
 
 // ---------- Xét nghiệm, mời vào phòng ----------

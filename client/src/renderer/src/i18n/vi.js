@@ -1129,6 +1129,9 @@ export const VI = {
   'Issued': 'Lập lúc',
   'Medicines': 'Thuốc',
   'Prescribed': 'Giờ kê',
+  'Someone else just updated this — the list has been refreshed, please check and try again.': 'Người khác vừa cập nhật mục này — danh sách đã được làm mới, vui lòng kiểm tra rồi thử lại.',
+  'Cannot reach the server. Check the connection and try again.': 'Không kết nối được máy chủ. Kiểm tra mạng rồi thử lại.',
+  'Something went wrong. Please try again.': 'Có lỗi xảy ra. Vui lòng thử lại.',
   'No one is waiting.': 'Không còn ai chờ khám.',
   // ===== Tạo hoá đơn theo đơn thuốc giấy =====
   'No drug in the catalog matches.': 'Không có thuốc nào trong danh mục khớp.',

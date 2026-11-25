@@ -4,6 +4,7 @@ import { useEffect, useSyncExternalStore } from 'react'
 import { fetchQueue, fetchStale, cancelStale as apiCancelStale, labReturn as apiLabReturn, checkIn as apiCheckIn, cancelVisit as apiCancelVisit, startExam as apiStartExam, releaseVisit as apiRelease, callNext as apiCallNext, callVisit as apiCallVisit, cancelCall as apiCancelCall } from './clinicApi'
 import { reopenPrescription as apiReopen } from './examApi'
 import { VI } from '../i18n/vi'
+import { failure, errorMessage } from './errors'
 
 // Trạng thái lượt khám theo backend: Waiting → CheckedIn → Examining → Prescribed → Finished, hoặc Cancelled.
 // Bác sĩ chỉ nhận được người đã CheckedIn; đi xét nghiệm vẫn là Examining (labOut = true);
@@ -130,7 +131,7 @@ function liveRedFlags(visits, prev = []) {
 const viaApi = (call) =>
   call.then(
     () => syncQueue().then(() => ({ ok: true })),
-    (e) => ({ ok: false, error: e.message })
+    (e) => failure(e, { resync: syncQueue })
   )
 
 export const isMine = (v, user) => (v.doctorId ? v.doctorId === user.id : v.doctor === user.name)
@@ -153,7 +154,7 @@ export function closeStaleVisit(id, { reason, note = '' }) {
   const label = STALE_REASONS.find((r) => r.key === reason).label
   return apiCancelStale([id], [VI[label] ?? label, note.trim()].filter(Boolean).join(' — ')).then(
     () => syncStale().then(() => ({ ok: true })),
-    (e) => ({ ok: false, error: e.message })
+    (e) => failure(e, { resync: syncStale })
   )
 }
 
@@ -198,7 +199,7 @@ export function takePatient(id, user, { force = false } = {}) {
         patch(id, { resumedFromLabs: true, entered: true })
         return { ok: true, visit: state.visits.find((x) => x.id === id) }
       },
-      (e) => (syncQueue(), { ok: false, error: e.message })
+      (e) => (syncQueue(), failure(e))
     )
   return apiStartExam(id).then(
     async () => {
@@ -206,7 +207,7 @@ export function takePatient(id, user, { force = false } = {}) {
       patch(id, { calledAt: new Date().toISOString() })
       return { ok: true, visit: state.visits.find((x) => x.id === id) ?? v }
     },
-    (e) => (syncQueue(), { ok: false, error: e.message })
+    (e) => (syncQueue(), failure(e))
   )
 }
 
@@ -218,7 +219,7 @@ const CALL_ERRORS = {
   CALLED_BY_OTHER: 'Another doctor is calling this patient.',
   NOT_CALLED: 'This patient is not being called.'
 }
-const callError = (e) => CALL_ERRORS[e?.code] ?? e?.message ?? 'Could not call the patient.'
+const callError = (e) => CALL_ERRORS[e?.code] ?? errorMessage(e, 'Could not call the patient.')
 // Đang được mời: còn trong hàng chờ, chưa bác sĩ nào nhận, có called_at.
 export const isInvited = (v) => isQueued(v) && !!v.calledAt && !v.doctorId
 export const myInvite = (user, visits = state.visits) => visits.find((v) => isInvited(v) && v.calledById === user.id) ?? null
@@ -257,7 +258,7 @@ export function recallVisit(rx, user) {
   if (inRoomOf(user).length) return { ok: false, error: 'Finish the patient in your room first — finalize the visit or send them for lab tests.' }
   return apiReopen(rx.visitId, 'Bác sĩ thu hồi đơn để sửa').then(
     async () => (await syncQueue(), { ok: true }),
-    (e) => ({ ok: false, error: e.message })
+    (e) => failure(e, { resync: syncQueue })
   )
 }
 export const labOrderSummary = (o) => [...(o.packageName ? [o.packageName] : []), ...o.tests.filter((x) => !x.cancelled && !x.inPackage).map((x) => x.name), ...(o.other ? [o.other] : [])].join(', ')

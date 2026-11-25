@@ -1,5 +1,5 @@
 // Mở ứng dụng Electron đã build (out/) cho test đầu cuối và các thao tác dùng chung.
-import { test as base, expect, _electron as electron } from '@playwright/test'
+import { test as base, expect, _electron as electron, request as playwrightRequest } from '@playwright/test'
 import { createRequire } from 'node:module'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -39,10 +39,30 @@ export const test = base.extend({
         /* chưa có localStorage */
       }
     })
+    // Bản eval kiểm hình dạng response bằng zod (api/validate.js): lệch hợp đồng là lỗi của lần chạy.
+    const drift = []
+    const onConsole = (m) => m.type() === 'warning' && m.text().startsWith('[api]') && drift.push(m.text())
+    page.on('console', onConsole)
     await use(page)
+    page.off('console', onConsole)
+    expect(drift, 'response lệch hợp đồng API').toEqual([])
   }
 })
 export { expect }
+
+// Gọi thẳng API server (chuẩn bị dữ liệu mà giao diện vai trò khác mới làm được, vd lễ tân check-in người bác sĩ vừa mời).
+export const API_BASE = process.env.E2E_API_BASE ?? 'http://127.0.0.1:8000'
+export async function apiAs(role) {
+  const ctx = await playwrightRequest.newContext({ baseURL: API_BASE })
+  const r = await ctx.post('/api/v1/auth/login', { data: { username: ROLES[role].user, password: PASSWORD } })
+  const { access_token } = await r.json()
+  const headers = { Authorization: `Bearer ${access_token}` }
+  return {
+    get: async (path) => (await ctx.get(path, { headers })).json(),
+    patch: (path, data) => ctx.patch(path, { headers, data }),
+    dispose: () => ctx.dispose()
+  }
+}
 
 // Đăng nhập theo vai trò từ màn đăng nhập (xoá phiên cũ trước).
 export async function login(page, role) {

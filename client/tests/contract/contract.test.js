@@ -149,3 +149,30 @@ describe('Hàm chuyển đổi chỉ đọc trường có trong schema', () => {
     expect(['Female', 'Male', 'Other']).toContain(p.gender)
   })
 })
+
+// 3. Schema zod dùng lúc chạy (api/schemas.gen.js) sinh từ đúng openapi.json này và nhận response thật.
+describe('Schema zod lúc chạy', () => {
+  it('schemas.gen.js khớp openapi.json (sinh lại: node scripts/contract/gen_zod.mjs)', async () => {
+    const { generate } = await import('../../scripts/contract/gen_zod.mjs')
+    expect(readFileSync(join(DIR, '../../src/renderer/src/api/schemas.gen.js'), 'utf8')).toBe(generate(openapi))
+  })
+  const CASES = [
+    ['queue', 'QueueItem', true],
+    ['billing_awaiting', 'AwaitingPaymentItem', true],
+    ['billing_invoices', 'InvoiceHistoryItem', true],
+    ['prescriptions', 'PrescriptionListItem', true],
+    ['patient', 'PatientOut', false],
+    ['patients_list', 'PatientSummary', 'items']
+  ]
+  for (const [fx, name, list] of CASES)
+    it(`${fx} qua zod ${name}`, async () => {
+      const zs = await import('../../src/renderer/src/api/schemas.gen.js')
+      const body = fixtures[fx].body
+      const data = list === 'items' ? body.items : list ? body : [body]
+      expect(data.length).toBeGreaterThan(0)
+      for (const row of data) {
+        const r = zs[name].safeParse(row)
+        expect(r.success, r.error?.issues.map((i) => `${i.path.join('.')}: ${i.message}`).join('; ')).toBe(true)
+      }
+    })
+})
