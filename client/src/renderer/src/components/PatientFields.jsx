@@ -161,7 +161,7 @@ export function DuplicateBanner({ dupes, allowNew, onPick, onCreateNew }) {
         <div className="dupe-list">
           {dupes.map((d) => (
             <div className="dupe-row" key={d.id}>
-              <span className="num">{d.id}</span>
+              {d.code && <span className="num">{d.code}</span>}
               <b>{d.name}</b>
               <span>{d.dob}</span>
               <span className="num">{d.phone}</span>
