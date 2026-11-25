@@ -127,7 +127,7 @@ export default function DashboardPage({ onNavigate }) {
   const { user } = useAuth()
   // Số liệu tổng hợp, không có dữ liệu bệnh nhân nên Admin xem được. Lỗi tải → các ô hiện “—”, phần còn lại vẫn dùng được.
   const days7 = rangeOf('7d')
-  const { data: summary, error: e1 } = useApiData(reportPath(rangeOf('today')))
+  const { data: summary, error: e1, reload: reloadSummary } = useApiData(reportPath(rangeOf('today')))
   const { data: week } = useApiData(reportPath(days7))
   const inv = useInventory()
   const NA = '—'
@@ -171,7 +171,7 @@ export default function DashboardPage({ onNavigate }) {
       <BellPortal>
         <ClusterAlerts onOpenReport={() => navigate('/reports')} />
       </BellPortal>
-      {e1 && <ErrorBlock message={translate('Could not load today’s figures') + ': ' + e1} />}
+      {e1 && <ErrorBlock message={translate('Could not load today’s figures') + ': ' + e1} onRetry={reloadSummary} />}
       {accountsError && <ErrorBlock message={translate('Could not load staff accounts') + ': ' + translate(accountsError)} />}
 
       <div className="kpis tiles4 ak">

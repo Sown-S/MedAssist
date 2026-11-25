@@ -4,7 +4,8 @@ import { ApiError } from '../src/renderer/src/api/client.js'
 import { errorMessage, failure, isStaleConflict, STALE_MESSAGE } from '../src/renderer/src/api/errors.js'
 import { useAwaiting, useTodayInvoices } from '../src/renderer/src/api/billingApi.js'
 import { usePrescriptions } from '../src/renderer/src/api/prescriptionApi.js'
-import { installFakeServer, resetCalls, calls } from './fakeServer'
+import { installFakeServer, resetCalls, calls, overrideRoute } from './fakeServer'
+import { useApiData } from '../src/renderer/src/hooks/useApiData.js'
 
 const err = (status, code, message, details) => new ApiError(status, { error: { code, message, details } })
 
@@ -62,5 +63,21 @@ describe('Hook đọc dữ liệu qua TanStack Query', () => {
     expect(inv.result.current).toBe(null)
     await waitFor(() => expect(inv.result.current).not.toBe(null))
     expect(hits('/api/v1/billing/awaiting')).toBe(0)
+  })
+
+  it('useApiData: lỗi server thành câu hiển thị, reload() gọi lại và hết lỗi', async () => {
+    let fail = true
+    const undo = overrideRoute(/\/api\/v1\/reports\/x$/, () => (fail ? { status: 500, body: { error: { code: 'INTERNAL_ERROR', message: 'Lỗi máy chủ' } } } : { ok: 1 }))
+    const { result } = renderHook(() => useApiData('/api/v1/reports/x'))
+    await waitFor(() => expect(result.current.error).toBe('Lỗi máy chủ'))
+    expect(result.current.loading).toBe(false)
+    fail = false
+    await result.current.reload()
+    await waitFor(() => expect(result.current).toMatchObject({ data: { ok: 1 }, error: null }))
+    undo()
+  })
+  it('useApiData(null) không gọi server', () => {
+    const { result } = renderHook(() => useApiData(null))
+    expect(result.current).toMatchObject({ data: null, loading: false, error: null })
   })
 })

@@ -1,25 +1,16 @@
-import { useEffect, useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import { apiGet } from '../api/client'
+import { errorMessage } from '../api/errors'
+import { queryClient } from '../lib/queryClient'
 
-// path = null → không gọi (data null, không loading, không lỗi).
+// GET một đường dẫn API qua TanStack Query (dùng chung cache theo path).
+// path = null → không gọi (data null, không loading, không lỗi). error là câu hiển thị được; reload() tải lại.
 export function useApiData(path) {
-  const [data, setData] = useState(null)
-  const [loading, setLoading] = useState(path != null)
-  const [error, setError] = useState(null)
-
-  useEffect(() => {
-    if (path == null) return
-    let cancelled = false
-    setLoading(true)
-    setError(null)
-    apiGet(path)
-      .then((d) => !cancelled && setData(d))
-      .catch((err) => !cancelled && setError(err.message))
-      .finally(() => !cancelled && setLoading(false))
-    return () => {
-      cancelled = true
-    }
-  }, [path])
-
-  return { data, loading, error }
+  const q = useQuery({ queryKey: ['api', path], queryFn: () => apiGet(path), enabled: path != null }, queryClient)
+  return {
+    data: q.data ?? null,
+    loading: path != null && q.isPending && !q.isError,
+    error: q.error ? errorMessage(q.error) : null,
+    reload: () => q.refetch()
+  }
 }

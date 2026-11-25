@@ -1,8 +1,11 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import Icon from '../../components/Icon'
 import { ErrorBlock, LoadingBlock } from '../../components/DataState'
 import { ticketNo } from '../../components/queuePrint'
 import { useAwaiting, fromAwaiting, listInvoices, fromServerMethod } from '../../api/billingApi'
+import { useQuery, keepPreviousData } from '@tanstack/react-query'
+import { queryClient } from '../../lib/queryClient'
+import { errorMessage } from '../../api/errors'
 import { translate } from '../../i18n'
 import { methodLabel, PAY_STATUS } from './shared'
 import { money, fold, ymd, hhmm } from '../../utils/format'
@@ -31,7 +34,7 @@ export default function BillingLiveView({ mode, readOnly, onPay }) {
 
   return (
     <>
-      {awaiting.error && <ErrorBlock message={awaiting.error.message} />}
+      {awaiting.error && <ErrorBlock message={errorMessage(awaiting.error)} onRetry={awaiting.reload} />}
       <MiniStats>
         <MiniStat icon="users" value={list.length} label="Waiting at the desk" />
         <MiniStat icon="package" value={toDispense} label="Waiting to dispense" />
@@ -122,16 +125,12 @@ export default function BillingLiveView({ mode, readOnly, onPay }) {
 function InvoiceHistory({ readOnly, onPay, reloadKey }) {
   const [date, setDate] = useState(ymd(new Date()))
   const [withCancelled, setWithCancelled] = useState(false)
-  const [list, setList] = useState(null)
-  const [error, setError] = useState(null)
-  useEffect(() => {
-    let alive = true
-    listInvoices(date, withCancelled).then(
-      (x) => alive && (setList(x), setError(null)),
-      (e) => alive && setError(e)
-    )
-    return () => (alive = false)
-  }, [date, withCancelled, reloadKey])
+  const inv = useQuery(
+    { queryKey: ['billing', 'invoices', date, withCancelled, reloadKey], queryFn: () => listInvoices(date, withCancelled), placeholderData: keepPreviousData },
+    queryClient
+  )
+  const list = inv.data ?? null
+  const error = inv.error
 
   const paid = (list ?? []).filter((x) => x.payment_status === 'Paid')
   const revenue = paid.reduce((s, x) => s + Number(x.total_amount), 0)
@@ -165,7 +164,7 @@ function InvoiceHistory({ readOnly, onPay, reloadKey }) {
               {translate('Show cancelled invoices')}
             </label>
           </div>
-          {error && <ErrorBlock message={error.message} />}
+          {error && <ErrorBlock message={errorMessage(error)} onRetry={() => inv.refetch()} />}
           {!list && !error && <Skeleton rows={5} cols={5} />}
           {list && (
             <div className="tbl-wrap">

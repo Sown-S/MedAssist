@@ -30,7 +30,7 @@ const PERIOD_SUB = { today: 'Today', week: 'This week', month: 'This month' }
 export default function Reports() {
   const [period, setPeriod] = useState('today')
   const range = rangeOf(period)
-  const { data, loading, error } = useApiData(reportPath(range))
+  const { data, loading, error, reload } = useApiData(reportPath(range))
   // Hôm nay chỉ có một điểm: biểu đồ doanh thu lấy 7 ngày gần nhất.
   const chartRange = period === 'today' ? rangeOf('7d') : range
   const week = useApiData(period === 'today' ? reportPath(chartRange) : null)
@@ -64,7 +64,7 @@ export default function Reports() {
       </div>
 
       {loading && <LoadingBlock />}
-      {error && <ErrorBlock message={error} />}
+      {error && <ErrorBlock message={error} onRetry={reload} />}
 
       {data && !loading && (
         <>

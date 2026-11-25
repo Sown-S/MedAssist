@@ -48,9 +48,5 @@ export function usePrescriptions({ from, to, physicianId, enabled = true, ms = 1
     },
     queryClient
   )
-  return {
-    list: q.data ?? [],
-    loaded: q.isFetched || q.isError,
-    error: q.error ?? null
-  }
+  return { list: q.data ?? [], loaded: q.isFetched || q.isError, error: q.error ?? null, reload: () => q.refetch() }
 }

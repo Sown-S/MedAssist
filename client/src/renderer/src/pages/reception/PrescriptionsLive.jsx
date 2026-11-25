@@ -12,6 +12,8 @@ import { periodRange, periodLabel, PAY_STATUS } from './shared'
 import { money, fold, ymd, hhmm, dmy } from '../../utils/format'
 import { MiniStat, MiniStats } from '../../components/MiniStat'
 import EmptyState from '../../components/ui/EmptyState'
+import { ErrorBlock } from '../../components/DataState'
+import { errorMessage } from '../../api/errors'
 
 const STATUS_FILTERS = [
   { key: '', label: 'All payment statuses' },
@@ -34,7 +36,7 @@ export default function PrescriptionsLive({ initialDoctorId = '', initialDoctorN
   const [open, setOpen] = useState(null)
 
   const [from, to] = periodRange(period, date)
-  const { list: all, loaded, error } = usePrescriptions({ from: period === 'all' ? '2000-01-01' : from, to: period === 'all' ? ymd(new Date()) : to })
+  const { list: all, loaded, error, reload } = usePrescriptions({ from: period === 'all' ? '2000-01-01' : from, to: period === 'all' ? ymd(new Date()) : to })
   const doctors = [...new Map([...(initialDoctorId ? [[initialDoctorId, initialDoctorName]] : []), ...all.map((r) => [r.doctorId, r.doctor])]).entries()].sort((a, b) => a[1].localeCompare(b[1]))
   const needle = fold(q)
   const list = all.filter(
@@ -84,6 +86,7 @@ export default function PrescriptionsLive({ initialDoctorId = '', initialDoctorN
         <MiniStat icon="wallet" value={money(value)} label="Invoice total" mono />
       </MiniStats>
 
+      {error && <ErrorBlock message={errorMessage(error)} onRetry={reload} />}
       <div className="card">
         <div className="card-b">
           <div className="toolbar mb-14">
@@ -200,7 +203,7 @@ export default function PrescriptionsLive({ initialDoctorId = '', initialDoctorN
                 {!list.length && (
                   <tr>
                     <td colSpan="7">
-                      <EmptyState icon="clipboard" title={error ? error.message : !loaded ? translate('Loading…') : all.length ? translate('No prescriptions match the filters.') : translate('No prescriptions in this period.')} text="Try another period or clear the filters." />
+                      <EmptyState icon="clipboard" title={error ? translate('Failed to load data') : !loaded ? translate('Loading…') : all.length ? translate('No prescriptions match the filters.') : translate('No prescriptions in this period.')} text="Try another period or clear the filters." />
                     </td>
                   </tr>
                 )}
