@@ -12,7 +12,6 @@ import Badge from '../../components/ui/Badge'
 
 // Hộp thoại của trang chủ bác sĩ: danh sách chờ khám, bệnh nhân đang đi xét nghiệm.
 export const no = (t) => String(t).padStart(3, '0')
-export const waitTone = (n) => (n >= 45 ? 'long' : n >= 25 ? 'warn' : 'ok')
 
 export function WaitingModal({ list, initial, now, past, onTake, onClose }) {
   const [open, setOpen] = useState(initial || null)
