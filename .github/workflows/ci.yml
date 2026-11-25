@@ -139,8 +139,6 @@ jobs:
         run: npm run lint
       - name: Vitest
         run: npm test
-      - name: Build danh mục component (Ladle) — truyện phải dựng được
-        run: npm run ladle:build
       - name: npm audit (thư viện chạy trong app, mức high trở lên chặn PR)
         run: npm audit --omit=dev --audit-level=high
       # Smoke: build bản eval, mở Electron thật (màn hình ảo xvfb), kiểm tra màn khởi động và màn đăng nhập

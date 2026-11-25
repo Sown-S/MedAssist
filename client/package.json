@@ -18,9 +18,7 @@
     "test:watch": "vitest",
     "lint": "eslint . --max-warnings 0 && stylelint \"src/renderer/**/*.css\" --max-warnings 0",
     "e2e": "electron-vite build --mode eval && playwright test",
-    "e2e:update": "playwright test e2e/visual.spec.mjs e2e/print.spec.mjs --update-snapshots",
-    "ladle": "ladle serve",
-    "ladle:build": "ladle build"
+    "e2e:update": "playwright test e2e/visual.spec.mjs e2e/print.spec.mjs --update-snapshots"
   },
   "dependencies": {
     "@electron-toolkit/utils": "^4.0.0",
@@ -37,7 +35,6 @@
   "devDependencies": {
     "@axe-core/playwright": "^4.14.1",
     "@eslint/js": "^9.39.0",
-    "@ladle/react": "^5.1.1",
     "@playwright/test": "1.57",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/react": "^16.1.0",
