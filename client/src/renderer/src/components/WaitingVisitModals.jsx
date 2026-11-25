@@ -15,6 +15,8 @@ import SymptomPanel from './SymptomPanel'
 import { normalizeVitals, vitalsToForm, vitalsFromForm } from '../api/vitals'
 import { toPayload, extractionStale } from '../api/symptoms'
 import DocumentModal from '../pages/doctor/DocumentModal'
+import PregnancyField from './PregnancyField'
+import { askPregnancy } from '../api/patient'
 
 // Quầy xử lý lượt đang chờ: sửa lượt khi bệnh nhân chuyển nặng (luật chạy lại, chỉ nâng mức) hoặc huỷ lượt (lưu lý do).
 
@@ -27,6 +29,7 @@ export function EditWaitingModal({ visit, onClose }) {
   const { showToast } = useToast()
   const [f, setF] = useState({
     reason: visit.reason === '—' ? '' : visit.reason,
+    pregnancy: '',
     ...vitalsToForm(normalizeVitals(visit.vitals))
   })
   const [syms, setSyms] = useState(symMap(visit.symptoms))
@@ -39,10 +42,12 @@ export function EditWaitingModal({ visit, onClose }) {
   const [referring, setReferring] = useState(false)
   const [vitalProps, setVitalProps] = useState(NO_VITALS)
   const textLocked = visit.status !== ST.WAITING
+  // Mang thai ghi theo lượt khám, sửa được khi lượt còn Waiting.
+  const pregnancyAsked = !textLocked && askPregnancy(visit.gender, visit.age)
   useEffect(() => {
     Promise.all([apiGet('/api/v1/visits/' + visit.id), clinic.getVisitSymptoms(visit.id)])
       .then(([v, list]) => {
-        setF({ reason: v.free_text_description ?? v.chief_complaint ?? '', ...vitalsToForm(normalizeVitals(v.vital_signs)) })
+        setF({ reason: v.free_text_description ?? v.chief_complaint ?? '', pregnancy: clinic.pregnancyOf(v), ...vitalsToForm(normalizeVitals(v.vital_signs)) })
         setSyms(symMap(list.filter((x) => x.state !== 'UNKNOWN')))
         setLoaded(true)
       })
@@ -59,7 +64,7 @@ export function EditWaitingModal({ visit, onClose }) {
   async function saveOnServer() {
     setBusy(true)
     try {
-      await clinic.updateVisit(visit.id, textLocked ? { vitals: vitalsFromForm(f) } : { text: f.reason, vitals: vitalsFromForm(f) })
+      await clinic.updateVisit(visit.id, textLocked ? { vitals: vitalsFromForm(f) } : { text: f.reason, vitals: vitalsFromForm(f), ...(pregnancyAsked ? { pregnancy: f.pregnancy } : {}) })
       await clinic.putSymptoms(visit.id, toPayload(syms))
       const a = await clinic.triggerAssessment(visit.id)
       syncQueue()
@@ -95,6 +100,7 @@ export function EditWaitingModal({ visit, onClose }) {
         <PatientAlerts p={visit} compact />
         <div className="sec-t">Symptoms</div>
         <SymptomPanel
+          gender={visit.gender}
           value={syms}
           onChange={setSyms}
           text={f.reason}
@@ -103,6 +109,7 @@ export function EditWaitingModal({ visit, onClose }) {
           onExtract={extract}
           onVitals={(list, from) => setVitalProps({ list, from })}
         />
+        {pregnancyAsked && loaded && <PregnancyField value={f.pregnancy} onChange={(v) => setF((x) => ({ ...x, pregnancy: v }))} />}
         <div className="sec-t">Vital signs</div>
         <VitalProposals
           list={vitalProps.list}

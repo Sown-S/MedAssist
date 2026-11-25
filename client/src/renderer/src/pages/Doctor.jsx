@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import Button from '../components/Button'
 import { useSearchParams } from 'react-router-dom'
 import Icon from '../components/Icon'
 import BellPortal from '../components/BellPortal'
@@ -80,9 +81,9 @@ export default function Doctor() {
                   {topRF.allergies ? ' · ' + translate('Drug allergy') + ': ' + translate(topRF.allergies) : ''}
                 </small>
                 <span className="bp-acts">
-                  <button className="btn btn-danger btn-sm" onClick={() => seeNow(topRF)}>
+                  <Button className="btn btn-danger btn-sm" onClick={() => seeNow(topRF)}>
                     <Icon name="stethoscope" /> See the patient now
-                  </button>
+                  </Button>
                   <button className="btn btn-outline btn-sm" onClick={() => reviewRedFlag(topRF.id, 'seen', user)}>
                     Dismiss
                   </button>

@@ -11,7 +11,7 @@ function loadConditions() {
     const out = []
     for (let offset = 0; ; offset += 200) {
       const page = await apiGet(`/api/v1/admin/knowledge/conditions?status=Active&limit=200&offset=${offset}`)
-      out.push(...page.items.map((x) => ({ code: x.values.icd10_code || '', label: x.values.name_vi, conditionCode: x.values.condition_code })))
+      out.push(...page.items.map((x) => ({ code: x.values.icd10_code || '', label: x.values.name_vi, conditionCode: x.values.condition_code, sex: ['Female', 'Male'].includes(x.values.applicable_sex) ? x.values.applicable_sex : 'Any' })))
       if (out.length >= page.total || !page.items.length) break
     }
     cache = out.sort((a, b) => a.code.localeCompare(b.code))

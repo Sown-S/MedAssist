@@ -1,9 +1,10 @@
 import Modal, { ModalHeader } from '../../../components/Modal'
 import { ROLES } from '../../../api/accountStore'
 import { ErrorNote } from '../../../components/DataState'
+import Button from '../../../components/Button'
 
 // Tạo / sửa tài khoản. form = null là đóng; editing = tài khoản đang sửa (null khi tạo mới).
-export default function AccountFormModal({ form, setForm, editing, me, rooms, formErr, onSubmit }) {
+export default function AccountFormModal({ form, setForm, editing, me, rooms, formErr, onSubmit, saving = false }) {
   return (
     <Modal open={!!form} onClose={() => setForm(null)}>
       {form && (
@@ -79,9 +80,9 @@ export default function AccountFormModal({ form, setForm, editing, me, rooms, fo
             <button type="button" className="btn btn-outline" onClick={() => setForm(null)}>
               Cancel
             </button>
-            <button data-shortcut="save" type="submit" className="btn btn-primary">
+            <Button data-shortcut="save" type="submit" className="btn btn-primary" loading={saving}>
               {editing ? 'Save' : 'Create account'}
-            </button>
+            </Button>
           </div>
         </form>
       )}

@@ -5,7 +5,8 @@ import { waitingOrder, readyOrder, ST, inRoom, atLabs, minutesSince, isMine } fr
 import { useNow } from '../../reception/shared'
 import { InviteBar } from '../doctorShared'
 import useNewIds from '../../../hooks/useNewIds'
-import { hhmm } from '../../../utils/format'
+import { hhmm, todayVN } from '../../../utils/format'
+import { usePrescriptions } from '../../../api/prescriptionApi'
 
 // Cột hàng đợi chia nhóm, thu gọn được; trạng thái nhớ theo máy.
 const GROUPS_KEY = 'medassist_doc_queue_groups'
@@ -37,6 +38,10 @@ export function useQueueGroups() {
 export default function DoctorQueue({ visits, user, mine, current, onSelect, take, next, onCloseLab, openGroups, toggle }) {
   const now = useNow()
   const fresh = useNewIds(visits.map((v) => v.id))
+  // Nhóm “Xong hôm nay”: số thuốc lấy từ đơn đã chốt hôm nay của bác sĩ (GET /prescriptions), chỉ tải khi nhóm đang mở.
+  const today = todayVN()
+  const { list: myRx } = usePrescriptions({ from: today, to: today, physicianId: user?.id, enabled: !!openGroups.done && !!user?.id, ms: 30000 })
+  const rxCount = new Map(myRx.map((r) => [r.visitId, r.rx.length]))
   const groups = [
     { key: 'mine', title: 'In my room', icon: 'stethoscope', list: mine },
     // Chỉ người mình chỉ định — bệnh nhân vẫn thuộc bác sĩ đó trong lúc đi xét nghiệm, bác sĩ khác không nhận được.
@@ -54,6 +59,10 @@ export default function DoctorQueue({ visits, user, mine, current, onSelect, tak
 
   function onItem(g, v) {
     if (g.key === 'mine') return onSelect(v.id)
+  }
+  const drugsOf = (v) => {
+    const n = rxCount.get(v.id)
+    return n === undefined ? '' : ' · ' + n + ' ' + translate(n === 1 ? 'drug' : 'drugs')
   }
 
   const rail = openGroups._rail
@@ -98,7 +107,7 @@ export default function DoctorQueue({ visits, user, mine, current, onSelect, tak
                   {g.list.map((v) => {
                     const n = minutesSince(v.statusAt, now)
                     const active = current?.id === v.id
-                    const clickable = g.key === 'mine' || (g.key === 'done' && v.rx.length > 0)
+                    const clickable = g.key === 'mine'
                     const t = tone(v, g)
                     return (
                       <div
@@ -107,7 +116,6 @@ export default function DoctorQueue({ visits, user, mine, current, onSelect, tak
                         style={clickable ? undefined : { cursor: 'default' }}
                         tabIndex={clickable ? 0 : undefined}
                         onClick={() => onItem(g, v)}
-                        title={g.key === 'done' && v.rx.length ? translate('View & review the prescription') : undefined}
                       >
                         <div className="pr" style={{ background: 'var(--' + t + ')' }} />
                         <div className="info">
@@ -117,7 +125,8 @@ export default function DoctorQueue({ visits, user, mine, current, onSelect, tak
                           <div className="meta">
                             {g.key === 'done' ? (
                               <>
-                                {hhmm(v.statusAt)} · {v.rx.length} {translate(v.rx.length === 1 ? 'drug' : 'drugs')}
+                                {hhmm(v.statusAt)}
+                                {drugsOf(v)}
                               </>
                             ) : (
                               <>
@@ -137,9 +146,7 @@ export default function DoctorQueue({ visits, user, mine, current, onSelect, tak
                           <div className="meta clip">
                             {g.key === 'labs' && v.labReturnedAt
                               ? translate('Results are ready — resume the visit')
-                              : g.key === 'done'
-                                ? v.diagnosis || '—'
-                                : g.key === 'other' || (g.key === 'labs' && !isMine(v, user))
+                              : g.key === 'other' || (g.key === 'labs' && !isMine(v, user))
                                   ? v.doctor
                                   : translate(v.reason)}
                           </div>

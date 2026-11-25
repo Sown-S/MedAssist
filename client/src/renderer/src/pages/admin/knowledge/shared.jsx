@@ -77,6 +77,9 @@ export function usableCodes(rows) {
     .sort()
 }
 
+// Chỉ áp dụng cho một giới tính (applicable_sex) → nhãn nhỏ; Any không hiện.
+const SexTag = ({ sex }) => (sex === 'Female' || sex === 'Male' ? <span className="kb-tag sex">{translate(sex === 'Female' ? 'Women only' : 'Men only')}</span> : null)
+
 export function Summary({ kind, values, names }) {
   const v = values ?? {}
   if (kind === 'symptoms')
@@ -85,6 +88,7 @@ export function Summary({ kind, values, names }) {
         <b>{v.symptom_name}</b> {v.short_name && <span className="muted">· {v.short_name}</span>} {v.category && <span className="muted">· {v.category}</span>}
         {v.detection === 'exam' && <span className="kb-tag exam">{translate('Found on examination')}</span>}
         {v.detection === 'reported' && <span className="kb-tag rep">{translate('Reported by patient')}</span>}
+        <SexTag sex={v.applicable_sex} />
         {v.aliases?.length > 0 && (
           <span className="muted">
             {' '}
@@ -97,6 +101,7 @@ export function Summary({ kind, values, names }) {
     return (
       <span>
         <b>{v.name_vi}</b> {v.icd10_code && <span className="num">· {v.icd10_code}</span>} {v.disease_group && <span className="muted">· {v.disease_group}</span>}
+        <SexTag sex={v.applicable_sex} />
       </span>
     )
   if (kind === 'relations')

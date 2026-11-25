@@ -16,8 +16,9 @@ export const maskDob = (s) => {
   const d = s.replace(/\D/g, '').slice(0, 8)
   return [d.slice(0, 2), d.slice(2, 4), d.slice(4)].filter(Boolean).join('/')
 }
-// Mang thai: 'yes' | 'no' | '' (chưa hỏi) ↔ medical_history.is_pregnant true | false | (không có khoá).
-const pregnancyOf = (mh) => (mh?.is_pregnant === true ? 'yes' : mh?.is_pregnant === false ? 'no' : '')
+// Mang thai ghi theo từng lượt khám (visit.is_pregnant, server 0.2.6): 'yes' | 'no' | '' (chưa hỏi) ↔ true | false | null.
+export const pregnancyOf = (v) => (v?.is_pregnant === true ? 'yes' : v?.is_pregnant === false ? 'no' : '')
+export const isPregnantOf = (pregnancy) => (pregnancy === 'yes' ? true : pregnancy === 'no' ? false : null)
 
 // Giữ medicalHistory gốc để PATCH sau không làm mất dữ liệu.
 export function toPatient(p) {
@@ -32,7 +33,6 @@ export function toPatient(p) {
     idNumber: p.id_number ?? '',
     allergies: p.allergy_notes ?? '',
     history: [...(mh?.chronic_conditions ?? []), mh?.notes].filter(Boolean).join(', '),
-    pregnancy: pregnancyOf(mh),
     medicalHistory: mh
   }
 }
@@ -78,9 +78,7 @@ export async function createPatient(f, { confirmDuplicate = false } = {}) {
     confirm_duplicate: confirmDuplicate
   }
   const history = f.history?.trim()
-  const pregnant = f.pregnancy === 'yes' ? true : f.pregnancy === 'no' ? false : undefined
-  if (history || pregnant !== undefined)
-    body.medical_history = { ...(history ? { notes: history } : {}), ...(pregnant !== undefined ? { is_pregnant: pregnant } : {}) }
+  if (history) body.medical_history = { notes: history }
   try {
     return { ok: true, patient: toPatient(await apiPost(`${V1}/patients`, body)) }
   } catch (e) {
@@ -94,17 +92,8 @@ export async function createPatient(f, { confirmDuplicate = false } = {}) {
   }
 }
 
-// Gửi lại toàn bộ medical_history để không mất bệnh nền / ghi chú.
-export async function setPregnancy(patient, pregnancy) {
-  if (pregnancy === (patient.pregnancy ?? '')) return
-  const mh = { ...(patient.medicalHistory ?? {}) }
-  if (pregnancy === 'yes' || pregnancy === 'no') mh.is_pregnant = pregnancy === 'yes'
-  else delete mh.is_pregnant
-  await apiRequest(`${V1}/patients/${patient.id}`, 'PATCH', { medical_history: mh })
-}
-
 // Dị ứng / bệnh nền bác sĩ xác nhận. Bệnh nền hiển thị gộp (chronic_conditions + notes) nên ghi lại cả đoạn vào notes;
-// các khoá khác của medical_history (mang thai…) giữ nguyên.
+// các khoá khác của medical_history giữ nguyên.
 export async function updateClinical(patientId, { allergies, history }) {
   const { chronic_conditions: _old, notes: _notes, ...mh } = (await getPatient(patientId)).medicalHistory ?? {}
   const notes = history.trim()
@@ -127,19 +116,22 @@ export async function updatePatient(id, f) {
 // Lý do khám (bắt buộc) = câu đầu của lời kể; lời kể đầy đủ dùng cho AI trích xuất triệu chứng.
 export const chiefComplaintOf = (text) => (String(text ?? '').trim().split(/[.\n]/)[0].trim() || 'Khám bệnh').slice(0, 2000)
 
-export async function createVisit(patientId, { text, vitals }) {
+// pregnancy: 'yes' | 'no' | '' — ghi vào lượt khám này (mỗi lượt hỏi lại, không lấy từ lần trước).
+export async function createVisit(patientId, { text, vitals, pregnancy = '' }) {
   return apiPost(`${V1}/visits`, {
     patient_id: patientId,
     chief_complaint: chiefComplaintOf(text),
     free_text_description: String(text ?? '').trim() || null,
-    vital_signs: Object.keys(vitals ?? {}).length ? vitals : null
+    vital_signs: Object.keys(vitals ?? {}).length ? vitals : null,
+    is_pregnant: isPregnantOf(pregnancy)
   })
 }
-// Chỉ sửa được khi lượt còn Waiting (409 VISIT_LOCKED).
-export const updateVisit = (visitId, { text, vitals }) =>
+// Waiting: sửa mọi trường. Sau check-in (lễ tân) hoặc khi bác sĩ đang khám: chỉ sửa sinh hiệu (gửi trường khác → 409 VISIT_LOCKED).
+export const updateVisit = (visitId, { text, vitals, pregnancy }) =>
   apiRequest(`${V1}/visits/${visitId}`, 'PATCH', {
     ...(text !== undefined ? { chief_complaint: chiefComplaintOf(text), free_text_description: String(text).trim() || null } : {}),
-    ...(vitals !== undefined ? { vital_signs: Object.keys(vitals).length ? vitals : null } : {})
+    ...(vitals !== undefined ? { vital_signs: Object.keys(vitals).length ? vitals : null } : {}),
+    ...(pregnancy !== undefined ? { is_pregnant: isPregnantOf(pregnancy) } : {})
   })
 export const putSymptoms = (visitId, symptoms) => apiRequest(`${V1}/visits/${visitId}/symptoms`, 'PUT', { symptoms })
 // Một lượt khám (trạng thái, ngày và số thứ tự) — dùng khi tạo lượt bị chặn vì bệnh nhân còn lượt đang mở.
@@ -161,10 +153,12 @@ export async function getVisitDetail(visitId, patientId) {
   return {
     reason: v.free_text_description || v.chief_complaint,
     vitals: v.vital_signs ?? {},
+    // Sinh hiệu lúc tiếp đón — bác sĩ sửa ở tab Sinh hiệu thì so với đây để biết có cần gửi lại không.
+    serverVitals: v.vital_signs ?? {},
     symptoms: symptoms.filter((x) => x.state !== 'UNKNOWN'),
     allergies: p.allergies,
     history: p.history,
-    pregnancy: p.pregnancy,
+    pregnancy: pregnancyOf(v),
     phone: p.phone,
     patientCode: p.code,
     dob: p.dob

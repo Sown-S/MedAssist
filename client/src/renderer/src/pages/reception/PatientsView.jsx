@@ -7,6 +7,7 @@ import { translate } from '../../i18n'
 import { listPatients, getPatient, patientVisits } from '../../api/clinicApi'
 import Skeleton from '../../components/Skeleton'
 import { dmy, fmtNum } from '../../utils/format'
+import { useToast } from '../../context/ToastContext'
 
 const PAGE = 20
 const EMPTY = { q: '', phone: '', idNumber: '', code: '', birthYear: '' }
@@ -30,6 +31,7 @@ const initials = (name) =>
 // Trang Bệnh nhân của Lễ tân: mọi hồ sơ (GET /patients), lọc theo từng ô như mẫu (họ tên, SĐT, CCCD, mã BN, năm sinh),
 // xem lịch sử khám (GET /patients/{id}/visits) và tiếp đón lại.
 export default function PatientsView({ readOnly, onCheckIn }) {
+  const { showToast } = useToast()
   const [f, setF] = useState(EMPTY)
   const [offset, setOffset] = useState(0)
   const [data, setData] = useState({ total: 0, items: [] })
@@ -54,9 +56,13 @@ export default function PatientsView({ readOnly, onCheckIn }) {
   }, [key, offset])
 
   const set = (k) => (e) => (setF((x) => ({ ...x, [k]: e.target.value })), setOffset(0))
+  // Cần hồ sơ đầy đủ (có tiền sử): dòng danh sách thiếu medical_history, PATCH tiền sử sau đó có thể làm mất bệnh nền.
   async function checkIn(p) {
-    const full = await getPatient(p.id).catch(() => p)
-    onCheckIn(full)
+    try {
+      onCheckIn(await getPatient(p.id))
+    } catch {
+      showToast(translate('Could not load the full patient record — try again.'), 'error')
+    }
   }
   const from = data.total ? offset + 1 : 0
   const to = Math.min(offset + PAGE, data.total)

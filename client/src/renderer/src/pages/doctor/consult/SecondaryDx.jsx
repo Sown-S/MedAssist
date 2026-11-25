@@ -3,7 +3,7 @@ import ICDPicker from '../../../components/ICDPicker'
 import Icon from '../../../components/Icon'
 import { translate } from '../../../i18n'
 
-export function SecondaryDx({ list, onChange }) {
+export function SecondaryDx({ list, onChange, gender }) {
   const [text, setText] = useState('')
   const add = (v) => {
     const x = v.trim()
@@ -26,7 +26,7 @@ export function SecondaryDx({ list, onChange }) {
       )}
       <div className="d-flex gap-8 items-start">
         <div className="grow">
-          <ICDPicker value={text} onChange={setText} onPick={add} />
+          <ICDPicker value={text} gender={gender} onChange={setText} onPick={add} />
         </div>
         <button className="btn btn-ghost btn-sm mt-4" disabled={!text.trim()} onClick={() => add(text)}>
           <Icon name="plus" />
