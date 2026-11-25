@@ -16,7 +16,7 @@
     "dist:eval": "electron-vite build --mode eval && electron-builder --publish never",
     "test": "vitest run",
     "test:watch": "vitest",
-    "lint": "eslint . --max-warnings 0",
+    "lint": "eslint . --max-warnings 0 && stylelint \"src/renderer/**/*.css\" --max-warnings 0",
     "e2e": "electron-vite build --mode eval && playwright test",
     "e2e:update": "playwright test e2e/visual.spec.mjs --update-snapshots"
   },
@@ -48,6 +48,7 @@
     "espree": "^10.4.0",
     "globals": "^15.14.0",
     "jsdom": "^25.0.1",
+    "stylelint": "^16.26.1",
     "vite": "^8.3.8",
     "vitest": "^5.1.1"
   },
