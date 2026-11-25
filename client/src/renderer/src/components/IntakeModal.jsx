@@ -9,7 +9,7 @@ import { toPayload, extractionStale } from '../api/symptoms'
 import VitalsFields from './VitalsFields'
 import VitalProposals from './VitalProposals'
 import SymptomPanel from './SymptomPanel'
-import { ageOf } from '../api/patient'
+import { ageOf, askPregnancy } from '../api/patient'
 import { translate } from '../i18n'
 import { printTicket, ticketNo } from './queuePrint'
 import PatientAlerts from './PatientAlerts'
@@ -24,14 +24,13 @@ const SAVED_FLASH_MS = 650
 const NO_VITALS = { list: [], from: null }
 
 const VITALS_EMPTY = Object.fromEntries(VITAL_KEYS.map((d) => [d.key, '']))
-const EMPTY = { name: '', dob: '', gender: 'Female', phone: '', idNumber: '', history: '', allergies: '', ...VITALS_EMPTY, pregnancy: '', reason: '', ticket: '' }
+const EMPTY = { name: '', dob: '', gender: '', phone: '', idNumber: '', history: '', allergies: '', ...VITALS_EMPTY, pregnancy: '', reason: '', ticket: '' }
 
 // Dùng chung với màn sửa lượt chờ.
 export function vitalCheck(f) {
   const r = checkVitals(f)
   return { errors: r.errors.map((e) => e.msg), errorKeys: new Set(r.errors.map((e) => e.key)), warnings: r.warnings }
 }
-const askPregnancy = (gender, age) => gender === 'Female' && age !== '' && age >= 12 && age <= 55
 
 // patient = null: đăng ký bệnh nhân mới (kiểm tra trùng trước khi tạo) rồi cấp số.
 // patient có sẵn: tiếp đón bệnh nhân cũ, thông tin hành chính chỉ đọc. Mức ưu tiên do luật đặt, lễ tân không nâng tay.
@@ -60,7 +59,8 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
 
   useEffect(() => {
     if (!open) return
-    setForm({ ...EMPTY, pregnancy: patient?.pregnancy ?? '' })
+    // Mang thai hỏi lại ở mỗi lượt khám — không điền sẵn từ lần trước.
+    setForm(EMPTY)
     setSyms({})
     setEditing(false)
     setTouched(false)
@@ -80,6 +80,7 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
     ? {}
     : {
         name: !form.name.trim(),
+        gender: !form.gender,
         phone: !PHONE_RE.test(form.phone.trim()),
         dob: !DOB_RE.test(form.dob.trim()) || ageOf(form.dob) === '',
         idNumber: !!form.idNumber.trim() && !ID_RE.test(form.idNumber.trim())
@@ -95,14 +96,16 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
   const draft = () => existing ?? { name: form.name.trim(), gender: form.gender, age: ageOf(form.dob), allergies: form.allergies.trim(), history: form.history.trim() }
 
   // Tạo hồ sơ + lượt Waiting nếu chưa có; lần sau chỉ cập nhật lời kể và sinh hiệu (chỉ khi còn Waiting).
+  // Mang thai gửi kèm lượt khám (không còn lưu ở hồ sơ) — đổi sau khi đã trích xuất cũng được lưu.
   async function ensureVisit(force = false) {
+    const pregnancy = pregnancyAsked ? form.pregnancy : ''
     if (visitRef.current) {
-      await clinic.updateVisit(visitRef.current.visit_id, { text: form.reason, vitals })
+      await clinic.updateVisit(visitRef.current.visit_id, { text: form.reason, vitals, pregnancy })
       return visitRef.current
     }
     let p = existing
     if (!p) {
-      const r = await clinic.createPatient({ ...form, pregnancy: pregnancyAsked ? form.pregnancy : '' }, { confirmDuplicate: force })
+      const r = await clinic.createPatient(form, { confirmDuplicate: force })
       if (!r.ok) {
         setDupes(r.duplicates)
         setIdTaken(!!r.idTaken)
@@ -111,10 +114,10 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
       p = r.patient
       setExisting(p)
       setDupes(null)
-    } else if (pregnancyAsked) await clinic.setPregnancy(p, form.pregnancy)
+    }
     let v
     try {
-      v = await clinic.createVisit(p.id, { text: form.reason, vitals })
+      v = await clinic.createVisit(p.id, { text: form.reason, vitals, pregnancy })
     } catch (e) {
       if (e?.code !== 'PATIENT_HAS_OPEN_VISIT') throw e
       const id = e.details?.[0]?.visit_id
@@ -135,6 +138,7 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
     setVisit(ov)
     setOpenVisit(null)
     if (!form.reason.trim() && (ov.free_text_description || ov.chief_complaint)) setForm((f) => ({ ...f, reason: ov.free_text_description || ov.chief_complaint }))
+    if (!form.pregnancy && ov.is_pregnant != null) setForm((f) => ({ ...f, pregnancy: clinic.pregnancyOf(ov) }))
     showToast(translate('Opened the existing visit') + ' — ' + translate('No.') + ' ' + (ov.queue_number ?? ''))
   }
   // Chuyển tuyến cấp cứu cần hồ sơ bệnh nhân — bệnh nhân mới thì tạo hồ sơ trước.
@@ -142,10 +146,10 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
     if (existing) return existing.id
     setTouched(true)
     if (invalid) {
-      showToast(translate('Fill in the patient’s name, date of birth and phone first.'), 'error')
+      showToast(translate('Fill in the patient’s name, date of birth, gender and phone first.'), 'error')
       return null
     }
-    const r = await clinic.createPatient({ ...form, pregnancy: pregnancyAsked ? form.pregnancy : '' }, { confirmDuplicate: false })
+    const r = await clinic.createPatient(form, { confirmDuplicate: false })
     if (!r.ok) {
       setDupes(r.duplicates)
       setIdTaken(!!r.idTaken)
@@ -239,7 +243,7 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
             {existing ? (
               <>
                 <div className="pl-summary">
-                  <span className="num">{existing.id}</span>
+                  {existing.code && <span className="num">{existing.code}</span>}
                   <span>{translate(existing.gender)}</span>
                   <span>
                     {existing.dob} ({ageOf(existing.dob)} {translate('yrs')})
@@ -282,6 +286,7 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
               <span>Symptoms</span>
             </div>
             <SymptomPanel
+              gender={existing ? existing.gender : form.gender}
               value={syms}
               onChange={setSyms}
               text={form.reason}
@@ -319,7 +324,7 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
       <div className="modal-f">
         {!existing && (
           <span className="muted small">
-            <Icon name="info" /> {translate('Fill in the name, date of birth and phone number first.')}
+            <Icon name="info" /> {translate('Fill in the name, date of birth, gender and phone number first.')}
           </span>
         )}
         <span className="sp" />

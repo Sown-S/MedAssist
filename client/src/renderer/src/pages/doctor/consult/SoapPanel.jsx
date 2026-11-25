@@ -45,14 +45,14 @@ export default function SoapPanel({ visit, symptoms, onSymptoms, onRerunAi, d, s
           <textarea className="input" value={d.exam} onChange={(e) => set({ exam: e.target.value })} placeholder="Findings on examination…" />
         </div>
         <div className="field full">
-          <ExamSigns visitId={visit.id} symptoms={symptoms} onSaved={onSymptoms} onRerun={onRerunAi} />
+          <ExamSigns visitId={visit.id} gender={visit.gender} symptoms={symptoms} onSaved={onSymptoms} onRerun={onRerunAi} />
         </div>
         <div className={'field full' + (tried && !d.diagnosis.trim() ? ' invalid' : '')}>
           <label>
             {translate('Confirmed diagnosis (ICD-10 code)')}
             <span className="req">*</span>
           </label>
-          <ICDPicker value={d.diagnosis} onChange={(v) => set({ diagnosis: v })} />
+          <ICDPicker value={d.diagnosis} gender={visit.gender} onChange={(v) => set({ diagnosis: v })} />
           <span className="msg">
             <Icon name="circle-alert" />
             {translate('Required')}
@@ -60,7 +60,7 @@ export default function SoapPanel({ visit, symptoms, onSymptoms, onRerunAi, d, s
         </div>
         <div className="field full">
           <label>{translate('Secondary diagnoses / comorbidities')}</label>
-          <SecondaryDx list={d.diagnosesExtra} onChange={(diagnosesExtra) => set({ diagnosesExtra })} />
+          <SecondaryDx list={d.diagnosesExtra} gender={visit.gender} onChange={(diagnosesExtra) => set({ diagnosesExtra })} />
         </div>
         <div className="field full">
           <label>

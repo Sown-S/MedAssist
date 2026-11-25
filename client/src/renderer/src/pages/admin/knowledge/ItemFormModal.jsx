@@ -4,7 +4,7 @@ import { translate } from '../../../i18n'
 import { putDraft, RULE_PREFIX } from '../../../api/knowledgeApi'
 import { KIND_META, errorText, usableCodes, groupByKey } from './shared'
 import { LogicEditor, LogicView } from './logic'
-import { initial, bodyOf, problem, aliasList, DETECTIONS, SHORT_NAME_MAX, ALIASES_MAX } from './itemForm'
+import { initial, bodyOf, problem, aliasList, DETECTIONS, SEXES, SHORT_NAME_MAX, ALIASES_MAX } from './itemForm'
 import { ErrorNote } from '../../../components/DataState'
 
 // group = null: thêm mới. Lưu = tạo / cập nhật bản nháp trong bản phát hành đang mở.
@@ -104,6 +104,17 @@ export default function ItemFormModal({ open, kind, group, data, names, onClose,
                 </select>
                 <small className="muted">{translate('“Found on examination” is hidden at check-in, only the doctor records it, and it cannot be used in rules.')}</small>
               </div>
+              <div className="field">
+                <label>Applies to</label>
+                <select className="input" value={f.applicable_sex ?? 'Any'} onChange={(e) => set({ applicable_sex: e.target.value })}>
+                  {SEXES.map(([k, l]) => (
+                    <option key={k} value={k}>
+                      {translate(l)}
+                    </option>
+                  ))}
+                </select>
+                <small className="muted">{translate('Hidden from patients of the other sex at check-in and in the doctor’s lists; “Other” patients see everything.')}</small>
+              </div>
               <div className="field full">
                 <label>Synonyms (optional, one per line)</label>
                 <textarea className="input" rows={3} value={f.aliases ?? ''} placeholder={'nóng sốt\nsốt nóng'} onChange={(e) => set({ aliases: e.target.value })} />
@@ -127,6 +138,17 @@ export default function ItemFormModal({ open, kind, group, data, names, onClose,
               <div className="field">
                 <label>Disease group</label>
                 <input className="input" value={f.disease_group} onChange={(e) => set({ disease_group: e.target.value })} />
+              </div>
+              <div className="field">
+                <label>Applies to</label>
+                <select className="input" value={f.applicable_sex ?? 'Any'} onChange={(e) => set({ applicable_sex: e.target.value })}>
+                  {SEXES.map(([k, l]) => (
+                    <option key={k} value={k}>
+                      {translate(l)}
+                    </option>
+                  ))}
+                </select>
+                <small className="muted">{translate('AI suggestions skip it for patients of the other sex; doctors can still pick it with “Show all”.')}</small>
               </div>
               <div className="field full">
                 <label>Description (optional)</label>

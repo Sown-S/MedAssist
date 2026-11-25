@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react'
+import { useAsyncAction } from '../../hooks/useAsyncAction'
+import Button from '../../components/Button'
 import Icon from '../../components/Icon'
 import { useToast } from '../../context/ToastContext'
 import { translate } from '../../i18n'
@@ -28,14 +30,14 @@ export default function RoomsPage({ onNavigate }) {
     refresh()
   }, [])
 
-  async function submit(e) {
-    e.preventDefault()
+  async function submit() {
     const res = form.id ? await updateRoom(form.id, { name: form.name }) : await createRoom(form)
     if (!res.ok) return setFormErr(res.error)
     showToast(form.id ? 'Room updated' : 'Room added')
     setForm(null)
     refresh()
   }
+  const [submitSafe, saving] = useAsyncAction(submit)
   async function toggle(r) {
     const res = await updateRoom(r.id, { active: !r.active })
     if (!res.ok) return showToast(translate(res.error), 'error')
@@ -74,7 +76,7 @@ export default function RoomsPage({ onNavigate }) {
       <ErrorNote tone="w">{error}</ErrorNote>
 
       {form && (
-        <form className="card mb-16" onSubmit={submit}>
+        <form className="card mb-16" onSubmit={(e) => (e.preventDefault(), submitSafe())}>
           <div className="card-h">
             <h3>{form.id ? translate('Rename room') + ' ' + form.code : translate('Add room')}</h3>
           </div>
@@ -109,9 +111,9 @@ export default function RoomsPage({ onNavigate }) {
               <button type="button" className="btn btn-ghost" onClick={() => setForm(null)}>
                 Cancel
               </button>
-              <button data-shortcut="save" type="submit" className="btn btn-primary">
+              <Button data-shortcut="save" type="submit" className="btn btn-primary" loading={saving}>
                 <Icon name="check" /> Save
-              </button>
+              </Button>
             </div>
           </div>
         </form>
@@ -160,9 +162,9 @@ export default function RoomsPage({ onNavigate }) {
                           <Icon name="pencil" />
                           {translate('Rename')}
                         </button>
-                        <button className="btn btn-ghost btn-sm" onClick={() => toggle(r)}>
+                        <Button className="btn btn-ghost btn-sm" onClick={() => toggle(r)}>
                           {translate(r.active ? 'Stop using' : 'Use again')}
-                        </button>
+                        </Button>
                       </div>
                     </td>
                   </tr>

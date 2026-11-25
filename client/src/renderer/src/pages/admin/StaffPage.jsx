@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { useAsyncAction } from '../../hooks/useAsyncAction'
 import Modal from '../../components/Modal'
 import ReauthModal from '../../components/ReauthModal'
 import ChangePasswordModal from '../../components/ChangePasswordModal'
@@ -56,8 +57,9 @@ export default function StaffPage() {
     setFormErr('')
     setForm({ ...EMPTY, ...a })
   }
-  function submitForm(e) {
-    e.preventDefault()
+  // Khoá nút Lưu / Tạo tài khoản tới khi server trả lời (chống bấm đúp tạo hai tài khoản).
+  const [submitSafe, saving] = useAsyncAction(submitForm)
+  function submitForm() {
     if (!form.fullName.trim() || !form.username.trim()) return setFormErr('Please enter a full name and username.')
     if (!editing) {
       if (form.roleKey === 'admin')
@@ -78,7 +80,7 @@ export default function StaffPage() {
         danger: true,
         run: doUpdate
       })
-    doUpdate()
+    return doUpdate()
   }
   async function doCreate() {
     setReauth(null)
@@ -225,7 +227,7 @@ export default function StaffPage() {
         </>
       )}
 
-      <AccountFormModal form={form} setForm={setForm} editing={editing} me={me} rooms={rooms} formErr={formErr} onSubmit={submitForm} />
+      <AccountFormModal form={form} setForm={setForm} editing={editing} me={me} rooms={rooms} formErr={formErr} onSubmit={(e) => (e.preventDefault(), submitSafe())} saving={saving} />
 
       <ReauthModal open={!!reauth} title={reauth?.title ?? ''} confirmLabel={reauth?.confirmLabel} danger={reauth?.danger} onClose={() => setReauth(null)} onConfirm={() => reauth.run()}>
         {reauth && <p className="muted">{reauth.message}</p>}

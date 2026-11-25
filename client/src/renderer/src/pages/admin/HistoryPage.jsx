@@ -1,4 +1,5 @@
 import { Fragment, useEffect, useMemo, useState } from 'react'
+import Button from '../../components/Button'
 import Icon from '../../components/Icon'
 import { useToast } from '../../context/ToastContext'
 import { translate } from '../../i18n'
@@ -102,14 +103,14 @@ export default function HistoryPage() {
           <p>Who did what and when — sign-ins, record views, changes, approvals and AI assessments. Entries can never be edited or deleted.</p>
         </div>
         <div className="act">
-          <button className="btn btn-outline" onClick={() => download('xlsx')}>
+          <Button className="btn btn-outline" onClick={() => download('xlsx')}>
             <Icon name="download" />
             {translate('Export Excel')}
-          </button>
-          <button className="btn btn-outline" onClick={() => download('csv')}>
+          </Button>
+          <Button className="btn btn-outline" onClick={() => download('csv')}>
             <Icon name="download" />
             {translate('Export CSV')}
-          </button>
+          </Button>
         </div>
       </div>
 

@@ -73,7 +73,9 @@ export const SCHEMAS = {
   general: {
     title: 'General',
     group: 'admin',
-    desc: 'Values used on patient records: gender, ethnicity, occupation, relationship, blood type',
+    desc: 'Sample reference list (gender, ethnicity, occupation, relationship, blood type) — patient forms do not use it yet',
+    // Dữ liệu mẫu trên máy, form bệnh nhân không đọc danh mục này — nói rõ để Admin không tưởng đổi ở đây có tác dụng.
+    localNote: 'This list is sample data kept on this computer only. Patient forms do not read it — gender is fixed as Female / Male / Other — so changes here have no effect yet.',
     filter: { field: 'group', options: GENERAL_GROUPS },
     fields: [
       { key: 'group', label: 'Group', type: 'select', options: GENERAL_GROUPS, required: true },

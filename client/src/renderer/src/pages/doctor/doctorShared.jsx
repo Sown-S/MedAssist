@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import Button from '../../components/Button'
 import Modal, { ModalHeader } from '../../components/Modal'
 import PatientAlerts from '../../components/PatientAlerts'
 import Icon from '../../components/Icon'
@@ -69,9 +70,9 @@ export function useTakePatient(open) {
           Cancel
         </button>
         {busy.target.priority && (
-          <button className="btn btn-outline" onClick={() => run(busy.target, true)}>
+          <Button className="btn btn-outline" onClick={() => run(busy.target, true)}>
             <Icon name="zap" /> Call in anyway
-          </button>
+          </Button>
         )}
         <button
           className="btn btn-primary"
@@ -118,12 +119,12 @@ export function InviteBar({ onStart, compact = false }) {
         <button className="btn btn-primary btn-sm" disabled={waiting} onClick={() => onStart(v)} title={waiting ? translate('Reception has to check the patient in first.') : undefined}>
           <Icon name="stethoscope" /> Start the exam
         </button>
-        <button className="btn btn-ghost btn-sm" onClick={() => run(inviteAgain(v.id), 'Called again')}>
+        <Button className="btn btn-ghost btn-sm" onClick={() => run(inviteAgain(v.id), 'Called again')}>
           <Icon name="megaphone" /> Call again
-        </button>
-        <button className="btn btn-ghost btn-sm" onClick={() => run(dropInvite(v.id), 'Invitation cancelled — the patient keeps their place in the queue')}>
+        </Button>
+        <Button className="btn btn-ghost btn-sm" onClick={() => run(dropInvite(v.id), 'Invitation cancelled — the patient keeps their place in the queue')}>
           Not here
-        </button>
+        </Button>
       </div>
     </div>
   )
@@ -241,9 +242,9 @@ export function ReleaseModal({ visit, onClose, onDone }) {
         <button className="btn btn-outline" onClick={onClose}>
           Cancel
         </button>
-        <button className="btn btn-primary" onClick={submit}>
+        <Button className="btn btn-primary" onClick={submit}>
           <Icon name="repeat" /> Return to queue
-        </button>
+        </Button>
       </div>
     </Modal>
   )
@@ -293,9 +294,9 @@ export function LeaveVisitModal({ visit, onClose, onDone }) {
         <button className="btn btn-outline" onClick={onClose}>
           Cancel
         </button>
-        <button className="btn btn-danger" onClick={submit} disabled={reason === 'other' && !note.trim()}>
+        <Button className="btn btn-danger" onClick={submit} disabled={reason === 'other' && !note.trim()}>
           {translate('Close visit')}
-        </button>
+        </Button>
       </div>
     </Modal>
   )

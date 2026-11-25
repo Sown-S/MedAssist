@@ -7,7 +7,7 @@ const OPTIONS = [
   ['yes', 'Pregnant']
 ]
 
-// Tình trạng thai (chỉ hỏi phụ nữ 12–55 tuổi): '' chưa hỏi | 'no' | 'yes'.
+// Tình trạng thai của lượt khám này (hỏi nữ / giới tính khác 12–55 tuổi): '' chưa hỏi | 'no' | 'yes'.
 export default function PregnancyField({ value, onChange }) {
   return (
     <>

@@ -56,6 +56,7 @@ export function EditPatient({ p, onSaved }) {
           <select className="input" {...bind('gender')}>
             <option value="Female">Female</option>
             <option value="Male">Male</option>
+            <option value="Other">Other</option>
           </select>
         </div>
         <div className="field">
@@ -109,12 +110,20 @@ export function NewPatientFields({ form, field, err, onDob }) {
           <DobInput className="input" value={form.dob} onChange={onDob} />
           {msg('Enter a valid date (dd/mm/yyyy)')}
         </div>
-        <div className="field">
-          <label>Gender</label>
+        <div className={fcls('gender')}>
+          <label>
+            {translate('Gender')}
+            {req}
+          </label>
           <select className="input" {...field('gender')}>
-            <option value="Female">Female</option>
-            <option value="Male">Male</option>
+            <option value="" disabled>
+              {translate('Select gender')}
+            </option>
+            <option value="Female">{translate('Female')}</option>
+            <option value="Male">{translate('Male')}</option>
+            <option value="Other">{translate('Other')}</option>
           </select>
+          {msg('Required')}
         </div>
         <div className={fcls('phone')}>
           <label>
@@ -152,7 +161,7 @@ export function DuplicateBanner({ dupes, allowNew, onPick, onCreateNew }) {
         <div className="dupe-list">
           {dupes.map((d) => (
             <div className="dupe-row" key={d.id}>
-              <span className="num">{d.id}</span>
+              {d.code && <span className="num">{d.code}</span>}
               <b>{d.name}</b>
               <span>{d.dob}</span>
               <span className="num">{d.phone}</span>

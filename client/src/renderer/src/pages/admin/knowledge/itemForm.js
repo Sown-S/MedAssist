@@ -12,6 +12,13 @@ export const DETECTIONS = [
   ['reported', 'Reported by patient'],
   ['exam', 'Found on examination']
 ]
+// Giới tính áp dụng của bệnh / triệu chứng (server 0.2.6): Any | Female | Male — lọc gợi ý và danh sách theo giới tính bệnh nhân.
+export const SEXES = [
+  ['Any', 'Both sexes'],
+  ['Female', 'Female'],
+  ['Male', 'Male']
+]
+const sexOf = (v) => (['Female', 'Male'].includes(v) ? v : 'Any')
 // Mỗi dòng một từ đồng nghĩa; bỏ dòng trống và khoảng trắng thừa.
 export const aliasList = (text) =>
   String(text ?? '')
@@ -25,9 +32,9 @@ export function initial(kind, base, sources) {
   const src = v.source_id ?? sources[0]?.source_id ?? ''
   switch (kind) {
     case 'symptoms':
-      return { symptom_name: v.symptom_name ?? '', short_name: v.short_name ?? '', aliases: (v.aliases ?? []).join('\n'), detection: v.detection ?? 'both', category: v.category ?? '' }
+      return { symptom_name: v.symptom_name ?? '', short_name: v.short_name ?? '', aliases: (v.aliases ?? []).join('\n'), detection: v.detection ?? 'both', category: v.category ?? '', applicable_sex: sexOf(v.applicable_sex) }
     case 'conditions':
-      return { name_vi: v.name_vi ?? '', icd10_code: v.icd10_code ?? '', disease_group: v.disease_group ?? '', description: v.description ?? '' }
+      return { name_vi: v.name_vi ?? '', icd10_code: v.icd10_code ?? '', disease_group: v.disease_group ?? '', description: v.description ?? '', applicable_sex: sexOf(v.applicable_sex) }
     case 'relations':
       return { condition_code: v.condition_code ?? '', symptom_code: v.symptom_code ?? '', polarity: v.polarity ?? 'SUPPORTS', weight: v.weight ?? 0.5, is_key: !!v.is_key, source_id: src }
     case 'excerpts':
@@ -49,9 +56,9 @@ const opt = (s) => (s?.trim() ? s.trim() : null)
 export function bodyOf(kind, f) {
   switch (kind) {
     case 'symptoms':
-      return { symptom_name: f.symptom_name.trim(), short_name: opt(f.short_name), aliases: aliasList(f.aliases), detection: f.detection, category: opt(f.category) }
+      return { symptom_name: f.symptom_name.trim(), short_name: opt(f.short_name), aliases: aliasList(f.aliases), detection: f.detection, category: opt(f.category), applicable_sex: sexOf(f.applicable_sex) }
     case 'conditions':
-      return { name_vi: f.name_vi.trim(), icd10_code: opt(f.icd10_code), disease_group: opt(f.disease_group), description: opt(f.description) }
+      return { name_vi: f.name_vi.trim(), icd10_code: opt(f.icd10_code), disease_group: opt(f.disease_group), description: opt(f.description), applicable_sex: sexOf(f.applicable_sex) }
     case 'relations':
       return { polarity: f.polarity, weight: Number(f.weight), is_key: f.is_key, source_id: f.source_id }
     case 'excerpts':
