@@ -59,13 +59,11 @@
 .pointer{cursor:pointer !important}
 .pt-10{padding-top:10px !important}
 .pt-14{padding-top:14px !important}
-.self-center{align-self:center !important}
 .self-start{align-self:flex-start !important}
 .span-all{grid-column:1 / -1 !important}
 .text-center{text-align:center !important}
 .text-danger{color:var(--danger) !important}
 .text-ink{color:var(--ink) !important}
-.text-left{text-align:left !important}
 .text-right{text-align:right !important}
 .text-warning{color:var(--warning) !important}
 .w-30{width:30px !important}
