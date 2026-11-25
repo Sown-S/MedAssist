@@ -1,0 +1,78 @@
+{
+ "method": "get",
+ "path": "/api/v1/prescriptions",
+ "status": 200,
+ "role": "physician",
+ "body": [
+  {
+   "prescription_id": "a775ea1d-13ea-423c-9268-c6a7decce154",
+   "visit_id": "14c34080-a460-459e-acc5-3dce272b7d3a",
+   "visit_date": "2026-11-25T21:55:32.220336+07:00",
+   "queue_number": 2,
+   "patient_code": "BN-73FFE9FF",
+   "patient_name": "Võ Khánh Ly",
+   "physician_id": "0ac86ff5-1658-4aa8-b74b-55fa0b5bf1f4",
+   "physician_name": "BS. Lê Thu Hà",
+   "status": "Confirmed",
+   "confirmed_at": "2026-11-25T21:55:32.248211+07:00",
+   "items": [
+    {
+     "drug_name": "Meloxicam 7,5 mg (Mobic 7.5)",
+     "unit": "viên",
+     "quantity": 7,
+     "dosage": "1 viên",
+     "frequency": "1 lần/ngày sau ăn",
+     "duration_days": 7,
+     "dispense_status": "Pending"
+    },
+    {
+     "drug_name": "Omeprazol 20 mg (Omeprazol 20)",
+     "unit": "viên",
+     "quantity": 7,
+     "dosage": "1 viên",
+     "frequency": "Sáng trước ăn",
+     "duration_days": 7,
+     "dispense_status": "Pending"
+    }
+   ],
+   "drug_total": 52500,
+   "invoice_status": "Pending",
+   "invoice_total": 132500
+  },
+  {
+   "prescription_id": "5c6f0944-b553-4f12-b31d-8bacd55024cd",
+   "visit_id": "fb2eb9af-04f1-4c7f-b8dd-73972dd574fe",
+   "visit_date": "2026-11-25T21:55:32.042491+07:00",
+   "queue_number": 1,
+   "patient_code": "BN-2BF624E9",
+   "patient_name": "Văn Đình Tài",
+   "physician_id": "0ac86ff5-1658-4aa8-b74b-55fa0b5bf1f4",
+   "physician_name": "BS. Lê Thu Hà",
+   "status": "Dispensed",
+   "confirmed_at": "2026-11-25T21:55:32.077761+07:00",
+   "items": [
+    {
+     "drug_name": "Meloxicam 7,5 mg (Mobic 7.5)",
+     "unit": "viên",
+     "quantity": 7,
+     "dosage": "1 viên",
+     "frequency": "1 lần/ngày sau ăn",
+     "duration_days": 7,
+     "dispense_status": "Dispensed"
+    },
+    {
+     "drug_name": "Omeprazol 20 mg (Omeprazol 20)",
+     "unit": "viên",
+     "quantity": 7,
+     "dosage": "1 viên",
+     "frequency": "Sáng trước ăn",
+     "duration_days": 7,
+     "dispense_status": "Dispensed"
+    }
+   ],
+   "drug_total": 52500,
+   "invoice_status": "Paid",
+   "invoice_total": 132500
+  }
+ ]
+}

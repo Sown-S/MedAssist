@@ -90,6 +90,10 @@ jobs:
           python -m alembic upgrade head
           python -m alembic check
 
+      - name: Hợp đồng với client (schema OpenAPI khớp client/tests/contract/openapi.json)
+        working-directory: server
+        run: python ../client/scripts/contract/export_openapi.py --check
+
       - name: Pytest (tự dựng lại medassist_test bằng Alembic)
         working-directory: server
         run: python -m pytest --cov=app --cov=scripts --cov-report=term --cov-fail-under=90

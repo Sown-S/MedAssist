@@ -1,0 +1,47 @@
+{
+ "method": "get",
+ "path": "/api/v1/inventory/batches",
+ "status": 200,
+ "role": "admin",
+ "body": [
+  {
+   "batch_id": "f0b365fb-60e9-45eb-90d8-50fddd57a853",
+   "drug_id": "e451abd9-a1bc-42cb-9d27-43e9bb12b622",
+   "batch_number": "EVAL-NEAR-E451AB",
+   "expiry_date": "2026-12-15",
+   "manufacturing_date": null,
+   "initial_quantity": 30,
+   "remaining_quantity": 30,
+   "import_price": 1000,
+   "created_at": "2026-11-25T21:55:24.658947+07:00",
+   "batch_status": "NearExpiry",
+   "days_to_expiry": 20
+  },
+  {
+   "batch_id": "00b77fb9-45f9-4c59-91da-c3ac881b0759",
+   "drug_id": "9985ad82-05cc-42d4-b99c-de0ca22008d4",
+   "batch_number": "EVAL-NEAR-9985AD",
+   "expiry_date": "2026-12-15",
+   "manufacturing_date": null,
+   "initial_quantity": 30,
+   "remaining_quantity": 0,
+   "import_price": 1000,
+   "created_at": "2026-11-25T21:55:24.658947+07:00",
+   "batch_status": "Depleted",
+   "days_to_expiry": 20
+  },
+  {
+   "batch_id": "7d659361-c93b-4d45-90cb-fd8cb58231a9",
+   "drug_id": "d27f8691-9d9d-4e68-ba80-dd7ac01fd4d1",
+   "batch_number": "EVAL-NEAR-D27F86",
+   "expiry_date": "2026-12-15",
+   "manufacturing_date": null,
+   "initial_quantity": 30,
+   "remaining_quantity": 30,
+   "import_price": 1000,
+   "created_at": "2026-11-25T21:55:24.658947+07:00",
+   "batch_status": "NearExpiry",
+   "days_to_expiry": 20
+  }
+ ]
+}

@@ -1,0 +1,47 @@
+{
+ "method": "get",
+ "path": "/api/v1/admin/settings",
+ "status": 200,
+ "role": "admin",
+ "body": [
+  {
+   "setting_key": "inventory.near_expiry_days",
+   "value": 90,
+   "description": "Lô còn hạn nhưng hết hạn trong N ngày thì cảnh báo NearExpiry",
+   "is_default": true,
+   "updated_by": null,
+   "updated_at": null
+  },
+  {
+   "setting_key": "inventory.min_remaining_shelf_days",
+   "value": 0,
+   "description": "Số ngày hạn tối thiểu còn lại sau khi dùng hết liệu trình",
+   "is_default": true,
+   "updated_by": null,
+   "updated_at": null
+  },
+  {
+   "setting_key": "clinic.profile",
+   "value": {
+    "name": "Phòng khám",
+    "address": "",
+    "phone": "",
+    "email": "",
+    "tax_code": "",
+    "license_no": "",
+    "license_date": "",
+    "license_issuer": "",
+    "director": "",
+    "director_license": "",
+    "logo": "",
+    "print_header": "",
+    "print_footer": "",
+    "show_logo": true
+   },
+   "description": "Thông tin in trên hóa đơn/phiếu khám",
+   "is_default": true,
+   "updated_by": null,
+   "updated_at": null
+  }
+ ]
+}

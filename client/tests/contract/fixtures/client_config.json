@@ -1,0 +1,25 @@
+{
+ "method": "get",
+ "path": "/api/v1/auth/client-config",
+ "status": 200,
+ "role": "nurse",
+ "body": {
+  "clinic": {
+   "name": "Phòng khám",
+   "address": "",
+   "phone": "",
+   "email": "",
+   "tax_code": "",
+   "license_no": "",
+   "license_date": "",
+   "license_issuer": "",
+   "director": "",
+   "director_license": "",
+   "logo": "",
+   "print_header": "",
+   "print_footer": "",
+   "show_logo": true
+  },
+  "idle_logout_minutes": 15
+ }
+}

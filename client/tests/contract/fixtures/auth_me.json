@@ -1,0 +1,18 @@
+{
+ "method": "get",
+ "path": "/api/v1/auth/me",
+ "status": 200,
+ "role": "nurse",
+ "body": {
+  "user_id": "7efcbca8-b085-4c68-9503-61ecde1edf8c",
+  "username": "letan01",
+  "full_name": "Phạm Thị Mai",
+  "role": "Nurse",
+  "must_change_password": false,
+  "staff_code": null,
+  "license_no": null,
+  "room_id": null,
+  "room_code": null,
+  "room_name": null
+ }
+}

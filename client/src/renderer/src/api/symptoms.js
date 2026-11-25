@@ -27,7 +27,7 @@ function publish(next) {
 // chỉ dùng để tìm; detection: reported (bệnh nhân kể) | exam (dấu hiệu khi khám) | both.
 // Server cũ chưa có các trường này → không có từ đồng nghĩa, coi như both, hiện tên đầy đủ.
 const DETECTIONS = ['reported', 'exam', 'both']
-const fromRow = (r) => ({
+export const fromRow = (r) => ({
   key: r.symptom_code,
   label: r.symptom_name,
   short: r.short_name?.trim() || '',

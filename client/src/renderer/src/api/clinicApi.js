@@ -37,10 +37,22 @@ export function toPatient(p) {
   }
 }
 
+// Dòng danh sách / tìm kiếm / ứng viên trùng (PatientSummary): không có dị ứng, tiền sử, CCCD — muốn sửa hay tiếp đón
+// thì tải hồ sơ đầy đủ bằng getPatient. summary: true để nơi dùng phân biệt với hồ sơ đầy đủ.
+export const toPatientSummary = (p) => ({
+  id: p.patient_id,
+  code: p.patient_code,
+  name: p.full_name,
+  dob: dmyDob(p.date_of_birth),
+  gender: p.gender,
+  phone: p.phone ?? '',
+  summary: true
+})
+
 // Một ô tìm cho mọi khoá: mã BN, SĐT, CCCD, năm sinh, họ tên (có dấu hay không đều được).
 export async function lookupPatients(term, limit = 20) {
   const r = await apiGet(`${V1}/patients/lookup?term=${encodeURIComponent(term)}&limit=${limit}`)
-  return r.items.map((x) => ({ ...toPatient(x), dob: dmyDob(x.date_of_birth) }))
+  return r.items.map(toPatientSummary)
 }
 
 export const getPatient = async (id) => toPatient(await apiGet(`${V1}/patients/${id}`))
@@ -54,7 +66,7 @@ export async function listPatients({ q = '', phone = '', idNumber = '', code = '
   if (code) qs.set('code', code)
   if (birthYear) qs.set('birth_year', birthYear)
   const r = await apiGet(`${V1}/patients?${qs}`)
-  return { total: r.total, items: r.items.map((x) => ({ ...toPatient(x), dob: dmyDob(x.date_of_birth) })) }
+  return { total: r.total, items: r.items.map(toPatientSummary) }
 }
 
 // Lịch sử khám của một bệnh nhân, mới nhất trước.
@@ -83,7 +95,7 @@ export async function createPatient(f, { confirmDuplicate = false } = {}) {
     return { ok: true, patient: toPatient(await apiPost(`${V1}/patients`, body)) }
   } catch (e) {
     if (e instanceof ApiError && e.code === 'POSSIBLE_DUPLICATE')
-      return { ok: false, duplicates: e.details.map((d) => ({ ...toPatient(d), dob: dmyDob(d.date_of_birth) })) }
+      return { ok: false, duplicates: e.details.map(toPatientSummary) }
     if (e instanceof ApiError && e.code === 'DUPLICATE_ID_NUMBER') {
       const owner = await getPatient(e.details[0].patient_id)
       return { ok: false, duplicates: [owner], idTaken: true }
@@ -150,6 +162,10 @@ export async function getVisitDetail(visitId, patientId) {
     getVisitSymptoms(visitId),
     getPatient(patientId)
   ])
+  return toVisitDetail(v, symptoms, p)
+}
+// Gộp lượt khám (GET /visits/{id}), triệu chứng đã chuẩn hoá và hồ sơ đã qua toPatient — tách riêng để test hợp đồng.
+export function toVisitDetail(v, symptoms, p) {
   return {
     reason: v.free_text_description || v.chief_complaint,
     vitals: v.vital_signs ?? {},
