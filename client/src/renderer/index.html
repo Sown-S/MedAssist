@@ -3,30 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <title>MedAssist</title>
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' data:; script-src 'self'; connect-src 'self' http: https:" />
-    <style>
-      /* Màn khởi động tĩnh: hiện ngay khi cửa sổ mở, trước khi React tải xong (BootGate vẽ lại đúng hình này). */
-      html,body{margin:0;background:#F0F2F5}
-      .boot{position:fixed;inset:0;display:grid;place-items:center;font-family:'Be Vietnam Pro',system-ui,sans-serif;color:#3C434D;background:#FFFFFF;overflow:hidden}
-      .boot-card{position:relative;z-index:1;width:min(440px,calc(100vw - 48px));display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center;animation:bootin .5s cubic-bezier(.2,.7,.2,1) both}
-      .boot-mark{width:92px;height:92px;border-radius:26px;display:grid;place-items:center;background:#fff;box-shadow:0 18px 40px -18px rgba(24,119,242,.45),0 0 0 1px rgba(24,119,242,.08);margin-bottom:6px}
-      .boot-mark svg{width:62px;height:38px;color:#1877F2;overflow:visible}
-      .boot-mark path{stroke-dasharray:100;stroke-dashoffset:100;animation:bootdraw 1.8s cubic-bezier(.6,0,.3,1) infinite}
-      .boot-mark circle{animation:bootdot 1.8s ease-in-out infinite}
-      .boot-mark.still path,.boot-mark.still circle{animation:none;stroke-dashoffset:0;opacity:1}
-      .boot-logo{font-size:30px;font-weight:700;color:#16222B;letter-spacing:-.02em;line-height:1}
-      .boot-logo b{font-weight:700;background:linear-gradient(90deg,#1877F2,#12B5A6);-webkit-background-clip:text;background-clip:text;color:transparent}
-      .boot-tag{margin:-4px 0 6px;font-size:14px;color:#5F6E7A}
-      .boot-bar{position:relative;width:180px;height:4px;border-radius:4px;background:#DCE3EB;overflow:hidden}
-      .boot-bar i{position:absolute;top:0;bottom:0;width:40%;border-radius:4px;background:linear-gradient(90deg,#5AA2FF,#1877F2);animation:bootbar 1.2s cubic-bezier(.2,.7,.2,1) infinite}
-      .boot-msg{font-size:13px;color:#5F6E7A;min-height:18px}
-      .boot-foot{position:absolute;left:0;right:0;bottom:22px;z-index:1;text-align:center;font-size:12px;color:#8796A5}
-      @keyframes bootbar{0%{left:-40%}100%{left:100%}}
-      @keyframes bootdraw{0%{stroke-dashoffset:100}55%{stroke-dashoffset:0}85%{stroke-dashoffset:0;opacity:1}100%{stroke-dashoffset:0;opacity:0}}
-      @keyframes bootdot{0%,45%{transform:scale(0);transform-origin:33px 22px}60%{transform:scale(1.4);transform-origin:33px 22px}75%,100%{transform:scale(1);transform-origin:33px 22px}}
-      @keyframes bootin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-      @media (prefers-reduced-motion:reduce){.boot-bar i,.boot-mark path,.boot-mark circle,.boot-card{animation:none}.boot-mark path{stroke-dashoffset:0}.boot-bar i{left:0;width:100%;opacity:.5}}
-    </style>
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' http: https:; object-src 'none'; base-uri 'none'; form-action 'none'" />
+    <link rel="stylesheet" href="./boot.css" />
   </head>
   <body>
     <div id="root">

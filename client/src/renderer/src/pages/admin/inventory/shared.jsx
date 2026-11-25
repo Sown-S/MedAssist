@@ -220,20 +220,17 @@ export function printHtml(title, body, doc = 'other', set = getSettings()) {
       (thermal ? ' class="thermal"' : '') +
       '><head><meta charset="utf-8"><title>' +
       esc(title) +
-      '</title><style>@page{size:' +
-      paper.css +
-      ';margin:' +
-      (thermal ? '3mm' : '12mm') +
-      '}' +
-      fontFaceCss() +
-      PRINT_CSS +
-      '</style></head><body>' +
+      '</title></head><body>' +
       printHeaderHtml(set) +
       body +
       (set.print.footer ? '<div class="pf">' + esc(set.print.footer) + '</div>' : '') +
       '</body></html>'
   )
   doc_.close()
+  // CSP của app (style-src 'self') chặn thẻ <style> trong iframe in; nạp CSS bằng CSSStyleSheet dựng sẵn (không bị CSP chặn).
+  const sheet = new frame.contentWindow.CSSStyleSheet()
+  sheet.replaceSync('@page{size:' + paper.css + ';margin:' + (thermal ? '3mm' : '12mm') + '}' + fontFaceCss() + PRINT_CSS)
+  doc_.adoptedStyleSheets = [sheet]
   // Chờ phông chữ nạp xong (tối đa 1,5 giây) rồi mới in để chữ không bị thay bằng Arial.
   const go = () => {
     frame.contentWindow.focus()
