@@ -103,9 +103,6 @@ export default function Dashboard({ go, readOnly, onPay }) {
         <div className="card">
           <div className="card-h">
             <h3>Waiting for dispensing &amp; payment</h3>
-            <button className="btn btn-ghost btn-sm" onClick={() => go('payments')}>
-              <span>All invoices →</span>
-            </button>
           </div>
           <div className="card-b">
             {unpaid.length ? (

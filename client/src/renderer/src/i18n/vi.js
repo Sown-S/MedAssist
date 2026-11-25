@@ -1117,7 +1117,6 @@ export const VI = {
   'Invoice history': 'Lịch sử hoá đơn',
   'Review paid and cancelled invoices': 'Xem lại hoá đơn đã thu, đã huỷ',
   'Nobody is waiting to pay.': 'Không có ai chờ thu tiền.',
-  'All invoices →': 'Tất cả hoá đơn →',
   'Call patients': 'Gọi bệnh nhân',
   'Call next': 'Gọi số tiếp theo',
   'Call again': 'Gọi lại',
