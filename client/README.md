@@ -49,7 +49,6 @@ npm run dev        # Vite dev server + cửa sổ Electron, sửa code thấy ng
 | `npm test` | Bộ test trong `tests/` (Vitest, API giả lập bằng `vi.doMock` / `tests/fakeServer.js`, không cần server). `npm run test:watch` chạy lại khi sửa code |
 | `npm run e2e` | Build bản eval rồi chạy test đầu cuối Playwright trên Electron thật với **máy chủ thật** (đã seed `scripts/seed_eval.py`, cổng 8000), xem [§12](#12-kiểm-thử). Linux không màn hình: `xvfb-run -a npm run e2e` |
 | `npm run e2e:update` | Chụp lại ảnh so sánh (giao diện, mẫu in) khi **cố ý** đổi giao diện; xem kỹ ảnh mới trong diff trước khi commit |
-| `npm run ladle` | Danh mục component dùng chung (`components/ui`) ở http://localhost:61000, thử sáng / tối và 4 màu phòng khám (`?accent=`) |
 | `npm run build` | Build ra `out/` (main, preload, renderer); dùng để kiểm tra cú pháp trước khi commit |
 | `npm start` | Chạy thử bản đã build trong `out/` |
 | `npm run build:win` | Build + đóng gói bản cài Windows (NSIS) vào `dist/`, kèm `certs/*.crt`. `:mac`, `:linux` tương tự |
@@ -96,7 +95,7 @@ và chỉ nhận địa chỉ `https://` khi server không phải máy này.
 | Kiểm hình dạng | zod: schema sinh từ OpenAPI (`api/schemas.gen.js`), chỉ cảnh báo ở bản dev/eval |
 | Form | react-hook-form + zod (`lib/zodForm.js`, `components/ui/Field.jsx`) |
 | Đa ngôn ngữ | JSX runtime tự viết (`@i18n`) dịch chuỗi lúc render, xem [§7](#7-đa-ngôn-ngữ-i18n) |
-| Test | Vitest + jsdom (unit, hợp đồng API), Playwright `_electron` (e2e, ảnh so sánh, axe-core), Ladle (danh mục component) |
+| Test | Vitest + jsdom (unit, hợp đồng API), Playwright `_electron` (e2e, ảnh so sánh, axe-core) |
 
 ```
 ┌─────────────── Electron ────────────────┐
@@ -128,7 +127,6 @@ client/
 ├─ vitest.config.mjs, tests/ Test unit, hợp đồng API (tests/contract), mẫu in (tests/__print__) — §12
 ├─ playwright.config.mjs, e2e/  Test đầu cuối trên Electron + máy chủ thật, ảnh so sánh (e2e/__screenshots__)
 ├─ stylelint.config.mjs, eslint.config.mjs
-├─ .ladle/                   Cấu hình danh mục component (npm run ladle)
 ├─ scripts/contract/         Chụp fixture, xuất OpenAPI, sinh schema zod
 ├─ scripts/css/              Kiểm CSS chết / bị ghi đè / biến, dấu vân tay computed style
 ├─ docs/adr/                 Quyết định kiến trúc (§16)
@@ -169,7 +167,7 @@ client/
       ├─ lib/                queryClient.js, zodForm.js (react-hook-form + zod), errorReport.js (ghi nhật ký lỗi)
       ├─ utils/format.js     Định dạng dùng chung: tiền (money), ngày (ymd, shortDateTime), bỏ dấu để tìm (fold)
       ├─ i18n/               index.js, jsx-runtime.js, jsx-dev-runtime.js, vi.js
-      ├─ components/ui/      EmptyState, Badge, Field (+ Field.module.css), ui.stories.jsx (Ladle)
+      ├─ components/ui/      EmptyState, Badge, Field (+ Field.module.css)
       ├─ components/         Dùng chung: Modal, ConfirmModal, ReauthModal, ChangePasswordModal, IntakeModal, SymptomPanel,
       │                      VitalsFields, WaitingVisitModals, StaleVisitsModal, SearchModal, RedFlagModal,
       │                      PaymentModal, DrugPicker, ICDPicker, ServerAddress, AdminSidebar,
@@ -397,8 +395,8 @@ Cơ chế:
 
 - **Design tokens** (màu, bo góc, bóng, cỡ chữ) đặt ở `:root` trong `styles/90-mock.css`; giao diện tối ghi đè ở `[data-theme="dark"]`. Dùng biến (`var(--surface)`, `var(--ink)`, `var(--primary)`, `var(--danger)`…) thay vì mã màu viết cứng để cả hai giao diện sáng / tối đều đúng.
 - **Lớp CSS dùng lại**: `card`, `card-title` (+ `.cnt`), `btn btn-primary|btn-ghost|btn-sm`, `icon-btn sm|danger`, `badge ok|warn|low|muted|info`, `dt` (bảng), `field`, `form-grid cols-2|cols-4`, `itabs/itab`, `ai-seg` (nút phân đoạn), `cash-filters` (thanh lọc), `empty-state`, `warn-banner danger|caution`, `dash-cards/dash-card`, `dash-actions`, `rev-cards`, `inv-stats`, `status-row`, `meter`, `drug-grid`.
-- **Component dùng chung** (`components/ui`, xem bằng `npm run ladle`): `EmptyState` (ô không có dữ liệu), `Badge tone=` (nhãn trạng thái),
-  `Field` (nhãn + gợi ý + lỗi, tự nối `aria-invalid` / `aria-describedby`). Thêm component dùng chung thì thêm truyện ở `ui.stories.jsx`.
+- **Component dùng chung** (`components/ui`): `EmptyState` (ô không có dữ liệu), `Badge tone=` (nhãn trạng thái),
+  `Field` (nhãn + gợi ý + lỗi, tự nối `aria-invalid` / `aria-describedby`).
 - **Form mới**: `useZodForm(schema)` + `<Field error={errors.x}>` (mẫu: `ChangePasswordModal`); thông báo lỗi trong schema viết tiếng Anh, tự dịch.
 - **Icon**: `<Icon name="…" />` (SVG theo `currentColor`). **Không dùng emoji.**
 - **Modal**: dùng `Modal` + `ModalHeader`; xác nhận thì dùng `ConfirmModal`; thao tác nhạy cảm thì dùng `ReauthModal` (nhập lại mật khẩu). Không dùng `alert/confirm` của trình duyệt.
@@ -501,7 +499,7 @@ Thẻ **Gợi ý tham khảo** theo `ai_status`: `Pending` (đang phân tích), 
 
 Bản eval còn cảnh báo khi response lệch hợp đồng (zod); e2e coi cảnh báo đó là lỗi.
 
-**CI** (`.github/workflows/ci.yml`): job *Client* chạy `npm run lint`, `npm test`, build Ladle, `npm audit` (phụ thuộc chạy thật, mức high)
+**CI** (`.github/workflows/ci.yml`): job *Client* chạy `npm run lint`, `npm test`, `npm audit` (phụ thuộc chạy thật, mức high)
 và `npm run smoke`; job *Client e2e* dựng PostgreSQL + server + worker, seed dữ liệu kiểm thử rồi chạy `npm run e2e` (lỗi thì tải ảnh /
 báo cáo ở mục Artifacts). Job server kiểm OpenAPI còn khớp `client/tests/contract/openapi.json`.
 
