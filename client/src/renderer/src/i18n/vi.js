@@ -85,6 +85,8 @@ export const VI = {
   'Please enter a full name and username.': 'Vui lòng nhập họ tên và tên đăng nhập.',
   'Invalid role.': 'Vai trò không hợp lệ.',
   'Please enter both your username and password.': 'Vui lòng nhập đầy đủ tài khoản và mật khẩu.',
+  'Enter your current password.': 'Nhập mật khẩu hiện tại.',
+  'The new password is too short.': 'Mật khẩu mới quá ngắn.',
   'The two new passwords do not match.': 'Hai mật khẩu mới không khớp.',
   'Set a New Password': 'Đặt mật khẩu mới',
   'Please set a password of your own before continuing.': 'Vui lòng đặt mật khẩu của riêng bạn trước khi tiếp tục.',

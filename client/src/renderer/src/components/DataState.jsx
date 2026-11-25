@@ -30,10 +30,10 @@ export function ErrorBlock({ message, onRetry, title }) {
 }
 
 // Thông báo lỗi ngắn trong form/hộp thoại: cùng kiểu banner của bản mẫu (icon + chữ), tone 'd' (lỗi) hoặc 'w' (cảnh báo).
-export function ErrorNote({ children, tone = 'd', style }) {
+export function ErrorNote({ children, tone = 'd', style, className = '' }) {
   if (!children) return null
   return (
-    <div className={'banner ' + tone} role="alert" style={style}>
+    <div className={'banner ' + tone + (className ? ' ' + className : '')} role="alert" style={style}>
       <Icon name={tone === 'w' ? 'triangle-alert' : 'circle-alert'} />
       <div className="txt">{children}</div>
     </div>
