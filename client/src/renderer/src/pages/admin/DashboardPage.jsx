@@ -18,6 +18,7 @@ import HomeGreeting from '../../components/HomeGreeting'
 import { useAuth } from '../../context/AuthContext'
 import { fmtDateTime, vnd, ymd } from '../../utils/format'
 import EmptyState from '../../components/ui/EmptyState'
+import ErrorBoundary from '../../components/ErrorBoundary'
 
 // by_status chỉ có trạng thái đang có lượt (hôm nay chưa ai check-in thì không có khoá CheckedIn) → thiếu là 0.
 export const countOf = (byStatus, ...keys) => keys.reduce((n, k) => n + (Number(byStatus?.[k]) || 0), 0)
@@ -169,7 +170,7 @@ export default function DashboardPage({ onNavigate }) {
       </div>
 
       <BellPortal>
-        <ClusterAlerts onOpenReport={() => navigate('/reports')} />
+        <ErrorBoundary inline><ClusterAlerts onOpenReport={() => navigate('/reports')} /></ErrorBoundary>
       </BellPortal>
       {e1 && <ErrorBlock message={translate('Could not load today’s figures') + ': ' + e1} onRetry={reloadSummary} />}
       {accountsError && <ErrorBlock message={translate('Could not load staff accounts') + ': ' + translate(accountsError)} />}
@@ -251,7 +252,7 @@ export default function DashboardPage({ onNavigate }) {
               </div>
               <div className="card-b">
                 {week ? (
-                  <LineChart points={fillDays(week.revenue.by_day, days7).map((x) => ({ label: x.day, value: x.amt }))} fmt={vnd} height={190} />
+                  <ErrorBoundary inline label="The chart could not be shown."><LineChart points={fillDays(week.revenue.by_day, days7).map((x) => ({ label: x.day, value: x.amt }))} fmt={vnd} height={190} /></ErrorBoundary>
                 ) : (
                   <p className="muted small">{translate('Not available — could not load the report.')}</p>
                 )}

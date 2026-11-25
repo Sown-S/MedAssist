@@ -4,6 +4,8 @@ import EmptyState from './ui/EmptyState'
 import { reportError, canExportDiagnostics, exportDiagnostics } from '../lib/errorReport'
 
 // Một màn lỗi lúc dựng chỉ hiện thông báo ở màn đó, không làm trắng cả cửa sổ; resetKey đổi thì dựng lại.
+// inline: bọc một phần trong trang (gợi ý AI, biểu đồ, cảnh báo cụm ca…) — phần đó lỗi thì chỉ hiện một dòng báo,
+// phần còn lại của trang (khám bệnh, kê đơn) vẫn dùng được.
 // Lỗi trong hàm xử lý sự kiện (onClick, gọi API) không đi qua đây.
 export default class ErrorBoundary extends Component {
   state = { error: null }
@@ -24,6 +26,18 @@ export default class ErrorBoundary extends Component {
   render() {
     const { error } = this.state
     if (!error) return this.props.children
+    if (this.props.inline)
+      return (
+        <div className="banner w" role="alert">
+          <Icon name="triangle-alert" />
+          <div className="txt">
+            <b>{this.props.label ?? 'This part could not be shown.'}</b> The rest of the screen still works.
+          </div>
+          <button className="btn btn-outline btn-sm" onClick={() => this.setState({ error: null })}>
+            <Icon name="repeat" /> Try again
+          </button>
+        </div>
+      )
     return (
       <div className="card m-24" role="alert">
         <EmptyState icon="alert" title="Something went wrong on this screen" text="Data already saved is not affected. Try again, or reload the app if it keeps happening.">

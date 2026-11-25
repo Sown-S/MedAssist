@@ -8,6 +8,7 @@ import { ReminderPanel } from './ReminderPanel'
 import DateField from '../../../components/DateField'
 import ExamSigns from './ExamSigns'
 import { ymd } from '../../../utils/format'
+import ErrorBoundary from '../../../components/ErrorBoundary'
 
 // Tab "Khám (SOAP)": S lời kể + triệu chứng đã xác nhận + kết quả cận lâm sàng (labs), O khám, gợi ý AI,
 // chẩn đoán ICD-10 chính / phụ, P hướng xử trí + hẹn tái khám.
@@ -27,7 +28,7 @@ export default function SoapPanel({ visit, symptoms, onSymptoms, onRerunAi, d, s
         <ConfirmedSymptoms list={symptoms} />
       </div>
 
-      <AssessmentCard a={ai} decisions={aiDecision} onAccept={(c) => decideAi(c, 'accepted')} onDismiss={(c) => decideAi(c, 'dismissed')} />
+      <ErrorBoundary inline label="The AI suggestion could not be shown."><AssessmentCard a={ai} decisions={aiDecision} onAccept={(c) => decideAi(c, 'accepted')} onDismiss={(c) => decideAi(c, 'dismissed')} /></ErrorBoundary>
 
       <div className="soap mt-14">
         <div className="field">
