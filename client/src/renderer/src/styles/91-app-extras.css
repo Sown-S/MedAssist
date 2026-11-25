@@ -770,11 +770,3 @@ kbd{display:inline-grid;place-items:center;min-width:24px;height:24px;padding:0 
 .audit-detail .audit-kv th,.audit-detail .audit-kv td{padding:6px 12px;text-align:left;border-bottom:1px solid var(--border);vertical-align:top;overflow-wrap:anywhere}
 .audit-detail .audit-kv tr:last-child td{border-bottom:0}
 .audit-detail .audit-kv td:first-child{color:var(--ink-3);white-space:nowrap}
-/* Ô chẩn đoán: bệnh không hợp giới tính bệnh nhân */
-.icd-opt .icd-sex{margin-left:8px;padding:1px 7px;border-radius:999px;background:var(--warning-soft,#FFF2DC);color:var(--warning-ink,#9A5B00);font-size:11.5px;font-weight:500}
-.icd-more{display:flex;align-items:center;gap:6px;width:100%;padding:9px 12px;border:0;border-top:1px solid var(--border);background:var(--surface-2);color:var(--primary-ink);font:inherit;font-size:13px;font-weight:500;cursor:pointer;text-align:left}
-.icd-more:hover{background:var(--primary-soft)}
-.icd-more svg.lucide{width:15px;height:15px}
-.icd-warn{display:flex;align-items:center;gap:6px;margin:6px 0 0}
-.icd-warn svg.lucide{width:15px;height:15px;flex:none}
-.kb-tag.sex{background:#FCE7F3;color:#9D174D}
