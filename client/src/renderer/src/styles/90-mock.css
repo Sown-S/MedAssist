@@ -218,7 +218,7 @@ tr.dim td{color:var(--ink-3)}
 :root:is([data-sidebar="dark"]) .side .nav-scroll::after{background-image:radial-gradient(rgba(125,179,255,.28) 1.4px,transparent 1.6px)}
 .app.collapsed .side .nav-scroll::after{display:none}
 .side .brand{color:inherit;height:64px;margin-bottom:6px;flex:none}
-:root:is([data-sidebar="dark"]) .side .brand{color:#fff}:root:is([data-sidebar="dark"]) .side .brand .t b{color:#7DB3FF}:root:is([data-sidebar="dark"]) .side .brand .logo{color:#5EA0FF}:root:is([data-sidebar="dark"]) .side{border-right-color:transparent}:root:is([data-sidebar="dark"]) .side .side-conn{border-top-color:rgba(255,255,255,.12)}
+:root:is([data-sidebar="dark"]) .side .brand{color:#fff}:root:is([data-sidebar="dark"]) .side .brand .logo{color:#5EA0FF}:root:is([data-sidebar="dark"]) .side{border-right-color:transparent}:root:is([data-sidebar="dark"]) .side .side-conn{border-top-color:rgba(255,255,255,.12)}
 .side .nav-scroll{flex:1;overflow-y:auto;overflow-x:hidden;margin:0 -6px;padding:0 6px}
 .side .grp-t{font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--sidebar-muted);padding:14px 10px 6px;font-weight:600;white-space:nowrap}
 .nav{display:flex;align-items:center;gap:14px;padding:13px 14px;border-radius:var(--radius);color:inherit;cursor:pointer;font-weight:500;transition:background .15s,color .15s;margin-bottom:6px}
@@ -475,7 +475,7 @@ tr.dim td{color:var(--ink-3)}
 .qa-h{width:100%;display:flex;align-items:center;border:0;background:none;border-radius:var(--radius);cursor:pointer;text-align:left;transition:background .15s,color .15s}
 .qa-h:hover{background:var(--surface-2);color:var(--ink)}
 .qa-h .cnt{min-width:26px;padding:0 8px;border-radius:999px;background:var(--routine-soft);color:var(--ink-2);font-size:13px;line-height:22px;text-align:center;letter-spacing:0}
-.qa-h svg.lucide{width:16px;height:16px;color:var(--ink-3);transition:transform .2s var(--ease)}.qa-g.open .qa-h svg.lucide{transform:rotate(90deg)}
+.qa-h svg.lucide{width:16px;height:16px;color:var(--ink-3);transition:transform .2s var(--ease)}.qa-g.open .qa-h svg.lucide:not(.qa-ic){transform:rotate(90deg)}
 .qa-b{display:grid;grid-template-rows:0fr;transition:grid-template-rows .25s var(--ease)}
 .qa-g.open .qa-b{grid-template-rows:1fr}
 .qa-b>div{overflow:hidden}.qa-g.open .qa-b>div{padding-bottom:8px}
