@@ -354,7 +354,7 @@ kbd{display:inline-grid;place-items:center;min-width:24px;height:24px;padding:0 
 
 /* Cột hàng chờ màn Khám: nhóm cùng kiểu chữ với mục thanh menu bên trái (chữ thường, cỡ thường, icon trước) */
 .qa-h{text-transform:none;letter-spacing:0;font-size:var(--fs-base);font-weight:500;color:var(--ink-2);padding:11px 10px;gap:12px}
-.qa-h .qa-ic{width:20px;height:20px;stroke-width:1.75;color:var(--ink-3);transform:none!important}
+.qa-h .qa-ic{width:20px;height:20px;stroke-width:1.75;color:var(--ink-3)}
 .qa-h .qa-t{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .qa-h .cnt{margin-left:0;font-weight:600}
 .qa-b .none{padding:4px 12px 10px 42px}
@@ -535,10 +535,11 @@ kbd{display:inline-grid;place-items:center;min-width:24px;height:24px;padding:0 
 .acct-dl dt,.acct-dl dd{padding:9px 0;border-top:1px solid var(--border)}
 .acct-dl dt{padding-right:14px}
 .acct-dl dt:first-of-type,.acct-dl dt:first-of-type+dd{border-top:0}
-.acct-pw{letter-spacing:.12em;color:var(--ink-3)!important}
+.acct-pw{letter-spacing:.12em}
 .acct-act{align-self:flex-start;margin-top:auto}
 .acct-dl dt{color:var(--ink-3)}
 .acct-dl dd{margin:0;color:var(--ink);font-weight:600;min-width:0;display:flex;align-items:center;justify-content:flex-end;gap:6px}
+.acct-dl dd.acct-pw{color:var(--ink-3)}
 .acct-url{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .acct-dot{width:8px;height:8px;border-radius:50%;background:var(--danger)}
 .acct-dot.ok{background:var(--success)}
@@ -722,7 +723,7 @@ kbd{display:inline-grid;place-items:center;min-width:24px;height:24px;padding:0 
 @container lleft (max-width:640px){.fbx{grid-template-columns:1fr}}
 :root[data-motion="reduce"] .cx-post{animation:none}
 @media (prefers-reduced-motion:reduce){.cx-post{animation:none}}
-.fbx-t h1{font-size:clamp(36px,4.6cqw,58px)!important;line-height:1.08}
+.fbx-t h1{font-size:clamp(36px,4.6cqw,58px);line-height:1.08}
 /* Tiêu đề màn đăng nhập: bóng nhiều lớp mềm cho chữ có chiều sâu (phần xanh có bóng ngả xanh) */
 .fbx-t h1{text-shadow:0 1px 0 rgba(255,255,255,.9),0 2px 2px rgba(16,24,40,.10),0 8px 18px rgba(16,24,40,.14),0 18px 36px rgba(16,24,40,.10)}
 .fbx-t h1 span{text-shadow:0 1px 0 rgba(255,255,255,.9),0 2px 2px rgb(var(--p-rgb) / .16),0 8px 18px rgb(var(--p-rgb) / .26),0 18px 38px rgb(var(--p-rgb) / .18)}
@@ -731,10 +732,10 @@ kbd{display:inline-grid;place-items:center;min-width:24px;height:24px;padding:0 
 
 /* ===== Logo: nét chuyển xanh dương → xanh ngọc. Sáng: nét dày hơn, bóng xanh mềm để nổi. Tối: màu sáng hơn, phát sáng nhẹ ===== */
 :root{--logo-a:#1877F2;--logo-b:#0FA89A}
-.brand .t b,.boot .boot-logo b{background:linear-gradient(90deg,var(--logo-a),var(--logo-b));-webkit-background-clip:text;background-clip:text;color:transparent!important;font-weight:700;text-shadow:none}
-.brand .logo{filter:drop-shadow(0 3px 5px rgb(var(--p-rgb) / .28))}
+.brand .t b,.boot .boot-logo b{background:linear-gradient(90deg,var(--logo-a),var(--logo-b));-webkit-background-clip:text;background-clip:text;color:transparent;font-weight:700;text-shadow:none}
+.brand .logo:not(:where(.brand-pulse.warn .logo,.brand-pulse.down .logo)){filter:drop-shadow(0 3px 5px rgb(var(--p-rgb) / .28))}
 :root[data-theme="dark"],:root[data-sidebar="dark"] .side{--logo-a:#5AA8FF;--logo-b:#2EE0C4}
-:root[data-theme="dark"] .brand .logo,:root[data-sidebar="dark"] .side .brand .logo{filter:drop-shadow(0 0 4px rgb(var(--p3-rgb) / .7)) drop-shadow(0 0 12px rgba(46,224,196,.45))}
+:root[data-theme="dark"] .brand .logo:not(:where(.brand-pulse.warn .logo,.brand-pulse.down .logo)),:root[data-sidebar="dark"] .side .brand .logo:not(:where(.brand-pulse.warn .logo,.brand-pulse.down .logo)){filter:drop-shadow(0 0 4px rgb(var(--p3-rgb) / .7)) drop-shadow(0 0 12px rgba(46,224,196,.45))}
 
 /* Mục menu đang chọn ở menu tối (giao diện tối, hoặc màu menu Tối / Chàm xám): nền xanh trong mờ chuyển dần,
    viền mảnh, vạch sáng bên trái theo màu logo, biểu tượng phát sáng nhẹ — thay khối xanh đặc */
@@ -810,9 +811,9 @@ kbd{display:inline-grid;place-items:center;min-width:24px;height:24px;padding:0 
 @keyframes beatdot{0%,32%{transform:scale(.6)}44%{transform:scale(1.45)}56%,100%{transform:scale(1)}}
 .brand-pulse.busy{--beat:1.4s}
 .brand-pulse.warn{--beat:1.2s;--logo-a:#F59E0B;--logo-b:#F97316}
-.brand-pulse.warn .logo{filter:drop-shadow(0 3px 6px rgba(245,158,11,.45))!important}
+.brand-pulse.warn .logo{filter:drop-shadow(0 3px 6px rgba(245,158,11,.45))}
 .brand-pulse.down{--beat:.9s;--logo-a:#F97316;--logo-b:#DC2626}
-.brand-pulse.down .logo{filter:drop-shadow(0 3px 7px rgba(220,38,38,.5))!important}
+.brand-pulse.down .logo{filter:drop-shadow(0 3px 7px rgba(220,38,38,.5))}
 :root[data-motion="reduce"] .brand-pulse .logo path,:root[data-motion="reduce"] .brand-pulse .logo circle{animation:none;stroke-dashoffset:0}
 @media (prefers-reduced-motion:reduce){.brand-pulse .logo path,.brand-pulse .logo circle{animation:none;stroke-dashoffset:0}}
 
@@ -901,7 +902,7 @@ select.input,select.select{field-sizing:fixed}
 :root[data-accent="sunset"]:is([data-theme="dark"],[data-sidebar="dark"]) .side,:root[data-accent="sunset"][data-theme="dark"]{--logo-a:#E879F9;--logo-b:#FDBA74}
 :root[data-accent="sunset"][data-theme="dark"]{--primary:#B07CF7;--primary-hover:#C29BFA;--primary-soft:rgba(176,124,247,.16);--primary-ink:#DCC4FF;--accent:#B07CF7;--sidebar-active:rgba(176,124,247,.18);--sidebar-active-ink:#DCC4FF}
 :root[data-accent="sunset"]:not([data-theme="dark"]):not([data-sidebar="dark"]) .side .nav:hover:not(.on){background:#F7F0FF}
-:root[data-accent="sunset"]:is([data-theme="dark"],[data-sidebar="dark"]) .side .brand .logo{filter:drop-shadow(0 0 4px rgb(var(--p3-rgb) / .7)) drop-shadow(0 0 12px rgba(251,146,60,.4))}
+:root[data-accent="sunset"]:is([data-theme="dark"],[data-sidebar="dark"]) .side .brand .logo:not(:where(.brand-pulse.warn .logo,.brand-pulse.down .logo)){filter:drop-shadow(0 0 4px rgb(var(--p3-rgb) / .7)) drop-shadow(0 0 12px rgba(251,146,60,.4))}
 /* Màu phòng khám có chất màu dải (Xanh dương y tế / Xanh ngọc / Hoàng hôn): nút chính, banner gọi bệnh nhân, lời chào,
    thanh bên tối, hoa văn chấm, thanh tải. Theme Mặc định (data-accent="default") giữ nguyên giao diện gốc, không áp các luật này.
    Màu trạng thái giữ nguyên ở mọi theme. */
