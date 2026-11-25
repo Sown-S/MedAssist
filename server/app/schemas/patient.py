@@ -47,7 +47,8 @@ class MedicalHistory(BaseModel):
         default_factory=list, max_length=30, description="Bệnh nền, vd 'Tăng huyết áp'"
     )
     notes: str | None = Field(default=None, max_length=2000)
-    is_pregnant: bool | None = Field(default=None, description="None = chưa hỏi")
+    # Client cũ còn gửi; tình trạng mang thai nay ghi theo lượt khám (visit.is_pregnant), không lưu ở hồ sơ.
+    is_pregnant: bool | None = Field(default=None, exclude=True, deprecated=True)
 
 
 class _PatientFields(BaseModel):

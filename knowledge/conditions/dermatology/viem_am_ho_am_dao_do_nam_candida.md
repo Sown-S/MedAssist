@@ -5,6 +5,7 @@ name_vi: Viêm âm hộ-âm đạo do nấm candida
 name_en: Vulvovaginal Candidiasis
 icd10_code: B37.3
 disease_group: dermatology
+applicable_sex: Female
 description: Viêm âm hộ-âm đạo do nấm Candida là bệnh rất thường gặp ở phụ nữ. Người ta thấy rằng hầu
   hết phụ nữ đều có ít nhất một lần trong đời có biểu hiện lâm sàng viêm âm hộ-âm đạo do nấm Candida.
   Nhiều phụ nữ bị nhiễm Candida nhưng không có triệu chứng lâm sàng, xét nghiệm soi tươi hoặc nuôi cấy

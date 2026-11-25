@@ -127,3 +127,43 @@ def test_reset_password(client, users, admin, logs):
 
 def test_unknown_user_404(client, users, admin):
     assert client.patch(f"/api/v1/admin/users/{uuid.uuid4()}", json={"role": "Nurse"}, headers=admin).status_code == 404
+
+
+def test_cannot_lock_or_demote_physician_with_examining_visit(client, users, admin, login):
+    from sqlalchemy import func
+
+    from app.core.database import SessionLocal
+    from app.models import Visit
+
+    uid = _new(client, admin, role="Physician").json()["user_id"]
+    pid = client.post(
+        "/api/v1/patients",
+        headers=login("yta"),
+        json={"full_name": f"Khóa BS {uuid.uuid4().hex[:6]}", "date_of_birth": "1990-01-01", "gender": "Male"},
+    ).json()["patient_id"]
+    with SessionLocal() as db:
+        visit = Visit(
+            patient_id=pid,
+            nurse_id=users["yta"].user_id,
+            physician_id=uid,
+            status="Examining",
+            chief_complaint="Ho",
+            checked_in_at=func.now(),
+            exam_started_at=func.now(),
+        )
+        db.add(visit)
+        db.commit()
+        vid = visit.visit_id
+
+    for body in ({"is_active": False}, {"role": "Nurse"}):
+        r = client.patch(f"/api/v1/admin/users/{uid}", json=body, headers=admin)
+        assert r.status_code == 409 and r.json()["error"]["code"] == "PHYSICIAN_HAS_OPEN_VISITS"
+        assert r.json()["error"]["details"][0]["visit_id"] == str(vid)
+    assert client.patch(f"/api/v1/admin/users/{uid}", json={"full_name": "BS Mới"}, headers=admin).status_code == 200
+
+    with SessionLocal() as db:
+        db.get(Visit, vid).status = "Cancelled"
+        db.get(Visit, vid).finished_at = func.now()
+        db.commit()
+    r = client.patch(f"/api/v1/admin/users/{uid}", json={"is_active": False}, headers=admin)
+    assert r.status_code == 200 and r.json()["is_active"] is False

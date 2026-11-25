@@ -211,7 +211,7 @@ def _patient_context(db: Session, visit: Visit) -> dict:
     return {
         "chronic_conditions": mh.get("chronic_conditions", []),
         "medical_notes": mh.get("notes"),
-        "is_pregnant": mh.get("is_pregnant"),
+        "is_pregnant": visit.is_pregnant,
         "allergy_notes": p.allergy_notes,
     }
 

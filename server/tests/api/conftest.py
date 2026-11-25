@@ -49,7 +49,7 @@ def billing_settings(client, login):
 def examining(client, nurse, doctor, billing_settings):
     """Tạo bệnh nhân + lượt khám, check-in, 'bs' nhận khám. Trả visit_id."""
 
-    def _make(**patient_over):
+    def _make(visit_over=None, **patient_over):
         pid = client.post(
             "/api/v1/patients",
             headers=nurse,
@@ -60,9 +60,9 @@ def examining(client, nurse, doctor, billing_settings):
                 **patient_over,
             },
         ).json()["patient_id"]
-        vid = client.post("/api/v1/visits", headers=nurse, json={"patient_id": pid, "chief_complaint": "Ho"}).json()[
-            "visit_id"
-        ]
+        vid = client.post(
+            "/api/v1/visits", headers=nurse, json={"patient_id": pid, "chief_complaint": "Ho", **(visit_over or {})}
+        ).json()["visit_id"]
         save_intake(vid)
         assert client.patch(f"/api/v1/visits/{vid}/check-in", headers=nurse).status_code == 200
         assert client.patch(f"/api/v1/visits/{vid}/start-exam", headers=doctor).status_code == 200

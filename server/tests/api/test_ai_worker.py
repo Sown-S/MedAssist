@@ -158,6 +158,7 @@ def test_enqueue_snapshots_features(make_visit, nurse_user):
     assert f["symptoms"] == {"wk_cough_dry": "ABSENT", "wk_fever_high": "PRESENT"}
     assert f["vital_signs"] == {"temperature_c": 39.2, "heart_rate_bpm": 120}
     assert f["age_months"] >= 20 and f["age_years"] == f["age_months"] // 12
+    assert f["sex"] == "Male"
     assert "full_name" not in str(f) and "patient_id" not in f  # không định danh
     v = _visit(vid)
     assert v.ai_status == "Pending" and v.triage_priority == "Routine" and not v.is_red_flag

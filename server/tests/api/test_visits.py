@@ -250,3 +250,83 @@ def test_admin_has_no_access(client, nurse, patient_id, login):
     assert client.get("/api/v1/queue", headers=admin).status_code == 403
     assert client.get(f"/api/v1/visits/{vid}", headers=admin).status_code == 403
     assert client.patch(f"/api/v1/visits/{vid}/check-in", headers=admin).status_code == 403
+
+
+def _patient(client, nurse, gender, dob="1995-03-01", **over):
+    return client.post(
+        "/api/v1/patients",
+        headers=nurse,
+        json={"full_name": f"Thai {uuid.uuid4().hex[:8]}", "date_of_birth": dob, "gender": gender, **over},
+    ).json()["patient_id"]
+
+
+@pytest.mark.parametrize(
+    "gender,dob,ok",
+    [
+        ("Female", "1995-03-01", True),
+        ("Other", "1995-03-01", True),
+        ("Male", "1995-03-01", False),
+        ("Female", "2020-01-01", False),
+        ("Female", "1950-01-01", False),
+    ],
+)
+def test_pregnancy_recorded_per_visit_and_validated(client, nurse, gender, dob, ok):
+    pid = _patient(client, nurse, gender, dob)
+    r = _visit(client, nurse, pid, is_pregnant=True)
+    if ok:
+        assert r.status_code == 201 and r.json()["is_pregnant"] is True
+    else:
+        assert r.status_code == 422 and r.json()["error"]["details"][0]["field"] == "is_pregnant"
+        r = _visit(client, nurse, pid, is_pregnant=False)
+        assert r.status_code == 201 and r.json()["is_pregnant"] is False
+
+
+def test_pregnancy_update_and_cleared_when_gender_changes(client, nurse, doctor):
+    pid = _patient(client, nurse, "Female")
+    vid = _visit(client, nurse, pid).json()["visit_id"]
+    assert client.get(f"/api/v1/visits/{vid}", headers=doctor).json()["is_pregnant"] is None
+    r = client.patch(f"/api/v1/visits/{vid}", headers=nurse, json={"is_pregnant": True})
+    assert r.status_code == 200 and r.json()["is_pregnant"] is True
+
+    assert client.patch(f"/api/v1/patients/{pid}", headers=nurse, json={"gender": "Male"}).status_code == 200
+    assert client.get(f"/api/v1/visits/{vid}", headers=doctor).json()["is_pregnant"] is None
+    r = client.patch(f"/api/v1/visits/{vid}", headers=nurse, json={"is_pregnant": True})
+    assert r.status_code == 422
+
+
+def test_pregnancy_no_longer_stored_on_patient(client, nurse):
+    pid = _patient(client, nurse, "Female", medical_history={"notes": "Hen", "is_pregnant": True})
+    p = client.get(f"/api/v1/patients/{pid}", headers=nurse).json()
+    assert p["medical_history"] == {"chronic_conditions": [], "notes": "Hen"}
+    r = client.patch(f"/api/v1/patients/{pid}", headers=nurse, json={"medical_history": {"is_pregnant": False}})
+    assert r.status_code == 200 and "is_pregnant" not in r.json()["medical_history"]
+
+
+def test_physician_updates_vitals_of_own_examining_visit(client, nurse, doctor, doctor2, patient_id):
+    vid = _visit(client, nurse, patient_id, vital_signs={"spo2_pct": 97}).json()["visit_id"]
+    client.patch(f"/api/v1/visits/{vid}/check-in", headers=nurse)
+    body = {"vital_signs": {"spo2_pct": 97, "weight_kg": 18.5}}
+    r = client.patch(f"/api/v1/visits/{vid}", headers=doctor, json=body)
+    assert r.status_code == 409 and r.json()["error"]["code"] == "VISIT_LOCKED"  # chưa nhận khám
+    client.patch(f"/api/v1/visits/{vid}/start-exam", headers=doctor)
+    assert client.patch(f"/api/v1/visits/{vid}", headers=doctor2, json=body).status_code == 409
+    r = client.patch(f"/api/v1/visits/{vid}", headers=doctor, json={**body, "chief_complaint": "Khác"})
+    assert r.status_code == 409
+    r = client.patch(f"/api/v1/visits/{vid}", headers=doctor, json=body)
+    assert r.status_code == 200 and r.json()["vital_signs"] == {"spo2_pct": 97, "weight_kg": 18.5}
+
+
+def test_physician_cancel_drops_draft_prescription(client, nurse, doctor, patient_id, logs):
+    from app.models import Prescription
+
+    vid = _visit(client, nurse, patient_id).json()["visit_id"]
+    client.patch(f"/api/v1/visits/{vid}/check-in", headers=nurse)
+    client.patch(f"/api/v1/visits/{vid}/start-exam", headers=doctor)
+    with SessionLocal() as db:
+        db.add(Prescription(visit_id=vid, physician_id=db.get(Visit, vid).physician_id))
+        db.commit()
+    r = client.patch(f"/api/v1/visits/{vid}/cancel", headers=doctor, json={"reason": "Bệnh nhân bỏ về"})
+    assert r.status_code == 200
+    with SessionLocal() as db:
+        assert db.scalars(db.query(Prescription).filter_by(visit_id=vid).statement).one().status == "Cancelled"
+    assert logs(action="UPDATE", entity="prescription")[-1].new_values == {"status": "Cancelled", "reason": "Cancelled"}

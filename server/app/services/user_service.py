@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 
 from app.core.security import hash_password
 from app.exceptions import AppError, NotFoundError
-from app.models import AuditLog
+from app.models import AuditLog, Visit
 from app.models.user import SYSTEM_USER_ID, User
 from app.schemas.user import UserCreate, UserUpdate
 from app.services import audit_service as audit
@@ -194,6 +194,26 @@ def update_user(db: Session, user_id: uuid.UUID, data: UserUpdate, actor: User) 
         db.execute(select(User.user_id).where(User.role == "Admin").with_for_update())
         if _active_admins(db) <= 1:
             raise AppError(422, "LAST_ADMIN", "Phải còn ít nhất một Admin đang hoạt động")
+
+    loses_physician = (
+        user.role == "Physician"
+        and user.is_active
+        and (changes.get("role", "Physician") != "Physician" or changes.get("is_active", True) is False)
+    )
+    if loses_physician:
+        # Lượt Examining chỉ chính bác sĩ đó trả, hủy hay kết thúc được: khóa tài khoản lúc này làm kẹt lượt.
+        examining = db.execute(
+            select(Visit.visit_id, Visit.queue_date, Visit.queue_number).where(
+                Visit.physician_id == user.user_id, Visit.status == "Examining"
+            )
+        ).all()
+        if examining:
+            raise AppError(
+                409,
+                "PHYSICIAN_HAS_OPEN_VISITS",
+                "Bác sĩ đang có bệnh nhân trong lượt khám: kết thúc hoặc trả về hàng đợi trước khi khóa / đổi vai trò",
+                [{"visit_id": str(v), "queue_date": d.isoformat(), "queue_number": n} for v, d, n in examining],
+            )
 
     old = audit.snapshot(user, changes.keys())
     for field, value in changes.items():

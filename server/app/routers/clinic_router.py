@@ -221,7 +221,7 @@ def get_visit(
 
 @router.patch("/visits/{visit_id}", response_model=VisitWithWarnings)
 def update_visit(
-    visit_id: uuid.UUID, body: VisitUpdate, actor: User = Depends(_nurse_visit), db: Session = Depends(get_db)
+    visit_id: uuid.UUID, body: VisitUpdate, actor: User = Depends(_clinical_visit), db: Session = Depends(get_db)
 ):
     visit = queue_service.update_visit(db, visit_id, body, actor)
     db.commit()

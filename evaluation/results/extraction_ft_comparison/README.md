@@ -102,7 +102,7 @@
   - *Ví dụ trên `dev`:* `fdev-07` (nhầm `vocal_abuse_phonotrauma_strain` sang `voice_pitch_timbre_alteration`), `fdev-18` (chọn dư `10` mã), `fdev-20` (chọn dư `avascular_femoral_head_necrosis_groin_pain` và `lumbar_spondylosis_paraspinal_spasm`).
   - *Số tổng hợp trên tập kín:* Nhánh B bị suy giảm Precision (`64.3%`, `FP = 25`) do vài ví dụ few-shot làm model gốc chọn rộng hơn; Nhánh C giữ được Precision cao nhất (`68.7%` ở `_seq` / `69.7%` ở `--interleave`, `FP = 21` ở `_seq`).
 - **Nhóm 4 — Xung đột cùng mã giữa nhiều cụm (`CONFLICTING_SELECTION`):**
-  - Khi một lời kể tách thành nhiều cụm có cùng ứng viên và LLM chọn một mã ở hai trạng thái mâu thuẫn (`PRESENT` và `ABSENT`), hàm `validate_selection` từ chối toàn bộ ca thay vì gộp mâu thuẫn. Ở lượt `_seq`, mỗi nhánh gặp đúng `1` ca lỗi này (`A: EXT-FT-014`, `B: EXT-FT-005`, `C: EXT-FT-027`); ở `--interleave`, A hoàn tất `30/30`, B gặp `EXT-FT-005` (`29/30`), C gặp `EXT-FT-027` (`29/30`); cả 6 lượt đều `0` ca quá `30 s`.
+  - Khi một lời kể tách thành nhiều cụm có cùng ứng viên và LLM chọn một mã ở hai trạng thái mâu thuẫn (`PRESENT` và `ABSENT`), hàm `validate_selection` từ chối toàn bộ ca thay vì gộp mâu thuẫn. Ở lượt `_seq`, mỗi nhánh gặp `1/30` ca lỗi này (`A: 1`, `B: 1`, `C: 1`); ở `--interleave`, số ca lỗi lần lượt là `A: 0/30`, `B: 1/30`, `C: 1/30`; cả 6 lượt đều `0` ca quá `30 s`.
 
 ## 8. Kết quả 29 ca đóng băng `v1.3` (THAM KHẢO — không phải tập kín)
 

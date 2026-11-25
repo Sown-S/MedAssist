@@ -103,11 +103,20 @@ def active_catalog(db: Session) -> list[dict]:
             Symptom.short_name,
             Symptom.aliases,
             Symptom.detection,
+            Symptom.applicable_sex,
         )
         .where(Symptom.status == "Active")
         .order_by(Symptom.category.nulls_last(), Symptom.symptom_name)
     ).all()
     return [
-        {"symptom_code": c, "symptom_name": n, "category": cat, "short_name": short, "aliases": al, "detection": det}
-        for c, n, cat, short, al, det in rows
+        {
+            "symptom_code": c,
+            "symptom_name": n,
+            "category": cat,
+            "short_name": short,
+            "aliases": al,
+            "detection": det,
+            "applicable_sex": sex,
+        }
+        for c, n, cat, short, al, det, sex in rows
     ]

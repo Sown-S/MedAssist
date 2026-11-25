@@ -15,6 +15,7 @@ from app.services import audit_service as audit
 
 _CODE_LOCK_KEY = 4_206_202_611
 CONSULTATION_NAME = "Phí khám bệnh"
+IN_PACKAGE_PREFIX = f"{CONSULTATION_NAME} (trong gói "
 
 
 def drug_label(drug: Drug) -> str:
@@ -41,7 +42,7 @@ def default_consultation(db: Session, package_name: str | None) -> tuple[str, De
     from app.services.settings_service import get_value
 
     if package_name:
-        return f"{CONSULTATION_NAME} (trong gói {package_name})"[:150], Decimal(0)
+        return f"{IN_PACKAGE_PREFIX}{package_name})"[:150], Decimal(0)
     code = get_value(db, "billing.consultation_service_code")
     service = db.scalar(select(Service).where(Service.code == code, Service.is_active.is_(True))) if code else None
     if service is not None:
@@ -241,6 +242,9 @@ def reissue(
     dòng cận lâm sàng lập lại theo phiếu chỉ định."""
     keep_fee = old.consultation_fee if consultation_fee is None else consultation_fee
     keep_name = consultation_name or _consultation_name(db, old)
+    if consultation_fee is None and not old.consultation_fee and (keep_name or "").startswith(IN_PACKAGE_PREFIX):
+        # Phí khám đang tính trong gói: tính lại theo chỉ định còn hiệu lực (hủy hết dòng trong gói thì thu phí khám).
+        keep_fee = keep_name = None
     keep_para = _paraclinical_lines(db, old) if paraclinical is None else paraclinical
     method = old.payment_method
     cancel(db, old, reason, actor)
