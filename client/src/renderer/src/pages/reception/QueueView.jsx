@@ -126,7 +126,7 @@ export default function QueueView({ readOnly, onPay }) {
           </div>
         </div>
         <div className="card-b">
-          <div className="tbl-wrap">
+          <div className="tbl-wrap" tabIndex={0}>
             {list.length ? (
               <table>
                 <thead>
@@ -205,7 +205,7 @@ export default function QueueView({ readOnly, onPay }) {
           <span className="plain">Transferred at once or placed at the top of the queue · doctors are alerted</span>
         </div>
         <div className="card-b">
-          <div className="tbl-wrap">
+          <div className="tbl-wrap" tabIndex={0}>
             {redFlags.length ? (
               <table>
                 <thead>

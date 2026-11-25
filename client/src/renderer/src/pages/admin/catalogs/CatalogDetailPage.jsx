@@ -108,7 +108,7 @@ export default function CatalogDetailPage({ catalogKey, params, onNavigate }) {
         ) : pg.total === 0 ? (
           <Empty title="No records match" text="Try another keyword or filter, or import the list from a file." />
         ) : (
-          <div className="tbl-wrap">
+          <div className="tbl-wrap" tabIndex={0}>
             <table>
               <thead>
                 <tr>

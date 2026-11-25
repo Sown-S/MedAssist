@@ -60,7 +60,7 @@ export default function BillingLiveView({ mode, readOnly, onPay }) {
               ? translate('Visits with work left at the desk. Invoices already issued are listed by day below.')
               : translate('Only visits with work left at the desk are listed. Paid invoices and earlier prescriptions are in each patient’s history.')}
           </p>
-          <div className="tbl-wrap">
+          <div className="tbl-wrap" tabIndex={0}>
             <table>
               <thead>
                 <tr>
@@ -167,7 +167,7 @@ function InvoiceHistory({ readOnly, onPay, reloadKey }) {
           {error && <ErrorBlock message={errorMessage(error)} onRetry={() => inv.refetch()} />}
           {!list && !error && <Skeleton rows={5} cols={5} />}
           {list && (
-            <div className="tbl-wrap">
+            <div className="tbl-wrap" tabIndex={0}>
               <table>
                 <thead>
                   <tr>

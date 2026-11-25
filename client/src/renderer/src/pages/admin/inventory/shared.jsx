@@ -116,7 +116,7 @@ export function Pager({ page, pages, total, from, to, onPage }) {
         {pages > PAGER_WINDOW && (
           <form className="pager-jump" onSubmit={go}>
             <span>Go to page</span>
-            <input className="input" type="number" min="1" max={pages} value={jump} onChange={(e) => setJump(e.target.value)} />
+            <input className="input" type="number" aria-label="Page number" min="1" max={pages} value={jump} onChange={(e) => setJump(e.target.value)} />
             <button type="submit" disabled={!jump}>
               Select
             </button>

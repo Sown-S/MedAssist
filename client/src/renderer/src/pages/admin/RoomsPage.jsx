@@ -131,7 +131,7 @@ export default function RoomsPage({ onNavigate }) {
 
       <div className="card">
         <div className="card-b">
-          <div className="tbl-wrap">
+          <div className="tbl-wrap" tabIndex={0}>
             <table>
               <thead>
                 <tr>

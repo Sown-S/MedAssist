@@ -21,7 +21,7 @@ export function WaitingModal({ list, initial, now, past, onTake, onClose }) {
       <ModalHeader title={translate('Waiting for consultation') + ' · ' + list.length} onClose={onClose} />
       <div className="modal-b">
         {list.length ? (
-          <div className="tbl-wrap">
+          <div className="tbl-wrap" tabIndex={0}>
             <table>
               <thead>
                 <tr>
@@ -153,7 +153,7 @@ export function LabListModal({ onResume, onClose }) {
           </div>
         </div>
         {list.length ? (
-          <div className="tbl-wrap">
+          <div className="tbl-wrap" tabIndex={0}>
             <table>
               <thead>
                 <tr>

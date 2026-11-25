@@ -123,7 +123,7 @@ export default function DrugCabinetView({ go }) {
               <Icon name="search" />
               <input className="input" type="search" placeholder="Search by drug name, active ingredient or ATC…" value={q} onChange={filter(setQ)} />
             </div>
-            <select className="select" value={atc} onChange={filter(setAtc)} title={translate('Therapeutic class (ATC)')}>
+            <select className="select" value={atc} onChange={filter(setAtc)} title={translate('Therapeutic class (ATC)')} aria-label="Therapeutic class (ATC)">
               <option value="">All drug classes (ATC)</option>
               {classes.map((c) => (
                 <option key={c} value={c}>
@@ -132,28 +132,28 @@ export default function DrugCabinetView({ go }) {
               ))}
               {active.some((d) => !d.atc) && <option value="-">No ATC code</option>}
             </select>
-            <select className="select" value={group} onChange={filter(setGroup)}>
+            <select className="select" aria-label="Filter by drug group" value={group} onChange={filter(setGroup)}>
               {GROUPS.map((g) => (
                 <option key={g.key} value={g.key}>
                   {g.label}
                 </option>
               ))}
             </select>
-            <select className="select" value={stock} onChange={filter(setStock)}>
+            <select className="select" aria-label="Filter by stock" value={stock} onChange={filter(setStock)}>
               {STOCK_FILTERS.map((g) => (
                 <option key={g.key} value={g.key}>
                   {g.label}
                 </option>
               ))}
             </select>
-            <select className="select" value={expiry} onChange={filter(setExpiry)}>
+            <select className="select" aria-label="Filter by expiry" value={expiry} onChange={filter(setExpiry)}>
               {EXPIRY_FILTERS.map((g) => (
                 <option key={g.key} value={g.key}>
                   {g.key === 'near' ? translate('Expiring within') + ' ' + near + ' ' + translate('days') : g.label}
                 </option>
               ))}
             </select>
-            <select className="select" value={sort} onChange={filter(setSort)}>
+            <select className="select" aria-label="Sort by" value={sort} onChange={filter(setSort)}>
               {SORTS.map((g) => (
                 <option key={g.key} value={g.key}>
                   {g.label}
@@ -165,7 +165,7 @@ export default function DrugCabinetView({ go }) {
             </span>
           </div>
           {list.length ? (
-            <div className="tbl-wrap">
+            <div className="tbl-wrap" tabIndex={0}>
               <table>
                 <thead>
                   <tr>

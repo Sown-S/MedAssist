@@ -124,7 +124,7 @@ export default function PatientLookup() {
             {searching && !results.length ? (
               <Skeleton rows={4} cols={4} />
             ) : results.length ? (
-              <div className="tbl-wrap">
+              <div className="tbl-wrap" tabIndex={0}>
                 <table className="pl-table">
                   <thead>
                     <tr>

@@ -99,7 +99,7 @@ export default function PrescriptionsLive({ initialDoctorId = '', initialDoctorN
               }}
             />
             <div className="sp" />
-            <select className="select" value={doctorId} onChange={(e) => setDoctorId(e.target.value)}>
+            <select className="select" aria-label="Filter by doctor" value={doctorId} onChange={(e) => setDoctorId(e.target.value)}>
               <option value="">All doctors</option>
               {doctors.map(([id, name]) => (
                 <option key={id} value={id}>
@@ -107,7 +107,7 @@ export default function PrescriptionsLive({ initialDoctorId = '', initialDoctorN
                 </option>
               ))}
             </select>
-            <select className="select" value={status} onChange={(e) => setStatus(e.target.value)}>
+            <select className="select" aria-label="Filter by payment status" value={status} onChange={(e) => setStatus(e.target.value)}>
               {STATUS_FILTERS.map((s) => (
                 <option key={s.key} value={s.key}>
                   {s.label}
@@ -123,7 +123,7 @@ export default function PrescriptionsLive({ initialDoctorId = '', initialDoctorN
               {translate('Print list')}
             </button>
           </div>
-          <div className="tbl-wrap">
+          <div className="tbl-wrap" tabIndex={0}>
             <table>
               <thead>
                 <tr>

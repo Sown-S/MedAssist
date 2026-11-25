@@ -175,7 +175,7 @@ export const ctxOf = (data, names) => ({ names, sources: Object.fromEntries(data
 export function ReleaseHistory({ releases, onView }) {
   if (!releases.length) return <p className="muted">No release yet.</p>
   return (
-    <div className="tbl-wrap">
+    <div className="tbl-wrap" tabIndex={0}>
       <table>
         <thead>
           <tr>

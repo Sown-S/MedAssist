@@ -24,7 +24,7 @@ export default function StaffTable({ rows, me, q, setQ, roleFilter, setRoleFilte
           <input className="input" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search name, username, staff code, phone…" />
         </div>
         <div className="toolbar-r">
-          <select className="select" value={roleFilter} onChange={(e) => setRoleFilter(e.target.value)}>
+          <select className="select" aria-label="Filter by role" value={roleFilter} onChange={(e) => setRoleFilter(e.target.value)}>
             <option value="all">All roles</option>
             {Object.entries(ROLES).map(([k, r]) => (
               <option key={k} value={k}>
@@ -45,7 +45,7 @@ export default function StaffTable({ rows, me, q, setQ, roleFilter, setRoleFilte
       {rows.length === 0 ? (
         <p className="muted">No accounts match.</p>
       ) : (
-        <div className="tbl-wrap">
+        <div className="tbl-wrap" tabIndex={0}>
           <table className="staff-table">
             <thead>
               <tr>

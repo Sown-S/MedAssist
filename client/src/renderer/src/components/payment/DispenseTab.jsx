@@ -74,7 +74,7 @@ export default function DispenseTab({ active, visitId, items, waiting, paid, rx,
         </div>
       )}
       {items.length ? (
-        <div className="tbl-wrap">
+        <div className="tbl-wrap" tabIndex={0}>
           <table>
             <thead>
               <tr>

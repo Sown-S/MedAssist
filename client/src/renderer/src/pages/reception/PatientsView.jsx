@@ -106,7 +106,7 @@ export default function PatientsView({ readOnly, onCheckIn }) {
           </button>
         </div>
         {status === 'failed' && <p className="sym-warn">{translate('Could not load the patient list from the server.')}</p>}
-        <div className="tbl-wrap">
+        <div className="tbl-wrap" tabIndex={0}>
           {data.items.length || status !== 'ready' ? (
             <table>
               <thead>
@@ -200,7 +200,7 @@ function VisitHistoryModal({ patient, onClose }) {
         {rows === null ? (
           <Skeleton rows={4} />
         ) : rows.length ? (
-          <div className="tbl-wrap">
+          <div className="tbl-wrap" tabIndex={0}>
             <table>
               <thead>
                 <tr>

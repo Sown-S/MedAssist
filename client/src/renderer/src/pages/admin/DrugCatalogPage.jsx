@@ -123,7 +123,7 @@ export default function DrugCatalogPage({ params, onNavigate }) {
         {pg.total === 0 ? (
           <Empty title="No drugs match" text="Try another keyword or filter." />
         ) : (
-          <div className="tbl-wrap">
+          <div className="tbl-wrap" tabIndex={0}>
             <table>
               <thead>
                 <tr>

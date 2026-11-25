@@ -39,7 +39,7 @@ export default function StaleVisitsModal({ readOnly, onClose, onPay }) {
           <div className="txt">{translate('These visits were not finished or not paid. Close each one with a reason, or collect payment if the patient came back. A patient with an open visit cannot be checked in again.')}</div>
         </div>
         {stale.length ? (
-          <div className="tbl-wrap">
+          <div className="tbl-wrap" tabIndex={0}>
             <table>
               <thead>
                 <tr>

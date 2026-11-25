@@ -26,7 +26,7 @@ export default function SourcesTab({ data, canEdit, onChanged }) {
       {!data.sources.length ? (
         <Empty icon="folder" title="No source yet" />
       ) : (
-        <div className="tbl-wrap">
+        <div className="tbl-wrap" tabIndex={0}>
           <table>
             <thead>
               <tr>

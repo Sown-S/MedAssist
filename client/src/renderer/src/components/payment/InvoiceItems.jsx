@@ -54,7 +54,7 @@ export default function InvoiceItems({ visitId, inv, editable, cat, orders, act,
       <div className="sec-t mt-0">
         Services
       </div>
-      <div className="tbl-wrap">
+      <div className="tbl-wrap" tabIndex={0}>
         <table>
           <thead>
             <tr>
@@ -180,7 +180,7 @@ export default function InvoiceItems({ visitId, inv, editable, cat, orders, act,
 
       <div className="sec-t">Medication (from the doctor’s prescription)</div>
       {drugItems.length ? (
-        <div className="tbl-wrap">
+        <div className="tbl-wrap" tabIndex={0}>
           <table>
             <thead>
               <tr>

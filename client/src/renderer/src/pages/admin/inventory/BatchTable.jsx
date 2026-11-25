@@ -22,7 +22,7 @@ export function BatchTable({ drug, stock, onReceive }) {
           )}
         </p>
       ) : (
-        <div className="tbl-wrap">
+        <div className="tbl-wrap" tabIndex={0}>
           <table>
             <thead>
               <tr>

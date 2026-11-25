@@ -184,7 +184,7 @@ export default function DoctorHome({ go }) {
             </button>
           </div>
           <div className="card-b">
-            <div className="tbl-wrap">
+            <div className="tbl-wrap" tabIndex={0}>
               {recent.length ? (
                 <table>
                   <thead>

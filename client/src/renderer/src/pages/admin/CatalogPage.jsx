@@ -116,7 +116,7 @@ export default function CatalogPage({ onNavigate }) {
           {ORDER.map(({ group, keys }) => (
             <div key={group}>
               {ORDER.length > 1 && <div className="sec-t">{translate(group)}</div>}
-              <div className="tbl-wrap">
+              <div className="tbl-wrap" tabIndex={0}>
                 <table>
                   <thead>
                     <tr>

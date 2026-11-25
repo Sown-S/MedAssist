@@ -88,7 +88,7 @@ function useServerLog() {
 
 function ServerActivity({ items, onOpen }) {
   return (
-    <div className="tbl-wrap">
+    <div className="tbl-wrap" tabIndex={0}>
       <table>
         <thead>
           <tr>
