@@ -42,13 +42,16 @@ def build_input_features(db: Session, visit: Visit) -> dict[str, Any]:
             .order_by(VisitSymptom.symptom_code)
         ).all()
     )
-    dob = db.scalar(select(Patient.date_of_birth).where(Patient.patient_id == visit.patient_id))
+    dob, sex = db.execute(
+        select(Patient.date_of_birth, Patient.gender).where(Patient.patient_id == visit.patient_id)
+    ).one()
     age_years, age_months = _age(dob, visit.visit_date.date())
     return {
         "symptoms": symptoms,
         "vital_signs": dict(visit.vital_signs or {}),
         "age_years": age_years,
         "age_months": age_months,
+        "sex": sex,
     }
 
 

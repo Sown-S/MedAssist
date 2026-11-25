@@ -349,3 +349,27 @@ def test_db_blocks_order_line_from_other_visit(client, doctor, examining, servic
                 text("INSERT INTO service_order_item (order_id, item_name, in_package) VALUES (:o, 'x', true)"),
                 {"o": order_a},
             )
+
+
+def test_cancelling_whole_package_restores_consultation_fee(client, nurse, doctor, examining, service, package):
+    consult = service(name="Khám gói", group="consult", price=80000)
+    cbc = service(name="Máu gói", kind="Lab", group="hematology", price=90000)
+    p = package([consult, cbc], price=150000, name="Gói hủy hết")
+    vid = examining()
+    order = client.post(
+        f"/api/v1/visits/{vid}/service-orders",
+        headers=doctor,
+        json={"package_id": p["package_id"], "service_ids": [], "send_out": False},
+    ).json()
+    invoice = _finish_exam(client, doctor, vid)
+    assert invoice["consultation_fee"] == 0
+
+    for item in order["items"]:
+        r = client.post(
+            f"/api/v1/service-order-items/{item['item_id']}/cancel", headers=nurse, json={"reason": "Không làm"}
+        )
+        assert r.status_code == 200, r.text
+    invoice = client.get(f"/api/v1/visits/{vid}/invoice", headers=nurse).json()
+    (consult_line,) = [i for i in invoice["items"] if i["item_type"] == "Consultation"]
+    assert invoice["consultation_fee"] > 0 and "trong gói" not in consult_line["item_name"]
+    assert invoice["paraclinical_fee"] == 0

@@ -20,6 +20,8 @@ QUEUE_VIEW_STATUSES = (*QUEUE_STATUSES, "Examining")  # màn lễ tân thấy c�
 _QUEUE_LOCK_KEY = 4_206_202_610  # khóa advisory cấp số thứ tự trong ngày
 
 # Thứ tự ưu tiên hàng đợi: chưa phân luồng (NULL) xếp như Routine
+# Ngoài khoảng này hoặc giới tính Nam thì không nhận "đang mang thai" (nhập nhầm).
+PREGNANCY_AGE = (12, 55)
 _PRIORITY_RANK = case((Visit.triage_priority == "Emergency", 3), (Visit.triage_priority == "HighPriority", 2), else_=1)
 
 
@@ -94,10 +96,34 @@ def _transition(
     return visit
 
 
+def pregnancy_allowed(gender: str, dob: datetime.date, on: datetime.date) -> bool:
+    age = on.year - dob.year - ((on.month, on.day) < (dob.month, dob.day))
+    return gender != "Male" and PREGNANCY_AGE[0] <= age <= PREGNANCY_AGE[1]
+
+
+def _check_pregnancy(patient: Patient, is_pregnant: bool | None, on: datetime.date) -> None:
+    if is_pregnant and not pregnancy_allowed(patient.gender, patient.date_of_birth, on):
+        raise AppError(
+            422,
+            "VALIDATION_ERROR",
+            "Dữ liệu không hợp lệ",
+            [
+                {
+                    "field": "is_pregnant",
+                    "in": "body",
+                    "message": "Chỉ ghi nhận mang thai với nữ hoặc giới tính khác, "
+                    f"{PREGNANCY_AGE[0]}–{PREGNANCY_AGE[1]} tuổi",
+                }
+            ],
+        )
+
+
 # --- Tạo, sửa -------------------------------------------------------------------------------------
 def create_visit(db: Session, data: VisitCreate, actor: User) -> Visit:
-    if db.get(Patient, data.patient_id) is None:
+    patient = db.get(Patient, data.patient_id)
+    if patient is None:
         raise NotFoundError("Không tìm thấy bệnh nhân")
+    _check_pregnancy(patient, data.is_pregnant, datetime.date.today())
 
     # Khóa theo transaction: cả kiểm tra lượt đang mở lẫn cấp số thứ tự đều tuần tự
     db.execute(text("SELECT pg_advisory_xact_lock(:k)"), {"k": _QUEUE_LOCK_KEY})
@@ -122,6 +148,7 @@ def create_visit(db: Session, data: VisitCreate, actor: User) -> Visit:
         chief_complaint=data.chief_complaint,
         vital_signs=data.vital_signs.to_db() if data.vital_signs else None,
         free_text_description=data.free_text_description,
+        is_pregnant=data.is_pregnant,
     )
     db.add(visit)
     db.flush()
@@ -147,12 +174,18 @@ def update_visit(db: Session, visit_id: uuid.UUID, data: VisitUpdate, actor: Use
     if visit is None:
         raise NotFoundError("Không tìm thấy lượt khám")
     changes = data.model_dump(exclude_unset=True)
+    vitals_only = set(changes) <= {"vital_signs"}
+    if actor.role == "Physician":
+        # Bác sĩ đo lại khi khám (cân nặng trẻ em in trên đơn); không đổi lời kể đã dùng cho AI.
+        if not (visit.status == "Examining" and visit.physician_id == actor.user_id and vitals_only):
+            raise AppError(409, "VISIT_LOCKED", "Bác sĩ chỉ sửa được sinh hiệu của lượt mình đang khám")
     # Sau check-in vẫn cho đo lại sinh hiệu để luật tính lại mức ưu tiên khi bệnh nhân chuyển nặng.
-    vitals_only = visit.status == "CheckedIn" and set(changes) <= {"vital_signs"}
-    if visit.status != "Waiting" and not vitals_only:
+    elif visit.status != "Waiting" and not (visit.status == "CheckedIn" and vitals_only):
         raise AppError(
             409, "VISIT_LOCKED", "Chỉ sửa được lượt khám khi còn chờ (Waiting); sau check-in chỉ sửa được sinh hiệu"
         )
+    if changes.get("is_pregnant"):
+        _check_pregnancy(db.get(Patient, visit.patient_id), True, visit.visit_date.date())
     if "vital_signs" in changes:
         changes["vital_signs"] = data.vital_signs.to_db() if data.vital_signs else None
     if changes.get("chief_complaint", "") is None:
@@ -224,6 +257,24 @@ def release(db: Session, visit_id: uuid.UUID, actor: User) -> Visit:
     )
 
 
+def _cancel_draft(db: Session, visit_id: uuid.UUID, actor: User, reason: str) -> None:
+    """Đơn nháp chưa trừ kho: bỏ để lượt đã đóng không còn đơn treo."""
+    draft = db.scalar(select(Prescription).where(Prescription.visit_id == visit_id, Prescription.status == "Draft"))
+    if draft is None:
+        return
+    draft.status, draft.cancelled_at = "Cancelled", func.now()
+    audit.record(
+        db,
+        action="UPDATE",
+        entity="prescription",
+        entity_id=draft.prescription_id,
+        actor_id=actor.user_id,
+        old_values={"status": "Draft"},
+        new_values={"status": "Cancelled", "reason": reason},
+    )
+    db.flush()
+
+
 def cancel(db: Session, visit_id: uuid.UUID, reason: str, actor: User) -> Visit:
     """Nurse: Waiting/CheckedIn, hoặc Prescribed khi bệnh nhân bỏ về (billing_service hoàn kho, hủy đơn và
     hóa đơn). Physician: Examining do chính mình nhận. Lý do lưu trong audit_log."""
@@ -237,7 +288,7 @@ def cancel(db: Session, visit_id: uuid.UUID, reason: str, actor: User) -> Visit:
         allowed, where = ("Examining",), (Visit.physician_id == actor.user_id,)
     else:
         raise AppError(403, "FORBIDDEN", "Bạn không có quyền hủy lượt khám")
-    return _transition(
+    visit = _transition(
         db,
         visit_id,
         actor,
@@ -247,6 +298,8 @@ def cancel(db: Session, visit_id: uuid.UUID, reason: str, actor: User) -> Visit:
         extra_where=where,
         audit_extra={"reason": reason},
     )
+    _cancel_draft(db, visit_id, actor, "Cancelled")
+    return visit
 
 
 # --- Hàm nội bộ: service đơn thuốc, hóa đơn gọi trong cùng transaction ----------------------------
@@ -351,20 +404,7 @@ def refer(db: Session, visit_id: uuid.UUID, data: ReferralIn, actor: User) -> Vi
         conflict_code=code,
         audit_extra={"outcome": "Referred", "facility_name": referral["facility_name"]},
     )
-    # Đơn nháp chưa trừ kho: bỏ để lượt đã đóng không còn đơn treo
-    draft = db.scalar(select(Prescription).where(Prescription.visit_id == visit_id, Prescription.status == "Draft"))
-    if draft is not None:
-        draft.status, draft.cancelled_at = "Cancelled", func.now()
-        audit.record(
-            db,
-            action="UPDATE",
-            entity="prescription",
-            entity_id=draft.prescription_id,
-            actor_id=actor.user_id,
-            old_values={"status": "Draft"},
-            new_values={"status": "Cancelled", "reason": "Referred"},
-        )
-        db.flush()
+    _cancel_draft(db, visit_id, actor, "Referred")
     return visit
 
 

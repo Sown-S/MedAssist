@@ -1205,6 +1205,7 @@ symptoms:
 - symptom_code: chlamydial_trichomonal_vaginitis_cervicitis
   symptom_name: Khí hư nhầy mủ cổ tử cung hoặc khí hư loãng có bọt màu vàng xanh kèm ngứa rát âm đạo
   category: dermatologic
+  applicable_sex: Female
 - symptom_code: photodermatitis_occupational_skin_lesion
   symptom_name: Đỏ da, bọng nước vùng tiếp xúc ánh nắng hoặc hóa chất/dầu mỡ nghề nghiệp
   category: dermatologic

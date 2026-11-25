@@ -1,8 +1,12 @@
 ---
 schema: okf_release_v1
-label: KB-2026.12.1
+label: KB-2026.12.2
 description: Bản phát hành tri thức 154 bệnh, 299 triệu chứng, 12 luật, 1530 quan hệ, 11 nguồn và 157 trích dẫn.
 ---
+
+## Changelog KB-2026.12.2
+
+- Thêm trường `applicable_sex` cho bệnh và triệu chứng (mặc định `Any`). Đánh dấu `Female` cho `viem_am_dao_do_trung_roi`, `viem_am_ho_am_dao_do_nam_candida` và triệu chứng `chlamydial_trichomonal_vaginitis_cervicitis`. Gợi ý AI bỏ các bệnh này với bệnh nhân nam; giới tính Khác không lọc. Không đổi quan hệ, trọng số hay luật.
 
 ## Changelog KB-2026.12.1
 
