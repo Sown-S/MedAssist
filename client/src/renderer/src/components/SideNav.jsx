@@ -1,6 +1,7 @@
 import { Fragment, useEffect, useState } from 'react'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
-import Icon, { Logo } from './Icon'
+import Icon from './Icon'
+import BrandPulse from './BrandPulse'
 import { translate } from '../i18n'
 import { useAdminNav } from '../context/AdminNavContext'
 import { useQueue, isQueued, isMine, inRoom } from '../api/queueStore'
@@ -146,7 +147,7 @@ export default function SideNav({ user, collapsed, onToggle }) {
         <Icon name="chevrons-left" />
       </button>
       <div className="brand">
-        <Logo />
+        <BrandPulse />
         <span className="t">
           Med<b>Assist</b>
         </span>

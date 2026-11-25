@@ -124,7 +124,7 @@ const fold = (t) => t.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/
 export function ChangeList({ detail, ctx, onDrop }) {
   const [kind, setKind] = useState('all')
   const [q, setQ] = useState('')
-  if (!detail) return <Skeleton rows={4} />
+  if (!detail) return <Skeleton rows={4} label="Loading release content" />
   if (!detail.changes.length) return <Empty icon="folder" title="No changes yet" text="Add or edit items in the Knowledge base tab — each saved draft appears here." />
   const count = (k, a) => detail.changes.filter((c) => (k === 'all' || c.kind === k) && (!a || c.action === a)).length
   const term = fold(q.trim().toLowerCase())

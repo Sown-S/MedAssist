@@ -49,7 +49,7 @@ export default function RoomsPage({ onNavigate }) {
   const free = exam.filter((r) => !r.physician).length
 
   return (
-    <div>
+    <div className="vflow">
       <div className="pg-h">
         <div>
           <h2>Rooms</h2>

@@ -1,5 +1,9 @@
 import Icon from './Icon'
 import { translate } from '../i18n'
+import CountUp from './CountUp'
+
+// Số trong ô: undefined = dữ liệu chưa về → khung xương nhấp nháy (không hiện 0 gây hiểu nhầm); có số → đếm lên.
+const Figure = ({ value }) => (value === undefined ? <i className="skel-n" aria-label={translate('Loading…')} /> : <CountUp value={value} />)
 
 // Ô số liệu ở trang chủ: biểu tượng màu + nhãn ở đầu, số lớn, một dòng phụ giải thích con số; bấm được thì có mũi tên.
 // tone: 'g' xanh lá | 'r' đỏ | 'b' xanh dương | 'v' tím | 'a' cam | 't' xanh ngọc. alert → nền đỏ nhạt, số đỏ, chấm nhấp nháy.
@@ -21,7 +25,9 @@ export function HomeTile({ value, label, sub, icon = 'chart', tone = 'b', alert,
         {alert && <span className="htile-ping" aria-hidden="true" />}
         {onClick && <Icon name="arrow-up-right" className="htile-go" />}
       </span>
-      <b className="num rt-n val htile-n">{value}</b>
+      <b className="num rt-n val htile-n">
+        <Figure value={value} />
+      </b>
       {sub ? <span className="htile-s">{sub}</span> : <span className="htile-s">&nbsp;</span>}
     </Tag>
   )
@@ -42,7 +48,9 @@ export function Kpi({ c = 'p', icon, label, value, go, alert, onClick }) {
         </div>
         {translate(label)}
       </div>
-      <div className="val num">{value}</div>
+      <div className="val num">
+        <Figure value={value} />
+      </div>
       {go && <span className="go">{go}</span>}
     </button>
   )

@@ -98,7 +98,7 @@ export default function AiLogsTab() {
       </div>
 
       <ErrorNote>{err}</ErrorNote>
-      {!data && !err && <Skeleton rows={6} cols={4} />}
+      {!data && !err && <Skeleton rows={6} cols={4} label="Loading the AI run log" />}
       {data && (
         <div className="tbl-wrap mt-10">
           <div className="tbl-wrap">

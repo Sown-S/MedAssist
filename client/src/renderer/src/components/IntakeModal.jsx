@@ -5,7 +5,7 @@ import Icon from './Icon'
 import { syncQueue } from '../api/queueStore'
 import * as clinic from '../api/clinicApi'
 import { VITAL_KEYS, checkVitals, vitalsFromForm } from '../api/vitals'
-import { toPayload, extractionStale } from '../api/symptoms'
+import { toPayload, extractionStale, useSymptomCatalog, fitsSex } from '../api/symptoms'
 import VitalsFields from './VitalsFields'
 import VitalProposals from './VitalProposals'
 import SymptomPanel from './SymptomPanel'
@@ -38,6 +38,7 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
   const { showToast } = useToast()
   const [form, setForm] = useState(EMPTY)
   const [syms, setSyms] = useState({})
+  const symCatalog = useSymptomCatalog()
   const [print, setPrint] = useState(true)
   const [touched, setTouched] = useState(false)
   const [dupes, setDupes] = useState(null)
@@ -90,7 +91,14 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
   const vWarn = vit.warnings
   const age = existing ? ageOf(existing.dob) : ageOf(form.dob)
   const child = age !== '' && age < 12
-  const pregnancyAsked = askPregnancy(existing ? existing.gender : form.gender, age)
+  // Đổi giới tính (hoặc trích xuất thêm) mà có triệu chứng không hợp giới tính (vd khí hư âm đạo với nam) → bỏ khỏi danh sách,
+  // không để triệu chứng đang bị ẩn vẫn được lưu.
+  const sex = existing ? existing.gender : form.gender
+  const pregnancyAsked = askPregnancy(sex, age)
+  useEffect(() => {
+    const bad = symCatalog.list.filter((s) => syms[s.key] && !fitsSex(s, sex)).map((s) => s.key)
+    if (bad.length) setSyms((cur) => Object.fromEntries(Object.entries(cur).filter(([k]) => !bad.includes(k))))
+  }, [sex, syms, symCatalog.list])
   // Luật cờ đỏ / ưu tiên chạy ở server khi lưu (POST /visits/{id}/assessment).
   const vitals = vitalsFromForm(form)
   const draft = () => existing ?? { name: form.name.trim(), gender: form.gender, age: ageOf(form.dob), allergies: form.allergies.trim(), history: form.history.trim() }
@@ -286,7 +294,7 @@ export default function IntakeModal({ open, onClose, onRedFlag, patient = null }
               <span>Symptoms</span>
             </div>
             <SymptomPanel
-              gender={existing ? existing.gender : form.gender}
+              gender={sex}
               value={syms}
               onChange={setSyms}
               text={form.reason}

@@ -1,7 +1,7 @@
 // Kết thúc khám: đồng bộ chẩn đoán → lưu đơn nháp → xác nhận (server trừ kho FEFO, lượt sang Prescribed, lập hoá đơn).
 // Không kê thuốc thì dùng “Hoàn tất khám”.
 import { apiGet, apiPost, apiRequest, ApiError } from './client'
-import { conditionOf } from './conditionCatalog'
+import { conditionOf, parseDiagnosis } from './conditionCatalog'
 
 const V1 = '/api/v1'
 
@@ -23,12 +23,6 @@ export const confirmPrescription = (visitId) => apiPost(`${V1}/visits/${visitId}
 export const completeExam = (visitId) => apiPost(`${V1}/visits/${visitId}/complete-exam`, {})
 export const reopenPrescription = (visitId, reason) => apiPost(`${V1}/visits/${visitId}/prescription/reopen`, { reason })
 
-// “J03.9 — Viêm amidan cấp” → { icd: 'J03.9', name }; chữ tự do → { icd: null, name }.
-function parseDiagnosis(text) {
-  const t = String(text ?? '').trim()
-  const m = t.match(/^([A-Z]\d{2}(?:\.[0-9A-Z]{1,4})?)\s*[—–-]\s*(.+)$/i)
-  return m ? { icd: m[1].toUpperCase(), name: m[2].trim() } : { icd: null, name: t }
-}
 const same = (a, b) => String(a ?? '').trim().toLowerCase() === String(b ?? '').trim().toLowerCase()
 
 // Đồng bộ chẩn đoán trên phiếu với server mà không tạo trùng khi chốt lại: giữ cái đã có, rút lại cái đã bỏ, thêm cái mới

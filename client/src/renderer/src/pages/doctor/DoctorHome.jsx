@@ -14,7 +14,7 @@ import { ymd, dmy, hhmm } from '../../utils/format'
 
 export default function DoctorHome({ go }) {
   const { user } = useAuth()
-  const { visits } = useQueue()
+  const { visits, loaded: queueLoaded, loadFailed } = useQueue()
   const inv = useInventory()
   const now = useNow()
   const [waitOpen, setWaitOpen] = useState(null) // null = đóng; '' = mở; id = mở và bung sẵn người đó
@@ -35,23 +35,25 @@ export default function DoctorHome({ go }) {
   const recent = serverWeek.list.map((r) => ({ ...r, day: ymd(new Date(r.at)), rxAt: r.at }))
   const lowStock = inv.drugs.filter((d) => d.active && d.kind === 'drug' && stockOf(d, inv.batches).statuses.some((s) => s === 'out' || s === 'low')).length
 
+  // Chưa có dữ liệu → undefined để ô hiện khung xương thay vì số 0; tải lỗi → “—”.
+  const when = (ok, v, failed) => (ok ? v : failed ? '—' : undefined)
   // Ô số liệu; chi tiết (người kế tiếp, đơn hôm nay/tuần…) nằm ở tooltip và ở các thẻ bên dưới.
   const tiles = [
     {
       tone: 'g',
       icon: 'users',
       title: 'Waiting for consultation',
-      value: waiting.length,
+      value: when(queueLoaded, waiting.length, loadFailed),
       hint: ready[0] ? translate('Next') + ': ' + no(ready[0].ticket) + ' — ' + ready[0].name : waiting.length ? translate('Nobody checked in yet') : translate('No one is waiting.'),
       run: () => setWaitOpen('')
     },
-    { tone: 'b', icon: 'door-open', title: 'In my room', value: mine.length, hint: mine[0] ? mine[0].name : translate('No patient in your room'), run: () => go('consult', mine[0]?.id) },
-    { tone: 'a', icon: 'flask-conical', title: 'Lab tests', value: labs.length, hint: `${labs.length} ${translate('patients out for lab tests')}`, run: () => setLabOpen(true) },
+    { tone: 'b', icon: 'door-open', title: 'In my room', value: when(queueLoaded, mine.length, loadFailed), hint: mine[0] ? mine[0].name : translate('No patient in your room'), run: () => go('consult', mine[0]?.id) },
+    { tone: 'a', icon: 'flask-conical', title: 'Lab tests', value: when(queueLoaded, labs.length, loadFailed), hint: `${labs.length} ${translate('patients out for lab tests')}`, run: () => setLabOpen(true) },
     {
       tone: 'v',
       icon: 'file-text',
       title: 'My prescriptions',
-      value: rxWeek,
+      value: when(serverWeek.loaded, rxWeek, !!serverWeek.error),
       hint: `${rxToday.length} ${translate('prescriptions today')} · ${rxWeek} ${translate('prescriptions this week')}`,
       run: () => go('prescriptions')
     },
@@ -59,7 +61,7 @@ export default function DoctorHome({ go }) {
       tone: 't',
       icon: 'pill',
       title: 'Drug cabinet',
-      value: inv.drugs.filter((d) => d.active && d.kind === 'drug').length,
+      value: when(inv.loaded, inv.drugs.filter((d) => d.active && d.kind === 'drug').length),
       hint: lowStock ? `${lowStock} ${translate('drugs low or out of stock')}` : translate('All drugs in stock'),
       run: () => go('drugs')
     },
