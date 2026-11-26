@@ -7,6 +7,7 @@ import datetime
 import hashlib
 import json
 import uuid
+from collections.abc import Callable
 from typing import Any
 
 from sqlalchemy import and_, case, func, or_, select, text, tuple_, update
@@ -19,7 +20,9 @@ from app.core.config import settings
 from app.exceptions import AppError
 from app.models import AiAssessmentLog, Patient, User, Visit, VisitSymptom
 from app.models.user import SYSTEM_USER_ID
+from app.schemas.visit import VisitUpdate
 from app.services import audit_service as audit
+from app.services import queue_service
 from app.services.queue_service import get_visit
 
 ASSESSABLE_STATUSES = ("Waiting", "CheckedIn", "Examining")
@@ -142,6 +145,7 @@ def enqueue_assessment(db: Session, visit_id: uuid.UUID, actor: User, reader: Kn
         run.status, run.mode, run.candidates, run.completed_at = "Skipped", "RuleOnly", [], func.now()
     db.add(run)
 
+    old_priority = visit.triage_priority
     _apply_triage(
         visit,
         is_red_flag=gate["is_red_flag"],
@@ -164,9 +168,24 @@ def enqueue_assessment(db: Session, visit_id: uuid.UUID, actor: User, reader: Kn
             "ai_status": visit.ai_status,
             "is_red_flag": gate["is_red_flag"],
             "rule_hits": [h["rule_key"] for h in hits],
+            "triage_priority": visit.triage_priority,
         },
+        old_values={"triage_priority": old_priority},
     )
     return run
+
+
+def update_visit(
+    db: Session, visit_id: uuid.UUID, data: VisitUpdate, actor: User, reader: Callable[[], KnowledgeReader]
+) -> Visit:
+    """Sửa lượt khám. Sinh hiệu đổi ở lượt đã lưu tiếp đón thì đánh giá lại ngay trong cùng transaction:
+    mức ưu tiên, cờ đỏ là thông tin an toàn, không chờ client gửi yêu cầu thứ hai (ERD §4)."""
+    before = dict(get_visit(db, visit_id).vital_signs or {})
+    visit = queue_service.update_visit(db, visit_id, data, actor)
+    if dict(visit.vital_signs or {}) != before and db.scalar(select(queue_service.intake_saved(visit_id))):
+        enqueue_assessment(db, visit_id, actor, reader())
+        db.refresh(visit)
+    return visit
 
 
 def _text_hash(text: str | None) -> str:

@@ -9224,6 +9224,18 @@
       ],
       "title": "Height Cm"
      },
+     "pain_vas": {
+      "anyOf": [
+       {
+        "description": "Điểm đau VAS (điểm), 0–10",
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Pain Vas"
+     },
      "respiratory_rate_bpm": {
       "anyOf": [
        {

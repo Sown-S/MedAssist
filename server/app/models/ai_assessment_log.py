@@ -5,6 +5,7 @@ import uuid
 from typing import Any
 
 from sqlalchemy import (
+    CHAR,
     CheckConstraint,
     DateTime,
     ForeignKeyConstraint,
@@ -77,6 +78,12 @@ class AiAssessmentLog(Base):
         Index("idx_ai_log_lease", "lease_until", postgresql_where="((status)::text = 'Running'::text)"),
         Index("idx_ai_log_queue", "queued_at", postgresql_where="((status)::text = 'Queued'::text)"),
         Index("idx_ai_log_release", "knowledge_release_id"),
+        Index(
+            "idx_ai_log_reasoning_hash",
+            "visit_id",
+            "reasoning_input_hash",
+            postgresql_where="((run_type)::text = 'Assessment'::text AND (status)::text = 'Completed'::text)",
+        ),
         Index("idx_ai_log_visit", "visit_id", text("queued_at DESC")),
     )
 
@@ -98,6 +105,7 @@ class AiAssessmentLog(Base):
     model_name: Mapped[str | None] = mapped_column(String(100))
     model_version: Mapped[str | None] = mapped_column(String(50))
     prompt_version: Mapped[str | None] = mapped_column(String(50))
+    reasoning_input_hash: Mapped[str | None] = mapped_column(CHAR(64))
     latency_phase1_ms: Mapped[int | None] = mapped_column(Integer)
     latency_llm_ms: Mapped[int | None] = mapped_column(Integer)
     latency_total_ms: Mapped[int | None] = mapped_column(Integer)
