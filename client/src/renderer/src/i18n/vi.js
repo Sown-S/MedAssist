@@ -1211,6 +1211,11 @@ export const VI = {
   'e.g. Rest, drink plenty of water, come back if the fever lasts more than 3 days…': 'ví dụ: Nghỉ ngơi, uống nhiều nước, tái khám nếu sốt quá 3 ngày…',
   'Saved on the server:': 'Đã lưu trên máy chủ:',
   'Save vitals': 'Lưu sinh hiệu',
+  'Re-assess, allow lowering': 'Đánh giá lại, cho phép hạ mức',
+  'Re-assess': 'Đánh giá lại',
+  'Re-assessed': 'Đã đánh giá lại',
+  'Re-assess with the current data — the priority may be lowered and the red flag removed; this action is logged.':
+    'Đánh giá lại theo dữ liệu hiện tại, có thể hạ mức và gỡ cờ đỏ; thao tác được ghi nhật ký.',
   'Vitals saved': 'Đã lưu sinh hiệu',
   'Not saved yet — the priority is recalculated when you save.': 'Chưa lưu — mức ưu tiên được tính lại khi bấm Lưu.',
   'No connection to the clinic server — the vitals cannot be saved now. Your notes are kept on this computer.':

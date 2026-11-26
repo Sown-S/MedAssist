@@ -187,7 +187,10 @@ export const visitPatch = (v) => ({ vitals: v.vital_signs ?? {}, serverVitals: v
 export const cancelVisit = (visitId, reason) => apiRequest(`${V1}/visits/${visitId}/cancel`, 'PATCH', { reason })
 
 // POST chạy luật cờ đỏ và ưu tiên ngay; phần AI chạy nền, GET hỏi lại tới khi xong.
-export const triggerAssessment = (visitId) => apiPost(`${V1}/visits/${visitId}/assessment`)
+// allowLower: đánh giá lại cho phép hạ mức, gỡ cờ đỏ (sửa sinh hiệu nhập nhầm); mặc định máy chủ chỉ nâng mức.
+export const triggerAssessment = (visitId, { allowLower = false } = {}) => apiPost(`${V1}/visits/${visitId}/assessment`, allowLower ? { allow_lower: true } : undefined)
+// Nhãn mức ưu tiên cho thông báo sau khi lưu / đánh giá lại.
+export const LEVEL_LABEL = { emergency: 'Emergency', high: 'High priority', routine: 'Routine' }
 export async function getAssessment(visitId) {
   try {
     return await apiGet(`${V1}/visits/${visitId}/assessment`)

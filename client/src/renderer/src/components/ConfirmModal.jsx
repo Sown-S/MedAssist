@@ -2,7 +2,7 @@ import { createPortal } from 'react-dom'
 import Icon from './Icon'
 
 // Hộp xác nhận xoá (kiểu "confirm" của bản mẫu). Bấm ra vùng mờ không huỷ; chỉ nút Hủy mới huỷ.
-export default function ConfirmModal({ open, message, onConfirm, onCancel }) {
+export default function ConfirmModal({ open, message, onConfirm, onCancel, confirmLabel = 'Delete' }) {
   if (!open) return null
   return createPortal(
     <div className="ov show">
@@ -20,7 +20,7 @@ export default function ConfirmModal({ open, message, onConfirm, onCancel }) {
             Cancel
           </button>
           <button className="btn btn-danger" onClick={onConfirm}>
-            Delete
+            {confirmLabel}
           </button>
         </div>
       </div>

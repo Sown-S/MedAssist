@@ -14,7 +14,7 @@ import CancelOrderItemModal from '../../../components/CancelOrderItemModal'
 import { useServerDrugs, reloadServerDrugs } from '../../../api/serverDrugs'
 import { syncDiagnoses, savePrescription, confirmPrescription, completeExam, shortageOf } from '../../../api/examApi'
 import { isServerOnline } from '../../../api/connectivity'
-import { updateVisit, triageOf, visitPatch } from '../../../api/clinicApi'
+import { updateVisit, triageOf, visitPatch, triggerAssessment, LEVEL_LABEL } from '../../../api/clinicApi'
 import { normalizeVitals, vitalsToForm, vitalsFromForm } from '../../../api/vitals'
 import { printPrescription } from '../printRx'
 import { saveDraft, deleteDraft } from '../../../api/draftStore'
@@ -125,6 +125,21 @@ export default function ConsultForm({ visit, user, onDone, onNext, onVisitSaved 
     else showToast('Vitals saved')
   }
 
+  // Lưu thường chỉ nâng mức; gõ nhầm sinh hiệu làm bật cờ đỏ → sửa lại rồi đánh giá lại cho phép hạ mức.
+  // Sinh hiệu chưa lưu thì lưu trước để máy chủ tính theo số đúng.
+  async function reassessLower() {
+    if (vitalsDirty && (await saveVitals()) === false) return
+    let r
+    try {
+      r = await triggerAssessment(visit.id, { allowLower: true })
+    } catch (e) {
+      return showToast(translate(e.message || 'Something went wrong'), 'error')
+    }
+    setAiRun((n) => n + 1)
+    syncQueue()
+    showToast(translate('Re-assessed') + ' · ' + translate(LEVEL_LABEL[triageOf(r?.priority?.final)]))
+  }
+
   const issues = d.rx.map((it) => ({ it, issue: issueOf(it) })).filter((x) => x.issue && x.issue.level !== 'info')
   const { problem, needWeight, vitalErr } = finalizeCheck(visit, d)
 
@@ -204,7 +219,7 @@ export default function ConsultForm({ visit, user, onDone, onNext, onVisitSaved 
 
   return (
     <div className="doc-main">
-      <ConsultHeader visit={visit} vit={vit} prev={prev} alerts={ai.alerts} onVisitSaved={onVisitSaved} />
+      <ConsultHeader visit={visit} vit={vit} prev={prev} alerts={ai.alerts} onVisitSaved={onVisitSaved} onReassessLower={reassessLower} />
 
       <div className="card">
         <div className="utabs">
