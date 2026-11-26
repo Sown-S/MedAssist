@@ -197,13 +197,18 @@ def _validated_suggestions(output: object, allowed: set[str]) -> list[SymptomSug
     except ValidationError:
         return []
     statuses: dict[str, Literal["PRESENT", "ABSENT", "UNKNOWN"]] = {}
+    conflicted: set[str] = set()
     for row in proposal.symptoms:
-        if row.symptom_code not in allowed:
+        code = row.symptom_code
+        if code not in allowed or code in conflicted:
             continue
-        if row.symptom_code in statuses and statuses[row.symptom_code] != row.status:
-            # Không được âm thầm chọn một trạng thái khi LLM sinh trạng thái mâu thuẫn.
-            return []
-        statuses[row.symptom_code] = row.status
+        if code in statuses and statuses[code] != row.status:
+            # Loại riêng mã bị mâu thuẫn trạng thái (vd: "hôm qua sốt, nay hết sốt"),
+            # giữ các mã không xung đột còn lại và không tự gán UNKNOWN.
+            conflicted.add(code)
+            del statuses[code]
+            continue
+        statuses[code] = row.status
     return [
         {"symptom_code": code, "status": status,
          "label": "Reference Suggestion", "requires_confirmation": True}

@@ -297,11 +297,21 @@ def test_duplicate_identical_statuses_are_deduplicated(catalogue):
 
 
 @pytest.mark.parametrize("conflicting", ["ABSENT", "UNKNOWN"])
-def test_conflicting_statuses_discard_the_proposal(catalogue, conflicting):
+def test_conflicting_statuses_omit_only_conflicted_code(catalogue, conflicting):
     client = MockLLMClient({"symptoms": OUTPUT["symptoms"] + [
         {"symptom_code": "signal_a", "status": conflicting},
+        {"symptom_code": "signal_a", "status": conflicting},
     ]})
-    assert extract(catalogue, client) == []
+    result = extract(catalogue, client)
+    assert codes_and_statuses(result) == {"signal_b": "ABSENT", "signal_c": "UNKNOWN"}
+    assert catalogue.calls == [["signal_b", "signal_c"]]
+
+    catalogue.calls.clear()
+    only_conflict = MockLLMClient({"symptoms": [
+        {"symptom_code": "signal_a", "status": "PRESENT"},
+        {"symptom_code": "signal_a", "status": conflicting},
+    ]})
+    assert extract(catalogue, only_conflict) == []
     assert catalogue.calls == []
 
 
