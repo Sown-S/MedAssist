@@ -41,6 +41,10 @@
     "height_cm": {
       "type": "number", "minimum": 30, "maximum": 250, "x-decimals": 1,
       "x-label": "Chiều cao", "x-unit": "cm", "x-hint": "kiểm tra lại có nhầm với cân nặng không"
+    },
+    "pain_vas": {
+      "type": "integer", "minimum": 0, "maximum": 10,
+      "x-label": "Điểm đau VAS", "x-unit": "điểm"
     }
   }
 }

@@ -30,6 +30,7 @@ def test_defaults_are_valid_and_cover_all_keys():
         "billing.consultation_service_code": "DV01",
         "security.idle_logout_minutes": 15,
         "alerts.cluster": {"window_days": 7, "min_cases": 5, "ratio": 2.0},
+        "prescription.gi_protect_age": 60,
         "ai.focus_scope": {
             "groups": ["musculoskeletal"],
             "conditions": [

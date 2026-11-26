@@ -57,6 +57,9 @@ class TriageRule(Base):
         ForeignKeyConstraint(["release_id"], ["knowledge_release.release_id"], name="triage_rule_release_id_fkey"),
         ForeignKeyConstraint(["retired_by"], ["users.user_id"], name="triage_rule_retired_by_fkey"),
         ForeignKeyConstraint(["source_id"], ["knowledge_source.source_id"], name="triage_rule_source_id_fkey"),
+        CheckConstraint(
+            "trigger_when IS NULL OR jsonb_typeof(trigger_when) = 'object'", name="chk_triage_rule_trigger_when"
+        ),
         PrimaryKeyConstraint("triage_rule_id", name="triage_rule_pkey"),
         UniqueConstraint("rule_key", "version", name="uq_triage_rule_key_version"),
         UniqueConstraint("triage_rule_id", "rule_type", name="uq_triage_rule_id_type"),
@@ -71,6 +74,8 @@ class TriageRule(Base):
     rule_name: Mapped[str] = mapped_column(String(255), nullable=False)
     rule_type: Mapped[str] = mapped_column(String(20), nullable=False)
     condition_logic: Mapped[Any] = mapped_column(JSONB(none_as_null=True), nullable=False)
+    # NULL = luật toàn cục; chỉ mở cổng danh sách "Hỏi ngay", luật vẫn luôn được đánh giá (ERD §2.8)
+    trigger_when: Mapped[Any | None] = mapped_column(JSONB(none_as_null=True))
     resulting_priority: Mapped[str] = mapped_column(String(20), nullable=False)
     reason_text: Mapped[str] = mapped_column(Text, nullable=False)
     source_id: Mapped[uuid.UUID] = mapped_column(Uuid, nullable=False)
