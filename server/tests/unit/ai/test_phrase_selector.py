@@ -126,12 +126,69 @@ def test_all_empty_valid_output_is_successful(context):
     assert result.completed and not result.suggestions
 
 
-@pytest.mark.parametrize("second,expected", [("PRESENT", True), ("ABSENT", False)])
-def test_repeated_code_is_deduplicated_or_conflict_rejected(context, second, expected):
+@pytest.mark.parametrize("second", ["PRESENT", "ABSENT", "UNKNOWN"])
+def test_repeated_code_is_deduplicated_and_conflict_omits_only_that_code(context, second):
     output = {"p1": VALID["p1"], "p2": [{"symptom_code": "cough_dry", "status": second}], "unmapped": []}
     result = run(context, Client(output), text="Ho khan; có ho khan.")
-    assert result.completed is expected
-    assert len(result.suggestions) == (1 if expected else 0)
+    assert result.completed is True and result.failure_code is None
+    if second == "PRESENT":
+        assert len(result.suggestions) == 1
+        assert result.suggestions[0]["symptom_code"] == "cough_dry"
+    else:
+        assert result.suggestions == ()
+        assert context[2] == []
+
+
+def test_temporal_conflict_hom_qua_sot_nay_het_sot_completes_without_unknown(monkeypatch):
+    rows = [
+        {"symptom_code": "fever", "symptom_name": "Sốt"},
+        {"symptom_code": "cough_dry", "symptom_name": "Ho khan"},
+    ]
+    reader = FakeKnowledgeReader(symptoms=rows)
+    db, validated = object(), []
+
+    def active(session, codes):
+        assert session is db
+        validated.append(codes)
+
+    monkeypatch.setattr(selector.knowledge_validators, "active_symptoms", active)
+    gate = run_node1({"input_features": {"symptoms": {}}}, reader)
+
+    only_fever = Client({
+        "p1": [{"symptom_code": "fever", "status": "PRESENT"}],
+        "p2": [{"symptom_code": "fever", "status": "ABSENT"}],
+        "unmapped": [],
+    })
+    res_only = asyncio.run(selector.select_phrase_symptoms(
+        "Hôm qua sốt, nay hết sốt.",
+        reader, only_fever, db, cache=CandidateIndexCache(), per_phrase_limit=1,
+        gate_state=gate, identifiers=(), timeout_seconds=30,
+    ))
+    assert res_only.completed is True and res_only.failure_code is None
+    assert res_only.suggestions == ()
+    assert validated == []
+
+    with_cough = Client({
+        "p1": [{"symptom_code": "fever", "status": "PRESENT"}],
+        "p2": [{"symptom_code": "fever", "status": "ABSENT"}],
+        "p3": [{"symptom_code": "cough_dry", "status": "PRESENT"}],
+        "unmapped": [],
+    })
+    res_mixed = asyncio.run(selector.select_phrase_symptoms(
+        "Hôm qua sốt, nay hết sốt, còn ho khan.",
+        reader, with_cough, db, cache=CandidateIndexCache(), per_phrase_limit=1,
+        gate_state=gate, identifiers=(), timeout_seconds=30,
+    ))
+    assert res_mixed.completed is True and res_mixed.failure_code is None
+    assert res_mixed.suggestions == (
+        {
+            "symptom_code": "cough_dry",
+            "status": "PRESENT",
+            "label": "Reference Suggestion",
+            "requires_confirmation": True,
+        },
+    )
+    assert validated == [["cough_dry"]]
 
 
 def test_known_identifiers_are_redacted_in_all_prompt_fields(context):

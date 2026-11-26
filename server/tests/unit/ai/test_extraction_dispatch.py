@@ -66,7 +66,7 @@ def test_explicit_legacy_empty_has_unknown_completion(monkeypatch):
     assert result.failure_code == "LEGACY_EMPTY_UNCLASSIFIED" and not result.suggestions
 
 
-@pytest.mark.parametrize("completed,reason", [(True, None), (False, "CONFLICTING_SELECTION"),
+@pytest.mark.parametrize("completed,reason", [(True, None), (False, "INVALID_SELECTION"),
                                              (False, "EXTRACTION_TIMEOUT"), (False, "RED_FLAG_SKIPPED")])
 def test_default_phrases_retains_actual_outcome_without_legacy_fallback(monkeypatch, completed, reason):
     async def phrase(*args, **kwargs):

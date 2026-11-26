@@ -20,12 +20,29 @@ def plan_for(text="Ho khan; không ho khan."):
     )
 
 
-def test_compact_preserves_states_and_rejects_conflicts():
+def test_compact_preserves_states_and_omits_conflicting_codes():
     plan = plan_for()
     decoded = decode_selection({"p1": ["c1:P"], "p2": ["c1:A"], "unmapped": []}, plan)
     assert decoded["p1"] == [{"symptom_code": "cough_dry", "status": "PRESENT"}]
     assert decoded["p2"] == [{"symptom_code": "cough_dry", "status": "ABSENT"}]
-    assert validate_selection(decoded, plan).failure_code == "CONFLICTING_SELECTION"
+    res_empty = validate_selection(decoded, plan)
+    assert res_empty.completed is True and res_empty.failure_code is None and res_empty.suggestions == ()
+
+    mixed_reader = FakeKnowledgeReader(symptoms=[
+        {"symptom_code": "fever", "symptom_name": "Sốt"},
+        {"symptom_code": "cough_dry", "symptom_name": "Ho khan"},
+    ])
+    mixed_plan = retrieve_phrases(
+        "Hôm qua sốt, nay hết sốt; có ho khan.", mixed_reader, CandidateIndexCache(),
+        identifiers=[], per_phrase_limit=1, deadline=monotonic() + 5,
+    )
+    mixed_decoded = decode_selection({"p1": ["c1:P"], "p2": ["c1:A"], "p3": ["c2:P"], "unmapped": []}, mixed_plan)
+    res_mixed = validate_selection(mixed_decoded, mixed_plan)
+    assert res_mixed.completed is True and res_mixed.failure_code is None
+    assert len(res_mixed.suggestions) == 1
+    assert res_mixed.suggestions[0]["symptom_code"] == "cough_dry"
+    assert res_mixed.suggestions[0]["status"] == "PRESENT"
+
     decoded = decode_selection({"p1": ["c1:U"], "p2": [], "unmapped": []}, plan)
     result = validate_selection(decoded, plan)
     assert result.completed and result.suggestions[0]["status"] == "UNKNOWN"

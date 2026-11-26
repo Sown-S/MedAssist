@@ -104,18 +104,35 @@ def test_worker_selects_once_pins_snapshot_and_commits_audit_atomically(env):
     assert "PRIVATE_PERSON" not in repr(env.audits)
 
 
-@pytest.mark.parametrize("output,code", [({}, "INVALID_SELECTION"),
-    ({"p1": VALID["p1"], "p2": [{"symptom_code": "cough_dry", "status": "ABSENT"}], "unmapped": []},
-     "CONFLICTING_SELECTION")])
-def test_incomplete_output_is_failed_and_never_partial(env, output, code):
-    if code == "CONFLICTING_SELECTION":
-        env.visit.free_text_description = "Ho khan; có ho khan."
-    asyncio.run(env.process(Client(output)))
-    assert env.run.status == "Failed" and env.run.error_detail == code
+def test_incomplete_output_is_failed_and_never_partial(env):
+    asyncio.run(env.process(Client({})))
+    assert env.run.status == "Failed" and env.run.error_detail == "INVALID_SELECTION"
     assert env.run.candidates == [] and env.run.lease_until is None
-    assert env.run.validation_result == {"valid": False, "reason": code}
+    assert env.run.validation_result == {"valid": False, "reason": "INVALID_SELECTION"}
     assert env.audits[0]["new_values"]["status"] == "Failed"
     assert env.events.index("audit") < env.events.index("commit")
+
+
+def test_conflicting_symptom_completes_and_keeps_other_suggestions(env):
+    env.visit.free_text_description = "Hôm qua ho khan, nay hết ho khan; không chóng mặt xoay tròn."
+    output = {
+        "p1": VALID["p1"],
+        "p2": [{"symptom_code": "cough_dry", "status": "ABSENT"}],
+        "p3": VALID["p2"],
+        "unmapped": [],
+    }
+    asyncio.run(env.process(Client(output)))
+    assert env.run.status == "Completed"
+    assert env.run.validation_result == {"valid": True, "reason": None}
+    assert env.run.candidates == [
+        {
+            "symptom_code": "vertigo",
+            "status": "ABSENT",
+            "label": "Reference Suggestion",
+            "requires_confirmation": True,
+        }
+    ]
+    assert env.audits[0]["new_values"]["status"] == "Completed"
 
 
 def test_unmapped_phrase_completes_and_keeps_valid_suggestions(env):

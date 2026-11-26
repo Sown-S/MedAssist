@@ -268,6 +268,22 @@ def test_reason_must_follow_schema_length_limits(catalogue, reason):
     assert_rejected(validate(state, catalogue, output), state, "INVALID_SCHEMA")
 
 
+def test_fourth_candidate_accepts_empty_reason_while_top_three_require_grounded_reasons(catalogue):
+    state = retrieved_state(count=4)
+    output = proposal(state)
+    output["ranking"][3]["reason"] = ""
+
+    result = validate(state, catalogue, output)
+
+    assert result["ai_status"] == "Completed"
+    assert result["mode"] == "Full"
+    assert [c["condition_code"] for c in result["candidates"]] == ["condition_d", "condition_c", "condition_b"]
+    for idx in range(3):
+        bad = deepcopy(output)
+        bad["ranking"][idx]["reason"] = ""
+        assert_rejected(validate(state, catalogue, bad), state, "INVALID_SCHEMA")
+
+
 def test_whitespace_reason_is_rejected(catalogue):
     state = retrieved_state()
     output = proposal(state)

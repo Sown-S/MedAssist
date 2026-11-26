@@ -51,13 +51,16 @@ def _payload(prompt: str) -> dict[str, Any]:
 
 def _reasoning(payload: dict[str, Any]) -> dict[str, Any]:
     ranking = []
-    for candidate in payload.get("candidates", []):
-        codes = [row["symptom_code"] for row in candidate["supporting_evidence"]]
-        codes += [row["symptom_code"] for row in candidate["contradicting_evidence"]]
-        codes += candidate["unknown_key_symptoms"]
-        # Node 4 yêu cầu lý do tiếng Việt có dấu và dẫn đúng một mã bằng chứng của ứng viên.
-        reason = (f"Gợi ý giả lập: dựa trên triệu chứng {codes[0]}." if codes
-                  else "Gợi ý giả lập: chưa có bằng chứng.")
+    for index, candidate in enumerate(payload.get("candidates", [])):
+        if index >= 3:
+            reason = ""
+        else:
+            codes = [row["symptom_code"] for row in candidate["supporting_evidence"]]
+            codes += [row["symptom_code"] for row in candidate["contradicting_evidence"]]
+            codes += candidate["unknown_key_symptoms"]
+            # Node 4 yêu cầu lý do tiếng Việt có dấu và dẫn đúng một mã bằng chứng của ứng viên.
+            reason = (f"Gợi ý giả lập: dựa trên triệu chứng {codes[0]}." if codes
+                      else "Gợi ý giả lập: chưa có bằng chứng.")
         ranking.append({"condition_code": candidate["condition_code"], "reason": reason})
     return {"ranking": ranking, "raise_priority": False}
 

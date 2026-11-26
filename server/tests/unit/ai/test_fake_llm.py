@@ -34,6 +34,15 @@ def test_reasoning_ranks_every_candidate_with_grounded_vietnamese_reason():
         assert any(code in row.reason for code in evidence)
 
 
+def test_fake_reasoning_sets_empty_reason_for_fourth_candidate():
+    state = retrieved_state(count=4)
+    result = asyncio.run(run_node3(state, FakeLLMClient(), timeout_seconds=5))
+
+    proposal = ReasoningOutput.model_validate(result["llm_output"], strict=True)
+    assert all(row.reason.startswith("Gợi ý giả lập") for row in proposal.ranking[:3])
+    assert proposal.ranking[3].reason == ""
+
+
 def test_extraction_reads_present_absent_unknown_from_note(catalogue):  # noqa: F811
     result = extract(catalogue, FakeLLMClient(), text="Sốt 2 ngày, không ho; chưa rõ khó thở.")
     assert codes_and_statuses(result) == {
