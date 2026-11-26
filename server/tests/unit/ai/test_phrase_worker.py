@@ -1,7 +1,7 @@
 """Kiểm worker trích xuất với selector thật và session giả."""
 
 import asyncio
-import datetime
+import time
 from types import SimpleNamespace
 import uuid
 
@@ -78,7 +78,7 @@ def env(monkeypatch):
                             audits=audits, events=events, release_id=release_id)
     async def process(client=None, *, waited=0, attempt=2):
         await runner._process_extraction(
-            assessment_id, visit_id, datetime.datetime.now(datetime.UTC) - datetime.timedelta(seconds=waited),
+            assessment_id, visit_id, time.monotonic() + runner.feature_extractor.EXTRACTION_TIMEOUT_SECONDS - waited,
             reader, client or Client(), "local-gemma", Session, attempt_count=attempt,
         )
     state.process = process

@@ -55,9 +55,10 @@ Hàng đợi là bảng `ai_assessment_log` (ERD §4.1), không dùng Redis hay 
 
 Ngân sách thời gian:
 
-- Tính từ `queued_at`, gồm cả thời gian chờ trong hàng đợi: đánh giá tối đa `AI_ASSESSMENT_TIMEOUT_SECONDS` (90 s), trích xuất `feature_extractor.EXTRACTION_TIMEOUT_SECONDS` (30 s).
+- Thời hạn chờ tính từ `queued_at` đến lúc worker nhận việc: `AI_QUEUE_WAIT_SECONDS` (90 s). Chờ quá hạn thì không gọi LLM.
+- Thời hạn chạy tính từ lúc worker nhận việc: đánh giá `AI_ASSESSMENT_TIMEOUT_SECONDS` (90 s), trích xuất `feature_extractor.EXTRACTION_TIMEOUT_SECONDS` (30 s). Ca trích xuất chờ dưới 90 s sau một ca đánh giá dài vẫn có đủ 30 s.
 - Đánh giá quá hạn hoặc LLM lỗi: kết quả `Degraded`/`RuleOnly`. Trích xuất quá hạn hoặc LLM lỗi: danh sách rỗng. Chỉ lỗi hạ tầng mới `Failed`.
-- Lease không cấp lại ngân sách đã hết.
+- Lease không cấp lại thời hạn chạy đã dùng: lần nhận lại cách `queued_at` hơn `WORKER_LEASE_SECONDS` (150 s), quá thời hạn chờ.
 - Mặc định 1 ca LLM: mỗi worker xử lý tuần tự từng việc.
 
 Dữ liệu nhật ký AI:
