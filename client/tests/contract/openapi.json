@@ -520,6 +520,18 @@
     "title": "AssessmentOut",
     "type": "object"
    },
+   "AssessmentRequest": {
+    "additionalProperties": false,
+    "properties": {
+     "allow_lower": {
+      "default": false,
+      "title": "Allow Lower",
+      "type": "boolean"
+     }
+    },
+    "title": "AssessmentRequest",
+    "type": "object"
+   },
    "AuditLogOut": {
     "properties": {
      "action_type": {
@@ -9224,18 +9236,6 @@
       ],
       "title": "Height Cm"
      },
-     "pain_vas": {
-      "anyOf": [
-       {
-        "description": "Điểm đau VAS (điểm), 0–10",
-        "type": "integer"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Pain Vas"
-     },
      "respiratory_rate_bpm": {
       "anyOf": [
        {
@@ -14423,7 +14423,7 @@
     ]
    },
    "post": {
-    "description": "Chạy pha luật đồng bộ rồi xếp hàng; không chạy Node 2-4 hoặc LLM trong API.\nBác sĩ chỉ chạy lại được lượt mình đang khám (sau khi ghi dấu hiệu khi khám).",
+    "description": "Chạy pha luật đồng bộ rồi xếp hàng; không chạy Node 2-4 hoặc LLM trong API.\nBác sĩ chỉ chạy lại được lượt mình đang khám. Chỉ nâng mức, trừ khi allow_lower.",
     "operationId": "trigger_assessment_api_v1_visits__visit_id__assessment_post",
     "parameters": [
      {
@@ -14437,6 +14437,23 @@
       }
      }
     ],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "anyOf": [
+         {
+          "$ref": "#/components/schemas/AssessmentRequest"
+         },
+         {
+          "type": "null"
+         }
+        ],
+        "title": "Body"
+       }
+      }
+     }
+    },
     "responses": {
      "202": {
       "content": {

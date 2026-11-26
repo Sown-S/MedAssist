@@ -56,6 +56,13 @@ class CandidateOut(BaseModel):
     in_focus_scope: bool
 
 
+class AssessmentRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    # Đánh giá lại có chủ đích (vd sửa sinh hiệu gõ nhầm): được hạ mức, gỡ cờ đỏ; có audit (ERD §4)
+    allow_lower: bool = False
+
+
 class AssessmentOut(BaseModel):
     model_config = ConfigDict(extra="forbid")
 

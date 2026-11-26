@@ -74,10 +74,6 @@ class Visit(Base):
         ),
         CheckConstraint("lab_out_at IS NULL OR status = 'Examining'", name="chk_visit_lab_out"),
         CheckConstraint("(called_at IS NULL) = (called_by IS NULL)", name="chk_visit_called"),
-        CheckConstraint("exam_room_id IS NULL OR physician_id IS NOT NULL", name="chk_visit_exam_room"),
-        CheckConstraint("follow_up_date IS NULL OR follow_up_date > queue_date", name="chk_visit_follow_up"),
-        ForeignKeyConstraint(["exam_room_id"], ["room.room_id"], name="fk_visit_exam_room"),
-        ForeignKeyConstraint(["target_room_id"], ["room.room_id"], name="fk_visit_target_room"),
         ForeignKeyConstraint(["called_by"], ["users.user_id"], name="fk_visit_called_by"),
         ForeignKeyConstraint(["nurse_id"], ["users.user_id"], name="visit_nurse_id_fkey"),
         ForeignKeyConstraint(["patient_id"], ["patient.patient_id"], name="visit_patient_id_fkey"),
@@ -90,7 +86,6 @@ class Visit(Base):
         PrimaryKeyConstraint("visit_id", name="visit_pkey"),
         Index("idx_visit_patient", "patient_id", text("visit_date DESC")),
         Index("idx_visit_physician", "physician_id"),
-        Index("idx_visit_follow_up", "follow_up_date", postgresql_where="(follow_up_date IS NOT NULL)"),
         Index(
             "idx_visit_queue",
             "queue_date",
@@ -144,8 +139,5 @@ class Visit(Base):
     lab_out_at: Mapped[datetime.datetime | None] = mapped_column(DateTime(True))
     called_at: Mapped[datetime.datetime | None] = mapped_column(DateTime(True))
     called_by: Mapped[uuid.UUID | None] = mapped_column(Uuid)
-    exam_room_id: Mapped[uuid.UUID | None] = mapped_column(Uuid)
-    target_room_id: Mapped[uuid.UUID | None] = mapped_column(Uuid)
-    follow_up_date: Mapped[datetime.date | None] = mapped_column(Date)
     created_at: Mapped[datetime.datetime] = mapped_column(DateTime(True), nullable=False, server_default=text("now()"))
     updated_at: Mapped[datetime.datetime] = mapped_column(DateTime(True), nullable=False, server_default=text("now()"))

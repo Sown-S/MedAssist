@@ -95,10 +95,34 @@ def _clear_invalid_pregnancy(db: Session, patient: Patient) -> None:
             visit.is_pregnant = None
 
 
+# Bác sĩ chỉ cập nhật thông tin lâm sàng hỏi được trong buồng khám; thông tin hành chính do quầy giữ
+PHYSICIAN_PATIENT_FIELDS = frozenset({"allergy_notes", "medical_history"})
+
+
+def _check_physician_may_update(db: Session, patient_id: uuid.UUID, fields: set[str], actor: User) -> None:
+    forbidden = sorted(fields - PHYSICIAN_PATIENT_FIELDS)
+    if forbidden:
+        raise AppError(
+            403,
+            "FORBIDDEN_FIELDS",
+            "Bác sĩ chỉ cập nhật được dị ứng và bệnh nền",
+            [{"field": f, "in": "body", "message": "Không có quyền sửa"} for f in forbidden],
+        )
+    examining = select(Visit.visit_id).where(
+        Visit.patient_id == patient_id, Visit.status == "Examining", Visit.physician_id == actor.user_id
+    )
+    if db.scalar(examining.limit(1)) is None:
+        raise AppError(
+            403, "NOT_YOUR_PATIENT", "Bác sĩ chỉ cập nhật được dị ứng, bệnh nền của bệnh nhân mình đang khám"
+        )
+
+
 def update_patient(db: Session, patient_id: uuid.UUID, data: PatientUpdate, actor: User) -> Patient:
     patient = db.scalar(select(Patient).where(Patient.patient_id == patient_id).with_for_update())
     if patient is None:
         raise NotFoundError("Không tìm thấy bệnh nhân")
+    if actor.role == "Physician":
+        _check_physician_may_update(db, patient_id, set(data.model_fields_set), actor)
     changes = data.model_dump(exclude_unset=True, mode="python")
     if "medical_history" in changes and data.medical_history is not None:
         changes["medical_history"] = data.medical_history.model_dump()

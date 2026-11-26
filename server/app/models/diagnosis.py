@@ -31,9 +31,6 @@ class Diagnosis(Base):
         CheckConstraint(
             "confirmed_by_physician = false OR confirmed_at IS NOT NULL", name="chk_diagnosis_confirmed_time"
         ),
-        CheckConstraint(
-            "laterality IS NULL OR laterality IN ('Left', 'Right', 'Bilateral')", name="chk_diagnosis_laterality"
-        ),
         ForeignKeyConstraint(
             ["assessment_id", "visit_id", "assessment_run_type"],
             ["ai_assessment_log.assessment_id", "ai_assessment_log.visit_id", "ai_assessment_log.run_type"],
@@ -61,7 +58,6 @@ class Diagnosis(Base):
     condition_code: Mapped[str | None] = mapped_column(String(80))
     icd10_code: Mapped[str | None] = mapped_column(String(10))
     diagnosis_name: Mapped[str] = mapped_column(String(255), nullable=False)
-    laterality: Mapped[str | None] = mapped_column(String(10))
     is_primary: Mapped[bool] = mapped_column(Boolean, nullable=False, server_default=text("true"))
     matches_top_suggestion: Mapped[bool | None] = mapped_column(Boolean)
     confirmed_by_physician: Mapped[bool] = mapped_column(Boolean, nullable=False, server_default=text("false"))
