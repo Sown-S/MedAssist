@@ -1,6 +1,7 @@
 """API khởi tạo và polling kết quả đánh giá AI và trích xuất triệu chứng của lượt khám."""
 
 import uuid
+from collections.abc import Callable
 from importlib import import_module
 from threading import Lock
 
@@ -64,6 +65,11 @@ def get_knowledge_reader(db: Session = Depends(get_db)) -> KnowledgeReader:
         # reader chung vì request khác có thể vừa refresh sang epoch mới.
         return SnapshotReader(reader.refresh())
     raise _knowledge_unavailable()
+
+
+def get_knowledge_reader_lazy(db: Session = Depends(get_db)) -> Callable[[], KnowledgeReader]:
+    """Chỉ dựng reader khi thật sự cần (vd PATCH lượt khám có đổi sinh hiệu)."""
+    return lambda: get_knowledge_reader(db)
 
 
 def _latest_or_404(db: Session, visit_id: uuid.UUID, knowledge_reader: KnowledgeReader) -> dict:
