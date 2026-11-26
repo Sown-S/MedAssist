@@ -30,6 +30,21 @@ test('mời bệnh nhân, chẩn đoán và hoàn tất khám', async ({ page })
   await expect(mine.locator('.qi').first()).toBeVisible({ timeout: 20_000 })
   await mine.locator('.qi').first().click()
 
+  // Đo lại sinh hiệu trong phòng: Lưu sinh hiệu → máy chủ tính lại mức ưu tiên ngay (không chờ chốt đơn).
+  // SpO2 88% là cờ đỏ; trả về 98% rồi lưu lại (bệnh nhân mời vào có thể đã là ca cấp cứu vì triệu chứng → chỉ kiểm thông báo).
+  await page.getByRole('button', { name: 'Sinh hiệu', exact: true }).click()
+  const save = page.getByRole('button', { name: 'Lưu sinh hiệu' })
+  await expect(save).toBeDisabled()
+  await page.locator('#v-spo2_pct').fill('88')
+  await save.click()
+  await expect(page.locator('.toast').filter({ hasText: 'Đã lưu sinh hiệu · Cấp cứu' })).toBeVisible({ timeout: 10_000 })
+  await expect(page.locator('.ch h2').getByText('Cấp cứu')).toBeVisible({ timeout: 10_000 })
+  await expect(save).toBeDisabled()
+  await page.locator('#v-spo2_pct').fill('98')
+  await save.click()
+  await expect(page.locator('.toast').filter({ hasText: /^Đã lưu sinh hiệu/ }).last()).toBeVisible({ timeout: 10_000 })
+  await expect(save).toBeDisabled()
+
   await page.getByRole('button', { name: 'Khám bệnh (SOAP)' }).first().click()
   const icd = page.locator('.icd-picker input').first()
   await icd.fill('B5')

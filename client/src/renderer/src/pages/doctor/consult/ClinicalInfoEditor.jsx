@@ -6,7 +6,8 @@ import { translate } from '../../../i18n'
 import { updateClinical } from '../../../api/clinicApi'
 
 // Bác sĩ xác nhận / sửa dị ứng và bệnh nền (lễ tân chỉ ghi lời khai); lưu vào hồ sơ để đơn đang kê và các lần sau dùng thông tin mới.
-export function ClinicalInfoEditor({ visit }) {
+// Chỉ gửi allergy_notes, medical_history (bác sĩ không sửa thông tin hành chính); lưu xong đầu phiếu và khung nhắc kê đơn đổi ngay.
+export function ClinicalInfoEditor({ visit, onVisitSaved }) {
   const { showToast } = useToast()
   const [open, setOpen] = useState(false)
   const [f, setF] = useState({ allergies: '', history: '' })
@@ -16,11 +17,13 @@ export function ClinicalInfoEditor({ visit }) {
   }
   async function save() {
     try {
-      await updateClinical(visit.patientId, f)
+      const p = await updateClinical(visit.patientId, f)
+      onVisitSaved?.({ allergies: p.allergies, history: p.history })
       setOpen(false)
       showToast('Patient record updated')
     } catch (e) {
       showToast(translate(e.message), 'error')
+      return false
     }
   }
   if (!open)

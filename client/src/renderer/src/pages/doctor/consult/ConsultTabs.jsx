@@ -1,16 +1,19 @@
 import VitalsFields from '../../../components/VitalsFields'
+import Button from '../../../components/Button'
+import Icon from '../../../components/Icon'
 import { translate } from '../../../i18n'
 import { vitalsText } from '../../../api/vitals'
 import ServerHistory from '../ServerHistory'
 import { isChild } from './rxDraft'
 
 // Tab "Sinh hiệu" của phiếu khám: đo lại trong phòng; trẻ dưới 12 tuổi bắt buộc cân nặng để chốt đơn.
-export function VitalsTab({ visit, vitals, onChange, tried, needWeight, vitalErr }) {
+// Lưu sinh hiệu → máy chủ tính lại mức ưu tiên, cờ đỏ ngay (không chờ chốt đơn).
+export function VitalsTab({ visit, vitals, onChange, tried, needWeight, vitalErr, dirty, onSave }) {
   return (
     <div className="ipanel active">
       <div className="sec-t">Vitals for this visit</div>
       <p className="muted small mt-0">
-        <span>Recorded at check-in:</span> <span className="num">{vitalsText(visit.vitals)}</span>
+        <span>Saved on the server:</span> <span className="num">{vitalsText(visit.vitals)}</span>
       </p>
       <VitalsFields
         value={vitals}
@@ -20,6 +23,12 @@ export function VitalsTab({ visit, vitals, onChange, tried, needWeight, vitalErr
       />
       {vitalErr.length > 0 && <p className="small text-danger">{vitalErr.map((e) => translate(e.msg)).join(' · ')}</p>}
       {isChild(visit) && <p className="muted small">Children under 12: weight is required to finalize a prescription — doses are calculated per kg.</p>}
+      <div className="d-flex justify-end gap-8 mt-12">
+        {dirty && <span className="muted small" style={{ alignSelf: 'center' }}>Not saved yet — the priority is recalculated when you save.</span>}
+        <Button className="btn btn-primary btn-sm" disabled={!dirty} onClick={onSave}>
+          <Icon name="save" /> <span>Save vitals</span>
+        </Button>
+      </div>
     </div>
   )
 }
