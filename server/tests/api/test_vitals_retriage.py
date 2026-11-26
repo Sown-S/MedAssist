@@ -6,9 +6,8 @@ import pytest
 from sqlalchemy import select, text
 
 from app.core.database import SessionLocal
-from app.core.security import hash_password
 from app.main import app
-from app.models import AiAssessmentLog, KnowledgeRelease, KnowledgeSource, TriageRule, User
+from app.models import AiAssessmentLog, KnowledgeRelease, KnowledgeSource, TriageRule
 from app.routers import assessment_router
 from app.services import ai_queue_service
 from tests.unit.ai.fakes import FakeKnowledgeReader
@@ -168,22 +167,10 @@ def test_physician_retriages_own_examining_visit(client, login, red_flag_kb, doc
     assert client.get(f"/api/v1/visits/{vid}", headers=nurse).json()["triage_priority"] == "Emergency"
 
 
-@pytest.fixture
-def pharmacist(users, login):
-    with SessionLocal() as db:
-        if not db.scalar(select(User).where(User.username == "duocsi")):
-            db.add(
-                User(username="duocsi", password_hash=hash_password("Matkhau123"), full_name="DS", role="Pharmacist")
-            )
-            db.commit()
-    return login("duocsi")
-
-
-def test_roles_without_clinical_access_cannot_patch(client, login, red_flag_kb, pharmacist):
+def test_admin_cannot_patch(client, login, red_flag_kb):
     vid = _saved_visit(client, login("yta"))
-    for headers in (pharmacist, login("admin")):
-        r = _patch_vitals(client, headers, vid, spo2_pct=80)
-        assert r.status_code == 403, r.text
+    r = _patch_vitals(client, login("admin"), vid, spo2_pct=80)
+    assert r.status_code == 403, r.text
     assert len(_runs(vid)) == 1
 
 

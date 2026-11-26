@@ -3,19 +3,7 @@
 import decimal
 import uuid
 
-from sqlalchemy import (
-    ARRAY,
-    Boolean,
-    CheckConstraint,
-    Index,
-    Integer,
-    Numeric,
-    PrimaryKeyConstraint,
-    String,
-    Text,
-    Uuid,
-    text,
-)
+from sqlalchemy import Boolean, CheckConstraint, Index, Integer, Numeric, PrimaryKeyConstraint, String, Uuid, text
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.core.database import Base
@@ -26,10 +14,6 @@ class Drug(Base):
     __table_args__ = (
         CheckConstraint("reorder_level >= 0", name="drug_reorder_level_check"),
         CheckConstraint("sale_price >= 0::numeric", name="drug_sale_price_check"),
-        CheckConstraint(
-            "warning_tags <@ ARRAY['nsaid', 'corticoid', 'gi_protect', 'weekly_dose', 'needs_folate', 'pregnancy_contraindicated']::text[]",
-            name="chk_drug_warning_tags",
-        ),
         PrimaryKeyConstraint("drug_id", name="drug_pkey"),
         Index(
             "uq_drug_identity",
@@ -48,7 +32,6 @@ class Drug(Base):
     dosage_form: Mapped[str] = mapped_column(String(50), nullable=False)
     active_ingredient_code: Mapped[str | None] = mapped_column(String(50))
     drug_class: Mapped[str | None] = mapped_column(String(100))
-    warning_tags: Mapped[list[str]] = mapped_column(ARRAY(Text), nullable=False, server_default=text("'{}'"))
     unit: Mapped[str] = mapped_column(String(30), nullable=False)
     sale_price: Mapped[decimal.Decimal] = mapped_column(Numeric(12, 2), nullable=False)
     reorder_level: Mapped[int] = mapped_column(Integer, nullable=False, server_default=text("0"))

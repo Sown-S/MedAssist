@@ -9,7 +9,6 @@ from app.models.audit_log import AuditLog  # noqa: F401
 from app.models.condition import Condition  # noqa: F401
 from app.models.condition_key import ConditionKey  # noqa: F401
 from app.models.condition_symptom import ConditionSymptom  # noqa: F401
-from app.models.credit_note import CreditNote, CreditNoteItem  # noqa: F401
 from app.models.diagnosis import Diagnosis  # noqa: F401
 from app.models.drug import Drug  # noqa: F401
 from app.models.guideline_excerpt import GuidelineExcerpt  # noqa: F401
@@ -28,7 +27,6 @@ from app.models.prescription import Prescription  # noqa: F401
 from app.models.prescription_item import PrescriptionItem  # noqa: F401
 from app.models.referral_facility import ReferralFacility  # noqa: F401
 from app.models.room import Room  # noqa: F401
-from app.models.room_session import RoomSession  # noqa: F401
 
 # Thuốc, kho, dịch vụ, hóa đơn
 from app.models.service import Service, ServicePackage  # noqa: F401

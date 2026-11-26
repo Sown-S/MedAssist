@@ -72,10 +72,6 @@ class _FocusScope(BaseModel):
     value: FocusScope
 
 
-class _GiProtectAge(BaseModel):
-    value: int = Field(ge=0, le=120, strict=True)
-
-
 class _ConsultationServiceCode(BaseModel):
     value: str = Field(max_length=20, pattern=r"^[A-Za-z0-9_-]*$")  # rỗng = dùng phí khám mặc định
 
@@ -112,11 +108,6 @@ SETTINGS: dict[str, tuple[type[BaseModel], Any, str]] = {
         {"window_days": 7, "min_cases": 5, "ratio": 2.0},
         "Cảnh báo cụm ca: trong N ngày có ít nhất M bệnh nhân cùng chẩn đoán/triệu chứng và gấp R lần "
         "trung bình các kỳ N ngày trước",
-    ),
-    "prescription.gi_protect_age": (
-        _GiProtectAge,
-        60,
-        "Từ tuổi này, kê thuốc nhãn nsaid hoặc corticoid mà đơn chưa có thuốc nhãn gi_protect thì cảnh báo",
     ),
     "ai.focus_scope": (
         _FocusScope,

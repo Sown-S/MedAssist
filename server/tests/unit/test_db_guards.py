@@ -55,7 +55,7 @@ def test_every_table_has_a_model(users):
     from app.models import Base
 
     db_tables = set(inspect(engine).get_table_names()) - {"alembic_version"}
-    assert len(db_tables) == 34
+    assert len(db_tables) == 31
     assert set(Base.metadata.tables) == db_tables
 
 
