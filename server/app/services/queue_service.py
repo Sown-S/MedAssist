@@ -176,9 +176,13 @@ def update_visit(db: Session, visit_id: uuid.UUID, data: VisitUpdate, actor: Use
     changes = data.model_dump(exclude_unset=True)
     vitals_only = set(changes) <= {"vital_signs"}
     if actor.role == "Physician":
-        # Bác sĩ đo lại khi khám (cân nặng trẻ em in trên đơn); không đổi lời kể đã dùng cho AI.
-        if not (visit.status == "Examining" and visit.physician_id == actor.user_id and vitals_only):
-            raise AppError(409, "VISIT_LOCKED", "Bác sĩ chỉ sửa được sinh hiệu của lượt mình đang khám")
+        # Bác sĩ đo lại khi khám (cân nặng trẻ em in trên đơn) và ghi mang thai bệnh nhân chỉ nói trong
+        # buồng khám, để khung nhắc kê đơn dùng được; không đổi lời kể đã dùng cho AI.
+        own = visit.status == "Examining" and visit.physician_id == actor.user_id
+        if not (own and set(changes) <= {"vital_signs", "is_pregnant"}):
+            raise AppError(
+                409, "VISIT_LOCKED", "Bác sĩ chỉ sửa được sinh hiệu và tình trạng mang thai của lượt mình đang khám"
+            )
     # Sau check-in vẫn cho đo lại sinh hiệu để luật tính lại mức ưu tiên khi bệnh nhân chuyển nặng.
     elif visit.status != "Waiting" and not (visit.status == "CheckedIn" and vitals_only):
         raise AppError(
