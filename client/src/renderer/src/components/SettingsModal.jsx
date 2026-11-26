@@ -6,6 +6,8 @@ import { SIDEBAR_THEMES, getSidebarTheme, setSidebarTheme } from '../api/sidebar
 import { getBaseUrl } from '../api/serverConfig'
 import { useServerOnline } from '../api/connectivity'
 import { version as appVersion } from '../../../../package.json'
+import { useToast } from '../context/ToastContext'
+import { canExportDiagnostics, exportDiagnostics } from '../lib/errorReport'
 import { COLOR_MODES, UI_SCALES, ACCENTS, getColorMode, setColorMode, getUiScale, setUiScale, getReduceMotion, setReduceMotion, getAccent, setAccent } from '../api/appTheme'
 import { hhmm } from '../utils/format'
 
@@ -366,6 +368,7 @@ export default function SettingsModal({ open, onClose, user, onChangePassword })
                       <dt>{translate('Version')}</dt>
                       <dd className="num">{appVersion}</dd>
                     </dl>
+                    {canExportDiagnostics() && <DiagnosticsButton />}
                   </div>
                 </section>
               </>
@@ -380,5 +383,23 @@ export default function SettingsModal({ open, onClose, user, onChangePassword })
         </button>
       </div>
     </Modal>
+  )
+}
+
+// Lưu nhật ký lỗi của máy này thành một file .txt để gửi nhóm phát triển khi báo lỗi.
+function DiagnosticsButton() {
+  const { showToast } = useToast()
+  return (
+    <button
+      className="btn btn-outline btn-sm acct-act"
+      title={translate('Errors recorded on this computer, with the app and system version — no passwords or patient records')}
+      onClick={async () => {
+        const r = await exportDiagnostics()
+        if (r?.ok) showToast(translate('Error details saved') + ': ' + r.path, 'success')
+      }}
+    >
+      <Icon name="download" />
+      {translate('Save error details')}
+    </button>
   )
 }

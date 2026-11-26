@@ -1,0 +1,4 @@
+/* Lỗi của từng ô nhập (Field): chữ đỏ nhỏ ngay dưới ô, ô viền đỏ. */
+.err{display:flex;align-items:center;gap:4px;margin-top:4px;font-size:var(--fs-sm);line-height:1.4;color:var(--danger)}
+.invalid :is(input,select,textarea){border-color:var(--danger)}
+.invalid :is(input,select,textarea):focus{box-shadow:0 0 0 3px color-mix(in srgb,var(--danger) 18%,transparent)}

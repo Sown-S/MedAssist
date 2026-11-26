@@ -19,6 +19,7 @@ import { useAuth } from '../context/AuthContext'
 import useCallAnnouncer from '../components/useCallAnnouncer'
 import { useServerOnline } from '../api/connectivity'
 import { OfflineBanner } from '../components/NetStatus'
+import Badge from '../components/ui/Badge'
 
 // Công cụ cho nhà phát triển (giả lập mất mạng…): chỉ hiện khi VITE_DEV_TOOLS=true.
 const DEV_TOOLS = import.meta.env.VITE_DEV_TOOLS === 'true'
@@ -142,7 +143,7 @@ export default function Reception() {
 
         {DEV_TOOLS && (
           <div className="dev-tools">
-            <span className="badge b-neutral">Developer tool</span>
+            <Badge tone="neutral">Developer tool</Badge>
             <label>
               <input type="checkbox" checked={simulateOffline} onChange={(e) => setSimulateOffline(e.target.checked)} />
               Simulate a network outage

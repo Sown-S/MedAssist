@@ -195,7 +195,7 @@ export function LabOrderResults({ order, summary }) {
         <span>· {order.by}</span>
         {order.diagnosis && <span className="muted">· {order.diagnosis}</span>}
       </div>
-      <div className="tbl-wrap">
+      <div className="tbl-wrap" tabIndex={0}>
         <table className="lab-res-table">
           <tbody>
             {rows.map((r) => (

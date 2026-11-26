@@ -42,8 +42,8 @@ export default function StockCardModal({ drug, moves, onClose }) {
             <Icon name="download" /> <span>Export to Excel (CSV)</span>
           </button>
         </div>
-        <div className="tbl-wrap" style={{ maxHeight: 420 }}>
-          <div className="tbl-wrap">
+        <div className="tbl-wrap" tabIndex={0} style={{ maxHeight: 420 }}>
+          <div className="tbl-wrap" tabIndex={0}>
             <table>
               <thead>
                 <tr>

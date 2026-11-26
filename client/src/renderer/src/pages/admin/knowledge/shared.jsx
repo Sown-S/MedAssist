@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { translate } from '../../../i18n'
 import { KINDS, OPEN_STATUSES, listAll, listReleases, listSources } from '../../../api/knowledgeApi'
 import { LogicView } from './logic'
+import Badge from '../../../components/ui/Badge'
 
 export const KIND_META = {
   symptoms: { label: 'Symptoms', one: 'Symptom', keyLabel: 'Symptom code' },
@@ -109,7 +110,7 @@ export function Summary({ kind, values, names }) {
       <span>
         <b>{names.condition[v.condition_code] ?? v.condition_code}</b> <span className="muted">↔</span> {names.symptom[v.symptom_code] ?? v.symptom_code}{' '}
         <span className={'badge ' + (v.polarity === 'CONTRADICTS' ? 'b-danger' : 'b-success')}>{v.polarity === 'CONTRADICTS' ? 'Contradicts' : 'Supports'}</span>{' '}
-        <span className="num">{Number(v.weight).toFixed(2)}</span> {v.is_key && <span className="badge b-info">Key symptom</span>}
+        <span className="num">{Number(v.weight).toFixed(2)}</span> {v.is_key && <Badge tone="info">Key symptom</Badge>}
       </span>
     )
   if (kind === 'excerpts')

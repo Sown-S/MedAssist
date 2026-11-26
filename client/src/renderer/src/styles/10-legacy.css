@@ -11,11 +11,7 @@
   --accent:#1877F2;
   --violet:#7C3AED;
   --field-bg:#FFFFFF;
-  --blur:none;
-  /* Thanh menu bên trái — đổi theo theme (Cài đặt › Giao diện thanh menu) */
-  --sidebar-dots:rgb(var(--p-rgb) / .28);
 }
-:root[data-sidebar="dark"]{--sidebar-dots:rgba(125,179,255,.28);}
 h1,h2,h3,.display{font-family:var(--font);}
 button,input,select,textarea{font-family:inherit;}
 html{background:var(--bg-solid);color-scheme:light;}
@@ -230,7 +226,7 @@ select option{background:var(--solid);color:var(--ink);}
 .staff-actions{min-width:180px;}
 .staff-secret{display:flex;align-items:center;gap:22px;flex-wrap:wrap;margin:14px 0 6px;padding:14px 16px;border:1px dashed var(--border);border-radius:12px;background:var(--field-bg);}
 .staff-secret .mono{font-size:15px;color:var(--ink);}
-.staff-secret-pw{font-size:17px !important;font-weight:700;letter-spacing:.04em;}
+.staff-secret-pw{font-size:17px;font-weight:700;letter-spacing:.04em;}
 .staff-secret .btn{margin-left:auto;display:inline-flex;align-items:center;gap:6px;}
 
 /* Phân quyền */
@@ -441,7 +437,8 @@ button.call-chip:hover{border-color:var(--accent);}
 .kb-logic-preview{margin-top:8px;display:flex;gap:6px;align-items:center;flex-wrap:wrap;}
 .kb-grow{flex:1;min-width:180px;}
 .kb-num{width:90px;padding:7px 9px;border:1px solid var(--border);border-radius:8px;background:var(--field-bg);color:var(--ink);font-variant-numeric:tabular-nums;}
-.kb-check{flex-direction:row !important;align-items:center;gap:8px;}
+.kb-check{align-items:center;gap:8px;}
+.field.kb-check{flex-direction:row;}
 .kb-changes{display:flex;flex-direction:column;gap:8px;}
 .kb-change{border:1px solid var(--border);border-radius:10px;padding:9px 12px;background:var(--surface);}
 .kb-change-head{display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap;}
@@ -456,7 +453,6 @@ button.call-chip:hover{border-color:var(--accent);}
 .kb-release-empty{padding:10px 0 4px;}
 /* Cấp phát & thu tiền (PaymentModalLive): nhãn, tên, giá, nút thẳng cột. */
 /* Cột cuối 36px dành cho nút xoá ở mọi dòng → cột giá luôn thẳng hàng dù dòng có nút hay không. */
-.kb-json{margin:6px 0 0;padding:8px 10px;max-width:520px;white-space:pre-wrap;word-break:break-word;font:12px 'IBM Plex Mono';background:var(--field-bg);border:1px solid var(--border);border-radius:8px;color:var(--ink-soft);}
 
 /* Lịch sử khám từ server */
 

@@ -8,6 +8,8 @@ import { translate } from '../i18n'
 import { ticketNo } from './queuePrint'
 import { lookupPatients, getPatient } from '../api/clinicApi'
 import { ErrorNote } from './DataState'
+import EmptyState from './ui/EmptyState'
+import Badge from './ui/Badge'
 
 // Tìm qua GET /patients/lookup (gõ xong 300 ms), chọn ai thì tải đủ hồ sơ.
 function useServerSearch(q, picked) {
@@ -123,7 +125,7 @@ export default function SearchModal({ open, onClose, onCheckIn, readOnly }) {
                       <span className="num">{r.code ?? r.id}</span> · {r.dob} · <span className="num">{r.phone}</span>
                     </span>
                   </span>
-                  {v && !isClosed(v) && <span className="badge b-info">{ticketNo(v.ticket)}</span>}
+                  {v && !isClosed(v) && <Badge tone="info">{ticketNo(v.ticket)}</Badge>}
                 </button>
               )
             })}
@@ -152,12 +154,9 @@ export default function SearchModal({ open, onClose, onCheckIn, readOnly }) {
                 </button>
               </>
             ) : (
-              <div className="empty">
-                <div className="ill">
-                  <Icon name="user-search" />
-                </div>
+              <EmptyState icon="user-search">
                 <p className="muted small">{translate('Select a patient to see their details.')}</p>
-              </div>
+              </EmptyState>
             )}
           </div>
         </div>

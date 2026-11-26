@@ -9,7 +9,7 @@ import { getLang, translate } from '../i18n'
 const SEEN_KEY = 'medassist_cluster_seen'
 const SHOWN = 2 // dòng hiện sẵn; còn lại bấm "Xem tất cả"
 
-export const clusterLine = (a, windowDays) => {
+const clusterLine = (a, windowDays) => {
   const avg = Number(a.baseline_avg).toLocaleString(getLang() === 'vi' ? 'vi-VN' : 'en-GB', { maximumFractionDigits: 2 })
   const kind = a.kind === 'symptom' ? 'Symptom' : 'Diagnosis'
   return translate(`${kind} ${a.name || a.code}: ${a.cases} cases in ${windowDays} days (previous periods averaged ${avg})`)

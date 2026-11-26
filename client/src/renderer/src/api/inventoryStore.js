@@ -42,7 +42,7 @@ export function useInventory() {
 let liveLoaded = false
 let liveLoading = null
 const liveName = (d) => [d.trade_name && d.trade_name !== d.generic_name ? d.trade_name : d.generic_name, d.strength].filter(Boolean).join(' ')
-const fromServerDrug = (d, cost = 0) => ({
+export const fromServerDrug = (d, cost = 0) => ({
   id: d.drug_id,
   name: liveName(d),
   ingredient: d.generic_name,
@@ -61,7 +61,7 @@ const fromServerDrug = (d, cost = 0) => ({
   use30: 0,
   active: d.is_active
 })
-const fromServerBatch = (b) => ({
+export const fromServerBatch = (b) => ({
   id: b.batch_id,
   drugId: b.drug_id,
   lot: b.batch_number,

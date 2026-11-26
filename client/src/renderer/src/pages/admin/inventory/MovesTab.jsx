@@ -44,7 +44,7 @@ export function MovesTab({ inv }) {
           </button>
         </div>
       </div>
-      <div className="tbl-wrap">
+      <div className="tbl-wrap" tabIndex={0}>
         <table>
           <thead>
             <tr>

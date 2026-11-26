@@ -57,3 +57,23 @@ describe('ErrorBoundary', () => {
     expect(screen.getByText('Màn hình bình thường')).toBeTruthy()
   })
 })
+
+describe('ErrorBoundary inline', () => {
+  it('phần con lỗi chỉ hiện một dòng báo, phần còn lại vẫn hiện', () => {
+    const Boom = () => {
+      throw new Error('hỏng')
+    }
+    const spy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    render(
+      <div>
+        <p>Phần khám bệnh</p>
+        <ErrorBoundary inline label="The chart could not be shown.">
+          <Boom />
+        </ErrorBoundary>
+      </div>
+    )
+    expect(screen.getByText('Phần khám bệnh')).toBeTruthy()
+    expect(screen.getByRole('alert').textContent).toContain('The chart could not be shown.')
+    spy.mockRestore()
+  })
+})

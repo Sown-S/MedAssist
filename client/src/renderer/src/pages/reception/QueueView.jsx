@@ -13,6 +13,8 @@ import { vitalsText } from '../../api/vitals'
 import useNewIds from '../../hooks/useNewIds'
 import Clip from '../../components/Clip'
 import { hhmm, dmy } from '../../utils/format'
+import EmptyState from '../../components/ui/EmptyState'
+import Badge from '../../components/ui/Badge'
 
 // Số phút chờ bắt đầu thành vàng / đỏ, theo từng chặng.
 const WAIT_LIMITS = { Waiting: [30, 60], CheckedIn: [15, 30], Examining: [30, 45], labs: [30, 60], Prescribed: [10, 20] }
@@ -95,9 +97,9 @@ export default function QueueView({ readOnly, onPay }) {
   const emergency = (v) => v.triage === 'emergency' && [ST.WAITING, ST.CHECKED_IN].includes(v.status)
   const prioOf = (v) =>
     emergency(v) ? (
-      <span className="badge b-danger">{translate('Emergency')}</span>
+      <Badge tone="danger">{translate('Emergency')}</Badge>
     ) : v.priority && v.status !== ST.FINISHED ? (
-      <span className="badge b-warning">{translate('Priority')}</span>
+      <Badge tone="warning">{translate('Priority')}</Badge>
     ) : (
       <span className="plain">{translate('Routine')}</span>
     )
@@ -124,7 +126,7 @@ export default function QueueView({ readOnly, onPay }) {
           </div>
         </div>
         <div className="card-b">
-          <div className="tbl-wrap">
+          <div className="tbl-wrap" tabIndex={0}>
             {list.length ? (
               <table>
                 <thead>
@@ -188,12 +190,7 @@ export default function QueueView({ readOnly, onPay }) {
                 </tbody>
               </table>
             ) : (
-              <div className="empty">
-                <div className="ill">
-                  <Icon name="inbox" />
-                </div>
-                <b>No patients in this step.</b>
-              </div>
+              <EmptyState icon="inbox" title="No patients in this step." />
             )}
           </div>
         </div>
@@ -208,7 +205,7 @@ export default function QueueView({ readOnly, onPay }) {
           <span className="plain">Transferred at once or placed at the top of the queue · doctors are alerted</span>
         </div>
         <div className="card-b">
-          <div className="tbl-wrap">
+          <div className="tbl-wrap" tabIndex={0}>
             {redFlags.length ? (
               <table>
                 <thead>
@@ -265,12 +262,7 @@ export default function QueueView({ readOnly, onPay }) {
                 </tbody>
               </table>
             ) : (
-              <div className="empty">
-                <div className="ill">
-                  <Icon name="inbox" />
-                </div>
-                <b>No red-flag cases today.</b>
-              </div>
+              <EmptyState icon="inbox" title="No red-flag cases today." />
             )}
           </div>
         </div>

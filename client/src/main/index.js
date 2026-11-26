@@ -1,11 +1,12 @@
-import { app, shell, BrowserWindow, protocol, net, ipcMain, safeStorage, session } from 'electron'
+import { app, shell, BrowserWindow, protocol, net, ipcMain, safeStorage, session, dialog } from 'electron'
 import { join, normalize, sep } from 'path'
 import { pathToFileURL } from 'url'
 import { readFileSync, writeFileSync, existsSync, readdirSync } from 'fs'
 import { X509Certificate } from 'crypto'
 import { verifyAgainstCAs } from './certPin'
 import { profileFromArgs } from './profile'
-import { fetchLatestRelease, RELEASES_URL } from './updateCheck'
+import { fetchLatestRelease, RELEASES_URL, ALL_RELEASES_URL } from './updateCheck'
+import { createLogger, diagnosticsText } from './logger'
 import { is } from '@electron-toolkit/utils'
 
 // Bản build tải giao diện qua giao thức riêng app://medassist (không dùng file://): Origin gửi lên server là
@@ -39,6 +40,13 @@ const readJson = (name) => {
   }
 }
 const writeJson = (name, data) => writeFileSync(fileOf(name), JSON.stringify(data), 'utf8')
+
+// Nhật ký lỗi (userData/logs). Lỗi không bắt được ở main và renderer bị sập cũng ghi vào đây.
+const log = createLogger(join(app.getPath('userData'), 'logs'))
+process.on('uncaughtException', (e) => log.write('error', e?.message ?? String(e), { stack: e?.stack, source: 'main' }))
+process.on('unhandledRejection', (e) => log.write('error', e?.message ?? String(e), { stack: e?.stack, source: 'main' }))
+app.on('render-process-gone', (_e, _wc, d) => log.write('error', `Renderer dừng: ${d.reason} (exit ${d.exitCode})`, { source: 'main' }))
+app.on('child-process-gone', (_e, d) => d.reason !== 'clean-exit' && log.write('warn', `Tiến trình ${d.type} dừng: ${d.reason}`, { source: 'main' }))
 
 // Máy không có kho khoá của hệ điều hành (Linux thiếu keyring): giữ token trong bộ nhớ đến khi tắt app,
 // không ghi chữ thường xuống đĩa (TC03).
@@ -96,7 +104,31 @@ function registerIpc() {
   let latestRelease = null
   ipcMain.handle('update:check', () => (latestRelease ??= fetchLatestRelease((url, init) => net.fetch(url, init), app.getVersion())))
   // Không nhận đường dẫn từ renderer: chỉ mở đúng trang Releases của dự án.
-  ipcMain.handle('update:open', () => shell.openExternal(RELEASES_URL))
+  ipcMain.handle('update:open', (_e, which) => shell.openExternal(which === 'all' ? ALL_RELEASES_URL : RELEASES_URL))
+  // Renderer ghi lỗi: chỉ nhận chuỗi, logger tự cắt độ dài và che token.
+  ipcMain.handle('log:write', (_e, level, message, extra) =>
+    log.write(String(level), String(message ?? ''), { stack: extra?.stack, context: extra?.context, source: 'renderer' })
+  )
+  // Lưu thông tin lỗi: hộp thoại chọn chỗ lưu, ghi một file .txt (phiên bản + môi trường + nhật ký).
+  ipcMain.handle('log:export', async (e) => {
+    const stamp = new Date().toISOString().slice(0, 16).replace(/[-:T]/g, '')
+    const { canceled, filePath } = await dialog.showSaveDialog(BrowserWindow.fromWebContents(e.sender), {
+      title: 'Lưu thông tin lỗi',
+      defaultPath: join(app.getPath('documents'), `medassist-thong-tin-loi-${stamp}.txt`),
+      filters: [{ name: 'Văn bản', extensions: ['txt'] }]
+    })
+    if (canceled || !filePath) return { ok: false, canceled: true }
+    const text = diagnosticsText({
+      app: app.getVersion(),
+      versions: process.versions,
+      platform: `${process.platform} ${process.getSystemVersion?.() ?? ''} (${process.arch})`,
+      serverUrl: readJson('config.json').serverUrl,
+      profile: PROFILE,
+      logs: log.read()
+    })
+    writeFileSync(filePath, text, 'utf8')
+    return { ok: true, path: filePath }
+  })
 }
 
 function createWindow() {
@@ -203,6 +235,7 @@ function pinServerCertificate() {
 app.commandLine.appendSwitch('lang', 'en-GB')
 
 app.whenReady().then(() => {
+  log.write('info', `Mở app ${app.getVersion()}`, { source: 'main' })
   serveApp()
   registerIpc()
   pinServerCertificate()

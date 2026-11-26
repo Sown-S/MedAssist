@@ -9,6 +9,7 @@ import { payInvoice, toServerMethod, receiptOf } from '../../api/billingApi'
 import { printReceipt } from '../queuePrint'
 import { translate } from '../../i18n'
 import { fmt } from './shared'
+import Badge from '../../components/ui/Badge'
 
 // Cột phải tab "Hoá đơn & thanh toán": tổng tiền, hình thức thanh toán, thu tiền (in biên lai), huỷ lượt chưa cấp thuốc.
 export default function PaymentSummary({ visitId, inv, paid, editable, items, patient, user, act, onClose }) {
@@ -46,7 +47,7 @@ export default function PaymentSummary({ visitId, inv, paid, editable, items, pa
             <>
               <span className="lab">{translate('Payment')}</span>
               <div>
-                <span className="badge b-success">{translate('Paid')}</span>
+                <Badge tone="success">{translate('Paid')}</Badge>
               </div>
               <button className="btn btn-outline self-start mt-8" onClick={() => printReceipt(receiptOf(inv, { name: patient.name, ticket: patient.ticket, byName: user.name }))}>
                 <Icon name="printer" />

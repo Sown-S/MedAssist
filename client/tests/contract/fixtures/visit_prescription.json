@@ -1,0 +1,51 @@
+{
+ "method": "get",
+ "path": "/api/v1/visits/{visit_id}/prescription",
+ "status": 200,
+ "role": "physician",
+ "body": {
+  "prescription_id": "a775ea1d-13ea-423c-9268-c6a7decce154",
+  "visit_id": "14c34080-a460-459e-acc5-3dce272b7d3a",
+  "status": "Confirmed",
+  "confirmed_at": "2026-11-25T21:55:32.248211+07:00",
+  "items": [
+   {
+    "item_id": "255bed15-5d5b-40bc-9506-d7250d23118a",
+    "drug_id": "014fd6e5-a6d2-4b39-9a70-9a96fd3bd92c",
+    "drug_name": "Meloxicam 7,5 mg (Mobic 7.5)",
+    "unit": "viên",
+    "dosage": "1 viên",
+    "frequency": "1 lần/ngày sau ăn",
+    "duration_days": 7,
+    "quantity": 7,
+    "instruction": null,
+    "dispense_status": "Pending",
+    "skip_reason": null,
+    "unit_price": 5500,
+    "usable_quantity": null
+   },
+   {
+    "item_id": "6419839c-dcfe-4dd9-b87e-09176de37cd0",
+    "drug_id": "41b36868-d431-4142-8c4e-4f3de6a78477",
+    "drug_name": "Omeprazol 20 mg (Omeprazol 20)",
+    "unit": "viên",
+    "dosage": "1 viên",
+    "frequency": "Sáng trước ăn",
+    "duration_days": 7,
+    "quantity": 7,
+    "instruction": null,
+    "dispense_status": "Pending",
+    "skip_reason": null,
+    "unit_price": 2000,
+    "usable_quantity": null
+   }
+  ],
+  "patient_context": {
+   "chronic_conditions": [],
+   "medical_notes": null,
+   "is_pregnant": null,
+   "allergy_notes": null,
+   "disclaimer": "Hệ thống không kiểm tra tương tác thuốc. Bác sĩ tự đối chiếu bệnh nền và dị ứng."
+  }
+ }
+}

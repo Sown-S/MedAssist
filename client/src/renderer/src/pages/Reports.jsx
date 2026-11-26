@@ -8,6 +8,7 @@ import { useApiData } from '../hooks/useApiData'
 import { PERIODS, rangeOf, reportPath, fillDays, percent } from '../api/reportsApi'
 import { translate } from '../i18n'
 import { vnd, fmtDate } from '../utils/format'
+import ErrorBoundary from '../components/ErrorBoundary'
 
 // Báo cáo vận hành: số liệu tổng hợp chỉ đọc. Precision / Recall không tính ở đây — phòng khám không có nhãn đúng.
 function HBar({ label, value, of, text, tone = '' }) {
@@ -30,7 +31,7 @@ const PERIOD_SUB = { today: 'Today', week: 'This week', month: 'This month' }
 export default function Reports() {
   const [period, setPeriod] = useState('today')
   const range = rangeOf(period)
-  const { data, loading, error } = useApiData(reportPath(range))
+  const { data, loading, error, reload } = useApiData(reportPath(range))
   // Hôm nay chỉ có một điểm: biểu đồ doanh thu lấy 7 ngày gần nhất.
   const chartRange = period === 'today' ? rangeOf('7d') : range
   const week = useApiData(period === 'today' ? reportPath(chartRange) : null)
@@ -64,7 +65,7 @@ export default function Reports() {
       </div>
 
       {loading && <LoadingBlock />}
-      {error && <ErrorBlock message={error} />}
+      {error && <ErrorBlock message={error} onRetry={reload} />}
 
       {data && !loading && (
         <>
@@ -95,7 +96,7 @@ export default function Reports() {
                 {period === 'today' && <span className="plain">{translate('Last 7 days')}</span>}
               </div>
               <div className="card-b">
-                {byDay ? <LineChart points={fillDays(byDay, chartRange).map((x) => ({ label: x.day, value: x.amt }))} fmt={vnd} height={220} /> : <LoadingBlock />}
+                {byDay ? <ErrorBoundary inline label="The chart could not be shown."><LineChart points={fillDays(byDay, chartRange).map((x) => ({ label: x.day, value: x.amt }))} fmt={vnd} height={220} /></ErrorBoundary> : <LoadingBlock />}
               </div>
             </div>
           </div>

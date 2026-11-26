@@ -1,0 +1,53 @@
+{
+ "method": "get",
+ "path": "/api/v1/services",
+ "status": 200,
+ "role": "nurse",
+ "body": [
+  {
+   "service_id": "68cd3563-9f66-4055-9c5a-537d77e57035",
+   "code": "DV01",
+   "name": "Khám bệnh",
+   "kind": "Service",
+   "group_key": "consult",
+   "unit": "lần",
+   "price": 80000,
+   "ref_low": null,
+   "ref_high": null,
+   "ref_text": null,
+   "sample": null,
+   "is_active": true,
+   "updated_at": "2026-11-25T21:55:10.356069+07:00"
+  },
+  {
+   "service_id": "e90fd730-1563-42fb-897b-88ad4611938b",
+   "code": "DV02",
+   "name": "Khám chuyên khoa Nhi",
+   "kind": "Service",
+   "group_key": "consult",
+   "unit": "lần",
+   "price": 100000,
+   "ref_low": null,
+   "ref_high": null,
+   "ref_text": null,
+   "sample": null,
+   "is_active": true,
+   "updated_at": "2026-11-25T21:55:10.356069+07:00"
+  },
+  {
+   "service_id": "3a91ec1d-3a33-48e2-a86b-b812f608b6d0",
+   "code": "DV03",
+   "name": "Thay băng vết thương",
+   "kind": "Service",
+   "group_key": "procedure",
+   "unit": "lần",
+   "price": 50000,
+   "ref_low": null,
+   "ref_high": null,
+   "ref_text": null,
+   "sample": null,
+   "is_active": true,
+   "updated_at": "2026-11-25T21:55:10.356069+07:00"
+  }
+ ]
+}

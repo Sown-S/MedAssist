@@ -1,5 +1,6 @@
 import { ExpiryCell, unitLabel } from './shared'
 import { fmtMoney, fmtDate } from '../../../utils/format'
+import Badge from '../../../components/ui/Badge'
 
 export function BatchTable({ drug, stock, onReceive }) {
   return (
@@ -21,7 +22,7 @@ export function BatchTable({ drug, stock, onReceive }) {
           )}
         </p>
       ) : (
-        <div className="tbl-wrap">
+        <div className="tbl-wrap" tabIndex={0}>
           <table>
             <thead>
               <tr>
@@ -39,7 +40,7 @@ export function BatchTable({ drug, stock, onReceive }) {
                 <tr key={b.id} className={b.days < 0 ? 'inv-expired' : ''}>
                   <td className="num">
                     {b.lot}
-                    {i === stock.batches.findIndex((x) => x.days >= 0) && <span className="badge b-info inv-fefo">FEFO next</span>}
+                    {i === stock.batches.findIndex((x) => x.days >= 0) && <Badge tone="info" className="inv-fefo">FEFO next</Badge>}
                   </td>
                   <td>
                     <ExpiryCell batch={b} />
@@ -49,7 +50,7 @@ export function BatchTable({ drug, stock, onReceive }) {
                   <td className="r num">{fmtMoney(b.cost)}</td>
                   <td className="r num">{fmtMoney(b.qty * b.cost)}</td>
                   <td className="acts-td">
-                    {b.days < 0 ? <span className="badge b-danger">Expired</span> : <span className="badge b-success">Usable</span>}
+                    {b.days < 0 ? <Badge tone="danger">Expired</Badge> : <Badge tone="success">Usable</Badge>}
                   </td>
                 </tr>
               ))}

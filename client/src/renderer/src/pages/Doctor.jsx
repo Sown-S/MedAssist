@@ -15,6 +15,7 @@ import PrescriptionsLive from './reception/PrescriptionsLive'
 import PatientLookup from './doctor/PatientLookup'
 import ClusterAlerts from '../components/ClusterAlerts'
 import { hhmm } from '../utils/format'
+import ErrorBoundary from '../components/ErrorBoundary'
 
 const VIEWS = {
   home: { icon: 'home', tab: 'Overview', title: 'Doctor dashboard', sub: 'Today’s queue, your patients and prescriptions at a glance' },
@@ -99,7 +100,7 @@ export default function Doctor() {
               </button>
             </div>
           )}
-          {view === 'home' && <ClusterAlerts />}
+          {view === 'home' && <ErrorBoundary inline><ClusterAlerts /></ErrorBoundary>}
         </BellPortal>
 
         {/* Đổi màn bằng menu bên trái (components/SideNav.jsx); phòng khám của bác sĩ hiện ở cuối menu. */}

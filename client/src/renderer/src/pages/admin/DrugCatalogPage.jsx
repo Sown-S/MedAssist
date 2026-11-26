@@ -8,6 +8,7 @@ import { ConfirmDialog, Empty } from './ui'
 import DrugFormModal from './inventory/DrugFormModal'
 import { SortTh, Pager, paginate, exportCsv, unitLabel } from './inventory/shared'
 import { fmtMoney, fmtNum, ymd } from '../../utils/format'
+import Badge from '../../components/ui/Badge'
 
 // Danh mục thuốc là dữ liệu gốc; tồn kho theo lô, nhập / xuất nằm ở Tồn kho & hạn dùng.
 export default function DrugCatalogPage({ params, onNavigate }) {
@@ -113,7 +114,7 @@ export default function DrugCatalogPage({ params, onNavigate }) {
             >
               <Icon name="download" /> <span>Export to Excel (CSV)</span>
             </button>
-            <button className="btn btn-primary btn-sm" onClick={() => setEdit({})}>
+            <button data-shortcut="new" className="btn btn-primary btn-sm" onClick={() => setEdit({})} title="Ctrl+N">
               + Add drug
             </button>
           </div>
@@ -122,7 +123,7 @@ export default function DrugCatalogPage({ params, onNavigate }) {
         {pg.total === 0 ? (
           <Empty title="No drugs match" text="Try another keyword or filter." />
         ) : (
-          <div className="tbl-wrap">
+          <div className="tbl-wrap" tabIndex={0}>
             <table>
               <thead>
                 <tr>
@@ -165,7 +166,7 @@ export default function DrugCatalogPage({ params, onNavigate }) {
                       {d.group === 'controlled' && <span className="essential-chip inv-ctrl">Controlled</span>}
                     </td>
                     <td className="r num">{fmtNum(s.usable)}</td>
-                    <td>{d.active ? <span className="badge b-success">In use</span> : <span className="badge b-neutral">Discontinued</span>}</td>
+                    <td>{d.active ? <Badge tone="success">In use</Badge> : <Badge tone="neutral">Discontinued</Badge>}</td>
                     <td className="acts-td" onClick={(e) => e.stopPropagation()}>
                       <button className="btn btn-ghost btn-sm" title="Edit" onClick={() => setEdit(d)}>
                         <Icon name="pencil" />

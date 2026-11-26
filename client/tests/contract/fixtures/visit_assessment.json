@@ -1,0 +1,254 @@
+{
+ "method": "get",
+ "path": "/api/v1/visits/{visit_id}/assessment",
+ "status": 200,
+ "role": "physician",
+ "body": {
+  "assessment_id": "60e69df4-a8ba-40cd-99dd-898f2849a1bd",
+  "ai_status": "Degraded",
+  "mode": "RuleOnly",
+  "knowledge_release": "KB-2026.12.3",
+  "model_version": null,
+  "prompt_version": null,
+  "priority": {
+   "rule": "Routine",
+   "final": "Routine",
+   "raised_by_ai": false
+  },
+  "alerts": [],
+  "complete_now": [
+   {
+    "symptom_code": "sym_acute_chest_pain",
+    "symptom_name": "Đau thắt ngực dữ dội hoặc cảm giác đè ép ngực cấp tính"
+   },
+   {
+    "symptom_code": "sym_altered_consciousness",
+    "symptom_name": "Lơ mơ, li bì, lú lẫn hoặc hôn mê"
+   },
+   {
+    "symptom_code": "sym_cauda_equina",
+    "symptom_name": "Bí tiểu, rối loạn cơ tròn hoặc tê mất cảm giác vùng yên ngựa"
+   },
+   {
+    "symptom_code": "out_of_scope_symptom",
+    "symptom_name": "Triệu chứng nguy hiểm hoặc bất thường ngoài danh mục chuẩn"
+   },
+   {
+    "symptom_code": "chemical_eye_exposure",
+    "symptom_name": "Hóa chất bắn vào mắt"
+   },
+   {
+    "symptom_code": "acute_visual_loss",
+    "symptom_name": "Mất hoặc giảm thị lực đột ngột"
+   },
+   {
+    "symptom_code": "major_head_face_trauma",
+    "symptom_name": "Chấn thương nặng vùng đầu mặt mới xảy ra"
+   },
+   {
+    "symptom_code": "penetrating_neck_wound",
+    "symptom_name": "Vết thương xuyên vùng cổ"
+   },
+   {
+    "symptom_code": "sudden_choking",
+    "symptom_name": "Ho sặc đột ngột khi ăn hoặc chơi"
+   },
+   {
+    "symptom_code": "trismus_tetanic_spasm",
+    "symptom_name": "Khít hàm (cứng hàm), co cứng cơ toàn thân và cơn co giật trên nền co cứng (uốn ván)"
+   },
+   {
+    "symptom_code": "meningeal_neck_stiffness_kernig",
+    "symptom_name": "Hội chứng màng não: cứng gáy, dấu hiệu Kernig/Brudzinski dương tính, nôn vọt"
+   },
+   {
+    "symptom_code": "fever_high",
+    "symptom_name": "Sốt cao (>= 38.5°C hoặc sốt cao đột ngột, liên tục)"
+   },
+   {
+    "symptom_code": "widespread_skin_peeling",
+    "symptom_name": "Da bong trợt trên vùng rộng"
+   },
+   {
+    "symptom_code": "bleeding_mucosal_erosions",
+    "symptom_name": "Niêm mạc bị trợt loét chảy máu"
+   },
+   {
+    "symptom_code": "cold_extremities",
+    "symptom_name": "Tay chân lạnh ẩm mới xuất hiện"
+   },
+   {
+    "symptom_code": "reduced_urine_output",
+    "symptom_name": "Tiểu ít mới xuất hiện"
+   },
+   {
+    "symptom_code": "airway_penetration_syndrome",
+    "symptom_name": "Hội chứng xâm nhập: sặc đột ngột, ho sặc sụa và tím tái khi đang ăn/chơi"
+   },
+   {
+    "symptom_code": "ocular_chemical_burn_limbal_ischemia",
+    "symptom_name": "Bỏng kết giác mạc, thiếu máu vùng rìa giác mạc và đục trắng giác mạc như sứ"
+   },
+   {
+    "symptom_code": "traumatic_hyphema_angle_recession",
+    "symptom_name": "Xuất huyết tiền phòng hoặc xuất huyết dịch kính và lùi góc tiền phòng sau chấn thương đụng dập"
+   },
+   {
+    "symptom_code": "traumatic_optic_neuropathy_defect",
+    "symptom_name": "Mất thị lực và mất phản xạ đồng tử hướng tâm sau chấn thương đầu mặt/hốc mắt"
+   },
+   {
+    "symptom_code": "temporal_bone_fracture_hemotympanum",
+    "symptom_name": "Chảy máu tai, chảy dịch não tủy qua tai hoặc bầm tím vùng chũm (dấu Battle)"
+   },
+   {
+    "symptom_code": "acute_angle_closure_mid_dilated_pupil",
+    "symptom_name": "Tiền phòng nông, góc tiền phòng đóng, giác mạc phù mờ và đồng tử giãn méo mất phản xạ"
+   },
+   {
+    "symptom_code": "central_retinal_artery_cherry_red_spot",
+    "symptom_name": "Mất thị lực đột ngột không đau, võng mạc phù trắng sữa và dấu hiệu hoàng điểm anh đào"
+   },
+   {
+    "symptom_code": "endophthalmitis_vitreous_pus_loss_reflex",
+    "symptom_name": "Mất ánh đồng tử, mủ dịch kính dày đặc, phù mi và cương tụ toàn bộ kết mạc (viêm mủ nội nhãn)"
+   },
+   {
+    "symptom_code": "corneal_perforation_iris_prolapse",
+    "symptom_name": "Dọa thủng hoặc thủng giác mạc kèm phòi mống mắt và xẹp tiền phòng"
+   },
+   {
+    "symptom_code": "orbital_cellulitis_chemosis_proptosis",
+    "symptom_name": "Mi mắt sưng nề đỏ căng, phù kết mạc phòi qua khe mi, lồi mắt thẳng trục và đau khi vận nhãn"
+   },
+   {
+    "symptom_code": "sym_progressive_paralysis",
+    "symptom_name": "Yếu liệt chi tiến triển nhanh hoặc liệt hai chi dưới"
+   },
+   {
+    "symptom_code": "sym_respiratory_failure",
+    "symptom_name": "Khó thở nặng, thở co kéo, tím tái (dấu hiệu suy hô hấp cấp)"
+   },
+   {
+    "symptom_code": "sym_seizures",
+    "symptom_name": "Co giật toàn thân hoặc co giật khu trú"
+   },
+   {
+    "symptom_code": "sym_septic_arthritis_suspected",
+    "symptom_name": "Sưng nóng đỏ đau dữ dội một khớp kèm sốt cao rét run"
+   },
+   {
+    "symptom_code": "sym_shock_circulatory",
+    "symptom_name": "Mạch nhanh nhỏ, tụt huyết áp, vã mồ hôi lạnh, chi lạnh ẩm (dấu hiệu sốc)"
+   }
+  ],
+  "candidates": [
+   {
+    "rank": 1,
+    "condition_code": "benh_viem_khop_dang_thap",
+    "name_vi": "Bệnh viêm khớp dạng thấp",
+    "icd10_code": "M05.9",
+    "score": 0.6428571428571429,
+    "supporting": [
+     {
+      "symptom_code": "joint_swelling_warmth_redness_effusion",
+      "symptom_name": "Sưng nề, nóng đỏ tại khớp, tràn dịch ổ khớp hoặc dày màng hoạt dịch khi sờ nắn",
+      "weight": 0.6,
+      "is_key": false
+     },
+     {
+      "symptom_code": "morning_stiffness_over_1h",
+      "symptom_name": "Cứng khớp buổi sáng kéo dài trên 1 giờ",
+      "weight": 0.6,
+      "is_key": false
+     },
+     {
+      "symptom_code": "myalgia_arthralgia",
+      "symptom_name": "Đau mỏi cơ, đau nhức khớp",
+      "weight": 0.6,
+      "is_key": false
+     },
+     {
+      "symptom_code": "symmetric_polyarthritis_hands",
+      "symptom_name": "Viêm đa khớp đối xứng hai bên (đặc biệt khớp cổ tay, bàn ngón, ngón gần)",
+      "weight": 0.9,
+      "is_key": true
+     }
+    ],
+    "contradicting": [],
+    "missing": [],
+    "explanation": null,
+    "label": "Reference Suggestion",
+    "in_focus_scope": true
+   },
+   {
+    "rank": 2,
+    "condition_code": "benh_viem_mang_hoat_dich_khop_goi_man_tinh_khong_dac_hieu",
+    "name_vi": "Bệnh viêm màng hoạt dịch khớp gối mạn tính không đặc hiệu",
+    "icd10_code": "M65.8",
+    "score": 0.5333333333333333,
+    "supporting": [
+     {
+      "symptom_code": "joint_swelling_warmth_redness_effusion",
+      "symptom_name": "Sưng nề, nóng đỏ tại khớp, tràn dịch ổ khớp hoặc dày màng hoạt dịch khi sờ nắn",
+      "weight": 0.6,
+      "is_key": false
+     },
+     {
+      "symptom_code": "myalgia_arthralgia",
+      "symptom_name": "Đau mỏi cơ, đau nhức khớp",
+      "weight": 0.6,
+      "is_key": false
+     }
+    ],
+    "contradicting": [],
+    "missing": [
+     {
+      "symptom_code": "knee_effusion_crepitus_locking",
+      "symptom_name": "Sưng đau khớp gối, tràn dịch khớp gối, tiếng lục khục hoặc dấu hiệu kẹt khớp"
+     }
+    ],
+    "explanation": null,
+    "label": "Reference Suggestion",
+    "in_focus_scope": true
+   },
+   {
+    "rank": 3,
+    "condition_code": "benh_viem_khop_thieu_nien_tu_phat_the_da_khop_co_yeu_to_dang",
+    "name_vi": "Bệnh viêm khớp thiếu niên tự phát thể đa khớp có yếu tố dạng thấp dương tính và âm tính RF (+) và RF (-)",
+    "icd10_code": "M08.0",
+    "score": 0.4225352112676056,
+    "supporting": [
+     {
+      "symptom_code": "joint_swelling_warmth_redness_effusion",
+      "symptom_name": "Sưng nề, nóng đỏ tại khớp, tràn dịch ổ khớp hoặc dày màng hoạt dịch khi sờ nắn",
+      "weight": 0.6,
+      "is_key": false
+     },
+     {
+      "symptom_code": "myalgia_arthralgia",
+      "symptom_name": "Đau mỏi cơ, đau nhức khớp",
+      "weight": 0.6,
+      "is_key": false
+     },
+     {
+      "symptom_code": "symmetric_polyarthritis_hands",
+      "symptom_name": "Viêm đa khớp đối xứng hai bên (đặc biệt khớp cổ tay, bàn ngón, ngón gần)",
+      "weight": 0.3,
+      "is_key": false
+     }
+    ],
+    "contradicting": [],
+    "missing": [
+     {
+      "symptom_code": "jia_systemic_polyarticular_enthesitis",
+      "symptom_name": "Viêm khớp kéo dài >= 6 tuần khởi phát ở trẻ dưới 16 tuổi (Thể hệ thống, đa khớp, viêm điểm bám gân)"
+     }
+    ],
+    "explanation": null,
+    "label": "Reference Suggestion",
+    "in_focus_scope": true
+   }
+  ]
+ }
+}

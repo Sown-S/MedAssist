@@ -5,7 +5,7 @@ import { fetchServices, fetchPackages, createService, updateService, createPacka
 import { apiMessage } from './serviceStore'
 
 const num = (x) => (x == null ? null : Number(x))
-const fromService = (s) => ({
+export const fromService = (s) => ({
   id: s.service_id,
   code: s.code,
   name: s.name,
@@ -20,7 +20,7 @@ const fromService = (s) => ({
   updatedAt: s.updated_at,
   updatedBy: ''
 })
-const fromPackage = (p) => ({
+export const fromPackage = (p) => ({
   id: p.package_id,
   code: p.code,
   name: p.name,

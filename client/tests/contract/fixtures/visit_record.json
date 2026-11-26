@@ -1,0 +1,107 @@
+{
+ "method": "get",
+ "path": "/api/v1/visits/{visit_id}/record",
+ "status": 200,
+ "role": "physician",
+ "body": {
+  "patient": {
+   "patient_id": "73ffe9ff-9d36-474a-a493-febda2b32166",
+   "full_name": "Võ Khánh Ly",
+   "date_of_birth": "1990-10-21",
+   "gender": "Female",
+   "medical_history": null,
+   "allergy_notes": null,
+   "patient_code": "BN-73FFE9FF"
+  },
+  "visit": {
+   "visit_id": "14c34080-a460-459e-acc5-3dce272b7d3a",
+   "patient_id": "73ffe9ff-9d36-474a-a493-febda2b32166",
+   "nurse_id": "7efcbca8-b085-4c68-9503-61ecde1edf8c",
+   "physician_id": "0ac86ff5-1658-4aa8-b74b-55fa0b5bf1f4",
+   "status": "Prescribed",
+   "queue_date": "2026-11-25",
+   "queue_number": 2,
+   "visit_date": "2026-11-25T21:55:32.220336+07:00",
+   "checked_in_at": "2026-11-25T21:55:32.220336+07:00",
+   "exam_started_at": "2026-11-25T21:55:32.248211+07:00",
+   "finished_at": null,
+   "chief_complaint": "Đau khớp tay hai bên, cứng buổi sáng",
+   "vital_signs": {
+    "spo2_pct": 99,
+    "height_cm": 150.0,
+    "weight_kg": 46.0,
+    "temperature_c": 37.1,
+    "heart_rate_bpm": 82,
+    "systolic_bp_mmhg": 118,
+    "diastolic_bp_mmhg": 74,
+    "respiratory_rate_bpm": 16
+   },
+   "free_text_description": "Mấy tháng nay sáng dậy hai bàn tay cứng đờ, phải hơn tiếng mới cử động được. Các khớp ngón tay và cổ tay hai bên sưng đau, cầm đũa khó.",
+   "is_pregnant": null,
+   "triage_priority": "Routine",
+   "triage_priority_rule": "Routine",
+   "priority_raised_by_ai": false,
+   "is_red_flag": false,
+   "red_flag_reason": null,
+   "ai_status": "Degraded",
+   "outcome": null,
+   "referral": null,
+   "lab_out_at": null,
+   "called_at": null,
+   "called_by": null,
+   "updated_at": "2026-11-25T21:55:32.248211+07:00"
+  },
+  "nurse_name": "Phạm Thị Mai",
+  "physician_name": "BS. Lê Thu Hà",
+  "diagnoses": [
+   {
+    "diagnosis_id": "8a5be63c-1829-4c85-a8bc-2f8bbd39e4c2",
+    "diagnosis_name": "Bệnh viêm khớp dạng thấp",
+    "icd10_code": "M05.9",
+    "condition_code": "benh_viem_khop_dang_thap",
+    "is_primary": true,
+    "confirmed_by_physician": true,
+    "clinical_notes": null,
+    "confirmed_at": "2026-11-25T21:55:32.248211+07:00"
+   }
+  ],
+  "prescription": {
+   "prescription_id": "a775ea1d-13ea-423c-9268-c6a7decce154",
+   "status": "Confirmed",
+   "confirmed_at": "2026-11-25T21:55:32.248211+07:00",
+   "items": [
+    {
+     "drug_label": "Meloxicam 7,5 mg (Mobic 7.5)",
+     "quantity": 7,
+     "unit": "viên",
+     "dosage": "1 viên",
+     "frequency": "1 lần/ngày sau ăn",
+     "duration_days": 7,
+     "dispense_status": "Pending",
+     "item_id": "255bed15-5d5b-40bc-9506-d7250d23118a",
+     "instruction": null,
+     "skip_reason": null
+    },
+    {
+     "drug_label": "Omeprazol 20 mg (Omeprazol 20)",
+     "quantity": 7,
+     "unit": "viên",
+     "dosage": "1 viên",
+     "frequency": "Sáng trước ăn",
+     "duration_days": 7,
+     "dispense_status": "Pending",
+     "item_id": "6419839c-dcfe-4dd9-b87e-09176de37cd0",
+     "instruction": null,
+     "skip_reason": null
+    }
+   ]
+  },
+  "invoice": {
+   "invoice_code": "HD-20261125-0002",
+   "total_amount": 132500,
+   "payment_status": "Pending",
+   "paid_at": null
+  },
+  "service_orders": []
+ }
+}
