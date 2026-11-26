@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Icon from './Icon'
 import Modal, { ModalHeader } from './Modal'
 import { LANGUAGES, getLang, setLang, translate } from '../i18n'
@@ -6,7 +6,9 @@ import { SIDEBAR_THEMES, getSidebarTheme, setSidebarTheme } from '../api/sidebar
 import { getBaseUrl } from '../api/serverConfig'
 import { useServerOnline } from '../api/connectivity'
 import { version as appVersion } from '../../../../package.json'
-import { COLOR_MODES, UI_SCALES, getColorMode, setColorMode, getUiScale, setUiScale, getReduceMotion, setReduceMotion } from '../api/appTheme'
+import { useToast } from '../context/ToastContext'
+import { canExportDiagnostics, exportDiagnostics } from '../lib/errorReport'
+import { COLOR_MODES, UI_SCALES, ACCENTS, getColorMode, setColorMode, getUiScale, setUiScale, getReduceMotion, setReduceMotion, getAccent, setAccent } from '../api/appTheme'
 import { hhmm } from '../utils/format'
 
 // Cài đặt cá nhân của máy này (nút bánh răng trên thanh trên): Giao diện, Ngôn ngữ, Tài khoản.
@@ -17,13 +19,13 @@ const MODE_COLORS = {
   light: { bg: '#F0F2F5', surface: '#FFFFFF', line: '#E1E4E8', ink: '#C5CCD3' },
   dark: { bg: '#0B1118', surface: '#18222D', line: '#243140', ink: '#3A4A5C' }
 }
-function MiniApp({ mode, sidebar }) {
+function MiniApp({ mode, sidebar, accent = '#1877F2' }) {
   const m = MODE_COLORS[mode === 'system' ? 'light' : mode]
   const side = sidebar ?? (mode === 'dark' ? { bg: '#0F161E', ink: '#5D6E80', active: 'rgba(59,139,246,.35)' } : SIDEBAR_THEMES[0])
   return (
     <span className={'mini' + (mode === 'system' ? ' split' : '')} style={{ background: m.bg }} aria-hidden="true">
       <span className="mini-side" style={{ background: side.bg, color: side.ink, borderColor: m.line }}>
-        <i className="lg" style={{ background: '#1877F2' }} />
+        <i className="lg" style={{ background: accent }} />
         <i className="act" style={{ background: side.active }} />
         <i />
         <i />
@@ -106,17 +108,61 @@ const TABS = [
   { key: 'acct', label: 'Account', icon: 'user-round' }
 ]
 
+// Hàng lựa chọn dạng băng chuyền: hiện 3 ô, nút ‹ › để chuyển qua lại thay vì xuống dòng.
+function PickCarousel({ label, children }) {
+  const ref = useRef(null)
+  const [edge, setEdge] = useState({ start: true, end: false })
+  const sync = () => {
+    const el = ref.current
+    if (!el) return
+    setEdge({ start: el.scrollLeft <= 2, end: el.scrollLeft + el.clientWidth >= el.scrollWidth - 2 })
+  }
+  useEffect(() => {
+    sync()
+    // Đưa ô đang chọn vào tầm nhìn khi mở.
+    const on = ref.current?.querySelector('.pick.on')
+    if (on) ref.current.scrollLeft = on.offsetLeft - ref.current.firstElementChild.offsetLeft
+    sync()
+  }, [])
+  const go = (dir) => {
+    const el = ref.current
+    const item = el?.querySelector('.pick')
+    if (!item) return
+    const calm = document.documentElement.dataset.motion === 'reduce'
+    el.scrollBy({ left: dir * (item.offsetWidth + 12), behavior: calm ? 'auto' : 'smooth' })
+  }
+  return (
+    <div className="pick-car">
+      <button type="button" className="pick-arr prev" onClick={() => go(-1)} disabled={edge.start} aria-label={translate('Previous')}>
+        <Icon name="chevron-left" />
+      </button>
+      <div className="pick-grid car" role="radiogroup" aria-label={label} ref={ref} onScroll={sync}>
+        {children}
+      </div>
+      <button type="button" className="pick-arr next" onClick={() => go(1)} disabled={edge.end} aria-label={translate('Next')}>
+        <Icon name="chevron-right" />
+      </button>
+    </div>
+  )
+}
+
 export default function SettingsModal({ open, onClose, user, onChangePassword }) {
   const [tab, setTab] = useState('look')
   const [mode, setMode] = useState(getColorMode)
   const [sidebar, setSidebar] = useState(getSidebarTheme)
   const [scale, setScale] = useState(getUiScale)
   const [calm, setCalm] = useState(getReduceMotion)
+  const [accent, setAccentState] = useState(getAccent)
+  // Bản xem trước thanh menu theo màu phòng khám đang chọn.
+  const accentDef = ACCENTS.find((a) => a.key === accent)
+  const accentColor = accentDef?.color
+  const tint = (t) => (accentDef?.side ? { ...t, ...(t.key === 'dark' ? { bg: accentDef.side, active: accentDef.color } : { active: accentDef.soft }) } : t)
 
   const pickMode = (v) => (setMode(v), setColorMode(v))
   const pickSidebar = (v) => (setSidebar(v), setSidebarTheme(v))
   const pickScale = (v) => (setScale(v), setUiScale(v))
   const pickCalm = (v) => (setCalm(v), setReduceMotion(v))
+  const pickAccent = (v) => (setAccentState(v), setAccent(v))
   // Đổi ngôn ngữ: giao diện đổi ngay là đủ, không hiện thêm thông báo.
   function chooseLanguage(code) {
     if (code !== getLang()) setLang(code)
@@ -149,7 +195,7 @@ export default function SettingsModal({ open, onClose, user, onChangePassword })
                   <div className="pick-grid" role="radiogroup" aria-label={translate('Color mode')}>
                     {COLOR_MODES.map((m) => (
                       <button key={m.key} type="button" role="radio" aria-checked={mode === m.key} className={'pick' + (mode === m.key ? ' on' : '')} onClick={() => pickMode(m.key)}>
-                        <MiniApp mode={m.key} sidebar={m.key === 'light' ? SIDEBAR_THEMES.find((t) => t.key === sidebar) : null} />
+                        <MiniApp mode={m.key} accent={accentColor} sidebar={m.key === 'light' ? tint(SIDEBAR_THEMES.find((t) => t.key === sidebar)) : null} />
                         <span className="pick-l">
                           <Icon name={m.icon} />
                           {translate(m.label)}
@@ -161,12 +207,29 @@ export default function SettingsModal({ open, onClose, user, onChangePassword })
                 </section>
 
                 <section className="pset-sec">
+                  <h4>{translate('Clinic color')}</h4>
+                  <p className="hint">{translate('Main color of buttons, links, the selected menu item and the dark menu bar. Status colors stay the same.')}</p>
+                  <PickCarousel label={translate('Clinic color')}>
+                    {ACCENTS.map((a) => (
+                      <button key={a.key} type="button" role="radio" aria-checked={accent === a.key} className={'pick' + (accent === a.key ? ' on' : '')} onClick={() => pickAccent(a.key)}>
+                        <MiniApp mode="light" accent={a.grad ?? a.color} sidebar={{ ...SIDEBAR_THEMES[0], active: a.soft ?? SIDEBAR_THEMES[0].active }} />
+                        <span className="pick-l">
+                          <span className="sw-dot" style={{ background: a.grad ?? a.color }} />
+                          {translate(a.label)}
+                          {accent === a.key && <Icon name="circle-check" className="pick-ok" />}
+                        </span>
+                      </button>
+                    ))}
+                  </PickCarousel>
+                </section>
+
+                <section className="pset-sec">
                   <h4>{translate('Menu bar color')}</h4>
                   <p className="hint">{translate(mode === 'dark' ? 'In dark mode the menu bar follows the dark palette.' : 'Only the left menu bar changes; pages stay light.')}</p>
                   <div className="pick-grid" role="radiogroup" aria-label={translate('Menu bar color')}>
                     {SIDEBAR_THEMES.map((t) => (
                       <button key={t.key} type="button" role="radio" aria-checked={sidebar === t.key} disabled={mode === 'dark'} className={'pick' + (sidebar === t.key ? ' on' : '')} onClick={() => pickSidebar(t.key)}>
-                        <MiniApp mode="light" sidebar={t} />
+                        <MiniApp mode="light" accent={accentColor} sidebar={tint(t)} />
                         <span className="pick-l">
                           <span className="sw-dot" style={{ background: t.bg }} />
                           {translate(t.label)}
@@ -305,6 +368,7 @@ export default function SettingsModal({ open, onClose, user, onChangePassword })
                       <dt>{translate('Version')}</dt>
                       <dd className="num">{appVersion}</dd>
                     </dl>
+                    {canExportDiagnostics() && <DiagnosticsButton />}
                   </div>
                 </section>
               </>
@@ -319,5 +383,23 @@ export default function SettingsModal({ open, onClose, user, onChangePassword })
         </button>
       </div>
     </Modal>
+  )
+}
+
+// Lưu nhật ký lỗi của máy này thành một file .txt để gửi nhóm phát triển khi báo lỗi.
+function DiagnosticsButton() {
+  const { showToast } = useToast()
+  return (
+    <button
+      className="btn btn-outline btn-sm acct-act"
+      title={translate('Errors recorded on this computer, with the app and system version — no passwords or patient records')}
+      onClick={async () => {
+        const r = await exportDiagnostics()
+        if (r?.ok) showToast(translate('Error details saved') + ': ' + r.path, 'success')
+      }}
+    >
+      <Icon name="download" />
+      {translate('Save error details')}
+    </button>
   )
 }

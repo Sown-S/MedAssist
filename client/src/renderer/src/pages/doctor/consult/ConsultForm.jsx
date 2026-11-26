@@ -14,6 +14,8 @@ import CancelOrderItemModal from '../../../components/CancelOrderItemModal'
 import { useServerDrugs, reloadServerDrugs } from '../../../api/serverDrugs'
 import { syncDiagnoses, savePrescription, confirmPrescription, completeExam, shortageOf } from '../../../api/examApi'
 import { isServerOnline } from '../../../api/connectivity'
+import { updateVisit } from '../../../api/clinicApi'
+import { normalizeVitals, vitalsToForm, vitalsFromForm } from '../../../api/vitals'
 import { printPrescription } from '../printRx'
 import { saveDraft, deleteDraft } from '../../../api/draftStore'
 import DocumentModal from '../DocumentModal'
@@ -29,6 +31,12 @@ import { useRxLines } from './useRxLines'
 import { useConsultShortcuts } from './useConsultShortcuts'
 import { useLabResults } from './useLabResults'
 import { finalizeCheck, clinicalNotes } from './finalizeCheck'
+
+const sameVitals = (a, b) => {
+  const ka = Object.keys(a).filter((k) => a[k] != null)
+  const kb = Object.keys(b).filter((k) => b[k] != null)
+  return ka.length === kb.length && ka.every((k) => String(a[k]) === String(b[k]))
+}
 
 // Phiếu khám của bệnh nhân đang trong phòng: SOAP, sinh hiệu, tiền sử, kê đơn, chốt đơn / kết thúc lượt.
 // Bản nháp lưu trên máy (draftStore) theo từng thay đổi.
@@ -56,6 +64,8 @@ export default function ConsultForm({ visit, user, onDone, onNext }) {
   }, [more])
   const [docs, setDocs] = useState(false)
   const [tried, setTried] = useState(false)
+  // Sinh hiệu đã gửi lên lượt khám này — mốc so sánh để chốt lại (vd sau lỗi thiếu thuốc) không gửi trùng.
+  const sentVitals = useRef(null)
   const [short, setShort] = useState(null)
   const [cancelRow, setCancelRow] = useState(null)
   // Phiếu chỉ định đọc từ GET /visits/{id}/service-orders.
@@ -93,6 +103,13 @@ export default function ConsultForm({ visit, user, onDone, onNext }) {
     if (!(await saveLabResults())) return
     const notes = clinicalNotes(d)
     try {
+      // Sinh hiệu bác sĩ sửa ở tab Sinh hiệu (cân nặng trẻ em in lên đơn) → lưu vào lượt khám trước khi chốt.
+      const vitalsNow = vitalsFromForm(d.vitals)
+      const base = sentVitals.current?.id === visit.id ? sentVitals.current.vitals : vitalsFromForm(vitalsToForm(normalizeVitals(visit.serverVitals ?? {})))
+      if (!sameVitals(vitalsNow, base)) {
+        await updateVisit(visit.id, { vitals: vitalsNow })
+        sentVitals.current = { id: visit.id, vitals: vitalsNow }
+      }
       await syncDiagnoses(visit.id, { primary: d.diagnosis, extra: d.diagnosesExtra ?? [], notes: notes || null, candidates: ai.candidates, assessmentId: ai.assessment_id })
       if (mapped.length) {
         await savePrescription(

@@ -1,0 +1,40 @@
+{
+ "method": "get",
+ "path": "/api/v1/patients/lookup",
+ "status": 200,
+ "role": "nurse",
+ "body": {
+  "interpreted_as": {
+   "kind": "name",
+   "name": "Nguy",
+   "birth_year": null
+  },
+  "total": 2,
+  "limit": 5,
+  "offset": 0,
+  "items": [
+   {
+    "patient_id": "903766cc-9e6f-4703-9b93-29df9b950a7d",
+    "full_name": "Nguyễn Hoài Ly",
+    "date_of_birth": "1961-05-12",
+    "gender": "Female",
+    "phone": "0942934838",
+    "id_number_last4": null,
+    "visit_count": 1,
+    "last_visit_at": "2026-11-24T09:30:00+07:00",
+    "patient_code": "BN-903766CC"
+   },
+   {
+    "patient_id": "06219332-f883-41ee-9003-f5170c256ee6",
+    "full_name": "Vương Hoài Nguyệt",
+    "date_of_birth": "1958-07-16",
+    "gender": "Female",
+    "phone": "0942926919",
+    "id_number_last4": null,
+    "visit_count": 1,
+    "last_visit_at": "2026-11-24T08:50:00+07:00",
+    "patient_code": "BN-06219332"
+   }
+  ]
+ }
+}

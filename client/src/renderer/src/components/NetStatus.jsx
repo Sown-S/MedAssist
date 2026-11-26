@@ -9,10 +9,32 @@ import { useServerOnline, useServerSlow, subscribeNextProbe, getNextProbeAt, pro
 // - SlowNotice: thông báo nổi khi một yêu cầu chờ quá 5 giây.
 // - OfflineBanner: mất kết nối → banner cố định, đếm ngược tới lần thử lại, nút “Thử lại ngay”; có lại → “Đã kết nối lại”.
 
-export function TopProgress() {
-  const on = useSyncExternalStore(subscribePending, isRequestPending)
+// Thanh tải kiểu YouTube ở mép dưới thanh trên: đổi trang hoặc có yêu cầu đang chờ → thanh xanh mảnh chạy dần tới ~85%;
+// xong → chạy nốt tới 100% rồi mờ đi. navKey đổi (đổi mục thanh bên) thì luôn chạy một lượt ngắn.
+export function TopProgress({ navKey }) {
+  const pending = useSyncExternalStore(subscribePending, isRequestPending)
+  const [phase, setPhase] = useState('idle') // idle | run | done
+  const first = useRef(true)
+  const navAt = useRef(0)
+  useEffect(() => {
+    if (first.current) return void (first.current = false)
+    navAt.current = Date.now()
+    setPhase('run')
+  }, [navKey])
+  useEffect(() => {
+    if (pending) return setPhase('run')
+    // Đổi trang mà không có yêu cầu nào: vẫn cho thanh chạy tối thiểu 350 ms rồi mới hoàn tất.
+    const wait = Math.max(0, 350 - (Date.now() - navAt.current))
+    const t = setTimeout(() => setPhase((p) => (p === 'run' ? 'done' : p)), wait)
+    return () => clearTimeout(t)
+  }, [pending, navKey])
+  useEffect(() => {
+    if (phase !== 'done') return
+    const t = setTimeout(() => setPhase('idle'), 450)
+    return () => clearTimeout(t)
+  }, [phase])
   return (
-    <div className={'net-bar' + (on ? ' on' : '')} role="progressbar" aria-hidden={!on} aria-label={translate('Loading…')}>
+    <div className={'net-bar ' + phase} role="progressbar" aria-hidden={phase === 'idle'} aria-label={translate('Loading…')}>
       <i />
     </div>
   )

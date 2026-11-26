@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { translate } from '../../../i18n'
 import { KINDS, OPEN_STATUSES, listAll, listReleases, listSources } from '../../../api/knowledgeApi'
 import { LogicView } from './logic'
+import Badge from '../../../components/ui/Badge'
 
 export const KIND_META = {
   symptoms: { label: 'Symptoms', one: 'Symptom', keyLabel: 'Symptom code' },
@@ -77,6 +78,9 @@ export function usableCodes(rows) {
     .sort()
 }
 
+// Chỉ áp dụng cho một giới tính (applicable_sex) → nhãn nhỏ; Any không hiện.
+const SexTag = ({ sex }) => (sex === 'Female' || sex === 'Male' ? <span className="kb-tag sex">{translate(sex === 'Female' ? 'Women only' : 'Men only')}</span> : null)
+
 export function Summary({ kind, values, names }) {
   const v = values ?? {}
   if (kind === 'symptoms')
@@ -85,6 +89,7 @@ export function Summary({ kind, values, names }) {
         <b>{v.symptom_name}</b> {v.short_name && <span className="muted">· {v.short_name}</span>} {v.category && <span className="muted">· {v.category}</span>}
         {v.detection === 'exam' && <span className="kb-tag exam">{translate('Found on examination')}</span>}
         {v.detection === 'reported' && <span className="kb-tag rep">{translate('Reported by patient')}</span>}
+        <SexTag sex={v.applicable_sex} />
         {v.aliases?.length > 0 && (
           <span className="muted">
             {' '}
@@ -97,6 +102,7 @@ export function Summary({ kind, values, names }) {
     return (
       <span>
         <b>{v.name_vi}</b> {v.icd10_code && <span className="num">· {v.icd10_code}</span>} {v.disease_group && <span className="muted">· {v.disease_group}</span>}
+        <SexTag sex={v.applicable_sex} />
       </span>
     )
   if (kind === 'relations')
@@ -104,7 +110,7 @@ export function Summary({ kind, values, names }) {
       <span>
         <b>{names.condition[v.condition_code] ?? v.condition_code}</b> <span className="muted">↔</span> {names.symptom[v.symptom_code] ?? v.symptom_code}{' '}
         <span className={'badge ' + (v.polarity === 'CONTRADICTS' ? 'b-danger' : 'b-success')}>{v.polarity === 'CONTRADICTS' ? 'Contradicts' : 'Supports'}</span>{' '}
-        <span className="num">{Number(v.weight).toFixed(2)}</span> {v.is_key && <span className="badge b-info">Key symptom</span>}
+        <span className="num">{Number(v.weight).toFixed(2)}</span> {v.is_key && <Badge tone="info">Key symptom</Badge>}
       </span>
     )
   if (kind === 'excerpts')

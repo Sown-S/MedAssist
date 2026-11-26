@@ -110,14 +110,14 @@ export function StockTab({ inv, user }) {
           <input className="input" value={q} onChange={(e) => reset(setQ)(e.target.value)} placeholder="Search by name, active ingredient, ATC code…" />
         </div>
         <div className="toolbar-r">
-          <select className="input" value={group} onChange={(e) => reset(setGroup)(e.target.value)}>
+          <select className="input" aria-label="Filter by drug group" value={group} onChange={(e) => reset(setGroup)(e.target.value)}>
             {GROUPS.map((g) => (
               <option key={g.key} value={g.key}>
                 {g.label}
               </option>
             ))}
           </select>
-          <select className="input" value={status} onChange={(e) => reset(setStatus)(e.target.value)}>
+          <select className="input" aria-label="Filter by stock status" value={status} onChange={(e) => reset(setStatus)(e.target.value)}>
             <option value="all">All statuses</option>
             {['ok', 'low', 'out', 'near', 'expired'].map((k) => (
               <option key={k} value={k}>
@@ -135,7 +135,7 @@ export function StockTab({ inv, user }) {
           <button className="btn btn-ghost btn-sm" onClick={doExport}>
             <Icon name="download" /> <span>Export to Excel (CSV)</span>
           </button>
-          <button className="btn btn-primary btn-sm" onClick={() => setReceive({})}>
+          <button data-shortcut="new" className="btn btn-primary btn-sm" onClick={() => setReceive({})} title="Ctrl+N">
             + Receive stock
           </button>
         </div>
@@ -144,7 +144,7 @@ export function StockTab({ inv, user }) {
       {pg.total === 0 ? (
         <Empty title="No drugs match" text="Try another keyword or filter." />
       ) : (
-        <div className="tbl-wrap">
+        <div className="tbl-wrap" tabIndex={0}>
           <table className="inv-table">
             <thead>
               <tr>

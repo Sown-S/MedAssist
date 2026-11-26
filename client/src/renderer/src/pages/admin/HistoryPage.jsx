@@ -1,4 +1,5 @@
 import { Fragment, useEffect, useMemo, useState } from 'react'
+import Button from '../../components/Button'
 import Icon from '../../components/Icon'
 import { useToast } from '../../context/ToastContext'
 import { translate } from '../../i18n'
@@ -102,14 +103,14 @@ export default function HistoryPage() {
           <p>Who did what and when — sign-ins, record views, changes, approvals and AI assessments. Entries can never be edited or deleted.</p>
         </div>
         <div className="act">
-          <button className="btn btn-outline" onClick={() => download('xlsx')}>
+          <Button className="btn btn-outline" onClick={() => download('xlsx')}>
             <Icon name="download" />
             {translate('Export Excel')}
-          </button>
-          <button className="btn btn-outline" onClick={() => download('csv')}>
+          </Button>
+          <Button className="btn btn-outline" onClick={() => download('csv')}>
             <Icon name="download" />
             {translate('Export CSV')}
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -162,7 +163,7 @@ export default function HistoryPage() {
           <ErrorNote>{err}</ErrorNote>
           {!data && !err && <Skeleton rows={6} cols={5} />}
           {data && (
-            <div className="tbl-wrap">
+            <div className="tbl-wrap" tabIndex={0}>
               <table>
                 <thead>
                   <tr>
@@ -177,7 +178,12 @@ export default function HistoryPage() {
                 <tbody>
                   {data.items.map((x) => (
                     <Fragment key={x.log_id}>
-                      <tr className={'pointer' + (open === x.log_id ? ' on' : '')} onClick={() => setOpen(open === x.log_id ? null : x.log_id)} aria-expanded={open === x.log_id}>
+                      <tr
+                        className={'pointer' + (open === x.log_id ? ' on' : '')}
+                        tabIndex={0}
+                        onClick={() => setOpen(open === x.log_id ? null : x.log_id)}
+                        onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), setOpen(open === x.log_id ? null : x.log_id))}
+                      >
                         <td className="num">{when(x.created_at)}</td>
                         <td>{x.username ?? (x.attempted_username ? <span className="sp-warn">{x.attempted_username}</span> : <span className="muted">—</span>)}</td>
                         <td>

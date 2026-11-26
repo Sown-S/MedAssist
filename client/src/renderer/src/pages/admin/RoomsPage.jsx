@@ -1,10 +1,13 @@
 import { useEffect, useState } from 'react'
+import { useAsyncAction } from '../../hooks/useAsyncAction'
+import Button from '../../components/Button'
 import Icon from '../../components/Icon'
 import { useToast } from '../../context/ToastContext'
 import { translate } from '../../i18n'
 import { listRooms, createRoom, updateRoom, ROOM_TYPES } from '../../api/roomStore'
 import { MiniStat, MiniStats } from '../../components/MiniStat'
 import { ErrorNote } from '../../components/DataState'
+import Badge from '../../components/ui/Badge'
 
 const EMPTY = { code: '', name: '', type: 'Exam' }
 
@@ -28,14 +31,14 @@ export default function RoomsPage({ onNavigate }) {
     refresh()
   }, [])
 
-  async function submit(e) {
-    e.preventDefault()
+  async function submit() {
     const res = form.id ? await updateRoom(form.id, { name: form.name }) : await createRoom(form)
     if (!res.ok) return setFormErr(res.error)
     showToast(form.id ? 'Room updated' : 'Room added')
     setForm(null)
     refresh()
   }
+  const [submitSafe, saving] = useAsyncAction(submit)
   async function toggle(r) {
     const res = await updateRoom(r.id, { active: !r.active })
     if (!res.ok) return showToast(translate(res.error), 'error')
@@ -47,7 +50,7 @@ export default function RoomsPage({ onNavigate }) {
   const free = exam.filter((r) => !r.physician).length
 
   return (
-    <div>
+    <div className="vflow">
       <div className="pg-h">
         <div>
           <h2>Rooms</h2>
@@ -59,6 +62,8 @@ export default function RoomsPage({ onNavigate }) {
             {translate('Staff accounts')}
           </button>
           <button
+            data-shortcut="new"
+            title="Ctrl+N"
             className="btn btn-primary"
             onClick={() => {
               setFormErr('')
@@ -74,7 +79,7 @@ export default function RoomsPage({ onNavigate }) {
       <ErrorNote tone="w">{error}</ErrorNote>
 
       {form && (
-        <form className="card mb-16" onSubmit={submit}>
+        <form className="card mb-16" onSubmit={(e) => (e.preventDefault(), submitSafe())}>
           <div className="card-h">
             <h3>{form.id ? translate('Rename room') + ' ' + form.code : translate('Add room')}</h3>
           </div>
@@ -109,9 +114,9 @@ export default function RoomsPage({ onNavigate }) {
               <button type="button" className="btn btn-ghost" onClick={() => setForm(null)}>
                 Cancel
               </button>
-              <button data-shortcut="save" type="submit" className="btn btn-primary">
+              <Button data-shortcut="save" type="submit" className="btn btn-primary" loading={saving}>
                 <Icon name="check" /> Save
-              </button>
+              </Button>
             </div>
           </div>
         </form>
@@ -126,7 +131,7 @@ export default function RoomsPage({ onNavigate }) {
 
       <div className="card">
         <div className="card-b">
-          <div className="tbl-wrap">
+          <div className="tbl-wrap" tabIndex={0}>
             <table>
               <thead>
                 <tr>
@@ -147,7 +152,7 @@ export default function RoomsPage({ onNavigate }) {
                     </td>
                     <td>{translate(ROOM_TYPES[r.type] ?? r.type)}</td>
                     <td>{r.type !== 'Exam' ? <span className="muted">—</span> : r.physician ? r.physician.name : <span className="sp-warn">No doctor</span>}</td>
-                    <td>{r.active ? <span className="plain">{translate('In use')}</span> : <span className="badge b-neutral">{translate('Not in use')}</span>}</td>
+                    <td>{r.active ? <span className="plain">{translate('In use')}</span> : <Badge tone="neutral">{translate('Not in use')}</Badge>}</td>
                     <td>
                       <div className="acts">
                         <button
@@ -160,9 +165,9 @@ export default function RoomsPage({ onNavigate }) {
                           <Icon name="pencil" />
                           {translate('Rename')}
                         </button>
-                        <button className="btn btn-ghost btn-sm" onClick={() => toggle(r)}>
+                        <Button className="btn btn-ghost btn-sm" onClick={() => toggle(r)}>
                           {translate(r.active ? 'Stop using' : 'Use again')}
-                        </button>
+                        </Button>
                       </div>
                     </td>
                   </tr>

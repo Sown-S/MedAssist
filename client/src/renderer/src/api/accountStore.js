@@ -6,7 +6,7 @@ import { apiGet, apiPost, apiRequest, ApiError } from "./client";
 // tắt tài khoản = thu hồi mọi phiên.
 const ROLE_OF = { Physician: "doctor", Nurse: "reception", Admin: "admin" };
 const SERVER_ROLE = { doctor: "Physician", reception: "Nurse", admin: "Admin" };
-const fromServer = (u) => ({
+export const fromServer = (u) => ({
   id: u.user_id,
   staffCode: u.staff_code ?? "",
   username: u.username,

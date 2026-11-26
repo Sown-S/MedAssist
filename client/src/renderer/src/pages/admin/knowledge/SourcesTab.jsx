@@ -7,6 +7,7 @@ import { Empty } from '../ui'
 import { errorText } from './shared'
 import { ErrorNote } from '../../../components/DataState'
 import DateField from '../../../components/DateField'
+import Badge from '../../../components/ui/Badge'
 
 // Mọi quan hệ, trích dẫn và luật phải trích một nguồn.
 export default function SourcesTab({ data, canEdit, onChanged }) {
@@ -25,7 +26,7 @@ export default function SourcesTab({ data, canEdit, onChanged }) {
       {!data.sources.length ? (
         <Empty icon="folder" title="No source yet" />
       ) : (
-        <div className="tbl-wrap">
+        <div className="tbl-wrap" tabIndex={0}>
           <table>
             <thead>
               <tr>
@@ -47,7 +48,7 @@ export default function SourcesTab({ data, canEdit, onChanged }) {
                   <td className="num small">{s.edition ?? '—'}</td>
                   <td className="small">{s.publication_date ?? '—'}</td>
                   <td className="small kb-url">{s.url ?? '—'}</td>
-                  <td>{s.is_active ? <span className="badge b-success">In use</span> : <span className="badge b-neutral">Not in use</span>}</td>
+                  <td>{s.is_active ? <Badge tone="success">In use</Badge> : <Badge tone="neutral">Not in use</Badge>}</td>
                 </tr>
               ))}
             </tbody>

@@ -1,4 +1,5 @@
 import { getBaseUrl, tokenStore } from './serverConfig'
+import { reportWarning } from '../lib/errorReport'
 
 // Địa chỉ server lấy từ serverConfig; token giữ trong kho mã hoá của hệ điều hành.
 
@@ -104,6 +105,8 @@ async function realRequest(path, options = {}, retried = false) {
   }
   if (!res.ok) {
     const err = new ApiError(res.status, await res.json().catch(() => null))
+    // Lỗi phía server (5xx): ghi nhật ký kèm mã yêu cầu để đối chiếu log server. Không ghi thân yêu cầu / dữ liệu.
+    if (res.status >= 500) reportWarning(`API ${options.method ?? 'GET'} ${path.split('?')[0]} → ${res.status}`, { code: err.code, requestId: err.requestId })
     if (err.code === 'PASSWORD_CHANGE_REQUIRED') onPasswordChangeRequired()
     throw err
   }

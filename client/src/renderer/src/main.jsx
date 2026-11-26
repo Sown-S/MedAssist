@@ -21,7 +21,9 @@ import { loadClientConfig } from './api/settingsStore'
 import { applySidebarTheme } from './api/sidebarTheme'
 import { applyAppearance } from './api/appTheme'
 import BootGate from './components/BootGate'
+import { installErrorReporting } from './lib/errorReport'
 
+installErrorReporting()
 applySidebarTheme()
 applyAppearance()
 

@@ -27,13 +27,15 @@ function publish(next) {
 // chỉ dùng để tìm; detection: reported (bệnh nhân kể) | exam (dấu hiệu khi khám) | both.
 // Server cũ chưa có các trường này → không có từ đồng nghĩa, coi như both, hiện tên đầy đủ.
 const DETECTIONS = ['reported', 'exam', 'both']
-const fromRow = (r) => ({
+export const fromRow = (r) => ({
   key: r.symptom_code,
   label: r.symptom_name,
   short: r.short_name?.trim() || '',
   aliases: Array.isArray(r.aliases) ? r.aliases.map((a) => String(a).trim()).filter(Boolean) : [],
   category: r.category,
-  detection: DETECTIONS.includes(r.detection) ? r.detection : 'both'
+  detection: DETECTIONS.includes(r.detection) ? r.detection : 'both',
+  // Giới tính áp dụng (server 0.2.6): Female / Male / Any — server cũ chưa có thì coi như Any.
+  sex: ['Female', 'Male'].includes(r.applicable_sex) ? r.applicable_sex : 'Any'
 })
 
 export async function loadSymptomCatalog() {
@@ -56,6 +58,9 @@ export const symptomOf = (code) => snapshot.list.find((s) => s.key === code)
 // Dấu hiệu khi khám (detection = exam): lễ tân không hỏi được, chỉ bác sĩ ghi ở phần khám.
 export const isExamSign = (s) => s?.detection === 'exam'
 export const isExamCode = (code) => isExamSign(symptomOf(code))
+
+// Hợp giới tính bệnh nhân: không biết giới tính hoặc giới tính Khác thì không lọc.
+export const fitsSex = (item, gender) => !gender || gender === 'Other' || !item?.sex || item.sex === 'Any' || item.sex === gender
 
 export function useSymptomCatalog() {
   const s = useSyncExternalStore((fn) => (listeners.add(fn), () => listeners.delete(fn)), () => snapshot)

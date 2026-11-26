@@ -1,0 +1,44 @@
+{
+ "method": "get",
+ "path": "/api/v1/inventory/stock",
+ "status": 200,
+ "role": "admin",
+ "body": [
+  {
+   "drug_id": "07b6afb1-b4b2-471d-afcd-866c62eb1f8e",
+   "generic_name": "Acarbose",
+   "strength": "100 mg",
+   "unit": "viên",
+   "reorder_level": 0,
+   "usable_quantity": 200,
+   "near_expiry_quantity": 0,
+   "expired_quantity": 0,
+   "nearest_expiry": "2028-11-14",
+   "is_low_stock": false
+  },
+  {
+   "drug_id": "1789c8bb-d8cd-4f48-9d64-c2754d73da44",
+   "generic_name": "Acarbose",
+   "strength": "50 mg",
+   "unit": "viên",
+   "reorder_level": 0,
+   "usable_quantity": 200,
+   "near_expiry_quantity": 0,
+   "expired_quantity": 0,
+   "nearest_expiry": "2028-11-14",
+   "is_low_stock": false
+  },
+  {
+   "drug_id": "2b9872fe-8b74-4080-9269-8100d58e1969",
+   "generic_name": "Acenocoumarol",
+   "strength": "2 mg",
+   "unit": "viên",
+   "reorder_level": 0,
+   "usable_quantity": 200,
+   "near_expiry_quantity": 0,
+   "expired_quantity": 0,
+   "nearest_expiry": "2028-11-14",
+   "is_low_stock": false
+  }
+ ]
+}

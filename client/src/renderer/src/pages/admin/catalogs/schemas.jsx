@@ -1,4 +1,5 @@
 import { fmtMoney, fmtDate } from '../../../utils/format'
+import Badge from '../../../components/ui/Badge'
 // Cấu hình từng danh mục (trường nhập, cột hiển thị, cột file, bộ lọc). Thêm danh mục mới chỉ cần thêm một mục ở đây
 // và dữ liệu mẫu trong catalogStore.
 
@@ -73,7 +74,9 @@ export const SCHEMAS = {
   general: {
     title: 'General',
     group: 'admin',
-    desc: 'Values used on patient records: gender, ethnicity, occupation, relationship, blood type',
+    desc: 'Sample reference list (gender, ethnicity, occupation, relationship, blood type) — patient forms do not use it yet',
+    // Dữ liệu mẫu trên máy, form bệnh nhân không đọc danh mục này — nói rõ để Admin không tưởng đổi ở đây có tác dụng.
+    localNote: 'This list is sample data kept on this computer only. Patient forms do not read it — gender is fixed as Female / Male / Other — so changes here have no effect yet.',
     filter: { field: 'group', options: GENERAL_GROUPS },
     fields: [
       { key: 'group', label: 'Group', type: 'select', options: GENERAL_GROUPS, required: true },
@@ -121,7 +124,7 @@ export const SCHEMAS = {
       // Thêm U+200B để bộ dịch tự động không đổi tên tiếng Anh sang tiếng Việt.
       { key: 'nameEn', label: 'English name', render: (r) => <span className="muted">{r.nameEn ? r.nameEn + '\u200B' : ''}</span> },
       { key: 'chapter', label: 'Chapter', render: (r) => <span className="num">{r.chapter}</span> },
-      { key: 'custom', label: 'Source', render: (r) => (r.custom ? <span className="badge b-warning">Custom</span> : <span className="badge">Standard</span>) }
+      { key: 'custom', label: 'Source', render: (r) => (r.custom ? <Badge tone="warning">Custom</Badge> : <span className="badge">Standard</span>) }
     ],
     csv: ['code', 'name', 'nameEn', 'chapter']
   },

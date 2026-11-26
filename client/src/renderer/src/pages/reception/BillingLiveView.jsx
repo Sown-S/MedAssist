@@ -1,14 +1,19 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import Icon from '../../components/Icon'
 import { ErrorBlock, LoadingBlock } from '../../components/DataState'
 import { ticketNo } from '../../components/queuePrint'
 import { useAwaiting, fromAwaiting, listInvoices, fromServerMethod } from '../../api/billingApi'
+import { useQuery, keepPreviousData } from '@tanstack/react-query'
+import { queryClient } from '../../lib/queryClient'
+import { errorMessage } from '../../api/errors'
 import { translate } from '../../i18n'
 import { methodLabel, PAY_STATUS } from './shared'
 import { money, fold, ymd, hhmm } from '../../utils/format'
 import { MiniStat, MiniStats } from '../../components/MiniStat'
 import Skeleton from '../../components/Skeleton'
 import DateField from '../../components/DateField'
+import EmptyState from '../../components/ui/EmptyState'
+import Badge from '../../components/ui/Badge'
 
 // Hoá đơn / Đơn thuốc của Lễ tân khi chạy với server: các lượt còn việc ở quầy (GET /billing/awaiting).
 // Tab Hoá đơn có thêm lịch sử theo ngày; đơn cũ xem ở lịch sử của từng bệnh nhân.
@@ -29,7 +34,7 @@ export default function BillingLiveView({ mode, readOnly, onPay }) {
 
   return (
     <>
-      {awaiting.error && <ErrorBlock message={awaiting.error.message} />}
+      {awaiting.error && <ErrorBlock message={errorMessage(awaiting.error)} onRetry={awaiting.reload} />}
       <MiniStats>
         <MiniStat icon="users" value={list.length} label="Waiting at the desk" />
         <MiniStat icon="package" value={toDispense} label="Waiting to dispense" />
@@ -55,7 +60,7 @@ export default function BillingLiveView({ mode, readOnly, onPay }) {
               ? translate('Visits with work left at the desk. Invoices already issued are listed by day below.')
               : translate('Only visits with work left at the desk are listed. Paid invoices and earlier prescriptions are in each patient’s history.')}
           </p>
-          <div className="tbl-wrap">
+          <div className="tbl-wrap" tabIndex={0}>
             <table>
               <thead>
                 <tr>
@@ -78,16 +83,16 @@ export default function BillingLiveView({ mode, readOnly, onPay }) {
                     {mode === 'invoices' && <td className="num">{v.invoiceCode ?? '—'}</td>}
                     <td>
                       {!v.hasRx ? (
-                        <span className="badge b-neutral">{translate('No prescription')}</span>
+                        <Badge tone="neutral">{translate('No prescription')}</Badge>
                       ) : v.pending > 0 ? (
                         <span className="badge b-warning">
                           {v.pending} {translate(v.pending === 1 ? 'item waiting' : 'items waiting')}
                         </span>
                       ) : (
-                        <span className="badge b-success">{translate('Dispensed')}</span>
+                        <Badge tone="success">{translate('Dispensed')}</Badge>
                       )}
                     </td>
-                    <td>{v.payStatus === 'Paid' ? <span className="plain">{translate('Paid')}</span> : <span className="badge b-warning">{translate('Not paid')}</span>}</td>
+                    <td>{v.payStatus === 'Paid' ? <span className="plain">{translate('Paid')}</span> : <Badge tone="warning">{translate('Not paid')}</Badge>}</td>
                     <td className="r num">
                       <b>{money(v.total)}</b>
                     </td>
@@ -103,12 +108,7 @@ export default function BillingLiveView({ mode, readOnly, onPay }) {
                 {!list.length && (
                   <tr>
                     <td colSpan={mode === 'invoices' ? 7 : 6}>
-                      <div className="empty">
-                        <div className="ill">
-                          <Icon name="clipboard" />
-                        </div>
-                        <b>{translate(all.length ? 'No visits match the search.' : 'Nothing waiting at the desk.')}</b>
-                      </div>
+                      <EmptyState icon="clipboard" title={translate(all.length ? 'No visits match the search.' : 'Nothing waiting at the desk.')} />
                     </td>
                   </tr>
                 )}
@@ -125,16 +125,12 @@ export default function BillingLiveView({ mode, readOnly, onPay }) {
 function InvoiceHistory({ readOnly, onPay, reloadKey }) {
   const [date, setDate] = useState(ymd(new Date()))
   const [withCancelled, setWithCancelled] = useState(false)
-  const [list, setList] = useState(null)
-  const [error, setError] = useState(null)
-  useEffect(() => {
-    let alive = true
-    listInvoices(date, withCancelled).then(
-      (x) => alive && (setList(x), setError(null)),
-      (e) => alive && setError(e)
-    )
-    return () => (alive = false)
-  }, [date, withCancelled, reloadKey])
+  const inv = useQuery(
+    { queryKey: ['billing', 'invoices', date, withCancelled, reloadKey], queryFn: () => listInvoices(date, withCancelled), placeholderData: keepPreviousData },
+    queryClient
+  )
+  const list = inv.data ?? null
+  const error = inv.error
 
   const paid = (list ?? []).filter((x) => x.payment_status === 'Paid')
   const revenue = paid.reduce((s, x) => s + Number(x.total_amount), 0)
@@ -168,10 +164,10 @@ function InvoiceHistory({ readOnly, onPay, reloadKey }) {
               {translate('Show cancelled invoices')}
             </label>
           </div>
-          {error && <ErrorBlock message={error.message} />}
+          {error && <ErrorBlock message={errorMessage(error)} onRetry={() => inv.refetch()} />}
           {!list && !error && <Skeleton rows={5} cols={5} />}
           {list && (
-            <div className="tbl-wrap">
+            <div className="tbl-wrap" tabIndex={0}>
               <table>
                 <thead>
                   <tr>
@@ -214,12 +210,7 @@ function InvoiceHistory({ readOnly, onPay, reloadKey }) {
                   {!list.length && (
                     <tr>
                       <td colSpan="7">
-                        <div className="empty">
-                          <div className="ill">
-                            <Icon name="clipboard" />
-                          </div>
-                          <b>{translate('No invoices on this day.')}</b>
-                        </div>
+                        <EmptyState icon="clipboard" title={translate('No invoices on this day.')} />
                       </td>
                     </tr>
                   )}

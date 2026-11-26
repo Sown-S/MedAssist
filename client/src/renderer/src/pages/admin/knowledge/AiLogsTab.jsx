@@ -98,10 +98,10 @@ export default function AiLogsTab() {
       </div>
 
       <ErrorNote>{err}</ErrorNote>
-      {!data && !err && <Skeleton rows={6} cols={4} />}
+      {!data && !err && <Skeleton rows={6} cols={4} label="Loading the AI run log" />}
       {data && (
-        <div className="tbl-wrap mt-10">
-          <div className="tbl-wrap">
+        <div className="tbl-wrap mt-10" tabIndex={0}>
+          <div className="tbl-wrap" tabIndex={0}>
             <table>
               <thead>
                 <tr>

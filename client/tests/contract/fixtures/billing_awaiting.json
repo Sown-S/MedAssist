@@ -1,0 +1,18 @@
+{
+ "method": "get",
+ "path": "/api/v1/billing/awaiting",
+ "status": 200,
+ "role": "nurse",
+ "body": [
+  {
+   "visit_id": "14c34080-a460-459e-acc5-3dce272b7d3a",
+   "queue_number": 2,
+   "patient_name": "Võ Khánh Ly",
+   "invoice_code": "HD-20261125-0002",
+   "total_amount": 132500,
+   "payment_status": "Pending",
+   "has_prescription": true,
+   "pending_items": 2
+  }
+ ]
+}

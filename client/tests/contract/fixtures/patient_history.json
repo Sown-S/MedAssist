@@ -1,0 +1,110 @@
+{
+ "method": "get",
+ "path": "/api/v1/patients/{patient_id}/history",
+ "status": 200,
+ "role": "physician",
+ "body": {
+  "patient": {
+   "patient_id": "73ffe9ff-9d36-474a-a493-febda2b32166",
+   "full_name": "Võ Khánh Ly",
+   "date_of_birth": "1990-10-21",
+   "gender": "Female",
+   "medical_history": null,
+   "allergy_notes": null,
+   "patient_code": "BN-73FFE9FF"
+  },
+  "total": 2,
+  "limit": 3,
+  "offset": 0,
+  "items": [
+   {
+    "visit_id": "14c34080-a460-459e-acc5-3dce272b7d3a",
+    "visit_date": "2026-11-25T21:55:32.220336+07:00",
+    "status": "Prescribed",
+    "chief_complaint": "Đau khớp tay hai bên, cứng buổi sáng",
+    "triage_priority": "Routine",
+    "is_red_flag": false,
+    "outcome": null,
+    "referral_facility": null,
+    "physician_name": "BS. Lê Thu Hà",
+    "diagnoses": [
+     {
+      "diagnosis_name": "Bệnh viêm khớp dạng thấp",
+      "icd10_code": "M05.9",
+      "is_primary": true
+     }
+    ],
+    "prescription": {
+     "prescription_id": "a775ea1d-13ea-423c-9268-c6a7decce154",
+     "status": "Confirmed",
+     "confirmed_at": "2026-11-25T21:55:32.248211+07:00",
+     "item_count": 2,
+     "items": [
+      {
+       "drug_label": "Meloxicam 7,5 mg (Mobic 7.5)",
+       "quantity": 7,
+       "unit": "viên",
+       "dosage": "1 viên",
+       "frequency": "1 lần/ngày sau ăn",
+       "duration_days": 7,
+       "dispense_status": "Pending"
+      },
+      {
+       "drug_label": "Omeprazol 20 mg (Omeprazol 20)",
+       "quantity": 7,
+       "unit": "viên",
+       "dosage": "1 viên",
+       "frequency": "Sáng trước ăn",
+       "duration_days": 7,
+       "dispense_status": "Pending"
+      }
+     ]
+    }
+   },
+   {
+    "visit_id": "fb47a360-855a-4204-885c-4484a2b8c0d1",
+    "visit_date": "2026-11-10T08:10:00+07:00",
+    "status": "Finished",
+    "chief_complaint": "Đau khớp tay hai bên, cứng buổi sáng",
+    "triage_priority": "Routine",
+    "is_red_flag": false,
+    "outcome": null,
+    "referral_facility": null,
+    "physician_name": "BS. Lê Thu Hà",
+    "diagnoses": [
+     {
+      "diagnosis_name": "Bệnh viêm khớp dạng thấp",
+      "icd10_code": "M05.9",
+      "is_primary": true
+     }
+    ],
+    "prescription": {
+     "prescription_id": "5ed3cf8c-c7fa-48dd-a8c4-2903cce84226",
+     "status": "Dispensed",
+     "confirmed_at": "2026-11-10T08:42:00.040090+07:00",
+     "item_count": 2,
+     "items": [
+      {
+       "drug_label": "Meloxicam 7,5 mg (Mobic 7.5)",
+       "quantity": 7,
+       "unit": "viên",
+       "dosage": "1 viên",
+       "frequency": "1 lần/ngày sau ăn",
+       "duration_days": 7,
+       "dispense_status": "Dispensed"
+      },
+      {
+       "drug_label": "Omeprazol 20 mg (Omeprazol 20)",
+       "quantity": 7,
+       "unit": "viên",
+       "dosage": "1 viên",
+       "frequency": "Sáng trước ăn",
+       "duration_days": 7,
+       "dispense_status": "Dispensed"
+      }
+     ]
+    }
+   }
+  ]
+ }
+}

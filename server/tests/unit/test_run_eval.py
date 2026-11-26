@@ -42,6 +42,44 @@ def test_clinical_metrics():
     assert dx["cases"] == 2 and dx["top1_accuracy"] == 0.5 and dx["top3_accuracy"] == 0.5
     assert dx["macro_recall"] == pytest.approx(0.25)  # C4: 1/2 (y ngoài top-3), C5: 0
     assert m["latency"]["p50_ms"] == 10.0
+    assert m["exclusion"] == {"cases": 0, "passed": 0, "leaked": {}}
+
+
+def test_clinical_metrics_exclusion():
+    ok, leak = _row("M1", "Routine", "Routine"), _row("M2", "Routine", "Routine")
+    ok.update(expected_absent=["f1"], leaked=[])
+    leak.update(expected_absent=["f1", "f2"], leaked=["f2"])
+    assert clinical_metrics([ok, leak, _row("C1", "Routine", "Routine")])["exclusion"] == {
+        "cases": 2,
+        "passed": 1,
+        "leaked": {"M2": ["f2"]},
+    }
+
+
+def test_run_clinical_checks_all_node2_candidates(monkeypatch):
+    seen = []
+    monkeypatch.setattr(
+        run_eval,
+        "evaluate_case_offline",
+        lambda case, reader, mode, llm_client: {"candidates": [{"condition_code": "a"}]},
+    )
+    monkeypatch.setattr(run_eval, "run_node1", lambda state, reader: seen.append(state) or {"is_red_flag": False})
+    monkeypatch.setattr(
+        run_eval,
+        "run_node2",
+        lambda state, reader: {"candidates": [{"condition_code": c} for c in ("a", "b", "c", "f1")]},
+    )
+    reader = SimpleNamespace(refresh=lambda: None)
+    base = {"expected_priority": "Routine", "sex": "Male"}
+    rows = run_eval.run_clinical(
+        [{**base, "case_id": "M1", "expected_absent_conditions": ["f1", "f2"]}, {**base, "case_id": "C1"}],
+        reader,
+        "RuleOnly",
+        None,
+    )
+    assert rows[0]["leaked"] == ["f1"]  # f1 ngoài top-3 vẫn bị bắt
+    assert "leaked" not in rows[1] and len(seen) == 1
+    assert seen[0]["input_features"]["sex"] == "Male"
 
 
 def test_extraction_metrics():
@@ -93,7 +131,14 @@ def test_extraction_metrics_completion():
 
 def test_inputs_and_unknown_codes():
     f = input_features({"age_years": 3, "symptoms": {"a": "PRESENT"}, "vital_signs": {"spo2_pct": 95}})
-    assert f == {"symptoms": {"a": "PRESENT"}, "vital_signs": {"spo2_pct": 95}, "age_years": 3, "age_months": 36}
+    assert f == {
+        "symptoms": {"a": "PRESENT"},
+        "vital_signs": {"spo2_pct": 95},
+        "age_years": 3,
+        "age_months": 36,
+        "sex": None,
+    }
+    assert input_features({"sex": "Female"})["sex"] == "Female"
     cases = [{"case_id": "C1", "symptoms": {"a": "PRESENT", "q": "ABSENT"}}, {"id": "E1", "symptoms": {"a": "x"}}]
     assert unknown_codes(cases, "symptoms", {"a"}) == {"C1": ["q"]}
 

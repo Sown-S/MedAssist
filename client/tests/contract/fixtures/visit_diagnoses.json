@@ -1,0 +1,23 @@
+{
+ "method": "get",
+ "path": "/api/v1/visits/{visit_id}/diagnoses",
+ "status": 200,
+ "role": "physician",
+ "body": [
+  {
+   "diagnosis_id": "8a5be63c-1829-4c85-a8bc-2f8bbd39e4c2",
+   "visit_id": "14c34080-a460-459e-acc5-3dce272b7d3a",
+   "physician_id": "0ac86ff5-1658-4aa8-b74b-55fa0b5bf1f4",
+   "condition_code": "benh_viem_khop_dang_thap",
+   "icd10_code": "M05.9",
+   "diagnosis_name": "Bệnh viêm khớp dạng thấp",
+   "is_primary": true,
+   "confirmed_by_physician": true,
+   "assessment_id": "60e69df4-a8ba-40cd-99dd-898f2849a1bd",
+   "matches_top_suggestion": true,
+   "clinical_notes": null,
+   "created_at": "2026-11-25T21:55:32.248211+07:00",
+   "confirmed_at": "2026-11-25T21:55:32.248211+07:00"
+  }
+ ]
+}

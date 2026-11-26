@@ -24,6 +24,7 @@ const KEEP = new Set([
   'https://',
   'F1',
   'F2',
+  'Ctrl+N',
   'F3',
   'F3 / Ctrl+K',
   'Alt+D',
@@ -66,7 +67,7 @@ function walk(node, fn) {
   }
 }
 
-const TEXT_PROPS = new Set(['title', 'placeholder', 'aria-label'])
+const TEXT_PROPS = new Set(['title', 'text', 'placeholder', 'aria-label'])
 const isString = (n) => n?.type === 'Literal' && typeof n.value === 'string'
 
 function displayStrings(file) {
@@ -151,5 +152,14 @@ describe('Ngôn ngữ mặc định', () => {
       localStorage.setItem('medassist_lang', 'en')
       delete globalThis.__medassistI18n
     }
+  })
+})
+
+describe('Dịch chữ trong component bọc children', () => {
+  it('chuỗi nằm trong mảng children lồng (Button + Icon) vẫn được dịch', async () => {
+    const { localizeProps, setLang } = await import('../src/renderer/src/i18n/index.js')
+    setLang?.('vi')
+    const out = localizeProps('button', { children: [false, ['icon', ' See the patient now']] })
+    expect(out.children[1][1].trim()).toBe('Mời khám ngay')
   })
 })

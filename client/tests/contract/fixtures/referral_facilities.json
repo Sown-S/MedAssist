@@ -1,0 +1,38 @@
+{
+ "method": "get",
+ "path": "/api/v1/referral-facilities",
+ "status": 200,
+ "role": "physician",
+ "body": [
+  {
+   "facility_id": "4f3665fb-3092-4b63-8cd4-96b3ac63c19c",
+   "kcb_code": null,
+   "name": "Bệnh viện E",
+   "province": "Hà Nội",
+   "address": null,
+   "facility_type": "Hospital",
+   "ownership": "Ministry",
+   "tech_level": "Chuyên sâu"
+  },
+  {
+   "facility_id": "6965158f-031e-4582-817e-293d39e87657",
+   "kcb_code": null,
+   "name": "Bệnh viện 09",
+   "province": "Hà Nội",
+   "address": null,
+   "facility_type": "Hospital",
+   "ownership": "Public",
+   "tech_level": null
+  },
+  {
+   "facility_id": "e00f4a5b-54a0-4d93-9e4c-267b4cabeb85",
+   "kcb_code": null,
+   "name": "Bệnh viện FV",
+   "province": "Hồ Chí Minh",
+   "address": "06 Nguyễn Lương Bằng, Phường Tân Mỹ",
+   "facility_type": "Hospital",
+   "ownership": "Private",
+   "tech_level": null
+  }
+ ]
+}

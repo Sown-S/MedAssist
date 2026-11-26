@@ -140,9 +140,17 @@ describe('form triệu chứng ở Quản trị tri thức', () => {
       short_name: null,
       aliases: ['nóng sốt', 'sốt nóng'],
       detection: 'reported',
-      category: null
+      category: null,
+      applicable_sex: 'Any'
     })
     expect(initial('symptoms', null, []).detection).toBe('both')
+  })
+  it('giới tính áp dụng: đọc / gửi applicable_sex, giá trị lạ hoặc thiếu → Any', () => {
+    expect(initial('symptoms', { values: { symptom_name: 'Khí hư', applicable_sex: 'Female' } }, []).applicable_sex).toBe('Female')
+    expect(initial('conditions', { values: { name_vi: 'Viêm tuyến tiền liệt', applicable_sex: 'Male' } }, []).applicable_sex).toBe('Male')
+    expect(initial('conditions', null, []).applicable_sex).toBe('Any')
+    expect(bodyOf('conditions', { name_vi: 'X', icd10_code: '', disease_group: '', description: '', applicable_sex: 'Female' }).applicable_sex).toBe('Female')
+    expect(bodyOf('conditions', { name_vi: 'X', icd10_code: '', disease_group: '', description: '' }).applicable_sex).toBe('Any')
   })
   it('chặn tên ngắn quá dài và từ đồng nghĩa trùng (không phân biệt dấu)', () => {
     const f = { ...initial('symptoms', null, []), symptom_name: 'Sốt' }

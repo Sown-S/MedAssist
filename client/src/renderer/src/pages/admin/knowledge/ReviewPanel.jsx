@@ -1,4 +1,5 @@
 import Icon from '../../../components/Icon'
+import Button from '../../../components/Button'
 import { useEffect, useState } from 'react'
 import Modal, { ModalHeader } from '../../../components/Modal'
 import { useToast } from '../../../context/ToastContext'
@@ -107,9 +108,9 @@ export function ReviewPanel({ data, names, onChanged }) {
           <button className="btn btn-outline" onClick={() => setApproving(false)}>
             Cancel
           </button>
-          <button className="btn btn-primary" onClick={() => run(() => approveRelease(pending.release_id), 'Release approved and in use')}>
+          <Button className="btn btn-primary" onClick={() => run(() => approveRelease(pending.release_id), 'Release approved and in use')}>
             Approve
-          </button>
+          </Button>
         </div>
       </Modal>
 
@@ -129,13 +130,13 @@ export function ReviewPanel({ data, names, onChanged }) {
           <button className="btn btn-outline" onClick={() => setRejecting(false)}>
             Cancel
           </button>
-          <button
+          <Button
             className="btn btn-danger"
             disabled={note.trim().length < 3}
             onClick={() => run(() => rejectRelease(pending.release_id, note.trim()), 'Release returned to the administrator').then(() => setNote(''))}
           >
             Reject
-          </button>
+          </Button>
         </div>
       </Modal>
     </>

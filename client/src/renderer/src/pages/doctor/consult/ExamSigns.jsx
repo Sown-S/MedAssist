@@ -3,7 +3,7 @@ import Icon from '../../../components/Icon'
 import Button from '../../../components/Button'
 import { translate } from '../../../i18n'
 import { useToast } from '../../../context/ToastContext'
-import { STATES, useSymptomCatalog, searchSymptoms, isExamSign, isExamCode, displayName, fullNameTitle } from '../../../api/symptoms'
+import { STATES, useSymptomCatalog, fitsSex, searchSymptoms, isExamSign, isExamCode, displayName, fullNameTitle } from '../../../api/symptoms'
 import { putSymptoms, triggerAssessment } from '../../../api/clinicApi'
 import { ApiError } from '../../../api/client'
 
@@ -19,7 +19,7 @@ const toMap = (list) => Object.fromEntries((list ?? []).filter((x) => x.state !=
 export default function ExamSigns(props) {
   const catalog = useSymptomCatalog()
   if (catalog.status !== 'ready') return null
-  return <ExamSignsBody {...props} signs={catalog.list.filter(isExamSign)} />
+  return <ExamSignsBody {...props} signs={catalog.list.filter((s) => isExamSign(s) && fitsSex(s, props.gender))} />
 }
 
 function ExamSignsBody({ visitId, symptoms, onSaved, onRerun, signs }) {

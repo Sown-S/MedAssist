@@ -8,6 +8,7 @@ import { ReminderPanel } from './ReminderPanel'
 import DateField from '../../../components/DateField'
 import ExamSigns from './ExamSigns'
 import { ymd } from '../../../utils/format'
+import ErrorBoundary from '../../../components/ErrorBoundary'
 
 // Tab "Khám (SOAP)": S lời kể + triệu chứng đã xác nhận + kết quả cận lâm sàng (labs), O khám, gợi ý AI,
 // chẩn đoán ICD-10 chính / phụ, P hướng xử trí + hẹn tái khám.
@@ -27,7 +28,7 @@ export default function SoapPanel({ visit, symptoms, onSymptoms, onRerunAi, d, s
         <ConfirmedSymptoms list={symptoms} />
       </div>
 
-      <AssessmentCard a={ai} decisions={aiDecision} onAccept={(c) => decideAi(c, 'accepted')} onDismiss={(c) => decideAi(c, 'dismissed')} />
+      <ErrorBoundary inline label="The AI suggestion could not be shown."><AssessmentCard a={ai} decisions={aiDecision} onAccept={(c) => decideAi(c, 'accepted')} onDismiss={(c) => decideAi(c, 'dismissed')} /></ErrorBoundary>
 
       <div className="soap mt-14">
         <div className="field">
@@ -45,14 +46,14 @@ export default function SoapPanel({ visit, symptoms, onSymptoms, onRerunAi, d, s
           <textarea className="input" value={d.exam} onChange={(e) => set({ exam: e.target.value })} placeholder="Findings on examination…" />
         </div>
         <div className="field full">
-          <ExamSigns visitId={visit.id} symptoms={symptoms} onSaved={onSymptoms} onRerun={onRerunAi} />
+          <ExamSigns visitId={visit.id} gender={visit.gender} symptoms={symptoms} onSaved={onSymptoms} onRerun={onRerunAi} />
         </div>
         <div className={'field full' + (tried && !d.diagnosis.trim() ? ' invalid' : '')}>
           <label>
             {translate('Confirmed diagnosis (ICD-10 code)')}
             <span className="req">*</span>
           </label>
-          <ICDPicker value={d.diagnosis} onChange={(v) => set({ diagnosis: v })} />
+          <ICDPicker value={d.diagnosis} gender={visit.gender} onChange={(v) => set({ diagnosis: v })} />
           <span className="msg">
             <Icon name="circle-alert" />
             {translate('Required')}
@@ -60,7 +61,7 @@ export default function SoapPanel({ visit, symptoms, onSymptoms, onRerunAi, d, s
         </div>
         <div className="field full">
           <label>{translate('Secondary diagnoses / comorbidities')}</label>
-          <SecondaryDx list={d.diagnosesExtra} onChange={(diagnosesExtra) => set({ diagnosesExtra })} />
+          <SecondaryDx list={d.diagnosesExtra} gender={visit.gender} onChange={(diagnosesExtra) => set({ diagnosesExtra })} />
         </div>
         <div className="field full">
           <label>

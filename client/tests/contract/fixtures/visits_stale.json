@@ -1,0 +1,7 @@
+{
+ "method": "get",
+ "path": "/api/v1/visits/stale",
+ "status": 200,
+ "role": "nurse",
+ "body": []
+}

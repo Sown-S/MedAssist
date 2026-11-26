@@ -4,6 +4,8 @@ import { translate } from '../../../i18n'
 import { ClinicalInfoEditor } from './ClinicalInfoEditor'
 import { num, isChild } from './rxDraft'
 import { dmy, hhmm } from '../../../utils/format'
+import { askPregnancy, PREGNANCY_LABEL } from '../../../api/patient'
+import Badge from '../../../components/ui/Badge'
 
 const initials = (name = '') =>
   name
@@ -34,7 +36,7 @@ export default function ConsultHeader({ visit, vit, prev, alerts }) {
         <div className="minw-0">
           <h2>
             {visit.name}
-            {visit.triage === 'emergency' ? <span className="badge b-danger">{translate('Emergency')}</span> : visit.priority ? <span className="badge b-warning">{translate('Priority')}</span> : null}
+            {visit.triage === 'emergency' ? <Badge tone="danger">{translate('Emergency')}</Badge> : visit.priority ? <Badge tone="warning">{translate('Priority')}</Badge> : null}
             {STATUS_CHIP[visit.status] && <span className="plain">{translate(STATUS_CHIP[visit.status])}</span>}
           </h2>
           <div className="meta">
@@ -45,6 +47,8 @@ export default function ConsultHeader({ visit, vit, prev, alerts }) {
               {visit.age !== '' ? visit.age + ' ' + translate('yrs') + ' · ' : ''}
               {translate(visit.gender)}
             </span>
+            {askPregnancy(visit.gender, visit.age) &&
+              (visit.pregnancy === 'yes' ? <Badge tone="warning">{translate(PREGNANCY_LABEL.yes)}</Badge> : <span className="muted">{translate(PREGNANCY_LABEL[visit.pregnancy ?? ''])}</span>)}
             {visit.phone && <span className="num">{visit.phone}</span>}
           </div>
         </div>

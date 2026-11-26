@@ -1,0 +1,52 @@
+{
+ "method": "get",
+ "path": "/api/v1/drugs",
+ "status": 200,
+ "role": "admin",
+ "body": {
+  "total": 386,
+  "limit": 5,
+  "offset": 0,
+  "items": [
+   {
+    "drug_id": "07b6afb1-b4b2-471d-afcd-866c62eb1f8e",
+    "generic_name": "Acarbose",
+    "trade_name": "Acarbose 100 mg",
+    "strength": "100 mg",
+    "dosage_form": "viên",
+    "unit": "viên",
+    "sale_price": 1700,
+    "reorder_level": 0,
+    "drug_class": "Insulin và thuốc hạ đường huyết",
+    "active_ingredient_code": null,
+    "is_active": true
+   },
+   {
+    "drug_id": "1789c8bb-d8cd-4f48-9d64-c2754d73da44",
+    "generic_name": "Acarbose",
+    "trade_name": "Acarbose 50 mg",
+    "strength": "50 mg",
+    "dosage_form": "viên",
+    "unit": "viên",
+    "sale_price": 1700,
+    "reorder_level": 0,
+    "drug_class": "Insulin và thuốc hạ đường huyết",
+    "active_ingredient_code": null,
+    "is_active": true
+   },
+   {
+    "drug_id": "2b9872fe-8b74-4080-9269-8100d58e1969",
+    "generic_name": "Acenocoumarol",
+    "trade_name": "Acenocoumarol 2 mg",
+    "strength": "2 mg",
+    "dosage_form": "viên",
+    "unit": "viên",
+    "sale_price": 1700,
+    "reorder_level": 0,
+    "drug_class": "Thuốc tác dụng lên quá trình đông máu",
+    "active_ingredient_code": null,
+    "is_active": true
+   }
+  ]
+ }
+}

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import Icon from './Icon'
 import { translate } from '../i18n'
-import { STATES, useSymptomCatalog, groupSymptoms, searchSymptoms, symptomName, isDangerSymptom, isExamSign, displayName, fullNameTitle, DANGER, OUT_OF_SCOPE } from '../api/symptoms'
+import { STATES, useSymptomCatalog, fitsSex, groupSymptoms, searchSymptoms, symptomName, isDangerSymptom, isExamSign, displayName, fullNameTitle, DANGER, OUT_OF_SCOPE } from '../api/symptoms'
 
 // Danh sách triệu chứng cho y tá, từ trên xuống: ô tìm (gõ không dấu) → “Đã xác nhận” → Dấu hiệu nguy hiểm (mở sẵn)
 // → các nhóm khác (đóng sẵn, tiêu đề có số đã chọn). Mục đã chọn vẫn nằm trong nhóm của nó, được tô nổi.
@@ -39,12 +39,13 @@ function Row({ s, value, onSet, disabled }) {
   )
 }
 
-export default function SymptomChecklist({ value, onSet, disabled = false }) {
+// gender: giới tính bệnh nhân — ẩn triệu chứng không hợp (vd khí hư âm đạo với nam); Khác / chưa chọn thì không lọc.
+export default function SymptomChecklist({ value, onSet, disabled = false, gender = '' }) {
   const catalog = useSymptomCatalog()
   const [query, setQuery] = useState('')
   const [showAll, setShowAll] = useState(false)
   const [openGroups, setOpenGroups] = useState({})
-  const askable = catalog.list.filter((s) => !isExamSign(s))
+  const askable = catalog.list.filter((s) => !isExamSign(s) && fitsSex(s, gender))
   const groups = groupSymptoms(askable)
   const byKey = new Map(catalog.list.map((s) => [s.key, s]))
 
