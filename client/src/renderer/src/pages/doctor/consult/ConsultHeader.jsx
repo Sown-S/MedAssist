@@ -2,6 +2,7 @@ import Icon from '../../../components/Icon'
 import PatientAlerts from '../../../components/PatientAlerts'
 import { translate } from '../../../i18n'
 import { ClinicalInfoEditor } from './ClinicalInfoEditor'
+import { PregnancyEditor } from './PregnancyEditor'
 import { num, isChild } from './rxDraft'
 import { dmy, hhmm } from '../../../utils/format'
 import { askPregnancy, PREGNANCY_LABEL } from '../../../api/patient'
@@ -19,7 +20,7 @@ const initials = (name = '') =>
 const STATUS_CHIP = { waiting: 'WAITING', in_exam: 'IN CONSULTATION', labs: 'WAITING FOR LABS' }
 
 // Đầu phiếu khám (thẻ .ch của bản mẫu): tên, dải sinh hiệu, lần khám trước, ghi chú trả đơn, cờ đỏ / sàn ưu tiên, dị ứng, thông tin lâm sàng.
-export default function ConsultHeader({ visit, vit, prev, alerts }) {
+export default function ConsultHeader({ visit, vit, prev, alerts, onVisitSaved }) {
   const strip = [
     ['Pulse', vit.heart_rate_bpm || '—', num(vit.heart_rate_bpm) > 100],
     ['BP', vit.systolic_bp_mmhg ? vit.systolic_bp_mmhg + '/' + (vit.diastolic_bp_mmhg || '—') : '—'],
@@ -90,6 +91,7 @@ export default function ConsultHeader({ visit, vit, prev, alerts }) {
       ))}
       <PatientAlerts p={visit} />
       <ClinicalInfoEditor visit={visit} />
+      <PregnancyEditor visit={visit} onVisitSaved={onVisitSaved} />
     </div>
   )
 }

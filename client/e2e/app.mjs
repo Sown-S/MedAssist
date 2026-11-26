@@ -60,6 +60,7 @@ export async function apiAs(role) {
   return {
     get: async (path) => (await ctx.get(path, { headers })).json(),
     patch: (path, data) => ctx.patch(path, { headers, data }),
+    post: (path, data) => ctx.post(path, { headers, data }),
     dispose: () => ctx.dispose()
   }
 }

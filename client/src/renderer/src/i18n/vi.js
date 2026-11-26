@@ -1540,6 +1540,8 @@ export const VI = {
   // ===== Sửa quy trình: dị ứng, chốt ca, huỷ hoá đơn, đóng ngày, cờ đỏ, trả đơn, thuốc kê đơn, trang quản trị =====
   'Update allergies / chronic conditions': 'Cập nhật dị ứng / bệnh nền',
   'Save to patient record': 'Lưu vào hồ sơ bệnh nhân',
+  'Edit pregnancy status': 'Sửa tình trạng mang thai',
+  'Pregnancy status saved for this visit': 'Đã lưu tình trạng mang thai của lượt khám',
   'Patient record updated': 'Đã cập nhật hồ sơ bệnh nhân',
   Shift: 'Ca',
   'Returned to stock': 'Hoàn kho',

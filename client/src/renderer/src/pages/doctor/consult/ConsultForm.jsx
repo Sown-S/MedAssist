@@ -204,7 +204,7 @@ export default function ConsultForm({ visit, user, onDone, onNext, onVisitSaved 
 
   return (
     <div className="doc-main">
-      <ConsultHeader visit={visit} vit={vit} prev={prev} alerts={ai.alerts} />
+      <ConsultHeader visit={visit} vit={vit} prev={prev} alerts={ai.alerts} onVisitSaved={onVisitSaved} />
 
       <div className="card">
         <div className="utabs">
