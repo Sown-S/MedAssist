@@ -90,7 +90,7 @@ export default function ConsultHeader({ visit, vit, prev, alerts, onVisitSaved }
         </div>
       ))}
       <PatientAlerts p={visit} />
-      <ClinicalInfoEditor visit={visit} />
+      <ClinicalInfoEditor visit={visit} onVisitSaved={onVisitSaved} />
       <PregnancyEditor visit={visit} onVisitSaved={onVisitSaved} />
     </div>
   )

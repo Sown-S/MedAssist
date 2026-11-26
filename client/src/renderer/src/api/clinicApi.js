@@ -182,6 +182,8 @@ export function toVisitDetail(v, symptoms, p) {
     dob: p.dob
   }
 }
+// Phần chi tiết phiếu khám lấy từ lượt khám máy chủ vừa trả về (PATCH /visits/{id}) — gộp vào phiếu đang mở.
+export const visitPatch = (v) => ({ vitals: v.vital_signs ?? {}, serverVitals: v.vital_signs ?? {}, pregnancy: pregnancyOf(v) })
 export const cancelVisit = (visitId, reason) => apiRequest(`${V1}/visits/${visitId}/cancel`, 'PATCH', { reason })
 
 // POST chạy luật cờ đỏ và ưu tiên ngay; phần AI chạy nền, GET hỏi lại tới khi xong.

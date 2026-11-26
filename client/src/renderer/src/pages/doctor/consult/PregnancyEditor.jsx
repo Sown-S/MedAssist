@@ -4,7 +4,7 @@ import Icon from '../../../components/Icon'
 import PregnancyField from '../../../components/PregnancyField'
 import { useToast } from '../../../context/ToastContext'
 import { translate } from '../../../i18n'
-import { updateVisit } from '../../../api/clinicApi'
+import { updateVisit, visitPatch } from '../../../api/clinicApi'
 import { askPregnancy } from '../../../api/patient'
 
 // Bác sĩ sửa tình trạng mang thai của lượt đang khám (nữ / khác 12–55 tuổi). Mang thai ghi theo lượt khám:
@@ -15,7 +15,7 @@ export function PregnancyEditor({ visit, onVisitSaved }) {
   if (!askPregnancy(visit.gender, visit.age)) return null
   async function save() {
     try {
-      onVisitSaved?.(await updateVisit(visit.id, { pregnancy: value }))
+      onVisitSaved?.(visitPatch(await updateVisit(visit.id, { pregnancy: value })))
       setValue(null)
       showToast('Pregnancy status saved for this visit')
     } catch (e) {

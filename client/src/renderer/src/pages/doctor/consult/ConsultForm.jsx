@@ -14,7 +14,7 @@ import CancelOrderItemModal from '../../../components/CancelOrderItemModal'
 import { useServerDrugs, reloadServerDrugs } from '../../../api/serverDrugs'
 import { syncDiagnoses, savePrescription, confirmPrescription, completeExam, shortageOf } from '../../../api/examApi'
 import { isServerOnline } from '../../../api/connectivity'
-import { updateVisit, triageOf } from '../../../api/clinicApi'
+import { updateVisit, triageOf, visitPatch } from '../../../api/clinicApi'
 import { normalizeVitals, vitalsToForm, vitalsFromForm } from '../../../api/vitals'
 import { printPrescription } from '../printRx'
 import { saveDraft, deleteDraft } from '../../../api/draftStore'
@@ -116,7 +116,7 @@ export default function ConsultForm({ visit, user, onDone, onNext, onVisitSaved 
       return false
     }
     sentVitals.current = { id: visit.id, vitals: vitalsNow }
-    if (r) onVisitSaved?.(r)
+    if (r) onVisitSaved?.(visitPatch(r))
     setAiRun((n) => n + 1)
     syncQueue()
     const level = r?.is_red_flag ? 'emergency' : triageOf(r?.triage_priority)
