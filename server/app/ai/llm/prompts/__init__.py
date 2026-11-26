@@ -4,14 +4,15 @@ from importlib.resources import files
 
 from app.ai.llm.errors import LLMConfigurationError
 
-REASONING_PROMPT_VERSION = "reasoning-v3"
+REASONING_PROMPT_VERSION = "reasoning-v4"
 EXTRACTION_PROMPT_VERSION = "extraction-v2"
 PHRASE_EXTRACTION_PROMPT_VERSION = "extraction-phrases-v2"
 _FILES = {
     "extraction-phrases-compact-v3": "extraction_phrases_compact_v3.txt",
     "reasoning-v1": "reasoning_v1.txt",
     "reasoning-v2": "reasoning_v2.txt",
-    REASONING_PROMPT_VERSION: "reasoning_v3.txt",
+    "reasoning-v3": "reasoning_v3.txt",
+    REASONING_PROMPT_VERSION: "reasoning_v4.txt",
     "extraction-v1": "extraction_v1.txt",
     EXTRACTION_PROMPT_VERSION: "extraction_v2.txt",
     PHRASE_EXTRACTION_PROMPT_VERSION: "extraction_phrases_v2.txt",
