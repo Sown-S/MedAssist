@@ -95,7 +95,10 @@ def test_latest_assessment_maps_release_label_and_polling_fields():
         rule_hits={"hits": [], "complete_now": [{"symptom_code": "fever", "symptom_name": "Sốt"}]},
         candidates=[],
     )
-    visit = SimpleNamespace(visit_id=visit_id, ai_status="Pending", priority_raised_by_ai=False)
+    visit = SimpleNamespace(
+        visit_id=visit_id, ai_status="Pending", priority_raised_by_ai=False, is_red_flag=False,
+        triage_priority_rule="Routine", triage_priority="Routine",
+    )
 
     class ScalarResult:
         def first(self):
@@ -130,7 +133,10 @@ def test_latest_assessment_normalizes_queue_service_shapes():
         ],
         candidates=[candidate()],
     )
-    visit = SimpleNamespace(visit_id=visit_id, ai_status="Ready", priority_raised_by_ai=False)
+    visit = SimpleNamespace(
+        visit_id=visit_id, ai_status="Ready", priority_raised_by_ai=False, is_red_flag=False,
+        triage_priority_rule="Routine", triage_priority="Routine",
+    )
 
     class ScalarResult:
         def first(self):

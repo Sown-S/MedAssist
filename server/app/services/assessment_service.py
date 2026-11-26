@@ -18,6 +18,7 @@ from app.exceptions import NotFoundError
 from app.models.ai_assessment_log import AiAssessmentLog
 from app.models.condition import Condition
 from app.models.knowledge_release import KnowledgeRelease
+from app.models.triage_rule import TriageRule
 from app.models.visit import Visit
 from app.services import settings_service
 
@@ -149,6 +150,11 @@ def get_latest_assessment(
             }
         )
 
+    # Cờ đỏ được giữ khi sửa sinh hiệu (RED_FLAG_KEPT) không nằm trong rule_hits của lần chạy mới nhất
+    if visit.is_red_flag and not any(a["rule_type"] == "RED_FLAG" for a in alerts):
+        rule_key = db.scalar(select(TriageRule.rule_key).where(TriageRule.triage_rule_id == visit.red_flag_rule_id))
+        alerts.insert(0, {"rule_key": rule_key or "", "rule_type": "RED_FLAG", "reason_text": visit.red_flag_reason})
+
     candidates = log.candidates if isinstance(log.candidates, list) else []
     symptom_map = _symptom_map(knowledge_reader) if knowledge_reader is not None else {}
     if any(
@@ -174,9 +180,10 @@ def get_latest_assessment(
         "knowledge_release": release_label or (str(log.knowledge_release_id) if log.knowledge_release_id else None),
         "model_version": log.model_version or getattr(log, "model_name", None),
         "prompt_version": log.prompt_version,
+        # Mức đang áp cho lượt khám, không phải mức thô của lần chạy (sửa sinh hiệu không hạ mức, ERD §4)
         "priority": {
-            "rule": log.priority_rule,
-            "final": log.priority_final,
+            "rule": visit.triage_priority_rule or log.priority_rule,
+            "final": visit.triage_priority or log.priority_final,
             "raised_by_ai": visit.priority_raised_by_ai,
         },
         "alerts": alerts,
