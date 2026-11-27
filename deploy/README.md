@@ -84,6 +84,8 @@ Chạy PowerShell tại thư mục gốc repo.
      lễ tân không mời bệnh nhân vào phòng của bác sĩ đó được. Tài khoản `bs.duyet` tạo bằng lệnh ở trên cũng cần gắn phòng nếu bác sĩ này khám bệnh.
 6. **Sao lưu hằng ngày** (PowerShell quyền Administrator), chép thêm sang ổ thứ hai hoặc USB:
    `.\deploy\scripts\register-backup-task.ps1 -At 22:00 -CopyTo E:\MedAssistBackup`.
+   File sao lưu (`.dump.enc`) mã hóa AES-256 bằng `BACKUP_PASSPHRASE` trong `deploy\.env`. Cất một bản khóa ngoài máy admin
+   (cùng chỗ với khóa khôi phục BitLocker): mất khóa thì không khôi phục được.
    Sau đó làm một lần mục [Thử khôi phục](#thử-khôi-phục) để chắc bản sao lưu dùng được.
 7. **Mã hóa ổ đĩa** (NFR02): bật BitLocker cho ổ `C:` (Windows Pro: **Settings › Privacy & security › Device encryption**
    hoặc **Control Panel › BitLocker Drive Encryption**; Windows Home chỉ có Device encryption nếu máy hỗ trợ). Dữ liệu CSDL nằm
@@ -102,7 +104,7 @@ Trên mỗi máy client: cài bản `MedAssist Setup *.exe`, ở màn đăng nh�
 | Xem log | `... logs -f api` hoặc `... logs -f worker` |
 | Tắt (giữ dữ liệu, giữ model) | `.\deploy\scripts\stop.ps1` |
 | Sao lưu ngay | `.\deploy\scripts\backup.ps1 -CopyTo E:\MedAssistBackup` (giữ 14 bản mới nhất ở `deploy\backups\` và ở thư mục chép thêm) |
-| Khôi phục | `.\deploy\scripts\restore.ps1 -File deploy\backups\<file>.dump` (gõ `KHOIPHUC` để xác nhận): khôi phục vào CSDL mới, kiểm quyền rồi mới thay CSDL đang chạy; CSDL cũ giữ tên `medassist_truoc_<thời điểm>` |
+| Khôi phục | `.\deploy\scripts\restore.ps1 -File deploy\backups\<file>.dump.enc` (gõ `KHOIPHUC` để xác nhận): giải mã, khôi phục vào CSDL mới, kiểm quyền rồi mới thay CSDL đang chạy; CSDL cũ giữ tên `medassist_truoc_<thời điểm>`. Sai khóa thì dừng, CSDL đang chạy không đổi. File `.dump` cũ chưa mã hóa vẫn khôi phục được |
 | Cấp lại chứng chỉ (đổi IP, sắp hết hạn) | `new-certs.ps1 -HostName <IP>` rồi `... restart caddy` |
 | Nạp bản tri thức mới | Đổi `label` trong `knowledge/_release.md`, `start.ps1`, rồi `... exec api python -m scripts.import_okf --submit --approve-as <bác sĩ> --retire-missing`. Có bỏ bệnh, triệu chứng, luật khỏi `knowledge/` thì bắt buộc `--retire-missing` kèm `--approve-as`: không có hai cờ này, mục đã bỏ vẫn Active (chạy `--dry-run` trước để xem danh sách sẽ bị tắt) |
 | Xuất cụm lời kể không khớp (soạn từ đồng nghĩa) | `... exec api python -m scripts.export_unmapped --since <YYYY-MM-DD> --out /tmp/unmapped.csv`, rồi `... cp api:/tmp/unmapped.csv .\unmapped.csv`. File chỉ có cụm và số lần gặp, không kèm bệnh nhân |
@@ -115,7 +117,7 @@ Trên mỗi máy client: cài bản `MedAssist Setup *.exe`, ở màn đăng nh�
 Làm một lần sau khi cài và sau mỗi lần đổi cách sao lưu (NFR04: quy trình khôi phục phải được thử):
 
 1. `.\deploy\scripts\backup.ps1 -CopyTo E:\MedAssistBackup`, ghi lại số lượt khám, số bệnh nhân đang thấy trên giao diện.
-2. `.\deploy\scripts\restore.ps1 -File E:\MedAssistBackup\<file vừa tạo>.dump`, gõ `KHOIPHUC`.
+2. `.\deploy\scripts\restore.ps1 -File E:\MedAssistBackup\<file vừa tạo>.dump.enc`, gõ `KHOIPHUC`.
 3. Mở `https://<máy chủ>/health` (`database.ok = true`), đăng nhập trên một máy client, so lại số liệu ở bước 1.
 4. Ghi ngày thử, tên file, kết quả vào biên bản. CSDL cũ còn giữ tên `medassist_truoc_<thời điểm>`; xóa khi chắc chắn không cần:
    `... exec db psql -U medassist_owner -d postgres -c "DROP DATABASE medassist_truoc_<thời điểm>"`.
