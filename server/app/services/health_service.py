@@ -45,12 +45,12 @@ def _check_ollama() -> tuple[bool, str, str | None]:
 
 
 def _stuck_queue(db: Session) -> bool:
-    """Việc Queued quá hạn đánh giá mà chưa ai nhận: worker đã dừng."""
+    """Việc Queued quá thời hạn chờ mà chưa ai nhận: worker đã dừng."""
     oldest = db.scalar(select(func.min(AiAssessmentLog.queued_at)).where(AiAssessmentLog.status == "Queued"))
     if oldest is None:
         return False
     waited = (datetime.datetime.now(datetime.UTC) - oldest).total_seconds()
-    return waited > settings.AI_ASSESSMENT_TIMEOUT_SECONDS
+    return waited > settings.AI_QUEUE_WAIT_SECONDS
 
 
 def ai_status(db: Session) -> dict:

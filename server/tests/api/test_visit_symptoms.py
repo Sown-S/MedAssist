@@ -4,6 +4,8 @@ import uuid
 
 import pytest
 
+from tests.api.intake import save_intake
+
 
 @pytest.fixture
 def visit_id(client, nurse):
@@ -77,6 +79,18 @@ def test_examining_only_own_physician(client, nurse, doctor, doctor2, examining,
         r = _put(client, other, vid, item)
         assert r.status_code == 409 and r.json()["error"]["code"] == "NOT_YOUR_VISIT"
     assert _put(client, doctor, vid, item).status_code == 200
+
+
+def test_physician_cannot_edit_symptoms_before_exam(client, nurse, doctor, visit_id, wk_knowledge):
+    item = [{"symptom_code": "wk_fever_high", "state": "PRESENT"}]
+    r = _put(client, doctor, visit_id, item)
+    assert r.status_code == 409 and r.json()["error"]["code"] == "NOT_YOUR_VISIT"
+    save_intake(visit_id)
+    assert client.patch(f"/api/v1/visits/{visit_id}/check-in", headers=nurse).status_code == 200
+    r = _put(client, doctor, visit_id, item)
+    assert r.status_code == 409 and r.json()["error"]["code"] == "NOT_YOUR_VISIT"
+    assert _put(client, nurse, visit_id, item).status_code == 200
+    assert client.get(f"/api/v1/visits/{visit_id}/symptoms", headers=nurse).json()[0]["state"] == "PRESENT"
 
 
 def test_audit_counts_only(client, nurse, visit_id, wk_knowledge, logs):

@@ -36,7 +36,7 @@ export default function ConsultView({ visitId, onSelect }) {
       <DoctorQueue visits={visits} user={user} mine={mine} current={current} onSelect={onSelect} take={take} next={next} onCloseLab={setClosing} openGroups={openGroups} toggle={toggle} />
       {current ? (
         <ServerVisit key={current.id} visit={current}>
-          {(v) => <ConsultForm key={v.id} visit={v} user={user} onDone={() => onSelect(null)} onNext={next} />}
+          {(v, update) => <ConsultForm key={v.id} visit={v} onVisitSaved={update} user={user} onDone={() => onSelect(null)} onNext={next} />}
         </ServerVisit>
       ) : (
         <div className="doc-main">

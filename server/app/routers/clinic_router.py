@@ -38,6 +38,7 @@ from app.validation.schema_validators import vital_sign_warnings
 router = APIRouter(tags=["clinic"])
 
 _nurse_patient = require_roles("Nurse", audit_entity="patient")
+_clinical_patient = require_roles(*CLINICAL_ROLES, audit_entity="patient")
 _nurse_visit = require_roles("Nurse", audit_entity="visit")
 _physician_visit = require_roles("Physician", audit_entity="visit")
 _clinical_visit = require_roles(*CLINICAL_ROLES, audit_entity="visit")
@@ -106,8 +107,9 @@ def get_patient(
 
 @router.patch("/patients/{patient_id}", response_model=PatientOut)
 def update_patient(
-    patient_id: uuid.UUID, body: PatientUpdate, actor: User = Depends(_nurse_patient), db: Session = Depends(get_db)
+    patient_id: uuid.UUID, body: PatientUpdate, actor: User = Depends(_clinical_patient), db: Session = Depends(get_db)
 ):
+    # Y tá sửa mọi trường; bác sĩ chỉ dị ứng, bệnh nền của bệnh nhân mình đang khám (kiểm ở service)
     patient = emr_service.update_patient(db, patient_id, body, actor)
     db.commit()
     db.refresh(patient)

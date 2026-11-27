@@ -16,7 +16,13 @@ import re
 from threading import Lock
 from types import MappingProxyType
 
-from app.ai.extraction.feature_extractor import _CODES, _normalise, _strip_accents
+from app.ai.extraction.feature_extractor import (
+    APPLICABLE_SEXES,
+    _CODES,
+    _normalise,
+    _strip_accents,
+    applies_to_sex,
+)
 from app.ai.interfaces import KnowledgeReader
 from app.validation import knowledge_validators
 
@@ -109,6 +115,7 @@ class _Document:
     aliases: tuple[str, ...]
     features: frozenset[str]
     grams: frozenset[str]
+    applicable_sex: str = "Any"
 
 
 @dataclass(frozen=True)
@@ -129,7 +136,7 @@ class CandidateIndex:
     gram_postings: Mapping[str, tuple[int, ...]]
     idf: Mapping[str, float]
 
-    def search(self, phrase: str, *, limit: int) -> tuple[Candidate, ...]:
+    def search(self, phrase: str, *, limit: int, sex: object = None) -> tuple[Candidate, ...]:
         """Tìm trong toàn chỉ mục; caller chọn K bằng số đo, không có K production mặc định."""
         if not isinstance(phrase, str) or type(limit) is not int or limit <= 0:
             raise ValueError("Invalid candidate query or limit.")
@@ -147,6 +154,8 @@ class CandidateIndex:
         best: dict[int, tuple[float, bool, tuple[str, ...]]] = {}
         for entry_id in sorted(lexical.keys() | gram_hits.keys()):
             entry = self.entries[entry_id]
+            if not applies_to_sex(self.documents[entry.doc_id].applicable_sex, sex):
+                continue
             lexical_score = lexical[entry_id] / max(1.0, query_weight)
             # Giảm ưu thế của tên hội chứng ghép dài chỉ trùng vài từ phổ biến.
             lexical_score /= math.sqrt(max(1.0, len(entry.features) / max(1, len(features))))
@@ -191,6 +200,10 @@ def _read_catalogue(reader: KnowledgeReader):
             detection = "both" if raw_detection is None else raw_detection
             if not isinstance(detection, str) or detection not in knowledge_validators.DETECTIONS:
                 raise ValueError
+            raw_sex = row.get("applicable_sex", "Any")
+            applicable_sex = "Any" if raw_sex is None else raw_sex
+            if not isinstance(applicable_sex, str) or applicable_sex not in APPLICABLE_SEXES:
+                raise ValueError
             raw_aliases = row.get("aliases", ())
             if raw_aliases is None:
                 raw_aliases = ()
@@ -210,6 +223,7 @@ def _read_catalogue(reader: KnowledgeReader):
                 "symptom_name": name,
                 "aliases": aliases,
                 "detection": detection,
+                "applicable_sex": applicable_sex,
             })
     except (KeyError, TypeError, ValueError):
         # Validator mã dùng chung quản lý quy tắc slug/độ dài; ẩn chi tiết đầu vào.
@@ -242,7 +256,9 @@ def _build(key: str, catalogue_hash: str, rows: list[dict[str, object]]) -> Cand
         aliases = tuple(row["aliases"])
         name_features = _features(name) | _features(code.replace("_", " "))
         name_grams = _grams(name)
-        documents.append(_Document(code, name, aliases, name_features, name_grams))
+        documents.append(
+            _Document(code, name, aliases, name_features, name_grams, str(row["applicable_sex"]))
+        )
         surfaces: list[tuple[bool, frozenset[str], frozenset[str]]] = [
             (False, name_features, name_grams),
         ]

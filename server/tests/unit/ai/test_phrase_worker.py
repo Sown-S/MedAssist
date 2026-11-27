@@ -1,7 +1,7 @@
 """Kiểm worker trích xuất với selector thật và session giả."""
 
 import asyncio
-import datetime
+import time
 from types import SimpleNamespace
 import uuid
 
@@ -78,7 +78,7 @@ def env(monkeypatch):
                             audits=audits, events=events, release_id=release_id)
     async def process(client=None, *, waited=0, attempt=2):
         await runner._process_extraction(
-            assessment_id, visit_id, datetime.datetime.now(datetime.UTC) - datetime.timedelta(seconds=waited),
+            assessment_id, visit_id, time.monotonic() + runner.feature_extractor.EXTRACTION_TIMEOUT_SECONDS - waited,
             reader, client or Client(), "local-gemma", Session, attempt_count=attempt,
         )
     state.process = process
@@ -104,18 +104,35 @@ def test_worker_selects_once_pins_snapshot_and_commits_audit_atomically(env):
     assert "PRIVATE_PERSON" not in repr(env.audits)
 
 
-@pytest.mark.parametrize("output,code", [({}, "INVALID_SELECTION"),
-    ({"p1": VALID["p1"], "p2": [{"symptom_code": "cough_dry", "status": "ABSENT"}], "unmapped": []},
-     "CONFLICTING_SELECTION")])
-def test_incomplete_output_is_failed_and_never_partial(env, output, code):
-    if code == "CONFLICTING_SELECTION":
-        env.visit.free_text_description = "Ho khan; có ho khan."
-    asyncio.run(env.process(Client(output)))
-    assert env.run.status == "Failed" and env.run.error_detail == code
+def test_incomplete_output_is_failed_and_never_partial(env):
+    asyncio.run(env.process(Client({})))
+    assert env.run.status == "Failed" and env.run.error_detail == "INVALID_SELECTION"
     assert env.run.candidates == [] and env.run.lease_until is None
-    assert env.run.validation_result == {"valid": False, "reason": code}
+    assert env.run.validation_result == {"valid": False, "reason": "INVALID_SELECTION"}
     assert env.audits[0]["new_values"]["status"] == "Failed"
     assert env.events.index("audit") < env.events.index("commit")
+
+
+def test_conflicting_symptom_completes_and_keeps_other_suggestions(env):
+    env.visit.free_text_description = "Hôm qua ho khan, nay hết ho khan; không chóng mặt xoay tròn."
+    output = {
+        "p1": VALID["p1"],
+        "p2": [{"symptom_code": "cough_dry", "status": "ABSENT"}],
+        "p3": VALID["p2"],
+        "unmapped": [],
+    }
+    asyncio.run(env.process(Client(output)))
+    assert env.run.status == "Completed"
+    assert env.run.validation_result == {"valid": True, "reason": None}
+    assert env.run.candidates == [
+        {
+            "symptom_code": "vertigo",
+            "status": "ABSENT",
+            "label": "Reference Suggestion",
+            "requires_confirmation": True,
+        }
+    ]
+    assert env.audits[0]["new_values"]["status"] == "Completed"
 
 
 def test_unmapped_phrase_completes_and_keeps_valid_suggestions(env):
@@ -197,3 +214,20 @@ def test_unknown_strategy_is_configuration_error(env, monkeypatch):
     with pytest.raises(ValueError, match="strategy"):
         asyncio.run(env.process())
     assert not env.sessions
+
+
+def test_worker_passes_patient_sex_to_phrase_extraction_filter(env, monkeypatch):
+    env.snapshot.symptoms = [
+        {"symptom_code": "vaginal_discharge", "symptom_name": "Dấu hiệu bất thường âm đạo", "applicable_sex": "Female"},
+        {"symptom_code": "dysuria", "symptom_name": "Tiểu buốt bất thường", "applicable_sex": "Any"},
+    ]
+    env.visit.free_text_description = "Có dấu hiệu bất thường."
+    monkeypatch.setattr(runner.q, "build_input_features", lambda db, v: {"symptoms": {}, "sex": "Male"})
+    client = Client({"p1": [{"symptom_code": "dysuria", "status": "PRESENT"}], "unmapped": []})
+
+    asyncio.run(env.process(client))
+
+    assert env.run.status == "Completed"
+    enum_codes = client.calls[0]["schema"]["properties"]["p1"]["items"]["properties"]["symptom_code"]["enum"]
+    assert enum_codes == ["dysuria"]
+    assert [row["symptom_code"] for row in env.run.candidates] == ["dysuria"]

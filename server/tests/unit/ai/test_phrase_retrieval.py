@@ -445,6 +445,8 @@ def test_cache_invalidates_when_aliases_or_detection_change():
     [
         {"symptom_code": "ho", "symptom_name": "Ho", "detection": "PRIVATE_BAD_VALUE"},
         {"symptom_code": "ho", "symptom_name": "Ho", "detection": 123},
+        {"symptom_code": "ho", "symptom_name": "Ho", "applicable_sex": "PRIVATE_BAD_VALUE"},
+        {"symptom_code": "ho", "symptom_name": "Ho", "applicable_sex": 123},
         {"symptom_code": "ho", "symptom_name": "Ho", "aliases": "PRIVATE_BAD_VALUE"},
         {"symptom_code": "ho", "symptom_name": "Ho", "aliases": ["PRIVATE_BAD_VALUE", ""]},
         {"symptom_code": "ho", "symptom_name": "Ho", "aliases": ["PRIVATE_BAD_VALUE", "   "]},
@@ -456,3 +458,58 @@ def test_invalid_aliases_or_detection_in_catalogue_fail_closed_and_hide_marker(b
         CandidateIndexCache().get(reader([bad_row]))
     assert "Invalid Active symptom catalogue." in str(caught.value)
     assert "PRIVATE_BAD_VALUE" not in str(caught.value)
+
+
+@pytest.mark.parametrize(
+    "sex,expected",
+    [
+        ("Male", {"sym_any", "sym_male", "sym_missing", "sym_none"}),
+        ("Female", {"sym_any", "sym_female", "sym_missing", "sym_none"}),
+        ("Other", {"sym_any", "sym_female", "sym_male", "sym_missing", "sym_none"}),
+        (None, {"sym_any", "sym_female", "sym_male", "sym_missing", "sym_none"}),
+    ],
+)
+def test_search_filters_applicable_sex_matching_node2_and_preserves_limit_slots(sex, expected):
+    rows = [
+        {"symptom_code": "sym_any", "symptom_name": "Đau vùng chậu", "applicable_sex": "Any"},
+        {
+            "symptom_code": "sym_female",
+            "symptom_name": "Đau vùng chậu hạ vị kèm khí hư",
+            "applicable_sex": "Female",
+        },
+        {"symptom_code": "sym_male", "symptom_name": "Đau vùng chậu hạ vị", "applicable_sex": "Male"},
+        {"symptom_code": "sym_missing", "symptom_name": "Đau vùng chậu mạn"},
+        {"symptom_code": "sym_none", "symptom_name": "Đau vùng chậu nhẹ", "applicable_sex": None},
+    ]
+    cache = CandidateIndexCache()
+    source = reader(rows)
+    index = cache.get(source)
+    got = {c.symptom_code for c in index.search("Đau vùng chậu hạ vị", limit=10, sex=sex)}
+    assert got == expected
+
+    # Mã Female khớp cao nhất không được chiếm suất Top-1 của bệnh nhân Male.
+    top_for_male = index.search("Đau vùng chậu hạ vị kèm khí hư", limit=1, sex="Male")
+    assert len(top_for_male) == 1
+    assert top_for_male[0].symptom_code != "sym_female"
+
+    # Retrieve theo từng giới tính vẫn dùng chung một CandidateIndex trong cache.
+    plan_male = retrieve_phrases(
+        "Đau vùng chậu hạ vị kèm khí hư.", source, cache, identifiers=(), per_phrase_limit=10, deadline=monotonic() + 5, sex="Male"
+    )
+    plan_female = retrieve_phrases(
+        "Đau vùng chậu hạ vị kèm khí hư.", source, cache, identifiers=(), per_phrase_limit=10, deadline=monotonic() + 5, sex="Female"
+    )
+    assert cache.get(source) is index
+    assert "sym_female" not in {c.symptom_code for c in plan_male.groups[0].candidates}
+    assert "sym_female" in {c.symptom_code for c in plan_female.groups[0].candidates}
+
+
+def test_cache_invalidates_when_applicable_sex_changes():
+    cache = CandidateIndexCache(max_entries=2)
+    source = reader([{"symptom_code": "pelvic_pain", "symptom_name": "Đau vùng chậu", "applicable_sex": "Any"}])
+    first = cache.get(source)
+    source._symptoms[0]["applicable_sex"] = "Female"
+    updated = cache.get(source)
+    assert updated is not first
+    assert updated.snapshot_key != first.snapshot_key
+    assert updated.catalogue_sha256 != first.catalogue_sha256

@@ -17,6 +17,7 @@ from app.ai.llm.errors import (
 )
 
 _LOCAL_HOSTS = frozenset({"localhost", "ollama", "host.docker.internal"})
+REASONING_NUM_PREDICT = 512
 _LAN_NETWORKS = tuple(
     ip_network(network)
     for network in ("10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "fc00::/7")
@@ -99,7 +100,10 @@ class OllamaClient:
             "keep_alive": self.keep_alive,
             "options": options,
         }
-        if schema.get("title") in {"ExtractionOutput", "PhraseExtractionOutput"}:
+        if schema.get("title") == "ReasoningOutput":
+            # Trần bảo vệ để không cắt cụt JSON trên mã CXK dài; prompt ép sinh ngắn trong 3 mã đầu.
+            options["num_predict"] = REASONING_NUM_PREDICT
+        elif schema.get("title") in {"ExtractionOutput", "PhraseExtractionOutput"}:
             if schema.get("title") == "ExtractionOutput":
                 options["num_ctx"] = 8192
             # Phrases dùng context mặc định như reasoning để tránh đổi context

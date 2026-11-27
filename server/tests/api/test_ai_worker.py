@@ -667,3 +667,84 @@ def test_extraction_keeps_unmapped_phrases_for_alias_export(client, nurse, login
     ).json()["items"]
     item = next(i for i in logs if i["assessment_id"] == str(run.assessment_id))
     assert item["unmapped_count"] == 1 and "đau lưng" not in str(item)
+
+
+# --- Thời hạn chờ và thời hạn chạy ----------------------------------------------------------------
+class _TimedLLM(FakeLLMClient):
+    def __init__(self):
+        self.timeouts = []
+
+    async def generate_json(self, *, prompt, schema, timeout_seconds):
+        self.timeouts.append(timeout_seconds)
+        return await super().generate_json(prompt=prompt, schema=schema, timeout_seconds=timeout_seconds)
+
+
+def _backdate_queue(aid, seconds):
+    with SessionLocal() as db:
+        db.execute(
+            update(AiAssessmentLog)
+            .where(AiAssessmentLog.assessment_id == aid)
+            .values(queued_at=text(f"now() - interval '{seconds} seconds'"))
+        )
+        db.commit()
+
+
+def test_extraction_queued_behind_long_assessment_still_calls_model(client, nurse, text_visit):
+    vid = text_visit()
+    client.post(f"/api/v1/visits/{vid}/symptom-extraction", headers=nurse)
+    aid = _extractions(vid)[-1].assessment_id
+    _backdate_queue(aid, 60)  # chờ một ca Node 3 chạy 60 s
+    llm = _TimedLLM()
+    assert _process(llm, "fake") is True
+    run = _run(aid)
+    assert run.status == "Completed" and run.candidates
+    assert llm.timeouts and 25 < llm.timeouts[0] <= feature_extractor.EXTRACTION_TIMEOUT_SECONDS
+
+
+@pytest.mark.parametrize("waited", [90, 120])
+def test_extraction_waiting_past_queue_limit_never_calls_model(client, nurse, text_visit, waited):
+    vid = text_visit()
+    client.post(f"/api/v1/visits/{vid}/symptom-extraction", headers=nurse)
+    aid = _extractions(vid)[-1].assessment_id
+    _backdate_queue(aid, waited)
+    llm = _TimedLLM()
+    assert _process(llm, "fake") is True
+    run = _run(aid)
+    assert not llm.timeouts
+    assert run.status == "Failed" and run.error_detail == "EXTRACTION_TIMEOUT" and run.candidates == []
+
+
+def test_assessment_run_time_counts_from_claim(make_visit, nurse_user):
+    vid = make_visit({"wk_fever_high": "PRESENT", "wk_cough_dry": "PRESENT", "wk_sore_throat": "PRESENT"})
+    aid = _enqueue(vid, nurse_user)
+    _backdate_queue(aid, 60)
+    llm = _TimedLLM()
+    assert _process(llm, "fake") is True
+    assert llm.timeouts and 85 < llm.timeouts[0] <= runner.settings.AI_ASSESSMENT_TIMEOUT_SECONDS
+    assert _run(aid).status == "Completed" and _run(aid).mode == "Full"
+
+
+@pytest.mark.parametrize("waited", [90, 120])
+def test_assessment_waiting_past_queue_limit_ends_degraded(make_visit, nurse_user, waited):
+    vid = make_visit({"wk_fever_high": "PRESENT", "wk_cough_dry": "PRESENT", "wk_sore_throat": "PRESENT"})
+    aid = _enqueue(vid, nurse_user)
+    _backdate_queue(aid, waited)
+    llm = _TimedLLM()
+    assert _process(llm, "fake") is True
+    run = _run(aid)
+    assert not llm.timeouts
+    assert run.status == "Degraded" and run.mode == "RuleOnly" and run.candidates
+    assert _visit(vid).ai_status == "Degraded"
+
+
+def test_reclaim_after_lease_expiry_gets_no_run_time(make_visit, nurse_user):
+    vid = make_visit({"wk_fever_high": "PRESENT", "wk_cough_dry": "PRESENT", "wk_sore_throat": "PRESENT"})
+    aid = _enqueue(vid, nurse_user)
+    _expire_lease(aid, 1)
+    _backdate_queue(aid, runner.settings.WORKER_LEASE_SECONDS + 5)  # lần nhận đầu đã giữ hết lease
+    assert runner.sweep_once() == {"requeued": 1, "failed": 0}
+    llm = _TimedLLM()
+    assert _process(llm, "fake") is True
+    run = _run(aid)
+    assert not llm.timeouts
+    assert run.status == "Degraded" and run.mode == "RuleOnly" and run.attempt_count == 2

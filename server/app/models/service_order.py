@@ -73,15 +73,6 @@ class ServiceOrderItem(Base):
             "AND (status = 'Cancelled') = (cancel_reason IS NOT NULL)",
             name="chk_service_order_item_cancel",
         ),
-        CheckConstraint(
-            "laterality IS NULL OR laterality IN ('Left', 'Right', 'Bilateral')",
-            name="chk_service_order_item_laterality",
-        ),
-        CheckConstraint(
-            "(numeric_value IS NULL OR result IS NOT NULL) "
-            "AND (abnormal_flag IS NULL OR (numeric_value IS NOT NULL AND abnormal_flag IN ('H', 'L', 'N')))",
-            name="chk_service_order_item_numeric",
-        ),
         Index("idx_service_order_item_order", "order_id"),
     )
 
@@ -93,13 +84,7 @@ class ServiceOrderItem(Base):
     unit_price: Mapped[decimal.Decimal | None] = mapped_column(Numeric(12, 2))
     in_package: Mapped[bool] = mapped_column(Boolean, server_default=text("false"))
     status: Mapped[str] = mapped_column(String(12), server_default=text("'Ordered'"))
-    laterality: Mapped[str | None] = mapped_column(String(10))
     result: Mapped[str | None] = mapped_column(Text)
-    numeric_value: Mapped[decimal.Decimal | None] = mapped_column(Numeric(12, 3))
-    result_unit: Mapped[str | None] = mapped_column(String(30))
-    ref_low: Mapped[decimal.Decimal | None] = mapped_column(Numeric(12, 3))
-    ref_high: Mapped[decimal.Decimal | None] = mapped_column(Numeric(12, 3))
-    abnormal_flag: Mapped[str | None] = mapped_column(String(1))
     result_by: Mapped[uuid.UUID | None] = mapped_column(Uuid)
     result_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     cancelled_by: Mapped[uuid.UUID | None] = mapped_column(Uuid)

@@ -1,4 +1,4 @@
-"""Ngân sách worker tính cả thời gian chờ; không dùng DB hay Ollama."""
+"""Thời hạn chờ tính từ queued_at, thời hạn chạy tính từ lúc worker nhận việc; không dùng DB hay Ollama."""
 
 import datetime
 from types import SimpleNamespace
@@ -7,44 +7,44 @@ import pytest
 
 from app.worker import runner
 
+QUEUED_AT = datetime.datetime(2026, 10, 30, tzinfo=datetime.UTC)
 
-@pytest.fixture
-def now(monkeypatch):
-    fixed = datetime.datetime(2026, 10, 30, tzinfo=datetime.UTC)
 
-    class Clock:
-        @staticmethod
-        def now(tz):
-            assert tz == datetime.UTC
-            return fixed
-
-    monkeypatch.setattr(runner, "datetime", SimpleNamespace(datetime=Clock, UTC=datetime.UTC))
+@pytest.fixture(autouse=True)
+def limits(monkeypatch):
     monkeypatch.setattr(runner, "settings", SimpleNamespace(
-        AI_ASSESSMENT_TIMEOUT_SECONDS=90, WORKER_LEASE_SECONDS=120,
+        AI_QUEUE_WAIT_SECONDS=90, AI_ASSESSMENT_TIMEOUT_SECONDS=90, WORKER_LEASE_SECONDS=150,
     ))
-    return fixed
+
+
+def _budget(waited: float, limit: float | None = None) -> float:
+    return runner._run_budget(QUEUED_AT, QUEUED_AT + datetime.timedelta(seconds=waited), limit)
 
 
 @pytest.mark.parametrize("limit,budget", [(None, 90), (30, 30)])
-@pytest.mark.parametrize("stage", ["new", "near", "deadline", "expired", "future"])
-def test_queue_wait_consumes_budget(now, limit, budget, stage):
-    waited, expected = {
-        "new": (0, budget),
-        "near": (budget - 0.5, 0.5),
-        "deadline": (budget, 0),
-        "expired": (budget + 100, 0),
-        "future": (-5, budget),
-    }[stage]
-    queued_at = now - datetime.timedelta(seconds=waited)
-    assert runner._remaining_budget(queued_at, limit) == pytest.approx(expected)
+@pytest.mark.parametrize("waited", [0, 60, 89.9, -5])
+def test_wait_within_limit_keeps_full_run_budget(limit, budget, waited):
+    assert _budget(waited, limit) == budget
+
+
+@pytest.mark.parametrize("limit", [None, 30])
+@pytest.mark.parametrize("waited", [90, 91, 190])
+def test_wait_reaching_limit_gets_no_run_budget(limit, waited):
+    assert _budget(waited, limit) == 0
+
+
+@pytest.mark.parametrize("limit", [None, 30])
+def test_reclaim_after_lease_expiry_gets_no_run_budget(limit):
+    assert _budget(runner.settings.WORKER_LEASE_SECONDS, limit) == 0
 
 
 @pytest.mark.parametrize("limit", [0, -1])
-def test_nonpositive_budget_stays_exhausted(now, limit):
-    assert runner._remaining_budget(now, limit) == 0
+def test_nonpositive_budget_stays_exhausted(limit):
+    assert _budget(0, limit) == 0
 
 
-def test_test_override_does_not_replenish_extraction_budget(now, monkeypatch):
-    monkeypatch.setenv("MEDASSIST_TEST_NO_ASSESSMENT_TIMEOUT", "1")
-    queued_at = now - datetime.timedelta(seconds=60)
-    assert runner._remaining_budget(queued_at, 30) == 0
+def test_remaining_budget_counts_down_from_deadline(monkeypatch):
+    monkeypatch.setattr(runner.time, "monotonic", lambda: 1000.0)
+    assert runner._remaining_budget(1030.0) == 30
+    assert runner._remaining_budget(1000.0) == 0
+    assert runner._remaining_budget(970.0) == 0

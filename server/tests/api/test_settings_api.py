@@ -18,7 +18,6 @@ def test_list_shows_defaults(client, users, admin):
         "billing.consultation_service_code",
         "security.idle_logout_minutes",
         "alerts.cluster",
-        "prescription.gi_protect_age",
         "ai.focus_scope",
     }
     assert all("description" in r for r in rows.values())

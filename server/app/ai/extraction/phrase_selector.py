@@ -3,7 +3,7 @@
 import asyncio
 import json
 import math
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field, replace
 from time import monotonic
 
@@ -12,7 +12,7 @@ from sqlalchemy.orm import Session
 
 from app.ai.extraction import compact_selection
 from app.ai.extraction.candidate_index import CandidateIndexCache
-from app.ai.extraction.feature_extractor import SymptomSuggestion, _validated_suggestions
+from app.ai.extraction.feature_extractor import _CODES, SymptomSuggestion, _validated_suggestions
 from app.ai.extraction.phrase_retrieval import RetrievalPlan, retrieve_phrases
 from app.ai.extraction.phrase_splitter import IncompleteSegmentation
 from app.ai.extraction.selection_groups import group_for_selection
@@ -82,14 +82,13 @@ def validate_selection(output: object, plan: RetrievalPlan) -> SelectionResult:
         for key, codes in allowed.items():
             parsed = ExtractionOutput.model_validate({"symptoms": output[key]}, strict=True)
             selected = [row.symptom_code for row in parsed.symptoms]
+            _CODES.validate_python(selected, strict=True)
             if len(selected) != len(set(selected)) or not set(selected) <= codes:
                 return SelectionResult(False, "INVALID_SELECTION")
             merged.extend(row.model_dump() for row in parsed.symptoms)
     except ValidationError:
         return SelectionResult(False, "INVALID_SELECTION")
     suggestions = _validated_suggestions({"symptoms": merged}, set().union(*allowed.values()))
-    if merged and not suggestions:
-        return SelectionResult(False, "CONFLICTING_SELECTION")
     phrases = {group.phrase.phrase_id: group.phrase.text for group in plan.groups}
     unmapped_phrases = tuple(dict.fromkeys(phrases[key] for key in unmapped))
     return SelectionResult(True, suggestions=tuple(suggestions), unmapped_phrases=unmapped_phrases)
@@ -118,8 +117,12 @@ async def select_phrase_symptoms(
     if deadline <= monotonic():
         return SelectionResult(False, "EXTRACTION_TIMEOUT")
     try:
-        plan = retrieve_phrases(text, knowledge_reader, cache, identifiers=identifiers,
-                                per_phrase_limit=per_phrase_limit, deadline=deadline)
+        input_features = gate_state.get("input_features")
+        sex = input_features.get("sex") if isinstance(input_features, Mapping) else None
+        plan = retrieve_phrases(
+            text, knowledge_reader, cache, identifiers=identifiers,
+            per_phrase_limit=per_phrase_limit, deadline=deadline, sex=sex,
+        )
         plan = group_for_selection(plan)
         if not plan.masked_text.replace("[REDACTED]", "").strip(" \t\r\n,;:.!?"):
             return SelectionResult(True)

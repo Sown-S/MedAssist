@@ -130,10 +130,13 @@ def test_request_schema_limits_codes_and_keeps_independent_default_schema():
     code_schema = schema["$defs"]["RankedCondition"]["properties"]["condition_code"]
     assert code_schema["enum"] == ["condition_a", "condition_b"]
     assert "enum" not in reasoning_json_schema()["$defs"]["RankedCondition"]["properties"]["condition_code"]
-    assert REASONING_PROMPT_VERSION == "reasoning-v3"
+    assert REASONING_PROMPT_VERSION == "reasoning-v4"
     assert "[symptom_code]" in load_prompt(REASONING_PROMPT_VERSION)
+    assert "180" in load_prompt(REASONING_PROMPT_VERSION)
+    assert 'reason=""' in load_prompt(REASONING_PROMPT_VERSION)
     assert "reasoning-v1" in load_prompt("reasoning-v1")
     assert "reasoning-v2" in load_prompt("reasoning-v2")
+    assert "reasoning-v3" in load_prompt("reasoning-v3")
     assert "không tự viết lại tên bệnh" in load_prompt(REASONING_PROMPT_VERSION)
 
 
