@@ -90,7 +90,9 @@ services:
       OLLAMA_NUM_PARALLEL: "1"        # hàng đợi LLM mặc định 1 ca
       OLLAMA_CONTEXT_LENGTH: "4096"   # prompt + JSON ~2.200 token; 8192 tốn thêm ~1.5 GB VRAM cho KV cache
       OLLAMA_FLASH_ATTENTION: "${OLLAMA_FLASH_ATTENTION:-1}"   # KV cache lượng tử chỉ có hiệu lực khi bật
-      OLLAMA_KV_CACHE_TYPE: "${OLLAMA_KV_CACHE_TYPE:-q8_0}"    # KV cache ~ nửa f16, để model nằm trọn trong VRAM
+      # GPU 6 GB vẫn để ~18/43 layer trên CPU: q8_0 thêm 2 layer GPU nhưng sinh token chậm hơn f16.
+      # GPU đủ chứa trọn model thì đặt q8_0 trong deploy/.env để tiết kiệm VRAM.
+      OLLAMA_KV_CACHE_TYPE: "${OLLAMA_KV_CACHE_TYPE:-f16}"
     volumes:
       - ollama_models:/root/.ollama
     networks: [internal]
