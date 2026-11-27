@@ -1,7 +1,8 @@
 ﻿# Khôi phục CSDL từ một bản sao lưu theo Architecture §5.4.1: khôi phục vào CSDL mới, kiểm quyền,
 # rồi mới đổi tên thay CSDL đang chạy. Không dùng pg_restore --clean trên CSDL đang chạy vì lệnh đó cấp lại
 # UPDATE cho medassist_app trên audit_log và stock_movement (bảng chỉ ghi thêm).
-# Dùng: .\deploy\scripts\restore.ps1 -File deploy\backups\medassist_20261020_2200.dump
+# Dùng: .\deploy\scripts\restore.ps1 -File deploy\backups\medassist_20261020_2200.dump.enc
+# File .enc giải mã bằng BACKUP_PASSPHRASE trong deploy/.env; file .dump cũ (chưa mã hóa) vẫn khôi phục được.
 # CSDL cũ được giữ lại tên medassist_truoc_<thời điểm> để quay lại nếu cần.
 param([Parameter(Mandatory)] [string] $File)
 $ErrorActionPreference = "Stop"
@@ -19,9 +20,21 @@ $File = (Resolve-Path $File).Path
 $answer = Read-Host "Khôi phục sẽ THAY CSDL đang chạy bằng $File (CSDL cũ giữ tên $Old). Gõ KHOIPHUC để tiếp tục"
 if ($answer -ne "KHOIPHUC") { Write-Host "Đã hủy."; exit 1 }
 
-docker @Compose cp $File db:/tmp/restore.dump
+$Encrypted = $File.EndsWith(".enc")
+docker @Compose cp $File $(if ($Encrypted) { "db:/tmp/restore.dump.enc" } else { "db:/tmp/restore.dump" })
 if ($LASTEXITCODE) { throw "Không chép được file sao lưu vào container db" }
 try {
+    if ($Encrypted) {
+        # Giải mã trước mọi thay đổi CSDL. pg_restore -l bắt nốt trường hợp sai khóa mà phần đệm vẫn hợp lệ.
+        $decrypt = '[ ${#BACKUP_PASSPHRASE} -gt 0 ] || exit 3; command -v openssl >/dev/null || exit 4; ' +
+                   'openssl enc -d -aes-256-cbc -pbkdf2 -iter 600000 -md sha256 -pass env:BACKUP_PASSPHRASE ' +
+                   '-in /tmp/restore.dump.enc -out /tmp/restore.dump 2>/dev/null && pg_restore -l /tmp/restore.dump >/dev/null 2>&1 || exit 5'
+        docker @Compose exec -T db bash -c $decrypt
+        $code = $LASTEXITCODE
+        if ($code -eq 3) { throw "Thiếu BACKUP_PASSPHRASE trong deploy\.env: thêm vào rồi chạy start.ps1. CSDL đang chạy chưa bị đụng tới" }
+        if ($code -eq 4) { throw "Container db không có openssl để giải mã. CSDL đang chạy chưa bị đụng tới" }
+        if ($code) { throw "Không giải mã được ${File}: sai BACKUP_PASSPHRASE hoặc file hỏng. CSDL đang chạy chưa bị đụng tới" }
+    }
     Psql postgres @("-c", "DROP DATABASE IF EXISTS $New", "-c", "CREATE DATABASE $New")
     # Vai trò đã có sẵn nên mật khẩu ở đây không được dùng; chỉ đặt owner, múi giờ, quyền CONNECT, schema.
     Psql postgres @("-v", "dbname=$New", "-v", "owner_pw=x", "-v", "app_pw=x", "-v", "backup_pw=x",
@@ -48,7 +61,7 @@ WHERE has_table_privilege('medassist_app', t, p) <> want
     try { Psql postgres @("-c", "DROP DATABASE IF EXISTS $New") } catch { }
     throw
 } finally {
-    docker @Compose exec -T db rm -f /tmp/restore.dump
+    docker @Compose exec -T db rm -f /tmp/restore.dump /tmp/restore.dump.enc
     docker @Compose start api worker
 }
 Write-Host "Đã khôi phục từ $File. CSDL cũ: $Old (xóa khi chắc chắn: ... exec db psql -U postgres -c 'DROP DATABASE $Old')"
