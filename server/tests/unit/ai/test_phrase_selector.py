@@ -360,3 +360,43 @@ def test_selector_retrieves_via_alias_and_excludes_exam_codes_from_enum(monkeypa
         },
     )
     assert validated == [["dyspnea_on_exertion"]]
+
+
+@pytest.mark.parametrize(
+    "sex,expected_codes",
+    [
+        ("Male", ["dysuria"]),
+        ("Female", ["dysuria", "vaginal_discharge"]),
+        ("Other", ["dysuria", "vaginal_discharge"]),
+        (None, ["dysuria", "vaginal_discharge"]),
+    ],
+)
+def test_selector_filters_applicable_sex_from_gate_state(monkeypatch, sex, expected_codes):
+    rows = [
+        {"symptom_code": "vaginal_discharge", "symptom_name": "Khí hư bất thường", "applicable_sex": "Female"},
+        {"symptom_code": "dysuria", "symptom_name": "Tiểu buốt bất thường", "applicable_sex": "Any"},
+    ]
+    reader = FakeKnowledgeReader(symptoms=rows)
+    monkeypatch.setattr(selector.knowledge_validators, "active_symptoms", lambda session, codes: None)
+    client = Client({"p1": [{"symptom_code": "dysuria", "status": "PRESENT"}], "unmapped": []})
+    features = {"symptoms": {}} if sex is None else {"symptoms": {}, "sex": sex}
+    gate = run_node1({"input_features": features}, reader)
+
+    result = asyncio.run(selector.select_phrase_symptoms(
+        "Triệu chứng bất thường.",
+        reader,
+        client,
+        object(),
+        cache=CandidateIndexCache(),
+        per_phrase_limit=4,
+        gate_state=gate,
+        identifiers=(),
+        timeout_seconds=30,
+    ))
+
+    assert result.completed is True
+    request = client.calls[0]
+    enum_codes = sorted(request["schema"]["properties"]["p1"]["items"]["properties"]["symptom_code"]["enum"])
+    payload = json.loads(request["prompt"].rsplit("\n", 1)[-1])
+    assert enum_codes == expected_codes
+    assert sorted(payload["catalogue"]) == expected_codes
