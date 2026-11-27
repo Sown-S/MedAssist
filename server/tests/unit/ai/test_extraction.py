@@ -700,3 +700,35 @@ def test_catalogue_schema_is_request_local():
     second = extraction_json_schema(["signal_c"])
     assert second["$defs"]["ExtractedSymptom"]["properties"]["symptom_code"]["enum"] == ["signal_c"]
     assert "enum" not in extraction_json_schema()["$defs"]["ExtractedSymptom"]["properties"]["symptom_code"]
+
+
+@pytest.mark.parametrize(
+    "sex,expected_codes",
+    [
+        ("Male", ["dysuria"]),
+        ("Female", ["dysuria", "vaginal_discharge"]),
+        ("Other", ["dysuria", "vaginal_discharge"]),
+        (None, ["dysuria", "vaginal_discharge"]),
+    ],
+)
+def test_legacy_extractor_filters_applicable_sex_from_gate_state(catalogue, sex, expected_codes):
+    rows = [
+        {"symptom_code": "vaginal_discharge", "symptom_name": "Khí hư bất thường", "applicable_sex": "Female"},
+        {"symptom_code": "dysuria", "symptom_name": "Tiểu buốt bất thường", "applicable_sex": "Any"},
+    ]
+    features = {"symptoms": {}} if sex is None else {"symptoms": {}, "sex": sex}
+    gate = run_node1({"input_features": features}, FakeKnowledgeReader())
+    client = MockLLMClient({"symptoms": []})
+
+    extract(catalogue, client, text="Tiểu buốt.", reader=FakeKnowledgeReader(symptoms=rows), gate=gate)
+
+    assert sorted(payload(client)["catalogue"]) == expected_codes
+    code_schema = client.calls[0]["schema"]["$defs"]["ExtractedSymptom"]["properties"]["symptom_code"]
+    assert sorted(code_schema["enum"]) == expected_codes
+
+
+def test_legacy_extractor_rejects_invalid_applicable_sex(catalogue):
+    rows = [{"symptom_code": "signal_a", "symptom_name": "Sốt", "applicable_sex": "PRIVATE_BAD_VALUE"}]
+    with pytest.raises(ValueError, match="Invalid Active symptom catalogue.") as caught:
+        extract(catalogue, MockLLMClient({"symptoms": []}), reader=FakeKnowledgeReader(symptoms=rows))
+    assert "PRIVATE_BAD_VALUE" not in str(caught.value)

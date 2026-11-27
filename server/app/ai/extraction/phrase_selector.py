@@ -3,7 +3,7 @@
 import asyncio
 import json
 import math
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field, replace
 from time import monotonic
 
@@ -117,8 +117,12 @@ async def select_phrase_symptoms(
     if deadline <= monotonic():
         return SelectionResult(False, "EXTRACTION_TIMEOUT")
     try:
-        plan = retrieve_phrases(text, knowledge_reader, cache, identifiers=identifiers,
-                                per_phrase_limit=per_phrase_limit, deadline=deadline)
+        input_features = gate_state.get("input_features")
+        sex = input_features.get("sex") if isinstance(input_features, Mapping) else None
+        plan = retrieve_phrases(
+            text, knowledge_reader, cache, identifiers=identifiers,
+            per_phrase_limit=per_phrase_limit, deadline=deadline, sex=sex,
+        )
         plan = group_for_selection(plan)
         if not plan.masked_text.replace("[REDACTED]", "").strip(" \t\r\n,;:.!?"):
             return SelectionResult(True)

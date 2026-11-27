@@ -214,3 +214,20 @@ def test_unknown_strategy_is_configuration_error(env, monkeypatch):
     with pytest.raises(ValueError, match="strategy"):
         asyncio.run(env.process())
     assert not env.sessions
+
+
+def test_worker_passes_patient_sex_to_phrase_extraction_filter(env, monkeypatch):
+    env.snapshot.symptoms = [
+        {"symptom_code": "vaginal_discharge", "symptom_name": "Dấu hiệu bất thường âm đạo", "applicable_sex": "Female"},
+        {"symptom_code": "dysuria", "symptom_name": "Tiểu buốt bất thường", "applicable_sex": "Any"},
+    ]
+    env.visit.free_text_description = "Có dấu hiệu bất thường."
+    monkeypatch.setattr(runner.q, "build_input_features", lambda db, v: {"symptoms": {}, "sex": "Male"})
+    client = Client({"p1": [{"symptom_code": "dysuria", "status": "PRESENT"}], "unmapped": []})
+
+    asyncio.run(env.process(client))
+
+    assert env.run.status == "Completed"
+    enum_codes = client.calls[0]["schema"]["properties"]["p1"]["items"]["properties"]["symptom_code"]["enum"]
+    assert enum_codes == ["dysuria"]
+    assert [row["symptom_code"] for row in env.run.candidates] == ["dysuria"]

@@ -32,6 +32,7 @@ class RetrievalPlan:
 def retrieve_phrases(
     text: str, reader: KnowledgeReader, cache: CandidateIndexCache, *,
     identifiers: Sequence[str], per_phrase_limit: int, deadline: float,
+    sex: object = None,
 ) -> RetrievalPlan:
     """Caller chạy Node 1 trước, truyền deadline từ queued_at; không cấp lại 30 s.
 
@@ -60,7 +61,7 @@ def retrieve_phrases(
     for phrase in phrases:
         check_deadline()
         if phrase.text not in matches:
-            matches[phrase.text] = index.search(phrase.text, limit=per_phrase_limit)
+            matches[phrase.text] = index.search(phrase.text, limit=per_phrase_limit, sex=sex)
         groups.append(PhraseCandidates(phrase, matches[phrase.text]))
     check_deadline()
     return RetrievalPlan(index.snapshot_key, index.catalogue_sha256, masked, tuple(groups))
