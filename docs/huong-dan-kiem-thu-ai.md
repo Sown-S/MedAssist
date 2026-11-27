@@ -66,13 +66,13 @@ python -m app.worker                # terminal 2
 | Thứ tự hàng đợi | Cấp cứu → Ưu tiên cao → Thường, trong cùng mức theo thời điểm tiếp đón |
 | Trạng thái AI | Cờ đỏ → `Skipped`; không có triệu chứng "Có" → `Degraded` (không có ứng viên); còn lại → `Ready`. `Degraded` do LLM quá giờ là lỗi môi trường, ghi lại và xem log worker |
 | Gợi ý cuối | Chỉ gồm bệnh trong danh sách ứng viên theo luật; lý do tiếng Việt, dẫn đúng triệu chứng của ca |
-| Ngưỡng cờ đỏ (Cấp cứu) | SpO2 < 92. Nhịp thở theo cân nặng: ≥ 30 (≥ 25 kg), ≥ 40 (10–25 kg), ≥ 50 (< 10 kg); thiếu cân nặng thì mục *Hỏi ngay* đòi cân nặng. Huyết áp tâm thu / mạch theo tuổi: ≥ 12 tuổi < 90 hoặc > 130; 1–12 tuổi < 80 hoặc > 150; < 1 tuổi < 70 hoặc > 170 |
-| Ngưỡng sàn (Ưu tiên cao) | Nhiệt độ ≥ 38,5°C (`pf_sot_cao`); mất nước nặng, hoặc sốt cao kèm chấm xuất huyết; ho ra máu / nôn ra máu / phân đen |
-| Giá trị đúng bằng ngưỡng | SpO2 92, mạch 130 (người lớn) không kích hoạt; nhiệt độ 38,5°C và nhịp thở 30 có kích hoạt (so sánh ≥) |
+| Ngưỡng cờ đỏ (Cấp cứu) | SpO2 < 92. Nhịp thở ≥ 30 lần/phút từ đủ 12 tuổi, ≥ 40 từ 1 đến dưới 12 tuổi, ≥ 50 dưới 1 tuổi. Huyết áp tâm thu / mạch theo tuổi: ≥ 12 tuổi < 90 hoặc > 130; từ 1 đến dưới 12 tuổi < 80 hoặc > 150; < 1 tuổi < 70 hoặc > 170 |
+| Ngưỡng sàn (Ưu tiên cao) | Nhiệt độ ≥ 38,5°C hoặc có triệu chứng sốt cao (`pf_sot_cao`). `pf_severe_dehydration_high_fever` kích hoạt khi mất nước nặng, nhiệt độ ≥ 39°C, hoặc sốt cao kèm chấm xuất huyết. Ho ra máu / nôn ra máu / phân đen cũng kích hoạt sàn. |
+| Giá trị đúng bằng ngưỡng | SpO2 92, mạch 130 (người lớn) không kích hoạt; nhiệt độ 38,5°C và nhịp thở 30 (từ đủ 12 tuổi) có kích hoạt (so sánh ≥) |
 
 ## 6. Giới hạn đã biết
 
-- Ngưỡng nhịp thở dựa trên cân nặng (không theo tuổi), nên ca thiếu cân nặng phải hỏi thêm trước khi vào hàng chờ.
-- Một số bệnh cần xử trí sớm (uốn ván chưa co giật, viêm màng não còn tỉnh, viêm nắp thanh quản) chưa có luật cờ đỏ riêng; ra mức Thường nếu sốt dưới 38,5°C.
+- Khi thiếu tuổi khiến luật cờ đỏ suy hô hấp chưa xác định được kết quả và chưa có cờ đỏ nào kích hoạt, mục *Hỏi ngay* yêu cầu bổ sung tuổi (`age_years`).
+- `rf_out_of_scope` kích hoạt khi xác nhận co cứng hàm/toàn thân (`trismus_tetanic_spasm`), hoặc khi xác nhận cả dấu màng não (`meningeal_neck_stiffness_kernig`) và sốt cao (`fever_high`). Viêm nắp thanh quản có mã triệu chứng `epiglottitis_drooling_muffled_voice`, nhưng chưa có luật cờ đỏ riêng cho mã này.
 - Kho tri thức trích xuất tự động từ văn bản Bộ Y tế, một số quan hệ triệu chứng chưa được bác sĩ rà soát; đây là lý do gợi ý chỉ để tham khảo.
 - AI không gợi ý thuốc và hệ thống không đánh giá đơn thuốc (ngoài phạm vi dự án).
