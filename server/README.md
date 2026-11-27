@@ -379,7 +379,8 @@ python -m scripts.seed_services
 | `OLLAMA_NUM_CTX` | | `0` | `num_ctx` gửi kèm mỗi request; `0` = không gửi, Ollama dùng `OLLAMA_CONTEXT_LENGTH` của máy chủ. `legacy` vẫn ép 8192 |
 | `AI_EXTRACTION_STRATEGY` | | `phrases` | Cách trích xuất triệu chứng: `phrases` (ứng viên theo từng cụm) hoặc `legacy` (gửi toàn catalog, vượt context với kho hiện tại) |
 | `AI_EXTRACTION_CANDIDATES_PER_PHRASE` | | `4` | Số ứng viên mỗi cụm khi dùng `phrases` (1–50) |
-| `AI_ASSESSMENT_TIMEOUT_SECONDS` | | `90` | Ngân sách một lần đánh giá, tính từ lúc xếp hàng |
+| `AI_QUEUE_WAIT_SECONDS` | | `90` | Thời hạn chờ trong hàng đợi, tính từ lúc xếp hàng; quá hạn thì không gọi LLM |
+| `AI_ASSESSMENT_TIMEOUT_SECONDS` | | `90` | Thời hạn chạy một lần đánh giá, tính từ lúc worker nhận việc |
 | `WORKER_LEASE_SECONDS` / `WORKER_MAX_ATTEMPTS` | | `150` / `2` | Hạn thuê việc; số lần thử trước khi `Failed` |
 | `TEST_DATABASE_URL` / `TEST_MIGRATION_DATABASE_URL` | | tự suy ra | Ghi đè DB cho pytest (thường không cần) |
 

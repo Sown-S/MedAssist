@@ -29,7 +29,9 @@ Chú ý chung:
 | Sinh hiệu | Nhiệt độ, mạch, nhịp thở, huyết áp (2 ô), SpO2, cân nặng, chiều cao. Trẻ dưới 12 tuổi bắt buộc cân nặng. Số bất thường app hỏi lại |
 | Lưu | App chạy luật ngay và báo mức: **Cấp cứu** (đỏ), **Ưu tiên cao** (vàng) hoặc **Thường**. Mục **Hỏi ngay** (tô vàng) là câu cần hỏi thêm để loại trừ dấu hiệu nguy hiểm |
 | Cờ đỏ | Chọn **Chuyển viện ngay** (gọi 115 nếu cần) hoặc **Lưu lên đầu hàng chờ** mức Cấp cứu; bác sĩ được báo |
-| Sửa / hủy lượt | Ở Hàng chờ: **Sửa** lời kể, triệu chứng khi lượt còn *Chờ*; sau check-in chỉ đo lại sinh hiệu. **Hủy lượt** phải ghi lý do |
+| Sửa / hủy lượt | Ở Hàng chờ: **Sửa** lời kể, triệu chứng, sinh hiệu, mang thai khi lượt còn *Chờ*; sau check-in chỉ sửa sinh hiệu và triệu chứng. **Hủy lượt** phải ghi lý do |
+| Đo lại sinh hiệu | Lưu xong luật chạy lại ngay và **chỉ nâng mức**: cờ đỏ, mức đã nâng được giữ dù số mới bình thường, để không bỏ sót ca chuyển nặng |
+| Gõ nhầm sinh hiệu | Số gõ nhầm làm bật Cấp cứu / Ưu tiên: **Sửa** lại số đúng, bấm **Đánh giá lại, cho phép hạ mức** và xác nhận. Mức tính lại từ đầu, có thể gỡ cờ đỏ; thao tác được ghi nhật ký |
 | Check-in | Bệnh nhân có mặt và sắp tới lượt: **Có mặt – check-in**. Bác sĩ chỉ mời được người đã check-in |
 | Gọi bệnh nhân | Bác sĩ mời → bảng gọi hiện *"Mời số X vào phòng Y"* → gọi → **Đã vào phòng** hoặc **Không có mặt** (về cuối nhóm đã check-in) |
 | Cấp phát | Mở **Cấp phát & thu tiền**: **Đã cấp** / **Bỏ qua** (ghi lý do) từng thuốc, hoặc **Cấp hết**; in phiếu xuất kèm số lô, hạn dùng |
@@ -47,10 +49,14 @@ Chú ý chung:
 | Cảnh báo cụm ca | Băng vàng ở trang chủ khi một chẩn đoán hoặc triệu chứng đã xác nhận tăng đột biến trong những ngày gần đây (so với trung bình các kỳ trước). Chỉ để tham khảo, không kèm tên bệnh nhân |
 | Mời bệnh nhân | **Mời bệnh nhân tiếp theo** (**Alt+N**): người đã check-in đứng đầu theo thứ tự Cấp cứu → Ưu tiên → số thứ tự |
 | Khám | Xem chip triệu chứng lễ tân đã xác nhận, sinh hiệu, dị ứng, bệnh nền; ghi bệnh sử, khám; xem **hồ sơ khám cũ** ở tab Lịch sử |
+| Đo lại sinh hiệu | Tab **Sinh hiệu** → **Lưu sinh hiệu**: luật chạy lại ngay, app báo mức mới. Chỉ nâng mức (cờ đỏ, mức đã nâng được giữ). Gõ nhầm làm bật cờ đỏ: sửa số rồi bấm **Đánh giá lại, cho phép hạ mức** ở đầu phiếu |
+| Dấu hiệu khi khám | Tìm, đánh dấu rồi **Lưu dấu hiệu khi khám**: lưu vào lượt khám; app báo gợi ý AI có đang được cập nhật theo hay chưa |
+| Mang thai | **Sửa tình trạng mang thai** ở đầu phiếu (nữ hoặc giới tính khác, 12–55 tuổi): Chưa hỏi / Không mang thai / Đang mang thai. Chỉ với lượt mình đang khám |
+| Dị ứng, bệnh nền | **Cập nhật dị ứng / bệnh nền** ở đầu phiếu, chỉ với bệnh nhân mình đang khám. Thông tin hành chính (họ tên, SĐT, địa chỉ…) do lễ tân sửa |
 | Gợi ý tham khảo | Thẻ AI: *Đang phân tích* → *Đầy đủ* (có lý do) hoặc *Chỉ theo luật* (AI lỗi / quá giờ). Ca cờ đỏ không có gợi ý. Mỗi gợi ý có triệu chứng ủng hộ, phản bác, còn thiếu |
 | Chẩn đoán | Chọn ICD-10; có thể chọn từ gợi ý hoặc chẩn đoán khác (app ghi nhận lựa chọn để đo hiệu quả AI) |
 | Xét nghiệm | **Chỉ định xét nghiệm** (**Alt+L**), in phiếu; bệnh nhân đi làm, lễ tân báo về thì **Khám tiếp** |
-| Kê đơn | Tìm thuốc (**Alt+T**), liều Sáng/Trưa/Chiều/Tối × số ngày → tự tính số lượng. Khung nhắc dị ứng / bệnh nền / mang thai chỉ để đọc |
+| Kê đơn | Tìm thuốc (**Alt+T**), liều Sáng/Trưa/Chiều/Tối × số ngày → tự tính số lượng. Khung nhắc dị ứng / bệnh nền / mang thai chỉ để đọc, sửa ở đầu phiếu khám |
 | Chốt đơn | **Ctrl+Enter**: kho bị trừ ngay. Thiếu thuốc thì app liệt kê từng thuốc và lý do (hết, sắp hết hạn, ngừng dùng), đổi thuốc rồi chốt lại. Không kê đơn thì **Hoàn tất khám** |
 | Mở lại đơn | Khi chưa thu tiền và chưa cấp thuốc: mở lại, sửa, chốt lại |
 | Rời phòng | **Trả về hàng chờ** (bác sĩ khác mời lại được) hoặc **Bệnh nhân bỏ về** (ghi lý do) |
@@ -80,7 +86,8 @@ Quản trị viên **không xem được dữ liệu bệnh nhân** (hồ sơ hi
 | Thẻ gợi ý ghi "Chỉ theo luật" | AI tạm không dùng được; danh sách vẫn xếp theo luật, có thể dùng bình thường |
 | Không mời được bệnh nhân | Bệnh nhân chưa được lễ tân check-in, hoặc bác sĩ khác đã nhận |
 | Chốt đơn báo thiếu thuốc | Kho không đủ thuốc còn hạn qua hết đợt dùng; đổi thuốc hoặc nhờ nhập thêm lô |
-| Không sửa được lời kể | Lượt đã check-in; chỉ còn đo lại sinh hiệu được |
+| Không sửa được lời kể | Lượt đã check-in; chỉ còn sửa sinh hiệu và triệu chứng được |
+| Sinh hiệu đã sửa về bình thường mà vẫn Cấp cứu | Lưu sinh hiệu chỉ nâng mức để không bỏ sót ca nặng. Nếu do gõ nhầm, bấm **Đánh giá lại, cho phép hạ mức** |
 | Báo lỗi có "mã yêu cầu" | Ghi lại mã đó gửi quản trị viên để tra nhật ký máy chủ |
 | Băng "Đã có bản mới" không hiện dù đã có bản mới | Máy không có Internet hoặc chưa mở lại app; app chỉ kiểm tra một lần khi khởi động |
 | Không thấy cảnh báo cụm ca | Chưa đủ số ca tối thiểu hoặc chưa vượt hệ số so với các kỳ trước (Cài đặt › Vận hành); lễ tân không có mục này |

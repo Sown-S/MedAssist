@@ -365,7 +365,7 @@ def test_health_ai_ollama_down_still_200(client, monkeypatch, fresh_health, no_s
 
 def test_health_ai_stuck_queue(client, monkeypatch, fresh_health, examining):
     monkeypatch.setattr(settings, "LLM_PROVIDER", "fake")
-    old = datetime.datetime.now(datetime.UTC) - datetime.timedelta(seconds=settings.AI_ASSESSMENT_TIMEOUT_SECONDS + 60)
+    old = datetime.datetime.now(datetime.UTC) - datetime.timedelta(seconds=settings.AI_QUEUE_WAIT_SECONDS + 60)
     aid = _run(examining(), status="Queued", queued_at=old)
     try:
         assert client.get("/health").json()["ai"] == {
