@@ -1,8 +1,14 @@
 ---
 schema: okf_release_v1
-label: KB-2026.12.3
+label: KB-2026.12.4
 description: Bản phát hành tri thức 154 bệnh, 299 triệu chứng, 12 luật, 1527 quan hệ, 11 nguồn và 157 trích dẫn.
 ---
+
+## Changelog KB-2026.12.4
+
+- Đổi tên hiển thị luật `pf_severe_dehydration_high_fever` để diễn đạt đúng điều kiện OR hiện có. Giữ nguyên logic luật.
+- Thêm 42 alias cho 7 mã triệu chứng cơ xương khớp. Huy đã kiểm tra hồi quy bản alias rút gọn trên 29 ca trích xuất. Rà chéo nội dung alias: CHỜ HUY RÀ.
+- Giữ nguyên danh sách bệnh, luật, quan hệ và trọng số. Bộ test đóng băng `testset-v1.5-frozen` không đổi.
 
 ## Changelog KB-2026.12.3
 
