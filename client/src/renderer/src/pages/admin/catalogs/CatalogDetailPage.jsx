@@ -12,6 +12,7 @@ import { useLiveCatalog, setLiveActive } from '../../../api/serviceCatalogLive'
 import { RowForm } from './RowForm'
 import { exportCatalog } from './catalogCsv'
 import { fmtDate, fmtDateTime } from '../../../utils/format'
+import Badge from '../../../components/ui/Badge'
 
 export default function CatalogDetailPage({ catalogKey, params, onNavigate }) {
   const s = SCHEMAS[catalogKey]
@@ -59,6 +60,11 @@ export default function CatalogDetailPage({ catalogKey, params, onNavigate }) {
         </div>
       </div>
 
+      {s.localNote && (
+        <div className="hint-w mb-12">
+          <Icon name="info" /> {translate(s.localNote)}
+        </div>
+      )}
       <div className="card">
         <div className="toolbar">
           <div className="search">
@@ -90,7 +96,7 @@ export default function CatalogDetailPage({ catalogKey, params, onNavigate }) {
             <button className="btn btn-ghost btn-sm" onClick={() => exportCatalog(catalogKey, list)}>
               <Icon name="download" /> <span>Export</span>
             </button>
-            <button className="btn btn-primary btn-sm" onClick={() => setEdit({})}>
+            <button data-shortcut="new" className="btn btn-primary btn-sm" onClick={() => setEdit({})} title="Ctrl+N">
               + Add
             </button>
           </div>
@@ -102,7 +108,7 @@ export default function CatalogDetailPage({ catalogKey, params, onNavigate }) {
         ) : pg.total === 0 ? (
           <Empty title="No records match" text="Try another keyword or filter, or import the list from a file." />
         ) : (
-          <div className="tbl-wrap">
+          <div className="tbl-wrap" tabIndex={0}>
             <table>
               <thead>
                 <tr>
@@ -130,7 +136,7 @@ export default function CatalogDetailPage({ catalogKey, params, onNavigate }) {
                         {c.render ? c.render(r, cats, inv, c.key) : r[c.key] || <span className="muted">—</span>}
                       </td>
                     ))}
-                    <td>{r.active ? <span className="badge b-success">In use</span> : <span className="badge b-neutral">Discontinued</span>}</td>
+                    <td>{r.active ? <Badge tone="success">In use</Badge> : <Badge tone="neutral">Discontinued</Badge>}</td>
                     <td className="small">
                       <span className="num">{fmtDate(r.updatedAt)}</span>
                       <div className="muted">{r.updatedBy}</div>

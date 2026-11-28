@@ -39,8 +39,8 @@ export default function LineChart({ points, fmt = String, height = 200, compareL
         <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
           <defs>
             <linearGradient id="lcg" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0" stopColor="#1877F2" stopOpacity=".22" />
-              <stop offset="1" stopColor="#1877F2" stopOpacity="0" />
+              <stop offset="0" style={{ stopColor: 'var(--primary)' }} stopOpacity=".22" />
+              <stop offset="1" style={{ stopColor: 'var(--primary)' }} stopOpacity="0" />
             </linearGradient>
           </defs>
           <path d={line + ' L100 100 L0 100 Z'} fill="url(#lcg)" />

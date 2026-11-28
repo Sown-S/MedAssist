@@ -77,7 +77,7 @@ def test_public_client_satisfies_protocol_and_sends_structured_local_request():
     assert request.method == "POST"
     assert json.loads(request.content) == {
         "model": MODEL, "prompt": PROMPT, "format": schema, "stream": False,
-        "keep_alive": "5m", "options": {"temperature": 0},
+        "keep_alive": "5m", "options": {"temperature": 0, "num_predict": 512},
     }
     assert request.extensions["timeout"] == dict(connect=1.5, read=1.5, write=1.5, pool=1.5)
     assert "authorization" not in request.headers
@@ -105,7 +105,7 @@ def test_num_ctx_is_forwarded_and_legacy_extraction_keeps_full_context():
     client = client_for(handler, num_ctx=4096)
     generate(client)
     generate(client, schema=extraction_json_schema(["signal_a"]))
-    assert sent[0]["options"] == {"temperature": 0, "num_ctx": 4096}
+    assert sent[0]["options"] == {"temperature": 0, "num_ctx": 4096, "num_predict": 512}
     assert sent[1]["options"] == {"temperature": 0, "num_ctx": 8192}
 
 
@@ -379,6 +379,21 @@ def test_reasoning_and_extraction_schemas_can_be_sent_and_have_strict_shapes():
 def test_reasoning_contract_rejects_extra_evidence_priority_or_wrong_shapes(output):
     with pytest.raises(ValidationError):
         ReasoningOutput.model_validate(output)
+
+
+def test_reasoning_contract_allows_empty_reason_only_for_fourth_candidate():
+    four = {"ranking": [
+        {"condition_code": "a", "reason": "r1"},
+        {"condition_code": "b", "reason": "r2"},
+        {"condition_code": "c", "reason": "r3"},
+        {"condition_code": "d", "reason": ""},
+    ], "raise_priority": False}
+    assert ReasoningOutput.model_validate(four).ranking[3].reason == ""
+    for index in range(3):
+        bad = deepcopy(four)
+        bad["ranking"][index]["reason"] = ""
+        with pytest.raises(ValidationError):
+            ReasoningOutput.model_validate(bad)
 
 
 @pytest.mark.parametrize("output", [

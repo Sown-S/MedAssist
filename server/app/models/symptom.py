@@ -36,6 +36,7 @@ class Symptom(Base):
         CheckConstraint("symptom_code::text ~ '^[a-z0-9]+(_[a-z0-9]+)*$'::text", name="chk_symptom_code_format"),
         CheckConstraint("version >= 1", name="symptom_version_check"),
         CheckConstraint("detection IN ('reported', 'exam', 'both')", name="chk_symptom_detection"),
+        CheckConstraint("applicable_sex IN ('Any', 'Female', 'Male')", name="chk_symptom_applicable_sex"),
         ForeignKeyConstraint(["created_by"], ["users.user_id"], name="symptom_created_by_fkey"),
         ForeignKeyConstraint(["release_id"], ["knowledge_release.release_id"], name="symptom_release_id_fkey"),
         ForeignKeyConstraint(["retired_by"], ["users.user_id"], name="symptom_retired_by_fkey"),
@@ -55,6 +56,7 @@ class Symptom(Base):
     short_name: Mapped[str | None] = mapped_column(String(30))
     aliases: Mapped[list[str]] = mapped_column(ARRAY(Text), nullable=False, server_default=text("'{}'"))
     detection: Mapped[str] = mapped_column(String(10), nullable=False, server_default=text("'both'"))
+    applicable_sex: Mapped[str] = mapped_column(String(10), nullable=False, server_default=text("'Any'"))
     status: Mapped[str] = mapped_column(String(20), nullable=False, server_default=text("'Draft'::character varying"))
     release_id: Mapped[uuid.UUID] = mapped_column(Uuid, nullable=False)
     created_by: Mapped[uuid.UUID] = mapped_column(Uuid, nullable=False)

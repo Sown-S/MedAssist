@@ -36,7 +36,7 @@ Depends(audit_view("visit", roles=CLINICAL_ROLES, dedupe_seconds=300))
 Hàng đợi là bảng `ai_assessment_log` (ERD §4.1), không dùng Redis hay Celery.
 
 1. `enqueue_assessment()`: `POST /visits/{id}/assessment` gọi trong transaction của request.
-   - Chụp đặc trưng đầu vào **đã xác nhận** (`visit_symptom` + sinh hiệu + tuổi) vào `input_features`.
+   - Chụp đặc trưng đầu vào **đã xác nhận** (`visit_symptom` + sinh hiệu + tuổi + giới tính) vào `input_features`. Node 2 bỏ bệnh có `applicable_sex` khác giới tính bệnh nhân; giới tính `Other` không lọc.
    - Chạy Node 1 (cổng cờ đỏ) **đồng bộ**: cờ đỏ phải hiện ngay cả khi worker hay LLM đang dừng. Cờ đỏ thì lần chạy kết thúc luôn (`Skipped`/`RuleOnly`), không xếp hàng.
    - Không cờ đỏ: trạng thái `Queued`; các lần `Queued` cũ của cùng lượt khám bị thay thế.
 2. Worker (`python -m app.worker`): `claim_next()` lấy việc bằng `FOR UPDATE SKIP LOCKED` + lease; `sweep_expired()` thu hồi lease quá hạn (worker chết giữa chừng).
@@ -55,14 +55,15 @@ Hàng đợi là bảng `ai_assessment_log` (ERD §4.1), không dùng Redis hay 
 
 Ngân sách thời gian:
 
-- Tính từ `queued_at`, gồm cả thời gian chờ trong hàng đợi: đánh giá tối đa `AI_ASSESSMENT_TIMEOUT_SECONDS` (90 s), trích xuất `feature_extractor.EXTRACTION_TIMEOUT_SECONDS` (30 s).
+- Thời hạn chờ tính từ `queued_at` đến lúc worker nhận việc: `AI_QUEUE_WAIT_SECONDS` (90 s). Chờ quá hạn thì không gọi LLM.
+- Thời hạn chạy tính từ lúc worker nhận việc: đánh giá `AI_ASSESSMENT_TIMEOUT_SECONDS` (90 s), trích xuất `feature_extractor.EXTRACTION_TIMEOUT_SECONDS` (30 s). Ca trích xuất chờ dưới 90 s sau một ca đánh giá dài vẫn có đủ 30 s.
 - Đánh giá quá hạn hoặc LLM lỗi: kết quả `Degraded`/`RuleOnly`. Trích xuất quá hạn hoặc LLM lỗi: danh sách rỗng. Chỉ lỗi hạ tầng mới `Failed`.
-- Lease không cấp lại ngân sách đã hết.
+- Lease không cấp lại thời hạn chạy đã dùng: lần nhận lại cách `queued_at` hơn `WORKER_LEASE_SECONDS` (150 s), quá thời hạn chờ.
 - Mặc định 1 ca LLM: mỗi worker xử lý tuần tự từng việc.
 
 Dữ liệu nhật ký AI:
 
-- Không chứa thông tin định danh: `input_features` chỉ có mã triệu chứng, sinh hiệu, tuổi.
+- Không chứa thông tin định danh: `input_features` chỉ có mã triệu chứng, sinh hiệu, tuổi, giới tính.
 - `rule_hits` luôn có dạng `{"hits": [...], "complete_now": [{symptom_code, symptom_name}]}` ở cả lúc xếp hàng và lúc worker ghi kết quả, để polling không mất danh sách "cần bổ sung ngay".
 
 ## 3. Quyết định của bác sĩ với gợi ý AI (`ai_decision_service`)

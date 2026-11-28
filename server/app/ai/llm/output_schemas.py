@@ -5,9 +5,10 @@ Không chấp nhận bằng chứng, mã ICD hoặc mức ưu tiên hạ thấp 
 
 from typing import Any, Literal
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 OUTPUT_SCHEMA_VERSION = "1"
+_MAX_DISPLAYED_REASONING = 3
 
 
 class _StrictOutput(BaseModel):
@@ -17,12 +18,11 @@ class _StrictOutput(BaseModel):
 class RankedCondition(_StrictOutput):
     condition_code: str = Field(min_length=1, max_length=128)
     reason: str = Field(
-        min_length=1, max_length=500,
-        description="Bắt đầu bằng [symptom_code] nguyên văn từ supporting_evidence của đúng "
-                    "condition_code này, sau đó giải thích ngắn bằng tiếng Việt có dấu. "
-                    "Không thay mã bằng tên triệu chứng; không bịa bằng chứng. "
-                    "Gọi bệnh là ứng viên này, không tự diễn giải tên bệnh từ condition_code. "
-                    "Phân biệt bằng chứng phản bác và dấu hiệu chưa rõ.",
+        min_length=0, max_length=500,
+        description="Với 3 vị trí đầu: bắt đầu bằng [symptom_code] nguyên văn từ supporting_evidence "
+                    "của đúng condition_code này, sau đó một câu ngắn ≤ 180 ký tự tiếng Việt có dấu. "
+                    "Không thay mã bằng tên triệu chứng; không bịa bằng chứng; gọi bệnh là ứng viên này. "
+                    "Vị trí thứ 4 (nếu có): để chuỗi rỗng \"\".",
     )
 
 
@@ -33,6 +33,13 @@ class ReasoningOutput(_StrictOutput):
     raise_priority: bool = Field(
         description="Chỉ đề nghị nâng Routine lên HighPriority, không bao giờ hạ mức."
     )
+
+    @model_validator(mode="after")
+    def _require_reasons_for_top_three(self) -> "ReasoningOutput":
+        for row in self.ranking[:_MAX_DISPLAYED_REASONING]:
+            if not row.reason:
+                raise ValueError("Ba ứng viên đầu phải có giải thích")
+        return self
 
 
 class ExtractedSymptom(_StrictOutput):
@@ -53,7 +60,10 @@ def reasoning_json_schema(condition_codes: list[str] | None = None) -> dict[str,
         schema["$defs"]["RankedCondition"]["properties"]["condition_code"]["enum"] = list(condition_codes)
         ranking = schema["properties"]["ranking"]
         ranking["minItems"] = ranking["maxItems"] = len(condition_codes)
-        ranking["description"] = "Mỗi mã sau xuất hiện đúng một lần, không lặp, không bỏ: " + ", ".join(condition_codes)
+        ranking["description"] = (
+            "Mỗi mã sau xuất hiện đúng một lần, không lặp, không bỏ; chỉ viết reason cho tối đa 3 mã đầu, "
+            "mã thứ 4 để reason rỗng \"\": " + ", ".join(condition_codes)
+        )
     return schema
 
 

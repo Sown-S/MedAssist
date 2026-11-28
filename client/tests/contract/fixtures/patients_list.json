@@ -1,0 +1,37 @@
+{
+ "method": "get",
+ "path": "/api/v1/patients",
+ "status": 200,
+ "role": "nurse",
+ "body": {
+  "total": 45,
+  "limit": 5,
+  "offset": 0,
+  "items": [
+   {
+    "patient_id": "9727be02-f5e3-4fb1-8038-de56d5639078",
+    "full_name": "Mạc Văn Phát",
+    "date_of_birth": "1996-02-07",
+    "gender": "Male",
+    "phone": "0950948866",
+    "patient_code": "BN-9727BE02"
+   },
+   {
+    "patient_id": "a985cc3c-2ba2-4402-9c88-730069cf45f5",
+    "full_name": "Lê Thanh Mai",
+    "date_of_birth": "1993-08-28",
+    "gender": "Female",
+    "phone": "0950940947",
+    "patient_code": "BN-A985CC3C"
+   },
+   {
+    "patient_id": "4453cda2-c355-4b72-a7b5-92988cfb5086",
+    "full_name": "Phạm Tiến Toàn",
+    "date_of_birth": "1987-02-28",
+    "gender": "Male",
+    "phone": "0950933028",
+    "patient_code": "BN-4453CDA2"
+   }
+  ]
+ }
+}

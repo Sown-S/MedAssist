@@ -306,6 +306,10 @@ chỉ để kiểm tra luồng chạy, không dùng số liệu của nó cho b�
 trích xuất trả rỗng và số ca vượt 30 s để so các cách trích xuất. Chỉnh thuật toán bằng bộ ca phát triển
 (`--extraction-cases`); bộ đóng băng chỉ dùng để chấm cuối.
 
+Nhánh B của thí nghiệm fine-tune trích xuất (model gốc + few-shot): thêm `--extraction-few-shot training/extraction/few_shot_dev_examples.json`. Ví dụ chỉ chèn vào prompt khi đo, theo đúng phiên bản prompt của từng yêu cầu; prompt chạy thật không đổi. `results.json` ghi tên file, SHA-256, ID ví dụ và số yêu cầu có/không có ví dụ. Prompt dài hơn nhiều nên khi đo nhánh này đặt `OLLAMA_NUM_CTX=8192`.
+
+`--interleave`: trước mỗi ca trích xuất chạy một ca lâm sàng chế độ Full (bỏ ca cờ đỏ vì không gọi model suy luận), để đo độ trễ khi model trích xuất và model suy luận chạy xen kẽ như trên máy admin; thời gian ca lâm sàng không tính vào độ trễ trích xuất. `results.json` ghi `interleave`.
+
 ### Cụm lời kể không khớp triệu chứng (`scripts.export_unmapped`)
 
 Mỗi lượt trích xuất theo cụm lưu các cụm không khớp mã nào (đã che định danh) trong `validation_result`. Script gộp
@@ -375,7 +379,8 @@ python -m scripts.seed_services
 | `OLLAMA_NUM_CTX` | | `0` | `num_ctx` gửi kèm mỗi request; `0` = không gửi, Ollama dùng `OLLAMA_CONTEXT_LENGTH` của máy chủ. `legacy` vẫn ép 8192 |
 | `AI_EXTRACTION_STRATEGY` | | `phrases` | Cách trích xuất triệu chứng: `phrases` (ứng viên theo từng cụm) hoặc `legacy` (gửi toàn catalog, vượt context với kho hiện tại) |
 | `AI_EXTRACTION_CANDIDATES_PER_PHRASE` | | `4` | Số ứng viên mỗi cụm khi dùng `phrases` (1–50) |
-| `AI_ASSESSMENT_TIMEOUT_SECONDS` | | `90` | Ngân sách một lần đánh giá, tính từ lúc xếp hàng |
+| `AI_QUEUE_WAIT_SECONDS` | | `90` | Thời hạn chờ trong hàng đợi, tính từ lúc xếp hàng; quá hạn thì không gọi LLM |
+| `AI_ASSESSMENT_TIMEOUT_SECONDS` | | `90` | Thời hạn chạy một lần đánh giá, tính từ lúc worker nhận việc |
 | `WORKER_LEASE_SECONDS` / `WORKER_MAX_ATTEMPTS` | | `150` / `2` | Hạn thuê việc; số lần thử trước khi `Failed` |
 | `TEST_DATABASE_URL` / `TEST_MIGRATION_DATABASE_URL` | | tự suy ra | Ghi đè DB cho pytest (thường không cần) |
 

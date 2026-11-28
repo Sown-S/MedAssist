@@ -76,7 +76,8 @@ def test_diagnosis_validation_and_permissions(client, doctor, doctor2, nurse, ex
 # --- Đơn nháp -------------------------------------------------------------------------------------
 def test_draft_shows_context_and_stock(client, doctor, nurse, examining, drug):
     vid = examining(
-        medical_history={"chronic_conditions": ["Tăng huyết áp"], "is_pregnant": True},
+        visit_over={"is_pregnant": True},
+        medical_history={"chronic_conditions": ["Tăng huyết áp"]},
         allergy_notes="Dị ứng penicillin",
         gender="Female",
     )

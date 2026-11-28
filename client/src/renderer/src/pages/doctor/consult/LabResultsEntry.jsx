@@ -32,7 +32,7 @@ export default function LabResultsEntry({ visit, labOrders, labResults, resultOf
                 {translate('Reprint')}
               </button>
             </div>
-            <div className="tbl-wrap">
+            <div className="tbl-wrap" tabIndex={0}>
               <table>
                 <thead>
                   <tr>

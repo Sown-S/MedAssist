@@ -302,3 +302,29 @@ def test_cli_rejects_wrong_roles(capsys, users):
         assert (
             s.scalar(select(KnowledgeRelease).where(KnowledgeRelease.status.in_(["Draft", "PendingApproval"]))) is None
         )
+
+
+def test_official_vault_marks_female_only_items():
+    v = okf.load_vault(OFFICIAL)
+    assert v.conditions["viem_am_ho_am_dao_do_nam_candida"].applicable_sex == "Female"
+    assert v.symptoms["chlamydial_trichomonal_vaginitis_cervicitis"].applicable_sex == "Female"
+    assert v.conditions["benh_lau"].applicable_sex == "Any"
+
+
+def test_applicable_sex_imported_and_versioned(db, vault_copy):
+    first = okf.load_vault(vault_copy)
+    okf.apply_plan(db, first, okf.make_plan(db, first), drafter=_u(db, "admin"), approver=_u(db, "bs"))
+    _edit(vault_copy / "_release.md", f"label: {first.release.label}", "label: KB-TEST-SEX")
+    _edit(
+        vault_copy / "conditions/dermatology/benh_lau.md",
+        "disease_group: dermatology\n",
+        "disease_group: dermatology\napplicable_sex: Male\n",
+    )
+
+    second = okf.load_vault(vault_copy)
+    plan = okf.make_plan(db, second)
+    assert [(c.kind, c.key, c.action) for c in plan.changes] == [("condition", "benh_lau", "changed")]
+    okf.apply_plan(db, second, plan, drafter=_u(db, "admin"), approver=_u(db, "bs"))
+    _check_integrity(db)
+    row = db.scalar(select(Condition).where(Condition.condition_code == "benh_lau", Condition.status == "Active"))
+    assert row.applicable_sex == "Male"

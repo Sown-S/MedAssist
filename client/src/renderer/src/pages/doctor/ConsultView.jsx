@@ -6,6 +6,7 @@ import { useTakePatient, LeaveVisitModal } from './doctorShared'
 import { ServerVisit } from './consult/ServerVisit'
 import DoctorQueue, { useQueueGroups } from './consult/DoctorQueue'
 import ConsultForm from './consult/ConsultForm'
+import EmptyState from '../../components/ui/EmptyState'
 
 // Màn Khám của bác sĩ: cột hàng đợi (consult/DoctorQueue) + phiếu khám người đang trong phòng (consult/ConsultForm).
 export default function ConsultView({ visitId, onSelect }) {
@@ -35,21 +36,16 @@ export default function ConsultView({ visitId, onSelect }) {
       <DoctorQueue visits={visits} user={user} mine={mine} current={current} onSelect={onSelect} take={take} next={next} onCloseLab={setClosing} openGroups={openGroups} toggle={toggle} />
       {current ? (
         <ServerVisit key={current.id} visit={current}>
-          {(v) => <ConsultForm key={v.id} visit={v} user={user} onDone={() => onSelect(null)} onNext={next} />}
+          {(v, update) => <ConsultForm key={v.id} visit={v} onVisitSaved={update} user={user} onDone={() => onSelect(null)} onNext={next} />}
         </ServerVisit>
       ) : (
         <div className="doc-main">
         <div className="card">
-          <div className="empty">
-            <div className="ill">
-              <Icon name="stethoscope" />
-            </div>
-            <b>No patient in your room</b>
-            <span>Call the next patient, or pick someone from the queue on the left.</span>
+          <EmptyState icon="stethoscope" title="No patient in your room" text="Call the next patient, or pick someone from the queue on the left.">
             <button className="btn btn-primary mt-14" onClick={next} disabled={!waitingOrder(visits).length}>
               <Icon name="megaphone" /> Call next patient
             </button>
-          </div>
+          </EmptyState>
         </div>
         </div>
       )}

@@ -1,0 +1,101 @@
+{
+  "seed": 20261122,
+  "kb_release": "KB-2026.12.1",
+  "index_version": "lexical-phrases-v2",
+  "catalogue_sha256": "aab3a2d992a58c003f713c90bf8175f530a8d6c147f7251d08a6b404377576a0",
+  "snapshot_key": "e6dc09c40c97452a6c7beedabf25b00de91b45302f0386e32ebbd0ab3472841a",
+  "per_phrase_limit": 4,
+  "focus_codes_with_surface": 122,
+  "total_codes_with_surface": 132,
+  "splits": {
+    "train": {
+      "path": "training/extraction/data/train.jsonl",
+      "count": 2000,
+      "sha256": "c702e5735c2333abbbdb1cfd9620b6d2282c48746633467c7fab790617af5926",
+      "prompt_versions": {
+        "extraction-phrases-v2": 600,
+        "extraction-phrases-compact-v3": 1400
+      },
+      "archetypes": {
+        "out_of_catalog_unmapped": 223,
+        "parent_caregiver": 319,
+        "prompt_injection_defense": 64,
+        "routine_or_negative_only": 65,
+        "shared_negation_and_contrast": 324,
+        "standard_patient_voice": 639,
+        "unaccented_and_typo": 138,
+        "uncertainty_heavy": 228
+      },
+      "status_counts": {
+        "PRESENT": 3969,
+        "UNKNOWN": 1199,
+        "ABSENT": 1998
+      },
+      "unmapped_groups": 223,
+      "retrieval_coverage_in_top4": 1.0,
+      "prompt_chars_p50": 3945,
+      "prompt_chars_p95": 5103,
+      "prompt_chars_max": 5964
+    },
+    "val": {
+      "path": "training/extraction/data/val.jsonl",
+      "count": 200,
+      "sha256": "20ec22aace4b024d4cb6c52dbe665ba03d780c02d874620798876b7341a9fe88",
+      "prompt_versions": {
+        "extraction-phrases-compact-v3": 140,
+        "extraction-phrases-v2": 60
+      },
+      "archetypes": {
+        "out_of_catalog_unmapped": 24,
+        "parent_caregiver": 27,
+        "prompt_injection_defense": 4,
+        "routine_or_negative_only": 4,
+        "shared_negation_and_contrast": 30,
+        "standard_patient_voice": 69,
+        "unaccented_and_typo": 18,
+        "uncertainty_heavy": 24
+      },
+      "status_counts": {
+        "ABSENT": 184,
+        "PRESENT": 403,
+        "UNKNOWN": 136
+      },
+      "unmapped_groups": 24,
+      "retrieval_coverage_in_top4": 1.0,
+      "prompt_chars_p50": 3960,
+      "prompt_chars_p95": 5050,
+      "prompt_chars_max": 5549
+    },
+    "dev": {
+      "path": "training/extraction/data/dev.jsonl",
+      "count": 200,
+      "sha256": "c89f1aaaba0bcfa0dc205dce1f4f207c20d58c89fc01c47cd22fde0bb307eae3",
+      "prompt_versions": {
+        "extraction-phrases-compact-v3": 140,
+        "extraction-phrases-v2": 60
+      },
+      "archetypes": {
+        "out_of_catalog_unmapped": 18,
+        "parent_caregiver": 27,
+        "prompt_injection_defense": 5,
+        "routine_or_negative_only": 5,
+        "shared_negation_and_contrast": 37,
+        "standard_patient_voice": 66,
+        "unaccented_and_typo": 16,
+        "uncertainty_heavy": 26
+      },
+      "status_counts": {
+        "UNKNOWN": 121,
+        "ABSENT": 189,
+        "PRESENT": 379
+      },
+      "unmapped_groups": 18,
+      "retrieval_coverage_in_top4": 1.0,
+      "prompt_chars_p50": 3964,
+      "prompt_chars_p95": 5000,
+      "prompt_chars_max": 5218
+    }
+  },
+  "few_shot_path": "training/extraction/few_shot_dev_examples.json",
+  "few_shot_sha256": "b2ab3624d6485af330e33a23eee270f91584fb9b2bcc65d44547b43a0b74746c"
+}

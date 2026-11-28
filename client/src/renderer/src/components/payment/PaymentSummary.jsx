@@ -9,13 +9,17 @@ import { payInvoice, toServerMethod, receiptOf } from '../../api/billingApi'
 import { printReceipt } from '../queuePrint'
 import { translate } from '../../i18n'
 import { fmt } from './shared'
+import Badge from '../../components/ui/Badge'
 
 // Cột phải tab "Hoá đơn & thanh toán": tổng tiền, hình thức thanh toán, thu tiền (in biên lai), huỷ lượt chưa cấp thuốc.
 export default function PaymentSummary({ visitId, inv, paid, editable, items, patient, user, act, onClose }) {
   const { showToast } = useToast()
   const [cancelling, setCancelling] = useState(false)
   const [cancelReason, setCancelReason] = useState('')
-  const methods = PAYMENT_METHODS.filter((m) => ['cash', 'transfer'].includes(m.key) && getSettings().ops.methods.includes(m.key))
+  // Hình thức thu trên máy này; cấu hình tắt cả hai thì vẫn cho cả Tiền mặt và Chuyển khoản (không thu ngầm bằng tiền mặt).
+  const usable = PAYMENT_METHODS.filter((m) => ['cash', 'transfer'].includes(m.key))
+  const enabled = usable.filter((m) => getSettings().ops.methods.includes(m.key))
+  const methods = enabled.length ? enabled : usable
   const [method, setMethod] = useState(methods[0]?.key ?? 'cash')
   const [pay, paying] = useAsyncAction(doPay)
 
@@ -43,7 +47,7 @@ export default function PaymentSummary({ visitId, inv, paid, editable, items, pa
             <>
               <span className="lab">{translate('Payment')}</span>
               <div>
-                <span className="badge b-success">{translate('Paid')}</span>
+                <Badge tone="success">{translate('Paid')}</Badge>
               </div>
               <button className="btn btn-outline self-start mt-8" onClick={() => printReceipt(receiptOf(inv, { name: patient.name, ticket: patient.ticket, byName: user.name }))}>
                 <Icon name="printer" />

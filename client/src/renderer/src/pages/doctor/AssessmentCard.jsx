@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import Icon from '../../components/Icon'
 import { translate } from '../../i18n'
 import { getAssessment, missingName } from '../../api/clinicApi'
+import Badge from '../../components/ui/Badge'
 
 // Chưa có kết quả (đang tải, hoặc lượt chưa được đánh giá — 404).
 const EMPTY = {
@@ -131,9 +132,9 @@ export default function AssessmentCard({ a, decisions, onAccept, onDismiss }) {
               </span>
               <div className="acts">
                 {decisions[c.condition_code] === 'accepted' ? (
-                  <span className="badge b-success">{translate('Accepted')}</span>
+                  <Badge tone="success">{translate('Accepted')}</Badge>
                 ) : decisions[c.condition_code] === 'dismissed' ? (
-                  <span className="badge b-neutral">{translate('Dismissed')}</span>
+                  <Badge tone="neutral">{translate('Dismissed')}</Badge>
                 ) : dismissing === c.condition_code ? (
                   <select
                     className="input"

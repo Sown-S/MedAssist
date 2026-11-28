@@ -7,10 +7,12 @@ import argparse
 import asyncio
 import csv
 import datetime
+import hashlib
 import json
 import sys
 import time
 from collections import Counter
+from itertools import cycle
 from pathlib import Path
 from statistics import mean, median
 
@@ -20,6 +22,7 @@ from app.ai.extraction.dispatch import ExtractionOptions
 from app.ai.extraction.dispatch import run_extraction as dispatch_extraction
 from app.ai.llm.prompts import REASONING_PROMPT_VERSION
 from app.ai.pipeline.node1_red_flag_gate import run_node1
+from app.ai.pipeline.node2_graph_retrieval import run_node2
 from app.ai.snapshot_reader import SnapshotReader
 from app.core.config import settings
 from app.core.database import SessionLocal
@@ -47,6 +50,7 @@ def input_features(case: dict) -> dict:
         "vital_signs": dict(case.get("vital_signs", {})),
         "age_years": age,
         "age_months": case.get("age_months", age * 12 if isinstance(age, int) else None),
+        "sex": case.get("sex"),
     }
 
 
@@ -62,6 +66,14 @@ def _latency(values: list[float]) -> dict:
     ordered = sorted(values)
     p95 = ordered[min(len(ordered) - 1, round(0.95 * (len(ordered) - 1)))]
     return {"mean_ms": mean(values), "p50_ms": median(values), "p95_ms": p95, "max_ms": ordered[-1]}
+
+
+def node2_codes(case: dict, reader) -> list[str]:
+    """Mọi bệnh Node 2 trả về cho ca; kết quả cuối chỉ giữ top-3 nên không dùng để kiểm loại trừ."""
+    state = run_node1({"input_features": input_features(case)}, reader)
+    if state["is_red_flag"]:
+        return []
+    return [c["condition_code"] for c in run_node2(state, reader).get("candidates", [])]
 
 
 def clinical_metrics(rows: list[dict]) -> dict:
@@ -83,6 +95,7 @@ def clinical_metrics(rows: list[dict]) -> dict:
         exp, top = set(r["expected_top"]), r["predicted_top"][:TOP_K]
         hit = len(exp & set(top))
         per_case.append(_prf(hit, len(top) - hit, len(exp) - hit))
+    absent = [r for r in rows if r.get("expected_absent")]
     return {
         "cases": len(rows),
         "red_flag": {
@@ -118,6 +131,11 @@ def clinical_metrics(rows: list[dict]) -> dict:
             "macro_precision": mean(c["precision"] for c in per_case) if per_case else None,
             "macro_recall": mean(c["recall"] for c in per_case) if per_case else None,
             "macro_f1": mean(c["f1"] for c in per_case) if per_case else None,
+        },
+        "exclusion": {
+            "cases": len(absent),
+            "passed": sum(not r["leaked"] for r in absent),
+            "leaked": {r["case_id"]: r["leaked"] for r in absent if r["leaked"]},
         },
         "latency": _latency([r["latency_ms"] for r in rows]),
     }
@@ -192,14 +210,49 @@ def run_clinical(cases: list[dict], reader: DbKnowledgeReader, mode: str, llm_cl
                 "latency_ms": round((time.monotonic() - started) * 1000, 1),
             }
         )
+        if absent := case.get("expected_absent_conditions"):
+            rows[-1]["expected_absent"] = absent
+            rows[-1]["leaked"] = sorted(set(absent) & set(node2_codes(case, reader)))
     return rows
 
 
-def run_extraction(cases: list[dict], reader: SnapshotReader, llm_client, options: ExtractionOptions) -> list[dict]:
-    """Mỗi ca nhận đủ 30 s vì đo trực tiếp, không qua hàng đợi (queue wait = 0)."""
+class FewShotClient:
+    """Nhánh B của thí nghiệm fine-tune (fine-tune-trich-xuat.md bản 3): chèn ví dụ few-shot vào prompt khi đo.
+    Prompt chạy thật không đổi. Chỉ dùng ví dụ có cùng chỉ dẫn (cùng phiên bản prompt) với yêu cầu."""
+
+    def __init__(self, inner, examples: list[dict]) -> None:
+        self._inner = inner
+        self._shots: dict[str, list[tuple[str, str]]] = {}
+        for e in examples:
+            instruction, _, payload = e["user_prompt"].partition("\n{")
+            self._shots.setdefault(instruction, []).append(("{" + payload, e["assistant_json"]))
+        self.applied = Counter()
+
+    @property
+    def model(self) -> str:
+        return self._inner.model
+
+    async def generate_json(self, *, prompt: str, schema, timeout_seconds: float) -> dict:
+        instruction, _, payload = prompt.partition("\n{")
+        shots = self._shots.get(instruction)
+        self.applied["with_examples" if shots else "without_examples"] += 1
+        if shots:
+            blocks = "".join(f"INPUT:\n{x}\nOUTPUT:\n{y}\n\n" for x, y in shots)
+            head = f"{instruction}\nEXAMPLES (input, then the correct output):\n\n{blocks}"
+            prompt = f"{head}NOW THE REAL INPUT:\n{{{payload}"
+        return await self._inner.generate_json(prompt=prompt, schema=schema, timeout_seconds=timeout_seconds)
+
+
+def run_extraction(
+    cases: list[dict], reader: SnapshotReader, llm_client, options: ExtractionOptions, before_each=None
+) -> list[dict]:
+    """Mỗi ca nhận đủ 30 s vì đo trực tiếp, không qua hàng đợi (queue wait = 0).
+    before_each (--interleave) chạy trước mỗi ca, ngoài phần đo độ trễ của ca đó."""
     cache = CandidateIndexCache()
     rows = []
     for case in cases:
+        if before_each:
+            before_each()
         gate = run_node1({"input_features": input_features({"age_years": case.get("age_years")})}, reader)
         started = time.monotonic()
         with SessionLocal() as db:
@@ -243,7 +296,7 @@ def render_summary(meta: dict, clinical: dict, extraction: dict | None, warnings
     if warnings:
         lines += ["", "## Cảnh báo", ""] + [f"- {w}" for w in warnings]
     for mode, m in clinical.items():
-        rf, pr, dx, lat = m["red_flag"], m["priority"], m["differential"], m["latency"]
+        rf, pr, dx, ex, lat = m["red_flag"], m["priority"], m["differential"], m["exclusion"], m["latency"]
         lines += [
             "",
             f"## Ca lâm sàng: {mode} ({m['cases']} ca)",
@@ -262,6 +315,9 @@ def render_summary(meta: dict, clinical: dict, extraction: dict | None, warnings
             f"{_pct(dx[f'top{TOP_K}_accuracy'])} |",
             f"| Chẩn đoán phân biệt: P / R / F1 (macro, top-{TOP_K}) | {_pct(dx['macro_precision'])} / "
             f"{_pct(dx['macro_recall'])} / {_pct(dx['macro_f1'])} |",
+            f"| Bệnh phải vắng trong ứng viên Node 2 ({ex['cases']} ca) | {ex['passed']}/{ex['cases']} đạt; lọt: "
+            + (", ".join(f"{k} ({', '.join(v)})" for k, v in ex["leaked"].items()) or "không")
+            + " |",
             f"| Độ trễ mean / p50 / p95 (ms) | {lat.get('mean_ms', 0):.0f} / {lat.get('p50_ms', 0):.0f} / "
             f"{lat.get('p95_ms', 0):.0f} |",
             "",
@@ -317,11 +373,23 @@ def main(argv: list[str] | None = None) -> int:
         default=settings.AI_EXTRACTION_CANDIDATES_PER_PHRASE,
         help="Số ứng viên mỗi cụm (chỉ dùng với phrases)",
     )
+    p.add_argument(
+        "--extraction-few-shot",
+        type=Path,
+        help="File ví dụ few-shot (training/extraction/few_shot_dev_examples.json) cho nhánh B; chỉ dùng khi đo",
+    )
+    p.add_argument(
+        "--interleave",
+        action="store_true",
+        help="Trước mỗi ca trích xuất chạy một ca lâm sàng Full (Node 3) để đo độ trễ khi hai model chạy xen kẽ",
+    )
     p.add_argument("--limit", type=int, help="Chỉ chạy N ca đầu mỗi bộ (thử nhanh)")
     p.add_argument("--out", type=Path, help="Thư mục kết quả (mặc định evaluation/results/<thời điểm>)")
     args = p.parse_args(argv)
     if args.extraction_only and args.skip_extraction:
         p.error("--extraction-only và --skip-extraction loại trừ nhau")
+    if args.interleave and args.skip_extraction:
+        p.error("--interleave cần phần trích xuất")
     if args.candidates_per_phrase < 1:
         p.error("--candidates-per-phrase phải là số nguyên dương")
     options = ExtractionOptions(strategy=args.extraction_strategy, per_phrase_limit=args.candidates_per_phrase)
@@ -345,6 +413,11 @@ def main(argv: list[str] | None = None) -> int:
         return 1
     llm_client, model_name = make_llm_client()
     extraction_client, extraction_model = make_extraction_llm_client((llm_client, model_name))
+    few_shot = None
+    if args.extraction_few_shot:
+        raw = args.extraction_few_shot.read_bytes()
+        few_shot = json.loads(raw)
+        extraction_client = FewShotClient(extraction_client, few_shot["examples"])
     modes = [] if args.extraction_only else ["RuleOnly", "Full"] if args.mode == "both" else [args.mode]
     with_llm = settings.LLM_PROVIDER != "none"
     if args.extraction_only and not with_llm:
@@ -368,8 +441,20 @@ def main(argv: list[str] | None = None) -> int:
         print("CẢNH BÁO:", w, file=sys.stderr)
 
     clinical_rows = {m: run_clinical(clinical_cases, reader, m, llm_client) for m in modes}
+    before_each = None
+    if args.interleave:
+        if not with_llm:
+            print("LLM_PROVIDER=none: --interleave cần LLM.", file=sys.stderr)
+            return 1
+        # Ca cờ đỏ dừng ở Node 1, không gọi model suy luận nên không gây đổi model.
+        warm_cases = read_jsonl(args.testset / "clinical_cases_labeled.jsonl")
+        warm = cycle([c for c in warm_cases if c["expected_priority"] != "Emergency"])
+
+        def before_each():
+            run_clinical([next(warm)], reader, "Full", llm_client)
+
     extraction_rows = (
-        run_extraction(extraction_cases, SnapshotReader(snapshot), extraction_client, options)
+        run_extraction(extraction_cases, SnapshotReader(snapshot), extraction_client, options, before_each)
         if with_llm and not args.skip_extraction and extraction_cases
         else None
     )
@@ -391,6 +476,14 @@ def main(argv: list[str] | None = None) -> int:
         if options.strategy == "phrases":
             meta["candidates_per_phrase"] = options.per_phrase_limit
         meta["extraction_prompt"] = ", ".join(sorted({r["prompt_version"] for r in extraction_rows}))
+        meta["interleave"] = args.interleave
+        if few_shot is not None:
+            meta["extraction_few_shot"] = {
+                "file": args.extraction_few_shot.name,
+                "sha256": hashlib.sha256(raw).hexdigest(),
+                "ids": [e["id"] for e in few_shot["examples"]],
+                "requests": dict(extraction_client.applied),
+            }
     if args.extraction_cases:
         meta["extraction_cases"] = args.extraction_cases.name
     clinical = {m: clinical_metrics(rows) for m, rows in clinical_rows.items()}

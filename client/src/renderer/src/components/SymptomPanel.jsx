@@ -21,7 +21,7 @@ const STEP_AT = { saving: 0, queued: 1, running: 2 }
 // Nhập triệu chứng có cấu trúc + trích xuất từ lời kể có người xác nhận (HITL — FR12, FR14).
 // value chỉ chứa mục lễ tân đã chọn / xác nhận.
 // Đề xuất của mô hình chỉ là chip chờ xác nhận; chưa xác nhận thì không được dùng.
-export default function SymptomPanel({ value, onChange, text, onText, disabled = false, textLocked = false, onExtract, onVitals }) {
+export default function SymptomPanel({ value, onChange, text, onText, disabled = false, textLocked = false, onExtract, onVitals, gender = '' }) {
   // idle | running { phase, queueAhead, startedAt } | done { seconds, count } | failed { timeout, message }
   const [job, setJob] = useState({ status: 'idle' })
   const [now, setNow] = useState(Date.now())
@@ -248,7 +248,7 @@ export default function SymptomPanel({ value, onChange, text, onText, disabled =
         </div>
       )}
 
-      <SymptomChecklist value={value} onSet={setState} disabled={disabled} />
+      <SymptomChecklist value={value} onSet={setState} disabled={disabled} gender={gender} />
     </div>
   )
 }

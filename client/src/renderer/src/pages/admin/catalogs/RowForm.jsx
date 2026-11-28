@@ -101,7 +101,7 @@ export function RowForm({ catalogKey, row, all, cats, inv, onClose }) {
         {!isNew && prices && (
           <>
             <div className="sec-t">Price history</div>
-            <div className="tbl-wrap">
+            <div className="tbl-wrap" tabIndex={0}>
               <table>
                 <thead>
                   <tr>

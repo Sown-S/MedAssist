@@ -22,8 +22,8 @@ result = await run_extraction(
 ```
 
 Caller ghim `SnapshotReader(reader.refresh())`, chạy Node 1 trước, truyền đầy đủ
-định danh cần che và ngân sách còn lại. Worker trừ thời gian chờ từ queued_at
-trong hạn 30 giây. Dispatcher không tự retry hoặc chuyển sang legacy khi lỗi.
+định danh cần che và ngân sách còn lại. Worker tính hạn 30 giây từ lúc nhận việc;
+chờ quá 90 giây từ queued_at thì không gọi model. Dispatcher không tự retry hoặc chuyển sang legacy khi lỗi.
 
 Kết quả có `strategy`, `prompt_version`, `completed`, `failure_code`, `suggestions`.
 
@@ -32,7 +32,7 @@ ID ngắn và trạng thái, sau đó code giải mã theo ứng viên riêng c�
 trước validation Active/HITL. Các cụm trùng hoàn toàn cả nội dung, ngữ cảnh và
 ứng viên dùng chung lựa chọn; mọi span gốc vẫn được kiểm khi giải mã. Định nghĩa
 và câu ngữ cảnh chỉ gửi một lần. Dưới 4 nhóm tiếp tục dùng prompt v2.
-Giữ một lần gọi model và deadline 30 giây từ lúc xếp hàng. Giới hạn tài nguyên
+Giữ một lần gọi model và deadline 30 giây từ lúc worker nhận việc. Giới hạn tài nguyên
 vẫn có hiệu lực: 1024 span truy xuất, 64 nhóm compact khác nhau và request
 24.000 byte; Ollama kiểm context thực tế với truncate=false. Các giới hạn này
 không cam kết mọi lời kể hợp lệ ở API đều xử lý trong 30 giây.

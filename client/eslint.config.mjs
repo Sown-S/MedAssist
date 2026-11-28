@@ -34,7 +34,7 @@ export default [
   },
   {
     // Script Node (vd scripts/smoke.mjs); hàm truyền vào cửa sổ Electron chạy trong trình duyệt nên cần cả globals.browser.
-    files: ['scripts/**/*.mjs'],
+    files: ['scripts/**/*.mjs', 'e2e/**/*.mjs', 'playwright.config.mjs'],
     languageOptions: { sourceType: 'module', globals: { ...globals.node, ...globals.browser } }
   },
   {

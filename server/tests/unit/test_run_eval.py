@@ -1,8 +1,13 @@
 """Chỉ số của scripts/run_eval.py: cờ đỏ, mức ưu tiên, luật, chẩn đoán phân biệt, trích xuất."""
 
+import asyncio
+from contextlib import nullcontext
+from types import SimpleNamespace
+
 import pytest
 
-from scripts.run_eval import clinical_metrics, extraction_metrics, input_features, unknown_codes
+from scripts import run_eval
+from scripts.run_eval import FewShotClient, clinical_metrics, extraction_metrics, input_features, unknown_codes
 
 
 def _row(case_id, exp_p, got_p, exp_rules=(), got_rules=(), exp_top=(), got_top=(), ms=10.0):
@@ -37,6 +42,44 @@ def test_clinical_metrics():
     assert dx["cases"] == 2 and dx["top1_accuracy"] == 0.5 and dx["top3_accuracy"] == 0.5
     assert dx["macro_recall"] == pytest.approx(0.25)  # C4: 1/2 (y ngoài top-3), C5: 0
     assert m["latency"]["p50_ms"] == 10.0
+    assert m["exclusion"] == {"cases": 0, "passed": 0, "leaked": {}}
+
+
+def test_clinical_metrics_exclusion():
+    ok, leak = _row("M1", "Routine", "Routine"), _row("M2", "Routine", "Routine")
+    ok.update(expected_absent=["f1"], leaked=[])
+    leak.update(expected_absent=["f1", "f2"], leaked=["f2"])
+    assert clinical_metrics([ok, leak, _row("C1", "Routine", "Routine")])["exclusion"] == {
+        "cases": 2,
+        "passed": 1,
+        "leaked": {"M2": ["f2"]},
+    }
+
+
+def test_run_clinical_checks_all_node2_candidates(monkeypatch):
+    seen = []
+    monkeypatch.setattr(
+        run_eval,
+        "evaluate_case_offline",
+        lambda case, reader, mode, llm_client: {"candidates": [{"condition_code": "a"}]},
+    )
+    monkeypatch.setattr(run_eval, "run_node1", lambda state, reader: seen.append(state) or {"is_red_flag": False})
+    monkeypatch.setattr(
+        run_eval,
+        "run_node2",
+        lambda state, reader: {"candidates": [{"condition_code": c} for c in ("a", "b", "c", "f1")]},
+    )
+    reader = SimpleNamespace(refresh=lambda: None)
+    base = {"expected_priority": "Routine", "sex": "Male"}
+    rows = run_eval.run_clinical(
+        [{**base, "case_id": "M1", "expected_absent_conditions": ["f1", "f2"]}, {**base, "case_id": "C1"}],
+        reader,
+        "RuleOnly",
+        None,
+    )
+    assert rows[0]["leaked"] == ["f1"]  # f1 ngoài top-3 vẫn bị bắt
+    assert "leaked" not in rows[1] and len(seen) == 1
+    assert seen[0]["input_features"]["sex"] == "Male"
 
 
 def test_extraction_metrics():
@@ -88,6 +131,62 @@ def test_extraction_metrics_completion():
 
 def test_inputs_and_unknown_codes():
     f = input_features({"age_years": 3, "symptoms": {"a": "PRESENT"}, "vital_signs": {"spo2_pct": 95}})
-    assert f == {"symptoms": {"a": "PRESENT"}, "vital_signs": {"spo2_pct": 95}, "age_years": 3, "age_months": 36}
+    assert f == {
+        "symptoms": {"a": "PRESENT"},
+        "vital_signs": {"spo2_pct": 95},
+        "age_years": 3,
+        "age_months": 36,
+        "sex": None,
+    }
+    assert input_features({"sex": "Female"})["sex"] == "Female"
     cases = [{"case_id": "C1", "symptoms": {"a": "PRESENT", "q": "ABSENT"}}, {"id": "E1", "symptoms": {"a": "x"}}]
     assert unknown_codes(cases, "symptoms", {"a"}) == {"C1": ["q"]}
+
+
+class _Capture:
+    model = "m"
+
+    def __init__(self):
+        self.prompts = []
+
+    async def generate_json(self, *, prompt, schema, timeout_seconds):
+        self.prompts.append(prompt)
+        return {}
+
+
+def test_few_shot_client_only_adds_matching_examples():
+    inner = _Capture()
+    shots = [
+        {"user_prompt": 'RULES V2\n{"text":"ví dụ"}', "assistant_json": '{"p1":[]}'},
+        {"user_prompt": 'RULES COMPACT\n{"text":"khác"}', "assistant_json": '{"p1":["c1:P"]}'},
+    ]
+    client = FewShotClient(inner, shots)
+    asyncio.run(client.generate_json(prompt='RULES V2\n{"text":"thật"}', schema={}, timeout_seconds=1))
+    asyncio.run(client.generate_json(prompt='RULES LEGACY\n{"text":"thật"}', schema={}, timeout_seconds=1))
+    first, second = inner.prompts
+    assert first.startswith("RULES V2\nEXAMPLES")
+    assert '{"text":"ví dụ"}' in first and '{"p1":[]}' in first and "khác" not in first
+    assert first.endswith('NOW THE REAL INPUT:\n{"text":"thật"}')
+    assert second == 'RULES LEGACY\n{"text":"thật"}'
+    assert client.applied == {"with_examples": 1, "without_examples": 1}
+
+
+def test_run_extraction_calls_before_each_outside_latency(monkeypatch):
+    calls = []
+
+    async def fake_dispatch(text, *args, **kwargs):
+        calls.append(("extract", text))
+        return SimpleNamespace(
+            suggestions=[], strategy="phrases", prompt_version="v", completed=True, failure_code=None
+        )
+
+    monkeypatch.setattr(run_eval, "dispatch_extraction", fake_dispatch)
+    monkeypatch.setattr(run_eval, "run_node1", lambda state, reader: {})
+    monkeypatch.setattr(run_eval, "SessionLocal", nullcontext)
+    cases = [
+        {"id": "E1", "clinical_note": "a", "expected_symptoms": {}},
+        {"id": "E2", "clinical_note": "b", "expected_symptoms": {}},
+    ]
+    rows = run_eval.run_extraction(cases, None, None, None, before_each=lambda: calls.append(("warm", None)))
+    assert calls == [("warm", None), ("extract", "a"), ("warm", None), ("extract", "b")]
+    assert [r["case_id"] for r in rows] == ["E1", "E2"]

@@ -1,0 +1,35 @@
+{
+ "method": "get",
+ "path": "/api/v1/symptoms",
+ "status": 200,
+ "role": "nurse",
+ "body": [
+  {
+   "symptom_code": "major_head_face_trauma",
+   "symptom_name": "Chấn thương nặng vùng đầu mặt mới xảy ra",
+   "category": "Dấu hiệu nguyên tử",
+   "short_name": null,
+   "aliases": [],
+   "detection": "both",
+   "applicable_sex": "Any"
+  },
+  {
+   "symptom_code": "widespread_skin_peeling",
+   "symptom_name": "Da bong trợt trên vùng rộng",
+   "category": "Dấu hiệu nguyên tử",
+   "short_name": null,
+   "aliases": [],
+   "detection": "both",
+   "applicable_sex": "Any"
+  },
+  {
+   "symptom_code": "sudden_choking",
+   "symptom_name": "Ho sặc đột ngột khi ăn hoặc chơi",
+   "category": "Dấu hiệu nguyên tử",
+   "short_name": null,
+   "aliases": [],
+   "detection": "both",
+   "applicable_sex": "Any"
+  }
+ ]
+}

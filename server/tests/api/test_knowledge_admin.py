@@ -7,6 +7,7 @@ from sqlalchemy import select, text
 
 from app.core.database import SessionLocal, engine
 from app.models import AuditLog
+from app.services.knowledge_reader import DbKnowledgeReader
 
 BASE = "/api/v1/admin/knowledge"
 
@@ -447,3 +448,30 @@ def test_symptom_aliases_and_exam_detection(client, admin, tag, source_id):
     _ok(client.put(f"{BASE}/rules/rf_kx_{tag}", headers=admin, json=rule))
     r = client.put(f"{BASE}/symptoms/{sym}", headers=admin, json={"symptom_name": "x", "detection": "exam"})
     assert r.status_code == 422 and r.json()["error"]["code"] == "EXAM_SYMPTOM_IN_RULE"
+
+
+def test_applicable_sex_on_symptoms_and_conditions(client, admin, doctor, login, tag, source_id):
+    rid = _release(client, admin)
+    sym, cond = f"ka_sx_{tag}", f"ka_cx_{tag}"
+    got = _ok(
+        client.put(f"{BASE}/symptoms/{sym}", headers=admin, json={"symptom_name": "Khí hư", "applicable_sex": "Female"})
+    )
+    assert got["values"]["applicable_sex"] == "Female"
+    got = _ok(client.put(f"{BASE}/conditions/{cond}", headers=admin, json={"name_vi": "Bệnh thử giới tính"}))
+    assert got["values"]["applicable_sex"] == "Any"
+    _ok(
+        client.put(
+            f"{BASE}/conditions/{cond}", headers=admin, json={"name_vi": "Bệnh thử giới tính", "applicable_sex": "Male"}
+        )
+    )
+    r = client.put(f"{BASE}/symptoms/{sym}", headers=admin, json={"symptom_name": "x", "applicable_sex": "Nam"})
+    assert r.status_code == 422
+
+    _ok(client.post(f"{BASE}/releases/{rid}/submit", headers=admin))
+    _ok(client.post(f"{BASE}/releases/{rid}/approve", headers=doctor))
+    reader = DbKnowledgeReader()
+    reader.refresh()
+    assert {c["condition_code"]: c["applicable_sex"] for c in reader.active_conditions()}[cond] == "Male"
+    assert {s["symptom_code"]: s["applicable_sex"] for s in reader.active_symptoms()}[sym] == "Female"
+    catalog = _ok(client.get("/api/v1/symptoms", headers=login("yta")))
+    assert {s["symptom_code"]: s["applicable_sex"] for s in catalog}[sym] == "Female"

@@ -670,12 +670,26 @@ symptoms:
 - symptom_code: sym_cauda_equina
   symptom_name: Bí tiểu, rối loạn cơ tròn hoặc tê mất cảm giác vùng yên ngựa
   category: red_flag_sign
+  aliases:
+    - "tê bẹn và vùng sát hậu môn"
+    - "tê giữa hai chân kèm bí tiểu"
+    - "lau quanh hậu môn chẳng thấy gì"
+    - "tê vùng kín lan quanh hậu môn"
+    - "tê vùng bẹn, són tiểu không hay"
+    - "tê quanh hậu môn, són phân không biết"
 - symptom_code: sym_progressive_paralysis
   symptom_name: Yếu liệt chi tiến triển nhanh hoặc liệt hai chi dưới
   category: red_flag_sign
 - symptom_code: sym_septic_arthritis_suspected
   symptom_name: Sưng nóng đỏ đau dữ dội một khớp kèm sốt cao rét run
   category: red_flag_sign
+  aliases:
+    - "một gối sưng nóng đau buốt, sốt rét run"
+    - "một mắt cá sưng nóng đau dữ, sốt lạnh run"
+    - "một khuỷu tay nóng đỏ đau buốt, sốt run người"
+    - "một đầu gối đỏ nóng đau dữ, sốt run cầm cập"
+    - "một cổ tay sưng nóng đau buốt, sốt rét run"
+    - "một khớp sưng đỏ đau dữ, sốt cao lạnh run"
 - symptom_code: sym_gi_respiratory_bleeding
   symptom_name: Ho ra máu, nôn ra máu hoặc đại tiện phân đen
   category: red_flag_sign
@@ -1205,6 +1219,7 @@ symptoms:
 - symptom_code: chlamydial_trichomonal_vaginitis_cervicitis
   symptom_name: Khí hư nhầy mủ cổ tử cung hoặc khí hư loãng có bọt màu vàng xanh kèm ngứa rát âm đạo
   category: dermatologic
+  applicable_sex: Female
 - symptom_code: photodermatitis_occupational_skin_lesion
   symptom_name: Đỏ da, bọng nước vùng tiếp xúc ánh nắng hoặc hóa chất/dầu mỡ nghề nghiệp
   category: dermatologic
@@ -1222,7 +1237,13 @@ symptoms:
     máu (Lupus)
   category: musculoskeletal
   short_name: "Rụng tóc kèm dấu thận, máu"
-  aliases: []
+  aliases:
+    - "tóc rụng thưa, da đầu không sẹo"
+    - "chỗ tóc rụng không có sẹo"
+    - "rụng tóc lộ da đầu lành"
+    - "tóc thưa dần không để sẹo"
+    - "tóc rụng từng nắm, da đầu vẫn lành"
+    - "rụng tóc mà da đầu không sẹo"
   detection: both
 - symptom_code: sclerodactyly_digital_ulcers_telangiectasia
   symptom_name: Da ngón tay dày cứng, loét/sẹo rỗ đầu ngón tay, giãn mao mạch và khó há miệng (Xơ cứng
@@ -1238,6 +1259,13 @@ symptoms:
   symptom_name: Sốt cao thành cơn hàng ngày (>= 39°C) kèm đau khớp, ban cá hồi, đau họng và hạch/lách
     to (Bệnh Still)
   category: musculoskeletal
+  aliases:
+    - "chiều nào cũng sốt vọt 39 độ kèm đau khớp"
+    - "mỗi ngày sốt vọt, đau khớp kèm ban hồng"
+    - "mỗi chiều sốt cao, đau khớp nổi vệt hồng"
+    - "ngày nào cũng sốt vọt, đau khớp đau họng"
+    - "hằng ngày sốt thành cơn, đau khớp nổi đốm hồng"
+    - "đau khớp mỗi chiều khi sốt trên 39 độ"
 - symptom_code: dermatomyositis_shawls_mechanic_hands
   symptom_name: Ban đỏ vùng cổ ngực (dấu hiệu khăn quàng), bàn tay thợ cơ khí và yếu cơ gốc chi (Viêm
     da cơ)
@@ -1263,14 +1291,26 @@ symptoms:
     (VCSDK)
   category: musculoskeletal
   short_name: "Giảm độ giãn ngực và lưng"
-  aliases: []
+  aliases:
+    - "khó cúi thắt lưng, hít sâu ngực ít nở"
+    - "khó gập lưng dưới, hít vào ngực khó nở"
+    - "lưng dưới khó cúi, ngực ít căng khi hít sâu"
+    - "cúi thắt lưng khó, hít đầy hơi ngực ít nở"
+    - "khó xoay lưng dưới, hít sâu ngực khó nở"
+    - "gập thắt lưng khó, hít vào lồng ngực ít nở"
   detection: both
 - symptom_code: reactive_arthritis_urethritis_conjunctivitis
   symptom_name: Tam chứng viêm khớp không đối xứng chi dưới, viêm niệu đạo và viêm kết mạc sau nhiễm khuẩn
     (Reiter)
   category: musculoskeletal
   short_name: "Viêm khớp, niệu đạo, mắt"
-  aliases: []
+  aliases:
+    - "một gối sưng đau, mắt đỏ, tiểu buốt"
+    - "tiểu rát, đỏ mắt, một cổ chân sưng đau"
+    - "sau tiêu chảy sưng một gối, đỏ mắt, tiểu buốt"
+    - "tiểu buốt, mắt đỏ, đau sưng một gối"
+    - "mắt đỏ, tiểu xót, sưng đau một mắt cá"
+    - "sưng đau một gối sau tiểu buốt, kèm đỏ mắt"
   detection: both
 - symptom_code: psoriatic_dactylitis_distal_interphalangeal
   symptom_name: Viêm ngón tay/ngón chân hình khúc dồi và viêm khớp liên đốt ngón xa kèm tổn thương da/móng
@@ -1306,7 +1346,13 @@ symptoms:
   symptom_name: Sưng nóng đỏ đau dữ dội một khớp lớn, hạn chế vận động hoàn toàn và dịch khớp đục mủ
   category: musculoskeletal
   short_name: "Khớp viêm, dịch khớp đục mủ"
-  aliases: []
+  aliases:
+    - "chọc hút khớp ra dịch đục như mủ"
+    - "hút khớp ra dịch vàng đục có mủ"
+    - "bác sĩ bảo dịch hút từ khớp có mủ"
+    - "khớp khó cử động, hút dịch ra mủ"
+    - "dịch hút từ khớp trắng đục như mủ"
+    - "chọc khớp ra dịch đục lẫn mủ"
   detection: both
 - symptom_code: pyomyositis_psoas_muscle_abscess
   symptom_name: Sưng đau nhức bắp cơ khu trú, cơ căng cứng, sốt cao và dấu hiệu cơ thắt lưng chậu dương

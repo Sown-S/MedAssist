@@ -34,6 +34,7 @@ class Condition(Base):
             name="condition_status_check",
         ),
         CheckConstraint("version >= 1", name="condition_version_check"),
+        CheckConstraint("applicable_sex IN ('Any', 'Female', 'Male')", name="chk_condition_applicable_sex"),
         ForeignKeyConstraint(["condition_code"], ["condition_key.condition_code"], name="fk_condition_key"),
         ForeignKeyConstraint(["created_by"], ["users.user_id"], name="condition_created_by_fkey"),
         ForeignKeyConstraint(["release_id"], ["knowledge_release.release_id"], name="condition_release_id_fkey"),
@@ -54,6 +55,7 @@ class Condition(Base):
     icd10_code: Mapped[str | None] = mapped_column(String(10))
     disease_group: Mapped[str | None] = mapped_column(String(100))
     description: Mapped[str | None] = mapped_column(Text)
+    applicable_sex: Mapped[str] = mapped_column(String(10), nullable=False, server_default=text("'Any'"))
     status: Mapped[str] = mapped_column(String(20), nullable=False, server_default=text("'Draft'::character varying"))
     release_id: Mapped[uuid.UUID] = mapped_column(Uuid, nullable=False)
     created_by: Mapped[uuid.UUID] = mapped_column(Uuid, nullable=False)

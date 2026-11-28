@@ -24,13 +24,10 @@ export default function KnowledgeLive({ reviewOnly = false }) {
   if (error)
     return (
       <div className="card">
-        <ErrorBlock message={errorText(error)} />
-        <button className="btn btn-ghost btn-sm" onClick={reload}>
-          Try again
-        </button>
+        <ErrorBlock message={errorText(error)} onRetry={reload} />
       </div>
     )
-  if (!data) return <LoadingBlock />
+  if (!data) return <LoadingBlock label={reviewOnly ? 'Loading releases to review' : 'Loading the knowledge base'} />
 
   const active = data.releases.find((r) => r.status === 'Active')
   const open = data.releases.find((r) => OPEN_STATUSES.includes(r.status))
@@ -48,7 +45,7 @@ export default function KnowledgeLive({ reviewOnly = false }) {
       ]
 
   return (
-    <div className="vflow">
+    <div className="vflow kb-live">
       <div className="pg-h">
         <div>
           <h2>{reviewOnly ? 'Knowledge review' : 'AI knowledge base'}</h2>

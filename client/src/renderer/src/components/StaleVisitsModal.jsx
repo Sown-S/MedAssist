@@ -6,6 +6,7 @@ import { translate } from '../i18n'
 import { useQueue, closeStaleVisit, STALE_REASONS, ST, statusLabel } from '../api/queueStore'
 import { ticketNo } from './queuePrint'
 import { dmy } from '../utils/format'
+import EmptyState from './ui/EmptyState'
 
 // Lượt chưa đóng từ những ngày trước — Lễ tân xử lý đầu ngày: bệnh nhân quay lại trả tiền → Thu tiền;
 // còn lại → Đóng lượt kèm lý do. Còn lượt chưa đóng thì bệnh nhân chưa tiếp đón lại được.
@@ -38,7 +39,7 @@ export default function StaleVisitsModal({ readOnly, onClose, onPay }) {
           <div className="txt">{translate('These visits were not finished or not paid. Close each one with a reason, or collect payment if the patient came back. A patient with an open visit cannot be checked in again.')}</div>
         </div>
         {stale.length ? (
-          <div className="tbl-wrap">
+          <div className="tbl-wrap" tabIndex={0}>
             <table>
               <thead>
                 <tr>
@@ -55,12 +56,9 @@ export default function StaleVisitsModal({ readOnly, onClose, onPay }) {
             </table>
           </div>
         ) : (
-          <div className="empty">
-            <div className="ill">
-              <Icon name="circle-check" />
-            </div>
+          <EmptyState icon="circle-check">
             <p className="muted">{translate('No open visits from previous days.')}</p>
-          </div>
+          </EmptyState>
         )}
       </div>
       <div className="modal-f">

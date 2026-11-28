@@ -1,6 +1,7 @@
 """API khởi tạo và polling kết quả đánh giá AI và trích xuất triệu chứng của lượt khám."""
 
 import uuid
+from collections.abc import Callable
 from importlib import import_module
 from threading import Lock
 
@@ -14,7 +15,7 @@ from app.core.auth import require_roles
 from app.core.database import get_db
 from app.exceptions import AppError, NotFoundError
 from app.models import User
-from app.schemas.assessment import AssessmentOut, ExtractionOut
+from app.schemas.assessment import AssessmentOut, AssessmentRequest, ExtractionOut
 from app.services import ai_queue_service, assessment_service
 
 router = APIRouter(tags=["assessment"])
@@ -66,6 +67,11 @@ def get_knowledge_reader(db: Session = Depends(get_db)) -> KnowledgeReader:
     raise _knowledge_unavailable()
 
 
+def get_knowledge_reader_lazy(db: Session = Depends(get_db)) -> Callable[[], KnowledgeReader]:
+    """Chỉ dựng reader khi thật sự cần (vd PATCH lượt khám có đổi sinh hiệu)."""
+    return lambda: get_knowledge_reader(db)
+
+
 def _latest_or_404(db: Session, visit_id: uuid.UUID, knowledge_reader: KnowledgeReader) -> dict:
     result = assessment_service.get_latest_assessment(db, visit_id, knowledge_reader)
     if result is None:
@@ -80,13 +86,15 @@ def _latest_or_404(db: Session, visit_id: uuid.UUID, knowledge_reader: Knowledge
 )
 def trigger_assessment(
     visit_id: uuid.UUID,
+    body: AssessmentRequest | None = None,
     actor: User = Depends(_assess_visit),
     db: Session = Depends(get_db),
     knowledge_reader: KnowledgeReader = Depends(get_knowledge_reader),
 ):
     """Chạy pha luật đồng bộ rồi xếp hàng; không chạy Node 2-4 hoặc LLM trong API.
-    Bác sĩ chỉ chạy lại được lượt mình đang khám (sau khi ghi dấu hiệu khi khám)."""
-    ai_queue_service.enqueue_assessment(db, visit_id, actor, knowledge_reader)
+    Bác sĩ chỉ chạy lại được lượt mình đang khám. Chỉ nâng mức, trừ khi allow_lower."""
+    allow_lower = body.allow_lower if body else False
+    ai_queue_service.enqueue_assessment(db, visit_id, actor, knowledge_reader, allow_lower=allow_lower)
     db.commit()
     return _latest_or_404(db, visit_id, knowledge_reader)
 

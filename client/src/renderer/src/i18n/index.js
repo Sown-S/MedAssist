@@ -61,6 +61,17 @@ export function translate(s) {
 const TEXT_PROPS = ['placeholder', 'title', 'aria-label', 'defaultValue']
 
 // Không dịch `value` của ô nhập — đó là dữ liệu người dùng gõ.
+// Dịch chuỗi trong mảng children, kể cả mảng lồng: component bọc lại children (vd <Button><Icon /> Lưu</Button> → button
+// nhận [spinner, [Icon, ' Lưu']]) thì chuỗi nằm trong mảng con. Không đổi gì thì trả lại đúng mảng cũ.
+function localizeList(list) {
+  let out = null
+  list.forEach((x, i) => {
+    const t = typeof x === 'string' ? translate(x) : Array.isArray(x) ? localizeList(x) : x
+    if (t !== x) (out ??= list.slice())[i] = t
+  })
+  return out ?? list
+}
+
 export function localizeProps(type, props) {
   if (store.lang === 'en' || typeof type !== 'string' || !props) return props
   let out = null
@@ -73,13 +84,8 @@ export function localizeProps(type, props) {
     const t = translate(c)
     if (t !== c) set('children', t)
   } else if (Array.isArray(c)) {
-    let arr = null
-    c.forEach((x, i) => {
-      if (typeof x !== 'string') return
-      const t = translate(x)
-      if (t !== x) (arr ??= c.slice())[i] = t
-    })
-    if (arr) set('children', arr)
+    const arr = localizeList(c)
+    if (arr !== c) set('children', arr)
   }
   for (const k of TEXT_PROPS) {
     if (typeof props[k] === 'string') {

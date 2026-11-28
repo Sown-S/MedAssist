@@ -17,7 +17,8 @@ function recomputeBalances(moves) {
   return sorted.reverse()
 }
 
-let state = { drugs: [], batches: [], moves: [] }
+// loaded: đã nạp danh mục thuốc và lô từ server (trước đó ô Tủ thuốc hiện khung xương).
+let state = { drugs: [], batches: [], moves: [], loaded: false }
 const listeners = new Set()
 function commit(next) {
   state = next
@@ -41,7 +42,7 @@ export function useInventory() {
 let liveLoaded = false
 let liveLoading = null
 const liveName = (d) => [d.trade_name && d.trade_name !== d.generic_name ? d.trade_name : d.generic_name, d.strength].filter(Boolean).join(' ')
-const fromServerDrug = (d, cost = 0) => ({
+export const fromServerDrug = (d, cost = 0) => ({
   id: d.drug_id,
   name: liveName(d),
   ingredient: d.generic_name,
@@ -60,7 +61,7 @@ const fromServerDrug = (d, cost = 0) => ({
   use30: 0,
   active: d.is_active
 })
-const fromServerBatch = (b) => ({
+export const fromServerBatch = (b) => ({
   id: b.batch_id,
   drugId: b.drug_id,
   lot: b.batch_number,
@@ -88,7 +89,7 @@ function reloadInventory() {
   liveLoading ??= fetchLive()
     .then((x) => {
       liveLoaded = true
-      commit({ ...state, ...x })
+      commit({ ...state, ...x, loaded: true })
     })
     .catch(() => {})
     .finally(() => (liveLoading = null))

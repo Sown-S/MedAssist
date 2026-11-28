@@ -1,5 +1,5 @@
 """Vòng lặp worker: lấy việc (SKIP LOCKED + lease), chạy pipeline đánh giá hoặc trích xuất, ghi kết quả;
-sweeper định kỳ thu hồi lease quá hạn. Ngân sách thời gian tính từ queued_at.
+sweeper định kỳ thu hồi lease quá hạn. Thời hạn chờ tính từ queued_at, thời hạn chạy từ lúc nhận việc.
 Chi tiết: docs/thiet-ke-backend.md §2.
 """
 
@@ -71,14 +71,17 @@ def make_extraction_llm_client(reasoning: tuple):
     return make_llm_client(model)
 
 
-def _remaining_budget(queued_at: datetime.datetime, limit: float | None = None) -> float:
+def _run_budget(queued_at: datetime.datetime, started_at: datetime.datetime, limit: float | None = None) -> float:
     target = float(settings.AI_ASSESSMENT_TIMEOUT_SECONDS if limit is None else limit)
-    if target <= 0:
+    # Lease hết hạn thì lần nhận lại cách queued_at hơn WORKER_LEASE_SECONDS (> thời hạn chờ),
+    # nên không được cấp lại thời hạn chạy đã dùng.
+    if target <= 0 or (started_at - queued_at).total_seconds() >= settings.AI_QUEUE_WAIT_SECONDS:
         return 0.0
-    # Tính cả thời gian chờ; lease không được cấp lại ngân sách đã hết.
-    # Nếu đồng hồ lệch khiến queued_at ở tương lai, không vượt ngân sách gốc.
-    waited = max(0.0, (datetime.datetime.now(datetime.UTC) - queued_at).total_seconds())
-    return max(0.0, target - waited)
+    return target
+
+
+def _remaining_budget(deadline: float) -> float:
+    return max(0.0, deadline - time.monotonic())
 
 
 def _known_identifiers(patient: Patient) -> list[str]:
@@ -95,7 +98,7 @@ def _known_identifiers(patient: Patient) -> list[str]:
 async def _process_extraction(
     assessment_id,
     visit_id,
-    queued_at,
+    deadline: float,
     reader: DbKnowledgeReader,
     llm_client,
     model_name: str | None,
@@ -111,7 +114,7 @@ async def _process_extraction(
         await _process_phrase_extraction(
             assessment_id,
             visit_id,
-            queued_at,
+            deadline,
             reader,
             llm_client,
             model_name,
@@ -134,7 +137,7 @@ async def _process_extraction(
                 rdb,
                 gate_state=gate,
                 identifiers=_known_identifiers(patient),
-                timeout_seconds=_remaining_budget(queued_at, feature_extractor.EXTRACTION_TIMEOUT_SECONDS),
+                timeout_seconds=_remaining_budget(deadline),
                 options=options,
             )
             rdb.rollback()
@@ -161,7 +164,7 @@ async def _process_extraction(
 async def _process_phrase_extraction(
     assessment_id,
     visit_id,
-    queued_at,
+    deadline: float,
     reader,
     llm_client,
     model_name,
@@ -187,7 +190,7 @@ async def _process_phrase_extraction(
                 rdb,
                 gate_state=gate,
                 identifiers=_known_identifiers(patient),
-                timeout_seconds=_remaining_budget(queued_at, feature_extractor.EXTRACTION_TIMEOUT_SECONDS),
+                timeout_seconds=_remaining_budget(deadline),
                 cache=_phrase_index_cache,
                 options=options,
             )
@@ -204,7 +207,7 @@ async def _process_phrase_extraction(
         if run is None or run.status != "Running" or (attempt_count is not None and run.attempt_count != attempt_count):
             wdb.rollback()
             return
-        if result.completed and _remaining_budget(queued_at, feature_extractor.EXTRACTION_TIMEOUT_SECONDS) <= 0:
+        if result.completed and _remaining_budget(deadline) <= 0:
             result = SelectionResult(False, "EXTRACTION_TIMEOUT")
         run.model_name, run.prompt_version = model_name, result.prompt_version
         validation = {"valid": result.completed, "reason": result.failure_code}
@@ -269,9 +272,10 @@ async def process_one(
         if run is None:
             db.commit()
             return False
+        claimed = time.monotonic()
         assessment_id, queued_at, features = run.assessment_id, run.queued_at, dict(run.input_features or {})
         run_type, visit_id = run.run_type, run.visit_id
-        attempt_count = run.attempt_count
+        attempt_count, started_at = run.attempt_count, run.started_at
         db.commit()
 
     if run_type == "Extraction":
@@ -279,7 +283,7 @@ async def process_one(
         await _process_extraction(
             assessment_id,
             visit_id,
-            queued_at,
+            claimed + _run_budget(queued_at, started_at, feature_extractor.EXTRACTION_TIMEOUT_SECONDS),
             reader,
             extraction_client,
             extraction_model,
@@ -288,6 +292,7 @@ async def process_one(
         )
         return True
 
+    deadline = claimed + _run_budget(queued_at, started_at)
     started = time.monotonic()
     marks: dict[str, float] = {}
 
@@ -306,7 +311,7 @@ async def process_one(
                     reader,
                     llm_client,
                     rdb,
-                    timeout_seconds=_remaining_budget(queued_at),
+                    timeout_seconds=_remaining_budget(deadline),
                     on_preliminary=on_preliminary,
                 )
             rdb.rollback()

@@ -1,0 +1,44 @@
+{
+  "freeze_version": "testset-v1.5-frozen",
+  "is_frozen": true,
+  "review_status": "CROSS_REVIEW_COMPLETED",
+  "author": "Tuan",
+  "cross_reviewer": "Huy",
+  "knowledge_release": "KB-2026.12.3",
+  "parent_testset": {
+    "path": "evaluation/testset_v1.4",
+    "combined_sha256": "a136d072e8c5149f25409591b245b61865e3320a5233ad73ef9d4d54aec86161"
+  },
+  "files": [
+    {
+      "path": "evaluation/testset_v1.5/clinical_cases_labeled.jsonl",
+      "records": 85,
+      "sha256": "4ea67d33baed32a99b0cab202bbe4bb0803835881df0e721e2921ddf3c30404e"
+    },
+    {
+      "path": "evaluation/testset_v1.5/symptom_extraction_testset.jsonl",
+      "records": 29,
+      "sha256": "b1cdf74efa2ba69c9d5443ddafef80be9e5bd779ea0dfee230a138644c31e373"
+    }
+  ],
+  "sha256_normalization": "UTF-8, CRLF -> LF",
+  "combined_sha256_formula": "sha256(sha_ext + \":\" + sha_clin)",
+  "combined_sha256": "34a6b896db336e3c2f753a968ba8331afa3ba3550d1787d17ca142b6be279085",
+  "frozen_date": "2026-11-26",
+  "cross_review": {
+    "reviewer": "Huy",
+    "reviewed_draft_manifest_sha256": "7e726b2de691dbc579296f577c49dff6581133c7b9d0ae5fd1b6475f759b27b9",
+    "reviewed_combined_sha256": "34a6b896db336e3c2f753a968ba8331afa3ba3550d1787d17ca142b6be279085",
+    "scope": "Kiểm tự động 85 ca lâm sàng và 29 ca trích xuất. Huy báo 85/85 ca đạt schema VitalSigns và khớp 12 luật Node 1.",
+    "new_case_verdicts": {
+      "CLIN-085": "ĐỒNG Ý",
+      "CLIN-086": "ĐỒNG Ý",
+      "CLIN-087": "ĐỒNG Ý"
+    },
+    "notes": [
+      "Trích đoạn trong viem_am_dao_do_trung_roi.md bị cụt câu mô tả dịch tiết.",
+      "Lời kể CLIN-086/087 không ghi câu phủ định cho hai mã ABSENT. Huy đồng ý giữ nguyên."
+    ],
+    "inherited_review": "Giữ các nhãn và giới hạn rà chuyên môn đã ghi trong v1.4."
+  }
+}

@@ -1,3 +1,4 @@
+import { cloneElement, isValidElement, useId } from 'react'
 const EFFECTS = {
   now: { label: 'Applies immediately', cls: 'b-success' },
   signin: { label: 'From next sign-in', cls: 'b-info' },
@@ -34,16 +35,22 @@ export const FIELDS = {
   'ops.clusterRatio': ['Ratio to previous periods', 'now']
 }
 
+// Ô con là một <input>/<select>/<textarea> thì nhãn nối vào ô (htmlFor) để trình đọc màn hình đọc được tên ô.
+const FORM_TAGS = new Set(['input', 'select', 'textarea'])
+
 export function Field({ path, hint, error, changed, wide, children }) {
   const [label, effect] = FIELDS[path] ?? [path, 'now']
   const ef = EFFECTS[effect]
+  const auto = useId()
+  const single = isValidElement(children) && FORM_TAGS.has(children.type) ? children : null
+  const id = single ? (single.props.id ?? auto) : undefined
   return (
     <div className={'field set-field' + (wide ? ' wide' : '') + (changed ? ' changed' : '') + (error ? ' has-err' : '')}>
-      <label>
+      <label htmlFor={id}>
         <span>{label}</span>
         {effect !== 'now' && <span className={'badge ' + ef.cls + ' set-effect'}>{ef.label}</span>}
       </label>
-      {children}
+      {single ? cloneElement(single, { id }) : children}
       {error ? <small className="set-err">{error}</small> : hint && <small className="muted">{hint}</small>}
     </div>
   )

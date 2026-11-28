@@ -14,6 +14,8 @@ import CancelOrderItemModal from '../../../components/CancelOrderItemModal'
 import { useServerDrugs, reloadServerDrugs } from '../../../api/serverDrugs'
 import { syncDiagnoses, savePrescription, confirmPrescription, completeExam, shortageOf } from '../../../api/examApi'
 import { isServerOnline } from '../../../api/connectivity'
+import { updateVisit, triageOf, visitPatch, triggerAssessment, LEVEL_LABEL } from '../../../api/clinicApi'
+import { normalizeVitals, vitalsToForm, vitalsFromForm } from '../../../api/vitals'
 import { printPrescription } from '../printRx'
 import { saveDraft, deleteDraft } from '../../../api/draftStore'
 import DocumentModal from '../DocumentModal'
@@ -30,9 +32,15 @@ import { useConsultShortcuts } from './useConsultShortcuts'
 import { useLabResults } from './useLabResults'
 import { finalizeCheck, clinicalNotes } from './finalizeCheck'
 
+const sameVitals = (a, b) => {
+  const ka = Object.keys(a).filter((k) => a[k] != null)
+  const kb = Object.keys(b).filter((k) => b[k] != null)
+  return ka.length === kb.length && ka.every((k) => String(a[k]) === String(b[k]))
+}
+
 // Phiếu khám của bệnh nhân đang trong phòng: SOAP, sinh hiệu, tiền sử, kê đơn, chốt đơn / kết thúc lượt.
 // Bản nháp lưu trên máy (draftStore) theo từng thay đổi.
-export default function ConsultForm({ visit, user, onDone, onNext }) {
+export default function ConsultForm({ visit, user, onDone, onNext, onVisitSaved }) {
   const { showToast } = useToast()
   const inv = useInventory()
   const srv = useServerDrugs({ enabled: true })
@@ -56,6 +64,8 @@ export default function ConsultForm({ visit, user, onDone, onNext }) {
   }, [more])
   const [docs, setDocs] = useState(false)
   const [tried, setTried] = useState(false)
+  // Sinh hiệu đã gửi lên lượt khám này — mốc so sánh để chốt lại (vd sau lỗi thiếu thuốc) không gửi trùng.
+  const sentVitals = useRef(null)
   const [short, setShort] = useState(null)
   const [cancelRow, setCancelRow] = useState(null)
   // Phiếu chỉ định đọc từ GET /visits/{id}/service-orders.
@@ -80,6 +90,56 @@ export default function ConsultForm({ visit, user, onDone, onNext }) {
   // Đơn gần nhất trong mọi lần khám trước, kể cả lượt đã xong hôm nay.
   const last = past.find((v) => v.rx?.length)
 
+  // Sinh hiệu đang có trên máy chủ: lần lưu gần nhất ở phiếu này, nếu chưa lưu thì sinh hiệu lúc tiếp đón.
+  const savedVitals = () => (sentVitals.current?.id === visit.id ? sentVitals.current.vitals : vitalsFromForm(vitalsToForm(normalizeVitals(visit.serverVitals ?? {}))))
+  const vitalsDirty = !sameVitals(vitalsFromForm(d.vitals), savedVitals())
+  const [vitalsTried, setVitalsTried] = useState(false)
+
+  // Lưu sinh hiệu ngay khi bác sĩ đo lại: máy chủ chạy lại luật (Node 1) trong cùng lần lưu và trả mức ưu tiên,
+  // cờ đỏ mới → báo ngay, tải lại hàng đợi (huy hiệu Cấp cứu) và lần đánh giá mới (khung cờ đỏ ở đầu phiếu).
+  async function saveVitals() {
+    if (!isServerOnline()) {
+      showToast(translate('No connection to the clinic server — the vitals cannot be saved now. Your notes are kept on this computer.'), 'error')
+      return false
+    }
+    setVitalsTried(true)
+    if (vitalErr.length) {
+      showToast(translate('Check the vital signs') + ': ' + vitalErr.map((e) => translate(e.msg)).join('; '), 'error')
+      return false
+    }
+    const vitalsNow = vitalsFromForm(d.vitals)
+    let r
+    try {
+      r = await updateVisit(visit.id, { vitals: vitalsNow })
+    } catch (e) {
+      showToast(translate(e.message || 'Something went wrong'), 'error')
+      return false
+    }
+    sentVitals.current = { id: visit.id, vitals: vitalsNow }
+    if (r) onVisitSaved?.(visitPatch(r))
+    setAiRun((n) => n + 1)
+    syncQueue()
+    const level = r?.is_red_flag ? 'emergency' : triageOf(r?.triage_priority)
+    if (level === 'emergency') showToast(translate('Vitals saved') + ' · ' + translate('Red flag') + (r.red_flag_reason ? ': ' + r.red_flag_reason : ''), 'error')
+    else if (level === 'high') showToast(translate('Vitals saved') + ' · ' + translate('High priority'), 'warning')
+    else showToast('Vitals saved')
+  }
+
+  // Lưu thường chỉ nâng mức; gõ nhầm sinh hiệu làm bật cờ đỏ → sửa lại rồi đánh giá lại cho phép hạ mức.
+  // Sinh hiệu chưa lưu thì lưu trước để máy chủ tính theo số đúng.
+  async function reassessLower() {
+    if (vitalsDirty && (await saveVitals()) === false) return
+    let r
+    try {
+      r = await triggerAssessment(visit.id, { allowLower: true })
+    } catch (e) {
+      return showToast(translate(e.message || 'Something went wrong'), 'error')
+    }
+    setAiRun((n) => n + 1)
+    syncQueue()
+    showToast(translate('Re-assessed') + ' · ' + translate(LEVEL_LABEL[triageOf(r?.priority?.final)]))
+  }
+
   const issues = d.rx.map((it) => ({ it, issue: issueOf(it) })).filter((x) => x.issue && x.issue.level !== 'info')
   const { problem, needWeight, vitalErr } = finalizeCheck(visit, d)
 
@@ -93,6 +153,12 @@ export default function ConsultForm({ visit, user, onDone, onNext }) {
     if (!(await saveLabResults())) return
     const notes = clinicalNotes(d)
     try {
+      // Sinh hiệu sửa ở tab Sinh hiệu mà chưa bấm Lưu (cân nặng trẻ em in lên đơn) → lưu vào lượt khám trước khi chốt.
+      const vitalsNow = vitalsFromForm(d.vitals)
+      if (!sameVitals(vitalsNow, savedVitals())) {
+        await updateVisit(visit.id, { vitals: vitalsNow })
+        sentVitals.current = { id: visit.id, vitals: vitalsNow }
+      }
       await syncDiagnoses(visit.id, { primary: d.diagnosis, extra: d.diagnosesExtra ?? [], notes: notes || null, candidates: ai.candidates, assessmentId: ai.assessment_id })
       if (mapped.length) {
         await savePrescription(
@@ -153,7 +219,7 @@ export default function ConsultForm({ visit, user, onDone, onNext }) {
 
   return (
     <div className="doc-main">
-      <ConsultHeader visit={visit} vit={vit} prev={prev} alerts={ai.alerts} />
+      <ConsultHeader visit={visit} vit={vit} prev={prev} alerts={ai.alerts} onVisitSaved={onVisitSaved} onReassessLower={reassessLower} />
 
       <div className="card">
         <div className="utabs">
@@ -172,7 +238,9 @@ export default function ConsultForm({ visit, user, onDone, onNext }) {
             <SoapPanel visit={visit} symptoms={symptoms} onSymptoms={setSymptoms} onRerunAi={() => setAiRun((n) => n + 1)} d={d} set={set} tried={tried} ai={ai} aiDecision={aiDecision} decideAi={decideAi} />
           )}
 
-          {tab === 'vitals' && <VitalsTab visit={visit} vitals={d.vitals} onChange={setVital} tried={tried} needWeight={needWeight} vitalErr={vitalErr} />}
+          {tab === 'vitals' && (
+            <VitalsTab visit={visit} vitals={d.vitals} onChange={setVital} tried={tried || vitalsTried} needWeight={tried && needWeight} vitalErr={vitalErr} dirty={vitalsDirty} onSave={saveVitals} />
+          )}
           {tab === 'hist' && <HistoryTab visit={visit} />}
         </div>
       </div>

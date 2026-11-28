@@ -1,0 +1,36 @@
+{
+  "test-1": [
+    "EXT-FT-003",
+    "EXT-FT-004",
+    "EXT-FT-005",
+    "EXT-FT-007",
+    "EXT-FT-011",
+    "EXT-FT-012",
+    "EXT-FT-013",
+    "EXT-FT-016",
+    "EXT-FT-018",
+    "EXT-FT-020",
+    "EXT-FT-021",
+    "EXT-FT-024",
+    "EXT-FT-025",
+    "EXT-FT-027",
+    "EXT-FT-029"
+  ],
+  "test-2": [
+    "EXT-FT-001",
+    "EXT-FT-002",
+    "EXT-FT-006",
+    "EXT-FT-008",
+    "EXT-FT-009",
+    "EXT-FT-010",
+    "EXT-FT-014",
+    "EXT-FT-015",
+    "EXT-FT-017",
+    "EXT-FT-019",
+    "EXT-FT-022",
+    "EXT-FT-023",
+    "EXT-FT-026",
+    "EXT-FT-028",
+    "EXT-FT-030"
+  ]
+}

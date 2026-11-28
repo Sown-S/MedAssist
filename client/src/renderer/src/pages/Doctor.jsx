@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import Button from '../components/Button'
 import { useSearchParams } from 'react-router-dom'
 import Icon from '../components/Icon'
 import BellPortal from '../components/BellPortal'
@@ -14,6 +15,7 @@ import PrescriptionsLive from './reception/PrescriptionsLive'
 import PatientLookup from './doctor/PatientLookup'
 import ClusterAlerts from '../components/ClusterAlerts'
 import { hhmm } from '../utils/format'
+import ErrorBoundary from '../components/ErrorBoundary'
 
 const VIEWS = {
   home: { icon: 'home', tab: 'Overview', title: 'Doctor dashboard', sub: 'Today’s queue, your patients and prescriptions at a glance' },
@@ -80,9 +82,9 @@ export default function Doctor() {
                   {topRF.allergies ? ' · ' + translate('Drug allergy') + ': ' + translate(topRF.allergies) : ''}
                 </small>
                 <span className="bp-acts">
-                  <button className="btn btn-danger btn-sm" onClick={() => seeNow(topRF)}>
+                  <Button className="btn btn-danger btn-sm" onClick={() => seeNow(topRF)}>
                     <Icon name="stethoscope" /> See the patient now
-                  </button>
+                  </Button>
                   <button className="btn btn-outline btn-sm" onClick={() => reviewRedFlag(topRF.id, 'seen', user)}>
                     Dismiss
                   </button>
@@ -98,7 +100,7 @@ export default function Doctor() {
               </button>
             </div>
           )}
-          {view === 'home' && <ClusterAlerts />}
+          {view === 'home' && <ErrorBoundary inline><ClusterAlerts /></ErrorBoundary>}
         </BellPortal>
 
         {/* Đổi màn bằng menu bên trái (components/SideNav.jsx); phòng khám của bác sĩ hiện ở cuối menu. */}

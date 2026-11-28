@@ -1,0 +1,15 @@
+﻿"Phiếu thẩm định","Hướng dẫn dành cho bác sĩ"
+"Mục đích","Xin bác sĩ nhận xét tên bệnh, mã ICD-10 và các triệu chứng liên quan."
+"Phiên bản tri thức","KB-2026.12.3"
+"Phạm vi","39 hồ sơ gồm 28 hồ sơ cơ xương khớp và 11 hồ sơ bệnh phổ biến, kể cả cảm lạnh thông thường."
+"Bắt đầu","Ưu tiên điền tệp 04_cau_hoi_uu_tien.csv (122 câu). Tệp 02 và 03 dùng để tra cứu hoặc nhận xét thêm nếu có thời gian."
+"Cách điền","Nhập trực tiếp vào các cột nhận xét cuối mỗi dòng. Có thể để trống phần chưa rà. Khi lưu, chọn CSV UTF-8."
+"Trọng số đề xuất","0.9 — then chốt
+0.6 — thường gặp
+0.3 — có thể gặp
+Các mức này đang chờ thẩm định."
+"Thuật ngữ trong câu hỏi","SUPPORTS nghĩa là “Ủng hộ”. Catalog là danh mục triệu chứng của hệ thống. Cột Then chốt ghi nhận lựa chọn hiện tại."
+"Phạm vi sử dụng","Tri thức chưa rà lâm sàng. Hệ thống chỉ hỗ trợ bác sĩ, không thay thế quyết định lâm sàng. Phiếu không chứa dữ liệu bệnh nhân."
+"Tên bệnh và ICD","Trong tệp 02, điền Đồng ý / Cần sửa / Loại cho tên bệnh và Đồng ý / Cần sửa cho ICD. Có thể ghi căn cứ vào cột Ghi chú."
+"Quan hệ và trọng số","Trong tệp 03, điền Đồng ý / Nên tăng / Nên giảm / Nên bỏ. Nếu đề nghị sửa, ghi trọng số 0.9 / 0.6 / 0.3 và Có / Không cho cột Then chốt đề nghị."
+"Trả lời câu hỏi","Trong tệp 04, ghi lựa chọn và căn cứ vào cột Trả lời bác sĩ. Với câu chọn then chốt, có thể ghi số thứ tự của ứng viên ngay trên dòng đó hoặc ghi mã triệu chứng."

@@ -46,7 +46,7 @@ def put_symptoms(db: Session, visit_id: uuid.UUID, data: SymptomsPut, actor: Use
         raise AppError(
             409, "VISIT_CLOSED", "Lượt khám đã kết thúc, không sửa triệu chứng được", [{"current": visit.status}]
         )
-    if visit.status == "Examining" and visit.physician_id != actor.user_id:
+    if (visit.status == "Examining" or actor.role == "Physician") and visit.physician_id != actor.user_id:
         raise AppError(409, "NOT_YOUR_VISIT", "Chỉ bác sĩ đang khám lượt này mới sửa được triệu chứng")
 
     wanted = {s.symptom_code: s for s in data.symptoms}
@@ -103,11 +103,20 @@ def active_catalog(db: Session) -> list[dict]:
             Symptom.short_name,
             Symptom.aliases,
             Symptom.detection,
+            Symptom.applicable_sex,
         )
         .where(Symptom.status == "Active")
         .order_by(Symptom.category.nulls_last(), Symptom.symptom_name)
     ).all()
     return [
-        {"symptom_code": c, "symptom_name": n, "category": cat, "short_name": short, "aliases": al, "detection": det}
-        for c, n, cat, short, al, det in rows
+        {
+            "symptom_code": c,
+            "symptom_name": n,
+            "category": cat,
+            "short_name": short,
+            "aliases": al,
+            "detection": det,
+            "applicable_sex": sex,
+        }
+        for c, n, cat, short, al, det, sex in rows
     ]

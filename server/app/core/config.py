@@ -18,7 +18,7 @@ class Settings(BaseSettings):
     )
 
     PROJECT_NAME: str = "MedAssist API"
-    VERSION: str = "0.2.5"
+    VERSION: str = "0.2.6"
     ENVIRONMENT: Literal["dev", "prod"] = "dev"
 
     # API, worker, script nạp OKF: vai trò medassist_app (ERD §6.2)
@@ -67,9 +67,10 @@ class Settings(BaseSettings):
     # AI-23: phrases tìm ứng viên theo từng cụm; legacy gửi toàn catalog, vượt context với kho hiện tại.
     AI_EXTRACTION_STRATEGY: Literal["legacy", "phrases"] = "phrases"
     AI_EXTRACTION_CANDIDATES_PER_PHRASE: int = Field(default=4, ge=1, le=50)
-    AI_ASSESSMENT_TIMEOUT_SECONDS: float = Field(default=90, gt=0, le=90)  # tính từ lúc xếp hàng
+    AI_QUEUE_WAIT_SECONDS: float = Field(default=90, gt=0, le=90)  # tính từ queued_at; quá hạn thì không chạy
+    AI_ASSESSMENT_TIMEOUT_SECONDS: float = Field(default=90, gt=0, le=90)  # tính từ lúc worker nhận việc
     WORKER_POLL_SECONDS: float = Field(default=1.0, gt=0)
-    WORKER_LEASE_SECONDS: int = Field(default=150, ge=30)  # > timeout đánh giá
+    WORKER_LEASE_SECONDS: int = Field(default=150, ge=30)  # > thời hạn chờ và thời hạn đánh giá
     WORKER_SWEEP_SECONDS: int = Field(default=30, ge=5)
     WORKER_MAX_ATTEMPTS: int = Field(default=2, ge=1, le=5)
 

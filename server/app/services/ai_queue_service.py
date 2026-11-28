@@ -7,6 +7,7 @@ import datetime
 import hashlib
 import json
 import uuid
+from collections.abc import Callable
 from typing import Any
 
 from sqlalchemy import and_, case, func, or_, select, text, tuple_, update
@@ -19,7 +20,9 @@ from app.core.config import settings
 from app.exceptions import AppError
 from app.models import AiAssessmentLog, Patient, User, Visit, VisitSymptom
 from app.models.user import SYSTEM_USER_ID
+from app.schemas.visit import VisitUpdate
 from app.services import audit_service as audit
+from app.services import queue_service
 from app.services.queue_service import get_visit
 
 ASSESSABLE_STATUSES = ("Waiting", "CheckedIn", "Examining")
@@ -42,13 +45,16 @@ def build_input_features(db: Session, visit: Visit) -> dict[str, Any]:
             .order_by(VisitSymptom.symptom_code)
         ).all()
     )
-    dob = db.scalar(select(Patient.date_of_birth).where(Patient.patient_id == visit.patient_id))
+    dob, sex = db.execute(
+        select(Patient.date_of_birth, Patient.gender).where(Patient.patient_id == visit.patient_id)
+    ).one()
     age_years, age_months = _age(dob, visit.visit_date.date())
     return {
         "symptoms": symptoms,
         "vital_signs": dict(visit.vital_signs or {}),
         "age_years": age_years,
         "age_months": age_months,
+        "sex": sex,
     }
 
 
@@ -77,6 +83,13 @@ def _uuid(value: Any) -> uuid.UUID | None:
     return uuid.UUID(str(value)) if value else None
 
 
+_RANK = {"Routine": 1, "HighPriority": 2, "Emergency": 3}
+
+
+def _higher(*levels: str | None) -> str:
+    return max((level for level in levels if level), key=_RANK.__getitem__, default="Routine")
+
+
 def _apply_triage(
     visit: Visit, *, is_red_flag: bool, hits: list[dict], priority_rule: str, priority_final: str
 ) -> None:
@@ -94,8 +107,11 @@ def _apply_triage(
 
 
 # --- Xếp hàng -------------------------------------------------------------------------------------
-def enqueue_assessment(db: Session, visit_id: uuid.UUID, actor: User, reader: KnowledgeReader) -> AiAssessmentLog:
-    """Tạo một lần đánh giá cho lượt khám. Bên gọi commit. Trả dòng nhật ký (Queued hoặc Skipped)."""
+def enqueue_assessment(
+    db: Session, visit_id: uuid.UUID, actor: User, reader: KnowledgeReader, *, allow_lower: bool = False
+) -> AiAssessmentLog:
+    """Tạo một lần đánh giá cho lượt khám. Bên gọi commit. Trả dòng nhật ký (Queued hoặc Skipped).
+    Mặc định chỉ nâng mức, giữ cờ đỏ; allow_lower là đánh giá lại có chủ đích, tính từ đầu (ERD §4)."""
     visit = db.scalar(select(Visit).where(Visit.visit_id == visit_id).with_for_update())
     if visit is None:
         get_visit(db, visit_id)
@@ -134,19 +150,35 @@ def enqueue_assessment(db: Session, visit_id: uuid.UUID, actor: User, reader: Kn
         priority_final=gate["priority_final"],
         knowledge_release_id=_uuid(release_id),
         status="Queued",
+        # Thời điểm sau khi giữ khóa lượt khám, không phải lúc bắt đầu transaction: thứ tự "lần mới nhất" đúng
+        # theo thứ tự ghi kể cả khi hai yêu cầu chờ khóa nhau
+        queued_at=func.clock_timestamp(),
     )
-    if gate["is_red_flag"]:
+    # Cờ đỏ đã bật thì giữ đến khi có người đánh giá lại có chủ đích; lần này chỉ ghi nhật ký
+    kept_red_flag = not allow_lower and visit.is_red_flag and not gate["is_red_flag"]
+    if gate["is_red_flag"] or kept_red_flag:
         run.status, run.mode, run.candidates, run.completed_at = "Skipped", "RuleOnly", [], func.now()
+        run.error_detail = "RED_FLAG_KEPT" if kept_red_flag else None
     db.add(run)
 
-    _apply_triage(
-        visit,
-        is_red_flag=gate["is_red_flag"],
-        hits=hits,
-        priority_rule=gate["priority_rule"],
-        priority_final=gate["priority_final"],
-    )
-    visit.ai_status = "Skipped" if gate["is_red_flag"] else "Pending"
+    old = {
+        "triage_priority_rule": visit.triage_priority_rule,
+        "triage_priority": visit.triage_priority,
+        "is_red_flag": visit.is_red_flag,
+    }
+    if not kept_red_flag:
+        priority_rule, priority_final = gate["priority_rule"], gate["priority_final"]
+        if not allow_lower and not gate["is_red_flag"]:
+            priority_rule = _higher(priority_rule, visit.triage_priority_rule)
+            priority_final = _higher(priority_final, visit.triage_priority, priority_rule)
+        _apply_triage(
+            visit,
+            is_red_flag=gate["is_red_flag"],
+            hits=hits,
+            priority_rule=priority_rule,
+            priority_final=priority_final,
+        )
+        visit.ai_status = "Skipped" if gate["is_red_flag"] else "Pending"
     db.flush()
     audit.record(
         db,
@@ -159,11 +191,29 @@ def enqueue_assessment(db: Session, visit_id: uuid.UUID, actor: User, reader: Kn
             "run_type": "Assessment",
             "status": run.status,
             "ai_status": visit.ai_status,
-            "is_red_flag": gate["is_red_flag"],
             "rule_hits": [h["rule_key"] for h in hits],
+            "error_detail": run.error_detail,
+            "allow_lower": allow_lower,
+            "triage_priority_rule": visit.triage_priority_rule,
+            "triage_priority": visit.triage_priority,
+            "is_red_flag": visit.is_red_flag,
         },
+        old_values=old,
     )
     return run
+
+
+def update_visit(
+    db: Session, visit_id: uuid.UUID, data: VisitUpdate, actor: User, reader: Callable[[], KnowledgeReader]
+) -> Visit:
+    """Sửa lượt khám. Sinh hiệu đổi ở lượt đã lưu tiếp đón thì Node 1 chạy lại trong cùng transaction,
+    chỉ nâng mức (ERD §4): mức ưu tiên, cờ đỏ không chờ client gửi yêu cầu thứ hai."""
+    before = dict(get_visit(db, visit_id).vital_signs or {})
+    visit = queue_service.update_visit(db, visit_id, data, actor)
+    if dict(visit.vital_signs or {}) != before and db.scalar(select(queue_service.intake_saved(visit_id))):
+        enqueue_assessment(db, visit_id, actor, reader())
+        db.refresh(visit)
+    return visit
 
 
 def _text_hash(text: str | None) -> str:
@@ -338,13 +388,15 @@ def write_result(
     run.lease_until, run.completed_at = None, func.now()
 
     visit = _open_visit_for(db, run)
-    if visit is not None:
+    if visit is not None and not (visit.is_red_flag and not final.get("is_red_flag")):
+        # Kết quả AI không hạ mức đang có của lượt, không gỡ cờ đỏ (ERD §4)
+        priority_rule = _higher(run.priority_rule, visit.triage_priority_rule)
         _apply_triage(
             visit,
             is_red_flag=bool(final.get("is_red_flag")),
             hits=hits,
-            priority_rule=run.priority_rule or "Routine",
-            priority_final=run.priority_final or run.priority_rule or "Routine",
+            priority_rule=priority_rule,
+            priority_final=_higher(run.priority_final, visit.triage_priority, priority_rule),
         )
         visit.ai_status = _VISIT_STATUS[status]
     db.flush()

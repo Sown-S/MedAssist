@@ -1,0 +1,126 @@
+{
+ "method": "get",
+ "path": "/api/v1/service-packages",
+ "status": 200,
+ "role": "nurse",
+ "body": [
+  {
+   "package_id": "b08cf987-2341-4b11-b0dc-ea2a192b4b34",
+   "code": "GK01",
+   "name": "Khám tổng quát cơ bản",
+   "price": 350000,
+   "is_active": true,
+   "items": [
+    {
+     "service_id": "68cd3563-9f66-4055-9c5a-537d77e57035",
+     "code": "DV01",
+     "name": "Khám bệnh",
+     "kind": "Service",
+     "quantity": 1,
+     "is_active": true
+    },
+    {
+     "service_id": "ac1b572d-9061-4b7f-99b2-26ddae8966c9",
+     "code": "XN01",
+     "name": "Công thức máu (CBC) — Bạch cầu (WBC)",
+     "kind": "Lab",
+     "quantity": 1,
+     "is_active": true
+    },
+    {
+     "service_id": "faf459d7-85a0-401d-9055-c5f15d9249be",
+     "code": "XN05",
+     "name": "Glucose máu lúc đói",
+     "kind": "Lab",
+     "quantity": 1,
+     "is_active": true
+    },
+    {
+     "service_id": "fc05ae23-ee52-4b3c-9a0d-02f944d4d24d",
+     "code": "DV12",
+     "name": "Đo điện tim (ECG)",
+     "kind": "Service",
+     "quantity": 1,
+     "is_active": true
+    }
+   ],
+   "updated_at": "2026-11-25T21:55:10.356069+07:00"
+  },
+  {
+   "package_id": "9a80406c-1676-446d-8601-3953dc5eb19b",
+   "code": "GK02",
+   "name": "Khám sức khỏe trẻ em",
+   "price": 220000,
+   "is_active": true,
+   "items": [
+    {
+     "service_id": "e90fd730-1563-42fb-897b-88ad4611938b",
+     "code": "DV02",
+     "name": "Khám chuyên khoa Nhi",
+     "kind": "Service",
+     "quantity": 1,
+     "is_active": true
+    },
+    {
+     "service_id": "ac1b572d-9061-4b7f-99b2-26ddae8966c9",
+     "code": "XN01",
+     "name": "Công thức máu (CBC) — Bạch cầu (WBC)",
+     "kind": "Lab",
+     "quantity": 1,
+     "is_active": true
+    },
+    {
+     "service_id": "6fab9cdb-dc28-4f72-99ec-e77c53ccbacc",
+     "code": "XN14",
+     "name": "X-quang ngực thẳng",
+     "kind": "Lab",
+     "quantity": 1,
+     "is_active": true
+    }
+   ],
+   "updated_at": "2026-11-25T21:55:10.356069+07:00"
+  },
+  {
+   "package_id": "4549f82c-2242-4985-aaf8-fb9c33a659f4",
+   "code": "GK03",
+   "name": "Theo dõi tiểu đường định kỳ",
+   "price": 300000,
+   "is_active": true,
+   "items": [
+    {
+     "service_id": "68cd3563-9f66-4055-9c5a-537d77e57035",
+     "code": "DV01",
+     "name": "Khám bệnh",
+     "kind": "Service",
+     "quantity": 1,
+     "is_active": true
+    },
+    {
+     "service_id": "faf459d7-85a0-401d-9055-c5f15d9249be",
+     "code": "XN05",
+     "name": "Glucose máu lúc đói",
+     "kind": "Lab",
+     "quantity": 1,
+     "is_active": true
+    },
+    {
+     "service_id": "5b0f4ed6-ed41-46c9-a6eb-d2b65e50e1c7",
+     "code": "XN11",
+     "name": "HbA1c",
+     "kind": "Lab",
+     "quantity": 1,
+     "is_active": true
+    },
+    {
+     "service_id": "27ac87ac-d0cf-4ce5-9ff7-4ff55940f93b",
+     "code": "XN07",
+     "name": "Creatinin",
+     "kind": "Lab",
+     "quantity": 1,
+     "is_active": true
+    }
+   ],
+   "updated_at": "2026-11-25T21:55:10.356069+07:00"
+  }
+ ]
+}

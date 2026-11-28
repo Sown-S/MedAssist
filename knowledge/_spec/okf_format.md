@@ -1,6 +1,6 @@
 ---
 schema: okf_spec_v1
-label: KB-2026.12.1
+label: KB-2026.12.4
 description: Đặc tả định dạng OKF, quy ước mã slug bất biến, 8 khóa sinh hiệu chuẩn,
   cấu trúc condition_logic và thứ tự nạp của MedAssist.
 ---
@@ -70,5 +70,8 @@ Mỗi mục trong `symptoms` của `symptoms/symptom_catalog.md` có thể bổ 
 | `short_name` | Chuỗi, mặc định `null` | Tên hiển thị tại tiếp đón. Từ 1 đến 30 ký tự Unicode sau khi bỏ khoảng trắng ở hai đầu. Dùng tiếng Việt dễ hiểu, chuẩn NFC. |
 | `aliases` | Danh sách chuỗi YAML, mặc định `[]` | Tối đa 15 cụm. Mỗi cụm từ 1 đến 60 ký tự sau khi gộp khoảng trắng. Dùng cách nói của người bệnh đúng nghĩa mã. Với mã gộp, chỉ dùng phần người bệnh có thể kể. |
 | `detection` | `reported`, `exam` hoặc `both`, mặc định `both` | `reported` cho triệu chứng người bệnh tự kể, `exam` cho dấu hiệu chỉ xác định qua khám hoặc xét nghiệm, `both` cho mã có thể ghi nhận theo cả hai cách hoặc gộp hai loại thông tin. |
+| `applicable_sex` | `Any`, `Female` hoặc `Male`, mặc định `Any` | Chỉ đặt `Female`/`Male` khi triệu chứng chỉ có ở một giới (vd khí hư âm đạo). Giao diện ẩn mã không hợp giới tính bệnh nhân; giới tính Khác không lọc. |
+
+Hồ sơ bệnh (`conditions/**/*.md`) cũng nhận `applicable_sex` cùng quy ước. Node 2 bỏ bệnh không hợp giới tính bệnh nhân khỏi danh sách gợi ý; bác sĩ vẫn chọn được khi chẩn đoán tay.
 
 Importer chuẩn hóa khóa so trùng alias bằng cách hạ chữ thường và gộp khoảng trắng. Mỗi alias phải duy nhất trong một mã và không được dùng chung giữa hai mã. Các mã dùng trong `condition_logic` của luật `rf_*` hoặc `pf_*` không được có `detection: exam`. Trong đợt bổ sung cho nhóm trọng tâm, các mã cờ đỏ, mã gộp và mã có nhãn trong 29 ca trích xuất v1.4 được giữ `both`.

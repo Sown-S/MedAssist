@@ -15,10 +15,12 @@ import SymptomPanel from './SymptomPanel'
 import { normalizeVitals, vitalsToForm, vitalsFromForm } from '../api/vitals'
 import { toPayload, extractionStale } from '../api/symptoms'
 import DocumentModal from '../pages/doctor/DocumentModal'
+import PregnancyField from './PregnancyField'
+import LowerPriorityButton from './LowerPriorityButton'
+import { askPregnancy } from '../api/patient'
 
 // Quầy xử lý lượt đang chờ: sửa lượt khi bệnh nhân chuyển nặng (luật chạy lại, chỉ nâng mức) hoặc huỷ lượt (lưu lý do).
 
-const LEVEL_LABEL = { high: 'High priority', emergency: 'Emergency' }
 // Sinh hiệu đề xuất + lời kể của lần trích xuất ra chúng (xem extractionStale).
 const NO_VITALS = { list: [], from: null }
 const symMap = (list) => Object.fromEntries((list ?? []).map((x) => [x.symptom_code, { state: x.state, source: x.source }]))
@@ -27,6 +29,7 @@ export function EditWaitingModal({ visit, onClose }) {
   const { showToast } = useToast()
   const [f, setF] = useState({
     reason: visit.reason === '—' ? '' : visit.reason,
+    pregnancy: '',
     ...vitalsToForm(normalizeVitals(visit.vitals))
   })
   const [syms, setSyms] = useState(symMap(visit.symptoms))
@@ -39,10 +42,12 @@ export function EditWaitingModal({ visit, onClose }) {
   const [referring, setReferring] = useState(false)
   const [vitalProps, setVitalProps] = useState(NO_VITALS)
   const textLocked = visit.status !== ST.WAITING
+  // Mang thai ghi theo lượt khám, sửa được khi lượt còn Waiting.
+  const pregnancyAsked = !textLocked && askPregnancy(visit.gender, visit.age)
   useEffect(() => {
     Promise.all([apiGet('/api/v1/visits/' + visit.id), clinic.getVisitSymptoms(visit.id)])
       .then(([v, list]) => {
-        setF({ reason: v.free_text_description ?? v.chief_complaint ?? '', ...vitalsToForm(normalizeVitals(v.vital_signs)) })
+        setF({ reason: v.free_text_description ?? v.chief_complaint ?? '', pregnancy: clinic.pregnancyOf(v), ...vitalsToForm(normalizeVitals(v.vital_signs)) })
         setSyms(symMap(list.filter((x) => x.state !== 'UNKNOWN')))
         setLoaded(true)
       })
@@ -56,15 +61,16 @@ export function EditWaitingModal({ visit, onClose }) {
     return clinic.extractSymptoms(visit.id, opts)
   }
   // Lưu sinh hiệu (+ lời kể khi còn Waiting), triệu chứng, rồi chạy lại luật ưu tiên.
-  async function saveOnServer() {
+  // allowLower: sửa sinh hiệu gõ nhầm làm bật cờ đỏ — đánh giá lại cho phép hạ mức (lưu thường chỉ nâng mức).
+  async function saveOnServer({ allowLower = false } = {}) {
     setBusy(true)
     try {
-      await clinic.updateVisit(visit.id, textLocked ? { vitals: vitalsFromForm(f) } : { text: f.reason, vitals: vitalsFromForm(f) })
+      await clinic.updateVisit(visit.id, textLocked ? { vitals: vitalsFromForm(f) } : { text: f.reason, vitals: vitalsFromForm(f), ...(pregnancyAsked ? { pregnancy: f.pregnancy } : {}) })
       await clinic.putSymptoms(visit.id, toPayload(syms))
-      const a = await clinic.triggerAssessment(visit.id)
+      const a = await clinic.triggerAssessment(visit.id, { allowLower })
       syncQueue()
       const level = clinic.triageOf(a.priority?.final)
-      showToast(translate('Visit updated') + (level !== 'routine' ? ' · ' + translate(LEVEL_LABEL[level]) : ''))
+      showToast(translate(allowLower ? 'Re-assessed' : 'Visit updated') + (allowLower || level !== 'routine' ? ' · ' + translate(clinic.LEVEL_LABEL[level]) : ''))
       onClose()
     } catch (e) {
       showToast(translate(e.message), 'error')
@@ -72,10 +78,10 @@ export function EditWaitingModal({ visit, onClose }) {
       setBusy(false)
     }
   }
-  function save() {
+  function save(opts) {
     setTried(true)
     if (vit.errors.length) return showToast(translate('Check the vital signs') + ': ' + vit.errors.map((e) => translate(e)).join('; '), 'error')
-    saveOnServer()
+    return saveOnServer(opts)
   }
   if (referring)
     return (
@@ -95,6 +101,7 @@ export function EditWaitingModal({ visit, onClose }) {
         <PatientAlerts p={visit} compact />
         <div className="sec-t">Symptoms</div>
         <SymptomPanel
+          gender={visit.gender}
           value={syms}
           onChange={setSyms}
           text={f.reason}
@@ -103,6 +110,7 @@ export function EditWaitingModal({ visit, onClose }) {
           onExtract={extract}
           onVitals={(list, from) => setVitalProps({ list, from })}
         />
+        {pregnancyAsked && loaded && <PregnancyField value={f.pregnancy} onChange={(v) => setF((x) => ({ ...x, pregnancy: v }))} />}
         <div className="sec-t">Vital signs</div>
         <VitalProposals
           list={vitalProps.list}
@@ -129,10 +137,11 @@ export function EditWaitingModal({ visit, onClose }) {
         >
           <Icon name="ban" /> Emergency — transfer now
         </button>
+        {(visit.triage === 'emergency' || visit.priority) && <LowerPriorityButton className="btn btn-outline" disabled={!loaded || busy} onConfirm={() => save({ allowLower: true })} />}
         <button className="btn btn-outline" onClick={onClose}>
           Cancel
         </button>
-        <button className="btn btn-primary" disabled={!loaded || busy} onClick={save}>
+        <button className="btn btn-primary" disabled={!loaded || busy} onClick={() => save()}>
           <Icon name="check" /> Save
         </button>
       </div>

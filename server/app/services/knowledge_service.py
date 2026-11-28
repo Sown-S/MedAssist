@@ -38,13 +38,13 @@ KINDS: dict[str, tuple[Any, tuple[str, ...], tuple[str, ...], str]] = {
     "symptoms": (
         Symptom,
         ("symptom_code",),
-        ("symptom_name", "category", "short_name", "aliases", "detection"),
+        ("symptom_name", "category", "short_name", "aliases", "detection", "applicable_sex"),
         "symptom",
     ),
     "conditions": (
         Condition,
         ("condition_code",),
-        ("name_vi", "icd10_code", "disease_group", "description"),
+        ("name_vi", "icd10_code", "disease_group", "description", "applicable_sex"),
         "condition",
     ),
     "relations": (

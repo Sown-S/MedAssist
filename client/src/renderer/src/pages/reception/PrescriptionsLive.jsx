@@ -11,6 +11,9 @@ import PeriodPicker from './PeriodPicker'
 import { periodRange, periodLabel, PAY_STATUS } from './shared'
 import { money, fold, ymd, hhmm, dmy } from '../../utils/format'
 import { MiniStat, MiniStats } from '../../components/MiniStat'
+import EmptyState from '../../components/ui/EmptyState'
+import { ErrorBlock } from '../../components/DataState'
+import { errorMessage } from '../../api/errors'
 
 const STATUS_FILTERS = [
   { key: '', label: 'All payment statuses' },
@@ -33,7 +36,7 @@ export default function PrescriptionsLive({ initialDoctorId = '', initialDoctorN
   const [open, setOpen] = useState(null)
 
   const [from, to] = periodRange(period, date)
-  const { list: all, loaded, error } = usePrescriptions({ from: period === 'all' ? '2000-01-01' : from, to: period === 'all' ? ymd(new Date()) : to })
+  const { list: all, loaded, error, reload } = usePrescriptions({ from: period === 'all' ? '2000-01-01' : from, to: period === 'all' ? ymd(new Date()) : to })
   const doctors = [...new Map([...(initialDoctorId ? [[initialDoctorId, initialDoctorName]] : []), ...all.map((r) => [r.doctorId, r.doctor])]).entries()].sort((a, b) => a[1].localeCompare(b[1]))
   const needle = fold(q)
   const list = all.filter(
@@ -83,6 +86,7 @@ export default function PrescriptionsLive({ initialDoctorId = '', initialDoctorN
         <MiniStat icon="wallet" value={money(value)} label="Invoice total" mono />
       </MiniStats>
 
+      {error && <ErrorBlock message={errorMessage(error)} onRetry={reload} />}
       <div className="card">
         <div className="card-b">
           <div className="toolbar mb-14">
@@ -95,7 +99,7 @@ export default function PrescriptionsLive({ initialDoctorId = '', initialDoctorN
               }}
             />
             <div className="sp" />
-            <select className="select" value={doctorId} onChange={(e) => setDoctorId(e.target.value)}>
+            <select className="select" aria-label="Filter by doctor" value={doctorId} onChange={(e) => setDoctorId(e.target.value)}>
               <option value="">All doctors</option>
               {doctors.map(([id, name]) => (
                 <option key={id} value={id}>
@@ -103,7 +107,7 @@ export default function PrescriptionsLive({ initialDoctorId = '', initialDoctorN
                 </option>
               ))}
             </select>
-            <select className="select" value={status} onChange={(e) => setStatus(e.target.value)}>
+            <select className="select" aria-label="Filter by payment status" value={status} onChange={(e) => setStatus(e.target.value)}>
               {STATUS_FILTERS.map((s) => (
                 <option key={s.key} value={s.key}>
                   {s.label}
@@ -119,7 +123,7 @@ export default function PrescriptionsLive({ initialDoctorId = '', initialDoctorN
               {translate('Print list')}
             </button>
           </div>
-          <div className="tbl-wrap">
+          <div className="tbl-wrap" tabIndex={0}>
             <table>
               <thead>
                 <tr>
@@ -199,13 +203,7 @@ export default function PrescriptionsLive({ initialDoctorId = '', initialDoctorN
                 {!list.length && (
                   <tr>
                     <td colSpan="7">
-                      <div className="empty">
-                        <div className="ill">
-                          <Icon name="clipboard" />
-                        </div>
-                        <b>{error ? error.message : !loaded ? translate('Loading…') : all.length ? translate('No prescriptions match the filters.') : translate('No prescriptions in this period.')}</b>
-                        <span>Try another period or clear the filters.</span>
-                      </div>
+                      <EmptyState icon="clipboard" title={error ? translate('Failed to load data') : !loaded ? translate('Loading…') : all.length ? translate('No prescriptions match the filters.') : translate('No prescriptions in this period.')} text="Try another period or clear the filters." />
                     </td>
                   </tr>
                 )}

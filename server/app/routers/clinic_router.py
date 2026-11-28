@@ -4,14 +4,17 @@ Mọi GET dữ liệu bệnh nhân ghi VIEW (audit_view); hàng đợi gộp 1 d
 """
 
 import uuid
+from collections.abc import Callable
 
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 
+from app.ai.interfaces import KnowledgeReader
 from app.core.audit_view import CLINICAL_ROLES, DEFAULT_POLL_WINDOW, audit_view
 from app.core.auth import require_roles
 from app.core.database import get_db
 from app.models import User
+from app.routers.assessment_router import get_knowledge_reader_lazy
 from app.schemas.common import Page, PhoneVN
 from app.schemas.emr import PatientHistory, PatientLookupResult, VisitRecord
 from app.schemas.patient import IdNumber, PatientCreate, PatientOut, PatientSummary, PatientUpdate
@@ -29,12 +32,13 @@ from app.schemas.visit import (
     VisitWithWarnings,
 )
 from app.schemas.visit_symptom import SymptomCatalogItem, SymptomsPut, VisitSymptomOut
-from app.services import emr_service, queue_service, symptom_service
+from app.services import ai_queue_service, emr_service, queue_service, symptom_service
 from app.validation.schema_validators import vital_sign_warnings
 
 router = APIRouter(tags=["clinic"])
 
 _nurse_patient = require_roles("Nurse", audit_entity="patient")
+_clinical_patient = require_roles(*CLINICAL_ROLES, audit_entity="patient")
 _nurse_visit = require_roles("Nurse", audit_entity="visit")
 _physician_visit = require_roles("Physician", audit_entity="visit")
 _clinical_visit = require_roles(*CLINICAL_ROLES, audit_entity="visit")
@@ -103,8 +107,9 @@ def get_patient(
 
 @router.patch("/patients/{patient_id}", response_model=PatientOut)
 def update_patient(
-    patient_id: uuid.UUID, body: PatientUpdate, actor: User = Depends(_nurse_patient), db: Session = Depends(get_db)
+    patient_id: uuid.UUID, body: PatientUpdate, actor: User = Depends(_clinical_patient), db: Session = Depends(get_db)
 ):
+    # Y tá sửa mọi trường; bác sĩ chỉ dị ứng, bệnh nền của bệnh nhân mình đang khám (kiểm ở service)
     patient = emr_service.update_patient(db, patient_id, body, actor)
     db.commit()
     db.refresh(patient)
@@ -221,9 +226,13 @@ def get_visit(
 
 @router.patch("/visits/{visit_id}", response_model=VisitWithWarnings)
 def update_visit(
-    visit_id: uuid.UUID, body: VisitUpdate, actor: User = Depends(_nurse_visit), db: Session = Depends(get_db)
+    visit_id: uuid.UUID,
+    body: VisitUpdate,
+    actor: User = Depends(_clinical_visit),
+    reader: Callable[[], KnowledgeReader] = Depends(get_knowledge_reader_lazy),
+    db: Session = Depends(get_db),
 ):
-    visit = queue_service.update_visit(db, visit_id, body, actor)
+    visit = ai_queue_service.update_visit(db, visit_id, body, actor, reader)
     db.commit()
     return _with_warnings(visit)
 

@@ -13,7 +13,7 @@ from app.exceptions import AppError, NotFoundError
 from app.models import Diagnosis, Drug, Invoice, Patient, Prescription, PrescriptionItem, User, Visit
 from app.schemas.patient import PatientCreate, PatientSummary, PatientUpdate
 from app.services import audit_service as audit
-from app.services import service_order_service
+from app.services import queue_service, service_order_service
 
 MAX_DUPLICATE_CANDIDATES = 10
 
@@ -82,10 +82,47 @@ def create_patient(db: Session, data: PatientCreate, actor: User) -> Patient:
     return patient
 
 
+def _clear_invalid_pregnancy(db: Session, patient: Patient) -> None:
+    """Sửa giới tính / ngày sinh thì bỏ "đang mang thai" không còn hợp lệ ở lượt khám đang mở."""
+    for visit in db.scalars(
+        select(Visit).where(
+            Visit.patient_id == patient.patient_id,
+            Visit.status.in_(queue_service.OPEN_STATUSES),
+            Visit.is_pregnant.is_(True),
+        )
+    ):
+        if not queue_service.pregnancy_allowed(patient.gender, patient.date_of_birth, visit.visit_date.date()):
+            visit.is_pregnant = None
+
+
+# Bác sĩ chỉ cập nhật thông tin lâm sàng hỏi được trong buồng khám; thông tin hành chính do quầy giữ
+PHYSICIAN_PATIENT_FIELDS = frozenset({"allergy_notes", "medical_history"})
+
+
+def _check_physician_may_update(db: Session, patient_id: uuid.UUID, fields: set[str], actor: User) -> None:
+    forbidden = sorted(fields - PHYSICIAN_PATIENT_FIELDS)
+    if forbidden:
+        raise AppError(
+            403,
+            "FORBIDDEN_FIELDS",
+            "Bác sĩ chỉ cập nhật được dị ứng và bệnh nền",
+            [{"field": f, "in": "body", "message": "Không có quyền sửa"} for f in forbidden],
+        )
+    examining = select(Visit.visit_id).where(
+        Visit.patient_id == patient_id, Visit.status == "Examining", Visit.physician_id == actor.user_id
+    )
+    if db.scalar(examining.limit(1)) is None:
+        raise AppError(
+            403, "NOT_YOUR_PATIENT", "Bác sĩ chỉ cập nhật được dị ứng, bệnh nền của bệnh nhân mình đang khám"
+        )
+
+
 def update_patient(db: Session, patient_id: uuid.UUID, data: PatientUpdate, actor: User) -> Patient:
     patient = db.scalar(select(Patient).where(Patient.patient_id == patient_id).with_for_update())
     if patient is None:
         raise NotFoundError("Không tìm thấy bệnh nhân")
+    if actor.role == "Physician":
+        _check_physician_may_update(db, patient_id, set(data.model_fields_set), actor)
     changes = data.model_dump(exclude_unset=True, mode="python")
     if "medical_history" in changes and data.medical_history is not None:
         changes["medical_history"] = data.medical_history.model_dump()
@@ -103,6 +140,8 @@ def update_patient(db: Session, patient_id: uuid.UUID, data: PatientUpdate, acto
     changed = [k for k, v in changes.items() if getattr(patient, k) != v]
     for k in changed:
         setattr(patient, k, changes[k])
+    if {"gender", "date_of_birth"} & set(changed):
+        _clear_invalid_pregnancy(db, patient)
     if changed:
         patient.updated_at = func.now()
         audit.record(

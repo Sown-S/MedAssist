@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { useInventory, stockOf } from '../api/inventoryStore'
 import { unitLabel } from '../pages/admin/inventory/shared'
 import { vnd } from '../utils/format'
+import Badge from './ui/Badge'
 
 // Ô tìm thuốc (tên, hoạt chất, ATC) kèm tồn dùng được. drugs: danh mục từ server; bỏ trống thì dùng kho đã nạp (inventoryStore).
 // inputId / title: để trang cha gắn phím tắt (VD Alt+T ở màn khám).
@@ -57,9 +58,9 @@ export default function DrugPicker({ onPick, disabled, drugs, inputId, title }) 
                     <span className="num">{st.usable}</span> <span>{unitLabel(d.unit)}</span>
                   </span>
                 ) : st.expired > 0 ? (
-                  <span className="badge b-danger">Only expired batches</span>
+                  <Badge tone="danger">Only expired batches</Badge>
                 ) : (
-                  <span className="badge b-danger">Out of stock</span>
+                  <Badge tone="danger">Out of stock</Badge>
                 )}
               </div>
             )

@@ -4,7 +4,7 @@ Chỉ chạy trong worker sau cổng Node 1; không ghi dữ liệu hay tự xá
 """
 
 import asyncio
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 import json
 import math
 import re
@@ -24,8 +24,14 @@ from app.exceptions import AppError
 from app.validation import knowledge_validators
 
 EXTRACTION_TIMEOUT_SECONDS = 30
+APPLICABLE_SEXES = ("Any", "Female", "Male")
 _CODES = TypeAdapter(list[knowledge_validators.SymptomCode])
 _MASK = "[REDACTED]"
+
+
+def applies_to_sex(applicable_sex: str, sex: object) -> bool:
+    """Giới tính Other hoặc chưa biết thì không lọc (khớp quy ước Node 2)."""
+    return sex not in ("Female", "Male") or applicable_sex in ("Any", sex)
 
 # Các nhãn mơ hồ (bệnh nhân, BN, patient) bắt buộc có dấu ':' hoặc '=' để không xóa nhầm
 # câu lâm sàng như "Bệnh nhân đau đầu 2 ngày".
@@ -94,7 +100,9 @@ async def extract_symptoms(
     masked = _redact_identifiers(text, identifiers)
     if not masked.strip() or not masked.replace(_MASK, "").strip(" \t\r\n,;:.!?"):
         return []
-    catalogue = _catalogue(knowledge_reader)
+    input_features = gate_state.get("input_features")
+    sex = input_features.get("sex") if isinstance(input_features, Mapping) else None
+    catalogue = _catalogue(knowledge_reader, sex=sex)
     if not catalogue:
         return []
     prompt_catalogue = _select_prompt_catalogue(catalogue, masked)
@@ -166,13 +174,16 @@ def _redact_identifiers(text: str, identifiers: Sequence[str]) -> str:
     return masked
 
 
-def _catalogue(reader: KnowledgeReader) -> list[dict[str, str]]:
+def _catalogue(reader: KnowledgeReader, *, sex: object = None) -> list[dict[str, str]]:
     rows = reader.active_symptoms()
     try:
         codes = _CODES.validate_python([row["symptom_code"] for row in rows], strict=True)
         names = [row.get("symptom_name", code) for row, code in zip(rows, codes, strict=True)]
-        if len(set(codes)) != len(codes) or any(
-            not isinstance(name, str) or not name.strip() for name in names
+        sexes = ["Any" if row.get("applicable_sex") is None else row.get("applicable_sex") for row in rows]
+        if (
+            len(set(codes)) != len(codes)
+            or any(not isinstance(name, str) or not name.strip() for name in names)
+            or any(not isinstance(item, str) or item not in APPLICABLE_SEXES for item in sexes)
         ):
             raise ValueError
     except (KeyError, TypeError, ValueError):
@@ -184,7 +195,8 @@ def _catalogue(reader: KnowledgeReader) -> list[dict[str, str]]:
     # ghi chú...) vào prompt.
     return [
         {"symptom_code": code, "symptom_name": name}
-        for code, name in sorted(zip(codes, names, strict=True))
+        for code, name, applicable_sex in sorted(zip(codes, names, sexes, strict=True))
+        if applies_to_sex(applicable_sex, sex)
     ]
 
 
@@ -197,13 +209,18 @@ def _validated_suggestions(output: object, allowed: set[str]) -> list[SymptomSug
     except ValidationError:
         return []
     statuses: dict[str, Literal["PRESENT", "ABSENT", "UNKNOWN"]] = {}
+    conflicted: set[str] = set()
     for row in proposal.symptoms:
-        if row.symptom_code not in allowed:
+        code = row.symptom_code
+        if code not in allowed or code in conflicted:
             continue
-        if row.symptom_code in statuses and statuses[row.symptom_code] != row.status:
-            # Không được âm thầm chọn một trạng thái khi LLM sinh trạng thái mâu thuẫn.
-            return []
-        statuses[row.symptom_code] = row.status
+        if code in statuses and statuses[code] != row.status:
+            # Loại riêng mã bị mâu thuẫn trạng thái (vd: "hôm qua sốt, nay hết sốt"),
+            # giữ các mã không xung đột còn lại và không tự gán UNKNOWN.
+            conflicted.add(code)
+            del statuses[code]
+            continue
+        statuses[code] = row.status
     return [
         {"symptom_code": code, "status": status,
          "label": "Reference Suggestion", "requires_confirmation": True}

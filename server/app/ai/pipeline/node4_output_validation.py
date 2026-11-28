@@ -128,7 +128,7 @@ def run_node4(state: PipelineState, db: Session) -> PipelineState:
         return _reject(result, "OUTSIDE_CANDIDATES")
     if set(codes) != set(expected):
         return _reject(result, "INCOMPLETE_RANKING")
-    for row in proposal.ranking:
+    for row in proposal.ranking[:MAX_DISPLAY_CANDIDATES]:
         if not row.reason.strip():
             return _reject(result, "INVALID_REASON")
         if not _contains_vietnamese_text(row.reason):
@@ -137,7 +137,7 @@ def run_node4(state: PipelineState, db: Session) -> PipelineState:
             return _reject(result, "UNGROUNDED_REASON")
 
     displayed = _display([expected[code] for code in codes])
-    for candidate, ranked in zip(displayed, proposal.ranking):
+    for candidate, ranked in zip(displayed, proposal.ranking[:MAX_DISPLAY_CANDIDATES]):
         # Văn bản tự do chỉ là giải thích, không bao giờ là nguồn bằng chứng chuẩn.
         candidate["reason"] = ranked.reason
     result["candidates"] = displayed

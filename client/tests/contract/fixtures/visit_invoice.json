@@ -1,0 +1,54 @@
+{
+ "method": "get",
+ "path": "/api/v1/visits/{visit_id}/invoice",
+ "status": 200,
+ "role": "physician",
+ "body": {
+  "invoice_id": "d3249df7-fca7-4392-9aae-439ef30d139f",
+  "visit_id": "14c34080-a460-459e-acc5-3dce272b7d3a",
+  "invoice_code": "HD-20261125-0002",
+  "consultation_fee": 80000,
+  "paraclinical_fee": 0,
+  "drug_fee": 52500,
+  "total_amount": 132500,
+  "payment_method": "Cash",
+  "payment_status": "Pending",
+  "paid_at": null,
+  "cancelled_at": null,
+  "cancel_reason": null,
+  "created_at": "2026-11-25T21:55:32.248211+07:00",
+  "items": [
+   {
+    "invoice_item_id": "362e7d96-fb25-4982-aee9-1f62cf2c212d",
+    "item_type": "Consultation",
+    "prescription_item_id": null,
+    "service_order_id": null,
+    "item_name": "Khám bệnh",
+    "quantity": 1,
+    "unit_price": 80000,
+    "subtotal": 80000
+   },
+   {
+    "invoice_item_id": "e82c9705-eaf3-442e-b0ce-ca1748a97864",
+    "item_type": "Drug",
+    "prescription_item_id": "255bed15-5d5b-40bc-9506-d7250d23118a",
+    "service_order_id": null,
+    "item_name": "Meloxicam 7,5 mg (Mobic 7.5)",
+    "quantity": 7,
+    "unit_price": 5500,
+    "subtotal": 38500
+   },
+   {
+    "invoice_item_id": "4fd9767b-c878-401f-a3d7-7410de4c7bb6",
+    "item_type": "Drug",
+    "prescription_item_id": "6419839c-dcfe-4dd9-b87e-09176de37cd0",
+    "service_order_id": null,
+    "item_name": "Omeprazol 20 mg (Omeprazol 20)",
+    "quantity": 7,
+    "unit_price": 2000,
+    "subtotal": 14000
+   }
+  ],
+  "unbilled_items": []
+ }
+}
